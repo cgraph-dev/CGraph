@@ -213,12 +213,14 @@ defmodule CGraph.Tracing.Context do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec generate_span_id() :: String.t()
   def generate_span_id do
     :crypto.strong_rand_bytes(8)
     |> Base.encode16(case: :lower)
   end
 
   @doc false
+  @spec create_span(String.t(), String.t(), String.t() | nil, map()) :: map()
   def create_span(name, span_id, parent_span_id, attributes) do
     %{
       span_id: span_id,
@@ -235,6 +237,7 @@ defmodule CGraph.Tracing.Context do
   end
 
   @doc false
+  @spec emit_span_start(String.t(), map()) :: :ok
   def emit_span_start(name, ctx) do
     :telemetry.execute(
       [:cgraph, :trace, :span, :start],

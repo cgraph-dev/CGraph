@@ -18,6 +18,7 @@ defmodule CGraph.Reputation do
   @doc """
   Get user reputation with pagination.
   """
+  @spec get_user_reputation(String.t(), keyword()) :: {[map()], map(), map()}
   def get_user_reputation(user_id, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     type = Keyword.get(opts, :type)
@@ -50,6 +51,7 @@ defmodule CGraph.Reputation do
   @doc """
   Get reputation summary for a user.
   """
+  @spec get_reputation_summary(String.t()) :: map()
   def get_reputation_summary(user_id) do
     positive =
       from(r in ReputationEntry, where: r.to_user_id == ^user_id and r.value > 0)
@@ -83,6 +85,7 @@ defmodule CGraph.Reputation do
   @doc """
   Give reputation to a user.
   """
+  @spec give_reputation(map()) :: {:ok, map()} | {:error, term()}
   def give_reputation(attrs) do
     # Map external field names to database column names
     db_attrs = %{

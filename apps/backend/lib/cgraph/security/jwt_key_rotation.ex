@@ -125,6 +125,7 @@ defmodule CGraph.Security.JWTKeyRotation do
   # ============================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     state = %{
       primary_key: primary_key_from_env(),
@@ -143,6 +144,7 @@ defmodule CGraph.Security.JWTKeyRotation do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:current_key, _from, state) do
     {:reply, state.primary_key, state}
   end
@@ -227,6 +229,7 @@ defmodule CGraph.Security.JWTKeyRotation do
   end
 
   @impl true
+  @spec handle_info(:cleanup_expired_keys, map()) :: {:noreply, map()}
   def handle_info(:cleanup_expired_keys, state) do
     now = DateTime.utc_now()
 

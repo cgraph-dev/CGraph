@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
   alias CGraph.Accounts.User
   alias CGraph.Messaging.Message
 
+  @spec index(map()) :: map()
   def index(%{messages: messages, meta: meta}) do
     %{
       data: Enum.map(messages, &message_data/1),
@@ -16,6 +17,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{message: message}) do
     %{data: message_data(message)}
   end
@@ -25,6 +27,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
   Uses camelCase field names for frontend compatibility.
   Can be called from channels for WebSocket broadcasts.
   """
+  @spec message_data(Message.t() | map()) :: map()
   def message_data(%Message{} = msg) do
     # Build metadata with file info for voice/audio/file messages
     file_metadata = build_file_metadata(msg)

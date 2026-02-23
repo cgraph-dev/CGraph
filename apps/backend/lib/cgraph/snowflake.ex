@@ -59,6 +59,7 @@ defmodule CGraph.Snowflake do
 
   # ── Client API ──
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -111,6 +112,7 @@ defmodule CGraph.Snowflake do
   # ── Server Callbacks ──
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()} | {:stop, term()}
   def init(opts) do
     node_id = Keyword.get(opts, :node_id, derive_node_id())
     worker_id = Keyword.get(opts, :worker_id, 0)
@@ -133,6 +135,7 @@ defmodule CGraph.Snowflake do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:generate, _from, state) do
     {id, new_state} = do_generate(state)
     {:reply, id, new_state}

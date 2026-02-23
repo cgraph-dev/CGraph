@@ -15,6 +15,7 @@ defmodule CGraph.Moderation.Stats do
   @doc """
   Get count of reports reviewed today.
   """
+  @spec reports_reviewed_today() :: non_neg_integer()
   def reports_reviewed_today do
     today_start = DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_date() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
 
@@ -28,6 +29,7 @@ defmodule CGraph.Moderation.Stats do
   @doc """
   Get average response time for reports (in hours).
   """
+  @spec average_response_time() :: float() | nil
   def average_response_time do
     result = Repo.one(
       from r in Report,
@@ -45,6 +47,7 @@ defmodule CGraph.Moderation.Stats do
   @doc """
   Get count of currently active restrictions.
   """
+  @spec active_restriction_count() :: non_neg_integer()
   def active_restriction_count do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
 

@@ -11,6 +11,7 @@ defmodule CGraph.RateLimiter.Distributed.EtsFallback do
   @doc """
   Check rate limit using ETS fallback.
   """
+  @spec check(String.t(), map()) :: :ok | {:error, :rate_limited, map()}
   def check(key, config) do
     case config.algorithm do
       :token_bucket -> token_bucket(key, config)
@@ -22,6 +23,7 @@ defmodule CGraph.RateLimiter.Distributed.EtsFallback do
   @doc """
   Get current rate limit status from ETS.
   """
+  @spec status(String.t(), map()) :: map()
   def status(key, config) do
     case config.algorithm do
       :token_bucket ->
@@ -61,6 +63,7 @@ defmodule CGraph.RateLimiter.Distributed.EtsFallback do
   @doc """
   Clean up expired entries from the ETS fallback table.
   """
+  @spec cleanup() :: nil
   def cleanup do
     now = System.system_time(:millisecond)
 

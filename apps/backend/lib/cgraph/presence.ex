@@ -140,6 +140,7 @@ defmodule CGraph.Presence do
   Required when implementing handle_metas/4 callback.
   """
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     {:ok, %{}}
   end
@@ -148,6 +149,7 @@ defmodule CGraph.Presence do
   Callback to enrich presence data when fetched.
   """
   @impl true
+  @spec fetch(String.t(), map()) :: map()
   def fetch(_topic, presences) do
     presences
   end
@@ -159,6 +161,7 @@ defmodule CGraph.Presence do
   for O(1) lookups and O(log N) pagination instead of loading the full CRDT.
   """
   @impl true
+  @spec handle_metas(String.t(), map(), map() | list() | nil, map()) :: {:ok, map()}
   def handle_metas("users:online" = topic, %{joins: joins, leaves: leaves}, presences, state) do
     # Sync joins to Redis
     for {user_id, %{metas: metas}} <- joins do
@@ -212,9 +215,11 @@ defmodule CGraph.Presence do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec room_topic(String.t()) :: String.t()
   def room_topic(room_id), do: "room:#{room_id}"
 
   @doc false
+  @spec emit_telemetry(atom(), String.t(), map()) :: :ok
   def emit_telemetry(event, user_id, metadata) do
     :telemetry.execute(
       [:cgraph, :presence, event],

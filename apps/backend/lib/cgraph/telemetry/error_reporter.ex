@@ -107,6 +107,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
   # ===========================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create ETS tables for aggregation
     :ets.new(@table, [:named_table, :set, :public, read_concurrency: true])
@@ -124,6 +125,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:record_error, report}, state) do
     fingerprint = generate_fingerprint(report)
     now = System.system_time(:millisecond)
@@ -193,6 +195,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:get_stats, minutes}, _from, state) do
     cutoff = System.system_time(:millisecond) - (minutes * 60 * 1000)
 
@@ -237,6 +240,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
+  @spec handle_info(:flush, map()) :: {:noreply, map()}
   def handle_info(:flush, state) do
     flush_to_storage()
     schedule_flush()

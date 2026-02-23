@@ -248,11 +248,13 @@ defmodule CGraph.Idempotency do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     Store.init_tables()
     schedule_cleanup()
@@ -260,6 +262,7 @@ defmodule CGraph.Idempotency do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:check, key, request_body}, _from, state) do
     result = Store.check_key(key, request_body)
     {:reply, result, state}
@@ -281,6 +284,7 @@ defmodule CGraph.Idempotency do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     Store.cleanup_expired()
     Store.cleanup_stale_locks()

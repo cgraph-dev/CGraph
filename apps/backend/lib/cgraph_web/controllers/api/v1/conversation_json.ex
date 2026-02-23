@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.ConversationJSON do
   @doc """
   Renders a list of conversations with pagination metadata.
   """
+  @spec index(map()) :: map()
   def index(%{conversations: conversations, current_user: current_user, meta: meta}) do
     %{
       data: Enum.map(conversations, &conversation_data(&1, current_user)),
@@ -21,6 +22,7 @@ defmodule CGraphWeb.API.V1.ConversationJSON do
   @doc """
   Renders a single conversation with full details.
   """
+  @spec show(map()) :: map()
   def show(%{conversation: conversation, current_user: current_user}) do
     %{data: conversation_data(conversation, current_user)}
   end
@@ -114,6 +116,7 @@ defmodule CGraphWeb.API.V1.ConversationJSON do
   @doc """
   Renders response for marking a conversation as read.
   """
+  @spec mark_read(map()) :: map()
   def mark_read(%{conversation_id: conversation_id}) do
     %{
       status: "ok",

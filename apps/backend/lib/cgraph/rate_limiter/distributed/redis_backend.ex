@@ -92,6 +92,7 @@ defmodule CGraph.RateLimiter.Distributed.RedisBackend do
 
   Returns `{:ok, result}` or `{:error, reason}`.
   """
+  @spec check(String.t(), map()) :: {:ok, :ok | {:error, :rate_limited, map()}} | {:error, term()}
   def check(key, config) do
     now = System.system_time(:millisecond)
     window_ms = config.window * 1000
@@ -168,6 +169,7 @@ defmodule CGraph.RateLimiter.Distributed.RedisBackend do
   @doc """
   Get current rate limit status from Redis without consuming a request.
   """
+  @spec status(String.t(), map()) :: {:ok, map()} | {:error, term()}
   def status(key, config) do
     case config.algorithm do
       :token_bucket ->
@@ -216,6 +218,7 @@ defmodule CGraph.RateLimiter.Distributed.RedisBackend do
   @doc """
   Pre-load Lua scripts into Redis for better performance.
   """
+  @spec load_scripts() :: :ok
   def load_scripts do
     # Pre-load scripts for better performance (optional)
     :ok

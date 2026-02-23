@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type { StoreApi } from 'zustand';
 import type { ProfileField, ProfileState } from './profileStore.types';
@@ -15,16 +15,16 @@ export function createFetchBlockedUsers(set: Set) {
     set({ isLoadingBlocked: true });
     try {
       const response = await api.get('/api/v1/users/me/blocked');
-      const blockedUsers = (ensureArray(response.data, 'blocked') as Record<string, unknown>[]).map(
-        (u) => ({
+      const blockedUsers = ensureArray(response.data, 'blocked')
+        .filter(isRecord)
+        .map((u) => ({
           id: u.id as string,
           username: u.username as string,
           displayName: (u.display_name as string) || null,
           avatarUrl: (u.avatar_url as string) || null,
           blockedAt: u.blocked_at as string,
           reason: (u.reason as string) || undefined,
-        })
-      );
+        }));
       set({ blockedUsers, isLoadingBlocked: false });
     } catch (error) {
       logger.error('Failed to fetch blocked users:', error);
@@ -128,18 +128,18 @@ export function createFetchProfileFields(set: Set) {
   return async () => {
     try {
       const response = await api.get('/api/v1/profile-fields');
-      const fields = (ensureArray(response.data, 'fields') as Record<string, unknown>[]).map(
-        (f) => ({
+      const fields = ensureArray(response.data, 'fields')
+        .filter(isRecord)
+        .map((f) => ({
           id: f.id as string,
           name: f.name as string,
           type: (f.type as ProfileField['type']) || 'text',
           value: null,
-          options: f.options as string[] | undefined,
+          options: f.options as string[] | undefined, // safe downcast – structural boundary
           required: (f.required as boolean) || false,
           editable: (f.editable as boolean) ?? true,
           visible: (f.visible as boolean) ?? true,
-        })
-      );
+        }));
       set({ availableFields: fields });
     } catch (error) {
       logger.error('Failed to fetch profile fields:', error);

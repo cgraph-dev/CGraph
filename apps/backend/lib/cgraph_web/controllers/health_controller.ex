@@ -30,6 +30,7 @@ defmodule CGraphWeb.HealthController do
   This endpoint should always return 200 if the Erlang VM is running.
   Used by Kubernetes/Docker for liveness probes.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     render_data(conn, %{
       status: "ok",
@@ -45,6 +46,7 @@ defmodule CGraphWeb.HealthController do
   Returns 503 if any critical dependency is unavailable.
   Used by load balancers to route traffic only to healthy instances.
   """
+  @spec ready(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ready(conn, _params) do
     # Check if server is draining (graceful shutdown in progress)
     if Application.get_env(:cgraph, :draining, false) do
@@ -101,6 +103,7 @@ defmodule CGraphWeb.HealthController do
   - Memory usage
   - Active connections
   """
+  @spec status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def status(conn, _params) do
     case Healthcheck.check() do
       {:ok, health} ->

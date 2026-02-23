@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.SavedMessageController do
   Query params:
   - search: optional text filter on message content
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     search = Map.get(params, "search")
@@ -60,6 +61,7 @@ defmodule CGraphWeb.API.V1.SavedMessageController do
   - message_id: required, the message to bookmark
   - note: optional text note
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
     message_id = Map.get(params, "message_id")
@@ -84,6 +86,7 @@ defmodule CGraphWeb.API.V1.SavedMessageController do
   Remove a saved message.
   DELETE /api/v1/saved-messages/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 

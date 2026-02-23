@@ -22,6 +22,7 @@ defmodule CGraph.DataExport.Server do
   @doc """
   Start the DataExport GenServer.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: CGraph.DataExport)
   end
@@ -165,6 +166,7 @@ defmodule CGraph.DataExport.Server do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     :ets.new(@export_table, [:named_table, :set, :public, read_concurrency: true])
 
@@ -180,6 +182,7 @@ defmodule CGraph.DataExport.Server do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:export_user_data, user_id, opts}, _from, state) do
     result = Processor.do_export_user_data(user_id, opts)
     {:reply, result, state}
@@ -208,6 +211,7 @@ defmodule CGraph.DataExport.Server do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     cleanup_expired_exports()
     schedule_cleanup()

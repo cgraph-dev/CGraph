@@ -52,38 +52,40 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
         }
       : null,
 
-    availableTitles: (
-      ensureArray(user.available_titles, 'available_titles') as Record<string, unknown>[]
-    ).map((t) => ({
-      id: t.id as string,
-      name: t.name as string,
-      color: (t.color as string) || '#ffffff',
-      type: (t.type as 'system' | 'custom' | 'earned') || 'system', // safe downcast
-    })),
+    availableTitles: ensureArray(user.available_titles, 'available_titles')
+      .filter(isRecord)
+      .map((t) => ({
+        id: t.id as string,
+        name: t.name as string,
+        color: (t.color as string) || '#ffffff',
+        type: (t.type as 'system' | 'custom' | 'earned') || 'system', // safe downcast
+      })),
 
-    badges: (ensureArray(user.badges, 'badges') as Record<string, unknown>[]).map((b) => ({
-      id: b.id as string,
-      name: b.name as string,
-      description: (b.description as string) || '',
-      iconUrl: (b.icon_url as string) || '',
-      color: (b.color as string) || '#6366f1',
-      rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
-      earnedAt: (b.earned_at as string) || new Date().toISOString(),
-      isEquipped: (b.is_equipped as boolean) || false,
-    })),
+    badges: ensureArray(user.badges, 'badges')
+      .filter(isRecord)
+      .map((b) => ({
+        id: b.id as string,
+        name: b.name as string,
+        description: (b.description as string) || '',
+        iconUrl: (b.icon_url as string) || '',
+        color: (b.color as string) || '#6366f1',
+        rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
+        earnedAt: (b.earned_at as string) || new Date().toISOString(),
+        isEquipped: (b.is_equipped as boolean) || false,
+      })),
 
-    equippedBadges: (
-      ensureArray(user.equipped_badges, 'equipped_badges') as Record<string, unknown>[]
-    ).map((b) => ({
-      id: b.id as string,
-      name: b.name as string,
-      description: (b.description as string) || '',
-      iconUrl: (b.icon_url as string) || '',
-      color: (b.color as string) || '#6366f1',
-      rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
-      earnedAt: (b.earned_at as string) || new Date().toISOString(),
-      isEquipped: true as const,
-    })),
+    equippedBadges: ensureArray(user.equipped_badges, 'equipped_badges')
+      .filter(isRecord)
+      .map((b) => ({
+        id: b.id as string,
+        name: b.name as string,
+        description: (b.description as string) || '',
+        iconUrl: (b.icon_url as string) || '',
+        color: (b.color as string) || '#6366f1',
+        rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
+        earnedAt: (b.earned_at as string) || new Date().toISOString(),
+        isEquipped: true as const,
+      })),
 
     stars: {
       count: Math.min(5, Math.floor(((user.post_count as number) || 0) / 100) + 1),

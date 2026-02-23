@@ -133,6 +133,7 @@ defmodule CGraph.Performance.SLO do
   # ── Server Implementation ──────────────────────────────────
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     definitions =
       Keyword.get_lazy(opts, :definitions, fn ->
@@ -155,6 +156,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:record, name, latency_ms, result}, state) do
     now = bucket_key(state.bucket_seconds)
     is_error = match?({:error, _}, result)
@@ -181,6 +183,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:status, _from, state) do
     cutoff = bucket_key(state.bucket_seconds) - state.window_seconds
     result = Map.new(state.slos, fn {name, entry} -> {name, compute_status(entry, cutoff)} end)
@@ -201,6 +204,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     cutoff = bucket_key(state.bucket_seconds) - state.window_seconds
 

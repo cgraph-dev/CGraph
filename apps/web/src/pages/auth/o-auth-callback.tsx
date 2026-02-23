@@ -58,6 +58,7 @@ export function OAuthCallbackPage() {
     // Validate provider
     const validProviders: OAuthProvider[] = ['google', 'apple', 'facebook', 'tiktok'];
     if (!validProviders.includes(provider as OAuthProvider)) {
+      // safe downcast – runtime verified
       setStatus('error');
       setErrorMessage('Invalid OAuth provider');
       return;
@@ -72,7 +73,7 @@ export function OAuthCallbackPage() {
     }
 
     // Exchange code for tokens
-    handleOAuthCallback(provider as OAuthProvider, code, state)
+    handleOAuthCallback(provider as OAuthProvider, code, state) // safe downcast – runtime verified
       .then((response) => {
         setStatus('success');
 
@@ -91,7 +92,7 @@ export function OAuthCallbackPage() {
           useAuthStore.setState({
             user: {
               id: response.user.id,
-              uid: ((response.user as Record<string, unknown>).uid as string) || '',
+              uid: ((response.user as Record<string, unknown>).uid as string) || '', // safe downcast – structural boundary
               userId: 0,
               userIdDisplay: '#0000',
               email: response.user.email,

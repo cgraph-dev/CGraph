@@ -12,6 +12,7 @@ defmodule CGraph.Repo do
   @doc """
   Soft delete a record by setting deleted_at timestamp.
   """
+  @spec soft_delete(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def soft_delete(struct) do
     struct
     |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -21,6 +22,7 @@ defmodule CGraph.Repo do
   @doc """
   Restore a soft-deleted record.
   """
+  @spec restore(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def restore(struct) do
     struct
     |> Ecto.Changeset.change(deleted_at: nil)
@@ -31,6 +33,7 @@ defmodule CGraph.Repo do
   Default query options that exclude soft-deleted records.
   Override in specific queries when needed.
   """
+  @spec default_options(atom()) :: keyword()
   def default_options(_operation) do
     []
   end

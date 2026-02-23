@@ -105,6 +105,7 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
   - `:by` - Rate limit key strategy (`:ip`, `:user`, `:ip_and_path`, `:user_and_action`)
   """
   @impl Plug
+  @spec init(keyword()) :: map()
   def init(opts) do
     tier = Keyword.get(opts, :tier, :standard)
     tier_config = Map.get(@tiers, tier, @tiers.standard)
@@ -134,6 +135,7 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
       config :cgraph, CGraph.RateLimiter, enabled: false
   """
   @impl Plug
+  @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def call(conn, opts) do
     # Bypass if rate limiting is disabled (e.g., test environment)
     if rate_limiting_enabled?() do
@@ -233,6 +235,7 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
   3. X-Forwarded-For (standard proxy header, first IP)
   4. conn.remote_ip (direct connection - always fallback)
   """
+  @spec extract_client_ip(Plug.Conn.t()) :: String.t()
   def extract_client_ip(conn) do
     direct_ip = conn.remote_ip |> :inet.ntoa() |> to_string()
 
@@ -283,6 +286,7 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
   @doc """
   Check if an IP address is in the trusted proxy list.
   """
+  @spec trusted_proxy?(tuple()) :: boolean()
   def trusted_proxy?(ip_tuple) when is_tuple(ip_tuple) do
     trusted_cidrs = get_trusted_proxy_cidrs()
     Enum.any?(trusted_cidrs, fn cidr -> ip_in_cidr?(ip_tuple, cidr) end)

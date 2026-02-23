@@ -102,6 +102,7 @@ defmodule CGraph.Security.AbuseDetection do
   # Client API
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -247,6 +248,7 @@ defmodule CGraph.Security.AbuseDetection do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create ETS table for fast lookups
     :ets.new(@ets_table, [:named_table, :set, :public, read_concurrency: true])
@@ -258,6 +260,7 @@ defmodule CGraph.Security.AbuseDetection do
   end
 
   @impl true
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:report, user_id, reporter_id, type, details}, state) do
     # Add to history
     event = %{
@@ -290,12 +293,14 @@ defmodule CGraph.Security.AbuseDetection do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:get_history, user_id}, _from, state) do
     history = Map.get(state.history, user_id, [])
     {:reply, history, state}
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     # Remove expired entries
     now = System.system_time(:second)

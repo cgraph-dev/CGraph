@@ -41,6 +41,7 @@ defmodule CGraphWeb.API.V1.ReportController do
   - `409 Conflict` - Duplicate report exists
   - `422 Unprocessable Entity` - Cannot report own content
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"report" => report_params}) do
     do_create(conn, report_params)
   end
@@ -84,6 +85,7 @@ defmodule CGraphWeb.API.V1.ReportController do
   @doc """
   List the current user's submitted reports.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     page = Map.get(params, "page", 1) |> to_integer(1)
@@ -96,6 +98,7 @@ defmodule CGraphWeb.API.V1.ReportController do
   @doc """
   Get the status of a specific report.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 

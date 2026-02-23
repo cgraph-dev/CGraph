@@ -47,6 +47,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   # Client API
   # ============================================================================
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -102,6 +103,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   # ============================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     config = load_config()
 
@@ -125,6 +127,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:send, device_token, payload, opts}, _from, state) do
     state = ensure_valid_jwt(state)
 
@@ -144,6 +147,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   end
 
   @impl true
+  @spec handle_info(:refresh_token, map()) :: {:noreply, map()}
   def handle_info(:refresh_token, state) do
     state = refresh_jwt_token(state)
     Process.send_after(self(), :refresh_token, @token_refresh_interval_ms)

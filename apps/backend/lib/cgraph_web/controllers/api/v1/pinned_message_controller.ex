@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.PinnedMessageController do
   @doc """
   List pinned messages for a channel.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id, "channel_id" => channel_id}) do
     user = conn.assigns.current_user
 
@@ -24,6 +25,7 @@ defmodule CGraphWeb.API.V1.PinnedMessageController do
   @doc """
   Pin a message in a channel.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id, "channel_id" => channel_id, "message_id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -41,6 +43,7 @@ defmodule CGraphWeb.API.V1.PinnedMessageController do
   @doc """
   Unpin a message from a channel.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "channel_id" => channel_id, "id" => id}) do
     user = conn.assigns.current_user
 

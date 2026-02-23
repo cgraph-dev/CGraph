@@ -93,6 +93,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Downcase a string field.
     """
+    @spec downcase(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def downcase(changeset, field) do
       update_change(changeset, field, fn value ->
         if is_binary(value), do: String.downcase(value), else: value
@@ -251,6 +252,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Apply a default value if field is not set.
     """
+    @spec put_default(Ecto.Changeset.t(), atom(), term()) :: Ecto.Changeset.t()
     def put_default(changeset, field, default) do
       if get_field(changeset, field) do
         changeset
@@ -262,6 +264,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Convert changeset to result tuple {:ok, map} or {:error, changeset}.
     """
+    @spec to_result(Ecto.Changeset.t()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
     def to_result(%Ecto.Changeset{} = changeset) do
       case apply_action(changeset, :validate) do
         {:ok, struct} -> {:ok, struct_to_map(struct)}

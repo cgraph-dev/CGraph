@@ -15,6 +15,7 @@ defmodule CGraph.WebRTC.Calls do
   @doc """
   List call history for a user, most recent first, with cursor-based pagination.
   """
+  @spec list_call_history(String.t(), keyword()) :: {:ok, [map()], map()}
   def list_call_history(user_id, opts \\ []) do
     query =
       from(c in CallHistory,
@@ -38,6 +39,7 @@ defmodule CGraph.WebRTC.Calls do
   @doc """
   Get a single call history record by ID.
   """
+  @spec get_call(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_call(call_id) do
     case Repo.get(CallHistory, call_id) do
       nil -> {:error, :not_found}
@@ -48,6 +50,7 @@ defmodule CGraph.WebRTC.Calls do
   @doc """
   Persist a completed call to the database.
   """
+  @spec persist_call_history(Room.t(), Room.t()) :: :ok
   def persist_call_history(%Room{} = final, original_room) do
     participant_ids =
       original_room.participants

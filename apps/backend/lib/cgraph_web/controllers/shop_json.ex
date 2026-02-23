@@ -3,14 +3,17 @@ defmodule CGraphWeb.ShopJSON do
   JSON rendering for shop endpoints.
   """
 
+  @spec index(map()) :: map()
   def index(%{items: items}) do
     %{data: Enum.map(items, &render_item/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{item: item}) do
     %{data: render_item(item)}
   end
 
+  @spec purchases(map()) :: map()
   def purchases(%{purchases: purchases}) do
     %{data: Enum.map(purchases, &render_purchase/1)}
   end

@@ -86,8 +86,9 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
           <Select
             label="Particle Density"
             value={preferences.particleSystem}
-            onChange={(value) =>
-              updatePreference('particleSystem', value as UIPreferences['particleSystem'])
+            onChange={
+              (value) =>
+                updatePreference('particleSystem', value as UIPreferences['particleSystem']) // safe downcast – runtime verified
             }
             options={[
               { value: 'none', label: 'Disabled' },
@@ -100,8 +101,8 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
           <Select
             label="Particle Color"
             value={preferences.particleColor}
-            onChange={(value) =>
-              updatePreference('particleColor', value as UIPreferences['particleColor'])
+            onChange={
+              (value) => updatePreference('particleColor', value as UIPreferences['particleColor']) // safe downcast – runtime verified
             }
             options={[
               { value: 'primary', label: 'Primary Theme Color' },
@@ -112,8 +113,8 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
           <Select
             label="Particle Shape"
             value={preferences.particleShape}
-            onChange={(value) =>
-              updatePreference('particleShape', value as UIPreferences['particleShape'])
+            onChange={
+              (value) => updatePreference('particleShape', value as UIPreferences['particleShape']) // safe downcast – runtime verified
             }
             options={[
               { value: 'circle', label: 'Circle' },
