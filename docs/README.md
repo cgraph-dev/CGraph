@@ -1,6 +1,6 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.36** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.47** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
@@ -13,12 +13,12 @@ developers and users of our hosted platform.
 
 | Document                                                                    | Description                              |
 | --------------------------------------------------------------------------- | ---------------------------------------- |
-| [**Architecture Transformation Plan**](ARCHITECTURE_TRANSFORMATION_PLAN.md) | ⭐ Current architecture status (8.0/10)  |
+| [**Architecture Transformation Plan**](ARCHITECTURE_TRANSFORMATION_PLAN.md) | ⭐ Current architecture status (8.7/10)  |
 | [**CLAUDE.md**](../CLAUDE.md)                                               | AI agent instructions & project overview |
 | [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)                       | Visual system architecture (Mermaid)     |
 | [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                                 | Database table ownership matrix          |
 
-### Module Architecture (New in v0.9.31, updated v0.9.36)
+### Module Architecture (New in v0.9.31, updated v0.9.47)
 
 ```
 apps/web/src/
@@ -127,15 +127,20 @@ import { ForumPost } from '@/modules/forums';
 
 ## 📋 Release Notes
 
-| Version                                             | Date         | Highlights                                                   |
-| --------------------------------------------------- | ------------ | ------------------------------------------------------------ |
-| [**v0.9.6**](release-notes/V0.9.6_RELEASE_NOTES.md) | January 2026 | **Latest** - Avatar borders everywhere, deployment readiness |
-| [v0.9.5](release-notes/V0.9.5_RELEASE_NOTES.md)     | January 2026 | Security hardening, Stripe payments                          |
-| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md)     | January 2026 | Proprietary transition, code protection                      |
-| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md)     | January 2026 | Friend request idempotency, scroll fixes                     |
-| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md)     | January 2026 | Chat message editing, typing indicators                      |
-| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md)     | January 2026 | Major release - new architecture                             |
-| [All Releases →](release-notes/)                    |              | Complete version history                                     |
+| Version                                         | Date          | Highlights                                                  |
+| ----------------------------------------------- | ------------- | ----------------------------------------------------------- |
+| **v0.9.47**                                     | February 2026 | **Latest** — Honest audit, version sync, 244 web test files |
+| v0.9.38                                         | February 2026 | World-class compliance push, 21 test batches                |
+| v0.9.37                                         | February 2026 | File renaming (1,510 kebab-case), @spec coverage            |
+| v0.9.31                                         | February 2026 | Module architecture rebuild, web restructure                |
+| v0.9.26                                         | January 2026  | Module architecture introduction, 12 feature modules        |
+| [v0.9.6](release-notes/V0.9.6_RELEASE_NOTES.md) | January 2026  | Avatar borders everywhere, deployment readiness             |
+| [v0.9.5](release-notes/V0.9.5_RELEASE_NOTES.md) | January 2026  | Security hardening, Stripe payments                         |
+| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md) | January 2026  | Proprietary transition, code protection                     |
+| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md) | January 2026  | Friend request idempotency, scroll fixes                    |
+| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md) | January 2026  | Chat message editing, typing indicators                     |
+| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md) | January 2026  | Major release — new architecture                            |
+| [All Releases →](release-notes/)                |               | Complete version history                                    |
 
 ---
 
@@ -199,5 +204,5 @@ outdated information but are retained for historical reference and audit purpose
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.36 • Proprietary Software • Last updated: February
+<sub>**CGraph Documentation** • Version 0.9.47 • Proprietary Software • Last updated: February
 2026</sub>

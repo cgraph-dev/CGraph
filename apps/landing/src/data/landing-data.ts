@@ -68,7 +68,8 @@ export const features: readonly FeatureData[] = [
   {
     icon: '📂',
     title: 'Encrypted File Sharing',
-    description: 'Share files with E2EE. Your uploads are encrypted before they leave your device.',
+    description:
+      'Share files within E2EE conversations. Messages and attachments are encrypted with AES-256-GCM.',
   },
   {
     icon: '🌟',

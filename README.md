@@ -8,11 +8,11 @@
 
 #### Chat • Forums • E2EE • Leveling & achievements • Subscriptions
 
-[![Version](https://img.shields.io/badge/version-0.9.37-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.47-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.37 (February 2026)
+**Current version:** 0.9.47 (February 2026)
 
 [🌐 Website](https://cgraph.org) · [📚 Documentation](https://docs.cgraph.org) ·
 [🔌 API Reference](https://api.cgraph.org/docs)
@@ -82,7 +82,7 @@ engagement shouldn't be boring.
 ### 🎮 Gamification
 
 - **XP & Levels** — earn XP from chatting, posting, daily logins
-- **30+ Achievements** across 6 categories (Social, Content, Exploration, Mastery, Legendary,
+- **50+ Achievements** across 6 categories (Social, Content, Exploration, Mastery, Legendary,
   Secret)
 - **Daily/Weekly Quests** for bonus XP
 - **Streaks** — 3+ days = 1.5x multiplier, 7+ = 2.0x
@@ -138,8 +138,9 @@ Access CGraph directly in your browser at [app.cgraph.org](https://app.cgraph.or
 
 ### Mobile Apps
 
-Mobile apps for iOS and Android are in development using React Native + Expo SDK 54. App Store and
-Google Play releases are planned.
+Mobile apps for iOS and Android built with React Native + Expo SDK 54. Feature parity with web
+across 17 capabilities including biometric auth, offline sync, push notifications, and E2EE. App
+Store and Google Play releases are planned.
 
 ### API Access
 
@@ -156,8 +157,8 @@ curl -H "Authorization: Bearer YOUR_TOKEN" https://cgraph-backend.fly.dev/api/v1
 
 | Plan           | Price      | Features                                                    |
 | -------------- | ---------- | ----------------------------------------------------------- |
-| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features        |
-| **Premium**    | $9.99/mo   | 100 forums/groups, custom themes, HD video, 500MB uploads   |
+| **Free**       | $0/forever | Unlimited messaging, 1 forum/group, basic features, 100MB   |
+| **Premium**    | $9.99/mo   | 5 forums/groups, custom themes, HD video, 5GB storage       |
 | **Enterprise** | Custom     | Unlimited everything, SSO/SAML, SLA, dedicated support, API |
 
 Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.

@@ -8,11 +8,11 @@
 
 ## Executive Summary
 
-| Category             | Current | Target | Gap                            |
-| -------------------- | ------- | ------ | ------------------------------ |
-| Rule Compliance      | ~99%    | 100%   | ~1% — testing remains          |
-| Wave Task Completion | ~55%    | 100%   | 45% — ~58 of 106 tasks done    |
-| Composite Score      | 9.8/10  | 9.5/10 | Above target — testing remains |
+| Category             | Current | Target | Gap                                |
+| -------------------- | ------- | ------ | ---------------------------------- |
+| Rule Compliance      | ~94%    | 100%   | ~6% — testing + type assertions    |
+| Wave Task Completion | ~55%    | 100%   | 45% — ~58 of 106 tasks done        |
+| Composite Score      | 9.4/10  | 9.5/10 | Below target — testing gap remains |
 
 ### Critical Gaps (Blocks World-Class)
 
@@ -321,18 +321,33 @@ All other previously listed controllers are now under 500 lines.
 
 | Metric                    | Current | Target       | Gap               |
 | ------------------------- | ------- | ------------ | ----------------- |
-| Web components (non-test) | ~1,150  | —            | —                 |
-| Web test files            | 242     | ~1,150 (1:1) | **~908 missing**  |
-| Web test coverage ratio   | ~21%    | 100%         | ~79%              |
-| Mobile test files         | 27      | —            | Needs assessment  |
+| Web components (non-test) | 1,207   | —            | —                 |
+| Web test files            | 244     | ~1,207 (1:1) | **~963 missing**  |
+| Web test coverage ratio   | ~20.2%  | 100%         | ~79.8%            |
+| Mobile test files         | 25      | —            | Needs assessment  |
 | Backend test files        | 171     | —            | Likely sufficient |
 
-**Module Test Coverage** (tests per module): | Module | Tests | Components | Gap |
-|--------|-------|------------|-----| | chat | 26 | ~80 | 54 | | forums | 15 | ~90 | 75 | |
-gamification | 12 | ~60 | 48 | | social | 8 | ~40 | 32 | | settings | 8 | ~50 | 42 | | auth | 9 |
-~20 | 11 | | groups | 6 | ~40 | 34 | | moderation | 4 | ~20 | 16 | | calls | 4 | ~25 | 21 | |
-premium | 4 | ~30 | 26 | | search | 4 | ~15 | 11 | | admin | 4 | ~30 | 26 | | profile | 3 | ~10 | 7
-| | shared | 4 | ~30 | 26 |
+**Module Test Coverage** (exact audit — February 23, 2026):
+
+| Module       | Tests | Components | Ratio | Gap |
+| ------------ | ----- | ---------- | ----- | --- |
+| chat         | 28    | 115        | 24.3% | 87  |
+| forums       | 15    | 133        | 11.3% | 118 |
+| gamification | 12    | 99         | 12.1% | 87  |
+| social       | 8     | 39         | 20.5% | 31  |
+| settings     | 8     | 116        | 6.9%  | 108 |
+| auth         | 9     | 19         | 47.4% | 10  |
+| groups       | 6     | 53         | 11.3% | 47  |
+| moderation   | 4     | 8          | 50.0% | 4   |
+| calls        | 4     | 7          | 57.1% | 3   |
+| premium      | 4     | 21         | 19.0% | 17  |
+| search       | 4     | 10         | 40.0% | 6   |
+| admin        | 4     | 29         | 13.8% | 25  |
+| shared       | 4     | —          | —     | —   |
+| pages        | 3     | —          | —     | —   |
+
+> **Module-only ratio**: 106 tests / 649 module components = **16.3%** **Web-wide ratio**: 244 tests
+> / 1,207 non-test .tsx = **20.2%**
 
 **Action Items**:
 
@@ -409,8 +424,10 @@ premium | 4 | ~30 | 26 | | search | 4 | ~15 | 11 | | admin | 4 | ~30 | 26 | | pr
     asOptionalString, asOptionalNumber, asArray, typedKeys
   - accessors.ts fully refactored: 24 assertions → 0 with runtime type guards
   - `isRecord()`, `asString()`, `asNumber()` type guards in `@/lib/api-utils`
-  - **0 unannotated type assertions remain** — all assertions are either guarded or annotated per
-    world-class standards
+  - **~15–25 unannotated type assertions remain** in production code (e.g.,
+    `reader.result as string`, `e.target.value as typeof filters.theme`,
+    `motion[Component] as typeof motion.span`). All high-risk assertions are guarded; remaining are
+    low-risk structural casts
 - [x] **11.2** ~~Audit 8 `dangerouslySetInnerHTML` usages for XSS sanitization~~ **DONE** (Tier 2b)
   - All 8 files use DOMPurify.sanitize() or sanitizeCss() — confirmed safe
 - [x] **11.3** ~~Add ESLint rule to prevent new `as` type assertions~~ **DONE** (Session 42)
@@ -722,14 +739,18 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Documentation (Rule 6)      | **100%** (100% JSDoc + 100% @doc + @moduledoc)                                       | **100%**       | 100%                |
 | Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns)                                           | **~100%**      | 100%                |
 | File Size (Rule 8)          | **100%** (0 Elixir over 500, 0 TSX over 300)                                         | **100%**       | 100%                |
-| Testing (Rule 9)            | 18% ratio                                                                            | 20%            | 100%                |
+| Testing (Rule 9)            | **20.2%** (244 tests / 1,207 components)                                             | 25%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)                                                                 | **100%**       | 100%                |
-| Security (Rule 11)          | **100%** (0 unannotated assertions)                                                  | **100%**       | 100%                |
+| Security (Rule 11)          | **~95%** (~15-25 unannotated `as` casts remain)                                      | **100%**       | 100%                |
 | React 19 (Rule 12)          | **~98%** (core migrations done; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%**       | 100%                |
 | CI/CD (Rule 13)             | **100%** (17/17)                                                                     | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)                                                              | **100%**       | 100%                |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)                                                     | **100%**       | 100%                |
-| **Overall**                 | **~99%**                                                                             | **~99%**       | **100%**            |
+| **Overall**                 | **~94%** (13 PASS + 2 PARTIAL)                                                       | **~96%**       | **100%**            |
+
+> **Methodology**: Equal-weight average across 15 rules. Testing at 20.2% and Security at ~95% bring
+> the overall from 100% down to ~94.4%. This is an honest assessment — the remaining gaps are
+> testing coverage (Rule 9) and ~15-25 unannotated type assertions (Rule 11).
 
 ---
 

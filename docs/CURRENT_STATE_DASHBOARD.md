@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.38** | Generated: February 22, 2026
+> **Version: 0.9.47** | Generated: February 23, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -472,5 +472,5 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.38 • Updated: February 22, 2026 • Session 40 Tiers 7-10
-sprint complete • Compliance ~91%</sub>
+<sub>**CGraph Dashboard** • Version 0.9.47 • Updated: February 23, 2026 • Session 50 honest audit
+complete • Compliance ~94%</sub>
