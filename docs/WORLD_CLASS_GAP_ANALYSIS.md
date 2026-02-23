@@ -322,7 +322,7 @@ All other previously listed controllers are now under 500 lines.
 | Metric                    | Current | Target       | Gap               |
 | ------------------------- | ------- | ------------ | ----------------- |
 | Web components (non-test) | ~1,150  | —            | —                 |
-| Web test files            | 237     | ~1,150 (1:1) | **~913 missing**  |
+| Web test files            | 242     | ~1,150 (1:1) | **~908 missing**  |
 | Web test coverage ratio   | ~21%    | 100%         | ~79%              |
 | Mobile test files         | 27      | —            | Needs assessment  |
 | Backend test files        | 171     | —            | Likely sufficient |
@@ -330,8 +330,8 @@ All other previously listed controllers are now under 500 lines.
 **Module Test Coverage** (tests per module): | Module | Tests | Components | Gap |
 |--------|-------|------------|-----| | chat | 26 | ~80 | 54 | | forums | 15 | ~90 | 75 | |
 gamification | 12 | ~60 | 48 | | social | 8 | ~40 | 32 | | settings | 8 | ~50 | 42 | | auth | 9 |
-~20 | 11 | | groups | 6 | ~40 | 34 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
-premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 | | profile | 3 | ~10 | 7
+~20 | 11 | | groups | 6 | ~40 | 34 | | moderation | 4 | ~20 | 16 | | calls | 4 | ~25 | 21 | |
+premium | 4 | ~30 | 26 | | search | 4 | ~15 | 11 | | admin | 4 | ~30 | 26 | | profile | 3 | ~10 | 7
 | | shared | 4 | ~30 | 26 |
 
 **Action Items**:
