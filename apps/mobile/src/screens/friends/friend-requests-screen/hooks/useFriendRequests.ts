@@ -4,8 +4,9 @@
  * Manages friend requests state and API interactions.
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { Animated, Alert } from 'react-native';
+import { useState, useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
+import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import type { FriendRequest, TabType } from '../types';
@@ -19,24 +20,13 @@ export function useFriendRequests() {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Animation values
-  const headerOpacity = useRef(new Animated.Value(0)).current;
-  const statsScale = useRef(new Animated.Value(0.9)).current;
+  const headerOpacity = useSharedValue(0);
+  const statsScale = useSharedValue(0.9);
 
   useEffect(() => {
     // Header entrance animation
-    Animated.parallel([
-      Animated.timing(headerOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.spring(statsScale, {
-        toValue: 1,
-        tension: 100,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    headerOpacity.value = withTiming(1, { duration: 500 });
+    statsScale.value = withSpring(1, { stiffness: 100, damping: 10 });
   }, [headerOpacity, statsScale]);
 
   const fetchRequests = useCallback(async () => {

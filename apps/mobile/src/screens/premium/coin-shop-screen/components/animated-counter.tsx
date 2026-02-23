@@ -1,5 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Text, Animated, Easing, TextStyle, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, TextStyle, StyleSheet } from 'react-native';
+import {
+  useSharedValue,
+  withTiming,
+  useAnimatedReaction,
+  runOnJS,
+  Easing,
+} from 'react-native-reanimated';
 
 interface AnimatedCounterProps {
   value: number;
@@ -18,26 +25,18 @@ interface AnimatedCounterProps {
  */
 export function AnimatedCounter({ value, style, duration = 1000 }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = useState(0);
-  const animValue = useRef(new Animated.Value(0)).current;
+  const animValue = useSharedValue(0);
 
   useEffect(() => {
-    // Animate to the new value
-    Animated.timing(animValue, {
-      toValue: value,
-      duration,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-
-    // Listen to animation updates and update display value
-    const listener = animValue.addListener(({ value: v }) => {
-      setDisplayValue(Math.floor(v));
-    });
-
-    return () => {
-      animValue.removeListener(listener);
-    };
+    animValue.value = withTiming(value, { duration, easing: Easing.out(Easing.cubic) });
   }, [value, animValue, duration]);
+
+  useAnimatedReaction(
+    () => animValue.value,
+    (currentValue) => {
+      runOnJS(setDisplayValue)(Math.floor(currentValue));
+    }
+  );
 
   return <Text style={[styles.defaultText, style]}>{displayValue.toLocaleString()}</Text>;
 }

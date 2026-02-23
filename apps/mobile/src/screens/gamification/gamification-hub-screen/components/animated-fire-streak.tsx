@@ -7,8 +7,17 @@
  * - Haptic feedback on interactions
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,116 +31,108 @@ export interface AnimatedFireStreakProps {
   onClaim: () => void;
 }
 
-export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireStreakProps) {
-  const flameAnims = useRef(
-    Array.from({ length: 5 }, () => ({
-      scale: new Animated.Value(1),
-      opacity: new Animated.Value(0.7),
-      translateY: new Animated.Value(0),
-    }))
-  ).current;
-  const claimPulse = useRef(new Animated.Value(1)).current;
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
+function FlameEmoji({ index }: { index: number }) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0.7);
+  const translateY = useSharedValue(0);
 
   useEffect(() => {
-    // Flame animations
-    flameAnims.forEach((flame, i) => {
-      const delay = i * 150;
-      Animated.loop(
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(flame.scale, {
-              toValue: 1.3 + Math.random() * 0.2,
-              duration: 400 + i * 50,
-              delay,
-              useNativeDriver: true,
-            }),
-            Animated.timing(flame.opacity, {
-              toValue: 1,
-              duration: 400,
-              delay,
-              useNativeDriver: true,
-            }),
-            Animated.timing(flame.translateY, {
-              toValue: -5 - i * 2,
-              duration: 400,
-              delay,
-              useNativeDriver: true,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(flame.scale, {
-              toValue: 1,
-              duration: 400 + i * 50,
-              useNativeDriver: true,
-            }),
-            Animated.timing(flame.opacity, {
-              toValue: 0.7,
-              duration: 400,
-              useNativeDriver: true,
-            }),
-            Animated.timing(flame.translateY, {
-              toValue: 0,
-              duration: 400,
-              useNativeDriver: true,
-            }),
-          ]),
-        ])
-      ).start();
-    });
+    const delay = index * 150;
+    const dur = 400 + index * 50;
 
+    scale.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1.3 + Math.random() * 0.2, { duration: dur }),
+          withTiming(1, { duration: dur })
+        ),
+        -1,
+        false
+      )
+    );
+    opacity.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 400 }),
+          withTiming(0.7, { duration: 400 })
+        ),
+        -1,
+        false
+      )
+    );
+    translateY.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(-5 - index * 2, { duration: 400 }),
+          withTiming(0, { duration: 400 })
+        ),
+        -1,
+        false
+      )
+    );
+  }, []);
+
+  const flameStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }, { translateY: translateY.value }],
+  }));
+
+  return (
+    <Animated.Text
+      style={[
+        styles.flameEmoji,
+        { fontSize: 24 + index * 4 },
+        flameStyle,
+      ]}
+    >
+      🔥
+    </Animated.Text>
+  );
+}
+
+export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireStreakProps) {
+  const claimPulse = useSharedValue(1);
+  const shimmerAnim = useSharedValue(0);
+
+  useEffect(() => {
     // Claim button pulse
     if (canClaim) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(claimPulse, {
-            toValue: 1.1,
-            duration: 800,
-            useNativeDriver: true,
-          }),
-          Animated.timing(claimPulse, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      claimPulse.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 800 }),
+          withTiming(1, { duration: 800 })
+        ),
+        -1,
+        false
+      );
 
       // Shimmer animation
-      Animated.loop(
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        })
-      ).start();
+      shimmerAnim.value = withRepeat(
+        withTiming(1, { duration: 2000 }),
+        -1,
+        false
+      );
     }
   }, [canClaim]);
 
-  const shimmerTranslate = shimmerAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-100, SCREEN_WIDTH],
-  });
+  const claimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: claimPulse.value }],
+  }));
+
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(shimmerAnim.value, [0, 1], [-100, SCREEN_WIDTH]) }],
+  }));
 
   return (
     <GlassCard variant="neon" intensity="medium" style={styles.card}>
       <View style={styles.content}>
         {/* Animated flames */}
         <View style={styles.flamesContainer}>
-          {flameAnims.map((flame, i) => (
-            <Animated.Text
-              key={i}
-              style={[
-                styles.flameEmoji,
-                {
-                  fontSize: 24 + i * 4,
-                  opacity: flame.opacity,
-                  transform: [{ scale: flame.scale }, { translateY: flame.translateY }],
-                },
-              ]}
-            >
-              🔥
-            </Animated.Text>
+          {Array.from({ length: 5 }, (_, i) => (
+            <FlameEmoji key={i} index={i} />
           ))}
         </View>
 
@@ -142,7 +143,7 @@ export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireSt
         </View>
 
         {canClaim ? (
-          <Animated.View style={{ transform: [{ scale: claimPulse }] }}>
+          <Animated.View style={claimStyle}>
             <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -158,7 +159,7 @@ export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireSt
               >
                 {/* Shimmer effect */}
                 <Animated.View
-                  style={[styles.shimmerOverlay, { transform: [{ translateX: shimmerTranslate }] }]}
+                  style={[styles.shimmerOverlay, shimmerStyle]}
                 >
                   <LinearGradient
                     colors={['transparent', 'rgba(255,255,255,0.3)', 'transparent']}

@@ -8,8 +8,16 @@
  * - Glow effect on interaction
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withDelay,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,82 +34,48 @@ export interface StatCardProps {
 }
 
 export function StatCard({ icon, label, value, color, onPress, index = 0 }: StatCardProps) {
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
-  const iconRotate = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useSharedValue(0.8);
+  const opacityAnim = useSharedValue(0);
+  const iconRotate = useSharedValue(0);
+  const glowAnim = useSharedValue(0);
 
   useEffect(() => {
     // Entrance animation
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 80,
-        friction: 8,
-        delay: index * 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 400,
-        delay: index * 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scaleAnim.value = withDelay(index * 100, withSpring(1, { stiffness: 80, damping: 8 }));
+    opacityAnim.value = withDelay(index * 100, withTiming(1, { duration: 400 }));
   }, [index]);
 
   const handlePressIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 0.95,
-        useNativeDriver: true,
-      }),
-      Animated.timing(iconRotate, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scaleAnim.value = withSpring(0.95);
+    iconRotate.value = withTiming(1, { duration: 200 });
+    glowAnim.value = withTiming(1, { duration: 200 });
   };
 
   const handlePressOut = () => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-      }),
-      Animated.timing(iconRotate, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scaleAnim.value = withSpring(1);
+    iconRotate.value = withTiming(0, { duration: 200 });
+    glowAnim.value = withTiming(0, { duration: 200 });
   };
 
-  const rotate = iconRotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '15deg'],
-  });
+  const wrapperStyle = useAnimatedStyle(() => ({
+    opacity: opacityAnim.value,
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowAnim.value * 0.3,
+  }));
+
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${interpolate(iconRotate.value, [0, 1], [0, 15])}deg` }],
+  }));
 
   const content = (
     <Animated.View
       style={[
         styles.wrapper,
-        {
-          opacity: opacityAnim,
-          transform: [{ scale: scaleAnim }],
-        },
+        wrapperStyle,
       ]}
     >
       {/* Glow effect */}
@@ -110,13 +84,13 @@ export function StatCard({ icon, label, value, color, onPress, index = 0 }: Stat
           styles.glow,
           {
             backgroundColor: color,
-            opacity: Animated.multiply(glowAnim, 0.3),
           },
+          glowStyle,
         ]}
       />
 
       <LinearGradient colors={[color + '30', '#1f293780']} style={styles.card}>
-        <Animated.View style={{ transform: [{ rotate }] }}>
+        <Animated.View style={iconStyle}>
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={28} color={color} />
         </Animated.View>
         <Text style={styles.value}>{value}</Text>

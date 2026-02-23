@@ -7,8 +7,9 @@
  * - Haptic feedback on tab change
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import Animated, { useSharedValue, withSpring, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -32,39 +33,27 @@ interface TabBarProps {
 // =============================================================================
 
 export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
-  const indicatorAnim = useRef(new Animated.Value(activeTab === 'forums' ? 0 : 1)).current;
-  const forumsScale = useRef(new Animated.Value(activeTab === 'forums' ? 1.1 : 1)).current;
-  const contributorsScale = useRef(
-    new Animated.Value(activeTab === 'contributors' ? 1.1 : 1)
-  ).current;
+  const indicatorAnim = useSharedValue(activeTab === 'forums' ? 0 : 1);
+  const forumsScale = useSharedValue(activeTab === 'forums' ? 1.1 : 1);
+  const contributorsScale = useSharedValue(activeTab === 'contributors' ? 1.1 : 1);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(indicatorAnim, {
-        toValue: activeTab === 'forums' ? 0 : 1,
-        friction: 8,
-        tension: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(forumsScale, {
-        toValue: activeTab === 'forums' ? 1.1 : 1,
-        friction: 8,
-        tension: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(contributorsScale, {
-        toValue: activeTab === 'contributors' ? 1.1 : 1,
-        friction: 8,
-        tension: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [activeTab, indicatorAnim, forumsScale, contributorsScale]);
+    indicatorAnim.value = withSpring(activeTab === 'forums' ? 0 : 1, { damping: 8, stiffness: 100 });
+    forumsScale.value = withSpring(activeTab === 'forums' ? 1.1 : 1, { damping: 8, stiffness: 100 });
+    contributorsScale.value = withSpring(activeTab === 'contributors' ? 1.1 : 1, { damping: 8, stiffness: 100 });
+  }, [activeTab]);
 
-  const indicatorTranslate = indicatorAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, (SCREEN_WIDTH - 32) / 2],
-  });
+  const indicatorAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(indicatorAnim.value, [0, 1], [0, (SCREEN_WIDTH - 32) / 2]) }],
+  }));
+
+  const forumsScaleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: forumsScale.value }],
+  }));
+
+  const contributorsScaleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: contributorsScale.value }],
+  }));
 
   return (
     <View style={styles.tabBarContainer}>
@@ -72,9 +61,7 @@ export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) 
       <Animated.View
         style={[
           styles.tabIndicator,
-          {
-            transform: [{ translateX: indicatorTranslate }],
-          },
+          indicatorAnimStyle,
         ]}
       >
         <LinearGradient
@@ -94,7 +81,7 @@ export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) 
         }}
         activeOpacity={0.8}
       >
-        <Animated.View style={{ transform: [{ scale: forumsScale }] }}>
+        <Animated.View style={forumsScaleStyle}>
           <Ionicons name="grid" size={20} color={activeTab === 'forums' ? '#FFF' : '#9CA3AF'} />
         </Animated.View>
         <Text style={[styles.tabLabel, activeTab === 'forums' && styles.tabLabelActive]}>
@@ -111,7 +98,7 @@ export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) 
         }}
         activeOpacity={0.8}
       >
-        <Animated.View style={{ transform: [{ scale: contributorsScale }] }}>
+        <Animated.View style={contributorsScaleStyle}>
           <Ionicons
             name="trophy"
             size={20}

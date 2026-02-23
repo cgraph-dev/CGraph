@@ -9,8 +9,18 @@
  * - Progress ring display
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,150 +29,160 @@ export interface AnimatedLevelOrbProps {
   progress: number; // 0-1
 }
 
+interface ParticleData {
+  angle: number;
+  radius: number;
+  yTarget: number;
+  xTarget: number;
+  duration: number;
+}
+
+function LevelParticle({ data, index }: { data: ParticleData; index: number }) {
+  const y = useSharedValue(0);
+  const x = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.5);
+
+  useEffect(() => {
+    const delay = index * 300;
+    const d = data.duration;
+
+    const startAnim = () => {
+      y.value = 0;
+      x.value = 0;
+      opacity.value = 0;
+      scale.value = 0.5;
+
+      y.value = withDelay(
+        delay,
+        withRepeat(
+          withTiming(data.yTarget, { duration: d, easing: Easing.out(Easing.ease) }),
+          -1,
+          true
+        )
+      );
+      x.value = withDelay(
+        delay,
+        withRepeat(
+          withTiming(data.xTarget, { duration: d }),
+          -1,
+          true
+        )
+      );
+      opacity.value = withDelay(
+        delay,
+        withRepeat(
+          withSequence(
+            withTiming(0.8, { duration: 500 }),
+            withTiming(0, { duration: 1500 })
+          ),
+          -1,
+          false
+        )
+      );
+      scale.value = withDelay(
+        delay,
+        withRepeat(
+          withTiming(1, { duration: 1000 }),
+          -1,
+          true
+        )
+      );
+    };
+
+    startAnim();
+  }, []);
+
+  const particleStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateY: y.value },
+      { translateX: x.value },
+      { scale: scale.value },
+    ],
+  }));
+
+  return (
+    <Animated.View style={[styles.particle, particleStyle]}>
+      <Ionicons name="sparkles" size={12} color="#8B5CF6" />
+    </Animated.View>
+  );
+}
+
 export function AnimatedLevelOrb({ level, progress }: AnimatedLevelOrbProps) {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0.5)).current;
-  const particleAnims = useRef(
-    Array.from({ length: 8 }, () => ({
-      y: new Animated.Value(0),
-      x: new Animated.Value(0),
-      opacity: new Animated.Value(0),
-      scale: new Animated.Value(0.5),
-    }))
-  ).current;
+  const rotateAnim = useSharedValue(0);
+  const pulseAnim = useSharedValue(1);
+  const glowAnim = useSharedValue(0.5);
+
+  const particlesData = useMemo<ParticleData[]>(
+    () =>
+      Array.from({ length: 8 }, (_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const radius = 50;
+        return {
+          angle,
+          radius,
+          yTarget: -60 - Math.random() * 30,
+          xTarget: Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
+          duration: 2000 + Math.random() * 1000,
+        };
+      }),
+    []
+  );
 
   useEffect(() => {
     // Continuous rotation
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 20000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    rotateAnim.value = withRepeat(
+      withTiming(1, { duration: 20000, easing: Easing.linear }),
+      -1,
+      false
+    );
 
     // Pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.08,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.08, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
 
     // Glow animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0.5,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Particle animations
-    particleAnims.forEach((particle, i) => {
-      const delay = i * 300;
-      const angle = (i / 8) * Math.PI * 2;
-      const radius = 50;
-
-      const animate = () => {
-        particle.y.setValue(0);
-        particle.x.setValue(0);
-        particle.opacity.setValue(0);
-        particle.scale.setValue(0.5);
-
-        Animated.parallel([
-          Animated.timing(particle.y, {
-            toValue: -60 - Math.random() * 30,
-            duration: 2000 + Math.random() * 1000,
-            delay,
-            easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(particle.x, {
-            toValue: Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
-            duration: 2000 + Math.random() * 1000,
-            delay,
-            useNativeDriver: true,
-          }),
-          Animated.sequence([
-            Animated.timing(particle.opacity, {
-              toValue: 0.8,
-              duration: 500,
-              delay,
-              useNativeDriver: true,
-            }),
-            Animated.timing(particle.opacity, {
-              toValue: 0,
-              duration: 1500,
-              useNativeDriver: true,
-            }),
-          ]),
-          Animated.timing(particle.scale, {
-            toValue: 1,
-            duration: 1000,
-            delay,
-            useNativeDriver: true,
-          }),
-        ]).start(() => animate());
-      };
-      animate();
-    });
+    glowAnim.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1500 }),
+        withTiming(0.5, { duration: 1500 })
+      ),
+      -1,
+      false
+    );
   }, []);
 
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowAnim.value,
+    transform: [{ scale: pulseAnim.value + 0.2 }],
+  }));
+
+  const orbStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: pulseAnim.value },
+      { rotate: `${interpolate(rotateAnim.value, [0, 1], [0, 360])}deg` },
+    ],
+  }));
 
   return (
     <View style={styles.container}>
       {/* Particles */}
-      {particleAnims.map((particle, i) => (
-        <Animated.View
-          key={i}
-          style={[
-            styles.particle,
-            {
-              opacity: particle.opacity,
-              transform: [
-                { translateY: particle.y },
-                { translateX: particle.x },
-                { scale: particle.scale },
-              ],
-            },
-          ]}
-        >
-          <Ionicons name="sparkles" size={12} color="#8B5CF6" />
-        </Animated.View>
+      {particlesData.map((data, i) => (
+        <LevelParticle key={i} data={data} index={i} />
       ))}
 
       {/* Glow effect */}
       <Animated.View
         style={[
           styles.glow,
-          {
-            opacity: glowAnim,
-            transform: [{ scale: Animated.add(pulseAnim, 0.2) }],
-          },
+          glowStyle,
         ]}
       >
         <LinearGradient
@@ -177,9 +197,7 @@ export function AnimatedLevelOrb({ level, progress }: AnimatedLevelOrbProps) {
       <Animated.View
         style={[
           styles.orb,
-          {
-            transform: [{ scale: pulseAnim }, { rotate }],
-          },
+          orbStyle,
         ]}
       >
         <LinearGradient

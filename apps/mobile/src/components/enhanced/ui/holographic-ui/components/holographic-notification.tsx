@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { Animated, StyleSheet, ViewStyle, Platform, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ViewStyle, Platform, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate, runOnJS } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -50,9 +51,9 @@ export function HolographicNotification({
   const actualTheme = colorTheme || TYPE_THEMES[type];
   const theme = getTheme(actualTheme);
 
-  const translateY = useRef(new Animated.Value(-100)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const glowPulse = useRef(new Animated.Value(0)).current;
+  const translateY = useSharedValue(-100);
+  const opacity = useSharedValue(0);
+  const glowPulse = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
@@ -64,36 +65,17 @@ export function HolographicNotification({
             : Haptics.NotificationFeedbackType.Warning
       );
 
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 0,
-          tension: 100,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      translateY.value = withSpring(0, { stiffness: 100, damping: 10 });
+      opacity.value = withTiming(1, { duration: 200 });
 
       // Glow pulse animation
-      const pulseLoop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowPulse, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowPulse, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
-        ])
+      glowPulse.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 1000 }),
+          withTiming(0, { duration: 1000 })
+        ),
+        -1
       );
-      pulseLoop.start();
 
       // Auto-hide logic
       if (autoHide && onDismiss) {
@@ -102,57 +84,47 @@ export function HolographicNotification({
         }, duration);
         return () => {
           clearTimeout(timeout);
-          pulseLoop.stop();
         };
       }
-
-      return () => {
-        pulseLoop.stop();
-      };
     } else {
-      translateY.setValue(-100);
-      opacity.setValue(0);
+      translateY.value = -100;
+      opacity.value = 0;
     }
   }, [visible, autoHide, duration]);
 
   const handleDismiss = () => {
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: -100,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      onDismiss?.();
+    translateY.value = withTiming(-100, { duration: 200 });
+    opacity.value = withTiming(0, { duration: 200 }, (finished) => {
+      if (finished && onDismiss) {
+        runOnJS(onDismiss)();
+      }
     });
   };
 
   if (!visible) return null;
 
-  const shadowOpacity = glowPulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.4, 0.8],
-  });
+  const containerAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+    ...(Platform.OS === 'ios' ? {
+      shadowOpacity: interpolate(glowPulse.value, [0, 1], [0.4, 0.8]),
+    } : {}),
+  }));
+
+  const borderGlowAnimStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(glowPulse.value, [0, 1], [0.5, 1]),
+  }));
 
   return (
     <Animated.View
       style={[
         styles.container,
-        {
-          transform: [{ translateY }],
-          opacity,
-        },
         Platform.OS === 'ios' && {
           shadowColor: theme.glow,
           shadowOffset: { width: 0, height: 4 },
-          shadowOpacity,
           shadowRadius: 15,
         },
+        containerAnimStyle,
         style,
       ]}
     >
@@ -169,11 +141,8 @@ export function HolographicNotification({
           styles.borderGlow,
           {
             borderColor: theme.primary,
-            opacity: glowPulse.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.5, 1],
-            }),
           },
+          borderGlowAnimStyle,
         ]}
       />
 

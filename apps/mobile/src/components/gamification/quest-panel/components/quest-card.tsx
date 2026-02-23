@@ -2,8 +2,9 @@
  * QuestCard - Individual quest display with actions
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Animated, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +19,7 @@ import { CountdownTimer } from './countdown-timer';
 
 export function QuestCard({ quest, onClaim }: QuestCardProps) {
   const [isClaiming, setIsClaiming] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useSharedValue(1);
 
   const config = QUEST_TYPE_CONFIG[quest.type];
   const isComplete = quest.currentProgress >= quest.targetProgress;
@@ -27,20 +28,13 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
 
   useEffect(() => {
     if (canClaim) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(scaleAnim, {
-            toValue: 1.02,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scaleAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      scaleAnim.value = withRepeat(
+        withSequence(
+          withTiming(1.02, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1
+      );
     }
   }, [canClaim, scaleAnim]);
 
@@ -51,20 +45,10 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
     HapticFeedback.success();
 
     // Celebration animation
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
-        toValue: 1.1,
-        tension: 200,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 100,
-        friction: 10,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scaleAnim.value = withSequence(
+      withSpring(1.1, { stiffness: 200, damping: 10 }),
+      withSpring(1, { stiffness: 100, damping: 10 })
+    );
 
     try {
       await onClaim(quest.id);
@@ -75,8 +59,12 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
     }
   };
 
+  const scaleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+    <Animated.View style={scaleAnimatedStyle}>
       <BlurView
         intensity={40}
         tint="dark"

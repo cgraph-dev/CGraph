@@ -17,7 +17,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -149,7 +150,6 @@ export default function ConfettiCelebration({
               toValue: 1,
               friction: 4,
               tension: 60,
-              useNativeDriver: true,
             }),
           ]),
           Animated.sequence([
@@ -158,7 +158,6 @@ export default function ConfettiCelebration({
               toValue: xTarget,
               duration: duration - delay,
               easing: Easing.out(Easing.cubic),
-              useNativeDriver: true,
             }),
           ]),
           Animated.sequence([
@@ -167,7 +166,6 @@ export default function ConfettiCelebration({
               toValue: yTarget,
               duration: duration - delay,
               easing: pattern === 'shower' ? Easing.in(Easing.quad) : Easing.out(Easing.cubic),
-              useNativeDriver: true,
             }),
           ]),
           Animated.loop(
@@ -175,7 +173,6 @@ export default function ConfettiCelebration({
               toValue: 1,
               duration: 1000 + Math.random() * 1000,
               easing: Easing.linear,
-              useNativeDriver: true,
             })
           ),
           Animated.sequence([
@@ -183,7 +180,6 @@ export default function ConfettiCelebration({
             Animated.timing(piece.opacity, {
               toValue: 0,
               duration: duration * 0.4,
-              useNativeDriver: true,
             }),
           ]),
         ]);

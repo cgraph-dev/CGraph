@@ -8,8 +8,8 @@
  * @since v0.7.29
  */
 
-import React, { memo, useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
+import React, { memo, useEffect } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 
 export interface AnimatedMessageWrapperProps {
   /** The message content to wrap with animation */
@@ -53,47 +53,28 @@ export const AnimatedMessageWrapper = memo(function AnimatedMessageWrapper({
   index,
   isNew = false,
 }: AnimatedMessageWrapperProps) {
-  // Initialize animation values based on whether this is a new message
-  const slideAnim = useRef(new Animated.Value(isNew ? 30 : 0)).current;
-  const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
-  const scaleAnim = useRef(new Animated.Value(isNew ? 0.9 : 1)).current;
+  const slideAnim = useSharedValue(isNew ? 30 : 0);
+  const fadeAnim = useSharedValue(isNew ? 0 : 1);
+  const scaleAnim = useSharedValue(isNew ? 0.9 : 1);
 
   useEffect(() => {
     if (isNew) {
-      // Run entrance animations in parallel for smooth combined effect
-      Animated.parallel([
-        Animated.spring(slideAnim, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 12,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 120,
-          friction: 8,
-        }),
-      ]).start();
+      slideAnim.value = withSpring(0, { stiffness: 100, damping: 12 });
+      fadeAnim.value = withTiming(1, { duration: 200 });
+      scaleAnim.value = withSpring(1, { stiffness: 120, damping: 8 });
     }
   }, [isNew, slideAnim, fadeAnim, scaleAnim]);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: fadeAnim.value,
+    transform: [
+      { translateX: isOwnMessage ? slideAnim.value : slideAnim.value * -1 },
+      { scale: scaleAnim.value },
+    ],
+  }));
+
   return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [
-          // Slide direction based on message ownership
-          { translateX: isOwnMessage ? slideAnim : Animated.multiply(slideAnim, -1) },
-          { scale: scaleAnim },
-        ],
-      }}
-    >
+    <Animated.View style={animatedStyle}>
       {children}
     </Animated.View>
   );

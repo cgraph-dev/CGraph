@@ -2,8 +2,9 @@
  * QuestSection - Collapsible section for quest type grouping
  */
 
-import React, { useRef, useState } from 'react';
-import { View, Text, Animated, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -15,8 +16,8 @@ import { QuestCard } from './quest-card';
 
 export function QuestSection({ type, quests, onClaim, initialExpanded = true }: QuestSectionProps) {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
-  const heightAnim = useRef(new Animated.Value(initialExpanded ? 1 : 0)).current;
-  const rotateAnim = useRef(new Animated.Value(initialExpanded ? 1 : 0)).current;
+  const heightAnim = useSharedValue(initialExpanded ? 1 : 0);
+  const rotateAnim = useSharedValue(initialExpanded ? 1 : 0);
 
   const config = QUEST_TYPE_CONFIG[type];
   const completedCount = quests.filter((q) => q.status === 'claimed').length;
@@ -25,33 +26,19 @@ export function QuestSection({ type, quests, onClaim, initialExpanded = true }: 
     HapticFeedback.light();
     const toValue = isExpanded ? 0 : 1;
 
-    Animated.parallel([
-      Animated.spring(heightAnim, {
-        toValue,
-        tension: 100,
-        friction: 15,
-        useNativeDriver: false,
-      }),
-      Animated.spring(rotateAnim, {
-        toValue,
-        tension: 100,
-        friction: 15,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    heightAnim.value = withSpring(toValue, { stiffness: 100, damping: 15 });
+    rotateAnim.value = withSpring(toValue, { stiffness: 100, damping: 15 });
 
     setIsExpanded(!isExpanded);
   };
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
-  });
+  const rotateAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${interpolate(rotateAnim.value, [0, 1], [0, 180])}deg` }],
+  }));
 
-  const containerHeight = heightAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, quests.length * 200], // Approximate height per quest
-  });
+  const containerHeightStyle = useAnimatedStyle(() => ({
+    maxHeight: interpolate(heightAnim.value, [0, 1], [0, quests.length * 200]),
+  }));
 
   return (
     <View style={styles.questSection}>
@@ -77,13 +64,13 @@ export function QuestSection({ type, quests, onClaim, initialExpanded = true }: 
               </Text>
             </View>
           </View>
-          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+          <Animated.View style={rotateAnimatedStyle}>
             <Ionicons name="chevron-down" size={20} color="#9ca3af" />
           </Animated.View>
         </View>
       </TouchableOpacity>
 
-      <Animated.View style={[styles.sectionContent, { maxHeight: containerHeight }]}>
+      <Animated.View style={[styles.sectionContent, containerHeightStyle]}>
         {isExpanded &&
           quests.map((quest) => <QuestCard key={quest.id} quest={quest} onClaim={onClaim} />)}
       </Animated.View>

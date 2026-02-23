@@ -13,8 +13,9 @@
  * - components/LoadingState: Loading indicator
  */
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { View, StyleSheet, FlatList, Animated, RefreshControl, StatusBar } from 'react-native';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { View, StyleSheet, FlatList, RefreshControl, StatusBar } from 'react-native';
+import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../../contexts/theme-context';
@@ -38,8 +39,8 @@ export default function NotificationsInboxScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('all');
 
   // Header animations
-  const headerOpacity = useRef(new Animated.Value(0)).current;
-  const headerTranslateY = useRef(new Animated.Value(-20)).current;
+  const headerOpacity = useSharedValue(0);
+  const headerTranslateY = useSharedValue(-20);
 
   // Derived data
   const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
@@ -69,19 +70,8 @@ export default function NotificationsInboxScreen() {
       setIsLoading(false);
 
       // Animate header in
-      Animated.parallel([
-        Animated.timing(headerOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.spring(headerTranslateY, {
-          toValue: 0,
-          tension: 80,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      headerOpacity.value = withTiming(1, { duration: 400 });
+      headerTranslateY.value = withSpring(0, { stiffness: 80, damping: 10 });
     };
 
     loadNotifications();

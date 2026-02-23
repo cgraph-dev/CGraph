@@ -7,7 +7,8 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
-import { Animated, FlatList, Linking, Alert } from 'react-native';
+import { FlatList, Linking, Alert } from 'react-native';
+import { useSharedValue, withTiming, withSpring, runOnJS, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { createLogger } from '../../../../lib/logger';
 
@@ -30,8 +31,8 @@ export function useMediaViewer() {
   const [selectedVideoDuration, setSelectedVideoDuration] = useState<number>(0);
 
   // Animation refs
-  const imageViewerAnim = useRef(new Animated.Value(0)).current;
-  const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
+  const imageViewerAnim = useSharedValue(0);
+  const imageScaleAnim = useSharedValue(0.8);
 
   /**
    * Open image viewer with optional gallery support.
@@ -52,24 +53,16 @@ export function useMediaViewer() {
 
       setShowImageViewer(true);
 
-      Animated.parallel([
-        Animated.timing(imageViewerAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.spring(imageScaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 80,
-          friction: 8,
-        }),
-      ]).start(() => {
+      imageViewerAnim.value = withTiming(1, { duration: 250 });
+      const afterOpen = () => {
         if (allImages && allImages.length > 1 && startIndex && startIndex > 0) {
           setTimeout(() => {
             imageGalleryRef.current?.scrollToIndex({ index: startIndex, animated: false });
           }, 50);
         }
+      };
+      imageScaleAnim.value = withSpring(1, { stiffness: 80, damping: 8 }, (finished) => {
+        if (finished) runOnJS(afterOpen)();
       });
     },
     [imageViewerAnim, imageScaleAnim]
@@ -79,22 +72,15 @@ export function useMediaViewer() {
    * Close image viewer with animation.
    */
   const closeImageViewer = useCallback(() => {
-    Animated.parallel([
-      Animated.timing(imageViewerAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(imageScaleAnim, {
-        toValue: 0.8,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
+    imageViewerAnim.value = withTiming(0, { duration: 200 });
+    const afterClose = () => {
       setShowImageViewer(false);
       setSelectedImage(null);
       setImageGallery([]);
       setCurrentImageIndex(0);
+    };
+    imageScaleAnim.value = withTiming(0.8, { duration: 200 }, (finished) => {
+      if (finished) runOnJS(afterClose)();
     });
   }, [imageViewerAnim, imageScaleAnim]);
 

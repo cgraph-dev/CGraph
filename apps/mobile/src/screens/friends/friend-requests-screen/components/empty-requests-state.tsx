@@ -4,53 +4,49 @@
  * Animated empty state for friend requests.
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import type { EmptyRequestsStateProps } from '../types';
 
 export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const floatAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useSharedValue(1);
+  const floatAnim = useSharedValue(0);
 
   useEffect(() => {
     // Pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
 
     // Float animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim, {
-          toValue: -10,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(floatAnim, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    floatAnim.value = withRepeat(
+      withSequence(
+        withTiming(-10, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
   }, [pulseAnim, floatAnim]);
+
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnim.value }, { translateY: floatAnim.value }],
+  }));
 
   const isIncoming = type === 'incoming';
 
@@ -59,9 +55,7 @@ export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
       <Animated.View
         style={[
           styles.emptyIconContainer,
-          {
-            transform: [{ scale: pulseAnim }, { translateY: floatAnim }],
-          },
+          animatedIconStyle,
         ]}
       >
         <LinearGradient

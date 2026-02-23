@@ -1,65 +1,62 @@
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 
 /**
  * PulsingDot - Animated indicator for live/online status
  * Features pulse, rotation, and glow effects
  */
 export function PulsingDot() {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0.5)).current;
+  const pulseAnim = useSharedValue(1);
+  const rotateAnim = useSharedValue(0);
+  const glowAnim = useSharedValue(0.5);
 
   useEffect(() => {
     // Pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.5,
-          duration: 800,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.5, { duration: 800, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1,
+      false
+    );
 
     // Rotation animation
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 4000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    rotateAnim.value = withRepeat(
+      withTiming(1, { duration: 4000, easing: Easing.linear }),
+      -1,
+      false
+    );
 
     // Glow animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0.3,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    glowAnim.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0.3, { duration: 1000 })
+      ),
+      -1,
+      false
+    );
   }, [pulseAnim, rotateAnim, glowAnim]);
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  const ringStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${interpolate(rotateAnim.value, [0, 1], [0, 360])}deg` }],
+    opacity: glowAnim.value,
+  }));
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnim.value }],
+    opacity: glowAnim.value,
+  }));
 
   return (
     <View style={styles.pulsingDotContainer}>
@@ -67,20 +64,14 @@ export function PulsingDot() {
       <Animated.View
         style={[
           styles.pulsingDotRing,
-          {
-            transform: [{ rotate: rotation }],
-            opacity: glowAnim,
-          },
+          ringStyle,
         ]}
       />
       {/* Pulsing glow */}
       <Animated.View
         style={[
           styles.pulsingDotOuter,
-          {
-            transform: [{ scale: pulseAnim }],
-            opacity: glowAnim,
-          },
+          pulseStyle,
         ]}
       />
       {/* Core dot */}

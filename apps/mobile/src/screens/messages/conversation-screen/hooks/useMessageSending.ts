@@ -8,7 +8,8 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
-import { Animated, Easing, Alert } from 'react-native';
+import { Alert } from 'react-native';
+import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
 import * as Crypto from 'expo-crypto';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -53,8 +54,8 @@ export interface UseMessageSendingReturn {
   inputText: string;
   setInputText: (text: string) => void;
   isSending: boolean;
-  sendButtonAnim: Animated.Value;
-  waveAnim: Animated.Value;
+  sendButtonAnim: SharedValue<number>;
+  waveAnim: SharedValue<number>;
   sendMessage: () => Promise<void>;
   handleVoiceComplete: (voiceData: VoiceData) => Promise<void>;
   handleSendWave: () => Promise<void>;
@@ -95,26 +96,16 @@ export function useMessageSending({
   const [isSending, setIsSending] = useState(false);
 
   // Animation refs
-  const sendButtonAnim = useRef(new Animated.Value(1)).current;
-  const waveAnim = useRef(new Animated.Value(0)).current;
+  const sendButtonAnim = useSharedValue(1);
+  const waveAnim = useSharedValue(0);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animated send button press effect
   const animateSendButton = useCallback(() => {
-    Animated.sequence([
-      Animated.timing(sendButtonAnim, {
-        toValue: 0.85,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(sendButtonAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
+    sendButtonAnim.value = withSequence(
+      withTiming(0.85, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withSpring(1, { stiffness: 200, damping: 10 })
+    );
   }, [sendButtonAnim]);
 
   // Stop typing indicator
@@ -288,10 +279,10 @@ export function useMessageSending({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const emoji = WAVE_EMOJIS[Math.floor(Math.random() * WAVE_EMOJIS.length)];
 
-    Animated.sequence([
-      Animated.timing(waveAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.timing(waveAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start();
+    waveAnim.value = withSequence(
+      withTiming(1, { duration: 200 }),
+      withTiming(0, { duration: 200 })
+    );
 
     try {
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {

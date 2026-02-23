@@ -6,8 +6,9 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
-import { useCallback, useRef } from 'react';
-import { Alert, Animated } from 'react-native';
+import { useCallback } from 'react';
+import { Alert } from 'react-native';
+import { useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
 import api from '../../../../lib/api';
@@ -35,7 +36,7 @@ interface UseVoiceAndWaveOptions {
 }
 
 export interface UseVoiceAndWaveReturn {
-  waveAnim: Animated.Value;
+  waveAnim: SharedValue<number>;
   handleVoiceComplete: (voiceData: VoiceData) => Promise<void>;
   handleSendWave: () => Promise<void>;
 }
@@ -51,7 +52,7 @@ export function useVoiceAndWave({
   onScrollToBottom,
 }: UseVoiceAndWaveOptions): UseVoiceAndWaveReturn {
   // Animation for wave greeting
-  const waveAnim = useRef(new Animated.Value(0)).current;
+  const waveAnim = useSharedValue(0);
 
   // Handle voice message completion - upload and send as a message
   const handleVoiceComplete = useCallback(
@@ -116,10 +117,10 @@ export function useVoiceAndWave({
     const emoji = WAVE_EMOJIS[Math.floor(Math.random() * WAVE_EMOJIS.length)];
 
     // Trigger wave animation
-    Animated.sequence([
-      Animated.timing(waveAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.timing(waveAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start();
+    waveAnim.value = withSequence(
+      withTiming(1, { duration: 200 }),
+      withTiming(0, { duration: 200 })
+    );
 
     // Send the wave message directly
     try {

@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Animated, StyleSheet, ViewStyle, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
+import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { HolographicConfig, getTheme } from '../types';
 import { HolographicText } from './holographic-text';
@@ -22,45 +23,32 @@ export function HolographicProgress({
   style,
 }: HolographicProgressProps) {
   const theme = getTheme(colorTheme);
-  const progressAnim = useRef(new Animated.Value(0)).current;
-  const shineAnim = useRef(new Animated.Value(0)).current;
+  const progressAnim = useSharedValue(0);
+  const shineAnim = useSharedValue(0);
 
   const clampedProgress = Math.max(0, Math.min(1, progress));
 
   useEffect(() => {
-    Animated.timing(progressAnim, {
-      toValue: clampedProgress,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
+    progressAnim.value = withTiming(clampedProgress, { duration: 500 });
   }, [clampedProgress]);
 
   useEffect(() => {
     // Shine animation loop
-    const animateShine = () => {
-      shineAnim.setValue(0);
-      Animated.timing(shineAnim, {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: false,
-      }).start(() => animateShine());
-    };
-    animateShine();
-
-    return () => {
-      shineAnim.stopAnimation();
-    };
+    shineAnim.value = 0;
+    shineAnim.value = withRepeat(
+      withTiming(1, { duration: 2000 }),
+      -1,
+      false
+    );
   }, []);
 
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
+  const progressWidthStyle = useAnimatedStyle(() => ({
+    width: `${interpolate(progressAnim.value, [0, 1], [0, 100])}%`,
+  }));
 
-  const shinePosition = shineAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['-50%', '150%'],
-  });
+  const shinePositionStyle = useAnimatedStyle(() => ({
+    left: `${interpolate(shineAnim.value, [0, 1], [-50, 150])}%`,
+  }));
 
   return (
     <View style={[styles.container, style]}>
@@ -87,7 +75,7 @@ export function HolographicProgress({
           },
         ]}
       >
-        <Animated.View style={[styles.progressFill, { width: progressWidth }]}>
+        <Animated.View style={[styles.progressFill, progressWidthStyle]}>
           <LinearGradient
             colors={[theme.primary, theme.accent, theme.primary]}
             start={{ x: 0, y: 0 }}
@@ -99,9 +87,7 @@ export function HolographicProgress({
           <Animated.View
             style={[
               styles.shine,
-              {
-                left: shinePosition,
-              },
+              shinePositionStyle,
             ]}
           >
             <LinearGradient

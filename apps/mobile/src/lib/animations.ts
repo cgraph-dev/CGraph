@@ -5,7 +5,8 @@
  * for use with React Native Animated API.
  */
 
-import { Animated, Easing, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
 
 // ============================================================================
 // Timing Constants

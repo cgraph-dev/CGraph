@@ -10,8 +10,9 @@
  * @updated v0.8.2 - Added particle explosion effect for web parity
  */
 
-import React, { memo, useRef, useCallback, useState } from 'react';
-import { TouchableOpacity, Text, Animated, Easing, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSequence, withSpring, withTiming, interpolate, runOnJS, Easing as ReanimatedEasing, type SharedValue } from 'react-native-reanimated';
 
 // Number of particles in the explosion effect
 const PARTICLE_COUNT = 8;
@@ -65,30 +66,19 @@ const ReactionParticle = memo(function ReactionParticle({
   color,
 }: {
   index: number;
-  animValue: Animated.Value;
+  animValue: SharedValue<number>;
   color: string;
 }) {
   const position = PARTICLE_POSITIONS[index];
   
-  const translateX = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, position.x],
-  });
-  
-  const translateY = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, position.y],
-  });
-  
-  const scale = animValue.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 1.2, 0],
-  });
-  
-  const opacity = animValue.interpolate({
-    inputRange: [0, 0.3, 1],
-    outputRange: [0, 1, 0],
-  });
+  const particleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: interpolate(animValue.value, [0, 1], [0, position.x]) },
+      { translateY: interpolate(animValue.value, [0, 1], [0, position.y]) },
+      { scale: interpolate(animValue.value, [0, 0.5, 1], [0, 1.2, 0]) },
+    ],
+    opacity: interpolate(animValue.value, [0, 0.3, 1], [0, 1, 0]),
+  }));
 
   return (
     <Animated.View
@@ -96,9 +86,8 @@ const ReactionParticle = memo(function ReactionParticle({
         styles.particle,
         {
           backgroundColor: color,
-          transform: [{ translateX }, { translateY }, { scale }],
-          opacity,
         },
+        particleAnimatedStyle,
       ]}
     />
   );
@@ -137,89 +126,59 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
   colors,
   disableParticles = false,
 }: AnimatedReactionBubbleProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  const particleAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useSharedValue(1);
+  const bounceAnim = useSharedValue(0);
+  const particleAnim = useSharedValue(0);
+  const glowAnim = useSharedValue(0);
   const [showParticles, setShowParticles] = useState(false);
 
   const handlePress = useCallback(() => {
     // Bounce animation sequence on tap
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
-        toValue: 1.3,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 5,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
+    scaleAnim.value = withSequence(
+      withSpring(1.3, { stiffness: 300, damping: 5 }),
+      withSpring(1, { stiffness: 200, damping: 10 })
+    );
 
     // Emoji "jump" animation
-    Animated.sequence([
-      Animated.timing(bounceAnim, {
-        toValue: -8,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 8,
-      }),
-    ]).start();
+    bounceAnim.value = withSequence(
+      withTiming(-8, { duration: 100, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+      withSpring(0, { stiffness: 300, damping: 8 })
+    );
 
     // Particle explosion effect
     if (!disableParticles) {
       setShowParticles(true);
-      particleAnim.setValue(0);
+      particleAnim.value = 0;
       
-      Animated.timing(particleAnim, {
-        toValue: 1,
+      particleAnim.value = withTiming(1, {
         duration: 400,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.cubic),
-      }).start(() => {
-        setShowParticles(false);
+        easing: ReanimatedEasing.out(ReanimatedEasing.cubic),
+      }, (finished) => {
+        if (finished) {
+          runOnJS(setShowParticles)(false);
+        }
       });
     }
 
     // Glow pulse effect
-    Animated.sequence([
-      Animated.timing(glowAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-        easing: Easing.in(Easing.quad),
-      }),
-    ]).start();
+    glowAnim.value = withSequence(
+      withTiming(1, { duration: 150, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+      withTiming(0, { duration: 300, easing: ReanimatedEasing.in(ReanimatedEasing.quad) })
+    );
 
     onPress();
   }, [scaleAnim, bounceAnim, particleAnim, glowAnim, onPress, disableParticles]);
 
-  // Glow opacity interpolation
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.4],
-  });
+  // Glow animated style
+  const glowAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(glowAnim.value, [0, 1], [0, 0.4]),
+    transform: [{ scale: interpolate(glowAnim.value, [0, 1], [1, 1.5]) }],
+  }));
 
-  const glowScale = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 1.5],
-  });
+  // Emoji animated style
+  const emojiAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }, { translateY: bounceAnim.value }],
+  }));
 
   // Dynamic styles based on reaction state and message ownership
   const bubbleStyle = {
@@ -242,9 +201,8 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
           styles.glowLayer,
           {
             backgroundColor: colors.primary,
-            opacity: glowOpacity,
-            transform: [{ scale: glowScale }],
           },
+          glowAnimatedStyle,
         ]}
       />
       
@@ -270,9 +228,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
         <Animated.Text
           style={[
             styles.reactionEmoji,
-            {
-              transform: [{ scale: scaleAnim }, { translateY: bounceAnim }],
-            },
+            emojiAnimatedStyle,
           ]}
         >
           {reaction.emoji}

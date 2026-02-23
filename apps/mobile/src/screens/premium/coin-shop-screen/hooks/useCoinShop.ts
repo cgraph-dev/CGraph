@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Alert, Animated } from 'react-native';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { Alert } from 'react-native';
+import { useSharedValue, withTiming, withDelay, withSpring, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import paymentService, { PRODUCT_IDS } from '../../../../lib/payment';
@@ -14,8 +15,8 @@ export function useCoinShop() {
   const [isPurchasing, setIsPurchasing] = useState(false);
 
   // Entry animations
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const balanceScaleAnim = useRef(new Animated.Value(0)).current;
+  const headerAnim = useSharedValue(0);
+  const balanceScaleAnim = useSharedValue(0);
 
   // Fetch user's coin balance and daily claim status on mount
   useEffect(() => {
@@ -44,19 +45,8 @@ export function useCoinShop() {
   }, []);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(headerAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.spring(balanceScaleAnim, {
-        toValue: 1,
-        friction: 6,
-        delay: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    headerAnim.value = withTiming(1, { duration: 500 });
+    balanceScaleAnim.value = withDelay(200, withSpring(1, { damping: 6 }));
   }, []);
 
   const filteredItems = useMemo(() => {

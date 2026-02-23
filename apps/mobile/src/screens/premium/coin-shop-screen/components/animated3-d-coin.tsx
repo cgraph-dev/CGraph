@@ -1,5 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Animated3DCoinProps {
@@ -17,69 +27,55 @@ interface Animated3DCoinProps {
  * - Linear gradient coin face
  */
 export function Animated3DCoin({ size = 70, delay = 0 }: Animated3DCoinProps) {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useSharedValue(0);
+  const scaleAnim = useSharedValue(0.8);
+  const glowAnim = useSharedValue(0);
 
   useEffect(() => {
     // Continuous rotation animation
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 4000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    rotateAnim.value = withRepeat(
+      withTiming(1, { duration: 4000, easing: Easing.linear }),
+      -1,
+      false
+    );
 
     // Scale breathing animation with delay
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 1500,
-          delay,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    scaleAnim.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.9, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        false
+      )
+    );
 
     // Glow pulsing animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
+    glowAnim.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 2000 }),
+        withTiming(0, { duration: 2000 })
+      ),
+      -1,
+      false
+    );
   }, [rotateAnim, scaleAnim, glowAnim, delay]);
 
-  const rotateY = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  const coinStyle = useAnimatedStyle(() => ({
+    transform: [
+      { rotateY: `${interpolate(rotateAnim.value, [0, 1], [0, 360])}deg` },
+      { scale: scaleAnim.value },
+    ],
+  }));
 
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.3, 0.8],
-  });
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(glowAnim.value, [0, 1], [0.3, 0.8]),
+  }));
 
   return (
-    <Animated.View style={{ transform: [{ rotateY }, { scale: scaleAnim }] }}>
+    <Animated.View style={coinStyle}>
       {/* Glow effect */}
       <Animated.View
         style={[
@@ -88,10 +84,10 @@ export function Animated3DCoin({ size = 70, delay = 0 }: Animated3DCoinProps) {
             width: size * 1.5,
             height: size * 1.5,
             borderRadius: size * 0.75,
-            opacity: glowOpacity,
             left: -size * 0.25,
             top: -size * 0.25,
           },
+          glowStyle,
         ]}
       />
       {/* Coin face */}

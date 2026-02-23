@@ -4,28 +4,59 @@
  * Animated stacked avatars showing group members.
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  interpolate,
+} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import type { MemberAvatarStackProps } from '../types';
 
 export function MemberAvatarStack({ memberCount, colors }: MemberAvatarStackProps) {
   const displayCount = Math.min(3, memberCount);
-  const anims = useRef(Array.from({ length: 3 }, () => new Animated.Value(0))).current;
+  const anim0 = useSharedValue(0);
+  const anim1 = useSharedValue(0);
+  const anim2 = useSharedValue(0);
+  const anims = [anim0, anim1, anim2];
 
   useEffect(() => {
-    Animated.stagger(
-      100,
-      anims.map((anim, index) =>
-        Animated.spring(anim, {
-          toValue: index < displayCount ? 1 : 0,
-          friction: 8,
-          tension: 50,
-          useNativeDriver: true,
-        })
-      )
-    ).start();
-  }, [displayCount, anims]);
+    anims.forEach((anim, index) => {
+      anim.value = withDelay(
+        index * 100,
+        withSpring(index < displayCount ? 1 : 0, { damping: 8, stiffness: 50 })
+      );
+    });
+  }, [displayCount]);
+
+  const style0 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: anim0.value },
+      { translateX: interpolate(anim0.value, [0, 1], [10, 0]) },
+    ],
+    opacity: anim0.value,
+  }));
+
+  const style1 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: anim1.value },
+      { translateX: interpolate(anim1.value, [0, 1], [10, 0]) },
+    ],
+    opacity: anim1.value,
+  }));
+
+  const style2 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: anim2.value },
+      { translateX: interpolate(anim2.value, [0, 1], [10, 0]) },
+    ],
+    opacity: anim2.value,
+  }));
+
+  const animStyles = [style0, style1, style2];
 
   return (
     <View style={styles.avatarStack}>
@@ -38,17 +69,8 @@ export function MemberAvatarStack({ memberCount, colors }: MemberAvatarStackProp
               backgroundColor: ['#8b5cf6', '#ec4899', '#10b981'][index],
               marginLeft: index > 0 ? -8 : 0,
               zIndex: 3 - index,
-              transform: [
-                { scale: anim },
-                {
-                  translateX: anim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [10, 0],
-                  }),
-                },
-              ],
-              opacity: anim,
             },
+            animStyles[index],
           ]}
         >
           <Ionicons name="person" size={10} color="#fff" />

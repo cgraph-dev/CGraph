@@ -4,66 +4,60 @@
  * Header with animated create button.
  */
 
-import React, { useRef, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import type { AnimatedHeaderProps } from '../types';
 
 export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useSharedValue(1);
+  const rotateAnim = useSharedValue(0);
 
   useEffect(() => {
     // Continuous pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1,
+      false
+    );
   }, [pulseAnim]);
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    Animated.sequence([
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.out(Easing.back(2)),
-        useNativeDriver: true,
-      }),
-      Animated.timing(rotateAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    rotateAnim.value = withSequence(
+      withTiming(1, { duration: 200, easing: Easing.out(Easing.back(2)) }),
+      withTiming(0, { duration: 200 })
+    );
 
     onCreatePress();
   };
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '90deg'],
-  });
+  const buttonStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: pulseAnim.value },
+      { rotate: `${interpolate(rotateAnim.value, [0, 1], [0, 90])}deg` },
+    ],
+  }));
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.headerButton}>
       <Animated.View
-        style={{
-          transform: [{ scale: pulseAnim }, { rotate: rotation }],
-        }}
+        style={buttonStyle}
       >
         <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.headerButtonGradient}>
           <Ionicons name="add" size={20} color="#fff" />

@@ -9,7 +9,8 @@
  */
 
 import React, { memo } from 'react';
-import { View, Text, Image, TouchableOpacity, Animated, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';
 import { UserBasic } from '../../types';
 
 export interface EmptyConversationProps {
@@ -25,7 +26,7 @@ export interface EmptyConversationProps {
     border: string;
   };
   /** Animation value for wave animation */
-  waveAnim: Animated.Value;
+  waveAnim: SharedValue<number>;
   /** Callback when wave button is pressed */
   onSendWave: () => void;
   /** Callback to set input text with a starter message */
@@ -70,10 +71,9 @@ export const EmptyConversation = memo(function EmptyConversation({
   const otherInitial = otherName.charAt(0).toUpperCase();
 
   // Animated wave rotation
-  const waveRotate = waveAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['0deg', '20deg', '0deg'],
-  });
+  const waveAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${interpolate(waveAnim.value, [0, 0.5, 1], [0, 20, 0])}deg` }],
+  }));
 
   return (
     <View style={styles.wrapper}>
@@ -94,7 +94,7 @@ export const EmptyConversation = memo(function EmptyConversation({
 
       {/* Cute message with animated emoji */}
       <View style={styles.messageRow}>
-        <Animated.Text style={[styles.waveEmoji, { transform: [{ rotate: waveRotate }] }]}>
+        <Animated.Text style={[styles.waveEmoji, waveAnimatedStyle]}>
           👋
         </Animated.Text>
         <Text style={[styles.messageText, { color: colors.textSecondary }]}>

@@ -6,8 +6,8 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
-import { useState, useRef, useCallback } from 'react';
-import { Animated, Easing } from 'react-native';
+import { useState, useCallback } from 'react';
+import { useSharedValue, withTiming, withSpring, withDelay, runOnJS, Easing, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Alert } from 'react-native';
@@ -24,10 +24,10 @@ export interface MessageActionsState {
 
 export interface UseMessageActionsReturn extends MessageActionsState {
   // Animations
-  backdropAnim: Animated.Value;
-  menuScaleAnim: Animated.Value;
-  messageActionsAnim: Animated.Value;
-  actionItemAnims: Animated.Value[];
+  backdropAnim: SharedValue<number>;
+  menuScaleAnim: SharedValue<number>;
+  messageActionsAnim: SharedValue<number>;
+  actionItemAnims: SharedValue<number>[];
   // Actions
   handleMessageLongPress: (message: Message) => void;
   closeMessageActions: () => void;
@@ -46,15 +46,14 @@ export function useMessageActions(): UseMessageActionsReturn {
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
   // Animation refs
-  const messageActionsAnim = useRef(new Animated.Value(0)).current;
-  const backdropAnim = useRef(new Animated.Value(0)).current;
-  const menuScaleAnim = useRef(new Animated.Value(0.9)).current;
-  const actionItemAnims = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]).current;
+  const messageActionsAnim = useSharedValue(0);
+  const backdropAnim = useSharedValue(0);
+  const menuScaleAnim = useSharedValue(0.9);
+  const actionItemAnim0 = useSharedValue(0);
+  const actionItemAnim1 = useSharedValue(0);
+  const actionItemAnim2 = useSharedValue(0);
+  const actionItemAnim3 = useSharedValue(0);
+  const actionItemAnims = [actionItemAnim0, actionItemAnim1, actionItemAnim2, actionItemAnim3];
 
   /**
    * Handle long press on message to show actions.
@@ -66,45 +65,21 @@ export function useMessageActions(): UseMessageActionsReturn {
       setShowMessageActions(true);
 
       // Reset all animations
-      backdropAnim.setValue(0);
-      menuScaleAnim.setValue(0.9);
-      messageActionsAnim.setValue(0);
-      actionItemAnims.forEach((anim) => anim.setValue(0));
+      backdropAnim.value = 0;
+      menuScaleAnim.value = 0.9;
+      messageActionsAnim.value = 0;
+      actionItemAnims.forEach((anim) => (anim.value = 0));
 
       // Staggered entrance animation
-      Animated.parallel([
-        // Backdrop fade in
-        Animated.timing(backdropAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-          easing: Easing.out(Easing.cubic),
-        }),
-        // Menu scale — bouncier spring for snappy feel
-        Animated.spring(menuScaleAnim, {
-          toValue: 1,
-          tension: 180,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        // Menu slide up with overshoot
-        Animated.spring(messageActionsAnim, {
-          toValue: 1,
-          tension: 120,
-          friction: 9,
-          useNativeDriver: true,
-        }),
-        // Staggered action items — faster cascade
-        ...actionItemAnims.map((anim, index) =>
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 180,
-            delay: 40 + index * 25,
-            useNativeDriver: true,
-            easing: Easing.out(Easing.cubic),
-          })
-        ),
-      ]).start();
+      backdropAnim.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.cubic) });
+      menuScaleAnim.value = withSpring(1, { stiffness: 180, damping: 10 });
+      messageActionsAnim.value = withSpring(1, { stiffness: 120, damping: 9 });
+      actionItemAnims.forEach((anim, index) => {
+        anim.value = withDelay(
+          40 + index * 25,
+          withTiming(1, { duration: 180, easing: Easing.out(Easing.cubic) })
+        );
+      });
     },
     [backdropAnim, menuScaleAnim, messageActionsAnim, actionItemAnims]
   );
@@ -113,25 +88,14 @@ export function useMessageActions(): UseMessageActionsReturn {
    * Close message actions menu with animation.
    */
   const closeMessageActions = useCallback(() => {
-    Animated.parallel([
-      Animated.timing(backdropAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(menuScaleAnim, {
-        toValue: 0.9,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(messageActionsAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
+    backdropAnim.value = withTiming(0, { duration: 200 });
+    menuScaleAnim.value = withTiming(0.9, { duration: 200 });
+    const afterClose = () => {
       setShowMessageActions(false);
       setSelectedMessage(null);
+    };
+    messageActionsAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+      if (finished) runOnJS(afterClose)();
     });
   }, [backdropAnim, menuScaleAnim, messageActionsAnim]);
 

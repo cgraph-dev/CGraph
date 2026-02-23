@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Text, Animated, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/theme-context';
 
@@ -43,23 +44,13 @@ export default function Toast({
   style,
 }: ToastProps) {
   const { colors } = useTheme();
-  const translateY = useRef(new Animated.Value(-100)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useSharedValue(-100);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      translateY.value = withTiming(0, { duration: 300 });
+      opacity.value = withTiming(1, { duration: 300 });
 
       const timer = setTimeout(() => {
         onClose();
@@ -67,21 +58,16 @@ export default function Toast({
 
       return () => clearTimeout(timer);
     } else {
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: -100,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      translateY.value = withTiming(-100, { duration: 200 });
+      opacity.value = withTiming(0, { duration: 200 });
       return undefined;
     }
   }, [visible, duration, onClose, translateY, opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+  }));
 
   if (!visible) return null;
 
@@ -92,9 +78,8 @@ export default function Toast({
         {
           backgroundColor: colors.surface,
           borderLeftColor: COLORS[type],
-          transform: [{ translateY }],
-          opacity,
         },
+        animatedStyle,
         style,
       ]}
       accessibilityRole="alert"

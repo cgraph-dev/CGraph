@@ -4,7 +4,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Dimensions, ViewStyle, Easing } from 'react-native';
+import { View, StyleSheet, Dimensions, ViewStyle } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Rarity, RarityColors } from '@/lib/design/design-system';
 
@@ -136,25 +137,21 @@ export default function ParticleBackground({
             toValue: -50,
             duration: duration,
             easing: Easing.linear,
-            useNativeDriver: true,
           }),
           Animated.sequence([
             Animated.timing(particle.x, {
               toValue: (particle.x as unknown as number) + 30,
               duration: duration / 2,
-              useNativeDriver: true,
             }),
             Animated.timing(particle.x, {
               toValue: (particle.x as unknown as number) - 30,
               duration: duration / 2,
-              useNativeDriver: true,
             }),
           ]),
         ]),
         Animated.timing(particle.y, {
           toValue: SCREEN_HEIGHT + 50,
           duration: 0,
-          useNativeDriver: true,
         }),
       ])
     );
@@ -165,12 +162,10 @@ export default function ParticleBackground({
         Animated.timing(particle.opacity, {
           toValue: 0.8,
           duration: 2000 / particle.speed,
-          useNativeDriver: true,
         }),
         Animated.timing(particle.opacity, {
           toValue: 0.2,
           duration: 2000 / particle.speed,
-          useNativeDriver: true,
         }),
       ])
     );
@@ -183,7 +178,6 @@ export default function ParticleBackground({
           toValue: 1,
           duration: 3000 / particle.speed,
           easing: Easing.linear,
-          useNativeDriver: true,
         })
       );
     }

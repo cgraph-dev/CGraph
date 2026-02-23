@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, ViewStyle, TextStyle } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming, Easing as ReanimatedEasing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type BadgeVariant =
@@ -53,61 +54,38 @@ export default function Badge({
   gradient = false,
 }: BadgeProps) {
   // Animated values
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0.3)).current;
+  const scaleAnim = useSharedValue(0);
+  const pulseAnim = useSharedValue(1);
+  const glowAnim = useSharedValue(0.3);
 
   useEffect(() => {
     // Entrance animation
     if (animated) {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: true,
-      }).start();
+      scaleAnim.value = withSpring(1, { stiffness: 100, damping: 8 });
     } else {
-      scaleAnim.setValue(1);
+      scaleAnim.value = 1;
     }
 
     // Pulse animation
     if (pulse) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.15,
-            duration: 800,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 800,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      pulseAnim.value = withRepeat(
+        withSequence(
+          withTiming(1.15, { duration: 800, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+          withTiming(1, { duration: 800, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+        ),
+        -1
+      );
     }
 
     // Glow animation
     if (glow) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 0.8,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0.3,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
+      glowAnim.value = withRepeat(
+        withSequence(
+          withTiming(0.8, { duration: 1500, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+          withTiming(0.3, { duration: 1500, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+        ),
+        -1
+      );
     }
   }, [animated, pulse, glow]);
 
@@ -198,15 +176,17 @@ export default function Badge({
     borderWidth: 1,
   };
 
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value * pulseAnim.value }],
+  }));
+
   return (
     <Animated.View
       style={[
         styles.container,
         containerStyle,
         style,
-        {
-          transform: [{ scale: Animated.multiply(scaleAnim, pulseAnim) }],
-        },
+        animatedContainerStyle,
         glow && {
           shadowColor: currentVariant.text,
           shadowOffset: { width: 0, height: 0 },

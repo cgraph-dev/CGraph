@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, Image, Animated, StyleSheet, ViewStyle, Platform, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ViewStyle, Platform } from 'react-native';
+import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import { HolographicConfig, getTheme } from '../types';
 
 interface HolographicAvatarProps {
@@ -20,9 +21,9 @@ export function HolographicAvatar({
   style,
 }: HolographicAvatarProps) {
   const theme = getTheme(colorTheme);
-  const ringScale = useRef(new Animated.Value(1)).current;
-  const ringOpacity = useRef(new Animated.Value(0.8)).current;
-  const statusPulse = useRef(new Animated.Value(1)).current;
+  const ringScale = useSharedValue(1);
+  const ringOpacity = useSharedValue(0.8);
+  const statusPulse = useSharedValue(1);
 
   const sizeValues = {
     sm: { container: 32, text: 10, status: 8 },
@@ -47,46 +48,38 @@ export function HolographicAvatar({
 
   // Ring animation
   useEffect(() => {
-    const animation = Animated.loop(
-      Animated.parallel([
-        Animated.timing(ringScale, {
-          toValue: 1.2,
-          duration: 2000,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(ringOpacity, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
+    ringScale.value = withRepeat(
+      withTiming(1.2, { duration: 2000, easing: Easing.out(Easing.ease) }),
+      -1,
+      false
     );
-    animation.start();
-    return () => animation.stop();
+    ringOpacity.value = withRepeat(
+      withTiming(0, { duration: 2000, easing: Easing.out(Easing.ease) }),
+      -1,
+      false
+    );
   }, []);
 
   // Status pulse
   useEffect(() => {
     if (!status) return;
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(statusPulse, {
-          toValue: 1.2,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(statusPulse, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
+    statusPulse.value = withRepeat(
+      withSequence(
+        withTiming(1.2, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1
     );
-    animation.start();
-    return () => animation.stop();
   }, [status]);
+
+  const ringAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: ringScale.value }],
+    opacity: ringOpacity.value,
+  }));
+
+  const statusAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: statusPulse.value }],
+  }));
 
   const currentSize = sizeValues[size];
 
@@ -101,9 +94,8 @@ export function HolographicAvatar({
             height: currentSize.container,
             borderRadius: currentSize.container / 2,
             borderColor: theme.accent,
-            transform: [{ scale: ringScale }],
-            opacity: ringOpacity,
           },
+          ringAnimStyle,
         ]}
       />
 
@@ -164,8 +156,8 @@ export function HolographicAvatar({
               borderRadius: currentSize.status / 2,
               backgroundColor: statusColors[status],
               borderColor: theme.background,
-              transform: [{ scale: statusPulse }],
             },
+            statusAnimStyle,
             Platform.OS === 'ios' && {
               shadowColor: statusColors[status],
               shadowOffset: { width: 0, height: 0 },

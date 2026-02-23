@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -15,8 +16,8 @@ export interface NotificationHeaderProps {
     text: string;
     textSecondary: string;
   };
-  headerOpacity: Animated.Value;
-  headerTranslateY: Animated.Value;
+  headerOpacity: SharedValue<number>;
+  headerTranslateY: SharedValue<number>;
   onMarkAllRead: () => void;
 }
 
@@ -32,14 +33,16 @@ export function NotificationHeader({
     onMarkAllRead();
   };
 
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerTranslateY.value }],
+  }));
+
   return (
     <Animated.View
       style={[
         styles.header,
-        {
-          opacity: headerOpacity,
-          transform: [{ translateY: headerTranslateY }],
-        },
+        headerAnimatedStyle,
       ]}
     >
       <SafeAreaView edges={['top']}>

@@ -8,7 +8,8 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { Platform, Alert, Animated } from 'react-native';
+import { Platform, Alert } from 'react-native';
+import { withTiming, runOnJS, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import { normalizeMessage } from '../../../../lib/normalizers';
@@ -31,7 +32,7 @@ interface UseAttachmentUploadOptions {
   setIsSending: (sending: boolean) => void;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   closeAttachmentPreview: () => void;
-  attachmentPreviewAnim: Animated.Value;
+  attachmentPreviewAnim: SharedValue<number>;
   handleImagePicker: () => Promise<void>;
   onScrollToBottom: () => void;
 }
@@ -283,13 +284,12 @@ export function useAttachmentUpload({
 
   // Add more attachments to pending list
   const addMoreAttachments = useCallback(() => {
-    Animated.timing(attachmentPreviewAnim, {
-      toValue: 0,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(async () => {
+    const afterAnim = async () => {
       closeAttachmentPreview();
       await handleImagePicker();
+    };
+    attachmentPreviewAnim.value = withTiming(0, { duration: 150 }, (finished) => {
+      if (finished) runOnJS(afterAnim)();
     });
   }, [attachmentPreviewAnim, closeAttachmentPreview, handleImagePicker]);
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, FlatList, Image, Animated } from 'react-native';
+import { View, TouchableOpacity, Text, FlatList, Image } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { styles } from '../styles';
@@ -8,7 +9,7 @@ interface ContactPickerProps {
   visible: boolean;
   contacts: (Contacts.Contact & { id: string })[];
   searchQuery: string;
-  animation: Animated.Value;
+  animation: SharedValue<number>;
   onShareContact: (contact: Contacts.Contact & { id: string }) => void;
   onClose: () => void;
   isDark: boolean;
@@ -19,6 +20,23 @@ interface ContactPickerProps {
     primary: string;
     textSecondary: string;
   };
+}
+
+function AnimatedContactItem({
+  animation,
+  index,
+  children,
+}: {
+  animation: SharedValue<number>;
+  index: number;
+  children: React.ReactNode;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: animation.value,
+    transform: [{ translateY: interpolate(animation.value, [0, 1], [20 + index * 5, 0]) }],
+  }));
+
+  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
 export function ContactPicker({
@@ -40,21 +58,16 @@ export function ContactPicker({
       contact.phoneNumbers?.some((p) => p.number?.includes(searchQuery))
   );
 
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animation.value,
+    transform: [{ scale: interpolate(animation.value, [0, 1], [0.9, 1]) }],
+  }));
+
   return (
     <Animated.View
       style={[
         styles.contactPickerOverlay,
-        {
-          opacity: animation,
-          transform: [
-            {
-              scale: animation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.9, 1],
-              }),
-            },
-          ],
-        },
+        overlayAnimatedStyle,
       ]}
     >
       <View
@@ -81,19 +94,7 @@ export function ContactPicker({
           data={filteredContacts}
           keyExtractor={(item) => item.id || String(Math.random())}
           renderItem={({ item, index }) => (
-            <Animated.View
-              style={{
-                opacity: animation,
-                transform: [
-                  {
-                    translateY: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20 + index * 5, 0],
-                    }),
-                  },
-                ],
-              }}
-            >
+            <AnimatedContactItem animation={animation} index={index}>
               <TouchableOpacity
                 style={[styles.contactItem, { borderBottomColor: colors.border }]}
                 onPress={() => onShareContact(item)}
@@ -121,7 +122,7 @@ export function ContactPicker({
                 </View>
                 <Ionicons name="paper-plane" size={20} color={colors.primary} />
               </TouchableOpacity>
-            </Animated.View>
+            </AnimatedContactItem>
           )}
           contentContainerStyle={styles.contactListContent}
           showsVerticalScrollIndicator={false}

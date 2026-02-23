@@ -13,7 +13,8 @@
  */
 
 import React from 'react';
-import { View, FlatList, StyleSheet, RefreshControl, Animated } from 'react-native';
+import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../contexts/theme-context';
 import { Header, LoadingSpinner } from '../../../components';
@@ -40,6 +41,11 @@ export default function FriendRequestsScreen() {
     onRefresh,
   } = useFriendRequests();
 
+  const headerAnimStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ scale: statsScale.value }],
+  }));
+
   if (loading) {
     return <LoadingSpinner fullScreen />;
   }
@@ -50,12 +56,7 @@ export default function FriendRequestsScreen() {
 
       {/* Stats Header */}
       <Animated.View
-        style={[
-          {
-            opacity: headerOpacity,
-            transform: [{ scale: statsScale }],
-          },
-        ]}
+        style={headerAnimStyle}
       >
         <StatsHeader
           incomingCount={incomingRequests.length}

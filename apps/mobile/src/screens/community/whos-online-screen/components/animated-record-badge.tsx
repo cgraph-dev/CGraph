@@ -1,5 +1,18 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+  interpolate,
+  Extrapolation,
+  Easing,
+} from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 interface AnimatedRecordBadgeProps {
   record: number;
   recordDate: string | null;
-  scrollY: Animated.Value;
+  scrollY: SharedValue<number>;
 }
 
 /**
@@ -15,59 +28,52 @@ interface AnimatedRecordBadgeProps {
  * Features shimmer effect, trophy bounce, and scroll parallax
  */
 export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRecordBadgeProps) {
-  const trophyBounce = useRef(new Animated.Value(1)).current;
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
-  const entryAnim = useRef(new Animated.Value(0)).current;
+  const trophyBounce = useSharedValue(1);
+  const shimmerAnim = useSharedValue(0);
+  const entryAnim = useSharedValue(0);
 
   useEffect(() => {
     // Entry animation
-    Animated.spring(entryAnim, {
-      toValue: 1,
-      friction: 6,
-      tension: 50,
-      delay: 300,
-      useNativeDriver: true,
-    }).start();
+    entryAnim.value = withDelay(300, withSpring(1, { damping: 6, stiffness: 50 }));
 
     // Trophy bounce
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(trophyBounce, {
-          toValue: 1.1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(trophyBounce, {
-          toValue: 1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    trophyBounce.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1,
+      false
+    );
 
     // Shimmer animation
-    Animated.loop(
-      Animated.timing(shimmerAnim, {
-        toValue: 1,
-        duration: 2000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    shimmerAnim.value = withRepeat(
+      withTiming(1, { duration: 2000, easing: Easing.linear }),
+      -1,
+      false
+    );
   }, [entryAnim, trophyBounce, shimmerAnim]);
 
-  const shimmerTranslate = shimmerAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-200, 200],
+  const containerStyle = useAnimatedStyle(() => {
+    const parallaxScale = interpolate(
+      scrollY.value,
+      [-50, 0, 100],
+      [1.05, 1, 0.95],
+      Extrapolation.CLAMP
+    );
+    return {
+      transform: [{ scale: entryAnim.value * parallaxScale }],
+      opacity: entryAnim.value,
+    };
   });
 
-  const parallaxScale = scrollY.interpolate({
-    inputRange: [-50, 0, 100],
-    outputRange: [1.05, 1, 0.95],
-    extrapolate: 'clamp',
-  });
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(shimmerAnim.value, [0, 1], [-200, 200]) }],
+  }));
+
+  const trophyStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: trophyBounce.value }],
+  }));
 
   const formatRecordDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
@@ -83,16 +89,13 @@ export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRec
     <Animated.View
       style={[
         styles.recordContainerEnhanced,
-        {
-          transform: [{ scale: Animated.multiply(entryAnim, parallaxScale) }],
-          opacity: entryAnim,
-        },
+        containerStyle,
       ]}
     >
       <BlurView intensity={40} tint="dark" style={styles.recordBlur}>
         {/* Shimmer effect */}
         <Animated.View
-          style={[styles.shimmerEffect, { transform: [{ translateX: shimmerTranslate }] }]}
+          style={[styles.shimmerEffect, shimmerStyle]}
         >
           <LinearGradient
             colors={['transparent', 'rgba(245, 158, 11, 0.2)', 'transparent']}
@@ -102,7 +105,7 @@ export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRec
           />
         </Animated.View>
 
-        <Animated.View style={{ transform: [{ scale: trophyBounce }] }}>
+        <Animated.View style={trophyStyle}>
           <LinearGradient colors={['#f59e0b', '#d97706']} style={styles.trophyContainer}>
             <Ionicons name="trophy" size={24} color="#fff" />
           </LinearGradient>

@@ -1,11 +1,21 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, Animated, Easing, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  interpolate,
+  Extrapolation,
+  Easing,
+} from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface WaveEffectProps {
-  scrollY: Animated.Value;
+  scrollY: SharedValue<number>;
 }
 
 /**
@@ -13,48 +23,38 @@ interface WaveEffectProps {
  * Creates a flowing wave effect in the background
  */
 export function WaveEffect({ scrollY }: WaveEffectProps) {
-  const wave1 = useRef(new Animated.Value(0)).current;
-  const wave2 = useRef(new Animated.Value(0)).current;
+  const wave1 = useSharedValue(0);
+  const wave2 = useSharedValue(0);
 
   useEffect(() => {
-    Animated.loop(
-      Animated.timing(wave1, {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    wave1.value = withRepeat(
+      withTiming(1, { duration: 3000, easing: Easing.linear }),
+      -1,
+      false
+    );
 
-    Animated.loop(
-      Animated.timing(wave2, {
-        toValue: 1,
-        duration: 4000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    wave2.value = withRepeat(
+      withTiming(1, { duration: 4000, easing: Easing.linear }),
+      -1,
+      false
+    );
   }, [wave1, wave2]);
 
-  const wave1TranslateX = wave1.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -SCREEN_WIDTH],
-  });
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollY.value, [0, 100], [0.3, 0.1], Extrapolation.CLAMP),
+  }));
 
-  const wave2TranslateX = wave2.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -SCREEN_WIDTH],
-  });
+  const wave1Style = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(wave1.value, [0, 1], [0, -SCREEN_WIDTH]) }],
+  }));
 
-  const waveOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0.3, 0.1],
-    extrapolate: 'clamp',
-  });
+  const wave2Style = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(wave2.value, [0, 1], [0, -SCREEN_WIDTH]) }],
+  }));
 
   return (
-    <Animated.View style={[styles.waveContainer, { opacity: waveOpacity }]}>
-      <Animated.View style={[styles.wave, { transform: [{ translateX: wave1TranslateX }] }]}>
+    <Animated.View style={[styles.waveContainer, containerStyle]}>
+      <Animated.View style={[styles.wave, wave1Style]}>
         <LinearGradient
           colors={['transparent', 'rgba(16, 185, 129, 0.2)', 'transparent']}
           start={{ x: 0, y: 0 }}
@@ -63,7 +63,7 @@ export function WaveEffect({ scrollY }: WaveEffectProps) {
         />
       </Animated.View>
       <Animated.View
-        style={[styles.wave, styles.wave2, { transform: [{ translateX: wave2TranslateX }] }]}
+        style={[styles.wave, styles.wave2, wave2Style]}
       >
         <LinearGradient
           colors={['transparent', 'rgba(139, 92, 246, 0.15)', 'transparent']}

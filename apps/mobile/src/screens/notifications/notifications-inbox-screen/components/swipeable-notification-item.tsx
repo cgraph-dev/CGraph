@@ -10,7 +10,8 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -69,14 +70,38 @@ export function SwipeableNotificationItem({
     onPress();
   };
 
+  const wrapperStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: entryTranslateY.value }, { scale: entryScale.value }],
+  }));
+
+  const deleteActionStyle = useAnimatedStyle(() => ({
+    opacity: deleteOpacity.value,
+    transform: [{ scale: actionScale.value }],
+  }));
+
+  const readActionStyle = useAnimatedStyle(() => ({
+    opacity: readOpacity.value,
+    transform: [{ scale: actionScale.value }],
+  }));
+
+  const swipeableCardStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeX.value }, { scale: pressScale.value }],
+  }));
+
+  const cardGlowStyle = useAnimatedStyle(() => ({
+    opacity: glowOpacity.value,
+  }));
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnim.value }],
+  }));
+
   return (
     <Animated.View
       style={[
         styles.wrapper,
-        {
-          opacity,
-          transform: [{ translateY: entryTranslateY }, { scale: entryScale }],
-        },
+        wrapperStyle,
       ]}
     >
       {/* Background actions */}
@@ -85,7 +110,7 @@ export function SwipeableNotificationItem({
           style={[
             styles.action,
             styles.deleteAction,
-            { opacity: deleteOpacity, transform: [{ scale: actionScale }] },
+            deleteActionStyle,
           ]}
         >
           <Ionicons name="trash" size={24} color="#FFF" />
@@ -97,7 +122,7 @@ export function SwipeableNotificationItem({
             style={[
               styles.action,
               styles.readAction,
-              { opacity: readOpacity, transform: [{ scale: actionScale }] },
+              readActionStyle,
             ]}
           >
             <Ionicons name="checkmark-circle" size={24} color="#FFF" />
@@ -110,14 +135,15 @@ export function SwipeableNotificationItem({
       <Animated.View
         style={[
           styles.swipeableCard,
-          { transform: [{ translateX: swipeX }, { scale: pressScale }] },
+          swipeableCardStyle,
         ]}
         {...panResponder.panHandlers}
       >
         <Animated.View
           style={[
             styles.cardGlow,
-            { opacity: glowOpacity, backgroundColor: typeGradients[item.type][0] },
+            { backgroundColor: typeGradients[item.type][0] },
+            cardGlowStyle,
           ]}
         />
 
@@ -154,7 +180,7 @@ export function SwipeableNotificationItem({
                   {item.title}
                 </Text>
                 {!item.read && (
-                  <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                  <Animated.View style={pulseStyle}>
                     <LinearGradient
                       colors={['#3b82f6', '#8b5cf6']}
                       start={{ x: 0, y: 0 }}

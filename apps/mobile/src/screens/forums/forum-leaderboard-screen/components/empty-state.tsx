@@ -7,8 +7,9 @@
  * - Trophy icon with gradient background
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,52 +18,36 @@ import { Ionicons } from '@expo/vector-icons';
 // =============================================================================
 
 export function EmptyState() {
-  const floatAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const floatAnim = useSharedValue(0);
+  const pulseAnim = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: floatAnim.value }, { scale: pulseAnim.value }],
+  }));
 
   useEffect(() => {
     // Float animation - moves up and down
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim, {
-          toValue: -10,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(floatAnim, {
-          toValue: 0,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    floatAnim.value = withRepeat(
+      withSequence(
+        withTiming(-10, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1
+    );
 
     // Pulse animation - scales up and down
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [floatAnim, pulseAnim]);
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1
+    );
+  }, []);
 
   return (
     <View style={styles.emptyContainer}>
-      <Animated.View
-        style={{
-          transform: [{ translateY: floatAnim }, { scale: pulseAnim }],
-        }}
-      >
+      <Animated.View style={animStyle}>
         <LinearGradient colors={['#374151', '#1F2937']} style={styles.emptyIconContainer}>
           <Ionicons name="trophy" size={48} color="#9CA3AF" />
         </LinearGradient>

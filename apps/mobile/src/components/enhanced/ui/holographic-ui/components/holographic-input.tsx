@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, TextInput, Animated, StyleSheet, ViewStyle, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
+import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { HolographicConfig, getTheme } from '../types';
 
@@ -24,37 +25,25 @@ export function HolographicInput({
 }: HolographicInputProps) {
   const theme = getTheme(colorTheme);
   const [isFocused, setIsFocused] = useState(false);
-  const focusLineWidth = useRef(new Animated.Value(0)).current;
-  const glowIntensity = useRef(new Animated.Value(0)).current;
+  const focusLineWidth = useSharedValue(0);
+  const glowIntensity = useSharedValue(0);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(focusLineWidth, {
-        toValue: isFocused ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.timing(glowIntensity, {
-        toValue: isFocused ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    focusLineWidth.value = withTiming(isFocused ? 1 : 0, { duration: 300 });
+    glowIntensity.value = withTiming(isFocused ? 1 : 0, { duration: 300 });
 
     if (isFocused) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   }, [isFocused]);
 
-  const lineWidthPercent = focusLineWidth.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
+  const containerAnimStyle = useAnimatedStyle(() => ({
+    ...(Platform.OS === 'ios' ? { shadowRadius: interpolate(glowIntensity.value, [0, 1], [5, 20]) } : {}),
+  }));
 
-  const shadowRadius = glowIntensity.interpolate({
-    inputRange: [0, 1],
-    outputRange: [5, 20],
-  });
+  const focusLineAnimStyle = useAnimatedStyle(() => ({
+    width: `${interpolate(focusLineWidth.value, [0, 1], [0, 100])}%`,
+  }));
 
   return (
     <Animated.View
@@ -68,8 +57,8 @@ export function HolographicInput({
           shadowColor: theme.glow,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: isFocused ? 0.6 : 0.2,
-          shadowRadius,
         },
+        containerAnimStyle,
         style,
       ]}
     >
@@ -96,9 +85,9 @@ export function HolographicInput({
         style={[
           styles.focusLine,
           {
-            width: lineWidthPercent,
             backgroundColor: theme.accent,
           },
+          focusLineAnimStyle,
           Platform.OS === 'ios' && {
             shadowColor: theme.accent,
             shadowOffset: { width: 0, height: 0 },

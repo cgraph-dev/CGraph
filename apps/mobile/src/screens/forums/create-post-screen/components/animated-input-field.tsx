@@ -2,8 +2,9 @@
  * AnimatedInputField - Animated text input with focus effects
  */
 
-import React, { useRef } from 'react';
-import { View, Text, TextInput, Animated } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle, interpolate, interpolateColor } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { AnimatedInputProps } from '../types';
@@ -19,68 +20,41 @@ export function AnimatedInputField({
   minHeight,
   showCharCount = false,
 }: AnimatedInputProps) {
-  const focusAnim = useRef(new Animated.Value(0)).current;
-  const labelAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const focusAnim = useSharedValue(0);
+  const labelAnim = useSharedValue(value ? 1 : 0);
+  const glowAnim = useSharedValue(0);
+  const shakeAnim = useSharedValue(0);
 
   const handleFocus = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Animated.parallel([
-      Animated.spring(focusAnim, {
-        toValue: 1,
-        friction: 8,
-        tension: 100,
-        useNativeDriver: false,
-      }),
-      Animated.timing(labelAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    focusAnim.value = withSpring(1, { damping: 8, stiffness: 100 });
+    labelAnim.value = withTiming(1, { duration: 200 });
+    glowAnim.value = withTiming(1, { duration: 300 });
   };
 
   const handleBlur = () => {
-    Animated.parallel([
-      Animated.spring(focusAnim, {
-        toValue: 0,
-        friction: 8,
-        tension: 100,
-        useNativeDriver: false,
-      }),
-      Animated.timing(labelAnim, {
-        toValue: value ? 1 : 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    focusAnim.value = withSpring(0, { damping: 8, stiffness: 100 });
+    labelAnim.value = withTiming(value ? 1 : 0, { duration: 200 });
+    glowAnim.value = withTiming(0, { duration: 300 });
   };
 
-  const borderColor = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(255,255,255,0.1)', '#8B5CF6'],
-  });
+  const labelAnimStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(labelAnim.value, [0, 1], [0, -8]) },
+      { scale: interpolate(labelAnim.value, [0, 1], [1, 0.85]) },
+    ],
+  }));
 
-  const labelTranslateY = labelAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -8],
-  });
+  const glowAnimStyle = useAnimatedStyle(() => ({
+    opacity: glowAnim.value,
+  }));
 
-  const labelScale = labelAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.85],
-  });
+  const inputBorderAnimStyle = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(focusAnim.value, [0, 1], ['rgba(255,255,255,0.1)', '#8B5CF6']),
+    transform: [
+      { translateX: interpolate(shakeAnim.value, [-1, 1], [-4, 4]) },
+    ],
+  }));
 
   const charProgress = maxLength ? (value.length / maxLength) * 100 : 0;
   const isNearLimit = maxLength && value.length > maxLength * 0.9;
@@ -91,9 +65,7 @@ export function AnimatedInputField({
       <Animated.View
         style={[
           styles.labelContainer,
-          {
-            transform: [{ translateY: labelTranslateY }, { scale: labelScale }],
-          },
+          labelAnimStyle,
         ]}
       >
         <Text style={styles.inputLabel}>{label}</Text>
@@ -104,26 +76,14 @@ export function AnimatedInputField({
         <Animated.View
           style={[
             styles.inputGlow,
-            {
-              opacity: glowAnim,
-            },
+            glowAnimStyle,
           ]}
         />
 
         <Animated.View
           style={[
             styles.inputBorder,
-            {
-              borderColor,
-              transform: [
-                {
-                  translateX: shakeAnim.interpolate({
-                    inputRange: [-1, 1],
-                    outputRange: [-4, 4],
-                  }),
-                },
-              ],
-            },
+            inputBorderAnimStyle,
           ]}
         >
           <TextInput

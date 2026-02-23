@@ -1,5 +1,6 @@
-import React, { ReactNode, useRef, useEffect, useState, useCallback } from 'react';
-import { View, Animated, StyleSheet, ViewStyle, Platform, Easing, Pressable } from 'react-native';
+import React, { ReactNode, useEffect, useState, useCallback } from 'react';
+import { View, StyleSheet, ViewStyle, Platform, Pressable } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { HolographicConfig, getTheme, getIntensityMultiplier } from '../types';
@@ -19,9 +20,9 @@ export function HolographicContainer({
   onPress,
 }: HolographicContainerProps) {
   const [isGlitching, setIsGlitching] = useState(false);
-  const flickerOpacity = useRef(new Animated.Value(1)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const glowPulse = useRef(new Animated.Value(0)).current;
+  const flickerOpacity = useSharedValue(1);
+  const scaleAnim = useSharedValue(1);
+  const glowPulse = useSharedValue(0);
 
   const config: HolographicConfig = {
     intensity: userConfig?.intensity ?? 'medium',
@@ -38,24 +39,13 @@ export function HolographicContainer({
 
   // Glow pulse animation
   useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowPulse, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowPulse, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-      ])
+    glowPulse.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1
     );
-    pulse.start();
-    return () => pulse.stop();
   }, []);
 
   // Flicker effect
@@ -64,7 +54,7 @@ export function HolographicContainer({
 
     const flickerInterval = setInterval(() => {
       const randomOpacity = 0.95 + Math.random() * 0.05;
-      flickerOpacity.setValue(randomOpacity);
+      flickerOpacity.value = randomOpacity;
     }, 100);
 
     return () => clearInterval(flickerInterval);
@@ -88,12 +78,7 @@ export function HolographicContainer({
   }, [config.enableFlicker, config.glitchProbability, config.enableHaptics]);
 
   const handlePressIn = useCallback(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.98,
-      tension: 300,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(0.98, { stiffness: 300, damping: 10 });
 
     if (config.enableHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -101,13 +86,13 @@ export function HolographicContainer({
   }, [config.enableHaptics]);
 
   const handlePressOut = useCallback(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      tension: 300,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(1, { stiffness: 300, damping: 10 });
   }, []);
+
+  const containerAnimStyle = useAnimatedStyle(() => ({
+    opacity: flickerOpacity.value,
+    transform: [{ scale: scaleAnim.value }],
+  }));
 
   const Container = onPress ? Pressable : View;
   const containerProps = onPress
@@ -123,11 +108,10 @@ export function HolographicContainer({
       style={[
         styles.holographicContainer,
         {
-          opacity: flickerOpacity,
-          transform: [{ scale: scaleAnim }],
           borderColor: theme.primary,
           backgroundColor: theme.background,
         },
+        containerAnimStyle,
         // Shadow for glow effect (iOS)
         Platform.OS === 'ios' && {
           shadowColor: theme.glow,

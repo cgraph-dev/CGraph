@@ -17,8 +17,9 @@
  * @since v0.9.0
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Alert, Animated, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -57,8 +58,8 @@ export default function CreatePostScreen({ navigation, route }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Entry animation
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
+  const fadeAnim = useSharedValue(0);
+  const slideAnim = useSharedValue(30);
 
   useEffect(() => {
     navigation.setOptions({
@@ -72,19 +73,8 @@ export default function CreatePostScreen({ navigation, route }: Props) {
       headerTintColor: '#FFF',
     });
 
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        friction: 8,
-        tension: 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    fadeAnim.value = withTiming(1, { duration: 400 });
+    slideAnim.value = withSpring(0, { damping: 8, stiffness: 50 });
   }, []);
 
   const handleSubmit = async () => {
@@ -117,6 +107,11 @@ export default function CreatePostScreen({ navigation, route }: Props) {
 
   const canSubmit = title.trim().length > 0;
 
+  const scrollAnimStyle = useAnimatedStyle(() => ({
+    opacity: fadeAnim.value,
+    transform: [{ translateY: slideAnim.value }],
+  }));
+
   return (
     <View style={styles.container}>
       {/* Background */}
@@ -130,10 +125,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
         <Animated.ScrollView
           style={[
             styles.scrollView,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
+            scrollAnimStyle,
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

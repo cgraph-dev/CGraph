@@ -4,8 +4,14 @@
  * Animated tabs for switching between incoming and outgoing requests.
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,15 +26,13 @@ export function TabsHeader({
   incomingCount,
   outgoingCount,
 }: TabsHeaderProps) {
-  const tabIndicatorPosition = useRef(new Animated.Value(0)).current;
+  const tabIndicatorPosition = useSharedValue(0);
 
   useEffect(() => {
-    Animated.spring(tabIndicatorPosition, {
-      toValue: activeTab === 'incoming' ? 0 : 1,
-      tension: 300,
-      friction: 20,
-      useNativeDriver: true,
-    }).start();
+    tabIndicatorPosition.value = withSpring(activeTab === 'incoming' ? 0 : 1, {
+      stiffness: 300,
+      damping: 20,
+    });
   }, [activeTab, tabIndicatorPosition]);
 
   const handleTabPress = (tab: TabType) => {
@@ -36,10 +40,17 @@ export function TabsHeader({
     onTabPress(tab);
   };
 
-  const indicatorTranslateX = tabIndicatorPosition.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, (SCREEN_WIDTH - 48) / 2],
-  });
+  const indicatorStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: interpolate(
+          tabIndicatorPosition.value,
+          [0, 1],
+          [0, (SCREEN_WIDTH - 48) / 2]
+        ),
+      },
+    ],
+  }));
 
   return (
     <View style={styles.tabsWrapper}>
@@ -48,9 +59,7 @@ export function TabsHeader({
         <Animated.View
           style={[
             styles.tabIndicator,
-            {
-              transform: [{ translateX: indicatorTranslateX }],
-            },
+            indicatorStyle,
           ]}
         >
           <LinearGradient

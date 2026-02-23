@@ -12,8 +12,9 @@
  * - components/EmptyGroupState: Empty state display
  */
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl, Animated } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../../contexts/theme-context';
 import api from '../../../lib/api';
@@ -26,24 +27,13 @@ export default function GroupListScreen({ navigation }: GroupListScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
 
   // Header animation
-  const headerOpacity = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(-20)).current;
+  const headerOpacity = useSharedValue(0);
+  const headerSlide = useSharedValue(-20);
 
   useEffect(() => {
     // Animate header entrance
-    Animated.parallel([
-      Animated.timing(headerOpacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(headerSlide, {
-        toValue: 0,
-        friction: 8,
-        tension: 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    headerOpacity.value = withTiming(1, { duration: 400 });
+    headerSlide.value = withSpring(0, { damping: 8, stiffness: 50 });
 
     navigation.setOptions({
       headerStyle: {

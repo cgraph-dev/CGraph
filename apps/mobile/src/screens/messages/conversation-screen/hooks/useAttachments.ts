@@ -7,7 +7,8 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
-import { Animated, Alert, Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
+import { useSharedValue, withSpring, withTiming, runOnJS, type SharedValue } from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
@@ -28,9 +29,9 @@ export interface UseAttachmentsReturn {
   pendingAttachments: AttachmentItem[];
   showAttachmentPreview: boolean;
   attachmentCaption: string;
-  attachmentPreviewAnim: Animated.Value;
+  attachmentPreviewAnim: SharedValue<number>;
   showAttachMenu: boolean;
-  attachMenuAnim: Animated.Value;
+  attachMenuAnim: SharedValue<number>;
   isPickerActive: boolean;
   // Actions
   setPendingAttachments: React.Dispatch<React.SetStateAction<AttachmentItem[]>>;
@@ -58,8 +59,8 @@ export function useAttachments(): UseAttachmentsReturn {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
 
   // Animation refs
-  const attachmentPreviewAnim = useRef(new Animated.Value(0)).current;
-  const attachMenuAnim = useRef(new Animated.Value(0)).current;
+  const attachmentPreviewAnim = useSharedValue(0);
+  const attachMenuAnim = useSharedValue(0);
 
   // Picker lock to prevent concurrent picker operations
   const isPickerActiveRef = useRef(false);
@@ -69,26 +70,20 @@ export function useAttachments(): UseAttachmentsReturn {
    */
   const openAttachmentPreview = useCallback(() => {
     setShowAttachmentPreview(true);
-    Animated.spring(attachmentPreviewAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 100,
-      friction: 10,
-    }).start();
+    attachmentPreviewAnim.value = withSpring(1, { stiffness: 100, damping: 10 });
   }, [attachmentPreviewAnim]);
 
   /**
    * Close attachment preview with animation.
    */
   const closeAttachmentPreview = useCallback(() => {
-    Animated.timing(attachmentPreviewAnim, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
+    const onFinish = () => {
       setShowAttachmentPreview(false);
       setPendingAttachments([]);
       setAttachmentCaption('');
+    };
+    attachmentPreviewAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+      if (finished) runOnJS(onFinish)();
     });
   }, [attachmentPreviewAnim]);
 
@@ -98,24 +93,18 @@ export function useAttachments(): UseAttachmentsReturn {
   const openAttachMenu = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowAttachMenu(true);
-    Animated.spring(attachMenuAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 80,
-      friction: 10,
-    }).start();
+    attachMenuAnim.value = withSpring(1, { stiffness: 80, damping: 10 });
   }, [attachMenuAnim]);
 
   /**
    * Close attachment menu with animation.
    */
   const closeAttachMenu = useCallback(() => {
-    Animated.timing(attachMenuAnim, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
+    const onFinish = () => {
       setShowAttachMenu(false);
+    };
+    attachMenuAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+      if (finished) runOnJS(onFinish)();
     });
   }, [attachMenuAnim]);
 

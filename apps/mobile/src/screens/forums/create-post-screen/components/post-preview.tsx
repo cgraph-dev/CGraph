@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Animated } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 

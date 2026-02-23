@@ -6,8 +6,8 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
-import { useState, useCallback, useRef } from 'react';
-import { Animated, Easing } from 'react-native';
+import { useState, useCallback } from 'react';
+import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
 import * as Crypto from 'expo-crypto';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
@@ -43,7 +43,7 @@ interface UseTextMessageSendingOptions {
 interface UseTextMessageSendingReturn {
   inputText: string;
   setInputText: (text: string) => void;
-  sendButtonAnim: Animated.Value;
+  sendButtonAnim: SharedValue<number>;
   sendMessage: () => Promise<void>;
 }
 
@@ -65,24 +65,14 @@ export function useTextMessageSending({
   onScrollToBottom,
 }: UseTextMessageSendingOptions): UseTextMessageSendingReturn {
   const [inputText, setInputText] = useState('');
-  const sendButtonAnim = useRef(new Animated.Value(1)).current;
+  const sendButtonAnim = useSharedValue(1);
 
   // Animated send button press effect
   const animateSendButton = useCallback(() => {
-    Animated.sequence([
-      Animated.timing(sendButtonAnim, {
-        toValue: 0.85,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(sendButtonAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
+    sendButtonAnim.value = withSequence(
+      withTiming(0.85, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withSpring(1, { stiffness: 200, damping: 10 })
+    );
   }, [sendButtonAnim]);
 
   // Send text message

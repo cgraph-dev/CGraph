@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Animated3DCoin } from './animated3-d-coin';
@@ -9,7 +10,7 @@ interface BalanceCardProps {
   userCoins: number;
   canClaimDaily: boolean;
   onClaimDaily: () => void;
-  scaleAnim: Animated.Value;
+  scaleAnim: SharedValue<number>;
 }
 
 export function BalanceCard({
@@ -18,8 +19,12 @@ export function BalanceCard({
   onClaimDaily,
   scaleAnim,
 }: BalanceCardProps) {
+  const balanceAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
   return (
-    <Animated.View style={[styles.balanceCardWrapper, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View style={[styles.balanceCardWrapper, balanceAnimatedStyle]}>
       <LinearGradient
         colors={['#1e1e2e', '#2d2d44']}
         start={{ x: 0, y: 0 }}

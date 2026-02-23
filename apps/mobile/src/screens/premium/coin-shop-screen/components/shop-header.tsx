@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ShopHeaderProps {
@@ -8,7 +9,7 @@ interface ShopHeaderProps {
   canClaimDaily: boolean;
   onGoBack: () => void;
   onClaimDaily: () => void;
-  animValue: Animated.Value;
+  animValue: SharedValue<number>;
 }
 
 export function ShopHeader({
@@ -19,21 +20,20 @@ export function ShopHeader({
   onClaimDaily,
   animValue,
 }: ShopHeaderProps) {
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animValue.value,
+    transform: [
+      {
+        translateY: interpolate(animValue.value, [0, 1], [-20, 0]),
+      },
+    ],
+  }));
+
   return (
     <Animated.View
       style={[
         styles.header,
-        {
-          opacity: animValue,
-          transform: [
-            {
-              translateY: animValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-20, 0],
-              }),
-            },
-          ],
-        },
+        headerAnimatedStyle,
       ]}
     >
       <TouchableOpacity style={styles.backButton} onPress={onGoBack} activeOpacity={0.7}>

@@ -2,8 +2,9 @@
  * PostTypeSelector - Animated post type selection with morphing indicator
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -14,44 +15,39 @@ import { styles } from '../styles';
 import { POST_TYPES, SCREEN_WIDTH } from '../constants';
 
 export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelectorProps) {
-  const scaleAnims = useRef(POST_TYPES.map(() => new Animated.Value(1))).current;
-  const indicatorAnim = useRef(new Animated.Value(0)).current;
+  // POST_TYPES is a constant array, so hook count is stable
+  const scaleAnims = POST_TYPES.map(() => useSharedValue(1));
+  const scaleAnimStyles = POST_TYPES.map((_, i) =>
+    useAnimatedStyle(() => ({
+      transform: [{ scale: scaleAnims[i].value }],
+    }))
+  );
+  const indicatorAnim = useSharedValue(0);
+
+  const indicatorAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(
+      indicatorAnim.value,
+      POST_TYPES.map((_, i) => i),
+      POST_TYPES.map((_, i) => i * ((SCREEN_WIDTH - 32 - 24) / POST_TYPES.length))
+    ) }],
+  }));
 
   useEffect(() => {
     const selectedIndex = POST_TYPES.findIndex((t) => t.type === selectedType);
-    Animated.spring(indicatorAnim, {
-      toValue: selectedIndex,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
+    indicatorAnim.value = withSpring(selectedIndex, { damping: 8, stiffness: 100 });
   }, [selectedType]);
 
   const handlePress = (type: PostType, index: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // Bounce animation
-    Animated.sequence([
-      Animated.timing(scaleAnims[index], {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnims[index], {
-        toValue: 1,
-        friction: 4,
-        tension: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scaleAnims[index].value = withSequence(
+      withTiming(0.9, { duration: 100 }),
+      withSpring(1, { damping: 4, stiffness: 100 })
+    );
 
     onTypeChange(type);
   };
-
-  const indicatorTranslateX = indicatorAnim.interpolate({
-    inputRange: POST_TYPES.map((_, i) => i),
-    outputRange: POST_TYPES.map((_, i) => i * ((SCREEN_WIDTH - 32 - 24) / POST_TYPES.length)),
-  });
 
   return (
     <View style={styles.postTypeContainer}>
@@ -64,8 +60,8 @@ export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelecto
               styles.postTypeIndicator,
               {
                 width: (SCREEN_WIDTH - 32 - 24) / POST_TYPES.length,
-                transform: [{ translateX: indicatorTranslateX }],
               },
+              indicatorAnimStyle,
             ]}
           >
             <LinearGradient
@@ -77,7 +73,7 @@ export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelecto
           {POST_TYPES.map((option, index) => (
             <Animated.View
               key={option.type}
-              style={[styles.postTypeOption, { transform: [{ scale: scaleAnims[index] }] }]}
+              style={[styles.postTypeOption, scaleAnimStyles[index]]}
             >
               <TouchableOpacity
                 style={styles.postTypeButton}

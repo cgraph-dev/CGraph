@@ -4,105 +4,122 @@
  * Animated particle effects for active groups.
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { FloatingParticlesProps } from '../types';
 
-export function FloatingParticles({ isActive }: FloatingParticlesProps) {
-  const particles = useRef(
-    Array.from({ length: 6 }, () => ({
-      translateX: new Animated.Value(0),
-      translateY: new Animated.Value(0),
-      scale: new Animated.Value(0),
-      opacity: new Animated.Value(0),
-    }))
-  ).current;
+interface ParticleData {
+  left: number;
+  top: number;
+  randomX: number;
+  randomY: number;
+  duration: number;
+  targetScale: number;
+}
+
+function Particle({ data, index }: { data: ParticleData; index: number }) {
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    if (!isActive) return;
+    const d = data.duration;
+    translateX.value = withDelay(
+      index * 200,
+      withRepeat(
+        withTiming(data.randomX, { duration: d, easing: Easing.inOut(Easing.sin) }),
+        -1,
+        true
+      )
+    );
+    translateY.value = withDelay(
+      index * 200,
+      withRepeat(
+        withTiming(data.randomY, { duration: d, easing: Easing.inOut(Easing.sin) }),
+        -1,
+        true
+      )
+    );
+    scale.value = withDelay(
+      index * 200,
+      withRepeat(
+        withSequence(
+          withTiming(data.targetScale, { duration: d / 2 }),
+          withTiming(0.3, { duration: d / 2 })
+        ),
+        -1,
+        false
+      )
+    );
+    opacity.value = withDelay(
+      index * 200,
+      withRepeat(
+        withSequence(
+          withTiming(0.6, { duration: d / 3 }),
+          withTiming(0, { duration: (d * 2) / 3 })
+        ),
+        -1,
+        false
+      )
+    );
+  }, []);
 
-    particles.forEach((particle, index) => {
-      const delay = index * 200;
-      const duration = 2000 + Math.random() * 1000;
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+    opacity: opacity.value,
+  }));
 
-      const animate = () => {
-        const randomX = (Math.random() - 0.5) * 40;
-        const randomY = (Math.random() - 0.5) * 30;
+  return (
+    <Animated.View
+      style={[
+        styles.particle,
+        {
+          left: data.left,
+          top: data.top,
+        },
+        animatedStyle,
+      ]}
+    >
+      <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.particleGradient} />
+    </Animated.View>
+  );
+}
 
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(particle.translateX, {
-              toValue: randomX,
-              duration,
-              easing: Easing.inOut(Easing.sin),
-              useNativeDriver: true,
-            }),
-            Animated.timing(particle.translateY, {
-              toValue: randomY,
-              duration,
-              easing: Easing.inOut(Easing.sin),
-              useNativeDriver: true,
-            }),
-            Animated.sequence([
-              Animated.timing(particle.scale, {
-                toValue: 0.8 + Math.random() * 0.4,
-                duration: duration / 2,
-                useNativeDriver: true,
-              }),
-              Animated.timing(particle.scale, {
-                toValue: 0.3,
-                duration: duration / 2,
-                useNativeDriver: true,
-              }),
-            ]),
-            Animated.sequence([
-              Animated.timing(particle.opacity, {
-                toValue: 0.6,
-                duration: duration / 3,
-                useNativeDriver: true,
-              }),
-              Animated.timing(particle.opacity, {
-                toValue: 0,
-                duration: (duration * 2) / 3,
-                useNativeDriver: true,
-              }),
-            ]),
-          ]),
-        ]).start(() => {
-          particle.translateX.setValue(0);
-          particle.translateY.setValue(0);
-          animate();
-        });
-      };
-
-      setTimeout(animate, delay);
-    });
-  }, [isActive, particles]);
+export function FloatingParticles({ isActive }: FloatingParticlesProps) {
+  const particlesData = useMemo<ParticleData[]>(
+    () =>
+      Array.from({ length: 6 }, (_, index) => ({
+        left: 10 + (index % 3) * 15,
+        top: 10 + Math.floor(index / 3) * 15,
+        randomX: (Math.random() - 0.5) * 40,
+        randomY: (Math.random() - 0.5) * 30,
+        duration: 2000 + Math.random() * 1000,
+        targetScale: 0.8 + Math.random() * 0.4,
+      })),
+    []
+  );
 
   if (!isActive) return null;
 
   return (
     <View style={styles.particlesContainer}>
-      {particles.map((particle, index) => (
-        <Animated.View
-          key={index}
-          style={[
-            styles.particle,
-            {
-              left: 10 + (index % 3) * 15,
-              top: 10 + Math.floor(index / 3) * 15,
-              transform: [
-                { translateX: particle.translateX },
-                { translateY: particle.translateY },
-                { scale: particle.scale },
-              ],
-              opacity: particle.opacity,
-            },
-          ]}
-        >
-          <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.particleGradient} />
-        </Animated.View>
+      {particlesData.map((data, index) => (
+        <Particle key={index} data={data} index={index} />
       ))}
     </View>
   );

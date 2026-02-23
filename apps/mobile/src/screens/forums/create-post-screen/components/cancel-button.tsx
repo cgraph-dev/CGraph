@@ -2,8 +2,9 @@
  * CancelButton - Animated cancel button
  */
 
-import React, { useRef } from 'react';
-import { Text, TouchableOpacity, Animated } from 'react-native';
+import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
@@ -14,24 +15,18 @@ interface CancelButtonProps {
 }
 
 export function CancelButton({ onPress }: CancelButtonProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useSharedValue(1);
+
+  const scaleAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
 
   const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(0.95, { damping: 8, stiffness: 100 });
   };
 
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 4,
-      tension: 80,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(1, { damping: 4, stiffness: 80 });
   };
 
   const handlePress = () => {
@@ -40,7 +35,7 @@ export function CancelButton({ onPress }: CancelButtonProps) {
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }], flex: 1 }}>
+    <Animated.View style={[{ flex: 1 }, scaleAnimStyle]}>
       <TouchableOpacity
         style={styles.cancelButton}
         onPressIn={handlePressIn}

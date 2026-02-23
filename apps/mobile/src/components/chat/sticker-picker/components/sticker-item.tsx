@@ -2,8 +2,9 @@
  * StickerItem Component - Animated sticker with all 15 animation types
  */
 
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation, Easing as ReanimatedEasing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sticker } from '../types';
 import { styles } from '../styles';
@@ -16,213 +17,186 @@ interface StickerItemProps {
 }
 
 export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: StickerItemProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const scaleXAnim = useRef(new Animated.Value(1)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const rotateYAnim = useRef(new Animated.Value(0)).current;
-  const translateYAnim = useRef(new Animated.Value(0)).current;
-  const translateXAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useSharedValue(1);
+  const scaleXAnim = useSharedValue(1);
+  const rotateAnim = useSharedValue(0);
+  const rotateYAnim = useSharedValue(0);
+  const translateYAnim = useSharedValue(0);
+  const translateXAnim = useSharedValue(0);
+  const opacityAnim = useSharedValue(1);
 
   useEffect(() => {
     // Stop any existing animations
-    const anims = [
-      scaleAnim,
-      scaleXAnim,
-      rotateAnim,
-      rotateYAnim,
-      translateYAnim,
-      translateXAnim,
-      opacityAnim,
-    ];
-    anims.forEach((anim) => anim.stopAnimation());
+    cancelAnimation(scaleAnim);
+    cancelAnimation(scaleXAnim);
+    cancelAnimation(rotateAnim);
+    cancelAnimation(rotateYAnim);
+    cancelAnimation(translateYAnim);
+    cancelAnimation(translateXAnim);
+    cancelAnimation(opacityAnim);
 
     // Reset values
-    scaleAnim.setValue(1);
-    scaleXAnim.setValue(1);
-    rotateAnim.setValue(0);
-    rotateYAnim.setValue(0);
-    translateYAnim.setValue(0);
-    translateXAnim.setValue(0);
-    opacityAnim.setValue(1);
+    scaleAnim.value = 1;
+    scaleXAnim.value = 1;
+    rotateAnim.value = 0;
+    rotateYAnim.value = 0;
+    translateYAnim.value = 0;
+    translateXAnim.value = 0;
+    opacityAnim.value = 1;
 
     // Animation based on sticker type - all 15 animations matching web
     switch (sticker.animation) {
       case 'bounce':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(translateYAnim, {
-              toValue: -10,
-              duration: 250,
-              useNativeDriver: true,
-              easing: Easing.out(Easing.quad),
-            }),
-            Animated.timing(translateYAnim, {
-              toValue: 0,
-              duration: 250,
-              useNativeDriver: true,
-              easing: Easing.in(Easing.quad),
-            }),
-          ])
-        ).start();
+        translateYAnim.value = withRepeat(
+          withSequence(
+            withTiming(-10, { duration: 250, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+            withTiming(0, { duration: 250, easing: ReanimatedEasing.in(ReanimatedEasing.quad) })
+          ),
+          -1
+        );
         break;
 
       case 'pulse':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(scaleAnim, { toValue: 1.1, duration: 500, useNativeDriver: true }),
-            Animated.timing(scaleAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
-          ])
-        ).start();
+        scaleAnim.value = withRepeat(
+          withSequence(
+            withTiming(1.1, { duration: 500 }),
+            withTiming(1, { duration: 500 })
+          ),
+          -1
+        );
         break;
 
       case 'shake':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(translateXAnim, { toValue: -5, duration: 100, useNativeDriver: true }),
-            Animated.timing(translateXAnim, { toValue: 5, duration: 100, useNativeDriver: true }),
-            Animated.timing(translateXAnim, { toValue: -5, duration: 100, useNativeDriver: true }),
-            Animated.timing(translateXAnim, { toValue: 5, duration: 100, useNativeDriver: true }),
-            Animated.timing(translateXAnim, { toValue: 0, duration: 100, useNativeDriver: true }),
-          ])
-        ).start();
+        translateXAnim.value = withRepeat(
+          withSequence(
+            withTiming(-5, { duration: 100 }),
+            withTiming(5, { duration: 100 }),
+            withTiming(-5, { duration: 100 }),
+            withTiming(5, { duration: 100 }),
+            withTiming(0, { duration: 100 })
+          ),
+          -1
+        );
         break;
 
       case 'wiggle':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(rotateAnim, { toValue: -0.05, duration: 166, useNativeDriver: true }),
-            Animated.timing(rotateAnim, { toValue: 0.05, duration: 166, useNativeDriver: true }),
-            Animated.timing(rotateAnim, { toValue: -0.05, duration: 166, useNativeDriver: true }),
-          ])
-        ).start();
+        rotateAnim.value = withRepeat(
+          withSequence(
+            withTiming(-0.05, { duration: 166 }),
+            withTiming(0.05, { duration: 166 }),
+            withTiming(-0.05, { duration: 166 })
+          ),
+          -1
+        );
         break;
 
       case 'float':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(translateYAnim, {
-              toValue: -10,
-              duration: 1000,
-              useNativeDriver: true,
-              easing: Easing.inOut(Easing.ease),
-            }),
-            Animated.timing(translateYAnim, {
-              toValue: 0,
-              duration: 1000,
-              useNativeDriver: true,
-              easing: Easing.inOut(Easing.ease),
-            }),
-          ])
-        ).start();
+        translateYAnim.value = withRepeat(
+          withSequence(
+            withTiming(-10, { duration: 1000, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+            withTiming(0, { duration: 1000, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+          ),
+          -1
+        );
         break;
 
       case 'pop':
-        Animated.sequence([
-          Animated.timing(scaleAnim, { toValue: 0, duration: 0, useNativeDriver: true }),
-          Animated.timing(scaleAnim, {
-            toValue: 1.2,
-            duration: 150,
-            useNativeDriver: true,
-            easing: Easing.out(Easing.back(2)),
-          }),
-          Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
-        ]).start();
+        scaleAnim.value = withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(1.2, { duration: 150, easing: ReanimatedEasing.out(ReanimatedEasing.back(2)) }),
+          withTiming(1, { duration: 150 })
+        );
         break;
 
       case 'wave':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(rotateAnim, { toValue: 0.35, duration: 250, useNativeDriver: true }),
-            Animated.timing(rotateAnim, { toValue: -0.35, duration: 500, useNativeDriver: true }),
-            Animated.timing(rotateAnim, { toValue: 0, duration: 250, useNativeDriver: true }),
-          ])
-        ).start();
+        rotateAnim.value = withRepeat(
+          withSequence(
+            withTiming(0.35, { duration: 250 }),
+            withTiming(-0.35, { duration: 500 }),
+            withTiming(0, { duration: 250 })
+          ),
+          -1
+        );
         break;
 
       case 'zoom':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(scaleAnim, { toValue: 1.1, duration: 500, useNativeDriver: true }),
-            Animated.timing(scaleAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
-          ])
-        ).start();
+        scaleAnim.value = withRepeat(
+          withSequence(
+            withTiming(1.1, { duration: 500 }),
+            withTiming(1, { duration: 500 })
+          ),
+          -1
+        );
         break;
 
       case 'flip':
-        Animated.loop(
-          Animated.timing(rotateYAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          })
-        ).start();
+        rotateYAnim.value = withRepeat(
+          withTiming(1, { duration: 1000, easing: ReanimatedEasing.linear }),
+          -1
+        );
         break;
 
       case 'swing':
-        Animated.sequence([
-          Animated.timing(rotateAnim, { toValue: 0.26, duration: 166, useNativeDriver: true }),
-          Animated.timing(rotateAnim, { toValue: -0.175, duration: 166, useNativeDriver: true }),
-          Animated.timing(rotateAnim, { toValue: 0.087, duration: 166, useNativeDriver: true }),
-          Animated.timing(rotateAnim, { toValue: -0.087, duration: 166, useNativeDriver: true }),
-          Animated.timing(rotateAnim, { toValue: 0, duration: 166, useNativeDriver: true }),
-        ]).start();
+        rotateAnim.value = withSequence(
+          withTiming(0.26, { duration: 166 }),
+          withTiming(-0.175, { duration: 166 }),
+          withTiming(0.087, { duration: 166 }),
+          withTiming(-0.087, { duration: 166 }),
+          withTiming(0, { duration: 166 })
+        );
         break;
 
       case 'jello':
-        Animated.sequence([
-          Animated.timing(scaleXAnim, { toValue: 1.25, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 0.75, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1.15, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 0.95, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1.05, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1, duration: 142, useNativeDriver: true }),
-        ]).start();
+        scaleXAnim.value = withSequence(
+          withTiming(1.25, { duration: 142 }),
+          withTiming(0.75, { duration: 142 }),
+          withTiming(1.15, { duration: 142 }),
+          withTiming(0.95, { duration: 142 }),
+          withTiming(1.05, { duration: 142 }),
+          withTiming(1, { duration: 142 })
+        );
         break;
 
       case 'heartbeat':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(scaleAnim, { toValue: 1.3, duration: 150, useNativeDriver: true }),
-            Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
-            Animated.timing(scaleAnim, { toValue: 1.3, duration: 150, useNativeDriver: true }),
-            Animated.timing(scaleAnim, { toValue: 1, duration: 1050, useNativeDriver: true }),
-          ])
-        ).start();
+        scaleAnim.value = withRepeat(
+          withSequence(
+            withTiming(1.3, { duration: 150 }),
+            withTiming(1, { duration: 150 }),
+            withTiming(1.3, { duration: 150 }),
+            withTiming(1, { duration: 1050 })
+          ),
+          -1
+        );
         break;
 
       case 'flash':
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(opacityAnim, { toValue: 0.5, duration: 250, useNativeDriver: true }),
-            Animated.timing(opacityAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
-            Animated.timing(opacityAnim, { toValue: 0.5, duration: 250, useNativeDriver: true }),
-            Animated.timing(opacityAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
-          ])
-        ).start();
+        opacityAnim.value = withRepeat(
+          withSequence(
+            withTiming(0.5, { duration: 250 }),
+            withTiming(1, { duration: 250 }),
+            withTiming(0.5, { duration: 250 }),
+            withTiming(1, { duration: 250 })
+          ),
+          -1
+        );
         break;
 
       case 'rubberband':
-        Animated.sequence([
-          Animated.timing(scaleXAnim, { toValue: 1.25, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 0.75, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1.15, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 0.95, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1.05, duration: 142, useNativeDriver: true }),
-          Animated.timing(scaleXAnim, { toValue: 1, duration: 142, useNativeDriver: true }),
-        ]).start();
+        scaleXAnim.value = withSequence(
+          withTiming(1.25, { duration: 142 }),
+          withTiming(0.75, { duration: 142 }),
+          withTiming(1.15, { duration: 142 }),
+          withTiming(0.95, { duration: 142 }),
+          withTiming(1.05, { duration: 142 }),
+          withTiming(1, { duration: 142 })
+        );
         break;
 
       case 'spin':
-        Animated.loop(
-          Animated.timing(rotateAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          })
-        ).start();
+        rotateAnim.value = withRepeat(
+          withTiming(1, { duration: 1000, easing: ReanimatedEasing.linear }),
+          -1
+        );
         break;
 
       case 'none':
@@ -231,20 +205,28 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
     }
 
     return () => {
-      anims.forEach((anim) => anim.stopAnimation());
+      cancelAnimation(scaleAnim);
+      cancelAnimation(scaleXAnim);
+      cancelAnimation(rotateAnim);
+      cancelAnimation(rotateYAnim);
+      cancelAnimation(translateYAnim);
+      cancelAnimation(translateXAnim);
+      cancelAnimation(opacityAnim);
     };
   }, [sticker.animation]);
 
-  // Interpolations
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
-  const rotationY = rotateYAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  // Animated style for sticker
+  const stickerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scaleAnim.value },
+      { scaleX: scaleXAnim.value },
+      { rotate: `${interpolate(rotateAnim.value, [0, 1], [0, 360])}deg` },
+      { rotateY: `${interpolate(rotateYAnim.value, [0, 1], [0, 360])}deg` },
+      { translateX: translateXAnim.value },
+      { translateY: translateYAnim.value },
+    ],
+    opacity: opacityAnim.value,
+  }));
 
   return (
     <TouchableOpacity
@@ -260,17 +242,7 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       <Animated.Text
         style={[
           styles.stickerEmoji,
-          {
-            transform: [
-              { scale: scaleAnim },
-              { scaleX: scaleXAnim },
-              { rotate: rotation },
-              { rotateY: rotationY },
-              { translateX: translateXAnim },
-              { translateY: translateYAnim },
-            ],
-            opacity: opacityAnim,
-          },
+          stickerAnimatedStyle,
           sticker.isLocked && styles.stickerLocked,
         ]}
       >

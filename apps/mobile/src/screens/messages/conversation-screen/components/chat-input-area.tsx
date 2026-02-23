@@ -7,7 +7,9 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { VoiceMessageRecorder, MorphingInputButton } from '../../../../components';
 import type { Message } from '../../../../types';
@@ -19,7 +21,7 @@ interface ChatInputAreaProps {
   isVoiceMode: boolean;
   isSending: boolean;
   showAttachMenu: boolean;
-  attachMenuAnim: Animated.Value;
+  attachMenuAnim: SharedValue<number>;
   inputRef: React.RefObject<TextInput>;
   colors: {
     primary: string;
@@ -75,6 +77,14 @@ export function ChatInputArea({
     }
   };
 
+  const attachRotateStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        rotate: `${interpolate(attachMenuAnim.value, [0, 1], [0, 45])}deg`,
+      },
+    ],
+  }));
+
   return (
     <>
       {/* Voice Recorder overlay */}
@@ -124,16 +134,7 @@ export function ChatInputArea({
         >
           <TouchableOpacity style={styles.attachButton} onPress={onToggleAttachMenu}>
             <Animated.View
-              style={{
-                transform: [
-                  {
-                    rotate: attachMenuAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', '45deg'],
-                    }),
-                  },
-                ],
-              }}
+              style={attachRotateStyle}
             >
               <Ionicons
                 name="add-circle"

@@ -3,8 +3,9 @@
  * 30+ animated border styles, particles, shapes, and status indicators
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Image, StyleSheet, Animated, ViewStyle, ImageSourcePropType } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Image, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/animation-engine';
 
@@ -62,55 +63,45 @@ export default function AnimatedAvatar({
   glowIntensity = 0.5,
   style,
 }: AnimatedAvatarProps) {
-  const rotationAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0.5)).current;
+  const rotationAnim = useSharedValue(0);
+  const pulseAnim = useSharedValue(1);
+  const glowAnim = useSharedValue(0.5);
   const [particles, setParticles] = useState<Array<{ x: number; y: number; scale: number }>>([]);
 
   useEffect(() => {
     // Stop any existing animations when borderAnimation changes
-    rotationAnim.stopAnimation();
-    pulseAnim.stopAnimation();
-    glowAnim.stopAnimation();
+    cancelAnimation(rotationAnim);
+    cancelAnimation(pulseAnim);
+    cancelAnimation(glowAnim);
 
     // Reset values
-    rotationAnim.setValue(0);
-    pulseAnim.setValue(1);
-    glowAnim.setValue(0.5);
+    rotationAnim.value = 0;
+    pulseAnim.value = 1;
+    glowAnim.value = 0.5;
 
     // Rotation animation for spin, rainbow, cosmic effects
     if (['spin', 'rainbow', 'cosmic', 'celestial'].includes(borderAnimation)) {
-      Animated.loop(
-        Animated.timing(rotationAnim, {
-          toValue: 1,
-          duration: 3000,
-          useNativeDriver: true,
-        })
-      ).start();
+      rotationAnim.value = withRepeat(
+        withTiming(1, { duration: 3000 }),
+        -1
+      );
     }
 
     // Pulse animation - keep separate from glow
     if (['pulse', 'supernova'].includes(borderAnimation)) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      pulseAnim.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1
+      );
     }
 
     // Glow animation - uses JS driver, so keep it simple
     if (['glow', 'neon', 'fire', 'electric', 'plasma'].includes(borderAnimation)) {
       // Simple static glow - avoid mixing native/JS driver
-      glowAnim.setValue(glowIntensity);
+      glowAnim.value = glowIntensity;
     }
 
     // Generate particles
@@ -119,9 +110,9 @@ export default function AnimatedAvatar({
     }
 
     return () => {
-      rotationAnim.stopAnimation();
-      pulseAnim.stopAnimation();
-      glowAnim.stopAnimation();
+      cancelAnimation(rotationAnim);
+      cancelAnimation(pulseAnim);
+      cancelAnimation(glowAnim);
     };
   }, [borderAnimation, particleEffect]);
 
@@ -199,10 +190,17 @@ export default function AnimatedAvatar({
     };
   };
 
-  const rotationInterpolate = rotationAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  // Animated styles
+  const borderContainerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { rotate: `${interpolate(rotationAnim.value, [0, 1], [0, 360])}deg` },
+      { scale: pulseAnim.value },
+    ],
+  }));
+
+  const statusPulseAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(pulseAnim.value, [1, 1.1], [0, 0.5]),
+  }));
 
   // Static glow value based on intensity
   const glowOpacityValue = 0.7 + glowIntensity * 0.3;
@@ -242,8 +240,8 @@ export default function AnimatedAvatar({
           {
             width: size + borderWidth * 2,
             height: size + borderWidth * 2,
-            transform: [{ rotate: rotationInterpolate }, { scale: pulseAnim }],
           },
+          borderContainerAnimatedStyle,
         ]}
       >
         {borderAnimation !== 'none' && borderAnimation !== 'solid' ? (
@@ -318,11 +316,8 @@ export default function AnimatedAvatar({
                 StyleSheet.absoluteFill,
                 {
                   backgroundColor: AnimationColors.success,
-                  opacity: pulseAnim.interpolate({
-                    inputRange: [1, 1.1],
-                    outputRange: [0, 0.5],
-                  }),
                 },
+                statusPulseAnimatedStyle,
               ]}
             />
           )}

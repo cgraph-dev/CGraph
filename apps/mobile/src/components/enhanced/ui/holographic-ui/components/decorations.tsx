@@ -1,5 +1,6 @@
-import React, { useMemo, useRef, useEffect } from 'react';
-import { View, ViewStyle, Animated, Easing, StyleSheet } from 'react-native';
+import React, { useMemo, useEffect } from 'react';
+import { View, ViewStyle, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 // =============================================================================
@@ -58,7 +59,7 @@ export function Scanlines({
   colorTheme = 'cyan',
   animated = true,
 }: ScanlinesProps) {
-  const translateY = useRef(new Animated.Value(0)).current;
+  const translateY = useSharedValue(0);
 
   // Theme colors (custom falls back to cyan)
   const themeColors: Record<string, string> = {
@@ -101,33 +102,24 @@ export function Scanlines({
   useEffect(() => {
     if (!animated) return;
 
-    const animation = Animated.loop(
-      Animated.timing(translateY, {
-        toValue: 100,
-        duration: 10000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
+    translateY.value = withRepeat(
+      withTiming(100, { duration: 10000, easing: Easing.linear }),
+      -1,
+      false
     );
-    animation.start();
-    return () => animation.stop();
-  }, [animated, translateY]);
+  }, [animated]);
+
+  const scanlineAnimStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(translateY.value, [0, 100], [0, 30]),
+      },
+    ],
+  }));
 
   return (
     <Animated.View
-      style={[
-        styles.scanlinesContainer,
-        {
-          transform: [
-            {
-              translateY: translateY.interpolate({
-                inputRange: [0, 100],
-                outputRange: [0, 30],
-              }),
-            },
-          ],
-        },
-      ]}
+      style={[styles.scanlinesContainer, scanlineAnimStyle]}
       pointerEvents="none"
     >
       {lines}

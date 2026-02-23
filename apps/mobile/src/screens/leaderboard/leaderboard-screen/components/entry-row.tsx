@@ -2,8 +2,9 @@
  * EntryRow - Leaderboard entry item
  */
 
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,26 +21,20 @@ export interface EntryRowProps {
 }
 
 export function EntryRow({ entry, category, isCurrentUser, onPress }: EntryRowProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useSharedValue(1);
   const config = RANK_CONFIGS[entry.rank];
 
   const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.98,
-      tension: 150,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(0.98, { stiffness: 150, damping: 10 });
   };
 
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      tension: 150,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(1, { stiffness: 150, damping: 10 });
   };
+
+  const scaleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
 
   return (
     <TouchableOpacity
@@ -48,7 +43,7 @@ export function EntryRow({ entry, category, isCurrentUser, onPress }: EntryRowPr
       onPressOut={handlePressOut}
       activeOpacity={1}
     >
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Animated.View style={scaleStyle}>
         <BlurView
           intensity={isCurrentUser ? 80 : 40}
           tint="dark"

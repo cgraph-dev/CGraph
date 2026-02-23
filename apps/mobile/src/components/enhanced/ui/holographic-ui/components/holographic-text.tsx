@@ -1,5 +1,6 @@
-import React, { ReactNode, useRef, useEffect } from 'react';
-import { Animated, Easing, TextStyle } from 'react-native';
+import React, { ReactNode, useEffect } from 'react';
+import { TextStyle } from 'react-native';
+import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';
 import { HolographicConfig, getTheme } from '../types';
 
 interface HolographicTextProps {
@@ -20,29 +21,18 @@ export function HolographicText({
   style,
 }: HolographicTextProps) {
   const theme = getTheme(colorTheme);
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useSharedValue(0);
 
   useEffect(() => {
     if (!animate) return;
 
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
-        }),
-      ])
+    glowAnim.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1
     );
-    animation.start();
-    return () => animation.stop();
   }, [animate]);
 
   const variantStyles: Record<string, TextStyle> = {
@@ -68,10 +58,11 @@ export function HolographicText({
     },
   };
 
-  const textShadowRadius = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [5 * glowIntensity, 15 * glowIntensity],
-  });
+  const textAnimStyle = useAnimatedStyle(() => ({
+    textShadowRadius: animate
+      ? interpolate(glowAnim.value, [0, 1], [5 * glowIntensity, 15 * glowIntensity])
+      : 10 * glowIntensity,
+  }));
 
   return (
     <Animated.Text
@@ -81,8 +72,8 @@ export function HolographicText({
           color: theme.primary,
           textShadowColor: theme.glow,
           textShadowOffset: { width: 0, height: 0 },
-          textShadowRadius: animate ? textShadowRadius : 10 * glowIntensity,
         },
+        textAnimStyle,
         style,
       ]}
     >

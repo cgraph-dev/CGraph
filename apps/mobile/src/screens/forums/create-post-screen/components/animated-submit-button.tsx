@@ -2,8 +2,9 @@
  * AnimatedSubmitButton - Animated submit button with glow and shimmer effects
  */
 
-import React, { useRef, useEffect } from 'react';
-import { Text, TouchableOpacity, Animated, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -13,56 +14,37 @@ import { styles } from '../styles';
 import { SCREEN_WIDTH } from '../constants';
 
 export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useSharedValue(1);
+  const glowAnim = useSharedValue(0);
+  const shimmerAnim = useSharedValue(0);
 
   useEffect(() => {
     if (!isDisabled && !isLoading) {
       // Subtle pulse when enabled
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0.5,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
+      glowAnim.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 1500 }),
+          withTiming(0.5, { duration: 1500 })
+        ),
+        -1
+      );
 
       // Shimmer effect
-      Animated.loop(
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 2500,
-          useNativeDriver: true,
-        })
-      ).start();
+      shimmerAnim.value = withRepeat(
+        withTiming(1, { duration: 2500 }),
+        -1,
+        false
+      );
     }
   }, [isDisabled, isLoading]);
 
   const handlePressIn = () => {
     if (isDisabled || isLoading) return;
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(0.95, { damping: 8, stiffness: 100 });
   };
 
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 4,
-      tension: 80,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withSpring(1, { damping: 4, stiffness: 80 });
   };
 
   const handlePress = () => {
@@ -71,15 +53,22 @@ export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitB
     onPress();
   };
 
-  const shimmerTranslateX = shimmerAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-200, SCREEN_WIDTH],
-  });
+  const scaleAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
+  const glowAnimStyle = useAnimatedStyle(() => ({
+    opacity: glowAnim.value,
+  }));
+
+  const shimmerAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(shimmerAnim.value, [0, 1], [-200, SCREEN_WIDTH]) }],
+  }));
 
   return (
-    <Animated.View style={[styles.submitButtonWrapper, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View style={[styles.submitButtonWrapper, scaleAnimStyle]}>
       {/* Glow effect */}
-      {!isDisabled && <Animated.View style={[styles.submitButtonGlow, { opacity: glowAnim }]} />}
+      {!isDisabled && <Animated.View style={[styles.submitButtonGlow, glowAnimStyle]} />}
 
       <TouchableOpacity
         onPressIn={handlePressIn}
@@ -97,7 +86,7 @@ export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitB
           {/* Shimmer overlay */}
           {!isDisabled && !isLoading && (
             <Animated.View
-              style={[styles.shimmerOverlay, { transform: [{ translateX: shimmerTranslateX }] }]}
+              style={[styles.shimmerOverlay, shimmerAnimStyle]}
             >
               <LinearGradient
                 colors={['transparent', 'rgba(255,255,255,0.2)', 'transparent']}
