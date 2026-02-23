@@ -322,14 +322,14 @@ All other previously listed controllers are now under 500 lines.
 | Metric                    | Current | Target       | Gap               |
 | ------------------------- | ------- | ------------ | ----------------- |
 | Web components (non-test) | ~1,150  | —            | —                 |
-| Web test files            | 205     | ~1,150 (1:1) | **~945 missing**  |
-| Web test coverage ratio   | ~18%    | 100%         | ~82%              |
+| Web test files            | 213     | ~1,150 (1:1) | **~937 missing**  |
+| Web test coverage ratio   | ~19%    | 100%         | ~81%              |
 | Mobile test files         | 27      | —            | Needs assessment  |
 | Backend test files        | 171     | —            | Likely sufficient |
 
 **Module Test Coverage** (tests per module): | Module | Tests | Components | Gap |
 |--------|-------|------------|-----| | chat | 17 | ~80 | 63 | | forums | 12 | ~90 | 78 | |
-gamification | 11 | ~60 | 49 | | social | 6 | ~40 | 34 | | settings | 5 | ~50 | 45 | | auth | 4 |
+gamification | 11 | ~60 | 49 | | social | 6 | ~40 | 34 | | settings | 8 | ~50 | 42 | | auth | 4 |
 ~20 | 16 | | groups | 4 | ~40 | 36 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
 premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
@@ -337,9 +337,13 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 - [x] **9.1** ~~Create test infrastructure: `packages/test-utils/`~~ **DONE** (Tier 7) — factories,
       store-helpers, async-helpers
-- [ ] **9.2** Write tests for critical path first: auth (4→20), chat (17→80), settings (5→50)
+- [x] **9.2** ~~Write tests for critical path (batch 1)~~ **PARTIAL** (Session 50) — auth 4→9 (+5:
+      auth-card, auth-form-input, auth-button, auth-logo, social-login-divider), chat +1
+      (typing-indicator), settings 5→8 (+3: notification, privacy, language panels)
+- [ ] **9.2b** Write tests for critical path (batch 2): auth (9→20), chat (17→80), settings (8→50)
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
-- [ ] **9.4** Set up coverage ratchet in CI (never decrease, only increase)
+- [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
+      statements/lines 60→65%, branches/functions 50→55%
 - [ ] **9.5** Add integration tests for store→API→component flows
 
 ---
@@ -437,7 +441,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | -------------------- | --------- | ---------------------------------------------- |
 | GitHub workflows     | 17        | PASS                                           |
 | Permissions blocks   | **17/17** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
-| Coverage enforcement | EXISTS    | PASS — CI gates at 60% web / 75% backend       |
+| Coverage enforcement | EXISTS    | PASS — CI gates at 65% web / 75% backend       |
 | Bundle size check    | EXISTS    | PASS — performance.yml, 2MB limit              |
 | Canary deploys       | EXISTS    | PASS — Fly.io canary strategy                  |
 | Auto-rollback        | EXISTS    | PASS — Fly.io canary                           |
@@ -447,7 +451,8 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 - [x] **13.1** ~~Add `permissions:` block to `backup.yml`~~ **DONE** (Tier 1)
 - [x] **13.2** ~~Add `permissions:` block to `deploy-backend.yml`~~ **DONE** (Tier 1)
-- [ ] **13.3** Raise web coverage gate from 60% → 70% (incremental ratchet)
+- [x] **13.3** ~~Raise web coverage gate from 60%~~ **PARTIAL** (Session 50 — 60→65%; next ratchet
+      to 70% when coverage reaches ~68%)
 - [x] **13.4** ~~Add ESLint rules for: no React.FC, no forwardRef, no useContext~~ **DONE** —
       already in eslint.config.js lines 160-196
 - [x] **13.5** ~~Add ESLint rule to enforce kebab-case filenames~~ **DONE** —
@@ -543,8 +548,9 @@ notificationVariants, loadingVariants, skeletonVariants, badgeVariants
 - voteFeedbackVariants (vote click feedback)
 
 Additional core animations exist for: typing indicators, reactions, level-up, achievements, friend
-cards, toasts, modals. Remaining gaps: some inline spring values not yet extracted to presets,
-mobile animation migration (~48 files still on deprecated Animated API).
+cards, toasts, modals. Remaining gaps: some inline spring values not yet extracted to presets.
+Mobile animation migration COMPLETE — 0 deprecated `Animated` imports from `react-native` remain
+(all files use `react-native-reanimated` v4; verified Session 50).
 
 ### Wave 3: Feature Completeness (3 tasks — 3 DONE)
 

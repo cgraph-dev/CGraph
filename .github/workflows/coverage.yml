@@ -107,7 +107,7 @@ jobs:
             WEB_BRANCH=$(jq -r '.total.branches.pct' apps/web/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
             echo "| App | Lines | Branches | Target |" >> $GITHUB_STEP_SUMMARY
             echo "|-----|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
-            echo "| Web | ${WEB_LINES}% | ${WEB_BRANCH}% | 60% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Web | ${WEB_LINES}% | ${WEB_BRANCH}% | 65% |" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Web coverage not available" >> $GITHUB_STEP_SUMMARY
           fi
