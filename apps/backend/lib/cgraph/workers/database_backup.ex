@@ -26,6 +26,7 @@ defmodule CGraph.Workers.DatabaseBackup do
   @backup_bucket System.get_env("AWS_BACKUP_BUCKET") || "cgraph-backups"
   @retention_days 30
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     backup_type = Map.get(args, "type", "daily")
@@ -182,6 +183,7 @@ defmodule CGraph.Workers.DatabaseBackup do
   end
 
   # Schedule helpers for manual triggering
+  @spec schedule_now(String.t()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def schedule_now(type \\ "manual") do
     %{type: type}
     |> __MODULE__.new()

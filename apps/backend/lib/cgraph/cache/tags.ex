@@ -19,6 +19,7 @@ defmodule CGraph.Cache.Tags do
   @doc """
   Associate `key` with each of the given `tags`.
   """
+  @spec store(term(), [term()]) :: :ok
   def store(key, tags) do
     Enum.each(tags, fn tag ->
       tag_key = storage_key(tag)
@@ -33,6 +34,7 @@ defmodule CGraph.Cache.Tags do
   @doc """
   Return all cache keys associated with `tag`.
   """
+  @spec get_keys(term()) :: {:ok, [term()]}
   def get_keys(tag) do
     tag_key = storage_key(tag)
 
@@ -45,6 +47,7 @@ defmodule CGraph.Cache.Tags do
   @doc """
   Remove the tag→key mapping for `tag`.
   """
+  @spec delete(term()) :: :ok
   def delete(tag) do
     tag_key = storage_key(tag)
     L2.delete(tag_key)

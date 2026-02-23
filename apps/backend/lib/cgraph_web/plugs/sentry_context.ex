@@ -7,8 +7,10 @@ defmodule CGraphWeb.Plugs.SentryContext do
 
   import Plug.Conn
 
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     if sentry_available?() do
       set_user(conn)

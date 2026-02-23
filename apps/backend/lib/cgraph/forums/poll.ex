@@ -22,6 +22,7 @@ defmodule CGraph.Forums.Poll do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(poll, attrs) do
     poll
     |> cast(attrs, [:post_id, :question, :options, :is_multiple_choice, :ends_at])
@@ -42,12 +43,14 @@ defmodule CGraph.Forums.Poll do
     end
   end
 
+  @spec vote_changeset(%__MODULE__{}, term(), [non_neg_integer()]) :: Ecto.Changeset.t()
   def vote_changeset(poll, user_id, option_indices) do
     current_votes = poll.votes || %{}
     new_votes = Map.put(current_votes, to_string(user_id), option_indices)
     change(poll, votes: new_votes)
   end
 
+  @spec close_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def close_changeset(poll) do
     change(poll, is_closed: true)
   end

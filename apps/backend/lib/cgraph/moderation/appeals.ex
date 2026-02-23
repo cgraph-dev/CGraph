@@ -23,6 +23,7 @@ defmodule CGraph.Moderation.Appeals do
   @doc """
   List pending appeals.
   """
+  @spec list_appeals(keyword()) :: [Appeal.t()]
   def list_appeals(opts \\ []) do
     limit = Keyword.get(opts, :limit, 50)
 
@@ -38,6 +39,7 @@ defmodule CGraph.Moderation.Appeals do
   @doc """
   Create an appeal for a moderation action.
   """
+  @spec create_appeal(User.t(), String.t(), map()) :: {:ok, Appeal.t()} | {:error, term()}
   def create_appeal(%User{} = user, action_id, attrs) do
     with {:ok, action} <- get_action_for_appeal(action_id, user),
          :ok <- check_appeal_eligibility(action, user) do
@@ -55,6 +57,7 @@ defmodule CGraph.Moderation.Appeals do
   @doc """
   Review an appeal (staff only).
   """
+  @spec review_appeal(User.t(), String.t(), map()) :: {:ok, Appeal.t()} | {:error, term()}
   def review_appeal(%User{} = reviewer, appeal_id, attrs) do
     with {:ok, appeal} <- get_appeal(appeal_id),
          :ok <- Enforcement.validate_reviewer(reviewer) do

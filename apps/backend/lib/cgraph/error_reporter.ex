@@ -151,6 +151,7 @@ defmodule CGraph.ErrorReporter do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(opts) do
     config = get_config(opts)
@@ -167,6 +168,7 @@ defmodule CGraph.ErrorReporter do
     {:ok, state}
   end
 
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:report, exception, stacktrace, context}, state) do
     try do
@@ -195,6 +197,7 @@ defmodule CGraph.ErrorReporter do
     {:noreply, state}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:stats, _from, state) do
     stats = %{

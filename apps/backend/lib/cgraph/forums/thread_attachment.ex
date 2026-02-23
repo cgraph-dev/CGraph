@@ -40,6 +40,7 @@ defmodule CGraph.Forums.ThreadAttachment do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(attachment, attrs) do
     attachment
     |> cast(attrs, [
@@ -88,6 +89,9 @@ defmodule CGraph.Forums.ThreadAttachment do
     end
   end
 
+  @spec allowed_extensions() :: [String.t()]
   def allowed_extensions, do: @allowed_extensions
+
+  @spec max_file_size() :: pos_integer()
   def max_file_size, do: @max_file_size
 end

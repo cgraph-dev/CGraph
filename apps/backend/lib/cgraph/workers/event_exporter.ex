@@ -15,6 +15,7 @@ defmodule CGraph.Workers.EventExporter do
 
   require Logger
 
+  @spec perform(Oban.Job.t()) :: {:ok, map()} | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id, "format" => format}} = _job) do
     Logger.info("event_exporter_started", event_id: event_id, format: format)
@@ -38,6 +39,7 @@ defmodule CGraph.Workers.EventExporter do
   @doc """
   Enqueue an export job.
   """
+  @spec enqueue(map()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(%{event_id: _event_id} = args) do
     args
     |> Map.put_new(:format, "json")

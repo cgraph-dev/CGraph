@@ -94,7 +94,7 @@ class SecureStorage {
       id: key,
       ciphertext,
       iv,
-      salt: this.deviceSalt!.buffer as ArrayBuffer,
+      salt: this.deviceSalt!.buffer as ArrayBuffer, // safe downcast – buffer type
       createdAt: Date.now(),
       expiresAt: ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined,
     };
@@ -128,7 +128,7 @@ class SecureStorage {
           return;
         }
 
-        const item = request.result as EncryptedItem;
+        const item = request.result as EncryptedItem; // safe downcast – IDB returns untyped
 
         // Check expiration
         if (item.expiresAt && item.expiresAt < Date.now()) {
@@ -195,7 +195,7 @@ class SecureStorage {
       request.onsuccess = () => {
         const cursor = request.result;
         if (cursor) {
-          const item = cursor.value as EncryptedItem;
+          const item = cursor.value as EncryptedItem; // safe downcast – IDB returns untyped
           if (item.expiresAt && item.expiresAt < Date.now()) {
             cursor.delete();
             deletedCount++;

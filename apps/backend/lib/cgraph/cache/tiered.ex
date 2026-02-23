@@ -18,6 +18,7 @@ defmodule CGraph.Cache.Tiered do
   @doc """
   Read through all tiers in order, promoting on hit when requested.
   """
+  @spec get_all(term(), boolean()) :: {:ok, term()} | {:error, term()}
   def get_all(key, promote) do
     try_tier(:l1, key, promote)
   end
@@ -25,6 +26,7 @@ defmodule CGraph.Cache.Tiered do
   @doc """
   Write value to every tier.
   """
+  @spec set_all(term(), term(), non_neg_integer() | :infinity) :: :ok
   def set_all(key, value, ttl) do
     L1.set(key, value, ttl)
     L2.set(key, value, ttl)
@@ -33,6 +35,7 @@ defmodule CGraph.Cache.Tiered do
   end
 
   @doc false
+  @spec default_ttl() :: non_neg_integer()
   def default_ttl, do: @default_ttl
 
   # ---------------------------------------------------------------------------

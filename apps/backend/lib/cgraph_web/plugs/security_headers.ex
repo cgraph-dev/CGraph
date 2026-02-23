@@ -62,6 +62,7 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   # Preload HSTS to submit to browser preload lists
   @hsts_preload true
 
+  @spec init(keyword()) :: map()
   @impl true
   def init(opts) do
     mode = Keyword.get(opts, :mode, :api)
@@ -79,6 +80,7 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
     }
   end
 
+  @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl true
   def call(conn, opts) do
     conn

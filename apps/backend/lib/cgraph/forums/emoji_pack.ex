@@ -34,6 +34,7 @@ defmodule CGraph.Forums.EmojiPack do
   @doc """
   Changeset for creating a new pack.
   """
+  @spec create_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def create_changeset(pack, attrs) do
     pack
     |> cast(attrs, [
@@ -50,6 +51,7 @@ defmodule CGraph.Forums.EmojiPack do
   @doc """
   Changeset for updating a pack.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(pack, attrs) do
     pack
     |> cast(attrs, [
@@ -63,6 +65,7 @@ defmodule CGraph.Forums.EmojiPack do
   @doc """
   Update emoji count.
   """
+  @spec update_emoji_count(%__MODULE__{}, non_neg_integer()) :: Ecto.Changeset.t()
   def update_emoji_count(pack, count) do
     change(pack, %{emoji_count: count})
   end

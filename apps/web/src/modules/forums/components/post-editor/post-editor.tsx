@@ -73,7 +73,11 @@ export function PostEditor({
                   value={editor.prefixId || ''}
                   onChange={(e) => editor.setPrefixId(e.target.value || undefined)}
                   className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
-                  style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+                  style={
+                    {
+                      '--tw-ring-color': primaryColor,
+                    } as React.CSSProperties /* safe downcast – CSS custom property */
+                  }
                 >
                   <option value="">No Prefix</option>
                   {prefixes.map((prefix) => (
@@ -93,7 +97,11 @@ export function PostEditor({
                   value={editor.categoryId || ''}
                   onChange={(e) => editor.setCategoryId(e.target.value || undefined)}
                   className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
-                  style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+                  style={
+                    {
+                      '--tw-ring-color': primaryColor,
+                    } as React.CSSProperties /* safe downcast – CSS custom property */
+                  }
                 >
                   <option value="">Select Category</option>
                   {categories.map((category) => (
@@ -129,7 +137,11 @@ export function PostEditor({
         {/* Content Area */}
         <div
           className={`relative ${editor.isDragging ? 'ring-2' : ''}`}
-          style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+          style={
+            {
+              '--tw-ring-color': primaryColor,
+            } as React.CSSProperties /* safe downcast – CSS custom property */
+          }
           onDrop={editor.handleDrop}
           onDragOver={editor.handleDragOver}
           onDragLeave={editor.handleDragLeave}

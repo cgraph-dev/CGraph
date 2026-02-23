@@ -41,6 +41,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
   alias CGraph.{Accounts, Notifications}
   alias CGraph.Workers.SendEmailNotification
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     Logger.warning("criticalalertdispatch", args: inspect(args))
@@ -59,6 +60,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
   @doc """
   Enqueue a critical alert for dispatch.
   """
+  @spec enqueue(map()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(alert_data) when is_map(alert_data) do
     %{alert: alert_data}
     |> __MODULE__.new()

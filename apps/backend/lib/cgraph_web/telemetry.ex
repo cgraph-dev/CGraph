@@ -21,6 +21,7 @@ defmodule CGraphWeb.Telemetry do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
+  @spec init(term()) :: {:ok, tuple()}
   @impl true
   def init(_init_arg) do
     # Attach telemetry handlers on init
@@ -159,6 +160,7 @@ defmodule CGraphWeb.Telemetry do
 
   Returns aggregated metrics for monitoring dashboards.
   """
+  @spec stats() :: map()
   def stats do
     %{
       vm: %{

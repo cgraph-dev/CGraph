@@ -21,6 +21,7 @@ defmodule CGraph.Gamification.UserAchievement do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user_achievement, attrs) do
     user_achievement
     |> cast(attrs, [:user_id, :achievement_id, :progress, :unlocked, :unlocked_at, :notified])
@@ -34,6 +35,7 @@ defmodule CGraph.Gamification.UserAchievement do
   @doc """
   Changeset for incrementing progress.
   """
+  @spec progress_changeset(%__MODULE__{}, integer()) :: Ecto.Changeset.t()
   def progress_changeset(user_achievement, increment \\ 1) do
     new_progress = (user_achievement.progress || 0) + increment
 
@@ -45,6 +47,7 @@ defmodule CGraph.Gamification.UserAchievement do
   @doc """
   Changeset for unlocking an achievement.
   """
+  @spec unlock_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def unlock_changeset(user_achievement) do
     user_achievement
     |> cast(%{unlocked: true, unlocked_at: DateTime.truncate(DateTime.utc_now(), :second)}, [:unlocked, :unlocked_at])

@@ -74,12 +74,14 @@ defmodule CGraphWeb.Plugs.TracingPlug do
   # Plug Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: map()
   @impl true
   def init(opts) do
     config = Map.merge(@default_config, Map.new(opts))
     config
   end
 
+  @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl true
   def call(conn, config) do
     if excluded_path?(conn.request_path, config.exclude_paths) do

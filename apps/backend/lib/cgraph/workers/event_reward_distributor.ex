@@ -15,6 +15,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
   alias CGraph.Gamification.Events
   alias CGraph.Workers.NotificationWorker
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id}}) do
     Logger.info("event_reward_processing", event_id: event_id)
@@ -52,6 +53,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
   @doc """
   Enqueue a reward distribution job.
   """
+  @spec enqueue(map()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(%{event_id: event_id}) do
     %{event_id: event_id}
     |> __MODULE__.new()

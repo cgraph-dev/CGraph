@@ -29,7 +29,9 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
 
   const [suppressEveryone, setSuppressEveryone] = useState(myMember?.suppressEveryone ?? false);
   const [suppressRoles, setSuppressRoles] = useState(false);
-  const [notifLevel, setNotifLevel] = useState<NotificationLevel>(myMember?.notifications ?? 'mentions');
+  const [notifLevel, setNotifLevel] = useState<NotificationLevel>(
+    myMember?.notifications ?? 'mentions'
+  );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,9 +45,24 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
   }, [myMember]);
 
   const notifOptions = [
-    { level: 'all' as NotificationLevel, label: 'All Messages', desc: 'Receive notifications for every message', icon: ChatBubbleLeftIcon },
-    { level: 'mentions' as NotificationLevel, label: 'Only @Mentions', desc: 'Only receive notifications when mentioned', icon: AtSymbolIcon },
-    { level: 'none' as NotificationLevel, label: 'Nothing', desc: 'Suppress all notifications from this group', icon: BellSlashIcon },
+    {
+      level: 'all' as NotificationLevel,
+      label: 'All Messages',
+      desc: 'Receive notifications for every message',
+      icon: ChatBubbleLeftIcon,
+    }, // safe downcast – literal to union
+    {
+      level: 'mentions' as NotificationLevel,
+      label: 'Only @Mentions',
+      desc: 'Only receive notifications when mentioned',
+      icon: AtSymbolIcon,
+    }, // safe downcast – literal to union
+    {
+      level: 'none' as NotificationLevel,
+      label: 'Nothing',
+      desc: 'Suppress all notifications from this group',
+      icon: BellSlashIcon,
+    }, // safe downcast – literal to union
   ];
 
   const handleSave = async () => {
@@ -102,10 +119,14 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
                     notifLevel === opt.level ? 'bg-primary-500/20' : 'bg-dark-700'
                   }`}
                 >
-                  <Icon className={`h-5 w-5 ${notifLevel === opt.level ? 'text-primary-400' : 'text-gray-400'}`} />
+                  <Icon
+                    className={`h-5 w-5 ${notifLevel === opt.level ? 'text-primary-400' : 'text-gray-400'}`}
+                  />
                 </div>
                 <div>
-                  <div className={`font-medium ${notifLevel === opt.level ? 'text-primary-400' : 'text-white'}`}>
+                  <div
+                    className={`font-medium ${notifLevel === opt.level ? 'text-primary-400' : 'text-white'}`}
+                  >
                     {opt.label}
                   </div>
                   <div className="text-sm text-gray-500">{opt.desc}</div>

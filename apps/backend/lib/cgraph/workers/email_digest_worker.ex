@@ -28,6 +28,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
   alias CGraph.{Accounts, Mailer, Repo}
   alias CGraph.Accounts.User
 
+  @spec perform(Oban.Job.t()) :: :ok | {:ok, String.t()} | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) when args == %{} or not is_map_key(args, "user_id") do
     # Cron-triggered: dispatch digest emails for all eligible users
@@ -53,6 +54,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
   Enqueue digest emails for all users who are due to receive one.
   This function should be called by a periodic cron job.
   """
+  @spec enqueue_all_digests() :: {:ok, String.t()}
   def enqueue_all_digests do
     now = DateTime.utc_now()
 

@@ -57,6 +57,7 @@ defmodule CGraph.Workers.Base do
       @behaviour CGraph.Workers.Base
       @timeout unquote(timeout)
 
+      @spec perform(Oban.Job.t()) :: :ok | {:ok, any()} | {:error, any()} | {:snooze, pos_integer()}
       @impl Oban.Worker
       def perform(%Oban.Job{args: args} = job) do
         start_time = System.monotonic_time()
@@ -185,6 +186,7 @@ defmodule CGraph.Workers.SendWelcomeEmail do
   alias CGraph.Accounts
 
   @impl CGraph.Workers.Base
+  @spec execute(map(), Oban.Job.t()) :: :ok | {:ok, any()} | {:error, any()}
   def execute(%{"user_id" => user_id} = args, _job) do
     case Accounts.get_user(user_id) do
       {:error, :not_found} ->
@@ -234,6 +236,7 @@ defmodule CGraph.Workers.CleanupExpiredSessions do
   import Ecto.Query
   alias CGraph.Repo
 
+  @spec execute(map(), Oban.Job.t()) :: {:ok, map()}
   @impl CGraph.Workers.Base
   def execute(_args, _job) do
     Logger.info("Starting session cleanup")
@@ -288,6 +291,7 @@ defmodule CGraph.Workers.ProcessMediaUpload do
     max_attempts: 3,
     timeout: :timer.minutes(15)
 
+  @spec execute(map(), Oban.Job.t()) :: :ok | {:error, term()}
   @impl CGraph.Workers.Base
   def execute(%{"upload_id" => upload_id, "file_path" => path} = args, _job) do
     Logger.info("Processing media upload", upload_id: upload_id)
@@ -359,6 +363,7 @@ defmodule CGraph.Workers.SyncExternalData do
     max_attempts: 10,
     timeout: :timer.minutes(5)
 
+  @spec execute(map(), Oban.Job.t()) :: :ok
   @impl CGraph.Workers.Base
   def execute(%{"source" => source, "resource_id" => id} = _args, _job) do
     Logger.info("Syncing external data", source: source, resource_id: id)

@@ -59,9 +59,9 @@ export class MatrixEngine {
       columnManager: new ColumnManager(),
       animationController: new AnimationController(),
       characters: generateCharacterSet(cfg),
-      atlas: null as CharacterAtlas | null,
+      atlas: null as CharacterAtlas | null, // safe downcast – structural boundary
       atlasNeedsRebuild: true,
-      depthLayers: [] as DepthLayer[],
+      depthLayers: [] as DepthLayer[], // safe downcast – structural boundary
       columnsByLayer: new Map<number, MatrixColumn[]>(),
       characterPool: new ObjectPool<MatrixCharacter>(
         () => ({
@@ -94,7 +94,7 @@ export class MatrixEngine {
         visibilityHandler: null,
         resizeObserver: null,
         resizeDebounceTimer: null,
-      } as EventListenerState,
+      } as EventListenerState, // safe downcast – structural boundary
     };
 
     initDepthLayers(cfg, this._ec.depthLayers, this._ec.columnsByLayer);

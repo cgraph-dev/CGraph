@@ -14,6 +14,7 @@ defmodule CGraph.Application do
   alias CGraph.Subscriptions.TierLimits
   alias CGraph.Telemetry.OpenTelemetry
 
+  @spec start(term(), term()) :: {:ok, pid()} | {:error, term()}
   @impl true
   def start(_type, _args) do
     require Logger
@@ -235,12 +236,14 @@ defmodule CGraph.Application do
     end
   end
 
+  @spec config_change(keyword(), keyword(), [atom()]) :: :ok
   @impl true
   def config_change(changed, _new, removed) do
     CGraphWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 
+  @spec prep_stop(term()) :: :ok
   @impl true
   def prep_stop(_state) do
     require Logger

@@ -35,9 +35,11 @@ defmodule CGraphWeb.Plugs.TraceContext do
   import Plug.Conn
   require Logger
 
+  @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do
     trace_id = extract_or_generate_trace_id(conn)

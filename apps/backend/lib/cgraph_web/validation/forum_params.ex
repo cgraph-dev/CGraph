@@ -15,6 +15,7 @@ defmodule CGraphWeb.Validation.ForumParams do
     field :is_nsfw, :boolean, default: false
   end
 
+  @spec validate_create(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_create(params) do
     %__MODULE__{}
     |> cast(params, [:name, :slug, :description, :title, :is_public, :is_nsfw], empty_values: [""])
@@ -26,6 +27,7 @@ defmodule CGraphWeb.Validation.ForumParams do
     |> result_from_changeset()
   end
 
+  @spec validate_update(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update(params) do
     %__MODULE__{}
     |> cast(params, [:name, :slug, :description, :title, :is_public, :is_nsfw], empty_values: [""])

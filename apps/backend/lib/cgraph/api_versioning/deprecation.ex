@@ -17,6 +17,7 @@ defmodule CGraph.ApiVersioning.Deprecation do
   @doc """
   Get information about a specific API version.
   """
+  @spec get_version_info(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_version_info(version) do
     case :ets.lookup(@versions_table, version) do
       [{^version, info}] -> {:ok, info}
@@ -27,6 +28,7 @@ defmodule CGraph.ApiVersioning.Deprecation do
   @doc """
   List all registered API versions with their status.
   """
+  @spec list_versions() :: [map()]
   def list_versions do
     :ets.tab2list(@versions_table)
     |> Enum.map(fn {_v, info} -> info end)
@@ -42,6 +44,7 @@ defmodule CGraph.ApiVersioning.Deprecation do
   - Deprecation: RFC 8594 deprecation link
   - Link: Migration guide link
   """
+  @spec add_deprecation_headers(Plug.Conn.t()) :: Plug.Conn.t()
   def add_deprecation_headers(conn) do
     version = Detection.get_version(conn)
 
