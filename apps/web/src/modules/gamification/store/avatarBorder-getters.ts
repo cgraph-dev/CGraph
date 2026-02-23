@@ -1,3 +1,7 @@
+/**
+ * Computed getter factories for the avatar border store.
+ * @module modules/gamification/store/avatarBorder-getters
+ */
 import type { BorderTheme } from '@/types/avatar-borders';
 import type { AvatarBorderState } from './avatarBorder-types';
 

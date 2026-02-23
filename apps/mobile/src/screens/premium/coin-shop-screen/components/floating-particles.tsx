@@ -1,3 +1,7 @@
+/**
+ * Floating particle animation effects for the coin shop background.
+ * @module screens/premium/coin-shop-screen/components/floating-particles
+ */
 import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {

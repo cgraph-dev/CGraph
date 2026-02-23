@@ -1,3 +1,7 @@
+/**
+ * Hook for managing particle effects in profile theme cards.
+ * @module modules/settings/components/customize/profile-theme-card/useParticles
+ */
 import { useState, useEffect } from 'react';
 import { PARTICLE_CONFIGS, type ParticleType } from '@/data/profileThemes';
 import type { Particle } from './types';

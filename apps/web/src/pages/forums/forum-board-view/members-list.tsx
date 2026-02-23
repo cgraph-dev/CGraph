@@ -1,6 +1,6 @@
 /**
  * Forum board members list component.
- * @module
+ * @module pages/forums/forum-board-view/members-list
  */
 import { UserIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 

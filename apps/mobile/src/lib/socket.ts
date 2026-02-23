@@ -1,3 +1,7 @@
+/**
+ * Phoenix WebSocket client manager with channel management, presence tracking, and reconnection logic.
+ * @module lib/socket
+ */
 import { Socket, Channel, Presence } from 'phoenix';
 import { exponentialBackoffWithJitter } from '@cgraph/socket';
 import * as SecureStore from 'expo-secure-store';

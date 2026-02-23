@@ -1,4 +1,8 @@
 /**
+ * Comment item component with voting, replies, and nested children.
+ * @module pages/forums/forum-post/comment-item
+ */
+/**
  * CommentItem component for ForumPost
  * Renders a single comment with voting, replies, and nested children
  */

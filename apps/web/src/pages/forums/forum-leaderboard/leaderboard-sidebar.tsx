@@ -1,4 +1,8 @@
 /**
+ * Leaderboard sidebar with Hall of Fame and How It Works sections.
+ * @module pages/forums/forum-leaderboard/leaderboard-sidebar
+ */
+/**
  * Leaderboard Sidebar Component
  *
  * Hall of Fame and How It Works sections.

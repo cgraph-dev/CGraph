@@ -1,3 +1,7 @@
+/**
+ * Storybook stories for the Button UI component.
+ * @module components/ui/button.stories
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { Button } from './button';

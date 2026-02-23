@@ -1,3 +1,7 @@
+/**
+ * User profile screen displaying user details and friend actions.
+ * @module screens/friends/user-profile-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

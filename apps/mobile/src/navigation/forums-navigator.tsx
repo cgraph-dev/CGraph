@@ -1,3 +1,7 @@
+/**
+ * Forums stack navigator with forum listing, thread viewing, and post creation screens.
+ * @module navigation/ForumsNavigator
+ */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ForumsStackParamList } from '../types';

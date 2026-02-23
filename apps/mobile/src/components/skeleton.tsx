@@ -1,3 +1,7 @@
+/**
+ * Skeleton loading placeholder component with shimmer animation for content loading states.
+ * @module components/Skeleton
+ */
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate } from 'react-native-reanimated';

@@ -1,3 +1,7 @@
+/**
+ * Animated wave effect component for visual flair on the online screen.
+ * @module screens/community/whos-online-screen/components/wave-effect
+ */
 import React, { useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import Animated, {

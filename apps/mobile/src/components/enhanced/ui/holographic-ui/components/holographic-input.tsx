@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed text input component with animated focus effects and glowing borders.
+ * @module components/enhanced/ui/holographic-ui/HolographicInput
+ */
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate } from 'react-native-reanimated';

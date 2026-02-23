@@ -1,4 +1,8 @@
 /**
+ * Sort options and configuration constants for the forum leaderboard.
+ * @module pages/forums/forum-leaderboard/constants
+ */
+/**
  * Forum Leaderboard Constants
  *
  * Sort options and configuration for the leaderboard.

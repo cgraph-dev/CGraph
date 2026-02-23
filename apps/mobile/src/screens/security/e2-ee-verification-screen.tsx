@@ -1,3 +1,7 @@
+/**
+ * End-to-end encryption verification screen for secure identity confirmation.
+ * @module screens/security/e2-ee-verification-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

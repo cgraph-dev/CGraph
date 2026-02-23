@@ -1,3 +1,7 @@
+/**
+ * Slider row component for adjustable numeric settings values.
+ * @module screens/settings/chat-bubble-settings-screen/components/slider-row
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

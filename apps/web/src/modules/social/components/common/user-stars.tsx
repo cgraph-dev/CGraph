@@ -1,3 +1,7 @@
+/**
+ * User star rating display component.
+ * @module modules/social/components/common/user-stars
+ */
 import React from 'react';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';

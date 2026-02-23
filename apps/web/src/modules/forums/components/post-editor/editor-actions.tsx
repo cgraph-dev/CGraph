@@ -1,3 +1,7 @@
+/**
+ * Editor action buttons for the forum post editor.
+ * @module modules/forums/components/post-editor/editor-actions
+ */
 import { motion } from 'framer-motion';
 import { PaperClipIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import type { EditorActionsProps } from './types';

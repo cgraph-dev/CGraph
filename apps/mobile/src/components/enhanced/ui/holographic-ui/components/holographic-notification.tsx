@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed notification banner with animated entrance, type-based styling, and auto-dismiss.
+ * @module components/enhanced/ui/holographic-ui/HolographicNotification
+ */
 import React, { useEffect } from 'react';
 import { StyleSheet, ViewStyle, Platform, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate, runOnJS } from 'react-native-reanimated';

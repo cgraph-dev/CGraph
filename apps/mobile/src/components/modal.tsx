@@ -1,3 +1,7 @@
+/**
+ * Reusable modal dialog component with configurable header, footer, sizing, and keyboard handling.
+ * @module components/Modal
+ */
 import React from 'react';
 import {
   View,

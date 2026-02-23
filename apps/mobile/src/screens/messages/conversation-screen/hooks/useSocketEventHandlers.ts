@@ -1,3 +1,7 @@
+/**
+ * Hook managing WebSocket event handlers for real-time conversation updates.
+ * @module screens/messages/conversation-screen/hooks/useSocketEventHandlers
+ */
 import { useCallback } from 'react';
 import { Message } from '../../../../types';
 

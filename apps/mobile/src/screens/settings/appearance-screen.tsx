@@ -1,3 +1,7 @@
+/**
+ * Appearance settings screen for theme and display customization.
+ * @module screens/settings/appearance-screen
+ */
 import React from 'react';
 import {
   View,

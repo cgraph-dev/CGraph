@@ -1,3 +1,7 @@
+/**
+ * Screen for changing the user's username with validation.
+ * @module screens/account/username-change-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

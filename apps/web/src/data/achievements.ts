@@ -1,3 +1,7 @@
+/**
+ * Achievement data definitions and configurations.
+ * @module data/achievements
+ */
 import type {
   Achievement,
   AchievementCategory,

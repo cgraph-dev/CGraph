@@ -27,6 +27,14 @@ export {
   loadingVariants,
   skeletonVariants,
   badgeVariants,
+  messageVariants,
+  messageVariantsSlide,
+  presenceVariants,
+  searchResultVariants,
+  sidebarVariants,
+  sidebarItemVariants,
+  settingsTabVariants,
+  voteFeedbackVariants,
 } from './transitions/variants';
 
 // Helper functions & utilities

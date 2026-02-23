@@ -1,4 +1,8 @@
 /**
+ * Vertical vote control sidebar with up/down arrows and score display.
+ * @module pages/forums/forum-post/post-vote-sidebar
+ */
+/**
  * Post Vote Sidebar
  *
  * Vertical vote control with up/down arrows and score display.

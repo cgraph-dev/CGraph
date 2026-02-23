@@ -1,3 +1,7 @@
+/**
+ * Notifications settings screen for managing push and email notification preferences.
+ * @module screens/settings/notifications-screen
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,

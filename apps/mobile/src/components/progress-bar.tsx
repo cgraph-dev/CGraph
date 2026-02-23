@@ -1,3 +1,7 @@
+/**
+ * Animated progress bar component with percentage label and themed color support.
+ * @module components/ProgressBar
+ */
 import React from 'react';
 import {
   View,

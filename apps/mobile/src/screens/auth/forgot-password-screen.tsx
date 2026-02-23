@@ -1,3 +1,7 @@
+/**
+ * Forgot password screen for initiating password reset flow.
+ * @module screens/auth/forgot-password-screen
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,

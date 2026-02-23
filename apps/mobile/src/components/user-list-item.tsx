@@ -1,3 +1,7 @@
+/**
+ * User list item component displaying avatar, name, status, and interactive actions.
+ * @module components/UserListItem
+ */
 import React, { useRef, useEffect } from 'react';
 import {
   View,

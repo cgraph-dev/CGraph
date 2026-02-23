@@ -1,3 +1,7 @@
+/**
+ * Type definitions for the forum post editor.
+ * @module modules/forums/components/post-editor/types
+ */
 import type { ThreadPrefix, ForumCategory } from '@/modules/forums/store';
 
 /**

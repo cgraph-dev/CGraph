@@ -1,3 +1,7 @@
+/**
+ * Avatar component that displays a user's profile image or generated initials with configurable size and online status.
+ * @module components/Avatar
+ */
 import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '../contexts/theme-context';

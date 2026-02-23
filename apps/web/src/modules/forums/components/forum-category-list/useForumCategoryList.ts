@@ -1,3 +1,7 @@
+/**
+ * Hook for managing forum category list state and interactions.
+ * @module modules/forums/components/forum-category-list/useForumCategoryList
+ */
 import { useState, useMemo } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumCategory, Forum } from '@/modules/forums/store';

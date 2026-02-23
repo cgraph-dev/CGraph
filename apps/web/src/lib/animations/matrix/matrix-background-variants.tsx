@@ -1,3 +1,7 @@
+/**
+ * Matrix background animation variant components.
+ * @module lib/animations/matrix/matrix-background-variants
+ */
 import { memo } from 'react';
 import { MatrixBackground } from './matrix-background';
 import type { MatrixBackgroundProps } from './matrix-background.types';

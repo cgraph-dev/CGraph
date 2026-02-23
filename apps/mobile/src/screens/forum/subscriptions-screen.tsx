@@ -1,3 +1,7 @@
+/**
+ * Forum subscriptions screen for managing followed forums and threads.
+ * @module screens/forum/subscriptions-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

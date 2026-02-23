@@ -1,4 +1,8 @@
 /**
+ * Forum admin dashboard page with management controls.
+ * @module pages/forums/forum-admin
+ */
+/**
  * Forum Admin Dashboard
  *
  * Comprehensive forum management panel with:

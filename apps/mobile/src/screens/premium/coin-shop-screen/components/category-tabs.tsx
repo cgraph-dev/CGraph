@@ -1,3 +1,7 @@
+/**
+ * Category tab selector for filtering coin shop items.
+ * @module screens/premium/coin-shop-screen/components/category-tabs
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

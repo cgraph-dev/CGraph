@@ -1,3 +1,7 @@
+/**
+ * Admin screen for reordering forum categories and boards.
+ * @module screens/admin/forum-reorder-screen
+ */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,

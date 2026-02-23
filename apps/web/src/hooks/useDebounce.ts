@@ -1,3 +1,7 @@
+/**
+ * Hook for debouncing values with configurable delay.
+ * @module hooks/useDebounce
+ */
 import { useState, useEffect, useRef } from 'react';
 
 /**

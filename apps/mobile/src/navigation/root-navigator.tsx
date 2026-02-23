@@ -1,3 +1,7 @@
+/**
+ * Root navigator that switches between auth and main app flows.
+ * @module navigation/root-navigator
+ */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../contexts/AuthContext';

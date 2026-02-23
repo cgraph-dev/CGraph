@@ -1,4 +1,8 @@
 /**
+ * Forum post page with voting, comments, and moderation features.
+ * @module pages/forums/forum-post/page
+ */
+/**
  * ForumPost Page
  *
  * Displays a single forum post with voting, content, comments,

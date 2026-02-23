@@ -1,3 +1,7 @@
+/**
+ * Themed toggle switch component with optional label and description text.
+ * @module components/Switch
+ */
 import React from 'react';
 import { View, Text, Switch as RNSwitch, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTheme } from '../contexts/theme-context';

@@ -1,3 +1,7 @@
+/**
+ * Type definitions for user profile pages.
+ * @module pages/profile/user-profile/types
+ */
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 /**

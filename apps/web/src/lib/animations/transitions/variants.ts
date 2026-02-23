@@ -293,3 +293,142 @@ export const badgeVariants: Variants = {
     transition: { duration: durations.fast },
   },
 };
+
+// ==================== MESSAGE VARIANTS ====================
+
+/** Entrance/exit animations for chat messages. */
+export const messageVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 12,
+    scale: 0.97,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: springs.smooth,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    x: -40,
+    transition: { duration: durations.fast },
+  },
+};
+
+/** Slide-in from left/right based on sender. */
+export const messageVariantsSlide = {
+  own: {
+    hidden: { opacity: 0, x: 30 },
+    visible: { opacity: 1, x: 0, transition: springs.smooth },
+    exit: { opacity: 0, x: 30, transition: { duration: durations.fast } },
+  },
+  other: {
+    hidden: { opacity: 0, x: -30 },
+    visible: { opacity: 1, x: 0, transition: springs.smooth },
+    exit: { opacity: 0, x: -30, transition: { duration: durations.fast } },
+  },
+} as const;
+
+// ==================== PRESENCE VARIANTS ====================
+
+/** Online/offline status pulse animation. */
+export const presenceVariants: Variants = {
+  offline: {
+    scale: 1,
+    opacity: 0.4,
+  },
+  online: {
+    scale: [1, 1.3, 1],
+    opacity: 1,
+    transition: {
+      scale: { duration: 0.4, times: [0, 0.5, 1] },
+      opacity: { duration: durations.normal },
+    },
+  },
+  away: {
+    opacity: [0.5, 0.8, 0.5],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+};
+
+// ==================== SEARCH RESULT VARIANTS ====================
+
+/** Search result item entrance animation. */
+export const searchResultVariants: Variants = {
+  hidden: { opacity: 0, y: 8, filter: 'blur(4px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: springs.smooth,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.98,
+    transition: { duration: durations.fast },
+  },
+};
+
+// ==================== SIDEBAR VARIANTS ====================
+
+/** Sidebar expand/collapse with spring physics. */
+export const sidebarVariants: Variants = {
+  collapsed: {
+    width: 72,
+    transition: springs.smooth,
+  },
+  expanded: {
+    width: 280,
+    transition: springs.gentle,
+  },
+};
+
+/** Sidebar item entrance with stagger support. */
+export const sidebarItemVariants: Variants = {
+  hidden: { opacity: 0, x: -12 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: springs.smooth,
+  },
+};
+
+// ==================== SETTINGS PANEL VARIANTS ====================
+
+/** Tab content transition for settings panels. */
+export const settingsTabVariants: Variants = {
+  hidden: { opacity: 0, x: 10 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: springs.smooth,
+  },
+  exit: {
+    opacity: 0,
+    x: -10,
+    transition: { duration: durations.fast },
+  },
+};
+
+// ==================== VOTE FEEDBACK VARIANTS ====================
+
+/** Upvote/downvote click feedback animation. */
+export const voteFeedbackVariants: Variants = {
+  idle: { scale: 1, y: 0 },
+  upvote: {
+    scale: [1, 1.4, 1],
+    y: [0, -6, 0],
+    transition: { duration: 0.4, times: [0, 0.3, 1] },
+  },
+  downvote: {
+    scale: [1, 1.4, 1],
+    y: [0, 6, 0],
+    transition: { duration: 0.4, times: [0, 0.3, 1] },
+  },
+};

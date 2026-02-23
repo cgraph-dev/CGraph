@@ -1,3 +1,7 @@
+/**
+ * Group overview screen showing group details and channels.
+ * @module screens/groups/group-screen
+ */
 import React, { useEffect, useState } from 'react';
 import {
   View,

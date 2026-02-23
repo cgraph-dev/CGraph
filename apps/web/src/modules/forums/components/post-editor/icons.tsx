@@ -1,8 +1,8 @@
-import React from 'react';
-
 /**
- * Custom Underline icon (not available in Heroicons)
+ * Custom icon components for the forum post editor.
+ * @module modules/forums/components/post-editor/icons
  */
+import React from 'react';
 export function UnderlineIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

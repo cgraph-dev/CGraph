@@ -1,3 +1,7 @@
+/**
+ * Type definitions for chat bubble settings screen.
+ * @module screens/settings/chat-bubble-settings-screen/types
+ */
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SettingsStackParamList } from '../../../types';
 

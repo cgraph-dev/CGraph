@@ -1,3 +1,7 @@
+/**
+ * Conversation screen for viewing and sending messages in a thread.
+ * @module screens/messages/conversation-screen
+ */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,

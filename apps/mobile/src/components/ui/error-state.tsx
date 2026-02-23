@@ -1,3 +1,7 @@
+/**
+ * Error state display component with animated icon, message, and retry action button.
+ * @module components/ui/ErrorState
+ */
 import React, { useRef, useEffect } from 'react';
 import {
   View,

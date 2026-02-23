@@ -1,3 +1,7 @@
+/**
+ * React hook for tracking real-time friend presence status via WebSocket.
+ * @module hooks/useFriendPresence
+ */
 import { useState, useEffect, useCallback } from 'react';
 import socketManager from '../lib/socket';
 

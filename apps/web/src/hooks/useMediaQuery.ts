@@ -1,3 +1,7 @@
+/**
+ * Hook for tracking whether a CSS media query matches.
+ * @module hooks/useMediaQuery
+ */
 import { useState, useEffect } from 'react';
 
 /**

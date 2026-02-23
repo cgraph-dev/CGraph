@@ -1,3 +1,7 @@
+/**
+ * React hook providing a unified API for triggering haptic feedback across different styles.
+ * @module hooks/useHaptics
+ */
 import { useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 

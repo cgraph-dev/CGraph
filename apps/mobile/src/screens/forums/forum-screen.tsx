@@ -1,3 +1,7 @@
+/**
+ * Individual forum screen displaying forum details and content.
+ * @module screens/forums/forum-screen
+ */
 import React, { useEffect, useState } from 'react';
 import {
   View,

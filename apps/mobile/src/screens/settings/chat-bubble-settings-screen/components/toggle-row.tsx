@@ -1,3 +1,7 @@
+/**
+ * Toggle switch row component for boolean settings.
+ * @module screens/settings/chat-bubble-settings-screen/components/toggle-row
+ */
 import React from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

@@ -1,3 +1,7 @@
+/**
+ * Mappers for transforming API announcement response data.
+ * @module modules/forums/store/announcement-mappers
+ */
 import type { Announcement, AnnouncementScope } from './announcementStore.types';
 
 /**

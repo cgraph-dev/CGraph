@@ -1,4 +1,8 @@
 /**
+ * Moderation queue page re-export from modular structure.
+ * @module pages/forums/moderation-queue
+ */
+/**
  * ModerationQueue Page
  *
  * Re-exports from modular structure.

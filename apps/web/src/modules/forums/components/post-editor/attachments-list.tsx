@@ -1,3 +1,7 @@
+/**
+ * Attachments list component for the forum post editor.
+ * @module modules/forums/components/post-editor/attachments-list
+ */
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { AttachmentsListProps } from './types';
 

@@ -1,3 +1,7 @@
+/**
+ * React hook for running a callback on a configurable interval with pause support.
+ * @module hooks/useInterval
+ */
 import { useRef, useEffect, useCallback } from 'react';
 
 /**

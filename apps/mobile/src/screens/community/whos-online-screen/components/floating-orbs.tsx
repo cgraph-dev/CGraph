@@ -1,3 +1,7 @@
+/**
+ * Floating orbs animation component for the who's online screen.
+ * @module screens/community/whos-online-screen/components/floating-orbs
+ */
 import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {

@@ -1,3 +1,7 @@
+/**
+ * Login screen for user authentication.
+ * @module screens/auth/login-screen
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,

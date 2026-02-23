@@ -1,3 +1,7 @@
+/**
+ * Forum board screen displaying threads within a specific board.
+ * @module screens/forums/forum-board-screen
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,

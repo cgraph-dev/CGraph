@@ -1,3 +1,7 @@
+/**
+ * Text scramble animation effect component for auth screens.
+ * @module modules/auth/components/auth-effects/text-scramble
+ */
 import { memo, useState, useEffect } from 'react';
 import { prefersReducedMotion, SCRAMBLE_CHARS } from './constants';
 import type { TextScrambleProps } from './types';

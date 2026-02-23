@@ -1,3 +1,7 @@
+/**
+ * Forum subscription toggle button with loading state and haptic feedback.
+ * @module components/forum/SubscriptionButton
+ */
 import React from 'react';
 import {
   View,

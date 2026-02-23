@@ -1,3 +1,7 @@
+/**
+ * Media tile component for displaying a selectable photo or video thumbnail in the attachment picker grid.
+ * @module components/attachment-picker/MediaTile
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

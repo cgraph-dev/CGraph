@@ -1,3 +1,7 @@
+/**
+ * Storybook stories for loading feedback components.
+ * @module components/feedback/loading.stories
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import { LoadingOverlay, SkeletonText, SkeletonAvatar, SkeletonMessage } from './loading';
 import { LoadingSpinner } from './loading-spinner';

@@ -1,3 +1,7 @@
+/**
+ * Special offers section displaying limited-time coin shop deals.
+ * @module screens/premium/coin-shop-screen/components/special-offers-section
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';

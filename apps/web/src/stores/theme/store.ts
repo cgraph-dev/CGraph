@@ -8,6 +8,7 @@
  * This file creates the Zustand store instance with no imports from
  * selectors.ts, so both selectors.ts and themeStore.ts can safely import it.
  *
+ * @module stores/theme/store
  * @version 2.1.1
  * @since v0.9.7
  */

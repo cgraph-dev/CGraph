@@ -1,3 +1,7 @@
+/**
+ * Tab content component rendering settings controls for each tab.
+ * @module screens/settings/chat-bubble-settings-screen/components/tab-content
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';

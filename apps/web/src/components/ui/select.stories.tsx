@@ -1,3 +1,7 @@
+/**
+ * Storybook stories for the Select UI component.
+ * @module components/ui/select.stories
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import Select from './select';
 import { useState } from 'react';

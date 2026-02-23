@@ -1,3 +1,7 @@
+/**
+ * Animated badge component displaying online user record counts.
+ * @module screens/community/whos-online-screen/components/animated-record-badge
+ */
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {

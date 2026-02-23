@@ -1,3 +1,7 @@
+/**
+ * Screen for creating a new forum.
+ * @module screens/forums/create-forum-screen
+ */
 import React, { useState } from 'react';
 import {
   View,

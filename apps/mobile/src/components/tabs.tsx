@@ -1,3 +1,7 @@
+/**
+ * Tabbed navigation component with customizable tab items and active indicator styling.
+ * @module components/Tabs
+ */
 import React from 'react';
 import {
   View,

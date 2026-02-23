@@ -1,3 +1,7 @@
+/**
+ * Forum administration screen for managing forum settings and moderation.
+ * @module screens/forums/forum-admin-screen
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,

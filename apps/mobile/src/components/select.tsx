@@ -1,3 +1,7 @@
+/**
+ * Dropdown select component with search, multi-select, and modal presentation support.
+ * @module components/Select
+ */
 import React, { useState } from 'react';
 import {
   View,

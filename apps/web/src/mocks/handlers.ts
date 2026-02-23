@@ -4,6 +4,7 @@
  * Comprehensive API mocks for testing. These handlers simulate the backend
  * API responses for unit and integration tests.
  *
+ * @module mocks/handlers
  * @see https://mswjs.io/docs/
  * @since v0.7.27
  * @updated v0.9.9 - Added comprehensive handlers for all API endpoints

@@ -1,3 +1,7 @@
+/**
+ * Type definitions and constants for online status indicators.
+ * @module modules/social/components/common/online-status/types
+ */
 export type OnlineStatus = 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
 
 /** Hex color map for animated backgroundColor transitions */

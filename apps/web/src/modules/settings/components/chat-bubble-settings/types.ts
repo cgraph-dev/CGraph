@@ -1,3 +1,7 @@
+/**
+ * Type definitions for chat bubble settings tab components.
+ * @module modules/settings/components/chat-bubble-settings/types
+ */
 import type { ChatBubbleConfig } from '@/stores/theme';
 import type { BackgroundCategory, ChatBackground } from '@/data/chatBackgrounds';
 

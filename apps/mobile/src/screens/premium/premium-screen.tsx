@@ -1,3 +1,7 @@
+/**
+ * Premium subscription screen with plan details and purchase options.
+ * @module screens/premium/premium-screen
+ */
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,

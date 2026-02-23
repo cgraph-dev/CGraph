@@ -1,3 +1,7 @@
+/**
+ * Type definitions for authentication visual effects.
+ * @module modules/auth/components/auth-effects/types
+ */
 import type { ReactNode } from 'react';
 
 /**

@@ -1,3 +1,7 @@
+/**
+ * Background particle effects for the level-up modal.
+ * @module modules/gamification/components/level-up-modal/background-particles
+ */
 import { motion } from 'framer-motion';
 
 const PARTICLE_COLORS = ['#10b981', '#8b5cf6', '#ec4899', '#f59e0b'] as const;

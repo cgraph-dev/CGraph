@@ -1,3 +1,7 @@
+/**
+ * Utility functions for seasonal theme detection and configuration.
+ * @module modules/gamification/components/events/seasonal-theme-provider/utils
+ */
 import type { SeasonalTheme } from './types';
 
 /**

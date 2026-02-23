@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed button component with animated gradient effects and haptic feedback.
+ * @module components/enhanced/ui/holographic-ui/HolographicButton
+ */
 import React, { ReactNode, useRef, useEffect } from 'react';
 import {
   View,

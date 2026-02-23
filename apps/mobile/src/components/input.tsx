@@ -1,3 +1,7 @@
+/**
+ * Themed text input component with label, error state, helper text, and icon support.
+ * @module components/Input
+ */
 import React from 'react';
 import {
   View,

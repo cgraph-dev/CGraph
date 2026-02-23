@@ -1,3 +1,7 @@
+/**
+ * Status badge indicator component showing user online/offline/idle/dnd presence status.
+ * @module components/StatusBadge
+ */
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 

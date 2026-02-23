@@ -1,3 +1,7 @@
+/**
+ * Mock data for progression customization features.
+ * @module pages/customize/progression-customization/mock-data
+ */
 import type { Achievement, LeaderboardEntry, Quest, DailyReward } from './types';
 
 /**

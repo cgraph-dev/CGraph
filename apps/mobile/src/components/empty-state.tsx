@@ -1,3 +1,7 @@
+/**
+ * Empty state placeholder component with icon, title, description, and optional action button.
+ * @module components/EmptyState
+ */
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

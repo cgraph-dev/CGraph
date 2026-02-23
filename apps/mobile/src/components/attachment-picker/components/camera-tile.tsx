@@ -1,3 +1,7 @@
+/**
+ * Camera tile component that provides a quick-access button to open the device camera.
+ * @module components/attachment-picker/CameraTile
+ */
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

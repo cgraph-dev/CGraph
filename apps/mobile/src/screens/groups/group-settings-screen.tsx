@@ -1,3 +1,7 @@
+/**
+ * Group settings screen for managing group configuration.
+ * @module screens/groups/group-settings-screen
+ */
 import React from 'react';
 import {
   View,

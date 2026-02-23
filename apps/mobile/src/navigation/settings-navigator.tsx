@@ -1,3 +1,7 @@
+/**
+ * Stack navigator for the settings section with all settings screens.
+ * @module navigation/settings-navigator
+ */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsStackParamList } from '../types';

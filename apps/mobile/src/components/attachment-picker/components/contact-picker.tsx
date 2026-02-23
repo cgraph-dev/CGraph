@@ -1,3 +1,7 @@
+/**
+ * Contact picker component for browsing and selecting device contacts as attachments.
+ * @module components/attachment-picker/ContactPicker
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text, FlatList, Image } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';

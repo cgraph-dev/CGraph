@@ -8,6 +8,7 @@
  * - Legacy backward-compatibility helpers
  * - Export / Import
  *
+ * @module stores/theme/actions
  * @version 2.1.0
  * @since v0.9.7
  */

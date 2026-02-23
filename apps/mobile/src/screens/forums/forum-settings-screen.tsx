@@ -1,3 +1,7 @@
+/**
+ * Forum settings screen for configuring forum preferences.
+ * @module screens/forums/forum-settings-screen
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,

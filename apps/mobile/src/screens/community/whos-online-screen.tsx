@@ -1,3 +1,7 @@
+/**
+ * Screen displaying currently online community members.
+ * @module screens/community/whos-online-screen
+ */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,

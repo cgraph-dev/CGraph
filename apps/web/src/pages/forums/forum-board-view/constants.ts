@@ -1,3 +1,7 @@
+/**
+ * Constants for forum board view configuration.
+ * @module pages/forums/forum-board-view/constants
+ */
 import type { MemberSortOption } from './types';
 
 /**

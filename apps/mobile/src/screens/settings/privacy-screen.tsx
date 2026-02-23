@@ -1,3 +1,7 @@
+/**
+ * Privacy settings screen for managing user privacy preferences.
+ * @module screens/settings/privacy-screen
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,

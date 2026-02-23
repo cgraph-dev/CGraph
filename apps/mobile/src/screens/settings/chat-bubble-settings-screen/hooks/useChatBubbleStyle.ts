@@ -1,3 +1,7 @@
+/**
+ * Hook managing chat bubble style state, persistence, and preset application.
+ * @module screens/settings/chat-bubble-settings-screen/hooks/useChatBubbleStyle
+ */
 import { useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';

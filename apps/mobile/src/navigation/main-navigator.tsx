@@ -1,3 +1,7 @@
+/**
+ * Main tab navigator with bottom tab bar for primary app sections.
+ * @module navigation/main-navigator
+ */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';

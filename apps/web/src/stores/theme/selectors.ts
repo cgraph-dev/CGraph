@@ -6,6 +6,7 @@
  *
  * Also houses legacy alias exports for backward compatibility.
  *
+ * @module stores/theme/selectors
  * @version 2.1.0
  * @since v0.9.7
  */

@@ -1,4 +1,8 @@
 /**
+ * Type definitions for the forum leaderboard component.
+ * @module pages/forums/forum-leaderboard/types
+ */
+/**
  * Forum Leaderboard Types
  *
  * Type definitions for the forum leaderboard component.

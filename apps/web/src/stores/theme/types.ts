@@ -3,6 +3,7 @@
  *
  * All types, interfaces, and union types for the unified theme system.
  *
+ * @module stores/theme/types
  * @version 2.0.0
  * @since v0.9.7
  */

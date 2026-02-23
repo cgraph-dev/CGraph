@@ -1,3 +1,7 @@
+/**
+ * Fallback view displayed when media library permissions are unavailable, offering alternative attachment options.
+ * @module components/attachment-picker/FallbackView
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

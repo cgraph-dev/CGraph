@@ -1,3 +1,7 @@
+/**
+ * Live message preview component for chat bubble style customization.
+ * @module screens/settings/chat-bubble-settings-screen/components/message-preview
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';

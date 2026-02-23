@@ -1,3 +1,7 @@
+/**
+ * Animated toast notification component with type-based styling and auto-dismiss behavior.
+ * @module components/Toast
+ */
 import React, { useEffect } from 'react';
 import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';

@@ -1,3 +1,7 @@
+/**
+ * Pulsing dot indicator component for online status.
+ * @module screens/community/whos-online-screen/components/pulsing-dot
+ */
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, {

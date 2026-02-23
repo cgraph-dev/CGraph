@@ -1,3 +1,7 @@
+/**
+ * Profile visibility settings screen for controlling what others can see.
+ * @module screens/settings/profile-visibility-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

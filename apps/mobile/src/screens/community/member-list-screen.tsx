@@ -1,3 +1,7 @@
+/**
+ * Community member list screen with search and filtering.
+ * @module screens/community/member-list-screen
+ */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,

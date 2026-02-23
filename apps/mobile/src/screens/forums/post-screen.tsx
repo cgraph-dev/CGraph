@@ -1,3 +1,7 @@
+/**
+ * Forum post screen for viewing and interacting with individual posts.
+ * @module screens/forums/post-screen
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,

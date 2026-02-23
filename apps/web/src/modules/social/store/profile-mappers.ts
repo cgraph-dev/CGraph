@@ -1,3 +1,7 @@
+/**
+ * Mappers for transforming API profile response data.
+ * @module modules/social/store/profile-mappers
+ */
 import { ensureArray, isRecord } from '@/lib/apiUtils';
 import type { UserBadge, ExtendedProfile } from './profileStore.types';
 

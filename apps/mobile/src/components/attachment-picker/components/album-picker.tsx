@@ -1,3 +1,7 @@
+/**
+ * Album picker component for browsing and selecting media library albums.
+ * @module components/attachment-picker/AlbumPicker
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

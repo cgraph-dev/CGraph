@@ -1,3 +1,7 @@
+/**
+ * Voice message playback component with waveform visualization, progress scrubbing, and playback controls.
+ * @module components/VoiceMessagePlayer
+ */
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   View,

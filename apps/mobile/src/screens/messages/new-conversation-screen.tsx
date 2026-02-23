@@ -1,3 +1,7 @@
+/**
+ * Screen for starting a new conversation with user search.
+ * @module screens/messages/new-conversation-screen
+ */
 import React, { useState } from 'react';
 import {
   View,

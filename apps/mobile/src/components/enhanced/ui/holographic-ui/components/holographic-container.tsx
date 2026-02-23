@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed container component with animated borders, scanlines, and corner decorations.
+ * @module components/enhanced/ui/holographic-ui/HolographicContainer
+ */
 import React, { ReactNode, useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, ViewStyle, Platform, Pressable } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';

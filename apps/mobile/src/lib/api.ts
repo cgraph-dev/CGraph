@@ -1,3 +1,7 @@
+/**
+ * HTTP API client configuration with environment-aware base URL resolution and auth token management.
+ * @module lib/api
+ */
 import { createHttpClient, extractApiError } from '@cgraph/utils';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';

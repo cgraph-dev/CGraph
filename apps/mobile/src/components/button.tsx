@@ -1,3 +1,7 @@
+/**
+ * Reusable button component with multiple variants, sizes, loading state, and press animations.
+ * @module components/Button
+ */
 import React, { useRef, ReactNode } from 'react';
 import {
   TouchableOpacity,

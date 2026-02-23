@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed progress bar component with animated fill and gradient effects.
+ * @module components/enhanced/ui/holographic-ui/HolographicProgress
+ */
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, interpolate } from 'react-native-reanimated';

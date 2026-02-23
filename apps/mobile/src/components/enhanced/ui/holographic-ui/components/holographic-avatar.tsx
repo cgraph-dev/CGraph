@@ -1,3 +1,7 @@
+/**
+ * Holographic-themed avatar component with animated glow effects and status indicators.
+ * @module components/enhanced/ui/holographic-ui/HolographicAvatar
+ */
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';

@@ -1,3 +1,7 @@
+/**
+ * Account settings screen for managing user account preferences.
+ * @module screens/settings/account-screen
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,

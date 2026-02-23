@@ -1,3 +1,7 @@
+/**
+ * Type definitions for the forum board view.
+ * @module pages/forums/forum-board-view/types
+ */
 import type { Board, Thread, ForumMember, Forum } from '@/modules/forums/store';
 
 /**

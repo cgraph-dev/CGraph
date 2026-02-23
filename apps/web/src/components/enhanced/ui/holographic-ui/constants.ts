@@ -1,3 +1,7 @@
+/**
+ * Holographic UI theme constants and configuration values.
+ * @module components/enhanced/ui/holographic-ui/constants
+ */
 import type { HolographicTheme } from './types';
 
 /**

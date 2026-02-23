@@ -1,3 +1,7 @@
+/**
+ * Header component for the attachment picker with album title, selection count, and action buttons.
+ * @module components/attachment-picker/Header
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

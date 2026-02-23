@@ -1,3 +1,7 @@
+/**
+ * Premium upgrade banner component with gradient styling.
+ * @module screens/premium/coin-shop-screen/components/premium-banner
+ */
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';

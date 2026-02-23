@@ -1,3 +1,7 @@
+/**
+ * Layout component for social pages.
+ * @module layouts/social-layout
+ */
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 

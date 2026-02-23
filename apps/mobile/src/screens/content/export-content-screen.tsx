@@ -1,3 +1,7 @@
+/**
+ * Screen for exporting user content and data.
+ * @module screens/content/export-content-screen
+ */
 import React, { useState, useCallback, useRef } from 'react';
 import {
   View,

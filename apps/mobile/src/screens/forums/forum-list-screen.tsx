@@ -1,3 +1,7 @@
+/**
+ * Forum list screen showing all available forum categories and boards.
+ * @module screens/forums/forum-list-screen
+ */
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,

@@ -1,3 +1,7 @@
+/**
+ * Loading spinner component with optional text label and full-screen overlay mode.
+ * @module components/LoadingSpinner
+ */
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '../contexts/theme-context';

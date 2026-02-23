@@ -4,6 +4,7 @@
  * All color definitions, theme presets, profile card configs, chat bubble presets,
  * and category classification. Pure data — no store logic.
  *
+ * @module stores/theme/presets
  * @version 2.0.0
  * @since v0.9.7
  */

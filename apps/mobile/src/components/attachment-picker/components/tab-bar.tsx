@@ -1,3 +1,7 @@
+/**
+ * Tab bar component for switching between attachment picker tabs (photos, camera, contacts, etc.).
+ * @module components/attachment-picker/TabBar
+ */
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

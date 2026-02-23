@@ -1,3 +1,7 @@
+/**
+ * Friends stack navigator with friend list, add friend, friend requests, and user profile screens.
+ * @module navigation/FriendsNavigator
+ */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FriendsStackParamList } from '../types';

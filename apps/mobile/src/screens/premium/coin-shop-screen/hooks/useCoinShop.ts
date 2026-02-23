@@ -1,3 +1,7 @@
+/**
+ * Hook managing coin shop state, purchases, and animations.
+ * @module screens/premium/coin-shop-screen/hooks/useCoinShop
+ */
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withTiming, withDelay, withSpring, type SharedValue } from 'react-native-reanimated';

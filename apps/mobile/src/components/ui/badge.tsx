@@ -1,3 +1,7 @@
+/**
+ * Badge component with multiple variants, sizes, animated entrance, and gradient styling options.
+ * @module components/ui/Badge
+ */
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming, Easing as ReanimatedEasing } from 'react-native-reanimated';

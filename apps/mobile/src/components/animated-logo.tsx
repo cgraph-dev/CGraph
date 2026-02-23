@@ -1,3 +1,7 @@
+/**
+ * Animated SVG logo component with gradient effects and entrance animations.
+ * @module components/AnimatedLogo
+ */
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import Svg, {

@@ -1,3 +1,7 @@
+/**
+ * React hook for persistent state management using AsyncStorage.
+ * @module hooks/useAsyncStorage
+ */
 import { useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

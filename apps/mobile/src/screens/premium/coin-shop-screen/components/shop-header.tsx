@@ -1,3 +1,7 @@
+/**
+ * Header component for the coin shop with balance display and navigation.
+ * @module screens/premium/coin-shop-screen/components/shop-header
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';

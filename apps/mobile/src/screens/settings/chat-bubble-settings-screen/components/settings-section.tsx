@@ -1,3 +1,7 @@
+/**
+ * Collapsible settings section container with icon and title.
+ * @module screens/settings/chat-bubble-settings-screen/components/settings-section
+ */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';

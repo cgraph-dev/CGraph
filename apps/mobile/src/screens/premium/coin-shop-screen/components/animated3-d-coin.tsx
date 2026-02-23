@@ -1,3 +1,7 @@
+/**
+ * Animated 3D coin component with rotation and glow effects.
+ * @module screens/premium/coin-shop-screen/components/animated3-d-coin
+ */
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {

@@ -1,3 +1,7 @@
+/**
+ * Transforms raw API statistics data into typed ForumStats shape.
+ * @module modules/forums/components/forum-statistics/transformStatisticsData
+ */
 import type { ForumStats } from '@/modules/forums/components/forum-statistics/forum-statistics.types';
 import { isRecord } from '@/lib/apiUtils';
 

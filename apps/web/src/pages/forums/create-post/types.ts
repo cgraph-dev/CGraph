@@ -1,4 +1,8 @@
 /**
+ * Type definitions for the forum post creation page.
+ * @module pages/forums/create-post/types
+ */
+/**
  * Create Post Module Types
  *
  * Type definitions for the forum post creation page.

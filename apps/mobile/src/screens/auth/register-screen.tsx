@@ -1,3 +1,7 @@
+/**
+ * Registration screen for new user account creation.
+ * @module screens/auth/register-screen
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,

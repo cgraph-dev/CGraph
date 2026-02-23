@@ -1,6 +1,7 @@
 /**
- * ReportModal component for ForumPost
- * Modal for reporting posts with reason selection
+ * ReportModal component for ForumPost.
+ * Modal for reporting posts with reason selection.
+ * @module pages/forums/forum-post/report-modal
  */
 
 import { REPORT_REASONS } from './constants';

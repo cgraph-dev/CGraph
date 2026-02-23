@@ -1,3 +1,7 @@
+/**
+ * Hook providing wrapped message action handlers for the conversation screen.
+ * @module screens/messages/conversation-screen/hooks/useMessageActionWrappers
+ */
 import { useCallback, RefObject } from 'react';
 import { TextInput } from 'react-native';
 import { Message } from '../../../../types';

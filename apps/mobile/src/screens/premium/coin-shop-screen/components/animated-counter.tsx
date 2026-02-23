@@ -1,3 +1,7 @@
+/**
+ * Animated numeric counter component with smooth value transitions.
+ * @module screens/premium/coin-shop-screen/components/animated-counter
+ */
 import React, { useEffect, useState } from 'react';
 import { Text, TextStyle, StyleSheet } from 'react-native';
 import {

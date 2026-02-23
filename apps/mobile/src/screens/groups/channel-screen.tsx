@@ -1,3 +1,7 @@
+/**
+ * Group channel screen for real-time messaging within a channel.
+ * @module screens/groups/channel-screen
+ */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,

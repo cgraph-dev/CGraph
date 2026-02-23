@@ -1,3 +1,7 @@
+/**
+ * Constants for achievement notification styling and rarity colors.
+ * @module modules/gamification/components/achievement-notification/constants
+ */
 import type { AchievementRarity } from '@/modules/gamification/store';
 
 /**

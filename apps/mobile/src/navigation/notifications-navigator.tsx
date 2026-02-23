@@ -1,3 +1,7 @@
+/**
+ * Stack navigator for the notifications section.
+ * @module navigation/notifications-navigator
+ */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotificationsStackParamList } from '../types';

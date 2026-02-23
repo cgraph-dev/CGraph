@@ -1,4 +1,8 @@
 /**
+ * Moderation queue page for forum moderators and admins.
+ * @module pages/forums/moderation-queue/moderation-queue
+ */
+/**
  * ModerationQueue Page
  *
  * Dedicated moderation queue page for forum moderators and admins.

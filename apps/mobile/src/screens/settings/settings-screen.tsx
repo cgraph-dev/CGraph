@@ -1,3 +1,7 @@
+/**
+ * Main settings screen with navigation to all settings sub-screens.
+ * @module screens/settings/settings-screen
+ */
 import React, { useRef, useEffect } from 'react';
 import {
   View,

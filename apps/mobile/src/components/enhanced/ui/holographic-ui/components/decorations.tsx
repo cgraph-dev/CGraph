@@ -1,3 +1,7 @@
+/**
+ * Decorative holographic UI elements including corner decorations and scanline overlays.
+ * @module components/enhanced/ui/holographic-ui/Decorations
+ */
 import React, { useMemo, useEffect } from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';

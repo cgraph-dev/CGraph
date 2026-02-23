@@ -1,3 +1,7 @@
+/**
+ * Screen header component with navigation controls, title, and optional action buttons.
+ * @module components/Header
+ */
 import React from 'react';
 import {
   View,

@@ -13,6 +13,7 @@
  * Actions → ./actions.ts | Selectors → ./selectors.ts
  * Store creation & barrel → this file
  *
+ * @module stores/theme/themeStore
  * @version 2.1.0
  * @since v0.9.7
  */

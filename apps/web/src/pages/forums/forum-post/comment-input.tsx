@@ -1,4 +1,8 @@
 /**
+ * Comment input section with textarea and submit button.
+ * @module pages/forums/forum-post/comment-input
+ */
+/**
  * Comment Input Section
  *
  * Renders either a locked-post notice or the comment textarea

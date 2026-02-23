@@ -1,3 +1,7 @@
+/**
+ * Segmented control row component for multi-option settings selection.
+ * @module screens/settings/chat-bubble-settings-screen/components/segmented-row
+ */
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
