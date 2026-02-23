@@ -16,7 +16,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  ScrollView,
+  FlatList,
   KeyboardAvoidingView,
   Animated,
   StyleSheet,
@@ -220,15 +220,16 @@ export const AttachmentPreviewModal = memo(function AttachmentPreviewModal({
           </View>
 
           {/* Preview Area */}
-          <ScrollView
+          <FlatList
+            data={attachments}
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
             horizontal={attachments.length > 1}
             pagingEnabled={attachments.length > 1}
             showsHorizontalScrollIndicator={attachments.length > 1}
-          >
-            {attachments.map(renderAttachment)}
-          </ScrollView>
+            keyExtractor={(_, index) => String(index)}
+            renderItem={({ item, index }) => renderAttachment(item, index)}
+          />
 
           {/* Footer: Caption + Send */}
           <View style={[styles.footer, { backgroundColor: colors.surface }]}>

@@ -16,7 +16,6 @@ import {
   Pressable,
   TouchableOpacity,
   FlatList,
-  ScrollView,
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -165,30 +164,34 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
           </View>
 
           {/* Emoji grid */}
-          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-            <View style={styles.grid}>
-              {emojis.map((emoji, index) => {
-                const reacted = hasReacted(emoji);
-                return (
-                  <TouchableOpacity
-                    key={`${emoji}-${index}`}
-                    style={[
-                      styles.gridItem,
-                      reacted && {
-                        backgroundColor: `${colors.primary}20`,
-                        borderColor: colors.primary,
-                        borderWidth: 1,
-                      },
-                    ]}
-                    onPress={() => handleEmojiPress(emoji)}
-                    activeOpacity={0.6}
-                  >
-                    <Text style={styles.gridEmoji}>{emoji}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </ScrollView>
+          <FlatList
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            data={emojis}
+            numColumns={8}
+            keyExtractor={(item, index) => `${item}-${index}`}
+            extraData={message?.reactions}
+            contentContainerStyle={styles.grid}
+            renderItem={({ item: emoji }) => {
+              const reacted = hasReacted(emoji);
+              return (
+                <TouchableOpacity
+                  style={[
+                    styles.gridItem,
+                    reacted && {
+                      backgroundColor: `${colors.primary}20`,
+                      borderColor: colors.primary,
+                      borderWidth: 1,
+                    },
+                  ]}
+                  onPress={() => handleEmojiPress(emoji)}
+                  activeOpacity={0.6}
+                >
+                  <Text style={styles.gridEmoji}>{emoji}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
         </View>
       </View>
     </Modal>
@@ -260,9 +263,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
     paddingVertical: 12,
   },
   gridItem: {

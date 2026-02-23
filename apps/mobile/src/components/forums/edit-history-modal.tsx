@@ -10,6 +10,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   Modal,
   ActivityIndicator,
 } from 'react-native';
@@ -128,13 +129,14 @@ export default function EditHistoryModal({
             ) : (
               <View style={styles.splitView}>
                 {/* Timeline Sidebar */}
-                <ScrollView
+                <FlatList
                   style={styles.timeline}
                   showsVerticalScrollIndicator={false}
-                >
-                  {history.map((edit, index) => (
+                  data={history}
+                  keyExtractor={(item) => item.id}
+                  extraData={selectedEdit?.id}
+                  renderItem={({ item: edit, index }) => (
                     <TouchableOpacity
-                      key={edit.id}
                       onPress={() => handleSelectEdit(edit)}
                       style={[
                         styles.timelineItem,
@@ -154,8 +156,8 @@ export default function EditHistoryModal({
                         {formatTimeAgo(edit.edited_at)}
                       </Text>
                     </TouchableOpacity>
-                  ))}
-                </ScrollView>
+                  )}
+                />
 
                 {/* Details Panel */}
                 <ScrollView

@@ -9,7 +9,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -159,14 +159,19 @@ export default function PollWidget({
       </View>
 
       {/* Poll Options */}
-      <ScrollView style={styles.options} showsVerticalScrollIndicator={false}>
-        {poll.options.map((option) => {
+      <FlatList
+        style={styles.options}
+        showsVerticalScrollIndicator={false}
+        data={poll.options}
+        keyExtractor={(item) => item.id}
+        extraData={{ selectedOptions, hasVoted, isPollClosed }}
+        renderItem={({ item: option }) => {
           const percentage = getPercentage(option.votes);
           const isSelected = selectedOptions.includes(option.id);
           const showResults = hasVoted || isPollClosed;
 
           return (
-            <View key={option.id} style={styles.optionWrapper}>
+            <View style={styles.optionWrapper}>
               {showResults ? (
                 // Results View
                 <View style={styles.resultOption}>
@@ -225,8 +230,8 @@ export default function PollWidget({
               )}
             </View>
           );
-        })}
-      </ScrollView>
+        }}
+      />
 
       {/* Vote Button */}
       {!hasVoted && !isPollClosed && (
