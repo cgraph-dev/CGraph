@@ -7,12 +7,12 @@ import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { SPECIAL_OFFERS } from './constants';
 import { CountdownTimer } from './countdown-timer';
 
 export function SpecialOffersSection() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={styles.specialOffersSection}>

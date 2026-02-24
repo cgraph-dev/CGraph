@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface AvatarProps {
   /** Image URL or null for initials */
@@ -75,7 +75,7 @@ export default function Avatar({
   showStatus = true,
   style,
 }: AvatarProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const sizeValue = typeof size === 'number' ? size : SIZES[size];
   const fontSize = sizeValue * 0.4;
   const statusSize = Math.max(sizeValue * 0.25, 8);

@@ -23,7 +23,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import GlassCard from '../../../../components/ui/glass-card';
 import { LeaderboardForum, TopContributor, LeaderboardType } from '../../forum-leaderboard-screen';
 

@@ -12,7 +12,7 @@ import { render, fireEvent, act } from '@testing-library/react-native';
 import Toast from '../toast';
 
 // Mock ThemeContext
-jest.mock('../../contexts/ThemeContext', () => ({
+jest.mock('@/stores', () => ({
   useTheme: () => ({
     colorScheme: 'light',
     themePreference: 'system',

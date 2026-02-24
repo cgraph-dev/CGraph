@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { View, Text, Switch as RNSwitch, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 type SwitchProps = {
   value: boolean;
@@ -23,7 +23,7 @@ export default function Switch({
   disabled = false,
   style,
 }: SwitchProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.container, style]}>

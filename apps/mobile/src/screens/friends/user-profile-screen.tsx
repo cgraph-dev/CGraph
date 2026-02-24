@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { FriendsStackParamList, UserBasic } from '../../types';
 import { Header, Avatar, Button, LoadingSpinner } from '../../components';
@@ -54,7 +54,7 @@ const formatKarma = (karma: number): string => {
 export default function UserProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProps>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const { userId } = route.params;
 
   const [user, setUser] = useState<UserProfile | null>(null);

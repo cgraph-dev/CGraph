@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 
 interface ReportDetailParams {
@@ -30,7 +30,7 @@ interface ReportDetailParams {
 
 export default function ReportDetailScreen({ route, navigation }: any) {
   const params: ReportDetailParams = route?.params ?? {};
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   const handleAction = (action: string) => {

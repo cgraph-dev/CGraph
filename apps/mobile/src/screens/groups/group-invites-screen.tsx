@@ -17,7 +17,7 @@ import Animated, { FadeInDown, FadeOutLeft } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 import { api } from '../../services/api';
 
@@ -38,7 +38,7 @@ interface Invite {
 
 export default function GroupInvitesScreen({ route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [invites, setInvites] = useState<Invite[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);

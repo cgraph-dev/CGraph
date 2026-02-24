@@ -23,8 +23,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme, ThemeColors } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import type { ThemeColors } from '@/stores';
+import { useAuthStore } from '@/stores';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { safeFormatConversationTime } from '../../lib/dateUtils';
@@ -225,8 +226,8 @@ const AnimatedConversationItem = ({
 };
 
 export default function ConversationListScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { user } = useAuth();
+  const { colors } = useThemeStore();
+  const { user } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());

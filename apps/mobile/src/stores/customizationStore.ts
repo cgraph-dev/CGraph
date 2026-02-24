@@ -150,7 +150,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
     set({
       theme: next,
       history: {
-        past: [...currentHistory.past, currentHistory.present],
+        past: [...currentHistory.past, currentHistory.present].slice(-50),
         present: next,
         future: newFuture,
       },
@@ -289,9 +289,10 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
   reset: () => set({
     theme: DEFAULT_THEME,
     history: {
-    past: [],
-    present: DEFAULT_THEME,
-    future: [],
+      past: [],
+      present: DEFAULT_THEME,
+      future: [],
+    },
     isPreviewMode: false,
     previewTheme: null,
     isDirty: false,

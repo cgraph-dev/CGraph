@@ -15,7 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { GroupsStackParamList, Group, ChannelCategory } from '../../types';
 
@@ -26,7 +26,7 @@ type Props = {
 
 export default function GroupScreen({ navigation, route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [group, setGroup] = useState<Group | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());

@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.50 | **Audit Date**: February 24, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.51 | **Audit Date**: February 24, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -8,11 +8,11 @@
 
 ## Executive Summary
 
-| Category             | Current | Target | Gap                                         |
-| -------------------- | ------- | ------ | ------------------------------------------- |
-| Rule Compliance      | ~97%    | 100%   | ~3% — testing coverage only                 |
-| Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done                 |
-| Composite Score      | 9.5/10  | 9.5/10 | At target — testing remains as final effort |
+| Category             | Current | Target | Gap                                               |
+| -------------------- | ------- | ------ | ------------------------------------------------- |
+| Rule Compliance      | ~92%    | 100%   | ~8% — testing, animation, query audit remaining    |
+| Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done                       |
+| Composite Score      | 8.5/10  | 9.5/10 | Testing + animation presets + real perf audit      |
 
 ### Critical Gaps (Blocks World-Class)
 
@@ -24,9 +24,10 @@
 4. **1,112 useMemo/useCallback** — React Compiler NOT enabled; keep for now
 5. ~~7 remaining offset pagination~~ **NEAR PASS** — core migrated to cursor; Redis
    leaderboard/search retain offset by design
-6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
+6. ~~6 missing shared packages~~ **6 dead packages DELETED** (Session 54 — config, hooks, state, ui, core, test-utils removed; 6 live packages remain)
 7. ~~4 mobile context shim files~~ **DELETED** (Tier 8 — 0 remaining)
 8. ~~31 Zustand stores missing reset()~~ **ALL FIXED** (Tier 10 — all stores have reset())
+9. **133 broken mobile imports** from deleted contexts **ALL FIXED** (Session 54 — migrated to @/stores)
 9. ~~67 files using deprecated `Animated`~~ **RESOLVED** — all imports are from
    `react-native-reanimated` (not legacy RN Animated); imperative API is reanimated's own
    compatibility API
@@ -99,15 +100,19 @@
 | Web Zustand stores      | **PASS** | All stores have reset() method                      |
 | Mobile Zustand stores   | **PASS** | All stores have reset() method                      |
 | Mobile Context shims    | **PASS** | 0 remaining — all 4 deleted in Tier 8               |
+| Mobile context imports  | **PASS** | 133 broken imports fixed in Session 54 (all → @/stores) |
 | Store MAX constants     | **PASS** | 26 MAX constants verified, all stores bounded       |
-| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5) |
+| Unbounded array spreads | **PASS** | 7 web + 14 mobile spreads bounded (Session 54)      |
 
 **Action Items**:
 
 - [x] **3.1** ~~Delete 4 deprecated mobile context shim files~~ **DONE** (Tier 8) — 0 remaining
 - [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
 - [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
-      **DONE** (Tier 5)
+      **DONE** (Session 54 — 7 web stores + 14 mobile stores/hooks/screens bounded)
+- [x] **3.6** ~~Fix 133 broken mobile imports from deleted context files~~ **DONE** (Session 54 —
+      AuthContext→17, theme-context→110, SettingsContext→3, CustomizationContext→2,
+      E2EEContext→1 casing fix; all → `@/stores`)
 - [x] **3.4** ~~Add `reset()` action to all stores~~ **DONE** (Tier 10 + Session 49) — all stores
       verified with reset() (added to prestige, seasonal, marketplace, referral stores; added
       reset() alias to theme store alongside resetTheme())
@@ -116,59 +121,56 @@
 
 ---
 
-### Rule 4: Animation Standards — PASS
+### Rule 4: Animation Standards — PARTIAL PASS
 
-| Metric                     | Status       | Notes                                                                                 |
-| -------------------------- | ------------ | ------------------------------------------------------------------------------------- |
-| Web animation presets      | EXISTS       | `apps/web/src/lib/animation-presets/`                                                 |
-| Mobile AnimationLibrary    | EXISTS       | `apps/mobile/src/lib/animations/`                                                     |
-| Inline spring values       | PASS         | Presets centralized in packages/animation-constants                                   |
-| Deprecated Animated API    | **RESOLVED** | All imports use `react-native-reanimated` — imperative API is reanimated's own compat |
-| Shared animation constants | EXISTS       | `packages/animation-constants/`                                                       |
+| Metric                     | Status           | Notes                                                                                 |
+| -------------------------- | ---------------- | ------------------------------------------------------------------------------------- |
+| Web animation presets      | EXISTS           | `apps/web/src/lib/animation-presets/`                                                 |
+| Mobile AnimationLibrary    | EXISTS           | `apps/mobile/src/lib/animations/`                                                     |
+| Inline spring values       | **NEEDS WORK**   | 70+ inline animation values remain in web; mobile does not import @cgraph/animation-constants |
+| Deprecated Animated API    | **RESOLVED**     | All imports use `react-native-reanimated` — imperative API is reanimated's own compat |
+| Shared animation constants | EXISTS           | `packages/animation-constants/`                                                       |
 
 **Action Items**:
 
-- [x] **4.1** Audit web for inline `transition: { duration: X }` without preset import — **PASS**
+- [x] **4.1** Audit web for inline `transition: { duration: X }` without preset import — **70+ FOUND**
 - [x] **4.2** Migrate mobile deprecated `Animated` to `react-native-reanimated` — **RESOLVED**: all
       57 files import from `react-native-reanimated` (not legacy `react-native`). Imperative API
       (`Animated.Value`, `Animated.timing`) is reanimated v4's own compatibility layer.
-- [x] **4.3** Extract any remaining inline animation values to preset files — **DONE**
-- [x] **4.4** Verify every interactive element has animation (buttons, toggles, etc.) — **PASS**
+- [ ] **4.3** Extract remaining 70+ inline animation values to preset files
+- [ ] **4.4** Make mobile import `@cgraph/animation-constants` instead of local duplicates
+- [x] **4.5** Verify every interactive element has animation (buttons, toggles, etc.) — **PASS**
 
 ---
 
 ### Rule 5: Cross-Platform Parity — PASS
 
-| Package                         | Plan Says        | Actual | Status |
-| ------------------------------- | ---------------- | ------ | ------ |
-| `packages/shared-types/`        | EXISTS           | EXISTS | PASS   |
-| `packages/utils/`               | EXISTS           | EXISTS | PASS   |
-| `packages/crypto/`              | EXISTS           | EXISTS | PASS   |
-| `packages/socket/`              | EXISTS           | EXISTS | PASS   |
-| `packages/api-client/`          | EXISTS           | EXISTS | PASS   |
-| `packages/animation-constants/` | EXISTS           | EXISTS | PASS   |
-| `packages/state/`               | EXISTS           | EXISTS | PASS   |
-| `packages/hooks/`               | EXISTS           | EXISTS | PASS   |
-| `packages/ui/`                  | EXISTS           | EXISTS | PASS   |
-| `packages/config/`              | EXISTS           | EXISTS | PASS   |
-| `packages/core/`                | EXISTS           | EXISTS | PASS   |
-| `packages/test-utils/`          | Task 0.6 creates | EXISTS | PASS   |
+| Package                         | Plan Says        | Actual      | Status |
+| ------------------------------- | ---------------- | ----------- | ------ |
+| `packages/shared-types/`        | EXISTS           | EXISTS      | PASS   |
+| `packages/utils/`               | EXISTS           | EXISTS      | PASS   |
+| `packages/crypto/`              | EXISTS           | EXISTS      | PASS   |
+| `packages/socket/`              | EXISTS           | EXISTS      | PASS   |
+| `packages/api-client/`          | EXISTS           | EXISTS      | PASS   |
+| `packages/animation-constants/` | EXISTS           | EXISTS      | PASS   |
+| ~~`packages/state/`~~           | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
+| ~~`packages/hooks/`~~           | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
+| ~~`packages/ui/`~~              | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
+| ~~`packages/config/`~~          | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
+| ~~`packages/core/`~~            | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
+| ~~`packages/test-utils/`~~      | ~~EXISTS~~       | **DELETED** | Dead code — 0 imports |
 
-**All 12 shared packages now exist.** Created in Tier 7 (commit `7fb596e2`).
+**6 live packages remain.** 6 dead packages deleted in Session 54 (had 0 imports in any app code).
 
 **Action Items**:
 
-- [x] **5.1** ~~Create `packages/state/`~~ **DONE** (Tier 7) — createBoundedStore, withReset,
-      withDevtools
-- [x] **5.2** ~~Create `packages/hooks/`~~ **DONE** (Tier 7) — useDebounce, useInterval,
-      useLocalStorage, usePrevious, useToggle
-- [x] **5.3** ~~Create `packages/ui/`~~ **DONE** (Tier 7) — ErrorBoundary, VisuallyHidden, Portal
-- [x] **5.4** ~~Create `packages/config/`~~ **DONE** (Tier 7) — APP_CONFIG, LIMITS, API_CONFIG,
-      FEATURE_FLAGS
-- [x] **5.5** ~~Create `packages/core/`~~ **DONE** (Tier 7) — formatters, validators, assert
-- [x] **5.6** ~~Create `packages/test-utils/`~~ **DONE** (Tier 7) — factories, store-helpers,
-      async-helpers
-- [x] **5.7** ~~Update plan to reflect actual package inventory honestly~~ **DONE**
+- [x] **5.1** ~~Create `packages/state/`~~ **CREATED then DELETED** (Tier 7 created; Session 54 deleted — 0 imports)
+- [x] **5.2** ~~Create `packages/hooks/`~~ **CREATED then DELETED** (same — 0 imports)
+- [x] **5.3** ~~Create `packages/ui/`~~ **CREATED then DELETED** (same — 0 imports)
+- [x] **5.4** ~~Create `packages/config/`~~ **CREATED then DELETED** (same — 0 imports)
+- [x] **5.5** ~~Create `packages/core/`~~ **CREATED then DELETED** (same — 0 imports)
+- [x] **5.6** ~~Create `packages/test-utils/`~~ **CREATED then DELETED** (same — 0 imports)
+- [x] **5.7** ~~Update plan to reflect actual package inventory honestly~~ **DONE** (Session 54)
 
 ---
 
@@ -192,7 +194,10 @@
 - [x] **6.4** Add JSDoc to all exported interfaces/types that lack them — **ENFORCED** via ESLint
 - [x] **6.5** Enforce JSDoc via ESLint rule (`jsdoc/require-jsdoc` for exported functions) —
       **DONE** (Session 53 — `eslint-plugin-jsdoc` installed and configured in `eslint.config.js`
-      with `require-jsdoc`, `require-description`, `check-tag-names`, `check-types` rules)
+      with `require-jsdoc`, `require-description`, `check-tag-names`, `check-types` rules;
+      Session 54 — escalated `check-tag-names` and `check-types` to `error`; `require-jsdoc` and
+      `require-description` remain at `warn` due to 150+ exported functions lacking JSDoc —
+      escalation blocked until JSDoc backfill is complete)
 
 ---
 
@@ -224,8 +229,8 @@
     (8), plugin_controller (8), marketplace_item (10), rate_limiter/distributed (7), forums/comments
     (9), email_verification (8), achievement_system (9), search_engine (9)
 - [x] **7.7** Enable `mix credo --strict` rule for missing `@spec` annotations — **DONE** (Session
-      53 — `.credo.exs` `strict: true`, `Readability.Specs` check enabled with `exit_status: 0` for
-      gradual enforcement)
+      53 — `.credo.exs` `strict: true`; Session 54 — escalated `Readability.Specs` from
+      `exit_status: 0` to `exit_status: 2` so missing @spec now fails CI)
 - [x] **7.8** Enable `mix credo --strict` rule for Logger interpolation — **DONE** (Session 53 —
       strict mode enabled in `.credo.exs`)
 
@@ -410,7 +415,7 @@ All other previously listed controllers are now under 500 lines.
 | ScrollView+map (mobile)        | INFO     | 26 files import ScrollView; most are form/settings UIs where ScrollView is appropriate                                 |
 | Message pruning (MAX_MESSAGES) | PASS     | 500 cap in chatStore                                                                                                   |
 | Bundle size                    | PASS     | CI checks in performance.yml                                                                                           |
-| EXPLAIN ANALYZE audit          | **PASS** | docs/QUERY_PERFORMANCE_AUDIT.md — all critical paths verified (Session 53)                                             |
+| EXPLAIN ANALYZE audit          | **PENDING** | docs/QUERY_PERFORMANCE_AUDIT.md — previous version was fabricated; replaced with honest TODO (Session 54)          |
 
 **Action Items**:
 
@@ -424,10 +429,9 @@ All other previously listed controllers are now under 500 lines.
       49)\n - edit-history-modal, poll-widget, reaction-picker-modal, attachment-preview-modal
       converted", "oldString": "- [ ] **10.3** Replace 3 mobile ScrollView with FlatList where lists
       can grow
-- [x] **10.4** Run `EXPLAIN ANALYZE` on top 20 queries, add missing indexes — **DONE** (Session 53 —
-      `docs/QUERY_PERFORMANCE_AUDIT.md` created with full audit of auth, messaging, forum,
-      gamification, marketplace, search, and digest worker queries. No N+1 patterns found in
-      production code.)
+- [ ] **10.4** Run `EXPLAIN ANALYZE` on top 20 queries, add missing indexes — **PENDING** (Session
+      53 version was fabricated with estimated timings, not real EXPLAIN output. Session 54 replaced
+      with honest TODO. Requires staging database with representative data to complete.)
 
 ---
 
@@ -467,9 +471,9 @@ All other previously listed controllers are now under 500 lines.
 | --------------------------- | ------------------- | ----------------------------------------------------------------------------- |
 | React version               | 19.x                | PASS                                                                          |
 | `useContext()` (legacy)     | **0**               | **PASS** — 12 use() context calls across 10 files (Tier 2, commit `08b988c2`) |
-| `useOptimistic()` adoption  | **9**               | **PASS** — 9 usages across web app                                            |
-| `useFormStatus()` adoption  | **2 forms**         | **PASS** — 2 usages                                                           |
-| `useActionState()` adoption | **11 forms**        | **PASS** — 11 usages across CreateGroupModal, AccountSettings, Register, etc. |
+| `useOptimistic()` adoption  | **3**               | **PASS** — 3 actual invocations (sendMessage, addReaction, EnhancedConversation) |
+| `useFormStatus()` adoption  | **1 form**          | **PASS** — 1 usage (SubmitButton component)                                   |
+| `useActionState()` adoption | **3 forms**         | **PASS** — 3 usages (CreateGroupModal, AccountSettings, Register)             |
 | `useMemo`/`useCallback`     | 1,112 in ~250 files | N/A — React Compiler NOT enabled; keep for performance                        |
 | `React.FC`                  | **0**               | **PASS** — all fixed (Tiers 2+7)                                              |
 | `forwardRef`                | **0**               | **PASS** — fixed in Tier 1                                                    |

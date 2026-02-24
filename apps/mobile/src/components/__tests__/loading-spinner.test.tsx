@@ -12,7 +12,7 @@ import { render } from '@testing-library/react-native';
 import LoadingSpinner from '../loading-spinner';
 
 // Mock ThemeContext
-jest.mock('../../contexts/ThemeContext', () => ({
+jest.mock('@/stores', () => ({
   useTheme: () => ({
     colorScheme: 'light',
     themePreference: 'system',

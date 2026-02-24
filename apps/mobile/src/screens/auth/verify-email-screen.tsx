@@ -22,8 +22,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { MatrixAuthBackground } from '../../components/matrix';
 import api from '../../lib/api';
 
@@ -47,8 +47,8 @@ type VerificationState = 'verifying' | 'success' | 'expired' | 'error' | 'alread
 // =============================================================================
 
 export default function VerifyEmailScreen({ navigation, route }: Props) {
-  const { colors } = useTheme();
-  const { user, refreshUser } = useAuth();
+  const { colors } = useThemeStore();
+  const { user, refreshUser } = useAuthStore();
   const token = route.params?.token;
 
   const [state, setState] = useState<VerificationState>('verifying');

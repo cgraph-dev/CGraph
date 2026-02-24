@@ -154,7 +154,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       const hasMore = newListings.length === 20;
 
       set((state) => ({
-        listings: reset ? newListings : [...state.listings, ...newListings],
+        listings: reset ? newListings : [...state.listings, ...newListings].slice(-200),
         hasMore,
         currentOffset: offset + newListings.length,
         isLoading: false,

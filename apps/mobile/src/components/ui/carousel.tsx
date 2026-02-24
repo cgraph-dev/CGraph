@@ -32,7 +32,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -90,7 +90,7 @@ export default function Carousel<T extends CarouselItem>({
   peekAmount = 30,
   hapticFeedback = true,
 }: CarouselProps<T>) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(initialIndex);

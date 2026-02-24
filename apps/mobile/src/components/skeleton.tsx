@@ -5,7 +5,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate } from 'react-native-reanimated';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface SkeletonProps {
   width?: number | string;
@@ -15,7 +15,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style }: SkeletonProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const animatedValue = useSharedValue(0);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
 }
 
 export function ForumCardSkeleton() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.forumCard, { backgroundColor: colors.surface }]}>
@@ -64,7 +64,7 @@ export function ForumCardSkeleton() {
 }
 
 export function PostCardSkeleton() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.postCard, { backgroundColor: colors.surface }]}>
@@ -88,7 +88,7 @@ export function PostCardSkeleton() {
 }
 
 export function CommentSkeleton() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.comment, { backgroundColor: colors.surface }]}>
@@ -106,7 +106,7 @@ export function CommentSkeleton() {
 }
 
 export function UserCardSkeleton() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.userCard, { backgroundColor: colors.surface }]}>

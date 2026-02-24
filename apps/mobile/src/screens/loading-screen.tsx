@@ -28,7 +28,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -139,7 +139,7 @@ function FloatingParticle({ delay, startX, size, duration, color }: ParticleProp
 }
 
 export default function LoadingScreen() {
-  const { colors, colorScheme } = useTheme();
+  const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
   
   const [tip] = useState(LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)]);

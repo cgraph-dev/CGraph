@@ -27,8 +27,8 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../../contexts/theme-context';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SettingsStackParamList } from '../../../types';
 
@@ -53,8 +53,8 @@ type Props = {
 };
 
 export default function AvatarSettingsScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { user } = useAuth();
+  const { colors } = useThemeStore();
+  const { user } = useAuthStore();
   const [style, setStyle] = useState<AvatarStyle>(defaultStyle);
 
   // Load style on mount

@@ -5,13 +5,13 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotificationsStackParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import NotificationsInboxScreen from '../screens/notifications/notifications-inbox-screen';
 
 const Stack = createNativeStackNavigator<NotificationsStackParamList>();
 
 export default function NotificationsNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   return (
     <Stack.Navigator

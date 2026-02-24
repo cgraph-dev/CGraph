@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default function AppearanceScreen({ navigation: _navigation }: Props) {
-  const { colors, themePreference, setThemePreference } = useTheme();
+  const { colors, themePreference, setThemePreference } = useThemeStore();
   
   const themes = [
     { value: 'light' as const, label: 'Light', icon: 'sunny-outline' as const },

@@ -5,7 +5,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface IconButtonProps {
   /** Icon name from Ionicons */
@@ -42,7 +42,7 @@ export default function IconButton({
   color,
   accessibilityLabel,
 }: IconButtonProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const sizeConfig = SIZES[size];
 
   const getBackgroundColor = () => {

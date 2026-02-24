@@ -27,7 +27,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { MatrixAuthBackground } from '../../components/matrix';
 import api from '../../lib/api';
 
@@ -90,7 +90,7 @@ function calculatePasswordStrength(password: string): PasswordStrength {
 // =============================================================================
 
 export default function ResetPasswordScreen({ navigation, route }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const token = route.params?.token;
 
   const [state, setState] = useState<ResetState>('validating');

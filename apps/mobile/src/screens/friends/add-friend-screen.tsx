@@ -28,7 +28,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import GlassCard from '../../components/ui/glass-card';
 import { Header } from '../../components';
@@ -161,7 +161,7 @@ function InfoStep({ number, title, description, delay }: {
 
 export default function AddFriendScreen() {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

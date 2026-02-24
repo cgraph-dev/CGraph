@@ -16,7 +16,7 @@ import Animated, { FadeInDown, FadeOutRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 import { api } from '../../services/api';
 
@@ -58,7 +58,7 @@ const actionIcons: Record<string, string> = {
 
 export default function GroupModerationScreen({ route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [tab, setTab] = useState<Tab>('bans');
   const [bans, setBans] = useState<BannedUser[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);

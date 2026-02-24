@@ -21,7 +21,7 @@ import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { SPRING_PRESETS } from '@/lib/animations/animation-library';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 // ---------------------------------------------------------------------------
 // Tab Item
@@ -39,7 +39,7 @@ function TabItem({
   onPress: () => void;
   onLongPress: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const scale = useSharedValue(1);
   const dotScale = useSharedValue(isFocused ? 1 : 0);
 
@@ -129,7 +129,7 @@ export function AnimatedTabBar({
   descriptors,
   navigation,
 }: BottomTabBarProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   return (

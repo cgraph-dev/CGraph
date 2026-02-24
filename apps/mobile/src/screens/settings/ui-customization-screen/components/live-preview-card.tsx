@@ -10,10 +10,10 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { useCustomization } from '@/contexts/CustomizationContext';
+import { useCustomizationStore } from '@/stores';
 
 export function LivePreviewCard() {
-  const { theme, getColor, getSpacing, getBorderRadius } = useCustomization();
+  const { theme, getColor, getSpacing, getBorderRadius } = useCustomizationStore();
 
   return (
     <View style={styles.previewSection}>

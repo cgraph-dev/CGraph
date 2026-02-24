@@ -12,8 +12,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
-import { useAuth } from '../contexts/AuthContext';
-import { useSettings } from '../contexts/SettingsContext';
+import { useAuthStore } from '@/stores';
+import { useSettingsStore } from '@/stores';
 import pushService, {
   registerForPushNotifications,
   shouldAttemptPushRegistration,
@@ -32,8 +32,8 @@ export interface UsePushNotificationsResult {
 let hasAttemptedInSession = false;
 
 export function usePushNotifications(): UsePushNotificationsResult {
-  const { isAuthenticated } = useAuth();
-  const { settings } = useSettings();
+  const { isAuthenticated } = useAuthStore();
+  const { settings } = useSettingsStore();
   const navigation = useNavigation();
 
   const [isRegistered, setIsRegistered] = useState(false);

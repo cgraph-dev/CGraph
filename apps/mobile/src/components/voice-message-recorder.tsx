@@ -32,7 +32,7 @@ import {
   setAudioModeAsync,
 } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { createLogger } from '../lib/logger';
 
 const logger = createLogger('VoiceRecorder');
@@ -64,7 +64,7 @@ export function VoiceMessageRecorder({
   onCancel,
   maxDuration = 300,
 }: VoiceMessageRecorderProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [state, setState] = useState<RecordingState>('idle');
   const [duration, setDuration] = useState(0);
   const [waveformData, setWaveformData] = useState<number[]>([]);

@@ -22,7 +22,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import type { MessagesStackParamList } from '../../types';
 
@@ -41,7 +41,7 @@ interface SavedMessage {
 }
 
 export default function SavedMessagesScreen() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const navigation = useNavigation<NavigationProp>();
 
   const [messages, setMessages] = useState<SavedMessage[]>([]);

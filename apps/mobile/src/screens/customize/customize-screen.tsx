@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type NavProp = NativeStackNavigationProp<SettingsStackParamList, 'Customize'>;
@@ -54,7 +54,7 @@ const CATEGORIES: CustomizeCategory[] = [
 
 export default function CustomizeScreen() {
   const navigation = useNavigation<NavProp>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>

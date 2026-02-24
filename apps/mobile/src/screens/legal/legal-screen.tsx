@@ -6,7 +6,7 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { Ionicons } from '@expo/vector-icons';
 
 export interface LegalSection {
@@ -27,7 +27,7 @@ export default function LegalScreen({
   icon,
   sections,
 }: LegalScreenProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   return (

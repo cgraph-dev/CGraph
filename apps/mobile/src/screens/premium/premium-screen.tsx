@@ -19,8 +19,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import GlassCard from '../../components/ui/glass-card';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/theme-context';
+import { useAuthStore } from '@/stores';
+import { useThemeStore } from '@/stores';
 import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payment';
 
 /**
@@ -101,8 +101,8 @@ type BillingCycle = 'monthly' | 'yearly';
 
 function PremiumScreen(): React.ReactElement | null {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { user: _user } = useAuth();
-  const { colors } = useTheme();
+  const { user: _user } = useAuthStore();
+  const { colors } = useThemeStore();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
   const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('premium');
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);

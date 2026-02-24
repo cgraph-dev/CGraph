@@ -19,7 +19,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, Share, StyleSheet } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCustomization } from '@/contexts/CustomizationContext';
+import { useCustomizationStore } from '@/stores';
 import useCustomizationStore, {
   useIsDirty,
   useCanUndo,
@@ -57,7 +57,7 @@ type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations' | 'ac
 // ============================================================================
 
 export default function UICustomizationScreen({ navigation }: Props) {
-  const { theme } = useCustomization();
+  const { theme } = useCustomizationStore();
   const isDirty = useIsDirty();
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();

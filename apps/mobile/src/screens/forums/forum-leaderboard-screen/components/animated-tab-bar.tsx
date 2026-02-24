@@ -13,7 +13,7 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle, interpolate } f
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { LeaderboardType } from '../../forum-leaderboard-screen';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

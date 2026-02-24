@@ -50,7 +50,7 @@ export function createForumCrudActions(set: Set, get: Get) {
         const meta = response.data.meta;
 
         set({
-          leaderboard: page === 1 ? forums : [...get().leaderboard, ...forums],
+          leaderboard: page === 1 ? forums : [...get().leaderboard, ...forums].slice(-500),
           leaderboardMeta: {
             page: meta.page,
             perPage: meta.per_page,

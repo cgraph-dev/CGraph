@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 
 type Props = {
@@ -24,7 +24,7 @@ type Props = {
 
 export default function GroupSettingsScreen({ navigation, route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   const settingsItems = [
     {

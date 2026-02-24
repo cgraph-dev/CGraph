@@ -143,7 +143,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
 
       setState((prev) => ({
         ...prev,
-        results: [...prev.results, ...response.results],
+        results: [...prev.results, ...response.results].slice(0, 500),
         isSearching: false,
         hasMore: response.hasMore,
       }));

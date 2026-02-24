@@ -5,7 +5,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GroupsStackParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import GroupListScreen from '../screens/groups/group-list-screen';
 import GroupScreen from '../screens/groups/group-screen';
 import ChannelScreen from '../screens/groups/channel-screen';
@@ -19,7 +19,7 @@ import GroupModerationScreen from '../screens/groups/group-moderation-screen';
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
 export default function GroupsNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   return (
     <Stack.Navigator

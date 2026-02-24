@@ -26,7 +26,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import { UserCardSkeleton } from '../../components/skeleton';
 import AnimatedAvatar from '../../components/ui/animated-avatar';
@@ -134,7 +134,7 @@ function RankChangeIndicator({ current, previous }: { current: number; previous?
 }
 
 export default function LeaderboardScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [meta, setMeta] = useState<LeaderboardMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);

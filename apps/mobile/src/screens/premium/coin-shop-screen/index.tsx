@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamListBase } from '@react-navigation/native';
-import { useTheme } from '../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { useCoinShop } from './hooks/useCoinShop';
 import {
   FloatingParticles,
@@ -38,7 +38,7 @@ import {
  */
 function CoinShopScreen(): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const {
     selectedCategory,
     userCoins,

@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
-import { ThemeColors } from '../../../../contexts/theme-context';
+import type { ThemeColors } from '@/stores';
 
 interface EmptyGroupStateProps {
   colors: ThemeColors;

@@ -21,7 +21,7 @@ import {
   providerInfo,
   OAuthResult,
 } from '../lib/oauth';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 // OAuth configuration - should be loaded from environment/config
 const oauthConfig: OAuthConfig = {
@@ -112,7 +112,7 @@ export function OAuthButton({
   variant = 'full',
   style,
 }: OAuthButtonProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const info = providerInfo[provider];
@@ -257,7 +257,7 @@ export function OAuthButtonGroup({
  * Divider with "or" text
  */
 export function AuthDivider({ text = 'or continue with' }: { text?: string }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={styles.divider}>

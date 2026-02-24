@@ -17,8 +17,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { SettingsStackParamList } from '../../types';
@@ -29,8 +29,8 @@ type Props = {
 };
 
 export default function ProfileScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { user, updateUser } = useAuth();
+  const { colors } = useThemeStore();
+  const { user, updateUser } = useAuthStore();
 
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [username, setUsername] = useState(user?.username || '');

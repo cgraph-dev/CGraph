@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import { TrendingItem } from './search-components';
-import type { ThemeColors } from '../../../../contexts/theme-context';
+import type { ThemeColors } from '@/stores';
 
 // Trending topics mock data
 const TRENDING_TOPICS = [

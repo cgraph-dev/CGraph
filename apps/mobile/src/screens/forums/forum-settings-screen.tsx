@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { ForumsStackParamList, Forum } from '../../types';
 
@@ -117,7 +117,7 @@ const settingsSections: SettingsSection[] = [
 
 export default function ForumSettingsScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [refreshing, setRefreshing] = useState(false);

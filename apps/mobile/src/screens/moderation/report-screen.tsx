@@ -21,7 +21,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import api from '@/lib/api';
-import { useTheme } from '@/contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import type { ThemeColors } from '@/stores/themeStore';
 
 // Report categories
@@ -53,7 +53,7 @@ type ReportRouteParams = {
 export function ReportScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ReportRouteParams, 'Report'>>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const { targetType, targetId, targetName } = route.params;
 

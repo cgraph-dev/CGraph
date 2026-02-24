@@ -19,7 +19,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { SettingsStackParamList } from '../../types';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 
 type Props = {
@@ -68,7 +68,7 @@ function getDeviceIcon(ua: string): keyof typeof Ionicons.glyphMap {
 }
 
 export default function SessionsScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);

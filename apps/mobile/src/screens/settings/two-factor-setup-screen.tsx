@@ -30,7 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 import api from '../../lib/api';
 
@@ -68,7 +68,7 @@ const STEPS = [
 // =============================================================================
 
 export default function TwoFactorSetupScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const [step, setStep] = useState<SetupStep>('intro');
   const [setupData, setSetupData] = useState<TwoFactorSetupData | null>(null);

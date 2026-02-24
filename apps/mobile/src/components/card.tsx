@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface CardProps {
   /** Card content */
@@ -26,7 +26,7 @@ export default function Card({
   padding = 'md',
   style,
 }: CardProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const getVariantStyles = (): ViewStyle => {
     switch (variant) {

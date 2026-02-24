@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthStore } from '@/stores';
 import { RootStackParamList } from '../types';
 import AuthNavigator from './auth-navigator';
 import MainNavigator from './main-navigator';
@@ -13,7 +13,7 @@ import LoadingScreen from '../screens/loading-screen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated } = useAuthStore();
   
   if (isLoading) {
     return <LoadingScreen />;

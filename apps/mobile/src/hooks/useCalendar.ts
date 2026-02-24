@@ -185,7 +185,7 @@ export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn
         // Add to events list
         setState((prev) => ({
           ...prev,
-          events: [...prev.events, event],
+          events: [...prev.events, event].slice(-500),
         }));
 
         // Invalidate cache

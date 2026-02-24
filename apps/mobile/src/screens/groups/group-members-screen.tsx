@@ -17,7 +17,7 @@ import Animated, { FadeInDown, FadeOutRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 import { api } from '../../services/api';
 
@@ -45,7 +45,7 @@ const roleColors: Record<string, string> = {
 
 export default function GroupMembersScreen({ route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

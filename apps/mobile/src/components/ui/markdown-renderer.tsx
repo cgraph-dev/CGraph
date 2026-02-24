@@ -21,7 +21,7 @@
 
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ScrollView } from 'react-native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
@@ -69,7 +69,7 @@ export default function MarkdownRenderer({
   allowImages = true,
   maxImageHeight = 300,
 }: MarkdownRendererProps) {
-  const { colors, colorScheme } = useTheme();
+  const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
 
   const baseFontSize = 15 * fontSize;

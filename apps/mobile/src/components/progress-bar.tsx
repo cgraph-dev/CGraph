@@ -10,7 +10,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 type ProgressBarProps = {
   value: number; // 0-100
@@ -29,7 +29,7 @@ export default function ProgressBar({
   label,
   style,
 }: ProgressBarProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   const clampedValue = Math.min(100, Math.max(0, value));
   

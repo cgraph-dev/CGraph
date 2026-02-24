@@ -19,8 +19,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { VoteButtons } from './components/vote-buttons';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/skeleton';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
@@ -38,8 +38,8 @@ type Props = {
 
 export default function PostScreen({ navigation: _navigation, route }: Props) {
   const { postId } = route.params;
-  const { colors } = useTheme();
-  const { user: _user } = useAuth();
+  const { colors } = useThemeStore();
+  const { user: _user } = useAuthStore();
   
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);

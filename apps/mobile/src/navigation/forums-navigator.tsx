@@ -5,7 +5,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ForumsStackParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import ForumListScreen from '../screens/forums/forum-list-screen';
 import ForumScreen from '../screens/forums/forum-screen';
 import PostScreen from '../screens/forums/post-screen';
@@ -21,7 +21,7 @@ import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
 export default function ForumsNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   return (
     <Stack.Navigator

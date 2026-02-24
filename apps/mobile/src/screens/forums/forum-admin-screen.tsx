@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { ForumsStackParamList, UserBasic } from '../../types';
 
@@ -78,7 +78,7 @@ type AdminTab = 'overview' | 'modqueue' | 'banned' | 'moderators';
 
 export default function ForumAdminScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');

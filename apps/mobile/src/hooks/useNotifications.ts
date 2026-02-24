@@ -128,7 +128,7 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
 
       setState((prev) => ({
         ...prev,
-        notifications: [...prev.notifications, ...newNotifications],
+        notifications: [...prev.notifications, ...newNotifications].slice(0, 200),
         isLoading: false,
         hasMore: newNotifications.length >= limit,
       }));

@@ -16,14 +16,14 @@ import React from 'react';
 import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { Header, LoadingSpinner } from '../../../components';
 import { useFriendRequests } from './hooks/useFriendRequests';
 import { RequestCard, EmptyRequestsState, TabsHeader, StatsHeader } from './components';
 
 export default function FriendRequestsScreen() {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const {
     activeTab,

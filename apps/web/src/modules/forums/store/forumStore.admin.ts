@@ -52,7 +52,8 @@ export function createAdminActions(set: Set, _get: Get) {
           permissions: data.permissions,
         });
         const group = response.data.user_group as UserGroup; // safe downcast – API response
-        set((state) => ({ userGroups: [...state.userGroups, group] }));
+        const MAX_USER_GROUPS = 50;
+        set((state) => ({ userGroups: [...state.userGroups, group].slice(-MAX_USER_GROUPS) }));
         return group;
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'createUserGroup');

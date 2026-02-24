@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -47,7 +47,7 @@ export default function Toast({
   onClose,
   style,
 }: ToastProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
 

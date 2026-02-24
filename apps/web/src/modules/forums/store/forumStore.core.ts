@@ -92,7 +92,7 @@ export function createCoreActions(set: Set, get: Get) {
           currentForum: forum,
           forums: state.forums.some((f) => f.id === forum.id)
             ? state.forums.map((f) => (f.id === forum.id ? forum : f))
-            : [...state.forums, forum],
+            : [...state.forums, forum].slice(-200),
         }));
         return forum;
       }

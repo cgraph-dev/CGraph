@@ -97,14 +97,14 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const unreadCount = response.data?.unread_count ?? response.data?.unreadCount;
 
       set((state) => ({
-        notifications: reset ? notifications : [...state.notifications, ...notifications],
+        notifications: reset ? notifications : [...state.notifications, ...notifications].slice(0, 200),
         hasMore,
         currentPage: page + 1,
         isLoading: false,
         unreadCount:
           unreadCount !== undefined
             ? unreadCount
-            : (reset ? notifications : [...state.notifications, ...notifications]).filter(
+            : (reset ? notifications : [...state.notifications, ...notifications].slice(0, 200)).filter(
                 (n) => !n.read
               ).length,
       }));

@@ -16,13 +16,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../../lib/api';
 import type { GroupListScreenProps, Group } from './types';
 import { AnimatedHeader, MorphingGroupCard, EmptyGroupState } from './components';
 
 export default function GroupListScreen({ navigation }: GroupListScreenProps) {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark } = useThemeStore();
   const [groups, setGroups] = useState<Group[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 

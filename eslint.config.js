@@ -249,8 +249,8 @@ export default [
         },
       ],
       'jsdoc/require-description': ['warn', { contexts: ['FunctionDeclaration'] }],
-      'jsdoc/check-tag-names': 'warn',
-      'jsdoc/check-types': 'warn',
+      'jsdoc/check-tag-names': ['error', { definedTags: ['refactored'] }],
+      'jsdoc/check-types': 'error',
     },
   },
 ];

@@ -14,7 +14,7 @@ import {
   StyleProp,
 } from 'react-native';
 import { timings, easings, pressAnimation } from '../lib/animations';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface AnimatedCardProps {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ export default function AnimatedCard({
   animateOnMount = true,
   pressable = true,
 }: AnimatedCardProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const opacity = useRef(new Animated.Value(animateOnMount ? 0 : 1)).current;
   const translateY = useRef(new Animated.Value(animateOnMount ? 20 : 0)).current;
   const scale = useRef(new Animated.Value(1)).current;

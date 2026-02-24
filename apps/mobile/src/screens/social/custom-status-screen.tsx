@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { api } from '../../services/api';
 
 const STATUS_PRESETS = [
@@ -33,7 +33,7 @@ const QUICK_EMOJIS = [
 ];
 
 export default function CustomStatusScreen({ navigation }: { navigation: any }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [statusText, setStatusText] = useState('');
   const [emoji, setEmoji] = useState('😊');
   const [saving, setSaving] = useState(false);

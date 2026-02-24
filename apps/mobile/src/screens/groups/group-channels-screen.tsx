@@ -17,7 +17,7 @@ import Animated, { FadeInDown, FadeOutLeft, Layout } from 'react-native-reanimat
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 import { api } from '../../services/api';
 
@@ -42,7 +42,7 @@ const channelIcons: Record<string, string> = {
 
 export default function GroupChannelsScreen({ route }: Props) {
   const { groupId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);

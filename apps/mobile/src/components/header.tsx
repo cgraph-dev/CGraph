@@ -13,7 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface HeaderProps {
@@ -45,7 +45,7 @@ export default function Header({
   largeTitle = false,
   style,
 }: HeaderProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   return (

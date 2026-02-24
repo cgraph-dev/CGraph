@@ -17,8 +17,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import GlassCard from '../../components/ui/glass-card';
 import AnimatedAvatar from '../../components/ui/animated-avatar';
 import { getValidImageUrl } from '../../lib/imageUtils';
@@ -35,8 +35,8 @@ const formatKarma = (karma: number): string => {
 };
 
 export default function SettingsScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { user, logout } = useAuth();
+  const { colors } = useThemeStore();
+  const { user, logout } = useAuthStore();
   
   const profileScale = useRef(new Animated.Value(0.8)).current;
   const profileOpacity = useRef(new Animated.Value(0)).current;

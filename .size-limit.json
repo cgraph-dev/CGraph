@@ -24,24 +24,18 @@
     "gzip": true
   },
   {
-    "name": "@cgraph/core",
-    "path": "packages/core/dist/index.js",
-    "limit": "50 KB",
-    "gzip": true
-  },
-  {
     "name": "@cgraph/utils (source)",
     "path": "packages/utils/src/index.ts",
     "limit": "30 KB"
   },
   {
-    "name": "@cgraph/ui (source)",
-    "path": "packages/ui/src/index.ts",
-    "limit": "10 KB"
-  },
-  {
     "name": "@cgraph/shared-types (source)",
     "path": "packages/shared-types/src/index.ts",
     "limit": "20 KB"
+  },
+  {
+    "name": "@cgraph/crypto (source)",
+    "path": "packages/crypto/src/index.ts",
+    "limit": "50 KB"
   }
 ]

@@ -11,7 +11,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 type TabItem = {
   id: string;
@@ -35,7 +35,7 @@ export default function Tabs({
   variant = 'pill',
   style,
 }: TabsProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   if (variant === 'underline') {
     return (

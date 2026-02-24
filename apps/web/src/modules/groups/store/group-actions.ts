@@ -51,7 +51,7 @@ export function createGroupActions(
         set((state) => ({
           groups: state.groups.some((g) => g.id === groupId)
             ? state.groups.map((g) => (g.id === groupId ? group : g))
-            : [...state.groups, group],
+            : [...state.groups, group].slice(-200),
         }));
       }
     },

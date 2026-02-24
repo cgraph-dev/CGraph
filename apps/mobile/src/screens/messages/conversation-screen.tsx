@@ -16,8 +16,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { AttachmentPicker } from '../../components';
@@ -73,9 +73,9 @@ type Props = {
 
 export default function ConversationScreen({ navigation, route }: Props) {
   const { conversationId } = route.params;
-  const { colors, colorScheme } = useTheme();
+  const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
 
   // Track deleted message IDs to prevent re-adding them (must be before useConversationData)
@@ -338,7 +338,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         });
         if (response.data?.data) {
           const newMsg = response.data.data;
-          setMessages((prev: Message[]) => [...prev, newMsg]);
+          setMessages((prev: Message[]) => [...prev, newMsg].slice(-500));
           scrollToBottom();
         }
       } catch (error) {

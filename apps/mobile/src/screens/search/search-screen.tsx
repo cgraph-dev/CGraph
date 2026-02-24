@@ -38,7 +38,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import GlassCard from '../../components/ui/glass-card';
 import api from '../../lib/api';
 import debounce from 'lodash.debounce';
@@ -85,7 +85,7 @@ const categories: CategoryConfig[] = [
 ];
 
 export default function SearchScreen() {
-  const { colors, colorScheme } = useTheme();
+  const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
 
   const [query, setQuery] = useState('');

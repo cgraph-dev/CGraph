@@ -17,8 +17,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 import api from '../../lib/api';
 import {
@@ -34,8 +34,8 @@ type Props = {
 };
 
 export default function AccountScreen({ navigation: _navigation }: Props) {
-  const { colors } = useTheme();
-  const { user, logout } = useAuth();
+  const { colors } = useThemeStore();
+  const { user, logout } = useAuthStore();
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');

@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 import api from '../../lib/api';
 
@@ -110,7 +110,7 @@ const FALLBACK_BADGES: Badge[] = [
 
 export default function BadgeSelectionScreen() {
   const navigation = useNavigation<NavProp>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);

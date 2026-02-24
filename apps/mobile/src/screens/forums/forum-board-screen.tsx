@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
 import { ForumsStackParamList, Post, UserBasic } from '../../types';
@@ -72,7 +72,7 @@ type SortOption = 'newest' | 'popular' | 'active';
 
 export default function ForumBoardScreen({ navigation, route }: Props) {
   const { forumId, boardId, boardName } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [board, setBoard] = useState<Board | null>(null);

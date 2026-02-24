@@ -30,8 +30,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/theme-context';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { MatrixAuthBackground } from '../../../components/matrix';
 import api from '../../../lib/api';
 import type { OnboardingProps, NotificationSettings } from './types';
@@ -39,8 +39,8 @@ import { SCREEN_WIDTH, STEPS, FEATURES } from './types';
 import { styles } from './styles';
 
 export default function OnboardingScreen({ navigation }: OnboardingProps) {
-  const { colors } = useTheme();
-  const { user } = useAuth();
+  const { colors } = useThemeStore();
+  const { user } = useAuthStore();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);

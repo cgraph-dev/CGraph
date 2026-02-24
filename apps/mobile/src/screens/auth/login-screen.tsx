@@ -18,8 +18,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { AuthStackParamList } from '../../types';
 import { OAuthButtonGroup, AuthDivider } from '../../components/o-auth-buttons';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -29,8 +29,8 @@ type Props = {
 };
 
 export default function LoginScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { login } = useAuth();
+  const { colors } = useThemeStore();
+  const { login } = useAuthStore();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');

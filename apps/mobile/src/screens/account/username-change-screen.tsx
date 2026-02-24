@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useTheme } from '@/contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface Props {
   currentUsername: string;
@@ -43,7 +43,7 @@ export function UsernameChangeScreen({
   onSuccess,
 }: Props): React.ReactElement {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   const [newUsername, setNewUsername] = useState('');
   const [isChecking, setIsChecking] = useState(false);

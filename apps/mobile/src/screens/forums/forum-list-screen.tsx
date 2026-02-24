@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import GlassCard from '../../components/ui/glass-card';
 import { ForumCardSkeleton } from '../../components/skeleton';
 import api from '../../lib/api';
@@ -203,7 +203,7 @@ function formatCount(count: number): string {
 }
 
 export default function ForumListScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [forums, setForums] = useState<Forum[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

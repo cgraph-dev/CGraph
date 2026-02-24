@@ -27,7 +27,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 
 // =============================================================================
@@ -77,7 +77,7 @@ const CALL_STATES: Record<CallStatus, string> = {
 // =============================================================================
 
 export default function CallScreen({ navigation, route }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const { recipientId, callType, incoming = false, roomId } = route.params;
 
   const [recipient, setRecipient] = useState<CallUser | null>(null);

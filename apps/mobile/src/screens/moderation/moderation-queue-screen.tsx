@@ -23,7 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 
 // ── Types ──────────────────────────────────────────────────
@@ -102,7 +102,7 @@ function timeAgo(dateStr: string): string {
 
 // ── Component ──────────────────────────────────────────────
 export default function ModerationQueueScreen({ navigation }: any) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);

@@ -315,7 +315,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
       setState((prev) => ({
         ...prev,
         coinBalance: prev.coinBalance ? { ...prev.coinBalance, balance: result.newBalance } : null,
-        inventory: [...prev.inventory, result.item],
+        inventory: [...prev.inventory, result.item].slice(-200),
       }));
 
       return result;

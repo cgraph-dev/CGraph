@@ -25,7 +25,7 @@ import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../../lib/api';
 import { ForumsStackParamList } from '../../../types';
 
@@ -50,7 +50,7 @@ type Props = {
 
 export default function CreatePostScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

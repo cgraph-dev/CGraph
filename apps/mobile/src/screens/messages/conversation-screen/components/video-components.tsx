@@ -10,7 +10,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { View, Text, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import type {
   VideoPlayerComponentProps,
   InlineVideoThumbnailProps,
@@ -29,7 +29,7 @@ export const InlineVideoThumbnail = memo(function InlineVideoThumbnail({
   videoUrl,
 }: InlineVideoThumbnailProps) {
   const [hasError, setHasError] = useState(false);
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const player = useVideoPlayer(videoUrl, (player) => {
     player.loop = false;
@@ -85,7 +85,7 @@ export const VideoPlayerComponent = memo(function VideoPlayerComponent({
   duration,
   onClose,
 }: VideoPlayerComponentProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -241,7 +241,7 @@ export const AttachmentVideoPreview = memo(function AttachmentVideoPreview({
   uri,
   duration,
 }: AttachmentVideoPreviewProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [hasError, setHasError] = useState(false);
 
   const player = useVideoPlayer(uri, (player) => {

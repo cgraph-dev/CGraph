@@ -5,7 +5,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MessagesStackParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import ConversationListScreen from '../screens/messages/conversation-list-screen';
 import ConversationScreen from '../screens/messages/conversation-screen';
 import NewConversationScreen from '../screens/messages/new-conversation-screen';
@@ -14,7 +14,7 @@ import SavedMessagesScreen from '../screens/messages/saved-messages-screen';
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
 export default function MessagesNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   return (
     <Stack.Navigator

@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '@/contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { formatDistanceToNow } from 'date-fns';
 
 type NotificationMode = 'instant' | 'daily' | 'weekly' | 'none';
@@ -38,7 +38,7 @@ interface Subscription {
 
 export function SubscriptionsScreen(): React.ReactElement {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);

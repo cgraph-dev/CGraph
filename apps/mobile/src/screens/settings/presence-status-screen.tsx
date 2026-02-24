@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { api } from '../../services/api';
 
 type PresenceStatus = 'online' | 'idle' | 'dnd' | 'invisible';
@@ -26,7 +26,7 @@ const STATUS_OPTIONS: StatusOption[] = [
 ];
 
 export default function PresenceStatusScreen({ navigation }: { navigation: any }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [status, setStatus] = useState<PresenceStatus>('online');
   const [updating, setUpdating] = useState(false);
 

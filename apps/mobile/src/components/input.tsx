@@ -13,7 +13,7 @@ import {
   TextInputProps,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   /** Input label */
@@ -45,7 +45,7 @@ export default function Input({
   inputStyle,
   ...props
 }: InputProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isFocused, setIsFocused] = React.useState(false);
 
   const borderColor = error ? '#ef4444' : isFocused ? colors.primary : colors.border;

@@ -12,7 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import deepLinks from './src/lib/deepLinks';
 import { ErrorBoundary } from './src/components/error/ErrorBoundary';
-import { E2EEProvider } from './src/lib/crypto/E2EEContext';
+import { E2EEProvider } from './src/lib/crypto/e2-ee-context';
 import RootNavigator from './src/navigation/RootNavigator';
 import { queryClient } from './src/lib/queryClient';
 import { usePushNotifications } from './src/hooks/usePushNotifications';

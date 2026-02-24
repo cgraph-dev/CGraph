@@ -19,7 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { AuthStackParamList } from '../../types';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -29,7 +29,7 @@ type Props = {
 };
 
 export default function ForgotPasswordScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);

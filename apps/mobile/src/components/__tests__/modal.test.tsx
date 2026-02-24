@@ -13,7 +13,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import Modal from '../modal';
 
 // Mock ThemeContext
-jest.mock('../../contexts/ThemeContext', () => ({
+jest.mock('@/stores', () => ({
   useTheme: () => ({
     colorScheme: 'light',
     themePreference: 'system',

@@ -15,7 +15,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import Button from './button';
 
 interface ModalProps {
@@ -47,7 +47,7 @@ export default function Modal({
   showCloseButton = true,
   contentStyle,
 }: ModalProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -109,7 +109,7 @@ export function ConfirmDialog({
   variant = 'default',
   loading = false,
 }: ConfirmDialogProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <Modal visible={visible} onClose={onClose} showCloseButton={false}>

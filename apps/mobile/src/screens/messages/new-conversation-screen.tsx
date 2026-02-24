@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { MessagesStackParamList, UserBasic } from '../../types';
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function NewConversationScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<UserBasic[]>([]);
   const [isSearching, setIsSearching] = useState(false);

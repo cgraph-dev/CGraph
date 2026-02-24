@@ -17,7 +17,7 @@ import {
   ViewStyle,
   StyleProp,
 } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface UserBadgeProps {
   userId?: number;
@@ -45,7 +45,7 @@ export default function UserBadge({
   showId = true,
   style,
 }: UserBadgeProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const sizeStyles = {
     sm: { avatar: 28, fontSize: 12, badgeSize: 14 },

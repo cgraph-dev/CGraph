@@ -5,7 +5,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsStackParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import SettingsScreen from '../screens/settings/settings-screen';
 import ProfileScreen from '../screens/settings/profile-screen';
 import AccountScreen from '../screens/settings/account-screen';
@@ -52,7 +52,7 @@ import {
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export default function SettingsNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <Stack.Navigator

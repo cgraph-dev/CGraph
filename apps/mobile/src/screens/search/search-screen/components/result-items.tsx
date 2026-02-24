@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import AnimatedAvatar from '../../../../components/ui/animated-avatar';
 import { AnimatedResultItem } from './search-components';
-import type { ThemeColors } from '../../../../contexts/theme-context';
+import type { ThemeColors } from '@/stores';
 
 // ============================================================================
 // TYPES

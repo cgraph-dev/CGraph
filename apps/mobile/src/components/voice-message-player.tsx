@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, useAudioPlayerStatus, AudioStatus, setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { createLogger } from '../lib/logger';
 
 const logger = createLogger('VoicePlayer');
@@ -51,7 +51,7 @@ export function VoiceMessagePlayer({
   isSender = false,
   style,
 }: VoiceMessagePlayerProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(initialDuration || 0);

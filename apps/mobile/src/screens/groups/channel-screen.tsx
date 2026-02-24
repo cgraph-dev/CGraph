@@ -19,8 +19,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatTime } from '../../lib/dateUtils';
 import socketManager from '../../lib/socket';
@@ -33,8 +33,8 @@ type Props = {
 
 export default function ChannelScreen({ navigation, route }: Props) {
   const { groupId, channelId } = route.params;
-  const { colors } = useTheme();
-  const { user: _user } = useAuth();
+  const { colors } = useThemeStore();
+  const { user: _user } = useAuthStore();
 
   const [channel, setChannel] = useState<Channel | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -81,7 +81,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     if (phoenixChannel) {
       phoenixChannel.on('new_message', (payload: unknown) => {
         const data = payload as { message: Message };
-        setMessages((prev) => [...prev, data.message]);
+        setMessages((prev) => [...prev, data.message].slice(-500));
       });
     }
   };
@@ -98,7 +98,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
         content,
         client_message_id: Crypto.randomUUID(),
       });
-      setMessages((prev) => [...prev, response.data.data]);
+      setMessages((prev) => [...prev, response.data.data].slice(-500));
     } catch (error) {
       console.error('Error sending message:', error);
       setInputText(content);

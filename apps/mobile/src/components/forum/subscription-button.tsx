@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '@/contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 type SubscriptionType = 'forum' | 'board' | 'thread';
 
@@ -32,7 +32,7 @@ export function SubscriptionButton({
   compact = false,
   showLabel = true,
 }: SubscriptionButtonProps): React.ReactElement | null {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const getLabel = () => {

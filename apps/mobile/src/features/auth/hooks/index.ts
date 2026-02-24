@@ -9,7 +9,7 @@
 import { useCallback, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { useAuth as useAuthContext } from '../../../contexts/AuthContext';
+import { useAuthStore } from '@/stores';
 import api from '../../../lib/api';
 
 /**
@@ -57,8 +57,8 @@ export function useBiometricAuth() {
 /**
  * Re-export the context hook with haptic feedback wrappers
  */
-export function useAuth() {
-  const auth = useAuthContext();
+export function useAuthStore() {
+  const auth = useAuthStore();
   
   const loginWithHaptics = useCallback(async (email: string, password: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

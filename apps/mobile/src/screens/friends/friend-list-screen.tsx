@@ -21,7 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, ThemeColors } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
+import type { ThemeColors } from '@/stores';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { UserBasic, FriendsStackParamList } from '../../types';
@@ -191,7 +192,7 @@ const AnimatedFriendItem = ({
 
 export default function FriendListScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [friends, setFriends] = useState<FriendItem[]>([]);
   const [filteredFriends, setFilteredFriends] = useState<FriendItem[]>([]);
   const [loading, setLoading] = useState(true);

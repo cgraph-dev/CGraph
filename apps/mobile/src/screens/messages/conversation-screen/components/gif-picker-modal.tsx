@@ -24,7 +24,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../../../lib/api';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -74,7 +74,7 @@ function generateSampleGifs(query: string): GifResult[] {
 }
 
 export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState<GifResult[]>([]);
   const [loading, setLoading] = useState(false);

@@ -166,7 +166,7 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
     set((state) => ({
       installedPlugins: {
         ...state.installedPlugins,
-        [forumId]: [...(state.installedPlugins[forumId] || []), plugin],
+        [forumId]: [...(state.installedPlugins[forumId] || []), plugin].slice(-50),
       },
     }));
 

@@ -21,8 +21,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
+import { useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { AuthStackParamList } from '../../types';
 import { OAuthButtonGroup, AuthDivider } from '../../components/o-auth-buttons';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -32,8 +32,8 @@ type Props = {
 };
 
 export default function RegisterScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const { register } = useAuth();
+  const { colors } = useThemeStore();
+  const { register } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');

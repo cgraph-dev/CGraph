@@ -78,7 +78,7 @@ export function createScheduledActions(set: Set, _get: Get) {
           return {
             scheduledMessages: {
               ...state.scheduledMessages,
-              [conversationId]: [...existingScheduled, scheduledMessage],
+              [conversationId]: [...existingScheduled, scheduledMessage].slice(-50),
             },
           };
         });

@@ -13,7 +13,7 @@ import {
   Animated,
   View,
 } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface ButtonProps {
   /** Button text */
@@ -50,7 +50,7 @@ export default function Button({
   textStyle,
   icon,
 }: ButtonProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {

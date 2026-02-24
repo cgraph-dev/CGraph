@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet, ViewStyle } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 interface LoadingSpinnerProps {
   /** Size of the spinner */
@@ -26,7 +26,7 @@ export default function LoadingSpinner({
   style,
   testID = 'loading-spinner',
 }: LoadingSpinnerProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const content = (
     <View style={[styles.container, style]} testID={fullScreen ? `${testID}-content` : testID}>

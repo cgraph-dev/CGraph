@@ -15,7 +15,7 @@ import {
   Switch,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { ForumsStackParamList } from '../../types';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,7 +34,7 @@ type Props = {
  * - Description: Optional, max 500 chars
  */
 export default function CreateForumScreen({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

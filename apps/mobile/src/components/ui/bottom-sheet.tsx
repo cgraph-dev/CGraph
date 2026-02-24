@@ -34,7 +34,7 @@ import {
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -87,7 +87,7 @@ export default function BottomSheet({
   backdropBlur = 20,
   onSnapChange,
 }: BottomSheetProps) {
-  const { colors, colorScheme } = useTheme();
+  const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
   const insets = useSafeAreaInsets();
 

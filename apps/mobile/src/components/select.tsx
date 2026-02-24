@@ -16,7 +16,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 type SelectOption = {
   value: string;
@@ -49,7 +49,7 @@ export default function Select({
   disabled = false,
   style,
 }: SelectProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 

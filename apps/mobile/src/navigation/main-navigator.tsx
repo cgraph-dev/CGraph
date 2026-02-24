@@ -6,7 +6,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import { AnimatedTabBar } from './components/animated-tab-bar';
 import MessagesNavigator from './messages-navigator';
 import FriendsNavigator from './friends-navigator';
@@ -19,7 +19,7 @@ import SettingsNavigator from './settings-navigator';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainNavigator() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   
   return (
     <Tab.Navigator

@@ -13,8 +13,9 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/theme-context';
-import { useSettings, NotificationSettings } from '../../contexts/SettingsContext';
+import { useThemeStore } from '@/stores';
+import { useSettingsStore } from '@/stores';
+import type { NotificationSettings } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -30,8 +31,8 @@ interface SettingItem {
 }
 
 export default function NotificationsScreen({ navigation: _navigation }: Props) {
-  const { colors } = useTheme();
-  const { settings, updateNotificationSettings, isLoading, isSaving, fetchSettings } = useSettings();
+  const { colors } = useThemeStore();
+  const { settings, updateNotificationSettings, isLoading, isSaving, fetchSettings } = useSettingsStore();
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {

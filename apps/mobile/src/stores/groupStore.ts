@@ -159,7 +159,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
       set((state) => ({
         groups: state.groups.some((g) => g.id === groupId)
           ? state.groups.map((g) => (g.id === groupId ? group : g))
-          : [...state.groups, group],
+          : [...state.groups, group].slice(-200),
       }));
     } catch {
       // silently fail
@@ -181,7 +181,8 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
       set((state) => {
         const existing = state.channelMessages[channelId] || [];
-        const merged = before ? [...newMessages, ...existing] : newMessages;
+        const MAX_CHANNEL_MESSAGES = 500;
+        const merged = before ? [...newMessages, ...existing].slice(-MAX_CHANNEL_MESSAGES) : newMessages;
         return {
           channelMessages: { ...state.channelMessages, [channelId]: merged },
           hasMoreMessages: { ...state.hasMoreMessages, [channelId]: hasMore },
@@ -234,7 +235,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   joinGroup: async (inviteCode: string) => {
     const group = await joinGroupByInvite(inviteCode);
     set((state) => ({
-      groups: [group, ...state.groups],
+      groups: [group, ...state.groups].slice(0, 200),
       justJoinedGroupName: group.name,
     }));
   },

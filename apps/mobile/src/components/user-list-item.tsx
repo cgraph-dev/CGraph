@@ -11,7 +11,7 @@ import {
   ViewStyle,
   Animated,
 } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import Avatar from './avatar';
 import { UserBasic } from '../types';
 
@@ -44,7 +44,7 @@ export default function UserListItem({
   style,
   animationDelay = 0,
 }: UserListItemProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const scaleValue = useRef(new Animated.Value(1)).current;
   const opacityValue = useRef(new Animated.Value(0)).current;
   const translateYValue = useRef(new Animated.Value(10)).current;

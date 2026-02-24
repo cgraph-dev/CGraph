@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import Button from './button';
 
 interface EmptyStateProps {
@@ -34,7 +34,7 @@ export default function EmptyState({
   onAction,
   style,
 }: EmptyStateProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.container, style]}>

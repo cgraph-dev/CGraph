@@ -18,7 +18,7 @@ import { View, StyleSheet, FlatList, RefreshControl, StatusBar } from 'react-nat
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import type { Notification, TabType } from './types';
 import { getMockNotifications } from './types';
 import {
@@ -30,7 +30,7 @@ import {
 } from './components';
 
 export default function NotificationsInboxScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark } = useThemeStore();
 
   // State
   const [notifications, setNotifications] = useState<Notification[]>([]);

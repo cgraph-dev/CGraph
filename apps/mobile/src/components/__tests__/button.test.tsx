@@ -14,7 +14,7 @@ import Button from '../button';
 
 // Mock the ThemeContext to avoid needing the full provider chain
 // useTheme returns { colorScheme, themePreference, setThemePreference, colors } directly
-jest.mock('../../contexts/ThemeContext', () => ({
+jest.mock('@/stores', () => ({
   useTheme: () => ({
     colorScheme: 'light',
     themePreference: 'system',

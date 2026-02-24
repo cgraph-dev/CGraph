@@ -162,11 +162,13 @@ export const useThreadStore = create<ThreadState>()(
         const { activeThread } = get();
         if (!activeThread || message.replyToId !== activeThread.id) return;
 
-        set((state) => {
+        const MAX_THREAD_MESSAGES = 500;
+      set((state) => {
           // Dedup
           if (state.threadMessages.some((m) => m.id === message.id)) return state;
+          const updated = [...state.threadMessages, message];
           return {
-            threadMessages: [...state.threadMessages, message],
+            threadMessages: updated.length > MAX_THREAD_MESSAGES ? updated.slice(-MAX_THREAD_MESSAGES) : updated,
             replyCounts: {
               ...state.replyCounts,
               [activeThread.id]: (state.replyCounts[activeThread.id] || 0) + 1,

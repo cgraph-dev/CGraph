@@ -17,7 +17,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { VoteButtons } from './components/vote-buttons';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
 import { ForumsStackParamList, Forum, Post } from '../../types';
@@ -29,7 +29,7 @@ type Props = {
 
 export default function ForumScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [_forum, setForum] = useState<Forum | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);

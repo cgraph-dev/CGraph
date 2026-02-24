@@ -27,7 +27,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Contacts from 'expo-contacts';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 import { Asset, SelectedAsset, TabType, AttachmentPickerProps } from './types';
 import { styles } from './styles';
@@ -45,7 +45,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const AttachmentPicker = memo(
   ({ visible, onClose, onSelectAssets, maxSelection = 10 }: AttachmentPickerProps) => {
-    const { colors, colorScheme } = useTheme();
+    const { colors, colorScheme } = useThemeStore();
     const isDark = colorScheme === 'dark';
 
     // State

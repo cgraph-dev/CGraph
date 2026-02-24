@@ -93,7 +93,7 @@
           {Credo.Check.Warning.UnsafeToAtom, []},
 
           # ── Typespecs ────────────────────────────────────────────
-          {Credo.Check.Readability.Specs, [exit_status: 0]}
+          {Credo.Check.Readability.Specs, [exit_status: 2]}
         ],
         disabled: [
           # Disabled: structured logging uses arbitrary metadata keys

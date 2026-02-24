@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { Poll } from '@/types';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuthStore } from '@/stores';
 
 interface PollWidgetProps {
   poll: Poll;
@@ -29,7 +29,7 @@ export default function PollWidget({
   onVote,
   onClose,
 }: PollWidgetProps) {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

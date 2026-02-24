@@ -34,7 +34,7 @@ import * as Haptics from 'expo-haptics';
 import AnimatedAvatar from '@/components/ui/animated-avatar';
 import GlassCard from '@/components/ui/glass-card';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/lib/design/design-system';
-import { useTheme } from '@/contexts/theme-context';
+import { useThemeStore } from '@/stores';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -128,7 +128,7 @@ const MOCK_POSTS: WallPost[] = [
 
 export default function UserWallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
   const [posts, setPosts] = useState<WallPost[]>(MOCK_POSTS);
   const [refreshing, setRefreshing] = useState(false);
   const [newPostText, setNewPostText] = useState('');
