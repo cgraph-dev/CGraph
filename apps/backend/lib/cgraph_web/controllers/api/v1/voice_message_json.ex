@@ -13,7 +13,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   """
   @spec show(map()) :: map()
   def show(%{voice_message: voice_message}) do
-    %{data: voice_message_data(voice_message)}
+    %{data: voice_message_data(voice_message), meta: %{}}
   end
 
   @doc """
@@ -21,7 +21,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   """
   @spec index(map()) :: map()
   def index(%{voice_messages: voice_messages}) do
-    %{data: Enum.map(voice_messages, &voice_message_data/1)}
+    %{data: Enum.map(voice_messages, &voice_message_data/1), meta: %{total: length(voice_messages)}}
   end
 
   @doc """
@@ -34,7 +34,8 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
         id: voice_message.id,
         waveform: VoiceMessage.waveform(voice_message),
         duration: voice_message.duration
-      }
+      },
+      meta: %{}
     }
   end
 
@@ -53,7 +54,8 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
         codec: voice_message.codec,
         size: voice_message.size,
         is_processed: voice_message.is_processed
-      }
+      },
+      meta: %{}
     }
   end
 

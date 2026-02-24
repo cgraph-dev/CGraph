@@ -6,13 +6,13 @@ defmodule CGraphWeb.API.V1.PushTokenJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{tokens: tokens}) do
-    %{data: Enum.map(tokens, &token_data/1)}
+    %{data: Enum.map(tokens, &token_data/1), meta: %{total: length(tokens)}}
   end
 
   @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{token: token}) do
-    %{data: token_data(token)}
+    %{data: token_data(token), meta: %{}}
   end
 
   @doc """

@@ -9,17 +9,14 @@
  */
 
 import { type Variants } from 'framer-motion';
-import {
-  springs as sharedSprings,
-  stagger as sharedStagger,
-} from '@cgraph/animation-constants';
+import { springs as sharedSprings, stagger as sharedStagger } from '@cgraph/animation-constants';
 
 // =============================================================================
 // SPRING PRESETS (sourced from @cgraph/animation-constants + FM type tag)
 // =============================================================================
 
 const toFMSpring = (s: { stiffness: number; damping: number; mass: number }) =>
-  ({ type: 'spring' as const, stiffness: s.stiffness, damping: s.damping } as const);
+  ({ type: 'spring' as const, stiffness: s.stiffness, damping: s.damping }) as const;
 
 export const springs = {
   gentle: toFMSpring(sharedSprings.gentle),
@@ -44,9 +41,9 @@ export const tweens = {
   /** Standard transition */
   standard: { duration: 0.3, ease: 'easeInOut' as const },
   /** Smooth, longer transition */
-  smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as readonly number[] },
+  smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as readonly number[] }, // type assertion: array literal type widening
   /** Dramatic entrance */
-  dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as readonly number[] },
+  dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as readonly number[] }, // type assertion: array literal type widening
   /** Subtle background animation */
   ambient: { duration: 3, ease: 'linear' as const, repeat: Infinity },
 } as const;
@@ -110,7 +107,7 @@ export const entranceVariants: Record<string, Variants> = {
       filter: 'blur(0px)',
       transition: {
         duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number], // type assertion: array literal type widening
       },
     },
   },

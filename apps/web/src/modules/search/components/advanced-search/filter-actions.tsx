@@ -16,6 +16,9 @@ interface FilterActionsProps {
   isLoading: boolean;
 }
 
+/**
+ *
+ */
 export function FilterActions({
   filters,
   updateFilter,
@@ -34,8 +37,8 @@ export function FilterActions({
           Results per page:
           <select
             value={filters.resultsPerPage}
-            onChange={(e) =>
-              updateFilter('resultsPerPage', parseInt(e.target.value) as 10 | 25 | 50)
+            onChange={
+              (e) => updateFilter('resultsPerPage', parseInt(e.target.value) as 10 | 25 | 50) // type assertion: select options are constrained to 10, 25, or 50
             }
             className="rounded border border-dark-500 bg-dark-700 px-2 py-1 text-gray-200"
           >

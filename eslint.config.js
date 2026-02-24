@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import checkFile from 'eslint-plugin-check-file';
+import jsdoc from 'eslint-plugin-jsdoc';
 
 export default [
   {
@@ -220,6 +221,36 @@ export default [
           ignoreMiddleExtensions: true,
         },
       ],
+    },
+  },
+  // JSDoc enforcement — require JSDoc on exported functions/classes (Rule 6.4/6.5)
+  {
+    files: [
+      'apps/web/src/**/*.{ts,tsx}',
+      'apps/mobile/src/**/*.{ts,tsx}',
+      'packages/**/*.{ts,tsx}',
+    ],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**', '**/mocks/**'],
+    plugins: {
+      jsdoc,
+    },
+    rules: {
+      'jsdoc/require-jsdoc': [
+        'warn',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            MethodDefinition: true,
+            ClassDeclaration: true,
+          },
+          contexts: ['ExportNamedDeclaration > FunctionDeclaration'],
+          checkConstructors: false,
+        },
+      ],
+      'jsdoc/require-description': ['warn', { contexts: ['FunctionDeclaration'] }],
+      'jsdoc/check-tag-names': 'warn',
+      'jsdoc/check-types': 'warn',
     },
   },
 ];

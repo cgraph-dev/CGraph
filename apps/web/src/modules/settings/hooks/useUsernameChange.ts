@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDebounce } from '@/shared/hooks';
+import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('useUsernameChange');
@@ -36,6 +37,9 @@ interface UseUsernameChangeOptions {
   onClose: () => void;
 }
 
+/**
+ *
+ */
 export function useUsernameChange({
   currentUsername,
   lastChangeDate,
@@ -94,11 +98,10 @@ export function useUsernameChange({
     const checkAvailability = async () => {
       setIsChecking(true);
       try {
-        const response = await fetch(
+        const { data } = await api.get(
           `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`,
           { signal }
         );
-        const data = await response.json();
         if (!signal.aborted) {
           setCheckResult({
             available: data.available,
@@ -136,8 +139,7 @@ export function useUsernameChange({
 
     setLoadingHistory(true);
     try {
-      const response = await fetch('/api/users/me/username-history', { signal });
-      const data = await response.json();
+      const { data } = await api.get('/api/users/me/username-history', { signal });
       if (!signal.aborted) {
         setHistory(data.history || []);
       }
@@ -170,16 +172,7 @@ export function useUsernameChange({
     setError(null);
 
     try {
-      const response = await fetch('/api/users/me/change-username', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newUsername }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to change username');
-      }
+      await api.post('/api/users/me/change-username', { username: newUsername });
 
       onSuccess?.(newUsername);
       onClose();

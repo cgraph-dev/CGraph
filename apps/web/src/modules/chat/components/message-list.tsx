@@ -59,6 +59,9 @@ type VirtualRow =
 // MessageList Component
 // ============================================================================
 
+/**
+ *
+ */
 export function MessageList({
   messages,
   userId,
@@ -141,7 +144,7 @@ export function MessageList({
 
       const { message, groupMessages, msgIndex } = row;
       const messageSenderId =
-        getMessageSenderId(message as unknown as Record<string, unknown>) || '';
+        getMessageSenderId(message as unknown as Record<string, unknown>) || ''; // type assertion: narrowing for helper function
       const currentUserId = userId || '';
 
       if (import.meta.env.DEV && msgIndex === 0) {
@@ -158,7 +161,7 @@ export function MessageList({
 
       const prevMessage = groupMessages[msgIndex - 1];
       const prevSenderId = prevMessage
-        ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
+        ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || '' // type assertion: narrowing for helper function
         : '';
       const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
 

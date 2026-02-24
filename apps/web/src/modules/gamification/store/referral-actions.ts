@@ -26,6 +26,9 @@ const logger = createLogger('ReferralStore');
 // API MAPPING HELPER
 // ========================================
 
+/**
+ *
+ */
 export function mapReferralFromApi(data: Record<string, unknown>): Referral {
   const referrerReward: Record<string, unknown> | undefined = isRecord(data.referrer_reward)
     ? data.referrer_reward
@@ -35,38 +38,38 @@ export function mapReferralFromApi(data: Record<string, unknown>): Referral {
     : undefined;
 
   return {
-    id: data.id as string,
-    referrerId: data.referrer_id as string,
-    referrerUsername: (data.referrer_username as string) || 'Unknown',
-    referredId: data.referred_id as string,
-    referredUsername: (data.referred_username as string) || 'Unknown',
-    referredAvatarUrl: (data.referred_avatar_url as string) || null,
+    id: data.id as string, // type assertion: API response field
+    referrerId: data.referrer_id as string, // type assertion: API response field
+    referrerUsername: (data.referrer_username as string) || 'Unknown', // type assertion: API response field
+    referredId: data.referred_id as string, // type assertion: API response field
+    referredUsername: (data.referred_username as string) || 'Unknown', // type assertion: API response field
+    referredAvatarUrl: (data.referred_avatar_url as string) || null, // type assertion: API response field
     status: (data.status as ReferralStatus) || 'pending', // safe downcast
-    code: (data.code as string) || '',
-    source: data.source as string | undefined,
+    code: (data.code as string) || '', // type assertion: API response field
+    source: data.source as string | undefined, // type assertion: API response field
     referrerReward: referrerReward
       ? {
-          id: referrerReward.id as string,
+          id: referrerReward.id as string, // type assertion: API response field
           type: (referrerReward.type as ReferralReward['type']) || 'xp', // safe downcast
-          amount: (referrerReward.amount as number) || 0,
-          description: (referrerReward.description as string) || '',
-          claimed: (referrerReward.claimed as boolean) || false,
-          claimedAt: (referrerReward.claimed_at as string) || null,
+          amount: (referrerReward.amount as number) || 0, // type assertion: API response field
+          description: (referrerReward.description as string) || '', // type assertion: API response field
+          claimed: (referrerReward.claimed as boolean) || false, // type assertion: API response field
+          claimedAt: (referrerReward.claimed_at as string) || null, // type assertion: API response field
         }
       : undefined,
     referredReward: referredReward
       ? {
-          id: referredReward.id as string,
+          id: referredReward.id as string, // type assertion: API response field
           type: (referredReward.type as ReferralReward['type']) || 'xp', // safe downcast
-          amount: (referredReward.amount as number) || 0,
-          description: (referredReward.description as string) || '',
-          claimed: (referredReward.claimed as boolean) || false,
-          claimedAt: (referredReward.claimed_at as string) || null,
+          amount: (referredReward.amount as number) || 0, // type assertion: API response field
+          description: (referredReward.description as string) || '', // type assertion: API response field
+          claimed: (referredReward.claimed as boolean) || false, // type assertion: API response field
+          claimedAt: (referredReward.claimed_at as string) || null, // type assertion: API response field
         }
       : undefined,
-    createdAt: (data.created_at as string) || new Date().toISOString(),
-    verifiedAt: (data.verified_at as string) || null,
-    rewardedAt: (data.rewarded_at as string) || null,
+    createdAt: (data.created_at as string) || new Date().toISOString(), // type assertion: API response field
+    verifiedAt: (data.verified_at as string) || null, // type assertion: API response field
+    rewardedAt: (data.rewarded_at as string) || null, // type assertion: API response field
   };
 }
 

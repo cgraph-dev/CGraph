@@ -7,13 +7,13 @@ defmodule CGraphWeb.API.V1.PinnedMessageJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{pinned_messages: pinned_messages}) do
-    %{data: Enum.map(pinned_messages, &pinned_message_data/1)}
+    %{data: Enum.map(pinned_messages, &pinned_message_data/1), meta: %{total: length(pinned_messages)}}
   end
 
   @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{pinned_message: pinned_message}) do
-    %{data: pinned_message_data(pinned_message)}
+    %{data: pinned_message_data(pinned_message), meta: %{}}
   end
 
   defp pinned_message_data(%PinnedMessage{} = pinned) do

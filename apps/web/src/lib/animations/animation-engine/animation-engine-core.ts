@@ -27,6 +27,9 @@ if (typeof window !== 'undefined') {
 // ANIMATION ENGINE
 // =============================================================================
 
+/**
+ *
+ */
 export class AnimationEngine {
   private static timeline: gsap.core.Timeline | null = null;
   private static activeAnimations = new Map<string, gsap.core.Tween>();
@@ -286,7 +289,7 @@ export class AnimationEngine {
   } {
     return {
       activeAnimations: this.activeAnimations.size,
-      fps: gsap.ticker.fps as unknown as number,
+      fps: gsap.ticker.fps as unknown as number, // type assertion: library type compatibility
     };
   }
 }

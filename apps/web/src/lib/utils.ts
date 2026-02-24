@@ -21,6 +21,7 @@ export function safeParseDate(value: unknown): Date | null {
   if (!value) return null;
 
   try {
+    // type assertion: value is unknown, narrow to Date constructor-compatible types
     const date = new Date(value as string | number | Date);
     return isNaN(date.getTime()) ? null : date;
   } catch {

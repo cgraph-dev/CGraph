@@ -11,6 +11,9 @@
 import { ColorTheory } from './color-theory';
 import type { AdaptiveTheme, ThemeColors, ThemeMetadata, UserPreference } from './types';
 
+/**
+ *
+ */
 export class AIThemeEngine {
   private preferences: UserPreference | null = null;
 
@@ -84,7 +87,7 @@ export class AIThemeEngine {
     hsl.l = modifiers.lightness;
 
     const primary = ColorTheory.rgbToHex(
-      ...(Object.values(ColorTheory.hslToRgb(hsl.h, hsl.s, hsl.l)) as [number, number, number])
+      ...(Object.values(ColorTheory.hslToRgb(hsl.h, hsl.s, hsl.l)) as [number, number, number]) // type assertion: hslToRgb returns {r,g,b}, Object.values yields number tuple
     );
 
     // Generate complementary and analogous colors

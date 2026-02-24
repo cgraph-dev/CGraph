@@ -66,11 +66,11 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
             ? (q.progress as Record<string, number>) // safe downcast: verified object
             : {};
           return {
-            id: q.id as string,
-            title: (questData.title || q.title) as string,
-            description: (questData.description || q.description) as string,
-            type: (questData.type || q.type) as string,
-            xpReward: (questData.xp_reward || q.xp_reward || 0) as number,
+            id: q.id as string, // type assertion: API response field
+            title: (questData.title || q.title) as string, // type assertion: API response field
+            description: (questData.description || q.description) as string, // type assertion: API response field
+            type: (questData.type || q.type) as string, // type assertion: API response field
+            xpReward: (questData.xp_reward || q.xp_reward || 0) as number, // type assertion: API response field
             objectives: rawObjs.map((raw: unknown) => {
               const obj: Record<string, unknown> = isRecord(raw) ? raw : {};
               const objId = String(obj.id ?? '');
@@ -83,9 +83,9 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
                 completed: (progress[objId] || 0) >= (Number(obj.target) || 0),
               };
             }),
-            expiresAt: q.expires_at as string,
-            completed: (q.completed || false) as boolean,
-            completedAt: q.completed_at as string | undefined,
+            expiresAt: q.expires_at as string, // type assertion: API response field
+            completed: (q.completed || false) as boolean, // type assertion: API response field
+            completedAt: q.completed_at as string | undefined, // type assertion: API response field
           };
         }),
         loginStreak: stats.streak_days || 0,
@@ -164,25 +164,25 @@ export function createFetchQuests(set: StoreSet, _get: StoreGet) {
           const quest: Record<string, unknown> = isRecord(q.quest) ? q.quest : q;
           const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || []; // safe downcast
           return {
-            id: (q.id || quest.id) as string,
-            title: quest.title as string,
-            description: quest.description as string,
+            id: (q.id || quest.id) as string, // type assertion: API response field
+            title: quest.title as string, // type assertion: API response field
+            description: quest.description as string, // type assertion: API response field
             type: (quest.type as QuestType) || 'daily', // safe downcast
-            xpReward: (quest.xp_reward as number) || 0,
+            xpReward: (quest.xp_reward as number) || 0, // type assertion: API response field
             objectives: rawObjectives.map((obj: unknown) => {
               const o: Record<string, unknown> = isRecord(obj) ? obj : {};
               return {
-                id: (o.id as string) || '',
-                description: (o.description as string) || '',
+                id: (o.id as string) || '', // type assertion: API response field
+                description: (o.description as string) || '', // type assertion: API response field
                 type: (o.type as 'count' | 'visit' | 'interact' | 'collect') || 'count', // safe downcast
-                targetValue: (o.target_value as number) || (o.targetValue as number) || 1,
-                currentValue: (o.current_value as number) || (o.currentValue as number) || 0,
-                completed: (o.completed as boolean) || false,
+                targetValue: (o.target_value as number) || (o.targetValue as number) || 1, // type assertion: API response field
+                currentValue: (o.current_value as number) || (o.currentValue as number) || 0, // type assertion: API response field
+                completed: (o.completed as boolean) || false, // type assertion: API response field
               };
             }),
-            expiresAt: q.expires_at as string,
-            completed: (q.completed as boolean) || false,
-            completedAt: q.completed_at as string | undefined,
+            expiresAt: q.expires_at as string, // type assertion: API response field
+            completed: (q.completed as boolean) || false, // type assertion: API response field
+            completedAt: q.completed_at as string | undefined, // type assertion: API response field
           };
         }),
       });

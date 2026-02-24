@@ -21,6 +21,9 @@ interface MessageMediaContentProps {
   voiceVisualizerTheme: string;
 }
 
+/**
+ *
+ */
 export function MessageMediaContent({
   message,
   isOwn,
@@ -29,16 +32,17 @@ export function MessageMediaContent({
   if (message.messageType === 'image' && message.metadata?.url) {
     return (
       <img
-        src={message.metadata.url as string}
+        src={message.metadata.url as string} // type assertion: message metadata field
         alt="Shared image"
         className="mb-2 max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-        onClick={() => window.open(message.metadata.url as string, '_blank')}
+        onClick={() => window.open(message.metadata.url as string, '_blank')} // type assertion: message metadata field
       />
     );
   }
 
   if (message.messageType === 'video' && message.metadata?.url) {
     return (
+      // type assertion: message metadata field is string for video messages
       <video src={message.metadata.url as string} controls className="mb-2 max-w-xs rounded-lg" />
     );
   }
@@ -47,14 +51,15 @@ export function MessageMediaContent({
     return (
       <>
         <a
-          href={message.metadata.url as string}
+          href={message.metadata.url as string} // type assertion: message metadata field
           target="_blank"
           rel="noopener noreferrer"
           className="mb-2 flex items-center gap-2 rounded-lg bg-dark-600/50 p-2 transition-colors hover:bg-dark-600"
         >
           <FileIcon />
           <span className="truncate text-sm">
-            {(message.metadata.filename as string) || 'File'}
+            {(message.metadata.filename as string) || 'File'}{' '}
+            {/* type assertion: message metadata field */}
           </span>
         </a>
         <FileMessage message={message} isOwnMessage={isOwn} className="mb-2" />
@@ -80,9 +85,9 @@ export function MessageMediaContent({
         />
         <VoiceMessagePlayer
           messageId={message.id}
-          audioUrl={message.metadata.url as string}
-          duration={(message.metadata.duration as number) || 0}
-          waveformData={message.metadata.waveform as number[] | undefined}
+          audioUrl={message.metadata.url as string} // type assertion: message metadata field
+          duration={(message.metadata.duration as number) || 0} // type assertion: message metadata field
+          waveformData={message.metadata.waveform as number[] | undefined} // type assertion: message metadata field
           className={isOwn ? 'voice-player-own' : ''}
         />
       </div>

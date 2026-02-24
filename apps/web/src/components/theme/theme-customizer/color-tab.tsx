@@ -6,7 +6,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
+import { THEME_COLORS, type ThemeColorPreset } from '@/stores';
 
 import type { ColorTabProps } from './types';
 
@@ -14,11 +14,15 @@ import type { ColorTabProps } from './types';
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function ColorTab({ selectedColor, onSelectColor }: ColorTabProps) {
+  // type assertion: Object.entries loses key type, re-assert ThemeColorPreset tuple
   const colors = Object.entries(THEME_COLORS) as [
     ThemeColorPreset,
     (typeof THEME_COLORS)[ThemeColorPreset],
-  ][];
+  ][]; // type assertion: Object.entries loses key type, restoring ThemeColorPreset
 
   return (
     <motion.div

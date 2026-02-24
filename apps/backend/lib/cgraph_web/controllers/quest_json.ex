@@ -6,7 +6,7 @@ defmodule CGraphWeb.QuestJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{quests: quests}) do
-    %{data: Enum.map(quests, &render_quest/1)}
+    %{data: Enum.map(quests, &render_quest/1), meta: %{total: length(quests)}}
   end
 
   @doc "Renders a single resource as JSON."
@@ -16,32 +16,33 @@ defmodule CGraphWeb.QuestJSON do
       data: %{
         quest: render_quest(quest),
         user_progress: user_quest && render_user_quest(user_quest)
-      }
+      },
+      meta: %{}
     }
   end
 
   @doc "Renders user quest progress as JSON."
   @spec user_quests(map()) :: map()
   def user_quests(%{user_quests: user_quests}) do
-    %{data: Enum.map(user_quests, &render_user_quest_with_quest/1)}
+    %{data: Enum.map(user_quests, &render_user_quest_with_quest/1), meta: %{total: length(user_quests)}}
   end
 
   @doc "Renders a single user quest as JSON."
   @spec user_quest(map()) :: map()
   def user_quest(%{user_quest: user_quest}) do
-    %{data: render_user_quest_with_quest(user_quest)}
+    %{data: render_user_quest_with_quest(user_quest), meta: %{}}
   end
 
   @doc "Renders daily quests as JSON."
   @spec daily(map()) :: map()
   def daily(%{quests: quests}) do
-    %{data: Enum.map(quests, &render_quest_with_progress/1)}
+    %{data: Enum.map(quests, &render_quest_with_progress/1), meta: %{total: length(quests)}}
   end
 
   @doc "Renders weekly quests as JSON."
   @spec weekly(map()) :: map()
   def weekly(%{quests: quests}) do
-    %{data: Enum.map(quests, &render_quest_with_progress/1)}
+    %{data: Enum.map(quests, &render_quest_with_progress/1), meta: %{total: length(quests)}}
   end
 
   # Private helpers

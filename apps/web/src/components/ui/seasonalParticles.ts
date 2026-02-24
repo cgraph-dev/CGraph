@@ -41,11 +41,10 @@ export const INTENSITY_COUNTS = {
 } as const;
 
 // ── Particle Factory ───────────────────────────────────────
-export function createParticle(
-  theme: SeasonalTheme,
-  w: number,
-  h: number,
-): SeasonalParticle {
+/**
+ *
+ */
+export function createParticle(theme: SeasonalTheme, w: number, h: number): SeasonalParticle {
   const base: SeasonalParticle = {
     x: Math.random() * w,
     y: -20,
@@ -85,7 +84,7 @@ export function createParticle(
         opacity: 0.3 + Math.random() * 0.4,
         color: ['#ef4444', '#ec4899', '#f43f5e', '#fb7185'][
           Math.floor(Math.random() * 4)
-        ] as string,
+        ] as string, // type assertion: array index returns valid color string
         shape: 'heart',
         rotationSpeed: (Math.random() - 0.5) * 0.03,
         maxLife: 300 + Math.random() * 200,
@@ -101,7 +100,7 @@ export function createParticle(
         opacity: 0.3 + Math.random() * 0.5,
         color: ['#fbb6ce', '#f9a8d4', '#fbcfe8', '#fce7f3'][
           Math.floor(Math.random() * 4)
-        ] as string,
+        ] as string, // type assertion: array index returns valid color string
         shape: 'petal',
         rotation: Math.random() * Math.PI * 2,
         rotationSpeed: (Math.random() - 0.5) * 0.04,
@@ -122,7 +121,7 @@ export function createParticle(
         opacity: 1,
         color: ['#fbbf24', '#ef4444', '#3b82f6', '#22c55e', '#a855f7', '#f97316'][
           Math.floor(Math.random() * 6)
-        ] as string,
+        ] as string, // type assertion: array index returns valid color string
         shape: 'star',
         maxLife: 60 + Math.random() * 40,
       };
@@ -138,7 +137,7 @@ export function createParticle(
         opacity: 0.7 + Math.random() * 0.3,
         color: ['#ef4444', '#3b82f6', '#22c55e', '#fbbf24', '#a855f7', '#ec4899'][
           Math.floor(Math.random() * 6)
-        ] as string,
+        ] as string, // type assertion: array index returns valid color string
         shape: 'rect',
         rotation: Math.random() * Math.PI * 2,
         rotationSpeed: (Math.random() - 0.5) * 0.1,
@@ -150,12 +149,10 @@ export function createParticle(
 }
 
 // ── Shape Drawers ──────────────────────────────────────────
-export function drawHeart(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-) {
+/**
+ *
+ */
+export function drawHeart(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   const s = size / 2;
   ctx.beginPath();
   ctx.moveTo(x, y + s * 0.3);
@@ -167,23 +164,19 @@ export function drawHeart(
   ctx.fill();
 }
 
-export function drawPetal(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-) {
+/**
+ *
+ */
+export function drawPetal(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   ctx.beginPath();
   ctx.ellipse(x, y, size * 0.6, size * 0.3, 0, 0, Math.PI * 2);
   ctx.fill();
 }
 
-export function drawStar(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-) {
+/**
+ *
+ */
+export function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   const spikes = 5;
   const outerR = size;
   const innerR = size * 0.4;

@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, staggerConfigs } from '@/lib/animation-presets/presets';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface FriendActivity {
   user_id: string;
@@ -38,6 +38,9 @@ const ACTIVITY_LABELS: Record<string, string> = {
   custom: '',
 };
 
+/**
+ *
+ */
 export function FriendActivityFeed() {
   const [activities, setActivities] = useState<FriendActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,13 +48,8 @@ export function FriendActivityFeed() {
   const fetchActivities = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/v1/friends/activity', {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setActivities(data.data || []);
-      }
+      const { data } = await api.get('/api/v1/friends/activity');
+      setActivities(data.data || []);
     } catch {
       // noop
     } finally {

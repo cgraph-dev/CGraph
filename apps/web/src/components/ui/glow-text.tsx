@@ -1,6 +1,6 @@
 /**
  * GlowText Component
- * 
+ *
  * Gradient text with animated glow effect.
  * Creates eye-catching headers and titles.
  */
@@ -47,6 +47,9 @@ const glowBlur = {
   high: '24px',
 };
 
+/**
+ *
+ */
 export default function GlowText({
   children,
   className = '',
@@ -69,7 +72,7 @@ export default function GlowText({
     : gradient.match(/#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3}|rgb[a]?\([^)]+\)/)?.[0] || '#667eea';
   void _primaryColor; // Reserved for future enhanced glow effects
 
-  const MotionComponent = motion[Component] as typeof motion.span;
+  const MotionComponent = motion[Component] as typeof motion.span; // type assertion: dynamic motion component access returns compatible type
 
   return (
     <MotionComponent
@@ -89,7 +92,11 @@ export default function GlowText({
             opacity: glowIntensities[glowIntensity],
           }}
           animate={{
-            opacity: [glowIntensities[glowIntensity], glowIntensities[glowIntensity] * 1.5, glowIntensities[glowIntensity]],
+            opacity: [
+              glowIntensities[glowIntensity],
+              glowIntensities[glowIntensity] * 1.5,
+              glowIntensities[glowIntensity],
+            ],
           }}
           transition={{
             duration: 2,
@@ -208,7 +215,8 @@ export function RainbowText({
     <motion.span
       className={`relative inline-block font-bold ${sizeClasses[size]} ${className}`}
       style={{
-        background: 'linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0080ff, #8000ff, #ff00ff, #ff0000)',
+        background:
+          'linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0080ff, #8000ff, #ff00ff, #ff0000)',
         backgroundSize: '200% 100%',
         backgroundClip: 'text',
         WebkitBackgroundClip: 'text',

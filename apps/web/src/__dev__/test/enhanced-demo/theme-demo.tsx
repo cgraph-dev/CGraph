@@ -7,6 +7,9 @@ import { GlassCard } from '@/shared/components/ui';
 import { themeEngine as aiThemeEngine } from '@/lib/ai/theme-engine';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
+/**
+ *
+ */
 export function ThemeDemo() {
   const [generatedTheme, setGeneratedTheme] = useState<ReturnType<
     typeof aiThemeEngine.getRecommendedTheme
@@ -46,10 +49,14 @@ export function ThemeDemo() {
                 <div key={name} className="text-center">
                   <div
                     className="mb-2 h-16 w-full rounded-lg border border-white/10"
-                    style={{ background: color as string }}
+                    style={{
+                      background: color as string /* type assertion: theme color value is string */,
+                    }}
                   />
                   <p className="text-xs capitalize text-gray-400">{name}</p>
-                  <p className="font-mono text-xs text-gray-500">{color as string}</p>
+                  <p className="font-mono text-xs text-gray-500">
+                    {color as string /* type assertion: theme color value is string */}
+                  </p>
                 </div>
               ))}
           </div>

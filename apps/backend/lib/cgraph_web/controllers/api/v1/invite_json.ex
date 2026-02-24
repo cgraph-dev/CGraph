@@ -8,13 +8,13 @@ defmodule CGraphWeb.API.V1.InviteJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{invites: invites}) do
-    %{data: Enum.map(invites, &invite_data/1)}
+    %{data: Enum.map(invites, &invite_data/1), meta: %{total: length(invites)}}
   end
 
   @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{invite: invite}) do
-    %{data: invite_data(invite)}
+    %{data: invite_data(invite), meta: %{}}
   end
 
   @doc "Renders join confirmation as JSON."
@@ -24,7 +24,8 @@ defmodule CGraphWeb.API.V1.InviteJSON do
       data: %{
         member: GroupMemberJSON.member_data(member),
         group: GroupJSON.group_data(group)
-      }
+      },
+      meta: %{}
     }
   end
 

@@ -10,11 +10,11 @@ defmodule CGraphWeb.API.V1.ReportJSON do
   """
   @spec index(map()) :: map()
   def index(%{reports: {reports, _meta}}) when is_list(reports) do
-    %{data: for(report <- reports, do: data(report))}
+    %{data: for(report <- reports, do: data(report)), meta: %{total: length(reports)}}
   end
 
   def index(%{reports: reports}) when is_list(reports) do
-    %{data: for(report <- reports, do: data(report))}
+    %{data: for(report <- reports, do: data(report)), meta: %{total: length(reports)}}
   end
 
   @doc """
@@ -22,7 +22,7 @@ defmodule CGraphWeb.API.V1.ReportJSON do
   """
   @spec show(map()) :: map()
   def show(%{report: report}) do
-    %{data: data(report)}
+    %{data: data(report), meta: %{}}
   end
 
   defp data(%Report{} = report) do

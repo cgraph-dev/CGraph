@@ -27,6 +27,9 @@ type SetState = (
 ) => void;
 type GetState = () => CalendarState;
 
+/**
+ *
+ */
 export function createEventActions(set: SetState, get: GetState) {
   return {
     fetchEvents: async (filters?: CalendarFilters) => {
@@ -160,49 +163,52 @@ export function createEventActions(set: SetState, get: GetState) {
 // ========================================
 
 // type assertion: mapping untyped API response fields to CalendarEvent interface
+/**
+ *
+ */
 export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
   const author: Record<string, unknown> = isRecord(data.author) ? data.author : {};
   const category: Record<string, unknown> = isRecord(data.category) ? data.category : {};
   const eventType = (data.event_type as EventType) || 'single'; // safe downcast
 
   return {
-    id: data.id as string,
-    title: (data.title as string) || 'Untitled Event',
-    description: (data.description as string) || '',
-    startDate: (data.start_date as string) || new Date().toISOString(),
-    endDate: (data.end_date as string) || null,
-    allDay: (data.all_day as boolean) || false,
-    timezone: (data.timezone as string) || 'UTC',
+    id: data.id as string, // type assertion: API response field
+    title: (data.title as string) || 'Untitled Event', // type assertion: API response field
+    description: (data.description as string) || '', // type assertion: API response field
+    startDate: (data.start_date as string) || new Date().toISOString(), // type assertion: API response field
+    endDate: (data.end_date as string) || null, // type assertion: API response field
+    allDay: (data.all_day as boolean) || false, // type assertion: API response field
+    timezone: (data.timezone as string) || 'UTC', // type assertion: API response field
     type: eventType,
     eventType: eventType,
-    isRecurring: (data.is_recurring as boolean) || false,
+    isRecurring: (data.is_recurring as boolean) || false, // type assertion: API response field
     recurrencePattern: data.recurrence_pattern as RecurrencePattern | undefined, // safe downcast
-    recurrenceEndDate: (data.recurrence_end_date as string) || null,
-    recurrenceCount: data.recurrence_count as number | undefined,
+    recurrenceEndDate: (data.recurrence_end_date as string) || null, // type assertion: API response field
+    recurrenceCount: data.recurrence_count as number | undefined, // type assertion: API response field
     recurrence: data.recurrence_pattern
       ? {
           pattern: data.recurrence_pattern as RecurrencePattern, // safe downcast
-          interval: (data.recurrence_interval as number) || 1,
-          endDate: (data.recurrence_end_date as string) || null,
-          count: data.recurrence_count as number | undefined,
+          interval: (data.recurrence_interval as number) || 1, // type assertion: API response field
+          endDate: (data.recurrence_end_date as string) || null, // type assertion: API response field
+          count: data.recurrence_count as number | undefined, // type assertion: API response field
         }
       : undefined,
-    location: data.location as string | undefined,
-    locationUrl: data.location_url as string | undefined,
-    categoryId: (data.category_id as string) || null,
-    categoryName: (category.name as string) || undefined,
-    categoryColor: (category.color as string) || undefined,
-    authorId: (data.author_id as string) || (author.id as string) || '',
-    authorUsername: (author.username as string) || 'Unknown',
-    authorAvatarUrl: (author.avatar_url as string) || null,
+    location: data.location as string | undefined, // type assertion: API response field
+    locationUrl: data.location_url as string | undefined, // type assertion: API response field
+    categoryId: (data.category_id as string) || null, // type assertion: API response field
+    categoryName: (category.name as string) || undefined, // type assertion: API response field
+    categoryColor: (category.color as string) || undefined, // type assertion: API response field
+    authorId: (data.author_id as string) || (author.id as string) || '', // type assertion: API response field
+    authorUsername: (author.username as string) || 'Unknown', // type assertion: API response field
+    authorAvatarUrl: (author.avatar_url as string) || null, // type assertion: API response field
     visibility: (data.visibility as EventVisibility) || 'public', // safe downcast
-    forumId: (data.forum_id as string) || null,
-    rsvpEnabled: (data.rsvp_enabled as boolean) || false,
-    rsvpDeadline: (data.rsvp_deadline as string) || null,
-    maxAttendees: (data.max_attendees as number) || null,
-    attendeeCount: (data.attendee_count as number) || 0,
+    forumId: (data.forum_id as string) || null, // type assertion: API response field
+    rsvpEnabled: (data.rsvp_enabled as boolean) || false, // type assertion: API response field
+    rsvpDeadline: (data.rsvp_deadline as string) || null, // type assertion: API response field
+    maxAttendees: (data.max_attendees as number) || null, // type assertion: API response field
+    attendeeCount: (data.attendee_count as number) || 0, // type assertion: API response field
     myRsvp: data.my_rsvp as RSVPStatus | undefined, // safe downcast
-    createdAt: (data.created_at as string) || new Date().toISOString(),
-    updatedAt: (data.updated_at as string) || new Date().toISOString(),
+    createdAt: (data.created_at as string) || new Date().toISOString(), // type assertion: API response field
+    updatedAt: (data.updated_at as string) || new Date().toISOString(), // type assertion: API response field
   };
 }

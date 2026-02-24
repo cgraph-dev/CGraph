@@ -10,7 +10,7 @@ import {
   ChatBubbleLeftIcon,
   UserPlusIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface NotificationActionsProps {
   type: 'friend_request' | 'message' | 'group_invite' | 'mention';
@@ -19,6 +19,9 @@ interface NotificationActionsProps {
   onAction?: (action: string) => void;
 }
 
+/**
+ *
+ */
 export function NotificationActions({
   type,
   notificationId,
@@ -33,14 +36,15 @@ export function NotificationActions({
   const handleAction = async (action: string, endpoint: string, method = 'POST', body?: object) => {
     setLoading(action);
     try {
-      await fetch(endpoint, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-        body: body ? JSON.stringify(body) : undefined,
-      });
+      if (method === 'DELETE') {
+        await api.delete(endpoint);
+      } else if (method === 'PUT') {
+        await api.put(endpoint, body);
+      } else if (method === 'PATCH') {
+        await api.patch(endpoint, body);
+      } else {
+        await api.post(endpoint, body);
+      }
       onAction?.(action);
     } catch {
       // noop

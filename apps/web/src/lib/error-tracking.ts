@@ -16,6 +16,7 @@
  *   Source maps are uploaded in CI but NOT served to users.
  */
 
+// type assertion: Vite env vars are typed as string, but may be undefined if not set
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 const ENVIRONMENT = import.meta.env.MODE || 'development';
 const RELEASE = import.meta.env.VITE_APP_VERSION || '0.9.31';

@@ -31,7 +31,7 @@ export function getLuminance(color: string): number {
   const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((val) => {
     const normalized = val / 255;
     return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
-  }) as [number, number, number];
+  }) as [number, number, number]; // type assertion: map always returns 3 elements matching rgb tuple
 
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }

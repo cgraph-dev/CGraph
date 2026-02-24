@@ -5,9 +5,14 @@
 
 import { useState, useEffect } from 'react';
 
+import { api } from '@/lib/api';
+
 import { getDefaultIcons } from './constants';
 import type { PostIcon } from './types';
 
+/**
+ *
+ */
 export function usePostIcons(forumId?: string, boardId?: string) {
   const [icons, setIcons] = useState<PostIcon[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,10 +32,8 @@ export function usePostIcons(forumId?: string, boardId?: string) {
           url += `?${params.toString()}`;
         }
 
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch icons');
-
-        const data = await response.json();
+        const response = await api.get(url);
+        const data = response.data;
         setIcons(data.icons || data);
         setError(null);
       } catch (err) {

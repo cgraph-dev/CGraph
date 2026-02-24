@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets/presets';
 import { LinkIcon, XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface ConnectedAccount {
   id: string;
@@ -24,6 +24,9 @@ const PROVIDERS = [
   { id: 'tiktok', name: 'TikTok', icon: '🎵', color: 'bg-pink-500/10 border-pink-500/20' },
 ];
 
+/**
+ *
+ */
 export function ConnectedAccounts() {
   const [accounts, setAccounts] = useState<ConnectedAccount[]>([]);
   const [_loading, setLoading] = useState(true);
@@ -31,13 +34,8 @@ export function ConnectedAccounts() {
   const fetchAccounts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/v1/me/connected-accounts', {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data.data || []);
-      }
+      const { data } = await api.get('/api/v1/me/connected-accounts');
+      setAccounts(data.data || []);
     } catch {
       // noop
     } finally {
@@ -60,10 +58,7 @@ export function ConnectedAccounts() {
       return;
     }
     try {
-      await fetch(`/api/v1/me/connected-accounts/${accountId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
+      await api.delete(`/api/v1/me/connected-accounts/${accountId}`);
       setAccounts((prev) => prev.filter((a) => a.id !== accountId));
     } catch {
       // noop

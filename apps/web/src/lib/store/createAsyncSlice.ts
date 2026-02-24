@@ -125,7 +125,7 @@ export function createAsyncSlice<T>(
       [dataKey]: null as T | null, // type assertion: initial null state for generic type
       [loadingKey]: false,
       [errorKey]: null as Error | null, // type assertion: initial null state for error
-      [lastFetchedKey]: null as number | null,
+      [lastFetchedKey]: null as number | null, // type assertion: initial null state for timestamp
 
       // Actions
       [fetchKey]: doFetch,

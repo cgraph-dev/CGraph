@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, staggerConfigs } from '@/lib/animation-presets/presets';
 import { ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface Appeal {
   id: string;
@@ -25,6 +25,9 @@ interface Appeal {
 
 type FilterStatus = 'all' | 'pending' | 'approved' | 'denied';
 
+/**
+ *
+ */
 export function AppealsQueue({ groupId }: { groupId: string }) {
   const [appeals, setAppeals] = useState<Appeal[]>([]);
   const [filter, setFilter] = useState<FilterStatus>('pending');
@@ -37,13 +40,8 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
     try {
       const params = new URLSearchParams();
       if (filter !== 'all') params.set('status', filter);
-      const res = await fetch(`/api/v1/groups/${groupId}/appeals?${params}`, {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setAppeals(data.data || []);
-      }
+      const { data } = await api.get(`/api/v1/groups/${groupId}/appeals?${params}`);
+      setAppeals(data.data || []);
     } catch {
       // noop
     } finally {
@@ -57,25 +55,17 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
 
   const handleReview = async (appealId: string, decision: 'approved' | 'denied') => {
     try {
-      const res = await fetch(`/api/v1/groups/${groupId}/appeals/${appealId}/review`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-        body: JSON.stringify({ decision, reason: reviewReason }),
+      await api.put(`/api/v1/groups/${groupId}/appeals/${appealId}/review`, {
+        decision,
+        reason: reviewReason,
       });
-      if (res.ok) {
-        setAppeals((prev) =>
-          prev.map((a) =>
-            a.id === appealId
-              ? { ...a, status: decision, reviewed_at: new Date().toISOString() }
-              : a
-          )
-        );
-        setReviewingId(null);
-        setReviewReason('');
-      }
+      setAppeals((prev) =>
+        prev.map((a) =>
+          a.id === appealId ? { ...a, status: decision, reviewed_at: new Date().toISOString() } : a
+        )
+      );
+      setReviewingId(null);
+      setReviewReason('');
     } catch {
       // noop
     }

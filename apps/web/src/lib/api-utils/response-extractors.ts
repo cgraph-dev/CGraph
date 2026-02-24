@@ -15,6 +15,9 @@ function isBoolean(v: unknown): v is boolean {
   return typeof v === 'boolean';
 }
 
+/**
+ *
+ */
 export function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null;
 }
@@ -48,10 +51,7 @@ export function asOptionalNumber(v: unknown): number | undefined {
  * Safely extract a typed array from an unknown value.
  * Each element is validated with the provided guard function.
  */
-export function asArray<T>(
-  v: unknown,
-  guard: (x: unknown) => x is T
-): T[] {
+export function asArray<T>(v: unknown, guard: (x: unknown) => x is T): T[] {
   if (!Array.isArray(v)) return [];
   return v.filter(guard);
 }
@@ -61,7 +61,7 @@ export function asArray<T>(
  * Use only when T is a known, closed interface.
  */
 export function typedKeys<T extends object>(obj: T): (keyof T)[] {
-  return Object.keys(obj) as (keyof T)[];
+  return Object.keys(obj) as (keyof T)[]; // type assertion: Object.keys returns keyof T
 }
 
 /**

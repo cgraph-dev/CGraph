@@ -23,12 +23,12 @@ export function createFetchBlockedUsers(set: Set) {
       const blockedUsers = ensureArray(response.data, 'blocked')
         .filter(isRecord)
         .map((u) => ({
-          id: u.id as string,
-          username: u.username as string,
-          displayName: (u.display_name as string) || null,
-          avatarUrl: (u.avatar_url as string) || null,
-          blockedAt: u.blocked_at as string,
-          reason: (u.reason as string) || undefined,
+          id: u.id as string, // type assertion: API response field narrowed from unknown
+          username: u.username as string, // type assertion: API response field narrowed from unknown
+          displayName: (u.display_name as string) || null, // type assertion: API response field narrowed from unknown
+          avatarUrl: (u.avatar_url as string) || null, // type assertion: API response field narrowed from unknown
+          blockedAt: u.blocked_at as string, // type assertion: API response field narrowed from unknown
+          reason: (u.reason as string) || undefined, // type assertion: API response field narrowed from unknown
         }));
       set({ blockedUsers, isLoadingBlocked: false });
     } catch (error) {

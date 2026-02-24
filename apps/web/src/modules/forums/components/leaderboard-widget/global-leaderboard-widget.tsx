@@ -12,6 +12,9 @@ import { UserRow } from './user-row';
 
 const logger = createLogger('LeaderboardWidget');
 
+/**
+ *
+ */
 export function GlobalLeaderboardWidget({
   limit = 5,
   showTitle = true,
@@ -30,7 +33,7 @@ export function GlobalLeaderboardWidget({
         const data = response.data?.data || [];
         setUsers(
           data.map((u: Record<string, unknown>, index: number) => ({
-            rank: (u.rank as number) || index + 1,
+            rank: (u.rank as number) || index + 1, // type assertion: API response field
             id: u.id,
             username: u.username,
             displayName: u.display_name,

@@ -6,13 +6,13 @@ defmodule CGraphWeb.API.V1.RoleJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{roles: roles}) do
-    %{data: Enum.map(roles, &role_data/1)}
+    %{data: Enum.map(roles, &role_data/1), meta: %{total: length(roles)}}
   end
 
   @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{role: role}) do
-    %{data: role_data(role)}
+    %{data: role_data(role), meta: %{}}
   end
 
   @doc """

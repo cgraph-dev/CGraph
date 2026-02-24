@@ -113,7 +113,7 @@ export async function generatePDF(
       thread.categoryName ? `Category: ${thread.categoryName}` : null,
       thread.viewCount !== undefined ? `Views: ${thread.viewCount.toLocaleString()}` : null,
       thread.replyCount !== undefined ? `Replies: ${thread.replyCount.toLocaleString()}` : null,
-    ].filter(Boolean) as string[];
+    ].filter(Boolean) as string[]; // type assertion: filter(Boolean) removes nulls, leaving only strings
 
     for (const line of metadataLines) {
       checkPageBreak(lineHeight);

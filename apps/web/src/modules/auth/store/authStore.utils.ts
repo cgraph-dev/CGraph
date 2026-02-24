@@ -31,34 +31,34 @@ export function getApiErrorMessage(error: unknown, fallback: string): string {
  */
 export function mapUserFromApi(apiUser: Record<string, unknown>): User {
   return {
-    id: apiUser.id as string,
-    uid: (apiUser.uid as string) || '',
-    userId: (apiUser.user_id as number) || 0,
-    userIdDisplay: (apiUser.user_id_display as string) || '#0000000000',
-    email: apiUser.email as string,
-    username: (apiUser.username as string | null) || null,
-    displayName: (apiUser.display_name as string | null) || null,
-    avatarUrl: (apiUser.avatar_url as string | null) || null,
-    walletAddress: (apiUser.wallet_address as string | null) || null,
-    emailVerifiedAt: (apiUser.email_verified_at as string | null) || null,
-    twoFactorEnabled: (apiUser.totp_enabled as boolean) || false,
-    status: (apiUser.status as 'online' | 'idle' | 'dnd' | 'offline') || 'offline',
-    statusMessage: (apiUser.custom_status as string | null) || null,
-    karma: (apiUser.karma as number) || 0,
-    isVerified: (apiUser.is_verified as boolean) || false,
-    isPremium: (apiUser.is_premium as boolean) || false,
-    isAdmin: (apiUser.is_admin as boolean) || false,
-    canChangeUsername: (apiUser.can_change_username as boolean) ?? true,
-    usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null,
-    createdAt: apiUser.inserted_at as string,
+    id: apiUser.id as string, // type assertion: API field narrowed from unknown
+    uid: (apiUser.uid as string) || '', // type assertion: API field narrowed from unknown
+    userId: (apiUser.user_id as number) || 0, // type assertion: API field narrowed from unknown
+    userIdDisplay: (apiUser.user_id_display as string) || '#0000000000', // type assertion: API field narrowed from unknown
+    email: apiUser.email as string, // type assertion: API field narrowed from unknown
+    username: (apiUser.username as string | null) || null, // type assertion: API field narrowed from unknown
+    displayName: (apiUser.display_name as string | null) || null, // type assertion: API field narrowed from unknown
+    avatarUrl: (apiUser.avatar_url as string | null) || null, // type assertion: API field narrowed from unknown
+    walletAddress: (apiUser.wallet_address as string | null) || null, // type assertion: API field narrowed from unknown
+    emailVerifiedAt: (apiUser.email_verified_at as string | null) || null, // type assertion: API field narrowed from unknown
+    twoFactorEnabled: (apiUser.totp_enabled as boolean) || false, // type assertion: API field narrowed from unknown
+    status: (apiUser.status as 'online' | 'idle' | 'dnd' | 'offline') || 'offline', // type assertion: API field narrowed to status union
+    statusMessage: (apiUser.custom_status as string | null) || null, // type assertion: API field narrowed from unknown
+    karma: (apiUser.karma as number) || 0, // type assertion: API field narrowed from unknown
+    isVerified: (apiUser.is_verified as boolean) || false, // type assertion: API field narrowed from unknown
+    isPremium: (apiUser.is_premium as boolean) || false, // type assertion: API field narrowed from unknown
+    isAdmin: (apiUser.is_admin as boolean) || false, // type assertion: API field narrowed from unknown
+    canChangeUsername: (apiUser.can_change_username as boolean) ?? true, // type assertion: API field narrowed from unknown
+    usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null, // type assertion: API field narrowed from unknown
+    createdAt: apiUser.inserted_at as string, // type assertion: API field narrowed from unknown
     // Gamification fields
-    level: (apiUser.level as number) || 1,
-    xp: (apiUser.xp as number) || 0,
-    coins: (apiUser.coins as number) || 0,
-    title: apiUser.title as string | undefined,
-    titleColor: apiUser.title_color as string | undefined,
-    badges: apiUser.badges as string[] | undefined,
-    streak: (apiUser.streak as number) || 0,
+    level: (apiUser.level as number) || 1, // type assertion: API field narrowed from unknown
+    xp: (apiUser.xp as number) || 0, // type assertion: API field narrowed from unknown
+    coins: (apiUser.coins as number) || 0, // type assertion: API field narrowed from unknown
+    title: apiUser.title as string | undefined, // type assertion: API field narrowed from unknown
+    titleColor: apiUser.title_color as string | undefined, // type assertion: API field narrowed from unknown
+    badges: apiUser.badges as string[] | undefined, // type assertion: API field narrowed from unknown
+    streak: (apiUser.streak as number) || 0, // type assertion: API field narrowed from unknown
   };
 }
 

@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { entranceVariants, springs } from '@/lib/animation-presets/presets';
 import { XMarkIcon, PaperAirplaneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { api } from '@/lib/api';
 import { useAuthStore } from '@/modules/auth/store';
 
 interface ThreadMessage {
@@ -26,6 +27,9 @@ interface ThreadPanelProps {
   conversationId: string;
 }
 
+/**
+ *
+ */
 export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: ThreadPanelProps) {
   const { user: _user } = useAuthStore();
   const [replies, setReplies] = useState<ThreadMessage[]>([]);
@@ -39,13 +43,8 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
     if (!parentMessage) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/v1/messages/${parentMessage.id}/thread`, {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setReplies(data.data || []);
-      }
+      const { data } = await api.get(`/api/v1/messages/${parentMessage.id}/thread`);
+      setReplies(data.data || []);
     } catch {
       // Thread endpoint may not exist yet — show empty state
     } finally {
@@ -87,28 +86,13 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
     inputRef.current?.focus();
 
     try {
-      const res = await fetch(`/api/v1/conversations/${conversationId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-        body: JSON.stringify({
-          content: trimmedContent,
-          reply_to_id: parentMessage.id,
-        }),
+      const { data } = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
+        content: trimmedContent,
+        reply_to_id: parentMessage.id,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        // Replace the optimistic reply with the real server response
-        setReplies((prev) =>
-          prev.map((r) => (r.id === optimisticReply.id ? data.data : r))
-        );
-      } else {
-        // Rollback: remove the optimistic reply on failure
-        setReplies((prev) => prev.filter((r) => r.id !== optimisticReply.id));
-      }
+      // Replace the optimistic reply with the real server response
+      setReplies((prev) => prev.map((r) => (r.id === optimisticReply.id ? data.data : r)));
     } catch {
       // Rollback: remove the optimistic reply on error
       setReplies((prev) => prev.filter((r) => r.id !== optimisticReply.id));

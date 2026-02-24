@@ -34,17 +34,17 @@ export function FileMessage({ message, isOwnMessage, className = '' }: FileMessa
   const [imageError, setImageError] = useState(false);
 
   // Extract file metadata from message with proper type casting
-  const fileUrl = (message.metadata?.fileUrl || message.metadata?.file_url) as string | undefined;
+  const fileUrl = (message.metadata?.fileUrl || message.metadata?.file_url) as string | undefined; // type assertion: message metadata field
   const fileName = (message.metadata?.fileName ||
     message.metadata?.file_name ||
-    'Unknown file') as string;
-  const fileSize = (message.metadata?.fileSize || message.metadata?.file_size || 0) as number;
+    'Unknown file') as string; // type assertion: message metadata field
+  const fileSize = (message.metadata?.fileSize || message.metadata?.file_size || 0) as number; // type assertion: message metadata field
   const fileMimeType = (message.metadata?.fileMimeType ||
     message.metadata?.file_mime_type ||
-    '') as string;
+    '') as string; // type assertion: message metadata field
   const thumbnailUrl = (message.metadata?.thumbnailUrl || message.metadata?.thumbnail_url) as
     | string
-    | undefined;
+    | undefined; // type assertion: message metadata field
 
   if (!fileUrl) {
     return null;

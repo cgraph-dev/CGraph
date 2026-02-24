@@ -167,7 +167,7 @@ const healthHandlers = [
 const authHandlers = [
   // Login
   http.post(`${API_BASE}/api/v1/auth/login`, async ({ request }) => {
-    const body = (await request.json()) as { identifier?: string; password?: string };
+    const body = (await request.json()) as { identifier?: string; password?: string }; // type assertion: mock parameter typing
     const idempotencyKey = request.headers.get('idempotency-key');
 
     if (!body?.identifier || !body?.password) {
@@ -196,7 +196,7 @@ const authHandlers = [
 
   // Register
   http.post(`${API_BASE}/api/v1/auth/register`, async ({ request }) => {
-    const body = (await request.json()) as { email?: string; password?: string; username?: string };
+    const body = (await request.json()) as { email?: string; password?: string; username?: string }; // type assertion: mock parameter typing
 
     if (!body?.email || !body?.password || !body?.username) {
       return HttpResponse.json({ error: 'missing_fields' }, { status: 400 });
@@ -223,7 +223,7 @@ const authHandlers = [
 
   // Refresh token
   http.post(`${API_BASE}/api/v1/auth/refresh`, async ({ request }) => {
-    const body = (await request.json()) as { refresh_token?: string };
+    const body = (await request.json()) as { refresh_token?: string }; // type assertion: mock parameter typing
 
     if (!body?.refresh_token || body.refresh_token === 'expired') {
       return HttpResponse.json({ error: 'invalid_token' }, { status: 401 });
@@ -266,7 +266,7 @@ const messageHandlers = [
   http.get(`${API_BASE}/api/v1/conversations/:id`, ({ params }) => {
     const { id } = params;
     return HttpResponse.json({
-      data: mockConversation({ id: id as string }),
+      data: mockConversation({ id: id as string }), // type assertion: mock parameter typing
     });
   }),
 
@@ -287,8 +287,8 @@ const messageHandlers = [
     const { id } = params;
     return HttpResponse.json({
       data: [
-        mockMessage({ conversationId: id as string, content: 'First message' }),
-        mockMessage({ conversationId: id as string, content: 'Second message' }),
+        mockMessage({ conversationId: id as string, content: 'First message' }), // type assertion: mock parameter typing
+        mockMessage({ conversationId: id as string, content: 'Second message' }), // type assertion: mock parameter typing
       ],
       meta: { page: 1, total: 2, hasMore: false },
     });
@@ -297,14 +297,14 @@ const messageHandlers = [
   // Send message
   http.post(`${API_BASE}/api/v1/conversations/:id/messages`, async ({ params, request }) => {
     const { id } = params;
-    const body = (await request.json()) as { content: string };
+    const body = (await request.json()) as { content: string }; // type assertion: mock parameter typing
 
     await delay(100); // Simulate network latency
 
     return HttpResponse.json(
       {
         data: mockMessage({
-          conversationId: id as string,
+          conversationId: id as string, // type assertion: mock parameter typing
           content: body.content,
         }),
       },
@@ -315,11 +315,11 @@ const messageHandlers = [
   // Update message (edit)
   http.patch(`${API_BASE}/api/v1/messages/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = (await request.json()) as { content: string };
+    const body = (await request.json()) as { content: string }; // type assertion: mock parameter typing
 
     return HttpResponse.json({
       data: mockMessage({
-        id: id as string,
+        id: id as string, // type assertion: mock parameter typing
         content: body.content,
         isEdited: true,
       }),
@@ -334,7 +334,7 @@ const messageHandlers = [
   // Add reaction
   http.post(`${API_BASE}/api/v1/messages/:id/reactions`, async ({ params, request }) => {
     const { id } = params;
-    const body = (await request.json()) as { emoji: string };
+    const body = (await request.json()) as { emoji: string }; // type assertion: mock parameter typing
 
     return HttpResponse.json(
       {
@@ -364,7 +364,7 @@ const friendHandlers = [
 
   // Send friend request
   http.post(`${API_BASE}/api/v1/friends/requests`, async ({ request }) => {
-    const body = (await request.json()) as { userId: string };
+    const body = (await request.json()) as { userId: string }; // type assertion: mock parameter typing
     return HttpResponse.json(
       {
         data: { id: 'request-1', userId: body.userId, status: 'pending' },
@@ -392,7 +392,7 @@ const friendHandlers = [
   // Accept friend request
   http.post(`${API_BASE}/api/v1/friends/requests/:id/accept`, ({ params }) => {
     return HttpResponse.json({
-      data: mockFriend({ friendshipId: params.id as string }),
+      data: mockFriend({ friendshipId: params.id as string }), // type assertion: mock parameter typing
     });
   }),
 
@@ -519,7 +519,7 @@ const forumHandlers = [
 
   // Create forum post
   http.post(`${API_BASE}/api/v1/forums/:id/posts`, async ({ request }) => {
-    const body = (await request.json()) as { title: string; content: string };
+    const body = (await request.json()) as { title: string; content: string }; // type assertion: mock parameter typing
     return HttpResponse.json(
       {
         data: { id: 'post-new', ...body, authorId: 'user-1', createdAt: new Date().toISOString() },

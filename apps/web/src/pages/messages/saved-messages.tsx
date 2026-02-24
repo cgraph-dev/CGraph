@@ -12,7 +12,7 @@ import {
   TrashIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface SavedMessage {
   id: string;
@@ -25,6 +25,9 @@ interface SavedMessage {
   note?: string;
 }
 
+/**
+ *
+ */
 export function SavedMessages() {
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [search, setSearch] = useState('');
@@ -35,13 +38,8 @@ export function SavedMessages() {
     try {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
-      const res = await fetch(`/api/v1/saved-messages?${params}`, {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setMessages(data.data || []);
-      }
+      const { data } = await api.get(`/api/v1/saved-messages?${params}`);
+      setMessages(data.data || []);
     } catch {
       // noop
     } finally {
@@ -55,10 +53,7 @@ export function SavedMessages() {
 
   const handleRemove = async (id: string) => {
     try {
-      await fetch(`/api/v1/saved-messages/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
+      await api.delete(`/api/v1/saved-messages/${id}`);
       setMessages((prev) => prev.filter((m) => m.id !== id));
     } catch {
       // noop

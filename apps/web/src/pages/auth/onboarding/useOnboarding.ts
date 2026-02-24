@@ -12,6 +12,9 @@ import type { ProfileData, ProfileUpdatePayload } from './types';
 
 const logger = createLogger('Onboarding');
 
+/**
+ *
+ */
 export function useOnboarding() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuthStore();
@@ -32,7 +35,7 @@ export function useOnboarding() {
       setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
+        setAvatarPreview(reader.result as string); // type assertion: FileReader result is always string when readAsDataURL
       };
       reader.readAsDataURL(file);
     }

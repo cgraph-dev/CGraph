@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheckIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
+import { api } from '@/lib/api';
 
 interface AutomodRule {
   id: string;
@@ -35,6 +35,9 @@ const ACTIONS = [
   { value: 'flag_for_review', label: 'Flag for review' },
 ];
 
+/**
+ *
+ */
 export function AutomodSettings({ groupId }: { groupId: string }) {
   const [rules, setRules] = useState<AutomodRule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,13 +47,8 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
   const fetchRules = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/v1/groups/${groupId}/automod`, {
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setRules(data.data || []);
-      }
+      const { data } = await api.get(`/api/v1/groups/${groupId}/automod`);
+      setRules(data.data || []);
     } catch {
       // noop
     } finally {
@@ -63,25 +61,19 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
   }, [fetchRules]);
 
   const handleSave = async () => {
-    const method = editingRule.id ? 'PUT' : 'POST';
     const url = editingRule.id
       ? `/api/v1/groups/${groupId}/automod/${editingRule.id}`
       : `/api/v1/groups/${groupId}/automod`;
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-        body: JSON.stringify(editingRule),
-      });
-      if (res.ok) {
-        fetchRules();
-        setShowEditor(false);
-        setEditingRule({});
+      if (editingRule.id) {
+        await api.put(url, editingRule);
+      } else {
+        await api.post(url, editingRule);
       }
+      fetchRules();
+      setShowEditor(false);
+      setEditingRule({});
     } catch {
       // noop
     }
@@ -89,10 +81,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`/api/v1/groups/${groupId}/automod/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-      });
+      await api.delete(`/api/v1/groups/${groupId}/automod/${id}`);
       setRules((prev) => prev.filter((r) => r.id !== id));
     } catch {
       // noop
@@ -101,13 +90,8 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
 
   const handleToggle = async (rule: AutomodRule) => {
     try {
-      await fetch(`/api/v1/groups/${groupId}/automod/${rule.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-        body: JSON.stringify({ is_enabled: !rule.is_enabled }),
+      await api.put(`/api/v1/groups/${groupId}/automod/${rule.id}`, {
+        is_enabled: !rule.is_enabled,
       });
       setRules((prev) =>
         prev.map((r) => (r.id === rule.id ? { ...r, is_enabled: !r.is_enabled } : r))

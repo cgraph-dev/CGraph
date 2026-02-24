@@ -250,7 +250,7 @@ class SecureStorage {
     return new Promise((resolve, reject) => {
       const request = store.getAllKeys();
       request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result as string[]);
+      request.onsuccess = () => resolve(request.result as string[]); // type assertion: IndexedDB getAllKeys returns IDBValidKey[], keys are always strings here
     });
   }
 }

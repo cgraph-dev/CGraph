@@ -13,30 +13,30 @@ import type { Forum } from './forumStore.types';
 export function mapForumFromApi(data: Record<string, unknown>): Forum {
   const owner = data.owner as Record<string, unknown> | null; // safe downcast – API response field
   return {
-    id: data.id as string,
-    name: data.name as string,
-    slug: data.slug as string,
-    description: (data.description as string | null) || null,
-    iconUrl: (data.icon as string | null) || null,
-    bannerUrl: (data.banner as string | null) || null,
+    id: data.id as string, // type assertion: API response field
+    name: data.name as string, // type assertion: API response field
+    slug: data.slug as string, // type assertion: API response field
+    description: (data.description as string | null) || null, // type assertion: API response field
+    iconUrl: (data.icon as string | null) || null, // type assertion: API response field
+    bannerUrl: (data.banner as string | null) || null, // type assertion: API response field
     customCss: null,
-    isNsfw: (data.is_nsfw as boolean) || false,
-    isPrivate: (data.is_private as boolean) || false,
-    isPublic: !(data.is_private as boolean),
-    memberCount: (data.member_count as number) || 0,
-    score: (data.score as number) || 0,
-    upvotes: (data.upvotes as number) || 0,
-    downvotes: (data.downvotes as number) || 0,
-    hotScore: (data.hot_score as number) || 0,
-    weeklyScore: (data.weekly_score as number) || 0,
-    featured: (data.featured as boolean) || false,
-    userVote: ((data.user_vote as number) || 0) as 1 | -1 | 0,
+    isNsfw: (data.is_nsfw as boolean) || false, // type assertion: API response field
+    isPrivate: (data.is_private as boolean) || false, // type assertion: API response field
+    isPublic: !(data.is_private as boolean), // type assertion: API response field
+    memberCount: (data.member_count as number) || 0, // type assertion: API response field
+    score: (data.score as number) || 0, // type assertion: API response field
+    upvotes: (data.upvotes as number) || 0, // type assertion: API response field
+    downvotes: (data.downvotes as number) || 0, // type assertion: API response field
+    hotScore: (data.hot_score as number) || 0, // type assertion: API response field
+    weeklyScore: (data.weekly_score as number) || 0, // type assertion: API response field
+    featured: (data.featured as boolean) || false, // type assertion: API response field
+    userVote: ((data.user_vote as number) || 0) as 1 | -1 | 0, // type assertion: API vote value constrained to valid vote values
     categories: ensureArray(data.categories, 'categories'),
     moderators: [],
-    isSubscribed: (data.is_subscribed as boolean) || false,
-    isMember: (data.is_member as boolean) || false,
-    ownerId: (owner?.id as string | null) || null,
-    createdAt: data.created_at as string,
+    isSubscribed: (data.is_subscribed as boolean) || false, // type assertion: API response field
+    isMember: (data.is_member as boolean) || false, // type assertion: API response field
+    ownerId: (owner?.id as string | null) || null, // type assertion: API response field
+    createdAt: data.created_at as string, // type assertion: API response field
   };
 }
 

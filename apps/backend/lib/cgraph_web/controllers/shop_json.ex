@@ -6,19 +6,19 @@ defmodule CGraphWeb.ShopJSON do
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{items: items}) do
-    %{data: Enum.map(items, &render_item/1)}
+    %{data: Enum.map(items, &render_item/1), meta: %{total: length(items)}}
   end
 
   @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{item: item}) do
-    %{data: render_item(item)}
+    %{data: render_item(item), meta: %{}}
   end
 
   @doc "Renders shop purchase history as JSON."
   @spec purchases(map()) :: map()
   def purchases(%{purchases: purchases}) do
-    %{data: Enum.map(purchases, &render_purchase/1)}
+    %{data: Enum.map(purchases, &render_purchase/1), meta: %{total: length(purchases)}}
   end
 
   # Private helpers

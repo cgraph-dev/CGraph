@@ -111,16 +111,16 @@ export const useChatCustomization = () => {
     // type assertion: initializing compatibility layer with explicit null types
     textColor: null as string | null,
     textSize: 14,
-    textWeight: 'normal' as string,
-    fontFamily: 'inherit' as string,
+    textWeight: 'normal' as string, // type assertion: legacy compat field widened to string
+    fontFamily: 'inherit' as string, // type assertion: legacy compat field widened to string
     entranceAnimation: bubbleEntranceAnimation,
-    hoverEffect: (bubbleHoverEffect ? 'lift' : 'none') as string,
-    glassEffect: (bubbleGlassEffect ? 'default' : 'none') as string,
-    borderStyle: 'none' as string,
-    particleEffect: null as string | null,
-    animationSpeed: 'normal' as string,
-    backgroundEffect: null as string | null,
-    animationIntensity: 'medium' as string,
+    hoverEffect: (bubbleHoverEffect ? 'lift' : 'none') as string, // type assertion: legacy compat field widened to string
+    glassEffect: (bubbleGlassEffect ? 'default' : 'none') as string, // type assertion: legacy compat field widened to string
+    borderStyle: 'none' as string, // type assertion: legacy compat field widened to string
+    particleEffect: null as string | null, // type assertion: legacy compat nullable field type
+    animationSpeed: 'normal' as string, // type assertion: legacy compat field widened to string
+    backgroundEffect: null as string | null, // type assertion: legacy compat nullable field type
+    animationIntensity: 'medium' as string, // type assertion: legacy compat field widened to string
   };
 
   const updateChat = (updates: Record<string, unknown>): void => {

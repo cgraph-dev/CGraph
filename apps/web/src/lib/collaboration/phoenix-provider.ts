@@ -68,6 +68,9 @@ export class PhoenixProvider {
     logger.info('PhoenixProvider initialized');
   }
 
+  /**
+   *
+   */
   get isSynced(): boolean {
     return this.synced;
   }
@@ -93,7 +96,7 @@ export class PhoenixProvider {
   private setupChannelListeners(): void {
     // Receive initial state on join
     const ref1 = this.channel.on('initial_state', (payload: Record<string, unknown>) => {
-      const stateBase64 = payload.state as string;
+      const stateBase64 = payload.state as string; // type assertion: Phoenix channel payload field
       if (stateBase64) {
         const state = base64ToUint8Array(stateBase64);
         Y.applyUpdate(this.doc, state, this);
@@ -105,7 +108,7 @@ export class PhoenixProvider {
 
     // Receive incremental updates from other clients
     const ref2 = this.channel.on('yjs_update', (payload: Record<string, unknown>) => {
-      const updateBase64 = payload.update as string;
+      const updateBase64 = payload.update as string; // type assertion: Phoenix channel payload field
       if (updateBase64) {
         const update = base64ToUint8Array(updateBase64);
         Y.applyUpdate(this.doc, update, this);
@@ -115,7 +118,7 @@ export class PhoenixProvider {
 
     // Receive awareness updates — apply remote state
     const ref3 = this.channel.on('awareness_update', (payload: Record<string, unknown>) => {
-      const userId = payload.user_id as string;
+      const userId = payload.user_id as string; // type assertion: Phoenix channel payload field
       const data = payload.data as Record<string, unknown> | undefined; // safe downcast – structural boundary
       if (userId && data) {
         // Store the remote awareness state keyed by userId
@@ -129,7 +132,7 @@ export class PhoenixProvider {
 
     // Handle awareness removal (user disconnected)
     const ref4 = this.channel.on('awareness_remove', (payload: Record<string, unknown>) => {
-      const userId = payload.user_id as string;
+      const userId = payload.user_id as string; // type assertion: Phoenix channel payload field
       if (userId) {
         this.remoteAwarenessStates.delete(userId);
         this.awareness.emit('change', [{ added: [], updated: [], removed: [userId] }, 'remote']);
@@ -269,6 +272,9 @@ const CURSOR_COLORS = [
   '#82E0AA',
 ];
 
+/**
+ *
+ */
 export function getUserColor(userId: string): string {
   let hash = 0;
   for (let i = 0; i < userId.length; i++) {

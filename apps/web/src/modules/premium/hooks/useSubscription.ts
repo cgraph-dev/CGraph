@@ -3,6 +3,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('useSubscription');
@@ -72,17 +73,7 @@ export function useSubscription(
           includeReplies: settings?.includeReplies ?? true,
         };
 
-        const response = await fetch('/api/forum/subscriptions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to subscribe');
-        }
-
-        const data = await response.json();
+        const { data } = await api.post('/api/forum/subscriptions', body);
         setSubscription(data.subscription);
       } finally {
         setIsLoading(false);
@@ -96,13 +87,7 @@ export function useSubscription(
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/forum/subscriptions/${subscription.id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to unsubscribe');
-      }
+      await api.delete(`/api/forum/subscriptions/${subscription.id}`);
 
       setSubscription(null);
     } finally {
@@ -124,15 +109,7 @@ export function useSubscription(
 
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/forum/subscriptions/${subscription.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(settings),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to update subscription');
-        }
+        await api.patch(`/api/forum/subscriptions/${subscription.id}`, settings);
 
         setSubscription((prev) => (prev ? { ...prev, ...settings } : null));
       } finally {
@@ -163,8 +140,7 @@ export function useSubscriptions(): UseSubscriptionsResult {
   const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/forum/subscriptions');
-      const data = await response.json();
+      const { data } = await api.get('/api/forum/subscriptions');
       setSubscriptions(data.subscriptions || []);
     } catch (error) {
       logger.error('Failed to fetch subscriptions:', error);

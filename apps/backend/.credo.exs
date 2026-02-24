@@ -13,7 +13,7 @@
       },
       plugins: [],
       requires: [],
-      strict: false,
+      strict: true,
       parse_timeout: 5000,
       color: true,
       checks: %{
@@ -90,15 +90,17 @@
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
           {Credo.Check.Warning.UnsafeExec, []},
-          {Credo.Check.Warning.UnsafeToAtom, []}
+          {Credo.Check.Warning.UnsafeToAtom, []},
+
+          # ── Typespecs ────────────────────────────────────────────
+          {Credo.Check.Readability.Specs, [exit_status: 0]}
         ],
         disabled: [
           # Disabled: structured logging uses arbitrary metadata keys
           # {Credo.Check.Warning.MissedMetadataKeyInLoggerConfig, []},
 
-          # Disabled: noisy for large projects
-          {Credo.Check.Readability.StrictModuleLayout, []},
-          {Credo.Check.Readability.Specs, []}
+          # Disabled: noisy for large projects — module layout order
+          {Credo.Check.Readability.StrictModuleLayout, []}
         ]
       }
     }

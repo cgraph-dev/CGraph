@@ -7,11 +7,15 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { NotificationMode, Subscription, SubscriptionCounts } from './types';
 
 const logger = createLogger('SubscriptionManager');
 
+/**
+ *
+ */
 export function useSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,8 +30,7 @@ export function useSubscriptions() {
     const fetchSubscriptions = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/forum/subscriptions', { signal });
-        const data = await response.json();
+        const { data } = await api.get('/api/forum/subscriptions', { signal });
         if (!signal.aborted) {
           setSubscriptions(data.subscriptions || []);
         }
@@ -51,11 +54,7 @@ export function useSubscriptions() {
 
   const updateSubscription = async (id: string, updates: Partial<Subscription>) => {
     try {
-      await fetch(`/api/forum/subscriptions/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
+      await api.patch(`/api/forum/subscriptions/${id}`, updates);
       setSubscriptions((prev) => prev.map((sub) => (sub.id === id ? { ...sub, ...updates } : sub)));
     } catch (error) {
       logger.error('Failed to update subscription:', error);
@@ -64,7 +63,7 @@ export function useSubscriptions() {
 
   const deleteSubscription = async (id: string) => {
     try {
-      await fetch(`/api/forum/subscriptions/${id}`, { method: 'DELETE' });
+      await api.delete(`/api/forum/subscriptions/${id}`);
       setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
     } catch (error) {
       logger.error('Failed to delete subscription:', error);
@@ -74,11 +73,7 @@ export function useSubscriptions() {
   const bulkUpdateMode = async (mode: NotificationMode) => {
     setBulkUpdating(true);
     try {
-      await fetch('/api/forum/subscriptions/bulk-update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notificationMode: mode }),
-      });
+      await api.post('/api/forum/subscriptions/bulk-update', { notificationMode: mode });
       setSubscriptions((prev) => prev.map((sub) => ({ ...sub, notificationMode: mode })));
     } catch (error) {
       logger.error('Failed to bulk update:', error);
