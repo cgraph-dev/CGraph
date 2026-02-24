@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface LevelTransitionProps {
   oldLevel: number;
@@ -42,7 +43,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
           x: [0, 10, 0],
           opacity: [0.5, 1, 0.5],
         }}
-        transition={{ duration: 1, repeat: Infinity }}
+        transition={loop(tweens.slow)}
       >
         <ChevronRightIcon className="h-8 w-8 text-primary-400" />
       </motion.div>
@@ -54,7 +55,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
           scale: [0, 1.2, 1],
           rotate: [0, 360],
         }}
-        transition={{ delay: 0.8, duration: 1, ...springs.default }}
+        transition={{ ...springs.default, delay: 0.8 }}
       >
         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 p-1.5">
           <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
@@ -71,7 +72,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
             opacity: [0.3, 0.7, 0.3],
             scale: [1, 1.3, 1],
           }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
           style={{ filter: 'blur(20px)', zIndex: -1 }}
         />
       </motion.div>

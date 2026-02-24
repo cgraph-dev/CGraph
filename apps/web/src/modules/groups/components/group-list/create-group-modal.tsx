@@ -14,6 +14,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { createLogger } from '@/lib/logger';
 import type { CreateGroupModalProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 const logger = createLogger('CreateGroupModal');
 
@@ -82,7 +83,7 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
               <div className="mb-6 text-center">
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={loop(tweens.ambient)}
                   className="mb-4 inline-block"
                 >
                   <SparklesIcon className="h-12 w-12 text-primary-400" />

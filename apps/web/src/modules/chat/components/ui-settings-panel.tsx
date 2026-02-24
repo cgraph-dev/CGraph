@@ -7,6 +7,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { UIPreferences } from './message-bubble';
+import { tweens } from '@/lib/animation-presets';
 
 type AnimationIntensity = UIPreferences['animationIntensity'];
 
@@ -30,7 +31,7 @@ export function UISettingsPanel({
       initial={{ opacity: 0, y: -20, height: 0 }}
       animate={{ opacity: 1, y: 0, height: 'auto' }}
       exit={{ opacity: 0, y: -20, height: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
       className="z-20"
     >
       <GlassCard variant="neon" glow className="mx-4 mt-4 rounded-2xl p-4">

@@ -11,6 +11,7 @@ import { exponentialBackoffWithJitter } from './backoff';
 
 const defaultBackoff = exponentialBackoffWithJitter();
 
+/** Client for connecting to and managing Phoenix WebSocket channels with reconnection and event handling. */
 export class PhoenixClient {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();

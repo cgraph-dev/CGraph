@@ -8,13 +8,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { NotificationHeaderProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function NotificationHeader({ unreadCount, onMarkAllRead }: NotificationHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={tweens.moderate}
       className="mb-6 flex items-center justify-between"
     >
       <div>
@@ -36,7 +37,7 @@ export function NotificationHeader({ unreadCount, onMarkAllRead }: NotificationH
                 animate={{
                   scale: [1, 1.05, 1],
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={loop(tweens.ambient)}
               >
                 {unreadCount}
               </motion.span>

@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import type { ReactionStylesSectionProps } from './types';
+import { tweens, loopWithDelay } from '@/lib/animation-presets';
 
 /** Helper to get animation props for each reaction type */
 function getReactionAnimation(animation: string) {
@@ -49,7 +50,7 @@ export function ReactionStylesSection({
           <motion.div
             className="text-6xl"
             animate={getReactionAnimation(reaction.animation)}
-            transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+            transition={loopWithDelay(tweens.slow, 1)}
           >
             ❤️
           </motion.div>

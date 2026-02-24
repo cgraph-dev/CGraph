@@ -6,6 +6,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloProgressProps {
   value: number;
@@ -66,7 +67,7 @@ export function HoloProgress({
             strokeLinecap="round"
             initial={{ strokeDasharray: circumference, strokeDashoffset: circumference }}
             animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={tweens.emphatic}
             style={{
               filter: `drop-shadow(0 0 4px ${theme.glow})`,
             }}
@@ -94,7 +95,7 @@ export function HoloProgress({
           className="relative h-full overflow-hidden rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={tweens.smooth}
           style={{
             background: `linear-gradient(90deg, ${theme.secondary}, ${theme.primary})`,
             boxShadow: `0 0 12px ${theme.glow}`,
@@ -107,7 +108,7 @@ export function HoloProgress({
                 background: `linear-gradient(90deg, transparent, ${theme.accent}60, transparent)`,
               }}
               animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.verySlow)}
             />
           )}
         </motion.div>

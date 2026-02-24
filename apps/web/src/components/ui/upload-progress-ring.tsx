@@ -7,6 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export interface UploadProgressRingProps {
   /** Upload progress 0–100 */
@@ -69,7 +70,7 @@ export function UploadProgressRing({
           strokeLinecap="round"
           strokeDasharray={circumference}
           animate={{ strokeDashoffset: dashOffset }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={tweens.standard}
           style={{
             transform: 'rotate(-90deg)',
             transformOrigin: '50% 50%',

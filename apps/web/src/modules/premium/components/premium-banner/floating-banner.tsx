@@ -9,6 +9,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { ANIMATED_FEATURES } from './constants';
 import type { BannerVariantProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 type FloatingBannerProps = Pick<
   BannerVariantProps,
@@ -57,7 +58,7 @@ export function FloatingBanner({
               scale: [1, 1.1, 1],
               rotate: [0, 5, -5, 0],
             }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            transition={loop(tweens.ambient)}
             className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-3"
           >
             <SparklesIcon className="h-6 w-6 text-white" />

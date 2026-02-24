@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { getEventEmoji } from './utils';
 import type { EventBannerProps, TimeRemaining } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Countdown unit display component
@@ -218,7 +219,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
                 '0 0 20px rgba(255,255,255,0.5)',
               ],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           >
             {event.name}
           </motion.h2>
@@ -248,7 +249,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         <motion.div
           className="text-4xl text-white/50 transition-colors group-hover:text-white"
           animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={loop(tweens.verySlow)}
         >
           →
         </motion.div>

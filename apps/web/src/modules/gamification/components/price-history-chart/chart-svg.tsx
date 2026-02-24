@@ -5,6 +5,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ChartDimensions, ChartMetrics, ChartPaths, HoveredPointData } from './types';
 import { GRID_PERCENTAGES, POSITIVE_COLOR, NEGATIVE_COLOR } from './constants';
+import { tweens } from '@/lib/animation-presets';
 
 interface ChartSVGProps {
   dimensions: ChartDimensions;
@@ -94,7 +95,7 @@ export function ChartSVG({
         fill="url(#areaGradient)"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={tweens.smooth}
       />
 
       {/* Main line */}
@@ -108,7 +109,7 @@ export function ChartSVG({
         filter="url(#glow)"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 1, ease: 'easeOut' }}
+        transition={tweens.slow}
       />
 
       {/* Hover indicator */}

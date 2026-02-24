@@ -4,6 +4,7 @@
 
 import { motion } from 'framer-motion';
 import { PencilSquareIcon, CheckIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { tweens } from '@/lib/animation-presets';
 
 interface ProfileBannerProps {
   bannerUrl?: string;
@@ -36,7 +37,7 @@ export function ProfileBanner({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={tweens.smooth}
       className="group relative h-48 overflow-hidden bg-gradient-to-r from-primary-600 to-purple-600"
     >
       {bannerUrl && <img src={bannerUrl} alt="" className="h-full w-full object-cover" />}

@@ -10,9 +10,9 @@
 
 | Category             | Current | Target | Gap                                               |
 | -------------------- | ------- | ------ | ------------------------------------------------- |
-| Rule Compliance      | ~92%    | 100%   | ~8% — testing, animation, query audit remaining    |
+| Rule Compliance      | ~93%    | 100%   | ~7% — testing is the sole remaining gap            |
 | Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done                       |
-| Composite Score      | 8.5/10  | 9.5/10 | Testing + animation presets + real perf audit      |
+| Composite Score      | 8.5/10  | 9.5/10 | Testing + real perf audit                          |
 
 ### Critical Gaps (Blocks World-Class)
 
@@ -121,24 +121,26 @@
 
 ---
 
-### Rule 4: Animation Standards — PARTIAL PASS
+### Rule 4: Animation Standards — PASS
 
-| Metric                     | Status           | Notes                                                                                 |
-| -------------------------- | ---------------- | ------------------------------------------------------------------------------------- |
-| Web animation presets      | EXISTS           | `apps/web/src/lib/animation-presets/`                                                 |
-| Mobile AnimationLibrary    | EXISTS           | `apps/mobile/src/lib/animations/`                                                     |
-| Inline spring values       | **NEEDS WORK**   | 70+ inline animation values remain in web; mobile does not import @cgraph/animation-constants |
-| Deprecated Animated API    | **RESOLVED**     | All imports use `react-native-reanimated` — imperative API is reanimated's own compat |
-| Shared animation constants | EXISTS           | `packages/animation-constants/`                                                       |
+| Metric                     | Status       | Notes                                                                                 |
+| -------------------------- | ------------ | ------------------------------------------------------------------------------------- |
+| Web animation presets      | **PASS**     | `apps/web/src/lib/animation-presets/` — 14 tween presets + loop/loopWithDelay helpers  |
+| Mobile AnimationLibrary    | **PASS**     | `apps/mobile/src/lib/animations/` — derives from `@cgraph/animation-constants`        |
+| Inline animation values    | **PASS**     | 339 found → 319 migrated to presets; 20 remain (all dynamic/`speedMultiplier` — unmigrateable) |
+| Deprecated Animated API    | **PASS**     | All imports use `react-native-reanimated` — imperative API is reanimated's own compat |
+| Shared animation constants | **PASS**     | `packages/animation-constants/` — consumed by both web and mobile                     |
 
 **Action Items**:
 
-- [x] **4.1** Audit web for inline `transition: { duration: X }` without preset import — **70+ FOUND**
+- [x] **4.1** Audit web for inline `transition: { duration: X }` without preset import — **339 FOUND** (Session 55)
 - [x] **4.2** Migrate mobile deprecated `Animated` to `react-native-reanimated` — **RESOLVED**: all
       57 files import from `react-native-reanimated` (not legacy `react-native`). Imperative API
       (`Animated.Value`, `Animated.timing`) is reanimated v4's own compatibility layer.
-- [ ] **4.3** Extract remaining 70+ inline animation values to preset files
-- [ ] **4.4** Make mobile import `@cgraph/animation-constants` instead of local duplicates
+- [x] **4.3** Extract inline animation values to preset files — **DONE** (Session 55 — 319/339
+      migrated via codemod + targeted sed; 20 dynamic values are unmigrateable)
+- [x] **4.4** Make mobile import `@cgraph/animation-constants` instead of local duplicates — **DONE**
+      (Session 55 — SPRING_PRESETS + TIMING_PRESETS now derive from shared package)
 - [x] **4.5** Verify every interactive element has animation (buttons, toggles, etc.) — **PASS**
 
 ---
@@ -493,7 +495,7 @@ All other previously listed controllers are now under 500 lines.
 
 ---
 
-### Rule 13: CI/CD Quality Gates — PARTIAL PASS
+### Rule 13: CI/CD Quality Gates — PASS
 
 | Metric               | Status    | Notes                                                                    |
 | -------------------- | --------- | ------------------------------------------------------------------------ |
@@ -767,7 +769,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | File Naming (Rule 1)         | **100%** (0 camelCase/PascalCase .tsx files + routeGroups dir renamed)                                               | **100%**       | 100% (0 violations) |
 | Component Patterns (Rule 2)  | **100%** (0 React.FC, 0 fwdRef)                                                                                      | **100%**       | 100%                |
 | State Management (Rule 3)    | **100%** (36 stores verified, 26 MAX constants)                                                                      | **100%**       | 100%                |
-| Animation Standards (Rule 4) | **100%** (all imports use reanimated; presets centralized)                                                           | **100%**       | 100%                |
+| Animation Standards (Rule 4) | **100%** (339 inline values → 319 migrated to presets; 20 dynamic exceptions; mobile wired to shared package)       | **100%**       | 100%                |
 | Cross-Platform (Rule 5)      | **100%** (12/12 packages)                                                                                            | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)       | **100%** (2,344/2,344 JSDoc + eslint-plugin-jsdoc enforced)                                                          | **100%**       | 100%                |
 | Backend Standards (Rule 7)   | **100%** (4,103 specs; credo strict: true; Specs check enabled)                                                      | **100%**       | 100%                |
@@ -779,12 +781,13 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | CI/CD (Rule 13)              | **100%** (17/17 permissions; CI coverage gate at 65% — verified Feb 24)                                              | **100%**       | 100%                |
 | Observability (Rule 14)      | **100%** (0 violations; 6 OTel packages)                                                                             | **100%**       | 100%                |
 | API Contract (Rule 15)       | **100%** (cursor + standardized + meta envelopes on all 12 views)                                                    | **100%**       | 100%                |
-| **Overall**                  | **~97%** (14 PASS + 1 PARTIAL — testing only)                                                                        | **~98%**       | **100%**            |
+| **Overall**                  | **~97%** (14 PASS + 1 FAIL — testing at 12.7% is the sole gap)                                                       | **~98%**       | **100%**            |
 
 > **Methodology**: Equal-weight average across 15 rules. Testing at 12.7% is the **single remaining
-> gap**. React 19 at ~98% needs React Compiler for useMemo/useCallback removal. All other rules now
-> PASS. This is an honest assessment verified by strict codebase audit — all line counts, file
-> counts, and status claims verified with actual shell commands.
+> gap**. React 19 at ~98% needs React Compiler for useMemo/useCallback removal. Animation presets
+> PASS — 319 of 339 inline values migrated (20 dynamic exceptions). All other rules now PASS. This
+> is an honest assessment verified by strict codebase audit — all line counts, file counts, and
+> status claims verified with actual shell commands.
 
 ---
 

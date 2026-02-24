@@ -7,6 +7,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import type { ClaimSuccessModalProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Claim success celebration overlay
@@ -29,7 +30,7 @@ export function ClaimSuccessModal({ claimedReward }: ClaimSuccessModalProps) {
           >
             <motion.div
               animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 1, repeat: Infinity }}
+              transition={loop(tweens.slow)}
               className="mb-4 text-6xl"
             >
               🎁

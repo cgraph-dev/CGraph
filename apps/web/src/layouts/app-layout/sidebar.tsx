@@ -14,6 +14,7 @@ import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface SidebarProps {
   user: User | null;
@@ -277,7 +278,7 @@ export default function Sidebar({
             animate={{
               boxShadow: ['0 0 0 0 rgba(16, 185, 129, 0.6)', '0 0 0 8px rgba(16, 185, 129, 0)'],
             }}
-            transition={{ duration: 2.5, repeat: Infinity }}
+            transition={loop(tweens.ambientSlow)}
           />
         </motion.div>
 

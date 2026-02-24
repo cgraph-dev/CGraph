@@ -11,9 +11,10 @@
  */
 
 import { Easing, WithTimingConfig, WithSpringConfig } from 'react-native-reanimated';
+import { springs, durations } from '@cgraph/animation-constants';
 
 // ============================================================================
-// Spring Physics Presets
+// Spring Physics Presets (derived from @cgraph/animation-constants)
 // ============================================================================
 
 /**
@@ -41,92 +42,53 @@ export function getSpringConfig(config: SpringConfig): WithSpringConfig {
 }
 
 export const SPRING_PRESETS: Record<string, SpringConfig> = {
-  // Subtle and gentle
   gentle: {
-    damping: 20,
-    stiffness: 90,
-    mass: 1,
+    ...springs.gentle,
     name: 'Gentle',
     description: 'Subtle, slow spring for smooth transitions',
   },
-
-  // Default balanced spring
   default: {
-    damping: 15,
-    stiffness: 120,
-    mass: 1,
+    ...springs.default,
     name: 'Default',
     description: 'Balanced spring for general use',
   },
-
-  // Bouncy and playful
   bouncy: {
-    damping: 8,
-    stiffness: 150,
-    mass: 1,
+    ...springs.bouncy,
     name: 'Bouncy',
     description: 'Playful spring with noticeable bounce',
   },
-
-  // Very bouncy
   superBouncy: {
-    damping: 5,
-    stiffness: 200,
-    mass: 1,
+    ...springs.superBouncy,
     name: 'Super Bouncy',
     description: 'Highly elastic spring for attention-grabbing',
   },
-
-  // Quick and responsive
   snappy: {
-    damping: 18,
-    stiffness: 200,
-    mass: 0.8,
+    ...springs.snappy,
     name: 'Snappy',
     description: 'Quick response for interactive elements',
   },
-
-  // Very snappy
   instant: {
-    damping: 22,
-    stiffness: 400,
-    mass: 0.6,
+    ...springs.instant,
     name: 'Instant',
     description: 'Near-instant response with minimal overshoot',
   },
-
-  // Slow and dramatic
   slow: {
-    damping: 25,
-    stiffness: 50,
-    mass: 1.5,
+    ...springs.slow,
     name: 'Slow',
     description: 'Dramatic slow spring for emphasis',
   },
-
-  // Wobbly attention-grabbing
   wobbly: {
-    damping: 6,
-    stiffness: 140,
-    mass: 1,
+    ...springs.wobbly,
     name: 'Wobbly',
     description: 'Attention-grabbing wobble effect',
   },
-
-  // Stiff and precise
   stiff: {
-    damping: 25,
-    stiffness: 300,
-    mass: 1,
+    ...springs.stiff,
     name: 'Stiff',
     description: 'Precise movement with minimal bounce',
   },
-
-  // Elastic like rubber
   elastic: {
-    damping: 4,
-    stiffness: 180,
-    mass: 1.2,
+    ...springs.elastic,
     name: 'Elastic',
     description: 'Rubber-like elasticity',
   },
@@ -141,12 +103,12 @@ export interface TimingConfig extends WithTimingConfig {
 }
 
 export const TIMING_PRESETS: Record<string, TimingConfig> = {
-  instant: { duration: 100, easing: Easing.out(Easing.ease), name: 'Instant' },
-  quick: { duration: 200, easing: Easing.out(Easing.ease), name: 'Quick' },
-  default: { duration: 300, easing: Easing.inOut(Easing.ease), name: 'Default' },
-  smooth: { duration: 400, easing: Easing.inOut(Easing.ease), name: 'Smooth' },
-  slow: { duration: 600, easing: Easing.inOut(Easing.ease), name: 'Slow' },
-  verySlow: { duration: 1000, easing: Easing.inOut(Easing.ease), name: 'Very Slow' },
+  instant: { duration: durations.instant, easing: Easing.out(Easing.ease), name: 'Instant' },
+  quick: { duration: durations.normal, easing: Easing.out(Easing.ease), name: 'Quick' },
+  default: { duration: durations.slow, easing: Easing.inOut(Easing.ease), name: 'Default' },
+  smooth: { duration: durations.smooth, easing: Easing.inOut(Easing.ease), name: 'Smooth' },
+  slow: { duration: durations.dramatic, easing: Easing.inOut(Easing.ease), name: 'Slow' },
+  verySlow: { duration: durations.verySlow, easing: Easing.inOut(Easing.ease), name: 'Very Slow' },
 };
 
 // ============================================================================

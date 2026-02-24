@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { EmptyStateProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function EmptyState({ filter }: EmptyStateProps) {
   return (
@@ -22,7 +23,7 @@ export function EmptyState({ filter }: EmptyStateProps) {
           <motion.div
             className="relative mb-4"
             animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            transition={loop(tweens.glacial)}
           >
             <div className="rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20 p-4">
               <BellIcon className="h-12 w-12 text-primary-400" />
@@ -33,7 +34,7 @@ export function EmptyState({ filter }: EmptyStateProps) {
                 scale: [1, 1.2, 1],
                 opacity: [0.5, 0, 0.5],
               }}
-              transition={{ duration: 3, repeat: Infinity }}
+              transition={loop(tweens.decorative)}
             />
           </motion.div>
           <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-medium text-transparent">

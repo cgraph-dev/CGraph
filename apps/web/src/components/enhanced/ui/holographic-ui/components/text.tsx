@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HoloTextProps } from '../types';
 import { getTheme } from '../presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 const variantStyles: Record<string, string> = {
   display: 'text-5xl font-black tracking-tight',
@@ -58,7 +59,7 @@ export function HoloText({
             }
           : undefined
       }
-      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+      transition={loop(tweens.ambientSlow)}
     >
       {children}
     </MotionComponent>

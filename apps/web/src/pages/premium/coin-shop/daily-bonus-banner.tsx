@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { GiftIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { DailyBonus } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface DailyBonusBannerProps {
   dailyBonus: DailyBonus;
@@ -25,7 +26,7 @@ export function DailyBonusBanner({ dailyBonus, onClaim }: DailyBonusBannerProps)
             <motion.div
               className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-500"
               animate={{ rotate: [0, 360] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.decorative)}
             >
               <GiftIcon className="h-6 w-6 text-white" />
             </motion.div>

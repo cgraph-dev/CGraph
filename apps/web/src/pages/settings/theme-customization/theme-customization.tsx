@@ -13,6 +13,7 @@ import { ThemeTab } from './theme-tab';
 import { AvatarTab } from './avatar-tab';
 import { ChatTab } from './chat-tab';
 import { EffectsTab } from './effects-tab';
+import { tweens } from '@/lib/animation-presets';
 
 export default function ThemeCustomization() {
   const [activeTab, setActiveTab] = useState<TabType>('theme');
@@ -98,7 +99,7 @@ export default function ThemeCustomization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
+                transition={tweens.fast}
                 className="space-y-6"
               >
                 {activeTab === 'theme' && <ThemeTab />}

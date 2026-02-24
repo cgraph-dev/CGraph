@@ -11,6 +11,7 @@ import { getBorderById } from '@/data/avatar-borders';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import type { LayoutProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export const GamingLayout = memo(function GamingLayout({
   user,
@@ -63,7 +64,7 @@ export const GamingLayout = memo(function GamingLayout({
           }}
           initial={{ width: 0 }}
           animate={{ width: `${xpPercentage}%` }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          transition={tweens.dramatic}
         />
         <div className="absolute inset-0 flex items-center justify-center text-xs font-bold">
           {user.xp.toLocaleString()} / {user.xpToNextLevel.toLocaleString()}

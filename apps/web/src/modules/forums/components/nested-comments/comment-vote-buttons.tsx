@@ -14,6 +14,7 @@ import {
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { springs } from '@/lib/animation-presets/presets';
 import type { CommentVoteButtonsProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 const floatingIndicator = {
   initial: { opacity: 1, y: 0, scale: 0.8 },
@@ -70,7 +71,7 @@ export function CommentVoteButtons({ comment, onVote }: CommentVoteButtonsProps)
         }`}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={tweens.fast}
       >
         {comment.score}
       </motion.span>

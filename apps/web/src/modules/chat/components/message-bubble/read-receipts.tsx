@@ -6,6 +6,7 @@
 
 import { motion } from 'framer-motion';
 import type { ReadByEntry } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface ReadReceiptsProps {
   readBy: ReadByEntry[];
@@ -17,7 +18,7 @@ export function ReadReceipts({ readBy }: ReadReceiptsProps) {
       className="mt-1 flex items-center gap-1 px-2"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
     >
       <div className="flex -space-x-1">
         {readBy.slice(0, 3).map((reader, idx) => (

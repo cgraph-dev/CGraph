@@ -14,6 +14,7 @@ import { FriendsTab } from './friends-tab';
 import { NotificationsTab } from './notifications-tab';
 import { DiscoverTab } from './discover-tab';
 import type { SocialTab, Notification, SearchResult } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * Social Hub - Unified Social Interface
@@ -207,7 +208,7 @@ export function Social() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={tweens.standard}
             className="p-6"
           >
             {tab === 'friends' && (

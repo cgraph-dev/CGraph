@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface CoinBalanceCardProps {
   balance: number;
@@ -20,7 +21,7 @@ export function CoinBalanceCard({ balance }: CoinBalanceCardProps) {
             scale: [1, 1.1, 1],
             rotate: [0, 5, -5, 0],
           }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         >
           <CurrencyDollarIcon className="h-6 w-6 text-white" />
         </motion.div>

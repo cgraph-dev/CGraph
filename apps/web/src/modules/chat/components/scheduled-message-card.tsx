@@ -4,6 +4,7 @@ import { ClockIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { format, formatDistanceToNow } from 'date-fns';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Message } from '@/modules/chat/store';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ScheduledMessageCardProps {
   message: Message;
@@ -69,7 +70,7 @@ export function ScheduledMessageCard({
             {isCanceling ? (
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.slow)}
                 className="h-4 w-4 rounded-full border-2 border-red-400 border-t-transparent"
               />
             ) : (

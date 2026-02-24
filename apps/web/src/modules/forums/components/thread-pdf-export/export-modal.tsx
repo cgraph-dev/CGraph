@@ -85,7 +85,7 @@ export const ExportModal = memo(function ExportModal({
           initial="hidden"
           animate="visible"
           exit="hidden"
-          transition={{ type: 'spring', duration: 0.3 }}
+          transition={springs.default}
           className="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-800"
           onClick={(e) => e.stopPropagation()}
         >

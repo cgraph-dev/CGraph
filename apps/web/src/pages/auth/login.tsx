@@ -17,6 +17,7 @@ import { LoginFormFields } from '@/pages/auth/login/login-form-fields';
 import { LogoIcon } from '@/components/logo';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { createLogger } from '@/lib/logger';
+import { tweens } from '@/lib/animation-presets';
 
 const logger = createLogger('Login');
 
@@ -177,7 +178,7 @@ export default function Login() {
           viewBox="0 0 40 40"
           fill="none"
           whileHover={reduced ? {} : { rotate: 360 }}
-          transition={{ duration: 0.5 }}
+          transition={tweens.smooth}
         >
           <path
             d="M20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40Z"

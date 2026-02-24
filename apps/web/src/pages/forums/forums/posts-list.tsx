@@ -12,6 +12,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { PostCard } from './post-card';
 import type { PostsListProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function PostsList({
   posts,
@@ -95,7 +96,7 @@ export function PostsList({
                 <motion.div
                   className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={loop(tweens.slow)}
                 />
                 <span>Loading...</span>
               </div>

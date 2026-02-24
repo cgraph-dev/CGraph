@@ -10,6 +10,7 @@ import { SparklesIcon, TrashIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { useReducedMotion } from '@/contexts/theme-context-enhanced';
 
 import type { ThemeCardProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 // =============================================================================
 // COMPONENT
@@ -106,7 +107,7 @@ export function ThemeCard({ theme, isActive, onSelect, onDelete, isPremium }: Th
               )`,
             }}
             animate={reduceMotion ? {} : { y: [0, 4] }}
-            transition={{ duration: 0.1, repeat: Infinity }}
+            transition={loop(tweens.instant)}
           />
         )}
 

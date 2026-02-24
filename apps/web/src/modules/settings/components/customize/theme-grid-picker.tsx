@@ -7,6 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckIcon, LockClosedIcon } from '@heroicons/react/24/solid';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface GridOption<T> {
   id: T;
@@ -73,7 +74,7 @@ export default function ThemeGridPicker<T extends string>({
             whileTap={!isLocked ? { scale: 0.95 } : {}}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2 }}
+            transition={tweens.fast}
           >
             {/* Glow effect on selection */}
             {isSelected && (
@@ -85,7 +86,7 @@ export default function ThemeGridPicker<T extends string>({
                 animate={{
                   opacity: [0.5, 1, 0.5],
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={loop(tweens.ambient)}
               />
             )}
 

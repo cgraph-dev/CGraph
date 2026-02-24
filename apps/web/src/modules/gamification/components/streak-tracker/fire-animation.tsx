@@ -7,6 +7,7 @@
 import { motion } from 'framer-motion';
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import { FIRE_COLORS, GLOW_COLOR } from './constants';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface FireAnimationProps {
   currentStreak: number;
@@ -26,7 +27,7 @@ export function FireAnimation({ currentStreak, size = 'large' }: FireAnimationPr
     <motion.div
       className="relative"
       animate={{ scale: [1, 1.1, 1] }}
-      transition={{ duration: 1.5, repeat: Infinity }}
+      transition={loop(tweens.verySlow)}
     >
       <FireIconSolid className={sizeClasses[size]} style={{ color: fireColor }} />
       <motion.div
@@ -35,7 +36,7 @@ export function FireAnimation({ currentStreak, size = 'large' }: FireAnimationPr
           opacity: [0.3, 0.7, 0.3],
           scale: [1, 1.3, 1],
         }}
-        transition={{ duration: 1, repeat: Infinity }}
+        transition={loop(tweens.slow)}
       >
         <FireIconSolid
           className={sizeClasses[size]}

@@ -21,6 +21,7 @@ import { EmojiPicker } from '@/modules/chat/components/emoji-picker';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Sticker } from '@/data/stickers';
 import type { UIPreferences } from './message-bubble';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface MessageInputAreaProps {
   messageInput: string;
@@ -240,7 +241,7 @@ export function MessageInputArea({
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.6, 0.3],
                       }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      transition={loop(tweens.ambient)}
                     />
                   )}
                   <PaperAirplaneIcon className="relative z-10 h-5 w-5" />

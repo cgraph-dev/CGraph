@@ -21,6 +21,7 @@ import {
   PostResult,
   MessageResult,
 } from './result-components';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /* ─── animation helpers ─── */
 
@@ -42,12 +43,12 @@ function LoadingState() {
         <motion.div
           className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={loop(tweens.slow)}
         />
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-primary-400/30"
           animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       </div>
     </motion.div>
@@ -68,7 +69,7 @@ function InitialEmptyState() {
           <motion.div
             className="relative mb-4"
             animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            transition={loop(tweens.glacial)}
           >
             <div className="rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20 p-4">
               <MagnifyingGlassIcon className="h-16 w-16 text-primary-400" />
@@ -76,7 +77,7 @@ function InitialEmptyState() {
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-primary-500/30"
               animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              transition={loop(tweens.decorative)}
             />
           </motion.div>
           <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-medium text-transparent">

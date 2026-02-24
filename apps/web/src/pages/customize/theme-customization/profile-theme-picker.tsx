@@ -13,6 +13,7 @@ import {
 import ProfileThemeCard, {
   ProfileThemeGrid,
 } from '@/modules/settings/components/customize/profile-theme-card';
+import { tweens } from '@/lib/animation-presets';
 
 interface ProfileThemePickerProps {
   useNewProfileThemes: boolean;
@@ -84,7 +85,7 @@ export function ProfileThemePicker({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
+          transition={tweens.fast}
         >
           <ProfileThemeGrid>
             {filteredThemes.map((theme) => (

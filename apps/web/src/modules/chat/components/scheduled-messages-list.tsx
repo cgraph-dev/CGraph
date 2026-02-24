@@ -12,6 +12,7 @@ import {
   type GroupedMessages,
 } from '@/modules/chat/hooks/useScheduledMessages';
 import { ScheduledMessageCard } from '@/modules/chat/components/scheduled-message-card';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ScheduledMessagesListProps {
   isOpen: boolean;
@@ -99,7 +100,7 @@ export function ScheduledMessagesList({
                   <div className="flex items-center justify-center py-12">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      transition={loop(tweens.slow)}
                       className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
                     />
                   </div>

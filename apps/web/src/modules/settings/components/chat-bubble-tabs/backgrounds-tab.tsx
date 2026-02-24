@@ -10,6 +10,7 @@ import { SparklesIcon, LockClosedIcon, CheckIcon } from '@heroicons/react/24/out
 import type { ChatBackground, BackgroundCategory } from '@/data/chatBackgrounds';
 import { CATEGORY_COLORS, type BackgroundsTabProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 function getBackgroundPreviewStyle(bg: ChatBackground): React.CSSProperties {
   if (bg.type === 'solid') {
@@ -90,7 +91,7 @@ export function BackgroundsTab({
               )}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              transition={tweens.standard}
             >
               {backgrounds.find((bg) => bg.id === selectedBackground)?.animation && (
                 <motion.div

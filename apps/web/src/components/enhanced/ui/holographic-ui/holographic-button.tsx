@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicButtonProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * HolographicButton Component
@@ -92,7 +93,7 @@ export function HolographicButton({
               borderColor: `${theme.primary} transparent ${theme.primary} transparent`,
             }}
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.slow)}
           />
         </div>
       )}

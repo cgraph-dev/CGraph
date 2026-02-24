@@ -12,6 +12,7 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import type { TestResult } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface TestResultItemProps {
   test: TestResult;
@@ -31,7 +32,7 @@ export function TestResultItem({ test, index }: TestResultItemProps) {
         return (
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.slow)}
           >
             <ArrowPathIcon className="h-5 w-5 text-primary-400" />
           </motion.div>

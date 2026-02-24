@@ -9,6 +9,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import type { CoinPackage } from '@/modules/premium/store/types';
 import { CoinIcon } from './coin-shop-data';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface CoinPackageCardProps {
   pkg: CoinPackage;
@@ -103,7 +104,7 @@ export function CoinPackageCard({
                   {isPurchasing ? (
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 0.5 }}
+                      transition={loop(tweens.smooth)}
                     >
                       <CheckIcon className="h-4 w-4" />
                     </motion.div>

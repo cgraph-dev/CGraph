@@ -16,6 +16,7 @@ import {
   getAnimationProps,
   getParticleEmoji,
 } from './animations';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function AnimatedAvatar({
   src,
@@ -124,7 +125,7 @@ export default function AnimatedAvatar({
                 <motion.div
                   className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 to-orange-500"
                   animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={loop(tweens.ambient)}
                 >
                   <span className="text-[8px]">👑</span>
                 </motion.div>

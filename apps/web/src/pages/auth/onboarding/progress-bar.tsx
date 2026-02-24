@@ -4,6 +4,7 @@
 
 import { motion } from 'framer-motion';
 import { ONBOARDING_STEPS } from './constants';
+import { tweens } from '@/lib/animation-presets';
 
 interface ProgressBarProps {
   currentStep: number;
@@ -44,7 +45,7 @@ export function ProgressBar({ currentStep }: ProgressBarProps) {
           className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
           initial={{ width: '0%' }}
           animate={{ width: `${((currentStep - 1) / (ONBOARDING_STEPS.length - 1)) * 100}%` }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
       </div>
     </div>

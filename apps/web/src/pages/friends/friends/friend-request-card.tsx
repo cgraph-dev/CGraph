@@ -10,6 +10,7 @@ import UserProfileCard from '@/modules/social/components/user-profile-card';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { FriendRequestCardProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequestCardProps) {
   // Defensive null check for user data
@@ -42,7 +43,7 @@ export function FriendRequestCard({ request, type, onAccept, onDecline }: Friend
             animate={{
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.decorative)}
           />
         )}
 

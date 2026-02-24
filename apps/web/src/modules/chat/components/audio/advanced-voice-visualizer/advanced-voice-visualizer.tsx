@@ -17,6 +17,7 @@ import { SpectrumVisualizer } from './spectrum-visualizer';
 import { CircularVisualizer } from './circular-visualizer';
 import { ParticleVisualizer } from './particle-visualizer';
 import type { AdvancedVoiceVisualizerProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 const logger = createLogger('AdvancedVoiceVisualizer');
 
@@ -94,7 +95,7 @@ export default function AdvancedVoiceVisualizer({
       style={{ width, height }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
     >
       {/* Hidden audio element */}
       {audioUrl && (

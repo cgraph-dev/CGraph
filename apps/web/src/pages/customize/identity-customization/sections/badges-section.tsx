@@ -9,6 +9,7 @@ import { LockClosedIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/out
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import type { Badge, Rarity } from '../types';
+import { tweens } from '@/lib/animation-presets';
 
 export interface BadgesSectionProps {
   badges: Badge[];
@@ -60,7 +61,7 @@ export function BadgesSection({
             }`}
             initial={{ width: 0 }}
             animate={{ width: `${(equippedBadges.length / 5) * 100}%` }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={tweens.standard}
           />
         </div>
 

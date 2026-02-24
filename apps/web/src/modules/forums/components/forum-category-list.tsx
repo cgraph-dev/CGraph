@@ -38,6 +38,7 @@ import {
   ForumCategoryCard,
   ForumCategoryEmptyState,
 } from '@/modules/forums/components/forum-category-list/index';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * ForumCategoryList Component
@@ -115,7 +116,7 @@ export function ForumCategoryList({
         onClick={() => toggleCategory(category.id)}
         whileHover={{ x: 4 }}
       >
-        <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
+        <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={tweens.fast}>
           <ChevronRightIcon className="h-5 w-5 text-gray-400" />
         </motion.div>
 

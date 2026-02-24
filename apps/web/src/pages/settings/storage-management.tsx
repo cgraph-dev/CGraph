@@ -14,6 +14,7 @@ import {
   DocumentIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
+import { tweens } from '@/lib/animation-presets';
 
 interface StorageBreakdown {
   messages: number; // bytes
@@ -133,7 +134,7 @@ export function StorageManagement() {
                   className={`absolute inset-y-0 left-0 rounded-full ${cat.color}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  transition={tweens.emphatic}
                 />
               </div>
               <span className="min-w-[60px] text-right text-xs text-white/30">

@@ -6,6 +6,7 @@ import { springs } from '@/lib/animation-presets/presets';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function NotFound() {
   const { t } = useTranslation('common');
@@ -37,7 +38,7 @@ export default function NotFound() {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={tweens.smooth}
         className="relative z-10 text-center"
       >
         <GlassCard
@@ -60,7 +61,7 @@ export default function NotFound() {
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-primary-500/20 blur-3xl"
                 animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity }}
+                transition={loop(tweens.decorative)}
               />
             </div>
           </motion.div>
@@ -106,7 +107,7 @@ export default function NotFound() {
               >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.3 }}
+                  transition={tweens.standard}
                 />
                 <svg
                   className="relative z-10 h-5 w-5"

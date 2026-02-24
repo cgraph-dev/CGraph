@@ -8,6 +8,7 @@ import type { UserTheme } from '@/stores/theme';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import { AVATAR_BORDERS } from '@/data/avatar-borders';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ThemedAvatarProps {
   src?: string | null;
@@ -252,7 +253,7 @@ export function ThemedAvatar({
             backgroundSize: '200% 200%',
           }}
           animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+          transition={loop(tweens.decorative)}
         />
       )}
     </motion.div>

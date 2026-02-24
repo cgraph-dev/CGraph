@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface AmbientParticlesProps {
   count?: number;
@@ -48,12 +49,12 @@ export function ProfileLoadingState() {
         <motion.div
           className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={loop(tweens.slow)}
         />
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-primary-400/30"
           animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       </div>
     </div>

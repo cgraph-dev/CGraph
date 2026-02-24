@@ -10,6 +10,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { tweens } from '@/lib/animation-presets';
 
 export interface SocialLoginDividerProps {
   text?: string;
@@ -28,7 +29,7 @@ export function SocialLoginDivider({
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ ...tweens.smooth, delay: 0.2 }}
           className="absolute inset-0 flex items-center"
         >
           <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -84,7 +85,7 @@ export function SocialLoginDivider({
       <motion.div
         initial={{ scaleX: 0, originX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
+        transition={{ ...tweens.standard, delay: 0.2 }}
         className="flex-grow border-t border-white/10"
       />
       <motion.span
@@ -98,7 +99,7 @@ export function SocialLoginDivider({
       <motion.div
         initial={{ scaleX: 0, originX: 1 }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
+        transition={{ ...tweens.standard, delay: 0.2 }}
         className="flex-grow border-t border-white/10"
       />
     </div>

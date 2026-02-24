@@ -9,6 +9,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SvgFilterIds, ColorDefinition } from '../types';
+import { tweens, loopWithDelay } from '@/lib/animation-presets';
 
 /** Props for DataFlowParticles */
 export interface DataFlowParticlesProps {
@@ -32,7 +33,7 @@ export function DataFlowParticles({ ids, colors: c, showParticles }: DataFlowPar
             fill={c.primary}
             initial={{ cx: 18, cy: 20, opacity: 0 }}
             animate={{ cx: [18, 18, 18], cy: [20, 48, 76], opacity: [1, 1, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: 'linear' }}
+            transition={loopWithDelay(tweens.verySlow, 0.5)}
           />
           {/* Right vertical flow (G letter) */}
           <motion.circle

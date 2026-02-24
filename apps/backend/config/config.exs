@@ -87,7 +87,9 @@ config :cgraph, Oban,
        # Process scheduled messages every minute
        {"* * * * *", CGraph.Workers.ScheduledMessageWorker},
        # Send email digests daily at 8 AM UTC
-       {"0 8 * * *", CGraph.Workers.EmailDigestWorker}
+       {"0 8 * * *", CGraph.Workers.EmailDigestWorker},
+       # Archive old messages daily at 3 AM UTC
+       {"0 3 * * *", CGraph.Workers.MessageArchivalWorker}
      ]}
   ],
   queues: [
@@ -104,7 +106,8 @@ config :cgraph, Oban,
     maintenance: 3,
     backups: 2,
     push_notifications: 10,
-    email_notifications: 5
+    email_notifications: 5,
+    archival: 1
   ]
 
 # Swoosh mailer configuration

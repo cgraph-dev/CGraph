@@ -38,6 +38,7 @@ export interface GroupChannelEvents {
   typing: { user_id: string; channel_id: string };
 }
 
+/** Manages a Phoenix channel subscription for a group chat, including messaging, membership, and presence. */
 export class GroupChannel {
   private channel: Channel | null = null;
   private presence: Presence | null = null;

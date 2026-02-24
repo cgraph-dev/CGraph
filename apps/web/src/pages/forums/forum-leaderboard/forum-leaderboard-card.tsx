@@ -23,6 +23,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumLeaderboardCardProps } from './types';
 import { getRankBadge } from './constants';
+import { tweens } from '@/lib/animation-presets';
 
 export function ForumLeaderboardCard({
   forum,
@@ -46,7 +47,7 @@ export function ForumLeaderboardCard({
       {/* Hover gradient glow */}
       <motion.div
         className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-transparent opacity-0 group-hover:opacity-100"
-        transition={{ duration: 0.3 }}
+        transition={tweens.standard}
       />
 
       <div className="relative z-10 flex">
@@ -120,7 +121,7 @@ export function ForumLeaderboardCard({
                 initial={{ opacity: 1, y: 0, scale: 0.8 }}
                 animate={{ opacity: 0, y: -24, scale: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                transition={tweens.emphatic}
                 className={`pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-xs font-bold ${
                   voteAnim === '+1' ? 'text-orange-400' : 'text-blue-400'
                 }`}

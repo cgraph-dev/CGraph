@@ -11,6 +11,7 @@ import { BORDER_STYLES, AVATAR_CATEGORIES } from './constants';
 import { useAvatarStyle } from './store';
 import AnimatedAvatar from './animated-avatar';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 const CATEGORIES = AVATAR_CATEGORIES;
 
@@ -99,7 +100,7 @@ export function AvatarStylePicker() {
                         'linear-gradient(135deg, transparent 40%, rgba(255,215,0,0.1) 50%, transparent 60%)',
                     }}
                     animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                    transition={loop(tweens.ambient)}
                   />
                 )}
               </motion.button>

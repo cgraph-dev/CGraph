@@ -6,6 +6,7 @@
 
 import { motion } from 'framer-motion';
 import type { UserStarsTier } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface StarTooltipProps {
   tier: UserStarsTier;
@@ -44,7 +45,7 @@ export function StarTooltip({ tier, postCount, progress, postsToNext }: StarTool
                 style={{ backgroundColor: tier.color }}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={tweens.smooth}
               />
             </div>
             <p className="mt-1 text-xs text-gray-500">

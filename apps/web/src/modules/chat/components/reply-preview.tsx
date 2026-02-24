@@ -7,6 +7,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { Message } from '@/modules/chat/store';
 import type { UIPreferences } from './message-bubble';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface ReplyPreviewProps {
   replyTo: Message;
@@ -23,7 +24,7 @@ export function ReplyPreview({ replyTo, uiPreferences, onClear }: ReplyPreviewPr
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.3, type: 'spring' }}
+      transition={springs.default}
       className="z-10 px-4 py-2"
     >
       <GlassCard
@@ -46,7 +47,7 @@ export function ReplyPreview({ replyTo, uiPreferences, onClear }: ReplyPreviewPr
                   }
                 : {}
             }
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           />
           <div>
             <p className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-xs font-semibold text-transparent">

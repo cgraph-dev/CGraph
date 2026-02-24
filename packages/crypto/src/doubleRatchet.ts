@@ -305,6 +305,7 @@ async function computeMAC(data: Uint8Array, key: Uint8Array): Promise<Uint8Array
 // DOUBLE RATCHET ENGINE
 // =============================================================================
 
+/** Implements the Signal Double Ratchet algorithm with optional post-quantum KEM ratchet steps. */
 export class DoubleRatchetEngine {
   private state: RatchetState;
   private config: RatchetConfig;

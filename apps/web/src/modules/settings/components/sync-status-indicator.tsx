@@ -53,7 +53,7 @@ export default function SyncStatusIndicator({
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
-          transition={{ duration: 0.2 }}
+          transition={tweens.fast}
           className={`flex items-center gap-2 text-sm ${className}`}
         >
           {status === 'saving' && (
@@ -129,3 +129,4 @@ export function useSyncStatus() {
 
 // Add React import for the hook
 import React from 'react';
+import { tweens } from '@/lib/animation-presets';

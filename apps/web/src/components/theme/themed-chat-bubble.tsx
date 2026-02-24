@@ -9,6 +9,7 @@ import { useChatCustomization } from '@/modules/settings/store/customization';
 import { useChatBubbleStore } from '@/stores/theme';
 import type { UserTheme } from '@/stores/theme';
 import { ThemedAvatar } from './themed-avatar';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ThemedChatBubbleProps {
   message: string;
@@ -243,7 +244,7 @@ export function ThemedChatBubble({
                 borderRadius: `${theme.bubbleBorderRadius}px`,
               }}
               animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.decorative)}
             />
           )}
         </motion.div>

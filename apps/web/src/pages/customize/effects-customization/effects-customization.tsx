@@ -16,6 +16,7 @@ import type { ParticleEffect, BackgroundEffect, AnimationSet } from './types';
 import { ParticleEffectsSection, BackgroundEffectsSection, AnimationSetsSection } from './sections';
 import { useEffectsCustomization } from './useEffectsCustomization';
 import { SaveButton } from './save-button';
+import { tweens } from '@/lib/animation-presets';
 
 export default function EffectsCustomization() {
   const {
@@ -78,7 +79,7 @@ export default function EffectsCustomization() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
+          transition={tweens.fast}
         >
           {activeCategory === 'particles' && (
             <ParticleEffectsSection

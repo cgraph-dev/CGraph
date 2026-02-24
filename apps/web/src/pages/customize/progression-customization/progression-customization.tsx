@@ -15,6 +15,7 @@ import { AchievementsSection } from './achievements-section';
 import { LeaderboardsSection } from './leaderboards-section';
 import { QuestsSection } from './quests-section';
 import { DailyRewardsSection } from './daily-rewards-section';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * ProgressionCustomization Component
@@ -111,7 +112,7 @@ export function ProgressionCustomization() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
+          transition={tweens.fast}
         >
           {activeCategory === 'achievements' && (
             <AchievementsSection achievements={filteredAchievements} />

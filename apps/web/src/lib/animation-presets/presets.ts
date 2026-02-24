@@ -36,17 +36,51 @@ export const springs = {
 // =============================================================================
 
 export const tweens = {
-  /** Quick fade */
+  /** 0.1s — near-instant snap */
+  instant: { duration: 0.1, ease: 'easeOut' as const },
+  /** 0.15s — quick feedback (toggle, button) */
   quickFade: { duration: 0.15, ease: 'easeOut' as const },
-  /** Standard transition */
+  /** 0.2s — fast UI response */
+  fast: { duration: 0.2, ease: 'easeOut' as const },
+  /** 0.25s — brisk transition */
+  brisk: { duration: 0.25, ease: 'easeOut' as const },
+  /** 0.3s — standard UI transition */
   standard: { duration: 0.3, ease: 'easeInOut' as const },
-  /** Smooth, longer transition */
+  /** 0.4s — deliberate panel/modal transition */
+  moderate: { duration: 0.4, ease: 'easeInOut' as const },
+  /** 0.5s — smooth, attention-getting */
   smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as readonly number[] }, // type assertion: array literal type widening
-  /** Dramatic entrance */
+  /** 0.6s — emphatic reveal */
+  emphatic: { duration: 0.6, ease: 'easeOut' as const },
+  /** 0.8s — dramatic entrance */
   dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as readonly number[] }, // type assertion: array literal type widening
-  /** Subtle background animation */
-  ambient: { duration: 3, ease: 'linear' as const, repeat: Infinity },
+  /** 1s — slow reveal, loading loops */
+  slow: { duration: 1, ease: 'easeInOut' as const },
+  /** 1.5s — extended ambient motion */
+  verySlow: { duration: 1.5, ease: 'easeInOut' as const },
+  /** 2s — ambient glow/pulse loop */
+  ambient: { duration: 2, ease: 'linear' as const },
+  /** 2.5s — slow ambient cycle */
+  ambientSlow: { duration: 2.5, ease: 'linear' as const },
+  /** 3s — background decoration loop */
+  decorative: { duration: 3, ease: 'linear' as const },
+  /** 4s — very slow ambient background */
+  glacial: { duration: 4, ease: 'easeInOut' as const },
 } as const;
+
+/**
+ * Create a looping transition from a tween preset.
+ * Usage: `transition={loop(tweens.ambient)}` instead of `transition={{ duration: 2, repeat: Infinity }}`
+ */
+export const loop = (base: { duration: number; ease: string | readonly number[] }) =>
+  ({ ...base, repeat: Infinity }) as const;
+
+/**
+ * Create a looping transition with a pause between cycles.
+ * Usage: `transition={loopWithDelay(tweens.slow, 1)}` instead of `transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}`
+ */
+export const loopWithDelay = (base: { duration: number; ease: string | readonly number[] }, repeatDelay: number) =>
+  ({ ...base, repeat: Infinity, repeatDelay }) as const;
 
 // =============================================================================
 // STAGGER CONFIGURATIONS (sourced from @cgraph/animation-constants)

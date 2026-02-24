@@ -10,6 +10,7 @@ import { staggerConfigs } from '@/lib/animation-presets/presets';
 import { MessageSkeleton } from '@/components/ui/skeletons';
 import type { SearchResultsProps } from './types';
 import { SearchResultCard } from './search-result-card';
+import { tweens } from '@/lib/animation-presets';
 
 const resultContainer = {
   hidden: {},
@@ -66,7 +67,7 @@ export function SearchResults({
         className="flex-1 overflow-y-auto p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.25 }}
+        transition={tweens.brisk}
       >
         <div className="py-8 text-center">
           <p className="text-white/60">No messages found</p>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { tierConfig, type PremiumTier } from './tier-config';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface UpgradeModalProps {
   requiredTier: PremiumTier;
@@ -67,7 +68,7 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
               animate={{
                 rotate: [0, 10, -10, 0],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
               className="mb-4 inline-block"
             >
               <SparklesIcon className="h-12 w-12 text-purple-400" />

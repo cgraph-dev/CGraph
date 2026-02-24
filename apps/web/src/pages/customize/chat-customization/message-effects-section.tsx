@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import type { MessageEffectsSectionProps } from './types';
+import { tweens, loopWithDelay } from '@/lib/animation-presets';
 
 /** Helper to get animation props for each effect type */
 function getEffectAnimation(animation: string) {
@@ -46,7 +47,7 @@ export function MessageEffectsSection({
             <motion.div
               className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs text-white"
               animate={getEffectAnimation(effect.animation)}
-              transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+              transition={loopWithDelay(tweens.slow, 1)}
             >
               Message
             </motion.div>

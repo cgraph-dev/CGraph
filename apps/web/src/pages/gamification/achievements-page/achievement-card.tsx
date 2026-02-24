@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { AchievementCardProps } from './types';
 import { CATEGORIES, RARITY_COLORS } from './constants';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function AchievementCard({ achievement, onClick }: AchievementCardProps) {
   const colors = RARITY_COLORS[achievement.rarity] || RARITY_COLORS.common;
@@ -31,7 +32,7 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
         <motion.div
           className={`absolute inset-0 bg-gradient-to-br ${colors.bg} opacity-50`}
           animate={{ opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 3, repeat: Infinity }}
+          transition={loop(tweens.decorative)}
         />
       )}
 
@@ -77,7 +78,7 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
                   className={`h-full bg-gradient-to-r ${CATEGORIES.find((c) => c.id === achievement.category)?.color || 'from-purple-500 to-pink-500'}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  transition={tweens.smooth}
                 />
               </div>
             </div>

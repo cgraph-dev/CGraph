@@ -8,6 +8,7 @@ import { ThemeRegistry } from '@/themes/theme-registry';
 import type { AppTheme } from '@/themes/theme-types';
 import { CheckCircle, Sparkles, Lock } from 'lucide-react';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ThemeSwitcherProps {
   currentThemeId: string;
@@ -250,7 +251,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
           >
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
             >
               <Sparkles className="h-8 w-8 text-emerald-500" />
             </motion.div>

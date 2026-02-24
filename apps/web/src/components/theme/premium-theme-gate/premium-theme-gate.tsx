@@ -10,6 +10,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
 import { tierHierarchy, tierConfig, type PremiumTier } from './tier-config';
 import { UpgradeModal } from './upgrade-modal';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface PremiumThemeGateProps {
   children: ReactNode;
@@ -68,7 +69,7 @@ export function PremiumThemeGate({
                     '0 0 20px rgba(139, 92, 246, 0.3)',
                   ],
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={loop(tweens.ambient)}
               >
                 <LockClosedIcon className="h-8 w-8 text-purple-400" />
               </motion.div>

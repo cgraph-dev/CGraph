@@ -8,6 +8,7 @@ import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumHeaderProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: ForumHeaderProps) {
   const isAdminOrMod = forum.ownerId === userId || forum.moderators?.some((m) => m.id === userId);
@@ -44,7 +45,7 @@ export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: F
                 animate={{
                   boxShadow: ['0 0 0 0 rgba(16, 185, 129, 0.7)', '0 0 0 6px rgba(16, 185, 129, 0)'],
                 }}
-                transition={{ duration: 2.5, repeat: Infinity }}
+                transition={loop(tweens.ambientSlow)}
               />
               {forum.iconUrl ? (
                 <img

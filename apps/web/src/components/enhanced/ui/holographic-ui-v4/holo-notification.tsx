@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
 import { HoloContainer } from './holo-container';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloNotificationProps {
   message: string;
@@ -67,7 +68,7 @@ export function HoloNotification({
                 className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full"
                 style={{ background: color, boxShadow: `0 0 8px ${color}` }}
                 animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                transition={loop(tweens.verySlow)}
               />
 
               {/* Content */}

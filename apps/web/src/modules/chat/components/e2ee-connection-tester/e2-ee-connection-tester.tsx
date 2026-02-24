@@ -16,6 +16,7 @@ import type { E2EEConnectionTesterProps } from './types';
 import { useE2EETests } from './useE2EETests';
 import { TestResultItem } from './test-result-item';
 import { OverallStatusBanner } from './overall-status-banner';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function E2EEConnectionTester({
   conversationId,
@@ -104,7 +105,7 @@ export default function E2EEConnectionTester({
               >
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={loop(tweens.slow)}
                 >
                   <ArrowPathIcon className="h-5 w-5" />
                 </motion.div>

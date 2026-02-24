@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import type { AnimatedLogoProps } from './types';
 import { SIZE_MAP, COLOR_PALETTES, SPLASH_TIMINGS } from './constants';
 import { CircuitBoardLogo } from './circuit-board-logo';
+import { tweens } from '@/lib/animation-presets';
 
 export default function AnimatedLogo({
   size = 'md',
@@ -41,7 +42,7 @@ export default function AnimatedLogo({
             }}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1.5, opacity: 0.5 }}
-            transition={{ duration: 2, ease: 'easeOut' }}
+            transition={tweens.ambient}
           />
         )}
 
@@ -63,7 +64,7 @@ export default function AnimatedLogo({
               className="flex flex-col items-center"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={tweens.smooth}
             >
               <motion.span
                 className={`font-bold ${dimensions.text} tracking-tight`}

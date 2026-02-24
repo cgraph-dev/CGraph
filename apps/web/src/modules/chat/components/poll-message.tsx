@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ChartBarIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
+import { tweens } from '@/lib/animation-presets';
 
 interface PollOption {
   id: string;
@@ -85,7 +86,7 @@ export function PollMessage({
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  transition={tweens.smooth}
                 />
               )}
 

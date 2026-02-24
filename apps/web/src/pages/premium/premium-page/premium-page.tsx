@@ -23,6 +23,7 @@ import { PREMIUM_TIERS } from './constants';
 import { PricingCard } from './pricing-card';
 import { FeatureComparisonTable } from './feature-comparison-table';
 import { FAQSection } from './faq-section';
+import { tweens } from '@/lib/animation-presets';
 
 const logger = createLogger('PremiumPage');
 
@@ -209,7 +210,7 @@ export default function PremiumPage() {
             {showFeatureComparison ? 'Hide' : 'Show'} full feature comparison
             <motion.div
               animate={{ rotate: showFeatureComparison ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
+              transition={tweens.standard}
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path

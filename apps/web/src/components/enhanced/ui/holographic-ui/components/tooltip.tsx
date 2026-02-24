@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HoloTooltipProps } from '../types';
 import { getTheme } from '../presets';
+import { tweens } from '@/lib/animation-presets';
 
 export function HoloTooltip({
   children,
@@ -53,7 +54,7 @@ export function HoloTooltip({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.15 }}
+            transition={tweens.quickFade}
             className={cn('absolute z-50 whitespace-nowrap', positionStyles[position])}
           >
             <div

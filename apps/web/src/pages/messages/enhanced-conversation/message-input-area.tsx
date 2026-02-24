@@ -7,6 +7,7 @@ import { PaperAirplaneIcon, PaperClipIcon, MicrophoneIcon } from '@heroicons/rea
 import { GlassCard } from '@/shared/components/ui';
 import { StickerPicker, StickerButton } from '@/modules/chat/components/sticker-picker';
 import type { MessageInputAreaProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface MessageInputAreaWithRefProps extends MessageInputAreaProps {
   inputContainerRef: React.RefObject<HTMLDivElement>;
@@ -72,7 +73,7 @@ export function MessageInputArea({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={isSending ? { rotate: 360 } : {}}
-            transition={{ duration: 0.5 }}
+            transition={tweens.smooth}
           >
             <PaperAirplaneIcon className="h-5 w-5" />
           </motion.button>

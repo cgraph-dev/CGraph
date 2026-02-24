@@ -16,6 +16,7 @@ import type {
   PostResultProps,
   MessageResultProps,
 } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * Wrapper component for search result sections
@@ -73,7 +74,7 @@ export function UserResult({ user, onClick }: UserResultProps) {
       <GlassCard variant="default" className="group relative overflow-hidden">
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
@@ -125,7 +126,7 @@ export function GroupResult({ group, onClick }: GroupResultProps) {
       <GlassCard variant="default" className="group relative overflow-hidden">
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
@@ -173,7 +174,7 @@ export function ForumResult({ forum, onClick }: ForumResultProps) {
       <GlassCard variant="default" className="group relative overflow-hidden">
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
@@ -221,7 +222,7 @@ export function PostResult({ post, onClick }: PostResultProps) {
       <GlassCard variant="default" className="group relative overflow-hidden">
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
         <div className="relative z-10 p-3 text-left">
           <p className="line-clamp-1 bg-gradient-to-r from-white to-primary-100 bg-clip-text font-medium text-transparent">
@@ -254,7 +255,7 @@ export function MessageResult({ message, onClick }: MessageResultProps) {
       <GlassCard variant="default" className="group relative overflow-hidden">
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
         <div className="relative z-10 p-3 text-left">
           <p className="line-clamp-2 text-sm text-gray-300">{message.content}</p>

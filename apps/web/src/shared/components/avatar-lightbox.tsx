@@ -10,6 +10,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 interface AvatarLightboxProps {
   /** Avatar image URL */
@@ -67,7 +68,7 @@ export function AvatarLightbox({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={tweens.fast}
           >
             {/* Backdrop */}
             <motion.div
@@ -85,7 +86,7 @@ export function AvatarLightbox({
               initial={{ opacity: 0, rotate: -90 }}
               animate={{ opacity: 1, rotate: 0 }}
               exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
+              transition={tweens.fast}
               aria-label="Close photo viewer"
             >
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

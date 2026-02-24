@@ -17,6 +17,7 @@ import { FeaturesStep } from './features-step';
 import { NavigationButtons } from './navigation-buttons';
 import { pageVariants } from './animations';
 import type { NotificationKey } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export default function Onboarding() {
   const {
@@ -87,7 +88,7 @@ export default function Onboarding() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.3 }}
+              transition={tweens.standard}
               className="min-h-[300px]"
             >
               {renderStepContent()}

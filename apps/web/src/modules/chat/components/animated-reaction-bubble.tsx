@@ -33,6 +33,7 @@ import {
   SUPER_GLOW_BURST_ANIMATION,
   SUPER_GLOW_BURST_TRANSITION,
 } from '@/modules/chat/components/animatedReactionBubble/constants';
+import { tweens } from '@/lib/animation-presets';
 
 // Re-export extracted pieces so existing imports keep working
 export { ReactionPicker } from '@/modules/chat/components/animatedReactionBubble/reaction-picker';
@@ -182,7 +183,7 @@ export function AnimatedReactionBubble({
       <motion.span
         className="relative z-10 text-lg"
         animate={isPressed ? { scale: [1, 0.8, 1], rotateZ: [0, -15, 15, 0] } : {}}
-        transition={{ duration: 0.3 }}
+        transition={tweens.standard}
       >
         {reaction.emoji}
       </motion.span>
@@ -212,7 +213,7 @@ export function AnimatedReactionBubble({
           className="absolute inset-0 rounded-full bg-white/20"
           initial={{ scale: 0, opacity: 1 }}
           animate={{ scale: 2, opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={tweens.smooth}
         />
       )}
 

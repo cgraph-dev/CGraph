@@ -30,6 +30,7 @@ import {
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useNotificationStore } from '@/modules/social/store';
 import { useChatStore } from '@/modules/chat/store';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface MobileNavProps {
   variant?: 'default' | 'floating' | 'minimal';
@@ -181,7 +182,7 @@ export function MobileNav({
                 {item.badge && item.badge > 0 && (
                   <motion.span
                     animate={{ scale: [1, 1.15, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    transition={loop(tweens.ambient)}
                     className="absolute right-1/4 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white shadow-[0_0_6px_rgba(239,68,68,0.4)]"
                   >
                     {item.badge > 99 ? '99' : item.badge}

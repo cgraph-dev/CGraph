@@ -14,6 +14,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getRankBadge, formatKarma, getUserInitial } from './utils';
 import type { UserLeaderboardCardProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboardCardProps) {
   const isTopThree = user.rank <= 3;
@@ -33,7 +34,7 @@ export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboard
         >
           <motion.div
             className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-            transition={{ duration: 0.3 }}
+            transition={tweens.standard}
           />
           <div className="relative z-10 flex items-center gap-4 p-4">
             {/* Rank Badge */}

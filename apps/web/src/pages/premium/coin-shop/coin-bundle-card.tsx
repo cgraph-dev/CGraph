@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { CoinBundle } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface CoinBundleCardProps {
   bundle: CoinBundle;
@@ -57,7 +58,7 @@ export function CoinBundleCard({
             animate={{
               scale: [1, 1.1, 1],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           >
             <CurrencyDollarIcon className="h-5 w-5 text-white" />
           </motion.div>
@@ -79,7 +80,7 @@ export function CoinBundleCard({
               <motion.div
                 className="mx-auto h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.slow)}
               />
             ) : (
               'Buy'

@@ -10,6 +10,7 @@ import { PendingTab, FriendsListTab, BlockedTab } from './friends-tab-panels';
 import { WelcomePanel } from './welcome-panel';
 import { FriendSuggestions } from './friend-suggestions';
 import { useFriendsPage } from './useFriendsPage';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function Friends() {
   const {
@@ -96,7 +97,7 @@ export default function Friends() {
                 <motion.div
                   className="absolute inset-0 rounded-full border-2 border-primary-400/30"
                   animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={loop(tweens.ambient)}
                 />
               </div>
             </motion.div>

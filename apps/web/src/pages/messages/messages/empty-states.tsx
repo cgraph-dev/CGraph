@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { UserIcon, SparklesIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import type { EmptyStateProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Empty conversation list state
@@ -20,7 +21,7 @@ export function EmptyConversationList({ searchQuery }: EmptyStateProps) {
       className="px-4 py-12 text-center"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={tweens.smooth}
     >
       <div className="relative mb-4 inline-block">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary-500/30 bg-gradient-to-br from-primary-500/20 to-purple-500/20 backdrop-blur-sm">
@@ -29,7 +30,7 @@ export function EmptyConversationList({ searchQuery }: EmptyStateProps) {
         <motion.div
           className="absolute inset-0 rounded-2xl bg-primary-400/20"
           animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       </div>
       <p className="bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-lg font-semibold text-transparent">
@@ -50,7 +51,7 @@ export function NoConversationSelected() {
       className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={tweens.smooth}
     >
       {/* Ambient particles */}
       {[...Array(8)].map((_, i) => (
@@ -92,7 +93,7 @@ export function NoConversationSelected() {
               opacity: [0.5, 0, 0.5],
               rotate: [0, 180, 360],
             }}
-            transition={{ duration: 4, repeat: Infinity }}
+            transition={loop(tweens.glacial)}
           />
           <motion.div
             className="absolute -inset-4 rounded-3xl border border-primary-400/20"
@@ -100,7 +101,7 @@ export function NoConversationSelected() {
               scale: [1, 1.5, 1],
               opacity: [0.3, 0, 0.3],
             }}
-            transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+            transition={{ ...loop(tweens.decorative), delay: 0.5 }}
           />
         </div>
 
@@ -115,7 +116,7 @@ export function NoConversationSelected() {
         <motion.div
           className="mt-6 inline-flex items-center gap-2 text-sm text-gray-500"
           animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         >
           <div className="h-2 w-2 animate-pulse rounded-full bg-primary-500" />
           {t('endToEndEncrypted')}
@@ -140,7 +141,7 @@ export function LoadingSpinner() {
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-primary-400/30"
           animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       </div>
     </motion.div>

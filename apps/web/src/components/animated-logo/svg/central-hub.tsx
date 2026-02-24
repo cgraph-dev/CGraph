@@ -10,6 +10,7 @@
 import { motion } from 'framer-motion';
 import { NODE_APPEAR_VARIANTS } from '../constants';
 import type { SvgFilterIds } from '../types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /** Props for CentralHub */
 export interface CentralHubProps {
@@ -69,7 +70,7 @@ export function CentralHub({
           strokeWidth="1.5"
           initial={{ r: 8, opacity: 0.8 }}
           animate={{ r: [8, 16, 8], opacity: [0.8, 0, 0.8] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+          transition={loop(tweens.ambient)}
         />
       )}
     </g>

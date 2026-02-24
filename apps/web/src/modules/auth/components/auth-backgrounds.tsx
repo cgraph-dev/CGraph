@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { motion } from 'framer-motion';
+import { loop } from '@/lib/animation-presets';
 
 export function GridBackground(): React.ReactElement | null {
   return (
@@ -33,7 +34,7 @@ export function GradientBackground(): React.ReactElement | null {
           'radial-gradient(circle at 20% 80%, rgba(var(--color-primary-500), 0.3) 0%, transparent 50%)',
         ],
       }}
-      transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
+      transition={loop({ duration: 10, ease: 'linear' })}
       className="absolute inset-0"
     />
   </div>

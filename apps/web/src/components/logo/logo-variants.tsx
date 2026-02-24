@@ -17,6 +17,7 @@ import { memo } from 'react';
 import { colorPalettes } from './colors';
 import { LogoIcon } from './logo-icon';
 import type { LogoProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Logo with text "CGraph" beside it.
@@ -96,7 +97,7 @@ export const LogoLoader = memo(function LogoLoader({
     <div className={`relative ${className}`}>
       <motion.div
         animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+        transition={loop(tweens.ambient)}
         className="absolute inset-0"
       >
         <svg viewBox="0 0 100 100" width={size} height={size}>

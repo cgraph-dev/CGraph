@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { IdSearchType } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 /** Props for IdSearchBar */
 export interface IdSearchBarProps {
@@ -38,7 +39,7 @@ export function IdSearchBar({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
+        transition={{ ...tweens.moderate, delay: 0.3 }}
       >
         <GlassCard variant="default" className="p-4">
           <div className="flex items-center gap-3">

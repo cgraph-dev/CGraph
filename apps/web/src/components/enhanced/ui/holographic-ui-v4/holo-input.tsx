@@ -7,6 +7,7 @@ import { ReactNode, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface HoloInputProps {
   value: string;
@@ -90,7 +91,7 @@ export function HoloInput({
           style={{ background: error ? theme.error : theme.accent }}
           initial={{ width: 0, x: '-50%' }}
           animate={{ width: isFocused ? '100%' : 0, x: '-50%' }}
-          transition={{ duration: 0.25 }}
+          transition={tweens.brisk}
         />
       </motion.div>
 

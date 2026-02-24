@@ -9,7 +9,7 @@ import type {
   ThemePreset,
   TitleDisplay,
 } from '@/modules/settings/store/customization';
-import { springs } from '@/lib/animation-presets';
+import { springs, tweens, loop } from '@/lib/animation-presets';
 import { GlowText, FireText } from '@/shared/components/ui';
 import { MOCK_BADGES } from './constants';
 import type { ThemeColors } from './types';
@@ -90,7 +90,7 @@ export function ProfileContent({
                   '0 0 4px rgba(52, 211, 153, 0.5)',
                 ],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
             />
             <span className="text-xs text-emerald-400">Online</span>
           </div>
@@ -133,7 +133,7 @@ export function ProfileContent({
                   background: `conic-gradient(from 0deg, transparent, ${badge.color}, transparent)`,
                 }}
                 animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.glacial)}
               />
               <span className="relative z-10">{badge.emoji}</span>
             </motion.div>
@@ -158,7 +158,7 @@ export function ProfileContent({
                   `0 0 8px ${colors.primary}40`,
                 ],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
             >
               42
             </motion.div>
@@ -185,7 +185,7 @@ export function ProfileContent({
             }}
             initial={{ scaleX: 0, originX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
+            transition={{ ...tweens.slow, duration: 1.2, delay: 0.3 }}
           >
             <motion.div
               className="absolute inset-0 rounded-full"
@@ -194,7 +194,7 @@ export function ProfileContent({
                   'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
               }}
               animate={{ x: ['-100%', '200%'] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              transition={loopWithDelay(tweens.ambient, 3)}
             />
           </motion.div>
 
@@ -206,7 +206,7 @@ export function ProfileContent({
               boxShadow: `0 0 8px ${colors.secondary}`,
             }}
             animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            transition={loop(tweens.verySlow)}
           />
         </div>
 

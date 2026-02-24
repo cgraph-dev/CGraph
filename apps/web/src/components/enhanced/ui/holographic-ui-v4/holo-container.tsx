@@ -14,6 +14,7 @@ import {
 } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, HoloConfig, getTheme, getIntensityMultiplier } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloContainerProps extends Omit<MotionProps, 'children'> {
   children: ReactNode;
@@ -148,7 +149,7 @@ export function HoloContainer({
             ? { backgroundPosition: ['0% 0%', '200% 200%'] }
             : { backgroundPosition: '0% 0%' }
         }
-        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+        transition={loop(tweens.decorative)}
       />
 
       {/* Scanlines */}
@@ -176,7 +177,7 @@ export function HoloContainer({
             initial={{ opacity: 0, x: -2 }}
             animate={{ opacity: 0.8, x: [0, 2, -2, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
+            transition={tweens.instant}
             style={{
               background: `linear-gradient(90deg, transparent 40%, ${theme.accent}30 50%, transparent 60%)`,
               mixBlendMode: 'screen',

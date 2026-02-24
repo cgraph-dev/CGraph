@@ -12,6 +12,7 @@ import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import { StatItem } from './stat-item';
 import type { LayoutProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export const DetailedLayout = memo(function DetailedLayout({
   user,
@@ -65,7 +66,7 @@ export const DetailedLayout = memo(function DetailedLayout({
               style={{ backgroundColor: theme?.colors.accent || '#22c55e' }}
               initial={{ width: 0 }}
               animate={{ width: `${xpPercentage}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+              transition={tweens.smooth}
             />
           </div>
         </div>

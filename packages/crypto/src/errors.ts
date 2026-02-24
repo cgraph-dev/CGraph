@@ -105,6 +105,7 @@ export class CryptoError extends Error {
     // Maintain proper stack trace in V8
     if ('captureStackTrace' in Error) {
       (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         Error as { captureStackTrace?: (target: Error, constructor: Function) => void }
       ).captureStackTrace?.(this, CryptoError);
     }
@@ -130,6 +131,7 @@ export class CryptoError extends Error {
 // CONVENIENCE FACTORIES
 // =============================================================================
 
+/** Creates a CryptoError indicating the session has not been initialized. */
 export function sessionNotInitialized(detail?: string): CryptoError {
   return new CryptoError(
     CryptoErrorCode.SESSION_NOT_INITIALIZED,
@@ -137,10 +139,12 @@ export function sessionNotInitialized(detail?: string): CryptoError {
   );
 }
 
+/** Creates a CryptoError for an invalid cryptographic key. */
 export function invalidKey(detail: string): CryptoError {
   return new CryptoError(CryptoErrorCode.INVALID_KEY, detail);
 }
 
+/** Creates a CryptoError for a failed message authentication code verification. */
 export function macVerificationFailed(): CryptoError {
   return new CryptoError(
     CryptoErrorCode.MAC_VERIFICATION_FAILED,
@@ -148,6 +152,7 @@ export function macVerificationFailed(): CryptoError {
   );
 }
 
+/** Creates a CryptoError when the skipped message limit is exceeded. */
 export function tooManySkippedMessages(count: number, max: number): CryptoError {
   return new CryptoError(
     CryptoErrorCode.TOO_MANY_SKIPPED_MESSAGES,
@@ -155,6 +160,7 @@ export function tooManySkippedMessages(count: number, max: number): CryptoError 
   );
 }
 
+/** Creates a CryptoError for an unsupported protocol version. */
 export function invalidProtocolVersion(got: number, expected: number): CryptoError {
   return new CryptoError(
     CryptoErrorCode.INVALID_PROTOCOL_VERSION,

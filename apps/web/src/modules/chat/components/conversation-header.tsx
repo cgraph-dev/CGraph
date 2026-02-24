@@ -24,6 +24,7 @@ import UserProfileCard from '@/modules/social/components/user-profile-card';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
 import type { Conversation } from '@/modules/chat/store';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ConversationHeaderProps {
   conversationName: string;
@@ -79,7 +80,7 @@ function ConversationHeaderComponent({
           className="flex min-w-0 flex-1 items-center gap-3"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={tweens.smooth}
         >
           <UserProfileCard
             userId={otherParticipant?.user?.id || ''}
@@ -99,7 +100,7 @@ function ConversationHeaderComponent({
                   animate={{
                     boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 6px rgba(34, 197, 94, 0)'],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={loop(tweens.ambient)}
                 />
               )}
             </motion.div>
@@ -118,7 +119,7 @@ function ConversationHeaderComponent({
                   <motion.span
                     className="font-medium text-primary-400"
                     animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    transition={loop(tweens.verySlow)}
                   >
                     typing...
                   </motion.span>
@@ -136,7 +137,7 @@ function ConversationHeaderComponent({
           className="ml-auto flex flex-shrink-0 items-center gap-2"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ ...tweens.smooth, delay: 0.1 }}
         >
           {/* E2EE Indicator */}
           <motion.button
@@ -159,7 +160,7 @@ function ConversationHeaderComponent({
                   }
                 : {}
             }
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           >
             <LockClosedIcon className="h-3.5 w-3.5 text-green-400" />
             <span className="text-xs font-bold tracking-wider text-green-400">E2EE</span>

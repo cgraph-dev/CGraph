@@ -19,6 +19,7 @@ import { BorderWidthCard, BorderColorCard, GlowIntensityCard } from './border-se
 import { AnimationSpeedCard } from './animation-speed-card';
 import { ShapeCard } from './shape-card';
 import { ExportImportCard } from './export-import-card';
+import { tweens } from '@/lib/animation-presets';
 
 export default function AvatarSettings() {
   const { user } = useAuthStore();
@@ -46,7 +47,7 @@ export default function AvatarSettings() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
       className="space-y-6"
     >
       {/* Header */}

@@ -8,6 +8,7 @@ import { PlayCircleIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { LinkMetadata } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface VideoEmbedProps {
   embed: LinkMetadata;
@@ -47,7 +48,7 @@ export default function VideoEmbed({ embed, onExpand }: VideoEmbedProps) {
                       '0 0 0 20px rgba(220, 38, 38, 0)',
                     ],
                   }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={loop(tweens.verySlow)}
                 >
                   <PlayCircleIcon className="ml-1 h-10 w-10 text-white" />
                 </motion.div>

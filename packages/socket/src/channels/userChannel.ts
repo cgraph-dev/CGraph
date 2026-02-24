@@ -20,6 +20,7 @@ export interface UserChannelEvents {
   status_update: { user_id: string; status: 'online' | 'away' | 'busy' | 'offline' };
 }
 
+/** Manages a Phoenix channel subscription for user-level events such as notifications, friend requests, and status updates. */
 export class UserChannel {
   private channel: Channel | null = null;
   private userId: string;

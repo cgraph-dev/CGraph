@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { MentionUser } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface MentionAutocompleteProps {
   query: string;
@@ -102,7 +103,7 @@ export function MentionAutocomplete({
         <div className="flex items-center justify-center py-3">
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.slow)}
             className="h-5 w-5 rounded-full border-2 border-primary-500 border-t-transparent"
           />
         </div>

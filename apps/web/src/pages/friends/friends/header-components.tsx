@@ -8,6 +8,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export function FriendsHeader({
   showAddFriend,
@@ -21,7 +22,7 @@ export function FriendsHeader({
       className="mb-4 flex items-center justify-between"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={tweens.moderate}
     >
       <h2 className="flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
         <UsersIcon className="h-6 w-6 text-primary-400" />
@@ -60,7 +61,7 @@ export function AddFriendForm({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
           className="mb-4"
         >
           <form onSubmit={onSubmit}>
@@ -117,7 +118,7 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
       className="flex items-center gap-2"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
+      transition={{ ...tweens.moderate, delay: 0.1 }}
     >
       {tabs.map((tab) => (
         <motion.div
@@ -183,7 +184,7 @@ export function FriendsSearchBar({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
           className="mt-3"
         >
           <div className="relative">

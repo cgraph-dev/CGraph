@@ -8,6 +8,7 @@ import { SparklesIcon, XMarkIcon, StarIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { ANIMATED_FEATURES } from './constants';
 import type { BannerVariantProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 type HeroBannerProps = Pick<
   BannerVariantProps,
@@ -49,7 +50,7 @@ export function HeroBanner({
         animate={{
           backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
         }}
-        transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
+        transition={loop({ duration: 5, ease: 'linear' })}
         className="absolute inset-0 opacity-50"
         style={{
           background:
@@ -97,7 +98,7 @@ export function HeroBanner({
           scale: [1, 1.1, 1],
           rotate: [0, 5, -5, 0],
         }}
-        transition={{ repeat: Infinity, duration: 3 }}
+        transition={loop(tweens.decorative)}
         className="mb-6 inline-flex rounded-2xl bg-white/20 p-4"
       >
         <SparklesIcon className="h-10 w-10 text-white" />

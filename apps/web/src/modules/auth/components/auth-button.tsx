@@ -13,6 +13,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -95,7 +96,7 @@ export function AuthButton({
         >
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+            transition={loop(tweens.slow)}
             className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
           />
           <span>{loadingText}</span>

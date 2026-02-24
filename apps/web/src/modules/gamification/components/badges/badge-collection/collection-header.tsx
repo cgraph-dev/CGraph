@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { TrophyIcon } from '@heroicons/react/24/outline';
 import type { CollectionStats } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface CollectionHeaderProps {
   stats: CollectionStats;
@@ -29,7 +30,7 @@ export function CollectionHeader({ stats }: CollectionHeaderProps) {
           className="h-full bg-gradient-to-r from-primary-500 to-primary-400"
           initial={{ width: 0 }}
           animate={{ width: `${stats.percentage}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={tweens.smooth}
         />
       </div>
     </div>

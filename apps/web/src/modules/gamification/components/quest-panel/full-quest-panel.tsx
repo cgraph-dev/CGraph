@@ -17,6 +17,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Quest } from '@/modules/gamification/store';
 import { getQuestTypeColor, getQuestProgress, isQuestReady } from './utils';
 import { QuestObjectiveItem } from './quest-objective-item';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface FullQuestPanelProps {
   className: string;
@@ -81,7 +82,7 @@ export function FullQuestPanel({
             <motion.div
               className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
             />
           </div>
         ) : activeQuests.length === 0 ? (
@@ -150,7 +151,7 @@ export function FullQuestPanel({
                                 className={`h-full rounded-full ${ready ? 'bg-green-500' : 'bg-gradient-to-r from-primary-500 to-purple-500'}`}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.5 }}
+                                transition={tweens.smooth}
                               />
                             </div>
                             <span className="absolute -top-5 right-0 text-xs text-gray-400">
@@ -211,7 +212,7 @@ export function FullQuestPanel({
                                 <motion.div
                                   className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                                   animate={{ rotate: 360 }}
-                                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                  transition={loop(tweens.slow)}
                                 />
                               ) : (
                                 'Claim'

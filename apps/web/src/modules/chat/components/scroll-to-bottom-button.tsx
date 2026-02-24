@@ -8,6 +8,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import { tweens, springs, loop } from '@/lib/animation-presets';
 
 export interface ScrollToBottomButtonProps {
   /** Whether the button should be visible */
@@ -38,7 +39,7 @@ export function ScrollToBottomButton({
           {/* Bouncing arrow */}
           <motion.span
             animate={{ y: [0, 3, 0] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            transition={loop(tweens.slow)}
           >
             <ChevronDownIcon className="h-4 w-4" />
           </motion.span>

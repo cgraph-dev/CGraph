@@ -15,6 +15,7 @@ import { CommentVoteButtons } from './comment-vote-buttons';
 import { ReplyForm, EditForm } from './comment-forms';
 import { BestAnswerBadge } from './best-answer-badge';
 import type { Comment } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface CommentCardProps {
   comment: Comment;
@@ -79,7 +80,7 @@ export function CommentCard({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
       className={`${indentLevel > 0 ? 'ml-6 md:ml-12' : ''} relative`}
       style={{
         borderLeft: indentLevel > 0 ? '2px solid rgba(16, 185, 129, 0.2)' : 'none',

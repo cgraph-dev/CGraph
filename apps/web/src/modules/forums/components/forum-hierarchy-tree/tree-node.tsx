@@ -17,6 +17,7 @@ import {
   ArrowsPointingOutIcon,
 } from '@heroicons/react/24/outline';
 import type { TreeNodeProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export const TreeNode = memo(function TreeNode({
   node,
@@ -143,7 +144,7 @@ export const TreeNode = memo(function TreeNode({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={tweens.fast}
             className="overflow-hidden"
           >
             {node.children!.map((child) => (

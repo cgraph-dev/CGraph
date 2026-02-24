@@ -7,6 +7,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { LoadMoreButtonProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function LoadMoreButton({ hasMore, isLoading, onLoadMore }: LoadMoreButtonProps) {
   return (
@@ -33,7 +34,7 @@ export function LoadMoreButton({ hasMore, isLoading, onLoadMore }: LoadMoreButto
                 <motion.div
                   className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={loop(tweens.slow)}
                 />
                 Loading...
               </span>

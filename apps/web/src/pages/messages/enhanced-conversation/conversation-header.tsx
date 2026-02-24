@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { PhoneIcon, ShieldCheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCardNeon } from '@/shared/components/ui';
 import type { ConversationHeaderProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ConversationHeader({
   conversationName,
@@ -32,7 +33,7 @@ export function ConversationHeader({
           <motion.div
             className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-900 bg-green-500"
             animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           />
         </div>
 
@@ -45,7 +46,7 @@ export function ConversationHeader({
                 <motion.span
                   className="text-primary-400"
                   animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={loop(tweens.verySlow)}
                 >
                   typing...
                 </motion.span>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import type { AchievementsSectionProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export function AchievementsSection({ achievements }: AchievementsSectionProps) {
   const getRarityColor = (rarity: string) => {
@@ -72,7 +73,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                     animate={{
                       width: `${(achievement.progress / achievement.maxProgress) * 100}%`,
                     }}
-                    transition={{ duration: 1, delay: index * 0.05 }}
+                    transition={{ ...tweens.slow, delay: index * 0.05 }}
                   />
                 </div>
               </div>

@@ -10,6 +10,7 @@ import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import { WeeklyCalendar } from './weekly-calendar';
 import type { StreakTrackerProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface WidgetVariantProps {
   currentStreak: number;
@@ -35,7 +36,7 @@ export function StreakWidgetVariant({
       <div className="flex items-center gap-4">
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={loop(tweens.verySlow)}
         >
           <FireIconSolid className="h-10 w-10 text-orange-500" />
         </motion.div>

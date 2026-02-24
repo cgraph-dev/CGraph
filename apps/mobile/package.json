@@ -19,6 +19,7 @@
     "storybook:generate": "sb-rn-get-stories"
   },
   "dependencies": {
+    "@cgraph/animation-constants": "workspace:*",
     "@cgraph/crypto": "workspace:*",
     "@cgraph/shared-types": "workspace:*",
     "@cgraph/socket": "workspace:*",

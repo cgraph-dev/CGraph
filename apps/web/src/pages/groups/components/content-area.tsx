@@ -9,6 +9,7 @@ import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ContentAreaProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProps) {
   // Has channel selected
@@ -33,7 +34,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
           >
             <motion.div
               animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              transition={loop(tweens.glacial)}
               className="relative mb-4 inline-block"
             >
               <HashtagIcon className="mx-auto h-16 w-16 text-primary-400" />
@@ -43,7 +44,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
                   scale: [1, 1.3, 1],
                   opacity: [0.5, 0, 0.5],
                 }}
-                transition={{ duration: 3, repeat: Infinity }}
+                transition={loop(tweens.decorative)}
               />
             </motion.div>
             <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-xl font-semibold text-transparent">
@@ -92,7 +93,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
           ))}
           <motion.div
             animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.05, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            transition={loop(tweens.glacial)}
             className="relative mb-4 inline-block"
           >
             <UserGroupIcon className="mx-auto h-20 w-20 text-primary-400" />
@@ -102,7 +103,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
                 scale: [1, 1.3, 1],
                 opacity: [0.5, 0, 0.5],
               }}
-              transition={{ duration: 3, repeat: Infinity }}
+              transition={loop(tweens.decorative)}
             />
           </motion.div>
           <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">

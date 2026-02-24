@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { springs, tweens, staggerConfigs, entranceVariants } from '../presets';
+import { springs, tweens, staggerConfigs, entranceVariants, loop } from '../presets';
 import { chatBubbleAnimations } from '../chat-bubbles';
 import {
   hoverAnimations,
@@ -67,9 +67,15 @@ describe('tweens', () => {
     expect(tweens.standard.duration).toBe(0.3);
   });
 
-  it('should define ambient as infinite repeat', () => {
-    expect(tweens.ambient.repeat).toBe(Infinity);
+  it('should define ambient with 2s duration and linear ease', () => {
+    expect(tweens.ambient.duration).toBe(2);
     expect(tweens.ambient.ease).toBe('linear');
+  });
+
+  it('should create looping transition via loop()', () => {
+    const looped = loop(tweens.ambient);
+    expect(looped.repeat).toBe(Infinity);
+    expect(looped.duration).toBe(2);
   });
 });
 

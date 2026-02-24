@@ -22,6 +22,7 @@ import type { TabId } from './types';
 import { CHAT_BUBBLE_TABS, CHAT_BUBBLE_PRESETS_UI } from './constants';
 import { ColorsTab, ShapeTab, EffectsTab, AnimationsTab, LayoutTab } from './tabs';
 import { BackgroundsTab } from './backgrounds-tab';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * Chat Bubble Customization Settings
@@ -254,7 +255,7 @@ export default function ChatBubbleSettings() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         >
           {activeTab === 'colors' && <ColorsTab style={style} updateStyle={updateStyle} />}
           {activeTab === 'shape' && <ShapeTab style={style} updateStyle={updateStyle} />}

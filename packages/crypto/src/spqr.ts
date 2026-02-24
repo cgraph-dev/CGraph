@@ -66,6 +66,7 @@ export interface SPQRReceiveResult {
 // SPQR ENGINE
 // =============================================================================
 
+/** Implements the Symmetric Post-Quantum Ratchet (SPQR) for deriving per-message post-quantum keys. */
 export class SPQREngine {
   private scka: SCKAEngine;
   private Ns: number = 0;

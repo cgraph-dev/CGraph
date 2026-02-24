@@ -19,6 +19,7 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
+import { tweens, springs } from '@/lib/animation-presets';
 
 interface QuickSwitcherItem {
   id: string;
@@ -185,7 +186,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                     key={item.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03, duration: 0.2 }}
+                    transition={{ ...tweens.fast, delay: index * 0.03 }}
                     onClick={() => handleSelect(item)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import type { BannerVariantProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 type BarBannerProps = Pick<
   BannerVariantProps,
@@ -45,7 +46,7 @@ export function BarBanner({
       <div className="flex items-center gap-4">
         <motion.div
           animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
+          transition={loop(tweens.ambient)}
         >
           <SparklesIcon className="h-6 w-6 text-white" />
         </motion.div>

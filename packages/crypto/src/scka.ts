@@ -130,6 +130,7 @@ async function hmacSHA256(key: Uint8Array, data: Uint8Array): Promise<Uint8Array
 // SCKA ENGINE
 // =============================================================================
 
+/** Implements the Symmetric-key Continuous Key Agreement (SCKA) ratchet for post-quantum chain key derivation. */
 export class SCKAEngine {
   private state: SCKAState;
 

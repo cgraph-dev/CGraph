@@ -15,6 +15,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { logger } from '@/lib/logger';
 import type { IncomingCall } from '@/modules/calls/store';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface IncomingCallModalProps {
   call: IncomingCall;
@@ -154,7 +155,7 @@ export function IncomingCallModal({ call, onAccept, onDecline }: IncomingCallMod
                 '0 0 20px rgba(34, 197, 94, 0.5)',
               ],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
             className="group flex flex-1 items-center justify-center gap-3 rounded-2xl bg-green-500 py-4 font-semibold text-white shadow-lg transition-all hover:bg-green-600 hover:shadow-xl"
           >
             <CheckIcon className="h-6 w-6" />

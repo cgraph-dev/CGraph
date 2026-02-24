@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface WelcomePanelProps {
   friendsCount: number;
@@ -20,7 +21,7 @@ export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePane
         className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={tweens.smooth}
       >
         {/* Ambient particles */}
         {[...Array(10)].map((_, i) => (
@@ -62,7 +63,7 @@ export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePane
                 opacity: [0.5, 0, 0.5],
                 rotate: [0, 180, 360],
               }}
-              transition={{ duration: 4, repeat: Infinity }}
+              transition={loop(tweens.glacial)}
             />
             <motion.div
               className="absolute -inset-4 rounded-3xl border border-primary-400/20"
@@ -70,7 +71,7 @@ export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePane
                 scale: [1, 1.5, 1],
                 opacity: [0.3, 0, 0.3],
               }}
-              transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+              transition={{ ...loop(tweens.decorative), delay: 0.5 }}
             />
           </div>
 
@@ -85,7 +86,7 @@ export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePane
           <motion.div
             className="mt-6 inline-flex items-center gap-2 text-sm text-gray-500"
             animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           >
             <ShieldCheckIcon className="h-4 w-4 text-primary-500" />
             Your friendships are private

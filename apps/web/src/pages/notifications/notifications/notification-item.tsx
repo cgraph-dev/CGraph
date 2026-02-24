@@ -15,6 +15,7 @@ import { NotificationActions } from '@/shared/components/notification-actions';
 import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constants';
 import type { NotificationItemProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function NotificationItem({
   notification,
@@ -45,7 +46,7 @@ export function NotificationItem({
         {/* Hover gradient glow */}
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
 
         <div className="relative z-10 flex items-start gap-4 p-4">
@@ -143,7 +144,7 @@ export function NotificationItem({
                         '0 0 0 6px rgba(16, 185, 129, 0)',
                       ],
                     }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    transition={loop(tweens.ambient)}
                   />
                 </motion.div>
               )}

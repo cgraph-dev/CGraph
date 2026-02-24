@@ -26,10 +26,12 @@ export interface ProtocolAddress {
   readonly deviceId: number;
 }
 
+/** Serializes a ProtocolAddress to a "name.deviceId" string. */
 export function addressToString(addr: ProtocolAddress): string {
   return `${addr.name}.${addr.deviceId}`;
 }
 
+/** Parses a "name.deviceId" string into a ProtocolAddress. */
 export function addressFromString(s: string): ProtocolAddress {
   const dot = s.lastIndexOf('.');
   if (dot === -1) throw new Error(`Invalid address: ${s}`);
@@ -174,12 +176,15 @@ export class InMemoryProtocolStore implements ProtocolStore {
   }
 
   // --- IdentityKeyStore ---
+  /** Returns the local identity key pair. */
   async getIdentityKeyPair() {
     return this.identityKeyPair;
   }
+  /** Returns the local registration identifier. */
   async getLocalRegistrationId() {
     return this.registrationId;
   }
+  /** Stores a remote identity key; returns true if it replaced a different existing key. */
   async saveIdentity(address: ProtocolAddress, identityKey: Uint8Array): Promise<boolean> {
     const key = addressToString(address);
     const existing = this.identities.get(key);
@@ -189,26 +194,32 @@ export class InMemoryProtocolStore implements ProtocolStore {
     }
     return false;
   }
+  /** Checks whether the given identity key is trusted using a trust-on-first-use (TOFU) policy. */
   async isTrustedIdentity(address: ProtocolAddress, identityKey: Uint8Array): Promise<boolean> {
     const key = addressToString(address);
     const existing = this.identities.get(key);
     if (!existing) return true; // Trust on first use (TOFU)
     return this.bytesEqual(existing, identityKey);
   }
+  /** Retrieves a stored remote identity key for the given address. */
   async getIdentity(address: ProtocolAddress): Promise<Uint8Array | null> {
     return this.identities.get(addressToString(address)) ?? null;
   }
 
   // --- SessionStore ---
+  /** Loads a session record for the given address. */
   async loadSession(address: ProtocolAddress): Promise<SessionRecord | null> {
     return this.sessions.get(addressToString(address)) ?? null;
   }
+  /** Stores a session record for the given address. */
   async storeSession(address: ProtocolAddress, record: SessionRecord): Promise<void> {
     this.sessions.set(addressToString(address), record);
   }
+  /** Removes the session record for the given address. */
   async removeSession(address: ProtocolAddress): Promise<void> {
     this.sessions.delete(addressToString(address));
   }
+  /** Removes all session records for a given user name. */
   async removeAllSessions(name: string): Promise<void> {
     for (const key of this.sessions.keys()) {
       if (key.startsWith(`${name}.`)) {
@@ -216,6 +227,7 @@ export class InMemoryProtocolStore implements ProtocolStore {
       }
     }
   }
+  /** Returns device IDs (excluding device 1) that have active sessions for the given user. */
   async getSubDeviceSessions(name: string): Promise<number[]> {
     const devices: number[] = [];
     for (const key of this.sessions.keys()) {
@@ -228,46 +240,58 @@ export class InMemoryProtocolStore implements ProtocolStore {
   }
 
   // --- PreKeyStore ---
+  /** Loads a one-time pre-key by ID. */
   async loadPreKey(id: number): Promise<PreKeyRecord | null> {
     return this.preKeys.get(id) ?? null;
   }
+  /** Stores a one-time pre-key by ID. */
   async storePreKey(id: number, record: PreKeyRecord): Promise<void> {
     this.preKeys.set(id, record);
   }
+  /** Removes a one-time pre-key by ID. */
   async removePreKey(id: number): Promise<void> {
     this.preKeys.delete(id);
   }
+  /** Returns all stored pre-key IDs. */
   async getAllPreKeyIds(): Promise<number[]> {
     return Array.from(this.preKeys.keys());
   }
 
   // --- SignedPreKeyStore ---
+  /** Loads a signed pre-key by ID. */
   async loadSignedPreKey(id: number): Promise<SignedPreKeyRecord | null> {
     return this.signedPreKeys.get(id) ?? null;
   }
+  /** Stores a signed pre-key by ID. */
   async storeSignedPreKey(id: number, record: SignedPreKeyRecord): Promise<void> {
     this.signedPreKeys.set(id, record);
   }
+  /** Removes a signed pre-key by ID. */
   async removeSignedPreKey(id: number): Promise<void> {
     this.signedPreKeys.delete(id);
   }
 
   // --- KyberPreKeyStore ---
+  /** Loads a KEM (ML-KEM-768) pre-key by ID. */
   async loadKyberPreKey(id: number): Promise<KyberPreKeyRecord | null> {
     return this.kyberPreKeys.get(id) ?? null;
   }
+  /** Stores a KEM pre-key by ID. */
   async storeKyberPreKey(id: number, record: KyberPreKeyRecord): Promise<void> {
     this.kyberPreKeys.set(id, record);
   }
+  /** Removes a KEM pre-key by ID. */
   async removeKyberPreKey(id: number): Promise<void> {
     this.kyberPreKeys.delete(id);
   }
+  /** Marks a KEM pre-key as used, deleting it unless it is a last-resort key. */
   async markKyberPreKeyUsed(id: number): Promise<void> {
     const record = this.kyberPreKeys.get(id);
     if (record && !record.isLastResort) {
       this.kyberPreKeys.delete(id);
     }
   }
+  /** Returns the last-resort KEM pre-key, if one exists. */
   async getLastResortKyberPreKey(): Promise<KyberPreKeyRecord | null> {
     for (const record of this.kyberPreKeys.values()) {
       if (record.isLastResort) return record;

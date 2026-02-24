@@ -17,6 +17,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 import { getVotePercentage, formatPollTimeRemaining } from './poll-widget.utils';
+import { tweens } from '@/lib/animation-presets';
 
 const logger = createLogger('PollWidget');
 
@@ -153,7 +154,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                    transition={tweens.emphatic}
                     className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-purple-500/20"
                   />
 

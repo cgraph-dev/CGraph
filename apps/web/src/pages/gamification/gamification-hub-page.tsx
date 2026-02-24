@@ -29,6 +29,7 @@ import { useGamificationHub } from '@/pages/gamification/useGamificationHub';
 import { StatCard } from '@/pages/gamification/components/stat-card';
 import { QuickLink } from '@/pages/gamification/components/quick-link';
 import { RecentAchievements } from '@/pages/gamification/components/recent-achievements';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function GamificationHubPage() {
   const {
@@ -78,7 +79,7 @@ export default function GamificationHubPage() {
           >
             <motion.div
               animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
+              transition={loop(tweens.glacial)}
               className="mb-4 inline-block"
             >
               <SparklesIcon className="h-12 w-12 text-yellow-400" />

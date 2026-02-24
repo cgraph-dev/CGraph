@@ -25,6 +25,7 @@ import type { AnimatedMessageWrapperProps } from './animated-message-wrapper.typ
 import { SPEED_MULTIPLIERS } from './animated-message-wrapper.types';
 import { messageVariants } from './animated-message-wrapper.constants';
 import { MessageParticles } from './message-particles';
+import { tweens } from '@/lib/animation-presets';
 
 export type { AnimatedMessageWrapperProps } from './animated-message-wrapper.types';
 
@@ -196,7 +197,7 @@ export function AnimatedMessageWrapper({
               className="pointer-events-none absolute inset-0 rounded-2xl bg-red-500/25"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.6, 0.3] }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={tweens.standard}
             />
           )}
 
@@ -206,7 +207,7 @@ export function AnimatedMessageWrapper({
               className="pointer-events-none absolute inset-0 rounded-2xl bg-yellow-400/20"
               initial={{ opacity: 0.6 }}
               animate={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
+              transition={tweens.verySlow}
             />
           )}
 

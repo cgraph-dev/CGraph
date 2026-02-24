@@ -9,6 +9,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { BackgroundCategory, ChatBackground } from '@/data/chatBackgrounds';
 import type { BackgroundsTabProps, CategoryColors } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 // Category colors for backgrounds
 const CATEGORY_COLORS: CategoryColors = {
@@ -101,7 +102,7 @@ export function BackgroundsTab({
               )}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              transition={tweens.standard}
             >
               {/* Animated effect overlay */}
               {backgrounds.find((bg) => bg.id === selectedBackground)?.animation && (

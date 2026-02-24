@@ -7,6 +7,7 @@ import { ReactNode, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloButtonProps {
   children: ReactNode;
@@ -106,7 +107,7 @@ export function HoloButton({
             className="h-5 w-5 rounded-full border-2"
             style={{ borderColor: `${colors.text} transparent ${colors.text} transparent` }}
             animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.dramatic)}
           />
         </motion.div>
       )}

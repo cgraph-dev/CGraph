@@ -33,6 +33,7 @@ import { CATEGORIES, RARITY_COLORS, RARITY_ORDER } from './constants';
 import { AchievementCard } from './achievement-card';
 import { AchievementDetailModal } from './achievement-detail-modal';
 import { useAchievementStats } from './useAchievementStats';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function AchievementsPage() {
   const { achievements, fetchAchievements, isLoadingAchievements } = useGamificationStore();
@@ -96,7 +97,7 @@ export default function AchievementsPage() {
             <div className="flex items-center gap-3">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={loop(tweens.ambient)}
               >
                 <TrophyIcon className="h-8 w-8 text-yellow-400" />
               </motion.div>
@@ -209,7 +210,7 @@ export default function AchievementsPage() {
             <motion.div
               className="h-10 w-10 rounded-full border-2 border-primary-500 border-t-transparent"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
             />
           </div>
         ) : filteredAchievements.length === 0 ? (

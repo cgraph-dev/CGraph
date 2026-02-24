@@ -8,6 +8,7 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { springs } from '@/lib/animations/transitions';
 import { getAvatarBorderId } from '@/lib/utils';
 import type { UserInfo } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ProfileSectionProps {
   user: UserInfo;
@@ -63,7 +64,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               animate={{
                 boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 8px rgba(34, 197, 94, 0)'],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
             />
           )}
         </div>
@@ -114,7 +115,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
             initial={{ width: 0 }}
             animate={{ width: `${xpProgress}%` }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ ...tweens.slow, delay: 0.4 }}
           />
         </div>
       </motion.div>

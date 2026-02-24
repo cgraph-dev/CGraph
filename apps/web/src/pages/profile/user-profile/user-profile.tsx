@@ -36,6 +36,7 @@ import { FriendshipActions } from './friendship-actions';
 import { ProfileAbout } from './profile-about';
 import { useProfileData } from './hooks/useProfileData';
 import { useProfileActions } from './hooks/useProfileActions';
+import { tweens } from '@/lib/animation-presets';
 
 export function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
@@ -98,7 +99,7 @@ export function UserProfile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ ...tweens.smooth, delay: 0.2 }}
           className="flex items-end gap-6"
         >
           <ProfileAvatar
@@ -153,7 +154,7 @@ export function UserProfile() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ ...tweens.smooth, delay: 0.4 }}
           className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3"
         >
           <div className="space-y-6 md:col-span-2">

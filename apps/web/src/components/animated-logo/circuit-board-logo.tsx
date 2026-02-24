@@ -22,6 +22,7 @@ import { GLetterTraces } from './svg/g-letter-traces';
 import { CircuitNodes } from './svg/circuit-nodes';
 import { CentralHub } from './svg/central-hub';
 import { DataFlowParticles } from './svg/data-flow-particles';
+import { tweens } from '@/lib/animation-presets';
 
 export function CircuitBoardLogo({
   logoSize,
@@ -63,7 +64,7 @@ export function CircuitBoardLogo({
         strokeWidth="1"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={shouldAnimate ? { pathLength: 1, opacity: 0.2 } : { pathLength: 1, opacity: 0.15 }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}
+        transition={tweens.verySlow}
       />
 
       <CLetterTraces ids={ids} shouldAnimate={shouldAnimate} />

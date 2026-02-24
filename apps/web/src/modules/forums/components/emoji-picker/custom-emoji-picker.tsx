@@ -29,6 +29,7 @@ import {
   CustomEmojisGrid,
   UnicodeEmojisGrid,
 } from './grids';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * Main CustomEmojiPicker component
@@ -119,7 +120,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
         initial={{ opacity: 0, scale: 0.95, y: position === 'top' ? 10 : -10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.15 }}
+        transition={tweens.quickFade}
         className={`absolute z-50 ${positionStyles[position]} w-80 rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 ${className}`}
         style={{ maxHeight }}
       >

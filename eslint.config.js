@@ -228,7 +228,6 @@ export default [
     files: [
       'apps/web/src/**/*.{ts,tsx}',
       'apps/mobile/src/**/*.{ts,tsx}',
-      'packages/**/*.{ts,tsx}',
     ],
     ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**', '**/mocks/**'],
     plugins: {
@@ -249,6 +248,32 @@ export default [
         },
       ],
       'jsdoc/require-description': ['warn', { contexts: ['FunctionDeclaration'] }],
+      'jsdoc/check-tag-names': ['error', { definedTags: ['refactored'] }],
+      'jsdoc/check-types': 'error',
+    },
+  },
+  // JSDoc enforcement — ERROR for shared packages (all backfilled)
+  {
+    files: ['packages/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**', '**/mocks/**'],
+    plugins: {
+      jsdoc,
+    },
+    rules: {
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            MethodDefinition: true,
+            ClassDeclaration: true,
+          },
+          contexts: ['ExportNamedDeclaration > FunctionDeclaration'],
+          checkConstructors: false,
+        },
+      ],
+      'jsdoc/require-description': ['error', { contexts: ['FunctionDeclaration'] }],
       'jsdoc/check-tag-names': ['error', { definedTags: ['refactored'] }],
       'jsdoc/check-types': 'error',
     },

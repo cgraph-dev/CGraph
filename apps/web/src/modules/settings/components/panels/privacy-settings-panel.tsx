@@ -9,6 +9,7 @@ import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 import { PROFILE_FIELD_VISIBILITY_OPTIONS } from './privacy-field-config';
 import { PrivacyToggle } from './privacy-toggle';
+import { tweens } from '@/lib/animation-presets';
 
 export function PrivacySettingsPanel() {
   const { settings, updatePrivacySettings, isSaving } = useSettingsStore();
@@ -28,7 +29,7 @@ export function PrivacySettingsPanel() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
     >
       <h1 className="mb-6 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
         Privacy

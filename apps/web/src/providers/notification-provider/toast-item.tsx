@@ -12,6 +12,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { NOTIFICATION_ICONS, NOTIFICATION_COLORS, DEFAULT_NOTIFICATION_COLOR } from './constants';
 import type { ToastItemProps, LevelUpNotification, QuestNotification } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ToastItem({ notification, index: _index, onDismiss }: ToastItemProps) {
   const [progress, setProgress] = useState(100);
@@ -71,7 +72,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
                 scale: [1, 1.2, 1],
                 rotate: [0, 10, -10, 0],
               }}
-              transition={{ duration: 1, repeat: Infinity }}
+              transition={loop(tweens.slow)}
             >
               <span className="text-2xl font-bold text-white">{levelNotif.newLevel}</span>
             </motion.div>
@@ -140,7 +141,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
             <motion.div
               className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-emerald-500"
               animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
+              transition={loop(tweens.slow)}
             >
               <GiftIcon className="h-6 w-6 text-white" />
             </motion.div>

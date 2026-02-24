@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Achievement } from '@/modules/gamification/store';
 import type { RarityColorConfig } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface BadgeTooltipProps {
   achievement: Achievement;
@@ -77,7 +78,7 @@ export function BadgeTooltip({ achievement, colors, isVisible }: BadgeTooltipPro
                     animate={{
                       width: `${(achievement.progress / achievement.maxProgress) * 100}%`,
                     }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    transition={tweens.smooth}
                   />
                 </div>
               </div>

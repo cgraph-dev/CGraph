@@ -8,6 +8,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read';
 
@@ -54,7 +55,7 @@ function DoubleCheck({ color }: { color: string }) {
         stroke={color}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.25 }}
+        transition={tweens.brisk}
       />
       {/* Second check offset */}
       <motion.path
@@ -62,7 +63,7 @@ function DoubleCheck({ color }: { color: string }) {
         stroke={color}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.25, delay: 0.15 }}
+        transition={{ ...tweens.brisk, delay: 0.15 }}
       />
     </motion.svg>
   );
@@ -77,7 +78,7 @@ export function MessageStatusIndicator({ status }: MessageStatusIndicatorProps) 
             key="sending"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
+            transition={loop(tweens.slow)}
             className="text-[10px] text-gray-400"
           >
             ⏳

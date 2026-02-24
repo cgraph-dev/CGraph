@@ -51,6 +51,7 @@ export interface ConversationChannelEvents {
   read_receipt: { user_id: string; last_read_at: string; last_read_message_id: string };
 }
 
+/** Manages a Phoenix channel subscription for a 1:1 conversation, including messaging, typing indicators, and presence. */
 export class ConversationChannel {
   private channel: Channel | null = null;
   private presence: Presence | null = null;

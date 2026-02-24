@@ -20,6 +20,7 @@ import {
 import { BellIcon as BellSolidIcon } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
+import { tweens } from '@/lib/animation-presets';
 
 type NotificationLevel = 'all' | 'mentions' | 'none';
 type TargetType = 'forum' | 'board' | 'thread';
@@ -152,7 +153,7 @@ export function SubscribeButton({
             initial={{ opacity: 0, y: -4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+            transition={tweens.quickFade}
             className="absolute right-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-xl border border-white/10 bg-dark-800 shadow-2xl"
           >
             {LEVELS.map((level) => {

@@ -6,6 +6,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloAvatarProps {
   src?: string;
@@ -87,7 +88,7 @@ export function HoloAvatar({
             className="pointer-events-none absolute inset-0 rounded-full"
             style={{ border: `1px solid ${theme.accent}` }}
             animate={{ scale: [1, 1.15], opacity: [0.6, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+            transition={loop(tweens.ambient)}
           />
         )}
       </motion.div>
@@ -102,7 +103,7 @@ export function HoloAvatar({
             border: `2px solid ${theme.background}`,
           }}
           animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       )}
     </div>

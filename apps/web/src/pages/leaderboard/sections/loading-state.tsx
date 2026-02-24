@@ -6,6 +6,7 @@
 import { motion } from 'framer-motion';
 
 import type { LoadingStateProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function LoadingState({ currentCategory }: LoadingStateProps) {
   return (
@@ -14,7 +15,7 @@ export function LoadingState({ currentCategory }: LoadingStateProps) {
         className={`h-16 w-16 rounded-full border-4 border-t-transparent bg-gradient-to-r ${currentCategory.gradient}`}
         style={{ borderColor: 'currentColor', borderTopColor: 'transparent' }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        transition={loop(tweens.slow)}
       />
       <p className="mt-4 text-gray-400">Loading rankings...</p>
     </div>

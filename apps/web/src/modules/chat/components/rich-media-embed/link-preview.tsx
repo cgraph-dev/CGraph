@@ -8,6 +8,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { springs } from '@/lib/animation-presets/presets';
 import type { LinkMetadata } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface LinkPreviewProps {
   embed: LinkMetadata;
@@ -35,7 +36,7 @@ export default function LinkPreview({ embed }: LinkPreviewProps) {
             className="relative h-48 overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
+            transition={{ ...tweens.standard, delay: 0.2 }}
           >
             <img
               src={embed.image}

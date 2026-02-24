@@ -22,6 +22,7 @@ const resultItem = {
 import { GlassCard } from '@/shared/components/ui';
 import { SearchResultItem } from './search-result-item';
 import type { SearchResult } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface SearchResultsProps {
   isOpen: boolean;
@@ -94,7 +95,7 @@ function LoadingState({ primaryColor }: { primaryColor: string }) {
     <div className="p-4 text-center text-gray-400">
       <motion.div
         animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        transition={loop(tweens.slow)}
         className="mx-auto h-6 w-6 rounded-full border-2 border-t-transparent"
         style={{ borderColor: primaryColor, borderTopColor: 'transparent' }}
       />

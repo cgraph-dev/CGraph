@@ -9,6 +9,7 @@ import type { CoinPackage } from '@/modules/premium/store/types';
 import { DEFAULT_PACKAGES, CoinIcon } from './coin-shop-data';
 import { useCoinShop } from './useCoinShop';
 import { CoinPackageCard } from './coin-package-card';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface CoinShopWidgetProps {
   variant?: 'default' | 'compact' | 'inline';
@@ -107,7 +108,7 @@ export function CoinShopWidget({
             <div className="flex items-center gap-3">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
+                transition={loop(tweens.ambient)}
                 className="rounded-xl bg-amber-500/20 p-3"
               >
                 <CoinIcon className="h-8 w-8" />

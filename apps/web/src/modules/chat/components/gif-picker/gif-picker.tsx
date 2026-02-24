@@ -23,6 +23,7 @@ import { CategoryButton } from './category-button';
 import { EmptyState } from './empty-state';
 import { useGifStorage } from './useGifStorage';
 import type { GifPickerProps, GifResult } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 const logger = createLogger('GifPicker');
 
@@ -227,7 +228,7 @@ export function GifPicker({ onSelect, onClose, isOpen, className }: GifPickerPro
             <div className="flex h-full items-center justify-center">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.slow)}
                 className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
               />
             </div>

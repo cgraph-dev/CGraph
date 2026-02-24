@@ -64,6 +64,7 @@ const MUTATING_METHODS = ['post', 'put', 'patch', 'delete'];
 
 const defaultRetryStatuses = [429, 500, 502, 503, 504];
 
+/** Generates a unique idempotency key for deduplicating mutating HTTP requests. */
 export function createIdempotencyKey(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -73,6 +74,7 @@ export function createIdempotencyKey(): string {
   return `${now}-${rand}`;
 }
 
+/** Creates a configured Axios instance with auth token refresh, retry logic, and idempotency support. */
 export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   const {
     baseURL,
@@ -248,6 +250,7 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   return instance;
 }
 
+/** Validates an Axios response body against a Zod schema and returns the parsed result. */
 export async function withZod<T>(
   promise: Promise<AxiosResponse<unknown>>,
   schema: ZodSchema<T>
@@ -256,6 +259,7 @@ export async function withZod<T>(
   return schema.parse(response.data ?? null);
 }
 
+/** Extracts a structured error object (message, code, status) from an Axios error or generic Error. */
 export function extractApiError(error: unknown): {
   message: string;
   code?: string;

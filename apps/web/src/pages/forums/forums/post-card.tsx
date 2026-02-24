@@ -25,6 +25,7 @@ import ThreadPrefix from '@/modules/forums/components/thread-prefix';
 import ThreadRating from '@/modules/forums/components/thread-rating';
 import { getVoteScoreClass } from './constants';
 import type { PostCardProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export function PostCard({ post, onVote }: PostCardProps) {
   return (
@@ -39,7 +40,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
         {/* Hover gradient glow */}
         <motion.div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
 
         <div className="relative z-10 flex">

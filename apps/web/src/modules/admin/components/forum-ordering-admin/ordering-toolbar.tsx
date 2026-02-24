@@ -12,6 +12,7 @@ import {
   ArrowUturnRightIcon,
 } from '@heroicons/react/24/outline';
 import type { OrderingToolbarProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export const OrderingToolbar = memo(function OrderingToolbar({
   hasChanges,
@@ -79,7 +80,7 @@ export const OrderingToolbar = memo(function OrderingToolbar({
             <>
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.slow)}
                 className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
               />
               Saving...

@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
+import { tweens } from '@/lib/animation-presets';
 
 export function SecuritySettingsPanel() {
   const { user } = useAuthStore();
@@ -14,7 +15,7 @@ export function SecuritySettingsPanel() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
     >
       <h1 className="mb-6 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
         Security

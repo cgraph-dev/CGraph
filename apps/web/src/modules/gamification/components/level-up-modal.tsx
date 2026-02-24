@@ -12,6 +12,7 @@ import {
   RewardsUnlockedList,
   useLevelUpEffects,
 } from './level-up-modal/index';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Level Up Modal Component
@@ -87,7 +88,7 @@ export default function LevelUpModal({
                   opacity: [0.3, 0.6, 0.3],
                   scale: [1, 1.1, 1],
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={loop(tweens.ambient)}
                 style={{ filter: 'blur(40px)' }}
               />
 
@@ -104,7 +105,7 @@ export default function LevelUpModal({
                       scale: [1, 1.2, 1],
                       rotate: [0, 5, -5, 0],
                     }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
+                    transition={{ ...tweens.emphatic, delay: 0.3 }}
                   >
                     <SparklesIcon className="mx-auto mb-4 h-16 w-16 text-primary-400" />
                   </motion.div>
@@ -156,7 +157,7 @@ export default function LevelUpModal({
                     animate={{
                       x: ['-100%', '200%'],
                     }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    transition={loop(tweens.verySlow)}
                   />
                   <span className="relative z-10">Continue</span>
                 </motion.button>

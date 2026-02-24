@@ -8,6 +8,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ModerationQueueItem } from '@/modules/moderation/store';
 import { QueueItemCard } from './queue-item-card';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface QueueListProps {
   items: ModerationQueueItem[];
@@ -33,7 +34,7 @@ export function QueueList({
       <div className="flex h-64 items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={loop(tweens.slow)}
           className="h-10 w-10 rounded-full border-2 border-primary-500 border-t-transparent"
         />
       </div>

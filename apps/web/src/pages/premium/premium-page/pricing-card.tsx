@@ -9,6 +9,7 @@ import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { PremiumTier, BillingInterval } from './types';
 import { getPrice, getYearlyTotal } from './utils';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface PricingCardProps {
   tier: PremiumTier;
@@ -143,7 +144,7 @@ export function PricingCard({
             <motion.div
               className="mx-auto h-5 w-5 rounded-full border-2 border-white border-t-transparent"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
             />
           ) : isCurrentPlan ? (
             'Current Plan'

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicInputProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * HolographicInput Component
@@ -69,7 +70,7 @@ export function HolographicInput({
           width: isFocused ? '100%' : 0,
           x: '-50%',
         }}
-        transition={{ duration: 0.3 }}
+        transition={tweens.standard}
       />
     </motion.div>
   );

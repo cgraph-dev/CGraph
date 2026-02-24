@@ -15,6 +15,7 @@ import {
 } from '@/modules/settings/store/customization';
 import { ChatBubble } from './chat-bubble';
 import { ProfileCardPreview } from './profile-card-preview';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export const LivePreviewPanel = memo(function LivePreviewPanel() {
   // Get store states with shallow comparison
@@ -58,7 +59,7 @@ export const LivePreviewPanel = memo(function LivePreviewPanel() {
               <motion.div
                 className="h-2 w-2 rounded-full bg-yellow-400"
                 animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
+                transition={loop(tweens.smooth)}
               />
               <span className="text-[10px] text-yellow-400">Saving...</span>
             </motion.div>

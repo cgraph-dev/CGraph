@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import type { Message } from '@/modules/chat/store';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface GifMessageProps {
   message: Message;
@@ -105,7 +106,7 @@ export function GifMessage({
           >
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
               className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent"
             />
           </div>
@@ -124,7 +125,7 @@ export function GifMessage({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: isLoading ? 0 : 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={tweens.standard}
             className="group relative cursor-pointer overflow-hidden rounded-lg"
             onClick={handleClick}
             whileHover={{ scale: 1.02 }}

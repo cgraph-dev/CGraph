@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HoloBadgeProps } from '../types';
 import { getTheme } from '../presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function HoloBadge({
   children,
@@ -48,7 +49,7 @@ export function HoloBadge({
         boxShadow: `0 0 8px ${color}30`,
       }}
       animate={pulse ? { scale: [1, 1.05, 1] } : undefined}
-      transition={{ duration: 1.5, repeat: Infinity }}
+      transition={loop(tweens.verySlow)}
     >
       {children}
     </motion.span>

@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { type PostAttachment } from '@/modules/forums/store';
 import { GlassCard } from '@/shared/components/ui';
+import { tweens } from '@/lib/animation-presets';
 
 /* ─── helpers ─── */
 
@@ -140,7 +141,7 @@ export function UploadProgressList({ progress }: { progress: Record<string, numb
                     className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.3 }}
+                    transition={tweens.standard}
                   />
                 </div>
               </div>

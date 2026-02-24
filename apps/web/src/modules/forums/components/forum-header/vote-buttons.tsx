@@ -14,6 +14,7 @@ import {
 import { springs } from '@/lib/animation-presets/presets';
 import { formatNumber } from './utils';
 import type { VoteButtonsProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 const floatingIndicator = {
   initial: { opacity: 1, y: 0, scale: 0.8 },
@@ -68,7 +69,7 @@ export const VoteButtons = memo(function VoteButtons({
         }`}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={tweens.fast}
       >
         {formatNumber(score)}
       </motion.span>

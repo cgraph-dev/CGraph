@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ServerIconProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export function ServerIcon({ group, isActive }: ServerIconProps) {
   return (
@@ -56,7 +57,7 @@ export function ServerIcon({ group, isActive }: ServerIconProps) {
         {/* Hover glow */}
         <motion.div
           className="pointer-events-none absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 blur-lg group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
       </motion.div>
     </NavLink>

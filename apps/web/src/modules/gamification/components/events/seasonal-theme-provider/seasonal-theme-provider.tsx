@@ -9,6 +9,7 @@ import { SEASONAL_THEMES } from './constants';
 import { detectSeasonalTheme } from './utils';
 import { SeasonalThemeContext } from './hooks';
 import { Particle } from './particle';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * SeasonalThemeProvider Component
@@ -72,7 +73,7 @@ export default function SeasonalThemeProvider({
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.05 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              transition={tweens.slow}
               className="pointer-events-none fixed inset-0 z-0"
               style={{
                 background: `radial-gradient(ellipse at top, ${currentTheme.colors.primary}44 0%, transparent 50%)`,

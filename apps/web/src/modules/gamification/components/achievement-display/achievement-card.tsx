@@ -12,6 +12,7 @@ import {
 import { GlassCard } from '@/shared/components/ui';
 import { RARITY_COLORS, RARITY_GRADIENTS } from './constants';
 import type { Achievement } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -50,7 +51,7 @@ export function AchievementCard({
           <motion.div
             className={`absolute inset-0 bg-gradient-to-br ${RARITY_GRADIENTS[achievement.rarity]} opacity-10`}
             animate={{ opacity: [0.1, 0.2, 0.1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           />
         )}
 
@@ -113,7 +114,7 @@ export function AchievementCard({
                   style={{ backgroundColor: RARITY_COLORS[achievement.rarity] }}
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5 }}
+                  transition={tweens.smooth}
                 />
               </div>
             </div>

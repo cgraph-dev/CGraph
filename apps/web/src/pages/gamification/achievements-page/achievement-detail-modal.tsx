@@ -13,6 +13,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { Achievement } from './types';
 import { RARITY_COLORS } from './constants';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface AchievementDetailModalProps {
   achievement: Achievement | null;
@@ -42,7 +43,7 @@ export function AchievementDetailModal({ achievement, onClose }: AchievementDeta
             <motion.div
               className="mb-4 text-6xl"
               animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
             >
               {achievement.icon}
             </motion.div>

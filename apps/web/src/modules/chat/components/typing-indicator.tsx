@@ -30,7 +30,7 @@ function TypingIndicatorComponent({
       initial={{ opacity: 0, y: 10, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.9 }}
-      transition={{ duration: 0.3, type: 'spring' }}
+      transition={springs.default}
     >
       <div className="ml-4 inline-block">
         <GlassCard

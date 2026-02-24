@@ -11,6 +11,7 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import type { OverallStatus } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface OverallStatusBannerProps {
   status: OverallStatus;
@@ -38,7 +39,7 @@ export function OverallStatusBanner({ status, totalDuration }: OverallStatusBann
         {status === 'testing' && (
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.ambient)}
           >
             <ShieldCheckIcon className="h-6 w-6 text-primary-400" />
           </motion.div>

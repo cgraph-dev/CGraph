@@ -16,6 +16,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { QuestCardProps } from './types';
 import { getTimeLeft } from './utils';
 import ObjectiveItem from './objective-item';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function QuestCard({
   quest,
@@ -102,7 +103,7 @@ export default function QuestCard({
                 <motion.div
                   className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={loop(tweens.slow)}
                 />
               ) : (
                 <ClipboardDocumentListIcon className="h-4 w-4" />
@@ -126,7 +127,7 @@ export default function QuestCard({
                 <motion.div
                   className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={loop(tweens.slow)}
                 />
               ) : (
                 <GiftIcon className="h-4 w-4" />

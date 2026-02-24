@@ -18,6 +18,7 @@ import {
   getConversationOnlineStatus,
   formatMessageTime,
 } from './utils';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ConversationItem({
   conversation,
@@ -110,7 +111,7 @@ export function ConversationItem({
                   <motion.div
                     className="absolute inset-0 rounded-full border border-primary-400/60"
                     animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    transition={loop(tweens.ambient)}
                   />
                 </motion.div>
               )}

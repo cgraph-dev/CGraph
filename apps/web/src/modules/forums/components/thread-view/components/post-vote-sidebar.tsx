@@ -12,6 +12,7 @@ import {
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 interface PostVoteSidebarProps {
   score: number;
@@ -65,7 +66,7 @@ export function PostVoteSidebar({ score, myVote, onVote }: PostVoteSidebarProps)
         style={{ color: score > 0 ? '#22c55e' : score < 0 ? '#ef4444' : 'inherit' }}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={tweens.fast}
       >
         {score}
       </motion.span>

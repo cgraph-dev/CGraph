@@ -44,6 +44,7 @@ export interface ForumChannelEvents {
   vote_update: { post_id: string; vote_count: number };
 }
 
+/** Manages a Phoenix channel subscription for a forum, including threads, posts, and voting. */
 export class ForumChannel {
   private channel: Channel | null = null;
   private presence: Presence | null = null;

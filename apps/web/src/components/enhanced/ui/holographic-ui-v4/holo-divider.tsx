@@ -6,6 +6,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloDividerProps {
   preset?: HoloPreset;
@@ -46,7 +47,7 @@ export function HoloDivider({
           className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{ background: theme.primary, boxShadow: `0 0 8px ${theme.glow}` }}
           animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         />
       )}
     </div>

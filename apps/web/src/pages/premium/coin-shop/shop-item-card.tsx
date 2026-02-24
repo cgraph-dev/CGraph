@@ -7,6 +7,7 @@ import { CurrencyDollarIcon, CheckCircleIcon } from '@heroicons/react/24/outline
 import { GlassCard } from '@/shared/components/ui';
 import { RARITY_COLORS } from './constants';
 import type { ShopItem } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ShopItemCardProps {
   item: ShopItem;
@@ -100,7 +101,7 @@ export function ShopItemCard({
               <motion.div
                 className="mx-auto h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={loop(tweens.slow)}
               />
             ) : isOwned ? (
               'Owned'

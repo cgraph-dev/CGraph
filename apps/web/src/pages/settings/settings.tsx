@@ -39,6 +39,7 @@ import {
   BillingSettingsPanel,
   RedirectToCustomize,
 } from '@/modules/settings/components/panels';
+import { tweens } from '@/lib/animation-presets';
 
 // Reserved for extended settings - mark as used to prevent tree-shaking removal
 const _extendedSettingsComponents = {
@@ -131,7 +132,7 @@ export default function Settings() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={tweens.moderate}
           className="relative z-10"
         >
           <h2 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-bold text-transparent">
@@ -213,7 +214,7 @@ export default function Settings() {
           className="max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ ...tweens.moderate, delay: 0.1 }}
         >
           <AnimatePresence mode="wait">
             {section === 'account' && <AccountSettings key="account" />}

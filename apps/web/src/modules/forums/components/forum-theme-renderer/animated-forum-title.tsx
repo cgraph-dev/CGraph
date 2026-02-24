@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { AnimatedForumTitleProps } from './types';
 import { DEFAULT_COLORS } from './constants';
+import { tweens } from '@/lib/animation-presets';
 
 export const AnimatedForumTitle = memo(function AnimatedForumTitle({
   title,
@@ -116,7 +117,7 @@ export const AnimatedForumTitle = memo(function AnimatedForumTitle({
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.3 }}
+            transition={{ ...tweens.standard, delay: i * 0.05 }}
             style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
           >
             {char === ' ' ? '\u00A0' : char}

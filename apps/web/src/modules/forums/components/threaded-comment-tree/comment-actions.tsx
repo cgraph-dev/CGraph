@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets/presets';
 import {
+import { tweens, springs } from '@/lib/animation-presets';
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
@@ -106,7 +107,7 @@ export function CommentActions({
               initial={{ opacity: 1, y: 0, scale: 0.8 }}
               animate={{ opacity: 0, y: -20, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' as const }}
+              transition={tweens.emphatic}
               className={`pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 text-xs font-bold ${
                 voteAnim === '+1' ? 'text-green-400' : 'text-red-400'
               }`}

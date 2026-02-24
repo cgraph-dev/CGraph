@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicTextProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * HolographicText Component
@@ -51,7 +52,7 @@ export function HolographicText({
             }
           : undefined
       }
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+      transition={loop(tweens.ambient)}
     >
       {children}
     </motion.span>

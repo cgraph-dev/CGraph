@@ -29,6 +29,7 @@ import { BordersSection, TitlesSection, BadgesSection, LayoutsSection } from './
 import { useIdentityCustomization, type SectionId } from './useIdentityCustomization';
 import { SearchFilterBar } from './search-filter-bar';
 import { SaveButton } from './save-button';
+import { tweens } from '@/lib/animation-presets';
 
 const SECTION_TABS: { id: SectionId; label: string; count: number }[] = [
   { id: 'borders', label: 'Avatar Borders', count: MOCK_BORDERS.length },
@@ -98,7 +99,7 @@ export default function IdentityCustomization() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
+          transition={tweens.fast}
         >
           {activeSection === 'borders' && (
             <BordersSection

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
+import { tweens } from '@/lib/animation-presets';
 
 export function NotificationSettingsPanel() {
   const { settings, updateNotificationSettings, isSaving, fetchSettings } = useSettingsStore();
@@ -107,7 +108,7 @@ export function NotificationSettingsPanel() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      transition={tweens.standard}
     >
       <h1 className="mb-6 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
         Notifications

@@ -7,6 +7,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface HoloTextProps {
   children: ReactNode;
@@ -70,7 +71,7 @@ export function HoloText({
             }
           : undefined
       }
-      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+      transition={loop(tweens.ambientSlow)}
     >
       {children}
     </MotionComponent>

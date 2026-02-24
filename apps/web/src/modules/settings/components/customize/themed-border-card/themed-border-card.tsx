@@ -13,6 +13,7 @@ import { SIZE_CONFIG, PARTICLE_ANIMATION_TYPES } from './constants';
 import { getBorderAnimation } from './animations';
 import { CornerBrackets } from './corner-brackets';
 import { ParticleEffects } from './particle-effects';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export default function ThemedBorderCard({
   border,
@@ -109,7 +110,7 @@ export default function ThemedBorderCard({
         <motion.div
           className="absolute -left-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500"
           animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         >
           <SparklesIcon className="h-3 w-3 text-white" />
         </motion.div>

@@ -9,6 +9,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ChannelListProps } from './types';
 import { ChannelItem } from './channel-item';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ChannelList({
   activeGroup,
@@ -38,7 +39,7 @@ export function ChannelList({
           >
             <motion.div
               animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              transition={loop(tweens.glacial)}
             >
               <UserGroupIcon className="mx-auto mb-3 h-12 w-12 text-primary-400" />
             </motion.div>
@@ -67,7 +68,7 @@ export function ChannelList({
           <h2 className="truncate bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text font-semibold text-transparent">
             {activeGroup.name}
           </h2>
-          <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.3 }}>
+          <motion.div whileHover={{ rotate: 180 }} transition={tweens.standard}>
             <ChevronDownIcon className="h-4 w-4 text-primary-400" />
           </motion.div>
         </motion.div>
@@ -94,7 +95,7 @@ export function ChannelList({
             >
               <motion.div
                 animate={{ rotate: expandedCategories.has(category.id) ? 0 : -90 }}
-                transition={{ duration: 0.2 }}
+                transition={tweens.fast}
               >
                 <ChevronDownIcon className="h-3 w-3" />
               </motion.div>
@@ -108,7 +109,7 @@ export function ChannelList({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={tweens.fast}
                   className="mt-0.5 overflow-hidden"
                 >
                   {category.channels?.map((channel) => (
@@ -170,7 +171,7 @@ export function ChannelList({
               animate={{
                 boxShadow: ['0 0 0 0 rgba(16, 185, 129, 0.4)', '0 0 0 6px rgba(16, 185, 129, 0)'],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={loop(tweens.ambient)}
             />
           </div>
           <div className="min-w-0 flex-1">

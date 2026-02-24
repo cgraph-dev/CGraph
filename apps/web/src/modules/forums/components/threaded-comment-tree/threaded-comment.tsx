@@ -13,6 +13,7 @@ import { CommentHeader } from './comment-header';
 import { CommentActions } from './comment-actions';
 import { countDescendants } from './utils';
 import type { ThreadedCommentProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export const ThreadedComment = memo(function ThreadedComment({
   comment,
@@ -77,7 +78,7 @@ export const ThreadedComment = memo(function ThreadedComment({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={tweens.fast}
         className={`relative rounded-lg ${
           comment.isBestAnswer
             ? 'border border-green-500/30 bg-green-500/5'
@@ -129,7 +130,7 @@ export const ThreadedComment = memo(function ThreadedComment({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={tweens.fast}
               className="relative mt-2 pl-6"
             >
               <div className="space-y-2">

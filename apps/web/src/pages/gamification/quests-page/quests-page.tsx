@@ -20,6 +20,7 @@ import LevelProgress from '@/modules/gamification/components/level-progress';
 import type { QuestTab } from './types';
 import { TABS } from './constants';
 import QuestCard from './quest-card';
+import { tweens, loop } from '@/lib/animation-presets';
 
 const logger = createLogger('QuestsPage');
 
@@ -189,7 +190,7 @@ export default function QuestsPage() {
             <motion.div
               className="h-10 w-10 rounded-full border-2 border-primary-500 border-t-transparent"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
             />
           </div>
         ) : displayedQuests.length === 0 ? (

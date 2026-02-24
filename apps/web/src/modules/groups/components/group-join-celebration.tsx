@@ -18,6 +18,7 @@ import { useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export interface GroupJoinCelebrationProps {
   /** Name of the group the user just joined */
@@ -73,7 +74,7 @@ export function GroupJoinCelebration({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         >
           {/* Backdrop dim */}
           <div className="absolute inset-0 bg-black/30" />
@@ -90,7 +91,7 @@ export function GroupJoinCelebration({
               className="text-4xl"
               initial={{ rotateZ: -10 }}
               animate={{ rotateZ: [0, 5, -5, 0] }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ ...tweens.smooth, delay: 0.2 }}
             >
               🎉
             </motion.div>

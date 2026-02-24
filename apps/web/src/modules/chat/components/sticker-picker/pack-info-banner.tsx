@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import type { StickerPack } from '@/data/stickers';
 import { cn } from '@/lib/utils';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface PackInfoBannerProps {
   pack: StickerPack;
@@ -52,7 +53,7 @@ export function PackInfoBanner({ pack, userCoins, isPurchasing, onPurchase }: Pa
           {isPurchasing ? (
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={loop(tweens.slow)}
               className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
             />
           ) : (

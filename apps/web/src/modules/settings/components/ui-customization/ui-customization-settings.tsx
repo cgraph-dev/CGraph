@@ -32,6 +32,7 @@ import {
   AdvancedSettings,
 } from './settings-tabs';
 import { ExportImportModal } from './export-import-modal';
+import { tweens } from '@/lib/animation-presets';
 
 type TabId = 'theme' | 'effects' | 'animations' | 'typography' | 'advanced';
 
@@ -122,7 +123,7 @@ export default function UICustomizationSettings() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         >
           {activeTab === 'theme' && (
             <ThemeSettings preferences={preferences} updatePreference={updatePreference} />

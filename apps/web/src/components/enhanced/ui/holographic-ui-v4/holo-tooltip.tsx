@@ -7,6 +7,7 @@ import { ReactNode, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 interface HoloTooltipProps {
   children: ReactNode;
@@ -61,7 +62,7 @@ export function HoloTooltip({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.15 }}
+            transition={tweens.quickFade}
             className={cn('absolute z-50 whitespace-nowrap', positionStyles[position])}
           >
             <div

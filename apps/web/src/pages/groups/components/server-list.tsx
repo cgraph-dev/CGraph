@@ -10,6 +10,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ServerListProps } from './types';
 import { ServerIcon } from './server-icon';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
   return (
@@ -34,7 +35,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           </motion.div>
           <motion.div
             className="pointer-events-none absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 blur-lg group-hover:opacity-100"
-            transition={{ duration: 0.3 }}
+            transition={tweens.standard}
           />
         </NavLink>
       </motion.div>
@@ -65,7 +66,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
         <PlusIcon className="h-6 w-6 text-green-400 transition-colors group-hover:text-white" />
         <motion.div
           className="pointer-events-none absolute inset-0 rounded-2xl bg-green-600/20 opacity-0 blur-lg group-hover:opacity-100"
-          transition={{ duration: 0.3 }}
+          transition={tweens.standard}
         />
       </motion.button>
     </div>

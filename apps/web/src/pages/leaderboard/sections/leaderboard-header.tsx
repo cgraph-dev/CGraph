@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { TrophyIcon } from '@heroicons/react/24/outline';
 
 import type { HeaderProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function LeaderboardHeader({ className = '' }: HeaderProps) {
   return (
@@ -26,11 +27,11 @@ export function LeaderboardHeader({ className = '' }: HeaderProps) {
             '0 0 20px rgba(250, 204, 21, 0.2)',
           ],
         }}
-        transition={{ duration: 2, repeat: Infinity }}
+        transition={loop(tweens.ambient)}
       >
         <motion.div
           animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         >
           <TrophyIcon className="h-7 w-7 text-yellow-400" />
         </motion.div>
@@ -38,7 +39,7 @@ export function LeaderboardHeader({ className = '' }: HeaderProps) {
         <motion.span
           className="text-2xl"
           animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={loop(tweens.verySlow)}
         >
           🏆
         </motion.span>

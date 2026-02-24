@@ -10,6 +10,7 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { RANK_COLORS } from './constants';
 import { formatScore } from './utils';
 import type { PodiumProps, LeaderboardEntry } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function Podium({ entries, onUserClick }: PodiumProps) {
   const top3 = entries.slice(0, 3);
@@ -57,7 +58,7 @@ export function Podium({ entries, onUserClick }: PodiumProps) {
                 <motion.div
                   className="absolute -top-3 left-1/2 -translate-x-1/2"
                   animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={loop(tweens.verySlow)}
                 >
                   <span className="text-2xl">👑</span>
                 </motion.div>
@@ -79,7 +80,7 @@ export function Podium({ entries, onUserClick }: PodiumProps) {
               }}
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
-              transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+              transition={{ ...tweens.moderate, delay: 0.3 + index * 0.1 }}
             >
               <div className="text-center">
                 <div className="text-2xl font-bold" style={{ color: RANK_COLORS[actualRank] }}>

@@ -9,6 +9,7 @@ import { GlassCard, AnimatedAvatar } from '@/shared/components/ui';
 
 import { formatValue, getRankChange } from '../utils';
 import type { UserRankCardProps } from './types';
+import { tweens, loopWithDelay } from '@/lib/animation-presets';
 
 export function UserRankCard({ userRank, currentCategory }: UserRankCardProps) {
   return (
@@ -26,7 +27,7 @@ export function UserRankCard({ userRank, currentCategory }: UserRankCardProps) {
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
           animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+          transition={loopWithDelay(tweens.decorative, 2)}
         />
 
         <div className="relative flex flex-col items-center justify-between gap-4 sm:flex-row">

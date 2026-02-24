@@ -13,6 +13,7 @@ import {
   resolveScheduleDate,
   formatDateTimeLocal,
 } from '@/modules/chat/components/scheduleMessageUtils';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface ScheduleMessageModalProps {
   isOpen: boolean;
@@ -183,7 +184,7 @@ export function ScheduleMessageModal({
                         <>
                           <motion.div
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            transition={loop(tweens.slow)}
                             className="h-5 w-5 rounded-full border-2 border-white border-t-transparent"
                           />
                           Scheduling...

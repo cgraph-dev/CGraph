@@ -1,6 +1,7 @@
 /** PreviewCard — renders a live preview of a profile theme configuration. */
 import { motion } from 'framer-motion';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface PreviewCardProps {
   theme: ProfileThemeConfig;
@@ -28,7 +29,7 @@ export default function PreviewCard({ theme }: PreviewCardProps) {
                 }
               : {}
           }
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={loop(tweens.ambient)}
         >
           <span className="text-2xl">👤</span>
         </motion.div>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import type { QuestsSectionProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export function QuestsSection({ quests }: QuestsSectionProps) {
   const getQuestColor = (type: string) => {
@@ -75,7 +76,7 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
                         className={`h-full bg-gradient-to-r ${getQuestColor(quest.type)}`}
                         initial={{ width: 0 }}
                         animate={{ width: `${(quest.progress / quest.maxProgress) * 100}%` }}
-                        transition={{ duration: 1 }}
+                        transition={tweens.slow}
                       />
                     </div>
                   </div>

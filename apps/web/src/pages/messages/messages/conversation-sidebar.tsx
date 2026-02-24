@@ -15,6 +15,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ConversationItem } from './conversation-item';
 import { EmptyConversationList, LoadingSpinner } from './empty-states';
 import type { ConversationSidebarProps } from './types';
+import { tweens } from '@/lib/animation-presets';
 
 export function ConversationSidebar({
   conversations,
@@ -38,7 +39,7 @@ export function ConversationSidebar({
           className="mb-4 flex items-center justify-between"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={tweens.moderate}
         >
           <h2 className="flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
             <ChatBubbleLeftRightIcon className="h-6 w-6 text-primary-400" />
@@ -77,7 +78,7 @@ export function ConversationSidebar({
           className="relative"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ ...tweens.moderate, delay: 0.1 }}
         >
           <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
             <MagnifyingGlassIcon className="h-4 w-4 text-primary-400" />
@@ -103,14 +104,14 @@ export function ConversationSidebar({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={tweens.standard}
           >
             {conversations.map((conv, index) => (
               <motion.div
                 key={conv.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                transition={{ ...tweens.standard, delay: index * 0.05 }}
               >
                 <ConversationItem
                   conversation={conv}

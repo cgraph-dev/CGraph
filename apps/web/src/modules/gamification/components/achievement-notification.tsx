@@ -14,6 +14,7 @@ import {
   useAnimatedProgress,
   useAutoDismiss,
 } from '@/modules/gamification/components/achievement-notification/useAchievementEffects';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface AchievementNotificationData {
   achievement: Achievement & {
@@ -95,7 +96,7 @@ function AchievementToast({
             animate={{
               opacity: [0.2, 0.4, 0.2],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           />
         )}
 
@@ -123,7 +124,7 @@ function AchievementToast({
                     }
                   : {}
               }
-              transition={{ duration: 0.6 }}
+              transition={tweens.emphatic}
             >
               {achievement.icon || '🏆'}
             </motion.div>

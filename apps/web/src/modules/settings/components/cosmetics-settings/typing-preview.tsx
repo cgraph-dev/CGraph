@@ -5,6 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { tweens, loop } from '@/lib/animation-presets';
 
 // =============================================================================
 // TYPES
@@ -49,7 +50,7 @@ export function TypingPreview({ type }: TypingPreviewProps) {
           scale: [1, 1.3, 1],
           opacity: [0.6, 1, 0.6],
         }}
-        transition={{ duration: 1, repeat: Infinity }}
+        transition={loop(tweens.slow)}
       />
     );
   }

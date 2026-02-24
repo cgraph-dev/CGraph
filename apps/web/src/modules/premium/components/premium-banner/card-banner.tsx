@@ -8,6 +8,7 @@ import { SparklesIcon, XMarkIcon, StarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import type { BannerVariantProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 type CardBannerProps = Pick<
   BannerVariantProps,
@@ -54,7 +55,7 @@ export function CardBanner({
           animate={{
             scale: [1, 1.1, 1],
           }}
-          transition={{ repeat: Infinity, duration: 2 }}
+          transition={loop(tweens.ambient)}
           className="flex-shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-3"
         >
           <SparklesIcon className="h-8 w-8 text-white" />

@@ -13,6 +13,7 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getConversationName, getConversationAvatar, getConversationAvatarBorderId } from './utils';
 import type { ConversationItemProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ConversationItem({
   conversation,
@@ -89,7 +90,7 @@ export function ConversationItem({
             animate={{
               boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 6px rgba(34, 197, 94, 0)'],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={loop(tweens.ambient)}
           />
         )}
       </motion.div>

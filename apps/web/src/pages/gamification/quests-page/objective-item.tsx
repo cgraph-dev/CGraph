@@ -7,6 +7,7 @@
 import { motion } from 'framer-motion';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import type { QuestObjective } from '@/modules/gamification/store';
+import { tweens } from '@/lib/animation-presets';
 
 interface ObjectiveItemProps {
   objective: QuestObjective;
@@ -39,7 +40,7 @@ export default function ObjectiveItem({ objective }: ObjectiveItemProps) {
           className={`h-full ${objective.completed ? 'bg-green-500' : 'bg-gradient-to-r from-primary-500 to-purple-500'}`}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5 }}
+          transition={tweens.smooth}
         />
       </div>
     </div>

@@ -11,6 +11,7 @@ import { ThemeDescription } from './theme-description';
 import { ProfileThemePicker } from './profile-theme-picker';
 import { SaveButton } from './save-button';
 import { ThemeCard } from './theme-card';
+import { tweens } from '@/lib/animation-presets';
 
 /**
  * ThemeCustomization Component
@@ -72,7 +73,7 @@ export default function ThemeCustomization() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
+            transition={tweens.fast}
             className="grid grid-cols-2 gap-4"
           >
             {filteredThemes.map((theme, index) => (

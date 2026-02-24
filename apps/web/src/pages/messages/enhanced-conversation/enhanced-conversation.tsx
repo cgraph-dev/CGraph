@@ -13,6 +13,7 @@ import { ConversationHeader } from './conversation-header';
 import { MessageInputArea } from './message-input-area';
 import { TypingIndicator } from './typing-indicator';
 import { LoadingSpinner } from './loading-spinner';
+import { tweens } from '@/lib/animation-presets';
 
 export default function EnhancedConversation() {
   const {
@@ -56,7 +57,7 @@ export default function EnhancedConversation() {
         className="relative flex h-full max-h-screen flex-1 flex-col overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={tweens.smooth}
       >
         {/* Header */}
         <ConversationHeader

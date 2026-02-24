@@ -11,6 +11,7 @@ import { AnimatedAvatar } from '@/shared/components/ui';
 
 import { formatValue, getRankConfig } from '../utils';
 import type { PodiumProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function TopPodium({ entries }: PodiumProps) {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export function TopPodium({ entries }: PodiumProps) {
                       y: [0, -5, 0],
                       rotate: [0, 5, -5, 0],
                     }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    transition={loop(tweens.ambient)}
                   >
                     <span className="text-3xl drop-shadow-lg">👑</span>
                   </motion.div>
@@ -71,7 +72,7 @@ export function TopPodium({ entries }: PodiumProps) {
                     opacity: [0.5, 0.8, 0.5],
                     scale: [1, 1.1, 1],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={loop(tweens.ambient)}
                   style={{ boxShadow: `0 0 40px ${config.glowColor}` }}
                 />
 
@@ -92,7 +93,7 @@ export function TopPodium({ entries }: PodiumProps) {
                 <motion.div
                   className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-2xl drop-shadow-lg"
                   animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={loop(tweens.verySlow)}
                 >
                   {config.medal}
                 </motion.div>
@@ -121,7 +122,7 @@ export function TopPodium({ entries }: PodiumProps) {
                 className={`${podiumHeight} mt-3 w-20 rounded-t-lg sm:w-28 ${config.bg} border-x-2 border-t-2 ${config.border} flex items-start justify-center pt-2`}
                 initial={{ height: 0 }}
                 animate={{ height: 'auto' }}
-                transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                transition={{ ...tweens.standard, delay: 0.5 + index * 0.1 }}
               >
                 <span className={`text-3xl font-black ${config.text}`}>#{entry.rank}</span>
               </motion.div>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicProgressProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * HolographicProgress Component
@@ -45,7 +46,7 @@ export function HolographicProgress({
           className="relative h-full overflow-hidden rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${clampedValue}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={tweens.smooth}
           style={{
             background: `linear-gradient(90deg, ${theme.secondary}, ${theme.primary})`,
             boxShadow: `0 0 15px ${theme.glow}`,
@@ -58,7 +59,7 @@ export function HolographicProgress({
               background: `linear-gradient(90deg, transparent, ${theme.accent}80, transparent)`,
             }}
             animate={{ x: ['-100%', '100%'] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+            transition={loop(tweens.ambient)}
           />
         </motion.div>
       </div>

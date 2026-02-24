@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { normalizeTiers } from './utils';
 import type { BattlePassProgressProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function BattlePassProgress({
   tiers: rawTiers,
@@ -88,13 +89,13 @@ export function BattlePassProgress({
           className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
           initial={{ width: 0 }}
           animate={{ width: `${progressInCurrentTier * 100}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={tweens.smooth}
         />
         <motion.div
           className="absolute inset-y-0 left-0 rounded-full bg-white/30"
           style={{ width: `${progressInCurrentTier * 100}%` }}
           animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={loop(tweens.verySlow)}
         />
       </div>
 

@@ -17,6 +17,7 @@ import { AuthCardHeader } from '@/modules/auth/components/auth-card-header';
 import type { LogoSize } from '@/modules/auth/components/auth-logo';
 import type { BackgroundEffect } from '@/modules/auth/components/auth-backgrounds';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export interface AuthCardProps {
   children: React.ReactNode;
@@ -203,7 +204,7 @@ function DefaultVariant({
             'linear-gradient(360deg, transparent, rgba(var(--color-primary-500), 0.5), transparent)',
           ],
         }}
-        transition={{ repeat: Infinity, duration: 3 }}
+        transition={loop(tweens.decorative)}
         className="pointer-events-none absolute inset-0 rounded-2xl"
         style={{ padding: 1 }}
       />

@@ -9,6 +9,7 @@ import { ClockIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GiftIcon as GiftIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import type { CompactViewProps } from './types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 /**
  * Compact daily rewards display
@@ -28,7 +29,7 @@ export function CompactView({
         <div className="flex items-center gap-3">
           <motion.div
             animate={canClaim ? { scale: [1, 1.1, 1] } : {}}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            transition={loop(tweens.verySlow)}
             className={`flex h-12 w-12 items-center justify-center rounded-xl ${
               canClaim ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-dark-700'
             }`}

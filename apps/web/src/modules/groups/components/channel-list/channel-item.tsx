@@ -9,6 +9,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { channelTypeIcons, channelTypeColors } from './constants';
 import type { ChannelItemProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ChannelItem({ channel, isActive }: ChannelItemProps) {
   const { groupId } = useParams();
@@ -45,7 +46,7 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
             <motion.div
               className="absolute left-0 top-1/4 h-1/2 w-0.5 rounded-r-full bg-primary-400"
               animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={loop(tweens.ambient)}
             />
           )}
           {/* Channel icon */}
@@ -84,7 +85,7 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
             >
               <motion.div
                 animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                transition={loop(tweens.ambient)}
                 className="absolute inset-0 rounded-full bg-red-500"
               />
               <span className="relative text-[10px] font-bold text-white">

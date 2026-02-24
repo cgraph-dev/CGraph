@@ -9,13 +9,14 @@ import { Button } from '@/components';
 import { calculateSavings } from './utils';
 import type { PaymentItem } from './types';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens, loop } from '@/lib/animation-presets';
 
 export function ProcessingStep() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12 text-center">
       <motion.div
         animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+        transition={loop(tweens.slow)}
         className="mx-auto h-16 w-16 rounded-full border-4 border-primary-500 border-t-transparent"
       />
       <p className="mt-6 text-lg text-white">Processing payment...</p>

@@ -13,6 +13,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { categories } from './constants';
 import { springs } from '@/lib/animation-presets/presets';
+import { tweens } from '@/lib/animation-presets';
 
 /** Props for SearchHeader */
 export interface SearchHeaderProps {
@@ -43,7 +44,7 @@ export function SearchHeader({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={tweens.moderate}
         className="relative z-10"
       >
         <h1 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
@@ -56,7 +57,7 @@ export function SearchHeader({
           className="relative mb-4"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ ...tweens.moderate, delay: 0.1 }}
         >
           <GlassCard variant="crystal" className="relative">
             <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-primary-400" />
@@ -93,7 +94,7 @@ export function SearchHeader({
           className="relative flex items-center gap-2 overflow-x-auto pb-2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ ...tweens.moderate, delay: 0.2 }}
         >
           {categories.map((cat) => {
             const Icon = cat.icon;

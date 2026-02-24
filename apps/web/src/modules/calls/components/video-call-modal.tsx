@@ -9,6 +9,7 @@ import { VideoCallTopBar } from '@/modules/calls/components/video-call-top-bar';
 import { VideoCallControls } from '@/modules/calls/components/video-call-controls';
 import { VideoGrid } from '@/modules/calls/components/video-grid';
 import type { CallParticipant } from '@/modules/calls/types';
+import { tweens, loop } from '@/lib/animation-presets';
 
 interface VideoCallModalProps {
   isOpen: boolean;
@@ -121,7 +122,7 @@ export function VideoCallModal({
                       {(callState.status === 'ringing' || isConnecting) && (
                         <motion.p
                           animate={{ opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
+                          transition={loop(tweens.verySlow)}
                           className="text-gray-400"
                         >
                           Connecting...
