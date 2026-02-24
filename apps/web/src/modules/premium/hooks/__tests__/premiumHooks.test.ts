@@ -1,15 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '@/test/setup';
+import { apiCircuitBreaker } from '@/lib/api';
 
 import { useSubscription, useSubscriptions } from '../useSubscription';
+
+// Reset circuit breaker at file level to prevent test pollution from retries
+afterEach(() => {
+  apiCircuitBreaker.reset();
+});
 
 // ─── useSubscription ─────────────────────────────────────────────────────────
 
 describe('useSubscription', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    apiCircuitBreaker.reset();
   });
 
   it('returns not subscribed by default when no initial subscription', () => {
@@ -47,7 +54,7 @@ describe('useSubscription', () => {
       unreadCount: 0,
     };
     server.use(
-      http.post('/api/forum/subscriptions', () => HttpResponse.json({ subscription: newSub }))
+      http.post('*/api/forum/subscriptions', () => HttpResponse.json({ subscription: newSub }))
     );
 
     const { result } = renderHook(() => useSubscription('forum', 'forum-1'));
@@ -71,7 +78,7 @@ describe('useSubscription', () => {
       unreadCount: 0,
     };
     server.use(
-      http.delete('/api/forum/subscriptions/sub-1', () => new HttpResponse(null, { status: 200 }))
+      http.delete('*/api/forum/subscriptions/sub-1', () => new HttpResponse(null, { status: 200 }))
     );
 
     const { result } = renderHook(() => useSubscription('thread', 'thread-1', initialSub));
@@ -107,7 +114,7 @@ describe('useSubscription', () => {
       unreadCount: 0,
     };
     server.use(
-      http.post('/api/forum/subscriptions', () => HttpResponse.json({ subscription: newSub }))
+      http.post('*/api/forum/subscriptions', () => HttpResponse.json({ subscription: newSub }))
     );
 
     const { result } = renderHook(() => useSubscription('board', 'board-1'));
@@ -130,7 +137,7 @@ describe('useSubscription', () => {
       unreadCount: 1,
     };
     server.use(
-      http.delete('/api/forum/subscriptions/sub-4', () => new HttpResponse(null, { status: 200 }))
+      http.delete('*/api/forum/subscriptions/sub-4', () => new HttpResponse(null, { status: 200 }))
     );
 
     const { result } = renderHook(() => useSubscription('thread', 'thread-2', initialSub));
@@ -153,7 +160,7 @@ describe('useSubscription', () => {
       unreadCount: 0,
     };
     server.use(
-      http.patch('/api/forum/subscriptions/sub-5', () => new HttpResponse(null, { status: 200 }))
+      http.patch('*/api/forum/subscriptions/sub-5', () => new HttpResponse(null, { status: 200 }))
     );
 
     const { result } = renderHook(() => useSubscription('forum', 'forum-2', initialSub));
@@ -179,9 +186,10 @@ describe('useSubscription', () => {
   });
 
   it('subscribe throws and resets isLoading on network failure', async () => {
-    server.use(
-      http.post('/api/forum/subscriptions', () => new HttpResponse(null, { status: 500 }))
-    );
+    // Mock api.post directly to avoid retry/circuit-breaker side effects that
+    // leak into subsequent tests via long-running backoff timers.
+    const { api } = await import('@/lib/api');
+    const postSpy = vi.spyOn(api, 'post').mockRejectedValue(new Error('Failed to subscribe'));
 
     const { result } = renderHook(() => useSubscription('thread', 'thread-1'));
 
@@ -193,6 +201,7 @@ describe('useSubscription', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isSubscribed).toBe(false);
+    postSpy.mockRestore();
   });
 });
 
@@ -201,6 +210,7 @@ describe('useSubscription', () => {
 describe('useSubscriptions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    apiCircuitBreaker.reset();
   });
 
   it('returns empty subscriptions initially', () => {
@@ -233,7 +243,7 @@ describe('useSubscriptions', () => {
       },
     ];
     server.use(
-      http.get('/api/forum/subscriptions', () => HttpResponse.json({ subscriptions: subs }))
+      http.get('*/api/forum/subscriptions', () => HttpResponse.json({ subscriptions: subs }))
     );
 
     const { result } = renderHook(() => useSubscriptions());
@@ -279,7 +289,7 @@ describe('useSubscriptions', () => {
       },
     ];
     server.use(
-      http.get('/api/forum/subscriptions', () => HttpResponse.json({ subscriptions: subs }))
+      http.get('*/api/forum/subscriptions', () => HttpResponse.json({ subscriptions: subs }))
     );
 
     const { result } = renderHook(() => useSubscriptions());
@@ -294,7 +304,7 @@ describe('useSubscriptions', () => {
   });
 
   it('handles fetch error gracefully', async () => {
-    server.use(http.get('/api/forum/subscriptions', () => HttpResponse.error()));
+    server.use(http.get('*/api/forum/subscriptions', () => HttpResponse.error()));
 
     const { result } = renderHook(() => useSubscriptions());
     await act(async () => {

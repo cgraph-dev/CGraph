@@ -75,6 +75,9 @@ export function useSubscription(
 
         const { data } = await api.post('/api/forum/subscriptions', body);
         setSubscription(data.subscription);
+      } catch (error) {
+        setIsLoading(false);
+        throw new Error('Failed to subscribe', { cause: error });
       } finally {
         setIsLoading(false);
       }
