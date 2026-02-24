@@ -8,7 +8,7 @@
  * - Authenticated → AppLayout (/messages, etc.)
  * - Unauthenticated → redirected to /login
  *
- * @module routes/routeGroups/publicRoutes
+ * @module routes/route-groups/public-routes
  */
 
 // No public page routes — all public content lives in the landing app (cgraph.org).

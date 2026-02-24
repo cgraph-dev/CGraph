@@ -3,7 +3,7 @@
  *
  * Composes route groups from modular sub-files for maintainability.
  * Each route group (dev, public, auth, forums, settings) is defined
- * in its own file under ./routeGroups/.
+ * in its own file under ./route-groups/.
  *
  * @module routes/AppRoutes
  */
@@ -11,7 +11,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import { ProtectedRoute, AdminRoute, ProfileRedirectRoute } from './guards';
-import { DevRoutes, AuthRoutes, ForumRoutes, SettingsRoutes } from './routeGroups';
+import { DevRoutes, AuthRoutes, ForumRoutes, SettingsRoutes } from './route-groups';
 import {
   // Core
   Messages,

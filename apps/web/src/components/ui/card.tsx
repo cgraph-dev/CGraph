@@ -1,3 +1,4 @@
+/** Card — reusable card container with variant, padding, and animation options. */
 import { ReactNode } from 'react';
 
 interface CardProps {
@@ -10,7 +11,7 @@ interface CardProps {
 
 /**
  * Card - A reusable card component with consistent styling.
- * 
+ *
  * Variants:
  * - default: Basic card with border
  * - interactive: Adds hover effects for clickable cards
@@ -24,10 +25,11 @@ export default function Card({
   animate = false,
 }: CardProps) {
   const baseStyles = 'rounded-lg bg-dark-800 border border-dark-700';
-  
+
   const variantStyles = {
     default: '',
-    interactive: 'hover:border-dark-600 hover:bg-dark-750 hover:shadow-card-hover transition-all duration-200 cursor-pointer',
+    interactive:
+      'hover:border-dark-600 hover:bg-dark-750 hover:shadow-card-hover transition-all duration-200 cursor-pointer',
     elevated: 'shadow-card border-dark-600',
   };
 
@@ -41,7 +43,9 @@ export default function Card({
   const animateStyles = animate ? 'animate-fade-in-up' : '';
 
   return (
-    <div className={`${baseStyles} ${variantStyles[variant]} ${paddingStyles[padding]} ${animateStyles} ${className}`}>
+    <div
+      className={`${baseStyles} ${variantStyles[variant]} ${paddingStyles[padding]} ${animateStyles} ${className}`}
+    >
       {children}
     </div>
   );
@@ -54,11 +58,7 @@ interface CardHeaderProps {
 }
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
-  return (
-    <div className={`border-b border-dark-700 pb-3 mb-3 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`mb-3 border-b border-dark-700 pb-3 ${className}`}>{children}</div>;
 }
 
 // Card Title component
@@ -69,11 +69,7 @@ interface CardTitleProps {
 }
 
 export function CardTitle({ children, className = '', as: Tag = 'h3' }: CardTitleProps) {
-  return (
-    <Tag className={`text-white font-semibold ${className}`}>
-      {children}
-    </Tag>
-  );
+  return <Tag className={`font-semibold text-white ${className}`}>{children}</Tag>;
 }
 
 // Card Content component
@@ -83,11 +79,7 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className = '' }: CardContentProps) {
-  return (
-    <div className={`text-gray-300 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`text-gray-300 ${className}`}>{children}</div>;
 }
 
 // Card Footer component
@@ -97,11 +89,7 @@ interface CardFooterProps {
 }
 
 export function CardFooter({ children, className = '' }: CardFooterProps) {
-  return (
-    <div className={`border-t border-dark-700 pt-3 mt-3 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`mt-3 border-t border-dark-700 pt-3 ${className}`}>{children}</div>;
 }
 
 // Card Description component
@@ -111,9 +99,5 @@ interface CardDescriptionProps {
 }
 
 export function CardDescription({ children, className = '' }: CardDescriptionProps) {
-  return (
-    <p className={`text-sm text-gray-400 ${className}`}>
-      {children}
-    </p>
-  );
+  return <p className={`text-sm text-gray-400 ${className}`}>{children}</p>;
 }

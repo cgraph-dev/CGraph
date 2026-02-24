@@ -12,10 +12,16 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
   TIER_ICONS,
   TIER_GRADIENTS,
-} from '@/modules/premium/components/subscriptionCard.constants';
+} from '@/modules/premium/components/subscription-card.constants';
 import type { SubscriptionCardProps } from '@/modules/premium/components/subscription-card';
 
-export function CompactSubscriptionCard({ plan, isCurrentPlan = false, billingInterval = 'monthly', onSelect, className = '' }: Pick<
+export function CompactSubscriptionCard({
+  plan,
+  isCurrentPlan = false,
+  billingInterval = 'monthly',
+  onSelect,
+  className = '',
+}: Pick<
   SubscriptionCardProps,
   'plan' | 'isCurrentPlan' | 'billingInterval' | 'onSelect' | 'className'
 >): React.ReactElement {

@@ -1,3 +1,4 @@
+/** TiltCard — 3D hover tilt effect wrapper for cards using Framer Motion. */
 import { memo, useRef } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { prefersReducedMotion } from './constants';

@@ -1,3 +1,4 @@
+/** RewardCard — displays a gamification event reward with type-specific icons. */
 import { motion } from 'framer-motion';
 import {
   TrophyIcon,

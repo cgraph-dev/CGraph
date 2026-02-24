@@ -1,7 +1,7 @@
 /**
  * Settings route definitions (protected)
  *
- * @module routes/routeGroups/settingsRoutes
+ * @module routes/route-groups/settings-routes
  */
 
 import { Route } from 'react-router-dom';

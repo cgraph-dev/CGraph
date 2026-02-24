@@ -12,4 +12,4 @@ export { StatsCard } from './stats-card';
 export { SystemHealthCard } from './system-health-card';
 export { JobsStatusCard } from './jobs-status-card';
 export { SettingToggle, SettingNumber } from './setting-controls';
-export { formatUptime, ChatBubbleIcon } from './adminUtils';
+export { formatUptime, ChatBubbleIcon } from './admin-utils';

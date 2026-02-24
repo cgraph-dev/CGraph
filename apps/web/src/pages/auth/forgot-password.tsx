@@ -1,3 +1,4 @@
+/** ForgotPassword — password reset request page with email submission form. */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -129,9 +130,7 @@ export default function ForgotPassword() {
           />
         </div>
 
-        <SubmitButton pendingText="Sending...">
-          {t('forgot_password.submit')}
-        </SubmitButton>
+        <SubmitButton pendingText="Sending...">{t('forgot_password.submit')}</SubmitButton>
       </form>
 
       {/* Back to Login */}

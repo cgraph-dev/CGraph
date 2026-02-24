@@ -1,3 +1,4 @@
+/** MetricCard — animated metric display with trend change indicator. */
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 

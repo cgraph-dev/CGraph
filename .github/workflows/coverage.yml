@@ -173,9 +173,9 @@ jobs:
               body += '### Web App\n\n';
               body += '| Metric | Coverage | Target | Status |\n';
               body += '|--------|----------|--------|--------|\n';
-              body += `| Lines | ${lines.toFixed(1)}% | 60% | ${getEmoji(lines, 60)} |\n`;
-              body += `| Branches | ${branches.toFixed(1)}% | 60% | ${getEmoji(branches, 60)} |\n`;
-              body += `| Functions | ${functions.toFixed(1)}% | 60% | ${getEmoji(functions, 60)} |\n`;
+              body += `| Lines | ${lines.toFixed(1)}% | 65% | ${getEmoji(lines, 65)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 65% | ${getEmoji(branches, 65)} |\n`;
+              body += `| Functions | ${functions.toFixed(1)}% | 65% | ${getEmoji(functions, 65)} |\n`;
             } catch (e) {
               body += '⚠️ Web coverage data not available\n';
             }
@@ -251,7 +251,7 @@ jobs:
           echo "=== Checking Web App Coverage Thresholds ==="
           pnpm run test --filter=@cgraph/web -- --run --coverage || {
             echo "❌ Web coverage below thresholds!"
-            echo "Required: 60% lines, 60% branches, 60% functions"
+            echo "Required: 65% lines, 65% branches, 65% functions"
             exit 1
           }
 

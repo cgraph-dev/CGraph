@@ -1,7 +1,7 @@
 /**
  * Forum route definitions (protected)
  *
- * @module routes/routeGroups/forumRoutes
+ * @module routes/route-groups/forum-routes
  */
 
 import { Route } from 'react-router-dom';

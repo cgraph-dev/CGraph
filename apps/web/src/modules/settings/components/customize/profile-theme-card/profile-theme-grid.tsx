@@ -1,3 +1,4 @@
+/** ProfileThemeGrid — responsive grid layout for profile theme cards. */
 import type { ProfileThemeGridProps } from './types';
 import { COL_CLASSES } from './constants';
 

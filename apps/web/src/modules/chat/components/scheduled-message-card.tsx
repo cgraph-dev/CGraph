@@ -1,3 +1,4 @@
+/** ScheduledMessageCard — displays a scheduled message with cancel and reschedule actions. */
 import { motion } from 'framer-motion';
 import { ClockIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { format, formatDistanceToNow } from 'date-fns';

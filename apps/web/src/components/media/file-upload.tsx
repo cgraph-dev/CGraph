@@ -1,3 +1,4 @@
+/** FileUpload — file upload component with drag-and-drop and preview support. */
 import { useState, useRef, ChangeEvent } from 'react';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 

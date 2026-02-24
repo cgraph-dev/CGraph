@@ -1,3 +1,4 @@
+/** SystemHealthCard — shows system resource usage with progress bars. */
 import type { SystemMetrics } from '@/types/admin.types';
 import { ProgressBar } from './progress-bar';
 

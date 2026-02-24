@@ -29,8 +29,8 @@ export const TIER_GRADIENTS: Record<SubscriptionTier, string> = {
 
 export function Crown({ className }: { className?: string }): React.ReactElement {
   return (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 0v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
-  </svg>
-);
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 0v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
+    </svg>
+  );
 }

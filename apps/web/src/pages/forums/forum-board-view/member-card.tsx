@@ -1,3 +1,4 @@
+/** MemberCard — displays a forum member with avatar, role badge, and stats. */
 import { Link } from 'react-router-dom';
 import { UserIcon, StarIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 

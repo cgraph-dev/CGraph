@@ -1,13 +1,12 @@
-// @ts-nocheck
 import { describe, it, expect } from 'vitest';
-import { TIER_ICONS, TIER_COLORS, TIER_GRADIENTS } from '../subscriptionCard.constants';
+import { TIER_ICONS, TIER_COLORS, TIER_GRADIENTS } from '../subscription-card.constants';
 import {
   TIER_ICONS as FC_TIER_ICONS,
   TIER_COLORS as FC_TIER_COLORS,
   TIER_GRADIENTS as FC_TIER_GRADIENTS,
   DEFAULT_CATEGORIES,
-} from '../featureComparisonConstants';
-import { DEFAULT_PACKAGES } from '../coinShopData';
+} from '../feature-comparison-constants';
+import { DEFAULT_PACKAGES } from '../coin-shop-data';
 
 // ── Types reference ────────────────────────────────────────────────────
 

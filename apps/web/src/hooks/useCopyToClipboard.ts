@@ -1,3 +1,4 @@
+/** useCopyToClipboard — hook for copying text to the clipboard with status tracking. */
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
 

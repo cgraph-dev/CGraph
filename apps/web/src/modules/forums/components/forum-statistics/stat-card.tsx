@@ -1,3 +1,4 @@
+/** StatCard — icon-labeled statistic display for forum statistics. */
 import type { StatCardProps } from '@/modules/forums/components/forum-statistics/forum-statistics.types';
 
 export function StatCard({

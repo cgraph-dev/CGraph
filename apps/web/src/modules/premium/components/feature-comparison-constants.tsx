@@ -1,7 +1,7 @@
 /**
  * Feature comparison constants — tier metadata and default feature categories.
  *
- * @module modules/premium/components/featureComparisonConstants
+ * @module modules/premium/components/feature-comparison-constants
  */
 
 import React from 'react';

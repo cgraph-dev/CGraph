@@ -19,7 +19,7 @@ import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useAuthStore } from '@/modules/auth/store';
-import { buildCommands, CATEGORY_LABELS, type Command } from './commandRegistry';
+import { buildCommands, CATEGORY_LABELS, type Command } from './command-registry';
 
 export type { Command };
 

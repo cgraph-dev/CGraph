@@ -1,7 +1,7 @@
 /**
  * Authentication route definitions
  *
- * @module routes/routeGroups/authRoutes
+ * @module routes/route-groups/auth-routes
  */
 
 import { Route } from 'react-router-dom';

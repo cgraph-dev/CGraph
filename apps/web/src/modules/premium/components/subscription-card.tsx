@@ -2,7 +2,7 @@
  * SubscriptionCard Component
  *
  * Displays a subscription tier with features, pricing, and CTA.
- * Constants extracted to subscriptionCard.constants.tsx
+ * Constants extracted to subscription-card.constants.tsx
  * Compact variant extracted to CompactSubscriptionCard.tsx
  */
 
@@ -17,7 +17,7 @@ import {
   TIER_COLORS,
   TIER_GRADIENTS,
   Crown,
-} from '@/modules/premium/components/subscriptionCard.constants';
+} from '@/modules/premium/components/subscription-card.constants';
 import { CompactSubscriptionCard } from '@/modules/premium/components/compact-subscription-card';
 import type { SubscriptionTier, SubscriptionPlan } from '@/modules/premium/store/types';
 
@@ -247,6 +247,6 @@ export function SubscriptionCard({
       </GlassCard>
     </motion.div>
   );
-};
+}
 
 export default SubscriptionCard;

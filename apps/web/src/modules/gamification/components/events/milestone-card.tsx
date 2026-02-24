@@ -1,3 +1,4 @@
+/** MilestoneCard — displays an event milestone with progress and claimable rewards. */
 import { TrophyIcon, CheckCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import type { EventMilestone } from '@/modules/gamification/store';
 import { GlassCard } from '@/shared/components/ui';

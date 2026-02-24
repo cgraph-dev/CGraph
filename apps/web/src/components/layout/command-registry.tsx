@@ -4,7 +4,7 @@
  * Defines all available commands for the CommandPalette,
  * grouped by category (navigation, actions, user).
  *
- * @module components/layout/commandRegistry
+ * @module components/layout/command-registry
  */
 
 import React from 'react';

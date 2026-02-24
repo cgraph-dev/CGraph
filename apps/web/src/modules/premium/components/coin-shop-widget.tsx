@@ -6,7 +6,7 @@ import { SparklesIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import type { CoinPackage } from '@/modules/premium/store/types';
-import { DEFAULT_PACKAGES, CoinIcon } from './coinShopData';
+import { DEFAULT_PACKAGES, CoinIcon } from './coin-shop-data';
 import { useCoinShop } from './useCoinShop';
 import { CoinPackageCard } from './coin-package-card';
 
@@ -143,6 +143,6 @@ export function CoinShopWidget({
       </p>
     </div>
   );
-};
+}
 
 export default CoinShopWidget;

@@ -1,3 +1,4 @@
+/** HolographicCard — card with holographic header, body, and footer sections. */
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import { HolographicContainer } from './holographic-container';

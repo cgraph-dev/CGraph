@@ -1,3 +1,4 @@
+/** StatsCard — displays a titled group of key-value statistics. */
 import clsx from 'clsx';
 
 export function StatsCard({

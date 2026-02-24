@@ -1,3 +1,4 @@
+/** BattlePassTierCard — displays a battle pass tier with rewards and lock state. */
 import { StarIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import type { BattlePassTier } from '@/modules/gamification/store';
 import { RewardCard } from '@/modules/gamification/components/events/reward-card';

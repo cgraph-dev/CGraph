@@ -1,3 +1,4 @@
+/** CyberGrid — canvas-based animated cyberpunk grid effect for auth backgrounds. */
 import { memo, useRef, useEffect } from 'react';
 import {
   prefersReducedMotion,

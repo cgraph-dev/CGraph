@@ -47,7 +47,7 @@ vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { medium: vi.fn() },
 }));
 
-vi.mock('@/modules/premium/components/subscriptionCard.constants', () => ({
+vi.mock('@/modules/premium/components/subscription-card.constants', () => ({
   TIER_ICONS: { free: '🆓', pro: '⭐', ultimate: '👑' },
   TIER_GRADIENTS: { free: 'from-gray-500', pro: 'from-blue-500', ultimate: 'from-purple-500' },
 }));

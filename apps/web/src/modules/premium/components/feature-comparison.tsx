@@ -23,7 +23,7 @@ import {
   DEFAULT_CATEGORIES,
   type FeatureCategory,
   type FeatureItem,
-} from './featureComparisonConstants';
+} from './feature-comparison-constants';
 
 // Re-export types for external consumers
 export type { FeatureCategory, FeatureItem };
@@ -271,6 +271,6 @@ export function FeatureComparison({
       </div>
     </div>
   );
-};
+}
 
 export default FeatureComparison;

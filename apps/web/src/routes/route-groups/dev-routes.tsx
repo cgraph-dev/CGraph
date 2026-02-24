@@ -1,7 +1,7 @@
 /**
  * Dev/Test route definitions
  *
- * @module routes/routeGroups/devRoutes
+ * @module routes/route-groups/dev-routes
  */
 
 import { Route } from 'react-router-dom';

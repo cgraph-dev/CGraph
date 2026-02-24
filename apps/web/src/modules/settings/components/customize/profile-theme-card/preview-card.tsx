@@ -1,3 +1,4 @@
+/** PreviewCard — renders a live preview of a profile theme configuration. */
 import { motion } from 'framer-motion';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 

@@ -15,7 +15,7 @@ export type { UseReactionsReturn } from './useReactions';
 export { useAttachments } from './useAttachments';
 export type { UseAttachmentsReturn, AttachmentItem } from './useAttachments';
 export { useConversationSocket } from './useConversationSocket';
-export { useConversationHeader, formatLastSeen } from './useConversationHeader';
+export { useConversationHeader, formatLastSeen } from './use-conversation-header';
 export { useConversationData } from './useConversationData';
 export { usePinAndDelete } from './usePinAndDelete';
 export { useFilePickers } from './useFilePickers';

@@ -66,18 +66,18 @@ export const DEFAULT_PACKAGES: CoinPackage[] = [
 /** Reusable coin SVG icon */
 export function CoinIcon({ className }: { className?: string }): React.ReactElement {
   return (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <circle cx="12" cy="12" r="10" fill="url(#coinGradient)" />
-    <circle cx="12" cy="12" r="7" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-    <text x="12" y="16" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
-      $
-    </text>
-    <defs>
-      <linearGradient id="coinGradient" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#F59E0B" />
-        <stop offset="100%" stopColor="#D97706" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <circle cx="12" cy="12" r="10" fill="url(#coinGradient)" />
+      <circle cx="12" cy="12" r="7" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
+        $
+      </text>
+      <defs>
+        <linearGradient id="coinGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
 }

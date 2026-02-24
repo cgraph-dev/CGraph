@@ -1,3 +1,4 @@
+/** ParticleField — canvas-based animated particle field with connection lines. */
 import { memo, useRef, useEffect } from 'react';
 import {
   prefersReducedMotion,
