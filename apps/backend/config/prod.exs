@@ -69,7 +69,9 @@ config :cgraph, Oban,
       # Daily cleanup jobs
       {"0 3 * * *", CGraph.Workers.CleanupWorker},
       # Send email digests daily at 8 AM UTC
-      {"0 8 * * *", CGraph.Workers.EmailDigestWorker}
+      {"0 8 * * *", CGraph.Workers.EmailDigestWorker},
+      # Archive old messages daily at 3 AM UTC
+      {"0 3 * * *", CGraph.Workers.MessageArchivalWorker}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
@@ -90,7 +92,11 @@ config :cgraph, Oban,
     maintenance: 5,           # Maintenance tasks
     backups: 3,               # Database backups
     push_notifications: 20,   # Push notification delivery
-    email_notifications: 10   # Email notification delivery
+    email_notifications: 10,  # Email notification delivery
+    archival: 5,              # Message archival jobs
+    emails: 15,               # Transactional email delivery
+    media: 10,                # Media processing jobs
+    sync: 15                  # Data synchronization
   ]
 
 # Rate limiting settings for production (balanced for 10K users)

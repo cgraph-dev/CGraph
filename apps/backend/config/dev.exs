@@ -15,6 +15,18 @@ config :cgraph, CGraph.Repo,
   ssl_opts: if(System.get_env("POSTGRES_HOST", "localhost") != "localhost", do: [verify: :verify_none], else: []),
   socket_options: if(System.get_env("POSTGRES_HOST", "localhost") != "localhost", do: [:inet6], else: [])
 
+# ReadRepo shares the primary database in dev (no replica needed).
+# In production, runtime.exs points this at the read replica.
+config :cgraph, CGraph.ReadRepo,
+  username: System.get_env("POSTGRES_USER", "cgraph"),
+  password: System.get_env("POSTGRES_PASSWORD", "cgraph_dev_password"),
+  hostname: System.get_env("POSTGRES_HOST", "localhost"),
+  database: System.get_env("POSTGRES_DB", "cgraph_dev"),
+  port: 5432,
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 5
+
 # For development, we disable any cache and enable debugging and code reloading
 # Using 0.0.0.0 to allow connections from mobile devices on the local network
 assets_path = Path.expand("../assets", __DIR__)

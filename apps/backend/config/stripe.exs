@@ -19,9 +19,7 @@ config :stripity_stripe,
 config :cgraph, CGraph.Subscriptions,
   # Stripe Price IDs for each tier (set in runtime.exs for prod)
   stripe_price_ids: %{
-    plus: nil,
-    pro: nil,
-    business: nil,
+    premium: nil,
     enterprise: nil
   },
 

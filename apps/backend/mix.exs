@@ -136,6 +136,9 @@ defmodule CGraph.MixProject do
       {:mox, "~> 1.2", only: :test},
       {:floki, "~> 0.37", only: :test},
 
+      # DNS clustering for Fly.io multi-region
+      {:dns_cluster, "~> 0.1"},
+
       # Server (latest stable)
       {:bandit, "~> 1.10"},
       {:gettext, "~> 0.26"},
