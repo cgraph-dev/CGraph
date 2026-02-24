@@ -322,8 +322,8 @@ All other previously listed controllers are now under 500 lines.
 | Metric                    | Current | Target       | Gap                |
 | ------------------------- | ------- | ------------ | ------------------ |
 | Web components (non-test) | 2,229   | —            | —                  |
-| Web test files            | 263     | ~2,229 (1:1) | **~1,966 missing** |
-| Web test coverage ratio   | ~11.8%  | 100%         | ~88.2%             |
+| Web test files            | 283     | ~2,229 (1:1) | **~1,946 missing** |
+| Web test coverage ratio   | ~12.7%  | 100%         | ~87.3%             |
 | Mobile test files         | 25      | —            | Needs assessment   |
 | Backend test files        | 171     | —            | Likely sufficient  |
 
@@ -331,23 +331,23 @@ All other previously listed controllers are now under 500 lines.
 
 | Module       | Tests | Components | Ratio | Gap |
 | ------------ | ----- | ---------- | ----- | --- |
-| chat         | 28    | 115        | 24.3% | 87  |
+| chat         | 38    | 115        | 33.0% | 77  |
 | forums       | 19    | 133        | 14.3% | 114 |
-| gamification | 21    | 99         | 21.2% | 78  |
-| social       | 8     | 39         | 20.5% | 31  |
-| settings     | 13    | 116        | 11.2% | 103 |
+| gamification | 22    | 99         | 22.2% | 77  |
+| social       | 9     | 39         | 23.1% | 30  |
+| settings     | 17    | 116        | 14.7% | 99  |
 | auth         | 9     | 19         | 47.4% | 10  |
 | groups       | 7     | 53         | 13.2% | 46  |
 | moderation   | 4     | 8          | 50.0% | 4   |
-| calls        | 4     | 7          | 57.1% | 3   |
-| premium      | 4     | 21         | 19.0% | 17  |
-| search       | 4     | 10         | 40.0% | 6   |
+| calls        | 5     | 7          | 71.4% | 2   |
+| premium      | 5     | 21         | 23.8% | 16  |
+| search       | 5     | 10         | 50.0% | 5   |
 | admin        | 8     | 29         | 27.6% | 21  |
 | shared       | 4     | —          | —     | —   |
 | pages        | 3     | —          | —     | —   |
 
-> **Module-only ratio**: 125 tests / 649 module components = **19.3%** **Web-wide ratio**: 263 tests
-> / 2,229 non-test .tsx/.ts = **11.8%**
+> **Module-only ratio**: 145 tests / 649 module components = **22.3%** **Web-wide ratio**: 283 tests
+> / 2,229 non-test .tsx/.ts = **12.7%**
 
 **Action Items**:
 
@@ -374,7 +374,15 @@ All other previously listed controllers are now under 500 lines.
       compact-view, rewards-unlocked-list, background-particles, compact-badge-showcase)
 - [x] **9.2h** ~~Write tests batch 10~~ **DONE** (Session 51) — admin +4 (metric-card, stats-card,
       realtime-stat, jobs-status-card), groups +1 (group-join-celebration)
-- [ ] **9.2i** Write tests for critical path (batch 11+): remaining modules
+- [x] **9.2i** ~~Write tests batch 11~~ **DONE** (Session 52) — chat +5 (category-button,
+      sticker-button, emoji-search, emoji-grid, sticker-search-bar)
+- [x] **9.2j** ~~Write tests batch 12~~ **DONE** (Session 52) — chat +5 (audio-embed, pack-tab,
+      conv-list-empty-state, gif-picker-empty-state, message-particles)
+- [x] **9.2k** ~~Write tests batch 13~~ **DONE** (Session 52) — social +1 (stat-item), settings +4
+      (section-header, privacy-toggle, avatar-preview-card, toggle), premium +1 (minimal-banner)
+- [x] **9.2l** ~~Write tests batch 14~~ **DONE** (Session 52) — gamification +1 (badge-empty-state),
+      chat +1 (badges-list), search +1 (filter-actions), calls +1 (video-call-controls)
+- [ ] **9.2m** Write tests for critical path (batch 15+): remaining modules
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
       statements/lines 60→65%, branches/functions 50→55%
@@ -747,7 +755,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Documentation (Rule 6)      | **100%** (100% JSDoc + 100% @doc + @moduledoc)                                            | **100%**       | 100%                |
 | Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns)                                                | **~100%**      | 100%                |
 | File Size (Rule 8)          | **100%** (0 Elixir over 500, 0 TSX over 300)                                              | **100%**       | 100%                |
-| Testing (Rule 9)            | **11.8%** (263 tests / 2,229 source files)                                                | 25%            | 100%                |
+| Testing (Rule 9)            | **12.7%** (283 tests / 2,229 source files)                                                | 25%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)                                                                      | **100%**       | 100%                |
 | Security (Rule 11)          | **~65%** (~345 unannotated `as` casts across ~59 files, predominantly API boundary casts) | **100%**       | 100%                |
 | React 19 (Rule 12)          | **~98%** (core migrations done; 9 useOptimistic, 2 useFormStatus, 11 useActionState)      | **~98%**       | 100%                |
@@ -756,7 +764,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)                                                          | **100%**       | 100%                |
 | **Overall**                 | **~90%** (13 PASS + 2 PARTIAL)                                                            | **~96%**       | **100%**            |
 
-> **Methodology**: Equal-weight average across 15 rules. Testing at 11.8% and Security at ~65% bring
+> **Methodology**: Equal-weight average across 15 rules. Testing at 12.7% and Security at ~65% bring
 > the overall from 100% down to ~90%. This is an honest assessment — the remaining gaps are testing
 > coverage (Rule 9) and ~345 unannotated type assertions across ~59 files (Rule 11), predominantly
 > API boundary casts from `Record<string, unknown>` to concrete types.
