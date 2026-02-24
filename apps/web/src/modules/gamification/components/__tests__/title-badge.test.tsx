@@ -58,20 +58,6 @@ vi.mock('@/data/titles', () => ({
   }),
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    button: ({ children, animate, whileHover, whileTap, ...rest }: any) => (
-      <button {...rest}>{children}</button>
-    ),
-    span: ({ children, animate, ...rest }: any) => <span {...rest}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
-vi.mock('@heroicons/react/24/outline', () => ({
-  SparklesIcon: (props: any) => <svg data-testid="sparkle-icon" {...props} />,
-}));
-
 vi.mock('../title-badge/hooks/useAnimationConfig', () => ({
   useAnimationConfig: () => ({ getAnimation: () => ({}) }),
 }));

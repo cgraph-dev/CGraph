@@ -12,18 +12,6 @@ import { DEFAULT_UI_PREFERENCES } from '@/pages/messages/conversation/types';
 
 // Mock framer-motion to prevent layout animation infinite loops in jsdom
 // Proxy defined inline because vi.mock factories are hoisted above variable declarations
-vi.mock('framer-motion', () => ({
-  motion: new Proxy({} as Record<string, any>, {
-    get: (_target: any, prop: string) =>
-      ({ children, ...props }: any) => {
-        // Strip framer-motion-specific props
-        const { initial, animate, exit, transition, layout, whileHover, whileTap, variants, ...domProps } = props;
-        const El = prop as any;
-        return <El {...domProps}>{children}</El>;
-      },
-  }),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
 
 // Mock stores — paths must match the actual import paths in MessageBubble.tsx
 vi.mock('@/modules/settings/store/customization', () => ({

@@ -3,26 +3,45 @@ import { render, fireEvent } from '@testing-library/react';
 import { ConversationInput } from '../conversation-input';
 
 // Mock dependencies
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    textarea: (props: any) => <textarea {...props} />,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
+vi.mock('framer-motion', () => {
+  const motionProxy = new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string') {
+        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
+          const Tag = prop as any;
+          return <Tag {...rest}>{children}</Tag>;
+        };
+      }
+      return undefined;
+    },
+  });
+  return {
+    motion: motionProxy,
+    AnimatePresence: ({ children }: any) => <>{children}</>,
+    useAnimation: () => ({ start: vi.fn() }),
+    useInView: () => true,
+    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
+    useTransform: () => ({ get: () => 0 }),
+    useSpring: () => ({ get: () => 0 }),
+  };
+});
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  PaperAirplaneIcon: () => <span data-testid="send-icon" />,
-  PaperClipIcon: () => <span data-testid="clip-icon" />,
-  FaceSmileIcon: () => <span data-testid="smile-icon" />,
-  SparklesIcon: () => <span data-testid="sparkles-icon" />,
-  MicrophoneIcon: () => <span data-testid="mic-icon" />,
-  ClockIcon: () => <span data-testid="clock-icon" />,
-  XMarkIcon: () => <span data-testid="x-icon" />,
-}));
+const iconProxy = new Proxy({}, {
+  get: (_target, prop) => {
+    if (typeof prop === 'string' && prop !== '__esModule') {
+      return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
+    }
+    return undefined;
+  },
+});
+vi.mock('@heroicons/react/24/outline', () => iconProxy);
+vi.mock('@heroicons/react/24/solid', () => iconProxy);
 
 vi.mock('@/components/VoiceMessageRecorder', () => ({
+  VoiceMessageRecorder: () => <div data-testid="voice-recorder" />,
+}));
+
+vi.mock('@/components/media/voice-message-recorder', () => ({
   VoiceMessageRecorder: () => <div data-testid="voice-recorder" />,
 }));
 
@@ -31,16 +50,38 @@ vi.mock('@/modules/chat/components/StickerPicker', () => ({
   StickerButton: () => <button data-testid="sticker-btn" />,
 }));
 
+vi.mock('@/modules/chat/components/sticker-picker', () => ({
+  StickerPicker: () => <div data-testid="sticker-picker" />,
+  StickerButton: () => <button data-testid="sticker-btn" />,
+}));
+
 vi.mock('@/modules/chat/components/GifPicker', () => ({
   GifPicker: () => <div data-testid="gif-picker" />,
+}));
+
+vi.mock('@/modules/chat/components/gif-picker', () => ({
+  GifPicker: () => <div data-testid="gif-picker" />,
+  default: () => <div data-testid="gif-picker" />,
 }));
 
 vi.mock('@/modules/chat/components/EmojiPicker', () => ({
   EmojiPicker: () => <div data-testid="emoji-picker" />,
 }));
 
+vi.mock('@/modules/chat/components/emoji-picker', () => ({
+  EmojiPicker: () => <div data-testid="emoji-picker" />,
+}));
+
 vi.mock('@/lib/animations/AnimationEngine', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn() },
+}));
+
+vi.mock('@/lib/animations/animation-engine', () => ({
+  HapticFeedback: { light: vi.fn(), medium: vi.fn() },
+}));
+
+vi.mock('@/modules/chat/store', () => ({
+  useChatStore: () => ({}),
 }));
 
 const defaultProps = {

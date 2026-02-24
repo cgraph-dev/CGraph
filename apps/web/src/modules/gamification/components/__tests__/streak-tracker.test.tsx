@@ -15,23 +15,6 @@ vi.mock('@/stores/theme', () => ({
   },
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    button: ({ children, whileHover, whileTap, disabled, ...rest }: any) => (
-      <button disabled={disabled} {...rest}>
-        {children}
-      </button>
-    ),
-    span: ({ children, ...rest }: any) => <span {...rest}>{children}</span>,
-    div: ({ children, ...rest }: any) => <div {...rest}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  Reorder: {
-    Group: ({ children }: any) => <div>{children}</div>,
-    Item: ({ children }: any) => <div>{children}</div>,
-  },
-}));
-
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: any) => (
     <div data-testid="glass-card" className={className}>
@@ -87,12 +70,6 @@ vi.mock('../streak-tracker/StreakVariants', () => ({
   StreakCompactVariant: ({ currentStreak }: any) => (
     <div data-testid="compact-variant">{currentStreak}</div>
   ),
-}));
-
-vi.mock('@heroicons/react/24/outline', () => ({
-  GiftIcon: (p: any) => <svg data-testid="gift-icon" {...p} />,
-  CheckCircleIcon: (p: any) => <svg data-testid="check-icon" {...p} />,
-  LockClosedIcon: (p: any) => <svg data-testid="lock-icon" {...p} />,
 }));
 
 // ── Helpers ────────────────────────────────────────────────────────────

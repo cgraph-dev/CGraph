@@ -48,37 +48,6 @@ vi.mock('react-router-dom', () => ({
   Outlet: () => <div data-testid="outlet" />,
 }));
 
-vi.mock('framer-motion', () => {
-  const handler = {
-    get(_target: any, prop: string) {
-      if (prop === '__esModule') return true;
-      return ({ children, ...rest }: any) => {
-        const safe = Object.fromEntries(
-          Object.entries(rest).filter(
-            ([k]) =>
-              ![
-                'initial', 'animate', 'exit', 'transition', 'variants',
-                'whileHover', 'whileTap', 'whileFocus', 'whileInView',
-                'layout', 'layoutId', 'drag', 'dragConstraints',
-              ].includes(k)
-          )
-        );
-        const Tag = ['svg', 'circle', 'path', 'g', 'line', 'rect', 'ellipse', 'polygon'].includes(prop)
-          ? prop
-          : 'div';
-        return <Tag {...safe}>{children}</Tag>;
-      };
-    },
-  };
-  return {
-    motion: new Proxy({}, handler),
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useMotionValue: (init: any) => ({ get: () => init, set: () => {}, onChange: () => () => {} }),
-    useSpring: (init: any) => ({ get: () => (typeof init === 'object' ? 0 : init), set: () => {}, onChange: () => () => {} }),
-    useTransform: () => ({ get: () => 0, set: () => {}, onChange: () => () => {} }),
-  };
-});
-
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: any) => (
     <div data-testid="glass-card" className={className}>

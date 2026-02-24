@@ -19,13 +19,6 @@ vi.mock('@/lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  MagnifyingGlassIcon: (p: any) => <svg data-testid="search-icon" {...p} />,
-  FunnelIcon: (p: any) => <svg data-testid="funnel-icon" {...p} />,
-  ChevronDownIcon: (p: any) => <svg data-testid="chevron-down" {...p} />,
-  ChevronUpIcon: (p: any) => <svg data-testid="chevron-up" {...p} />,
-}));
-
 vi.mock('@/components', () => ({
   Button: ({ children, onClick, disabled, ...rest }: any) => (
     <button onClick={onClick} disabled={disabled} {...rest}>

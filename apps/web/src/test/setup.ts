@@ -11,6 +11,163 @@ import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../mocks/handlers';
 
+// ─── Global Proxy mocks ─────────────────────────────────────────────
+// These catch ANY named export automatically, preventing
+// "No X export is defined on the mock" errors.
+
+// Heroicons — returns stub React components for any icon name
+vi.mock('@heroicons/react/24/outline', () => {
+  return new Proxy(
+    {},
+    {
+      get: (_t: unknown, name: string) => {
+        if (name === '__esModule') return true;
+        if (name === 'default') return {};
+        const Icon = (props: Record<string, unknown>) => {
+          const { createElement } = require('react');
+          return createElement('svg', {
+            'data-testid': `icon-${name}`,
+            ...props,
+          });
+        };
+        Icon.displayName = name;
+        return Icon;
+      },
+    },
+  );
+});
+
+vi.mock('@heroicons/react/24/solid', () => {
+  return new Proxy(
+    {},
+    {
+      get: (_t: unknown, name: string) => {
+        if (name === '__esModule') return true;
+        if (name === 'default') return {};
+        const Icon = (props: Record<string, unknown>) => {
+          const { createElement } = require('react');
+          return createElement('svg', {
+            'data-testid': `icon-${name}`,
+            ...props,
+          });
+        };
+        Icon.displayName = name;
+        return Icon;
+      },
+    },
+  );
+});
+
+vi.mock('@heroicons/react/20/solid', () => {
+  return new Proxy(
+    {},
+    {
+      get: (_t: unknown, name: string) => {
+        if (name === '__esModule') return true;
+        if (name === 'default') return {};
+        const Icon = (props: Record<string, unknown>) => {
+          const { createElement } = require('react');
+          return createElement('svg', {
+            'data-testid': `icon-${name}`,
+            ...props,
+          });
+        };
+        Icon.displayName = name;
+        return Icon;
+      },
+    },
+  );
+});
+
+// framer-motion — stub motion.* components, AnimatePresence, hooks
+vi.mock('framer-motion', () => {
+  const { createElement, forwardRef } = require('react');
+  const motionHandler = {
+    get: (_target: unknown, prop: string) => {
+      if (typeof prop === 'string') {
+        return forwardRef((props: Record<string, unknown>, ref: unknown) => {
+          const {
+            children,
+            initial: _i,
+            animate: _a,
+            exit: _e,
+            transition: _t,
+            variants: _v,
+            whileHover: _wh,
+            whileTap: _wt,
+            whileInView: _wi,
+            layout: _l,
+            layoutId: _lid,
+            onAnimationComplete: _oac,
+            ...rest
+          } = props;
+          return createElement(prop, { ...rest, ref }, children);
+        });
+      }
+      return undefined;
+    },
+  };
+  return {
+    motion: new Proxy({}, motionHandler),
+    AnimatePresence: ({ children }: { children: unknown }) => children,
+    useMotionValue: (initial: number) => ({
+      get: () => initial,
+      set: () => {},
+      onChange: () => () => {},
+    }),
+    useTransform: (val: unknown, _from: unknown, _to: unknown) => val,
+    useSpring: (val: unknown) => val,
+    useScroll: () => ({ scrollYProgress: { get: () => 0, onChange: () => () => {} } }),
+    useAnimation: () => ({ start: async () => {}, stop: () => {}, set: () => {} }),
+    useInView: () => true,
+    useReducedMotion: () => false,
+    LayoutGroup: ({ children }: { children: unknown }) => children,
+    Reorder: new Proxy({}, motionHandler),
+  };
+});
+
+// @/lib/animation-presets — stub all named exports
+vi.mock('@/lib/animation-presets', () => {
+  const emptyVariants = { initial: {}, animate: {}, exit: {} };
+  const noop = () => ({});
+  return {
+    springs: { gentle: {}, bouncy: {}, stiff: {} },
+    tweens: { fast: {}, normal: {}, slow: {} },
+    loop: { repeat: Infinity, repeatType: 'loop' },
+    loopWithDelay: (d: number) => ({ repeat: Infinity, delay: d }),
+    staggerConfigs: { fast: 0.05, normal: 0.1, slow: 0.2 },
+    entranceVariants: emptyVariants,
+    chatBubbleAnimations: {},
+    hoverAnimations: emptyVariants,
+    createPulseAnimation: noop,
+    createFireAnimation: noop,
+    createElectricAnimation: noop,
+    particleAnimations: emptyVariants,
+    backgroundAnimations: emptyVariants,
+    getStaggerDelay: () => 0,
+    createRepeatTransition: noop,
+    createSpring: noop,
+    getRarityGlow: () => '',
+    getTierGlow: () => '',
+    default: { gentle: {}, bouncy: {}, stiff: {} },
+  };
+});
+
+// @/lib/animations/animation-engine — stub haptics and animation helpers
+vi.mock('@/lib/animations/animation-engine', () => ({
+  HapticFeedback: {
+    light: vi.fn(),
+    medium: vi.fn(),
+    heavy: vi.fn(),
+    success: vi.fn(),
+    warning: vi.fn(),
+    error: vi.fn(),
+    selection: vi.fn(),
+  },
+  withHaptics: (fn: () => void) => fn,
+  springPresets: { gentle: {}, bouncy: {}, stiff: {} },
+}));
+
 // Mock logger to prevent circular dependency issues in test environment
 // (logger → error-tracking → react.tsx can fail during module evaluation)
 vi.mock('@/lib/logger', () => {

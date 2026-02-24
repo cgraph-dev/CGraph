@@ -39,14 +39,6 @@ vi.mock('@/stores/theme', () => ({
   useProfileCardConfig: vi.fn(() => mockConfig),
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, variants, initial, whileHover, whileTap, transition, ...rest }: any) => (
-      <div {...rest}>{children}</div>
-    ),
-  },
-}));
-
 vi.mock('@/lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));

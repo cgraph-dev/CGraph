@@ -3,18 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className, onClick }: React.PropsWithChildren<Record<string, unknown>>) => (
-      <div className={className as string} onClick={onClick as React.MouseEventHandler}>
-        {children}
-      </div>
-    ),
-    li: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => <li>{children}</li>,
-  },
-  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-}));
-
 vi.mock('@/lib/haptics', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn() },
 }));

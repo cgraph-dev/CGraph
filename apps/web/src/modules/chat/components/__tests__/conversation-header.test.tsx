@@ -3,25 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { ConversationHeader } from '../conversation-header';
 
 // Mock dependencies
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
-vi.mock('@heroicons/react/24/outline', () => ({
-  PhoneIcon: () => <span data-testid="phone-icon" />,
-  VideoCameraIcon: () => <span data-testid="video-icon" />,
-  InformationCircleIcon: () => <span data-testid="info-icon" />,
-  LockClosedIcon: () => <span data-testid="lock-icon" />,
-  ShieldCheckIcon: () => <span data-testid="shield-icon" />,
-  Cog6ToothIcon: () => <span data-testid="cog-icon" />,
-  SparklesIcon: () => <span data-testid="sparkles-icon" />,
-  MagnifyingGlassIcon: () => <span data-testid="search-icon" />,
-  ClockIcon: () => <span data-testid="clock-icon" />,
-}));
 
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, ...props }: any) => <div {...props}>{children}</div>,

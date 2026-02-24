@@ -21,44 +21,6 @@ vi.mock('@/modules/chat/hooks/useScheduleMessageModal', () => ({
   useScheduleMessageModal: () => mockHookReturn,
 }));
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(prop, function MotionMock({ children, className, onClick, disabled }) {
-              return (
-                <Tag
-                  className={className as string}
-                  onClick={onClick as React.MouseEventHandler}
-                  disabled={disabled as boolean}
-                >
-                  {children}
-                </Tag>
-              );
-            });
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
     <div className={className}>{children}</div>
@@ -79,17 +41,6 @@ vi.mock('@/modules/chat/components/scheduleMessageUtils', () => ({
   ],
   resolveScheduleDate: () => new Date('2025-06-01T09:00:00Z'),
   formatDateTimeLocal: () => '2025-06-01T09:00',
-}));
-
-vi.mock('@/lib/animation-presets', () => ({
-  springs: { stiff: {} },
-}));
-
-vi.mock('@heroicons/react/24/outline', () => ({
-  ClockIcon: () => <span data-testid="clock-icon" />,
-  XMarkIcon: () => <span data-testid="x-icon" />,
-  CalendarIcon: () => <span data-testid="calendar-icon" />,
-  PaperAirplaneIcon: () => <span data-testid="plane-icon" />,
 }));
 
 const defaultProps = {

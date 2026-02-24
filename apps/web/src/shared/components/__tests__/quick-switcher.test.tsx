@@ -9,57 +9,6 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(prop, function MotionMock({ children, className, onClick, onMouseEnter }) {
-              return (
-                <Tag
-                  className={className as string}
-                  onClick={onClick as React.MouseEventHandler}
-                  onMouseEnter={onMouseEnter as React.MouseEventHandler}
-                >
-                  {children}
-                </Tag>
-              );
-            });
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
-vi.mock('@/lib/animation-presets', () => ({
-  springs: { snappy: {} },
-}));
-
-vi.mock('@heroicons/react/24/outline', () => ({
-  MagnifyingGlassIcon: () => <span data-testid="search-icon" />,
-  ChatBubbleLeftRightIcon: () => <span data-testid="chat-icon" />,
-  UserGroupIcon: () => <span data-testid="group-icon" />,
-  HashtagIcon: () => <span data-testid="hash-icon" />,
-  UserIcon: () => <span data-testid="user-icon" />,
-  Cog6ToothIcon: () => <span data-testid="cog-icon" />,
-}));
-
 const testItems = [
   {
     id: 'c1',

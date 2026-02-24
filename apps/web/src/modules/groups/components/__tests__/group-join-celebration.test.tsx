@@ -7,14 +7,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className }: Record<string, unknown>) => (
-      <div className={className as string}>{children as React.ReactNode}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 
 // Mock canvas-confetti
 vi.mock('canvas-confetti', () => ({
@@ -22,11 +14,6 @@ vi.mock('canvas-confetti', () => ({
 }));
 
 // Mock animation presets
-vi.mock('@/lib/animation-presets', () => ({
-  springs: {
-    bouncy: { type: 'spring', stiffness: 300, damping: 20 },
-  },
-}));
 
 import { GroupJoinCelebration } from '../group-join-celebration';
 import confetti from 'canvas-confetti';

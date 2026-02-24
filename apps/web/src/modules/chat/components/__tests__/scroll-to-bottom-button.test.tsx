@@ -3,52 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ScrollToBottomButton } from '../scroll-to-bottom-button';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(prop, function MotionMock({ children, className, onClick, ..._rest }) {
-              return (
-                <Tag
-                  className={className as string}
-                  onClick={onClick as React.MouseEventHandler}
-                  aria-label={(_rest as Record<string, unknown>)['aria-label'] as string}
-                >
-                  {children}
-                </Tag>
-              );
-            });
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
-vi.mock('@/lib/animation-presets', () => ({
-  springs: { snappy: {}, bouncy: {} },
-}));
-
-vi.mock('@heroicons/react/24/solid', () => ({
-  ChevronDownIcon: () => <span data-testid="chevron-icon" />,
-}));
-
 describe('ScrollToBottomButton', () => {
   it('renders nothing when not visible', () => {
     const { container } = render(<ScrollToBottomButton visible={false} onClick={vi.fn()} />);

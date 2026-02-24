@@ -1,0 +1,180 @@
+/** @module ChatInfoPanel tests */
+import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+
+vi.mock('@/stores/theme', () => ({
+  useThemeStore: () => ({ theme: { colorPreset: 'blue' } }),
+  THEME_COLORS: { blue: { primary: '#3b82f6' } },
+}));
+
+vi.mock('@/lib/logger', () => ({
+  createLogger: () => ({ debug: vi.fn(), error: vi.fn(), warn: vi.fn() }),
+  chatLogger: { debug: vi.fn() },
+}));
+
+vi.mock('@/shared/components/ui', () => ({
+  GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
+    <div data-testid="glass-card" className={className}>{children}</div>
+  ),
+}));
+
+vi.mock('@/lib/animations/transitions', () => ({
+  springs: { smooth: { type: 'spring' } },
+}));
+
+vi.mock('./useChatInfoPanel', () => ({
+  useChatInfoPanel: () => ({
+    isMuted: false,
+    isBlocking: false,
+    isBlockLoading: false,
+    isReporting: false,
+    showBlockConfirm: false,
+    setShowBlockConfirm: vi.fn(),
+    showReportModal: false,
+    setShowReportModal: vi.fn(),
+    reportReason: '',
+    setReportReason: vi.fn(),
+    messageTTL: null,
+    handleMuteToggle: vi.fn(),
+    handleBlock: vi.fn(),
+    handleReport: vi.fn(),
+    handleViewProfile: vi.fn(),
+    handleCustomizeChat: vi.fn(),
+    handleNavigateToUser: vi.fn(),
+    handleNavigateToForum: vi.fn(),
+    handleUpdateTTL: vi.fn(),
+  }),
+}));
+
+vi.mock('./profile-section', () => ({
+  ProfileSection: ({ user }: { user: { displayName?: string } }) => (
+    <div data-testid="profile-section">{user.displayName}</div>
+  ),
+}));
+
+vi.mock('./stats-grid', () => ({
+  StatsGrid: ({ karma, streak }: { karma: number; streak: number }) => (
+    <div data-testid="stats-grid">karma:{karma} streak:{streak}</div>
+  ),
+}));
+
+vi.mock('./badges-list', () => ({
+  BadgesList: ({ badges }: { badges: unknown[] }) => (
+    <div data-testid="badges-list">{badges.length} badges</div>
+  ),
+}));
+
+vi.mock('./mutual-friends-list', () => ({
+  MutualFriendsList: ({ friends }: { friends: unknown[] }) => (
+    <div data-testid="mutual-friends">{friends.length} mutual friends</div>
+  ),
+}));
+
+vi.mock('./shared-forums-list', () => ({
+  SharedForumsList: ({ forums }: { forums: unknown[] }) => (
+    <div data-testid="shared-forums">{forums.length} shared forums</div>
+  ),
+}));
+
+vi.mock('./quick-actions', () => ({
+  QuickActions: () => <div data-testid="quick-actions" />,
+}));
+
+vi.mock('./confirmation-modals', () => ({
+  BlockConfirmModal: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="block-confirm-modal" /> : null,
+  ReportModal: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="report-modal" /> : null,
+}));
+
+vi.mock('../disappearing-messages-toggle', () => ({
+  DisappearingMessagesToggle: () => <div data-testid="disappearing-messages" />,
+}));
+
+import ChatInfoPanel from '../chat-info-panel';
+
+const defaultUser = {
+  id: 'u1',
+  username: 'testuser',
+  displayName: 'Test User',
+  avatarUrl: 'https://example.com/avatar.png',
+  level: 5,
+  xp: 1200,
+  karma: 42,
+  streak: 7,
+  onlineStatus: 'online' as const,
+  bio: 'Hello world',
+  badges: [{ id: 'b1', name: 'Pioneer', emoji: '🌟', rarity: 'rare' }],
+};
+
+const defaultProps = {
+  userId: 'u1',
+  conversationId: 'conv-1',
+  user: defaultUser,
+  mutualFriends: [{ id: 'f1', username: 'friend1' }],
+  sharedForums: [{ id: 'fo1', name: 'General' }],
+  onClose: vi.fn(),
+  onMuteToggle: vi.fn(),
+  onBlock: vi.fn(),
+  onReport: vi.fn(),
+};
+
+describe('ChatInfoPanel', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders the header with "User Info" text', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByText('User Info')).toBeInTheDocument();
+  });
+
+  it('renders profile section with user display name', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('profile-section')).toHaveTextContent('Test User');
+  });
+
+  it('renders stats grid with karma and streak', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('stats-grid')).toHaveTextContent('karma:42 streak:7');
+  });
+
+  it('renders bio when present', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByText('Hello world')).toBeInTheDocument();
+  });
+
+  it('does not render bio when absent', () => {
+    const user = { ...defaultUser, bio: undefined };
+    render(<ChatInfoPanel {...defaultProps} user={user} />);
+    expect(screen.queryByText('Hello world')).not.toBeInTheDocument();
+  });
+
+  it('renders badges list with correct count', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('badges-list')).toHaveTextContent('1 badges');
+  });
+
+  it('renders mutual friends list', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('mutual-friends')).toHaveTextContent('1 mutual friends');
+  });
+
+  it('renders shared forums list', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('shared-forums')).toHaveTextContent('1 shared forums');
+  });
+
+  it('renders quick actions section', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    expect(screen.getByTestId('quick-actions')).toBeInTheDocument();
+  });
+
+  it('calls onClose when close button is clicked', () => {
+    render(<ChatInfoPanel {...defaultProps} />);
+    const closeBtn = screen.getByTestId('x-mark-icon').closest('button');
+    if (closeBtn) fireEvent.click(closeBtn);
+    expect(defaultProps.onClose).toHaveBeenCalled();
+  });
+});

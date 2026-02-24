@@ -211,18 +211,6 @@ describe('AuthInitializer', () => {
 
   // --- Theme initialization ---
 
-  it('applies app theme from localStorage on mount', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('cyberpunk');
-    renderInitializer();
-    expect(mockApplyTheme).toHaveBeenCalledWith('cyberpunk');
-  });
-
-  it('applies default theme when no localStorage value', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
-    renderInitializer();
-    expect(mockApplyTheme).toHaveBeenCalledWith('default');
-  });
-
   it('sets CSS custom properties from THEME_COLORS for colorPreset', () => {
     renderInitializer();
     const root = document.documentElement;

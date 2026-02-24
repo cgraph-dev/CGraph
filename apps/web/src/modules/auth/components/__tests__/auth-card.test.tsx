@@ -2,28 +2,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get: (_target, prop) => {
-        return ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-          return <Tag className={className as string}>{children}</Tag>;
-        };
-      },
-    }
-  );
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/components/effects/auth-background', () => ({
   AuthBackground: () => <div data-testid="auth-background" />,
 }));
@@ -72,10 +50,6 @@ vi.mock('@/modules/auth/components/auth-card-header', () => ({
       {subtitle && <p>{subtitle}</p>}
     </div>
   ),
-}));
-
-vi.mock('@/lib/animation-presets', () => ({
-  springs: { ultraSmooth: { type: 'spring', stiffness: 100, damping: 15 } },
 }));
 
 import { AuthCard } from '../auth-card';

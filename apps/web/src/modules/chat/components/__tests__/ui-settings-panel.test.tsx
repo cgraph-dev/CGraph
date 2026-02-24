@@ -5,26 +5,6 @@ import { UISettingsPanel } from '../ui-settings-panel';
 import type { UIPreferences } from '../message-bubble';
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
-      <div {...props}>{children}</div>
-    ),
-    button: ({
-      children,
-      onClick,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      onClick?: () => void;
-      [key: string]: unknown;
-    }) => (
-      <button onClick={onClick} {...props}>
-        {children}
-      </button>
-    ),
-  },
-}));
 
 // Mock GlassCard
 vi.mock('@/components/ui/GlassCard', () => ({
