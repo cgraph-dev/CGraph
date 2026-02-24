@@ -10,7 +10,7 @@
 
 | Category             | Current | Target | Gap                                               |
 | -------------------- | ------- | ------ | ------------------------------------------------- |
-| Rule Compliance      | ~93%    | 100%   | ~7% — testing is the sole remaining gap            |
+| Rule Compliance      | ~93%    | 100%   | ~7% — testing + EXPLAIN ANALYZE audit remaining    |
 | Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done                       |
 | Composite Score      | 8.5/10  | 9.5/10 | Testing + real perf audit                          |
 
@@ -127,7 +127,7 @@
 | -------------------------- | ------------ | ------------------------------------------------------------------------------------- |
 | Web animation presets      | **PASS**     | `apps/web/src/lib/animation-presets/` — 14 tween presets + loop/loopWithDelay helpers  |
 | Mobile AnimationLibrary    | **PASS**     | `apps/mobile/src/lib/animations/` — derives from `@cgraph/animation-constants`        |
-| Inline animation values    | **PASS**     | 339 found → 319 migrated to presets; 20 remain (all dynamic/`speedMultiplier` — unmigrateable) |
+| Inline animation values    | **PASS**     | 339 found → 317 migrated to presets; 22 remain (all dynamic/`speedMultiplier` — unmigrateable) |
 | Deprecated Animated API    | **PASS**     | All imports use `react-native-reanimated` — imperative API is reanimated's own compat |
 | Shared animation constants | **PASS**     | `packages/animation-constants/` — consumed by both web and mobile                     |
 
@@ -406,7 +406,7 @@ All other previously listed controllers are now under 500 lines.
 
 ---
 
-### Rule 10: Performance & Scale Budgets — PASS
+### Rule 10: Performance & Scale Budgets — PARTIAL PASS
 
 | Metric                         | Status   | Details                                                                                                                |
 | ------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -428,9 +428,7 @@ All other previously listed controllers are now under 500 lines.
 - [x] **10.2** ~~Add `preload()` to 10+ N+1 query patterns in forums modules~~ **MOSTLY DONE** (Tier
       4 — 7 fixed in forums/, ~1 remaining)
 - [x] **10.3** ~~Replace 3 mobile ScrollView with FlatList where lists can grow~~ **DONE** (Session
-      49)\n - edit-history-modal, poll-widget, reaction-picker-modal, attachment-preview-modal
-      converted", "oldString": "- [ ] **10.3** Replace 3 mobile ScrollView with FlatList where lists
-      can grow
+      49 — edit-history-modal, poll-widget, reaction-picker-modal, attachment-preview-modal converted)
 - [ ] **10.4** Run `EXPLAIN ANALYZE` on top 20 queries, add missing indexes — **PENDING** (Session
       53 version was fabricated with estimated timings, not real EXPLAIN output. Session 54 replaced
       with honest TODO. Requires staging database with representative data to complete.)
@@ -769,25 +767,26 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | File Naming (Rule 1)         | **100%** (0 camelCase/PascalCase .tsx files + routeGroups dir renamed)                                               | **100%**       | 100% (0 violations) |
 | Component Patterns (Rule 2)  | **100%** (0 React.FC, 0 fwdRef)                                                                                      | **100%**       | 100%                |
 | State Management (Rule 3)    | **100%** (36 stores verified, 26 MAX constants)                                                                      | **100%**       | 100%                |
-| Animation Standards (Rule 4) | **100%** (339 inline values → 319 migrated to presets; 20 dynamic exceptions; mobile wired to shared package)       | **100%**       | 100%                |
-| Cross-Platform (Rule 5)      | **100%** (12/12 packages)                                                                                            | **100%**       | 100% (12/12)        |
+| Animation Standards (Rule 4) | **100%** (339 inline values → 317 migrated to presets; 22 dynamic exceptions; mobile wired to shared package)       | **100%**       | 100%                |
+| Cross-Platform (Rule 5)      | **100%** (6/6 live packages — 6 dead packages deleted Session 54)                                                    | **100%**       | 100% (6/6)          |
 | Documentation (Rule 6)       | **100%** (2,344/2,344 JSDoc + eslint-plugin-jsdoc enforced)                                                          | **100%**       | 100%                |
 | Backend Standards (Rule 7)   | **100%** (4,103 specs; credo strict: true; Specs check enabled)                                                      | **100%**       | 100%                |
 | File Size (Rule 8)           | **100%** (0 Elixir over 500, 0 TSX over 300 — verified `wc -l` Feb 24)                                               | **100%**       | 100%                |
 | Testing (Rule 9)             | **12.7%** (283 tests / 2,229 source files)                                                                           | 25%            | 100%                |
-| Performance (Rule 10)        | **100%** (all queries audited; EXPLAIN ANALYZE documented; 0 N+1)                                                    | **100%**       | 100%                |
+| Performance (Rule 10)        | **~90%** (cursor pagination done; 0 N+1; EXPLAIN ANALYZE **PENDING** — requires staging DB)                          | **100%**       | 100%                |
 | Security (Rule 11)           | **100%** (0 unannotated type assertions; all 250+ casts annotated)                                                   | **100%**       | 100%                |
 | React 19 (Rule 12)           | **~98%** (0 useContext; 12 use() context calls across 10 files; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%**       | 100%                |
 | CI/CD (Rule 13)              | **100%** (17/17 permissions; CI coverage gate at 65% — verified Feb 24)                                              | **100%**       | 100%                |
 | Observability (Rule 14)      | **100%** (0 violations; 6 OTel packages)                                                                             | **100%**       | 100%                |
 | API Contract (Rule 15)       | **100%** (cursor + standardized + meta envelopes on all 12 views)                                                    | **100%**       | 100%                |
-| **Overall**                  | **~97%** (14 PASS + 1 FAIL — testing at 12.7% is the sole gap)                                                       | **~98%**       | **100%**            |
+| **Overall**                  | **~93%** (12 PASS + 1 PARTIAL (Rule 10) + 1 ~98% (Rule 12) + 1 FAIL (Rule 9 testing))                                | **~98%**       | **100%**            |
 
-> **Methodology**: Equal-weight average across 15 rules. Testing at 12.7% is the **single remaining
-> gap**. React 19 at ~98% needs React Compiler for useMemo/useCallback removal. Animation presets
-> PASS — 319 of 339 inline values migrated (20 dynamic exceptions). All other rules now PASS. This
-> is an honest assessment verified by strict codebase audit — all line counts, file counts, and
-> status claims verified with actual shell commands.
+> **Methodology**: Equal-weight average across 15 rules. **Two gaps remain**: (1) Testing at 12.7%
+> (Rule 9 — FAIL), (2) EXPLAIN ANALYZE audit pending (Rule 10 — PARTIAL PASS, requires staging DB).
+> React 19 at ~98% needs React Compiler for useMemo/useCallback removal. Animation presets PASS —
+> 317 of 339 inline values migrated (22 dynamic exceptions). This is an honest assessment verified
+> by strict codebase audit — all line counts, file counts, and status claims verified with actual
+> shell commands.
 
 ---
 
