@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...rest }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div className={className as string} data-testid="motion-div">
         {children}
       </div>

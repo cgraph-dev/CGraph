@@ -19,10 +19,17 @@ vi.mock('framer-motion', () => {
           if (!cache.has(prop)) {
             const Tag = (
               typeof prop === 'string' ? prop : 'div'
-            ) as keyof React.JSX.IntrinsicElements;
-            cache.set(prop, function MotionMock({ children, className, ..._rest }) {
-              return <Tag className={className as string}>{children}</Tag>;
-            });
+            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any;
+            cache.set(
+              prop,
+              function MotionMock({
+                children,
+                className,
+              }: React.PropsWithChildren<Record<string, unknown>>) {
+                return <Tag className={className as string}>{children}</Tag>;
+              }
+            );
           }
           return cache.get(prop);
         },
@@ -48,8 +55,12 @@ vi.mock('@/lib/animations/animation-engine', () => ({
 }));
 
 vi.mock('@/modules/premium/components/subscription-card.constants', () => ({
-  TIER_ICONS: { free: '🆓', pro: '⭐', ultimate: '👑' },
-  TIER_GRADIENTS: { free: 'from-gray-500', pro: 'from-blue-500', ultimate: 'from-purple-500' },
+  TIER_ICONS: { free: '🆓', premium: '⭐', enterprise: '👑' },
+  TIER_GRADIENTS: {
+    free: 'from-gray-500',
+    premium: 'from-blue-500',
+    enterprise: 'from-purple-500',
+  },
 }));
 
 const freePlan = {
@@ -58,16 +69,36 @@ const freePlan = {
   description: 'Basic features',
   priceMonthly: 0,
   priceYearly: 0,
-  features: [],
+  features: [] as string[],
+  limits: {
+    maxGroups: 1,
+    maxForums: 1,
+    maxFileSize: 5,
+    maxStorageGB: 1,
+    customEmojis: 0,
+    customThemes: false,
+    prioritySupport: false,
+    noAds: false,
+  },
 };
 
 const proPlan = {
-  tier: 'pro' as const,
-  name: 'Pro',
+  tier: 'premium' as const,
+  name: 'Premium',
   description: 'Advanced features',
   priceMonthly: 9.99,
   priceYearly: 99.99,
-  features: [],
+  features: [] as string[],
+  limits: {
+    maxGroups: 10,
+    maxForums: 10,
+    maxFileSize: 50,
+    maxStorageGB: 50,
+    customEmojis: 100,
+    customThemes: true,
+    prioritySupport: true,
+    noAds: true,
+  },
 };
 
 describe('CompactSubscriptionCard', () => {
@@ -111,8 +142,8 @@ describe('CompactSubscriptionCard', () => {
     const onSelect = vi.fn();
     render(<CompactSubscriptionCard plan={proPlan} onSelect={onSelect} />);
     // Click the GlassCard wrapper
-    const card = screen.getByText('Pro').closest('[class]');
+    const card = screen.getByText('Premium').closest('[class]');
     if (card) fireEvent.click(card);
-    expect(onSelect).toHaveBeenCalledWith('pro');
+    expect(onSelect).toHaveBeenCalledWith('premium');
   });
 });

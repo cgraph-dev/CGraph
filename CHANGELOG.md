@@ -4,6 +4,60 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.33] - 2026-02-21
+
+**SESSION 55: ZERO TypeScript Errors — Full Type System Cleanup + Backend Config Fixes**
+
+### Backend Configuration Fixes (commit `200588c2`)
+
+- **4 critical backend config bugs fixed**:
+  - `prod.exs`: Added 4 missing Oban queues (archival, emails, media, sync) + restored
+    MessageArchivalWorker cron schedule
+  - `dev.exs`: Added missing CGraph.ReadRepo configuration (mirrors Repo, pool_size 5)
+  - `mix.exs`: Added missing `{:dns_cluster, "~> 0.1"}` dependency
+  - `stripe.exs`: Aligned tier names (plus/pro/business → premium/enterprise) to match
+    SubscriptionTier type
+
+### TypeScript Error Elimination — 429 → 0
+
+- **Root cause fix**: Framer Motion v12 `Transition` type incompatibility — removed `as const` from
+  individual tween ease values and applied `satisfies Record<string, Transition>` to `tweens` object
+  in `presets.ts`. Changed `loop()` and `loopWithDelay()` return types to explicit `Transition`.
+  This single pattern fix eliminated **195 type errors**.
+
+### Production Code Fixes (22 errors → 0)
+
+- Added missing animation imports (`staggerConfigs`, `springs`, `loop`, `loopWithDelay`,
+  `entranceVariants`) to 8 component files
+- Fixed `useSocket` import path (`@/hooks/useSocket` → `@/lib/socket`)
+- Made `socket` getter public in SocketManager (needed by collaborative editor)
+- Fixed `ThemeColorPreset` export (renamed to `ColorPreset as ThemeColorPreset`)
+- Added `EntranceAnimation` type export from chat-customization types
+- Fixed `handleSelectLayout` param type (`ProfileCardStyle` → `string` with cast)
+- Fixed `FloatingSidebar` user prop type (inline object → `User | null`)
+- Removed unused socket-manager getters (`forumCallbacks`, `threadCallbacks`)
+- Fixed ES2022 Error cause syntax for ES2020 target compatibility
+- Removed unused `Category` import in customize.tsx
+
+### Test File Fixes (212 errors → 0)
+
+- **48 TS6133** (unused variables): Removed unused `...rest` / `..._rest` / `..._props` from mock
+  destructuring across 36 test files; removed unused imports (`vi`, `beforeEach`, `afterEach`,
+  `waitFor`, `fireEvent`)
+- **55 TS2745+TS2322** (JSX children type): Fixed framer-motion mock Tag type from
+  `keyof React.JSX.IntrinsicElements` to `as any` across 19 test files
+- **21 TS2741** (missing props): Added missing required properties (`id`, `className`, `limits`,
+  `changedByAdmin`, `description`, `category`, etc.) to test fixtures
+- **15 TS2345** (argument type): Fixed Zustand store mock types, HTMLElement nullability
+- **26 TS2532+TS18048** (possibly undefined): Added non-null assertions to test assertions
+- **10 TS2304** (missing names): Added `vi` import to 5 test files
+- **9 TS2739** (missing properties): Added complete StickerPack fixture properties
+- **8 TS2740** (missing properties): Cast partial filter objects
+- **7 TS2339** (property access): Used `vi.mocked(api, true)` for deep mocking
+- **3 TS2322** (subscription tier): Aligned test tier values (`pro` → `premium`)
+
+---
+
 ## [0.9.32] - 2026-02-20
 
 **SESSION 31: WEB TEST SUITE GREEN + IDE WARNING SWEEP**
@@ -14,8 +68,8 @@ All notable changes to CGraph will be documented in this file.
   failures / 3 skipped
 - **Source bug fixed**: `transitions/core.ts` bouncy spring was mapped to `sharedSprings.snappy`
   (stiffness 400) instead of `sharedSprings.bouncy` (stiffness 300)
-- Root causes: async E2EE functions not awaited, stale mock import paths after architecture refactor,
-  incomplete mocks (createLogger, key-storage, useOutlet), assertion drift
+- Root causes: async E2EE functions not awaited, stale mock import paths after architecture
+  refactor, incomplete mocks (createLogger, key-storage, useOutlet), assertion drift
 - Established canonical mock patterns for Framer Motion (inline Proxy), Heroicons (Proxy), E2EE
   (async), and Logger — documented in CLAUDE.md
 - `App.test.tsx` skipped (hangs loading entire app tree)

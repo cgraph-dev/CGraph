@@ -5,19 +5,12 @@ import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({
-      children,
-      className,
-      onClick,
-      ..._props
-    }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children, className, onClick }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div className={className as string} onClick={onClick as React.MouseEventHandler}>
         {children}
       </div>
     ),
-    li: ({ children, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
-      <li>{children}</li>
-    ),
+    li: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => <li>{children}</li>,
   },
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
@@ -119,7 +112,7 @@ vi.mock('@/components/theme/ThemedAvatar', () => ({
   ThemedAvatar: () => <div data-testid="avatar" />,
 }));
 
-import { ConversationList } from './conversation-list';
+import { ConversationList } from '../conversation-list';
 
 describe('ConversationList', () => {
   beforeEach(() => {

@@ -56,10 +56,15 @@ function makePack(overrides: Record<string, unknown> = {}) {
   return {
     id: 'pack-1',
     name: 'Cool Stickers',
+    description: 'Test description',
     coverEmoji: '😎',
+    category: 'emotions' as const,
     rarity: 'rare' as const,
+    coinPrice: 100,
     isLimited: false,
     isFree: false,
+    stickerCount: 10,
+    previewColors: ['#fff'],
     stickers: [],
     ...overrides,
   };

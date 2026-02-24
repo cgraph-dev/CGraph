@@ -2,12 +2,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReplyCountFilter } from '../reply-count-filter';
+import type { AdvancedSearchFilters } from '../types';
 
 describe('ReplyCountFilter', () => {
-  const defaultFilters = { minReplies: undefined, maxReplies: undefined } as Record<
-    string,
-    unknown
-  >;
+  const defaultFilters = {
+    minReplies: undefined,
+    maxReplies: undefined,
+  } as unknown as AdvancedSearchFilters;
 
   it('renders the label', () => {
     render(<ReplyCountFilter filters={defaultFilters} updateFilter={vi.fn()} />);
@@ -48,7 +49,7 @@ describe('ReplyCountFilter', () => {
     const updateFilter = vi.fn();
     render(
       <ReplyCountFilter
-        filters={{ minReplies: 5, maxReplies: undefined }}
+        filters={{ minReplies: 5, maxReplies: undefined } as unknown as AdvancedSearchFilters}
         updateFilter={updateFilter}
       />
     );
@@ -58,7 +59,10 @@ describe('ReplyCountFilter', () => {
 
   it('displays current filter values', () => {
     render(
-      <ReplyCountFilter filters={{ minReplies: 10, maxReplies: 50 }} updateFilter={vi.fn()} />
+      <ReplyCountFilter
+        filters={{ minReplies: 10, maxReplies: 50 } as unknown as AdvancedSearchFilters}
+        updateFilter={vi.fn()}
+      />
     );
     expect((screen.getByPlaceholderText('Min') as HTMLInputElement).value).toBe('10');
     expect((screen.getByPlaceholderText('Max') as HTMLInputElement).value).toBe('50');

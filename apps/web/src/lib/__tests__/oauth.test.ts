@@ -26,7 +26,7 @@ vi.mock('../api', () => ({
 }));
 
 import { api } from '../api';
-const mockApi = vi.mocked(api);
+const mockApi = vi.mocked(api, true);
 
 beforeEach(() => {
   vi.clearAllMocks();

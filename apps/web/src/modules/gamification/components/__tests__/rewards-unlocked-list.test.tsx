@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/react';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...rest }: Record<string, unknown>) => (
+    div: ({ children, className }: Record<string, unknown>) => (
       <div className={className as string}>{children as React.ReactNode}</div>
     ),
   },

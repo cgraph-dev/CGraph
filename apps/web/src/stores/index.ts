@@ -78,7 +78,7 @@ export {
 // ============================================================================
 export { useThemeStore, THEME_COLORS } from './theme';
 export type {
-  ThemeColorPreset,
+  ColorPreset as ThemeColorPreset,
   AvatarBorderType,
   ChatBubbleStylePreset,
   EffectPreset,

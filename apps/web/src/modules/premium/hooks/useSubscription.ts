@@ -77,7 +77,9 @@ export function useSubscription(
         setSubscription(data.subscription);
       } catch (error) {
         setIsLoading(false);
-        throw new Error('Failed to subscribe', { cause: error });
+        throw new Error(
+          `Failed to subscribe: ${error instanceof Error ? error.message : String(error)}`
+        );
       } finally {
         setIsLoading(false);
       }

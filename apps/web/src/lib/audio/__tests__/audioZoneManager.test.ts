@@ -10,7 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AudioZoneManager } from '../audioZoneManager';
-import type { AudioZone, Position3D, AudioSource } from '../spatialAudio.types';
+import type { AudioZone, AudioSource } from '../spatialAudio.types';
 
 // ── Mock logger ──────────────────────────────────────────────────────────
 vi.mock('@/lib/logger', () => ({
@@ -121,11 +121,13 @@ describe('AudioZoneManager', () => {
   // ── Zone Transitions (Distance-Based Geometry) ─────────────────────────
   describe('checkZoneTransitions', () => {
     it('should detect position inside a zone', () => {
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 0, y: 0, z: 0 },
-        radius: 10,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 0, y: 0, z: 0 },
+          radius: 10,
+        })
+      );
 
       const activeZones = manager.checkZoneTransitions({ x: 3, y: 4, z: 0 });
       // distance = sqrt(9+16+0) = 5, which is < 10
@@ -134,11 +136,13 @@ describe('AudioZoneManager', () => {
     });
 
     it('should detect position outside a zone', () => {
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 0, y: 0, z: 0 },
-        radius: 5,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 0, y: 0, z: 0 },
+          radius: 5,
+        })
+      );
 
       const activeZones = manager.checkZoneTransitions({ x: 10, y: 10, z: 10 });
       // distance = sqrt(100+100+100) ≈ 17.3, which is > 5
@@ -146,11 +150,13 @@ describe('AudioZoneManager', () => {
     });
 
     it('should detect position on zone boundary', () => {
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 0, y: 0, z: 0 },
-        radius: 5,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 0, y: 0, z: 0 },
+          radius: 5,
+        })
+      );
 
       // Exactly on the boundary: distance = 5 ≤ 5
       const activeZones = manager.checkZoneTransitions({ x: 5, y: 0, z: 0 });
@@ -158,16 +164,20 @@ describe('AudioZoneManager', () => {
     });
 
     it('should detect position inside multiple overlapping zones', () => {
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 0, y: 0, z: 0 },
-        radius: 20,
-      }));
-      manager.addAudioZone(createZone({
-        id: 'z2',
-        position: { x: 5, y: 0, z: 0 },
-        radius: 15,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 0, y: 0, z: 0 },
+          radius: 20,
+        })
+      );
+      manager.addAudioZone(
+        createZone({
+          id: 'z2',
+          position: { x: 5, y: 0, z: 0 },
+          radius: 15,
+        })
+      );
 
       const activeZones = manager.checkZoneTransitions({ x: 3, y: 0, z: 0 });
       // z1: dist=3 ≤ 20 ✓, z2: dist=2 ≤ 15 ✓
@@ -175,11 +185,13 @@ describe('AudioZoneManager', () => {
     });
 
     it('should handle 3D distance correctly', () => {
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 10, y: 20, z: 30 },
-        radius: 10,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 10, y: 20, z: 30 },
+          radius: 10,
+        })
+      );
 
       // Position at (13, 24, 30): distance = sqrt(9+16+0) = 5 ≤ 10
       const inside = manager.checkZoneTransitions({ x: 13, y: 24, z: 30 });
@@ -205,13 +217,15 @@ describe('AudioZoneManager', () => {
       const mockCtx = { currentTime: 1.0 } as unknown as AudioContext;
 
       manager.setAudioContext(mockCtx);
-      manager.addAudioZone(createZone({
-        id: 'z1',
-        position: { x: 0, y: 0, z: 0 },
-        radius: 10,
-        gainModifier: 0.8,
-        occlusion: 0.2,
-      }));
+      manager.addAudioZone(
+        createZone({
+          id: 'z1',
+          position: { x: 0, y: 0, z: 0 },
+          radius: 10,
+          gainModifier: 0.8,
+          occlusion: 0.2,
+        })
+      );
 
       const source = createSource({
         position: { x: 0, y: 0, z: 0 },
@@ -235,10 +249,12 @@ describe('AudioZoneManager', () => {
       const mockCtx = { currentTime: 0 } as unknown as AudioContext;
 
       manager.setAudioContext(mockCtx);
-      manager.addAudioZone(createZone({
-        position: { x: 0, y: 0, z: 0 },
-        radius: 5,
-      }));
+      manager.addAudioZone(
+        createZone({
+          position: { x: 0, y: 0, z: 0 },
+          radius: 5,
+        })
+      );
 
       const source = createSource({
         position: { x: 100, y: 100, z: 100 },

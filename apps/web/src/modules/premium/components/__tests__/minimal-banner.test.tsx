@@ -25,24 +25,24 @@ import { MinimalBanner } from '../premium-banner/minimal-banner';
 
 describe('MinimalBanner', () => {
   it('renders "Go Premium" text', () => {
-    render(<MinimalBanner onUpgrade={vi.fn()} />);
+    render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     expect(screen.getByText('Go Premium')).toBeInTheDocument();
   });
 
   it('renders upgrade button', () => {
-    render(<MinimalBanner onUpgrade={vi.fn()} />);
+    render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     expect(screen.getByText('Upgrade →')).toBeInTheDocument();
   });
 
   it('renders sparkles icon', () => {
-    render(<MinimalBanner onUpgrade={vi.fn()} />);
+    render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     expect(screen.getByTestId('sparkles-icon')).toBeInTheDocument();
   });
 
   it('calls onUpgrade when upgrade button is clicked', async () => {
     const user = userEvent.setup();
     const onUpgrade = vi.fn();
-    render(<MinimalBanner onUpgrade={onUpgrade} />);
+    render(<MinimalBanner onUpgrade={onUpgrade} className="" />);
     await user.click(screen.getByText('Upgrade →'));
     expect(onUpgrade).toHaveBeenCalledOnce();
   });
@@ -53,19 +53,19 @@ describe('MinimalBanner', () => {
   });
 
   it('renders gradient background', () => {
-    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} />);
+    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     const div = container.firstChild as HTMLElement;
     expect(div.className).toContain('bg-gradient-to-r');
   });
 
   it('renders as a flex container', () => {
-    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} />);
+    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     const div = container.firstChild as HTMLElement;
     expect(div.className).toContain('flex');
   });
 
   it('renders without className', () => {
-    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} />);
+    const { container } = render(<MinimalBanner onUpgrade={vi.fn()} className="" />);
     expect(container.firstChild).toBeInTheDocument();
   });
 });

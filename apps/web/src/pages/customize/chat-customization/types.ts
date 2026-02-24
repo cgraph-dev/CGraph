@@ -5,6 +5,9 @@
 
 import type { CustomizationItem } from '@/modules/settings/components/customize';
 
+/** Entrance animation type for chat bubbles */
+export type EntranceAnimation = 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
+
 /** Chat customization category tabs */
 export type ChatCategory = 'bubbles' | 'effects' | 'reactions' | 'advanced';
 
@@ -61,7 +64,7 @@ export interface AdvancedControlsSectionProps {
   enableHoverEffects: boolean;
   onHoverEffectsChange: (value: boolean) => void;
   selectedEntranceAnimation: string;
-  onEntranceAnimationChange: (value: string) => void;
+  onEntranceAnimationChange: (value: EntranceAnimation) => void;
 }
 
 /** Category definition for tab navigation */

@@ -12,6 +12,7 @@ import { getMessageSenderId } from '@/lib/apiUtils';
 import { formatDateHeader, groupMessagesByDate } from '@/lib/chat/messageUtils';
 import { handleAddReaction } from '@/lib/chat/reactionUtils';
 import { GlassCard } from '@/shared/components/ui';
+import { springs } from '@/lib/animation-presets';
 import { AnimatedMessageWrapper } from './animated-message-wrapper';
 import { AnimatedReactionBubble } from './animated-reaction-bubble';
 import { TypingIndicator } from './typing-indicator';

@@ -15,7 +15,8 @@ vi.mock('framer-motion', () => ({
         ({ children, className, ..._rest }: React.PropsWithChildren<Record<string, unknown>>) => {
           const Tag = (
             typeof prop === 'string' ? prop : 'div'
-          ) as keyof React.JSX.IntrinsicElements;
+          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any;
           // Pass through common HTML attributes
           const passthrough: Record<string, unknown> = { className: className as string };
           for (const k of ['placeholder', 'value', 'onChange', 'rows', 'maxLength'] as const) {

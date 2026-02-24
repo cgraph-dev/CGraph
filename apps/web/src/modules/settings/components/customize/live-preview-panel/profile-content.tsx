@@ -9,7 +9,7 @@ import type {
   ThemePreset,
   TitleDisplay,
 } from '@/modules/settings/store/customization';
-import { springs, tweens, loop } from '@/lib/animation-presets';
+import { springs, tweens, loop, loopWithDelay } from '@/lib/animation-presets';
 import { GlowText, FireText } from '@/shared/components/ui';
 import { MOCK_BADGES } from './constants';
 import type { ThemeColors } from './types';
@@ -30,6 +30,9 @@ interface ProfileContentProps {
   speedMultiplier: number;
 }
 
+/**
+ *
+ */
 export function ProfileContent({
   settings,
   colors,

@@ -1,5 +1,5 @@
 /** @module thread-prefix tests */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ThreadPrefix from '../thread-prefix';
 
@@ -19,14 +19,22 @@ vi.mock('framer-motion', () => {
           if (!cache.has(prop)) {
             const Tag = (
               typeof prop === 'string' ? prop : 'div'
-            ) as keyof React.JSX.IntrinsicElements;
-            cache.set(prop, function MotionMock({ children, className, style, ..._rest }) {
-              return (
-                <Tag className={className as string} style={style as React.CSSProperties}>
-                  {children}
-                </Tag>
-              );
-            });
+            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any;
+            cache.set(
+              prop,
+              function MotionMock({
+                children,
+                className,
+                style,
+              }: React.PropsWithChildren<Record<string, unknown>>) {
+                return (
+                  <Tag className={className as string} style={style as React.CSSProperties}>
+                    {children}
+                  </Tag>
+                );
+              }
+            );
           }
           return cache.get(prop);
         },
@@ -35,7 +43,7 @@ vi.mock('framer-motion', () => {
   };
 });
 
-const mockPrefix = { name: 'SOLVED', color: '#22c55e' };
+const mockPrefix = { id: 'prefix-1', name: 'SOLVED', color: '#22c55e' };
 
 describe('ThreadPrefix', () => {
   it('returns null for null prefix', () => {

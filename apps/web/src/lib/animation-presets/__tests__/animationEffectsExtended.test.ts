@@ -1,4 +1,3 @@
-// @ts-expect-error — test file uses partial mocks that don't satisfy full type constraints
 /**
  * Animation Effects Extended Tests
  *
@@ -52,7 +51,7 @@ describe('particleAnimations (extended)', () => {
     it('moves upward (negative y) and fades out', () => {
       const { animate } = particleAnimations.rise;
       const y = animate.y as number[];
-      expect(y[1]).toBeLessThan(y[0]);
+      expect(y[1]!).toBeLessThan(y[0]!);
       const opacity = animate.opacity as number[];
       expect(opacity[opacity.length - 1]).toBe(0);
     });
@@ -66,7 +65,7 @@ describe('particleAnimations (extended)', () => {
   describe('fall', () => {
     it('moves downward (positive y)', () => {
       const y = particleAnimations.fall.animate.y as number[];
-      expect(y[1]).toBeGreaterThan(y[0]);
+      expect(y[1]!).toBeGreaterThan(y[0]!);
     });
   });
 

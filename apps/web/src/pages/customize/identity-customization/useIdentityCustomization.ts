@@ -26,6 +26,9 @@ import {
 
 export type SectionId = 'borders' | 'titles' | 'badges' | 'layouts';
 
+/**
+ *
+ */
 export function useIdentityCustomization() {
   const { user } = useAuthStore();
   const { level: _level } = useGamificationStore();
@@ -164,13 +167,13 @@ export function useIdentityCustomization() {
     }
   };
 
-  const handleSelectLayout = (layoutId: ProfileCardStyle, layout: ProfileLayout) => {
+  const handleSelectLayout = (layoutId: string, layout: ProfileLayout) => {
     if (!layout.unlocked) {
       toast('👁️ Previewing layout - Premium required to use', { icon: '✨', duration: 3000 });
       return;
     }
     updateIdentity('profileLayout', layoutId);
-    store.setProfileCardStyle(layoutId);
+    store.setProfileCardStyle(layoutId as ProfileCardStyle);
   };
 
   const handleSaveChanges = async () => {

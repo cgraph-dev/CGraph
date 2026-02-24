@@ -12,10 +12,11 @@ vi.mock('framer-motion', () => ({
     {
       get:
         (_target, prop) =>
-        ({ children, className, ..._rest }: React.PropsWithChildren<Record<string, unknown>>) => {
+        ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
           const Tag = (
             typeof prop === 'string' ? prop : 'div'
-          ) as keyof React.JSX.IntrinsicElements;
+          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any;
           return <Tag className={className as string}>{children}</Tag>;
         },
     }

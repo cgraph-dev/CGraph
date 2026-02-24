@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import * as Y from 'yjs';
 import { PhoenixProvider, getUserColor, type PhoenixProviderOptions } from './phoenix-provider';
-import { useSocket } from '@/hooks/useSocket';
+import { useSocket } from '@/lib/socket';
 import type { Awareness } from 'y-protocols/awareness';
 
 export interface CollaboratorInfo {

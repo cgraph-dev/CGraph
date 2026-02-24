@@ -4,14 +4,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div className={className as string}>{children}</div>
     ),
-    button: ({
-      children,
-      onClick,
-      ..._props
-    }: React.PropsWithChildren<Record<string, unknown>>) => (
+    button: ({ children, onClick }: React.PropsWithChildren<Record<string, unknown>>) => (
       <button onClick={onClick as React.MouseEventHandler}>{children}</button>
     ),
   },
@@ -106,7 +102,7 @@ describe('PrivacySettingsPanel', () => {
     render(<PrivacySettingsPanel />);
     const selects = screen.getAllByRole('combobox');
     if (selects.length > 0) {
-      fireEvent.change(selects[0], { target: { value: 'friends' } });
+      fireEvent.change(selects[0]!, { target: { value: 'friends' } });
       await waitFor(() => {
         expect(mockUpdatePrivacySettings).toHaveBeenCalled();
       });

@@ -7,7 +7,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { tweens, springs } from '@/lib/animation-presets';
+import { tweens, springs, loop } from '@/lib/animation-presets';
 
 export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read';
 
@@ -68,6 +68,9 @@ function DoubleCheck({ color }: { color: string }) {
   );
 }
 
+/**
+ *
+ */
 export function MessageStatusIndicator({ status }: MessageStatusIndicatorProps) {
   return (
     <span className="inline-flex items-center">

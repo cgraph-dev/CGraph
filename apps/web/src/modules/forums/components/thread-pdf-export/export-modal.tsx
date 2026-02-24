@@ -12,6 +12,7 @@ import type { ExportModalProps, PDFExportOptions } from './types';
 import { DEFAULT_OPTIONS, PAGE_SIZES, FONT_SIZES } from './constants';
 import { OptionToggle } from './option-toggle';
 import { OptionSelect } from './option-select';
+import { springs } from '@/lib/animation-presets';
 
 // =============================================================================
 // ANIMATIONS

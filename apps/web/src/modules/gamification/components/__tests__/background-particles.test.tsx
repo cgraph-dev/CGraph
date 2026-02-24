@@ -9,7 +9,7 @@ import { render } from '@testing-library/react';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, style, ...rest }: Record<string, unknown>) => (
+    div: ({ children, className, style }: Record<string, unknown>) => (
       <div
         className={className as string}
         style={style as React.CSSProperties}

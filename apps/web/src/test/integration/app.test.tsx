@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // SKIPPED: This integration test hangs during module resolution because
 // `import App from '../../App'` triggers loading the entire application tree

@@ -9,19 +9,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...rest }: Record<string, unknown>) => (
+    div: ({ children, className }: Record<string, unknown>) => (
       <div className={className as string} data-testid="motion-div">
         {children as React.ReactNode}
       </div>
     ),
-    button: ({
-      children,
-      className,
-      onClick,
-      disabled,
-      style,
-      ...rest
-    }: Record<string, unknown>) => (
+    button: ({ children, className, onClick, disabled, style }: Record<string, unknown>) => (
       <button
         className={className as string}
         onClick={onClick as React.MouseEventHandler}

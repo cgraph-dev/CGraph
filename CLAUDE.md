@@ -563,6 +563,50 @@ cd apps/backend && mix phx.server
 
 Uses pnpm workspaces with Turborepo for task orchestration.
 
+### Framer Motion Type Patterns (CRITICAL — Session 55)
+
+> **Why this matters**: Incorrect `as const` usage on FM animation presets caused 195 type errors.
+> These patterns prevent the same regression.
+
+```typescript
+// ✅ CORRECT — tweens use `satisfies` (NOT `as const`)
+import { type Transition, type Variants } from 'framer-motion';
+
+export const tweens = {
+  fast: { type: 'tween', duration: 0.15, ease: 'easeOut' },
+  medium: { type: 'tween', duration: 0.3, ease: 'easeInOut' },
+} satisfies Record<string, Transition>;
+
+// ✅ CORRECT — springs CAN use `as const` (they're compatible)
+export const springs = {
+  gentle: { type: 'spring' as const, stiffness: 120, damping: 14 },
+} as const;
+
+// ✅ CORRECT — loop functions return explicit Transition type
+export function loop(duration = 1.5): Transition {
+  return { repeat: Infinity, repeatType: 'loop', duration, ease: 'linear' };
+}
+
+// ❌ WRONG — as const on tween ease values creates readonly literal types
+export const tweens = {
+  fast: { type: 'tween', duration: 0.15, ease: 'easeOut' as const }, // BREAKS
+} as const;
+```
+
+**Rule**: `springs` use `as const` (compatible). `tweens` use
+`satisfies Record<string, Transition>`. `loop`/`loopWithDelay` return `Transition` explicitly.
+
+### Subscription Tier Names
+
+After Session 55's stripe.exs alignment, the valid tiers are:
+
+```typescript
+type SubscriptionTier = 'free' | 'premium' | 'enterprise';
+// ❌ WRONG: 'plus', 'pro', 'business', 'ultimate'
+```
+
+Ensure test fixtures, mocks, and constants use these exact tier names.
+
 ### Mobile Animation/Gesture Guidelines (CRITICAL)
 
 > **Migration Reference:**
@@ -1241,7 +1285,45 @@ P2 Medium (3): 11. `moderation.ex` — heuristic expanded from 2 to 7 categories
 ### ⚠️ Web Test Mock Patterns (CRITICAL — Read Before Touching Tests)
 
 > **Why this matters**: The #1 cause of web test failures is incorrect mocking. These patterns were
-> established in Session 31 after fixing 41 failures. Future agents MUST follow them.
+> established in Session 31 (41 failures) and refined in Session 55 (429 TS errors → 0).
+
+#### Framer Motion Mock — Typed Proxy (Session 55 canonical pattern)
+
+```typescript
+// ✅ CORRECT — Tag typed as `any` to avoid JSX children type issues
+// ✅ CORRECT — No unused ...rest in destructuring (causes TS6133)
+vi.mock('framer-motion', () => {
+  const cache = new Map<
+    string | symbol,
+    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
+  >();
+  const motionProxy = new Proxy(
+    {} as Record<string, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>,
+    {
+      get: (_target, prop) => {
+        if (!cache.has(prop)) {
+          const Tag = (typeof prop === 'string' ? prop : 'div') as any; // NOT keyof JSX.IntrinsicElements
+          cache.set(prop, function MotionMock({ children, className, onClick, disabled }:
+            React.PropsWithChildren<Record<string, unknown>>) {
+            return <Tag className={className as string} onClick={onClick as React.MouseEventHandler}
+              disabled={disabled as boolean}>{children}</Tag>;
+          });
+        }
+        return cache.get(prop);
+      },
+    }
+  );
+  return {
+    motion: motionProxy,
+    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
+  };
+});
+
+// ❌ WRONG — keyof React.JSX.IntrinsicElements causes TS2745 on children prop
+const Tag = (...) as keyof React.JSX.IntrinsicElements; // BREAKS
+// ❌ WRONG — unused ...rest causes TS6133
+({ children, className, ...rest }: ...) => ... // rest is never read
+```
 
 #### Framer Motion Proxy Mock (handles ALL motion.\* elements)
 

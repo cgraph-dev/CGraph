@@ -9,12 +9,12 @@ import { render, screen } from '@testing-library/react';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, style, ...rest }: Record<string, unknown>) => (
+    div: ({ children, className, style }: Record<string, unknown>) => (
       <div className={className as string} style={style as React.CSSProperties}>
         {children as React.ReactNode}
       </div>
     ),
-    span: ({ children, className, ...rest }: Record<string, unknown>) => (
+    span: ({ children, className }: Record<string, unknown>) => (
       <span className={className as string}>{children as React.ReactNode}</span>
     ),
   },
@@ -105,8 +105,8 @@ describe('CompactBadgeShowcase', () => {
   });
 
   it('applies custom className', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <CompactBadgeShowcase badges={makeBadges(1) as any} className="custom" />
     );
     expect(container.firstElementChild?.className).toContain('custom');

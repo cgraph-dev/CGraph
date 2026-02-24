@@ -10,7 +10,6 @@ vi.mock('framer-motion', () => ({
       disabled,
       className,
       type,
-      ..._props
     }: React.PropsWithChildren<Record<string, unknown>>) => (
       <button
         onClick={onClick as React.MouseEventHandler}
@@ -21,10 +20,8 @@ vi.mock('framer-motion', () => ({
         {children}
       </button>
     ),
-    div: ({ children, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
-      <div>{children}</div>
-    ),
-    span: ({ children, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => <div>{children}</div>,
+    span: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => (
       <span>{children}</span>
     ),
   },

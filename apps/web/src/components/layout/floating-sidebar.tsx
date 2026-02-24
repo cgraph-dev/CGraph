@@ -19,19 +19,18 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { CustomStatusModal } from '@/modules/social/components/custom-status-modal';
 import type { SidebarProps, QuickAction } from './sidebar';
+import type { User } from '@/modules/auth/store';
 
 interface FloatingSidebarProps extends Omit<SidebarProps, 'variant'> {
   groups: Array<{ id: string; name: string; iconUrl?: string | null }>;
-  user: {
-    avatarUrl?: string | null;
-    displayName?: string | null;
-    username?: string | null;
-    [key: string]: unknown;
-  } | null;
+  user: User | null;
   isSubscribed: boolean;
   quickActions: QuickAction[];
 }
 
+/**
+ *
+ */
 export function FloatingSidebar({
   defaultCollapsed = false,
   showGroups = true,

@@ -37,7 +37,7 @@ import {
   ForumCategoryCard,
   ForumCategoryEmptyState,
 } from '@/modules/forums/components/forum-category-list/index';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, staggerConfigs } from '@/lib/animation-presets';
 
 /**
  * ForumCategoryList Component
@@ -86,6 +86,9 @@ interface _ForumPreview {
 }
 void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
+/**
+ *
+ */
 export function ForumCategoryList({
   categories,
   forums = [],
@@ -180,7 +183,12 @@ export function ForumCategoryList({
 
   if (variant === 'compact') {
     return (
-      <motion.div className={`space-y-2 ${className}`} variants={staggerContainer} initial="hidden" animate="show">
+      <motion.div
+        className={`space-y-2 ${className}`}
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+      >
         {categories.map((category) => (
           <motion.div key={category.id} variants={staggerItem}>
             {renderCompactCategory(category)}
@@ -192,7 +200,12 @@ export function ForumCategoryList({
 
   if (variant === 'cards') {
     return (
-      <motion.div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`} variants={staggerContainer} initial="hidden" animate="show">
+      <motion.div
+        className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`}
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+      >
         {categories.map((category, index) => (
           <motion.div key={category.id} variants={staggerItem}>
             <ForumCategoryCard
@@ -224,42 +237,42 @@ export function ForumCategoryList({
 
       {/* Category List */}
       <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-4">
-      {categories
-        .sort((a, b) => a.order - b.order)
-        .map((category) => (
-          <motion.div key={category.id} variants={staggerItem}>
-          <GlassCard variant="frosted" className="overflow-hidden">
-            {renderCategoryHeader(category)}
+        {categories
+          .sort((a, b) => a.order - b.order)
+          .map((category) => (
+            <motion.div key={category.id} variants={staggerItem}>
+              <GlassCard variant="frosted" className="overflow-hidden">
+                {renderCategoryHeader(category)}
 
-            <AnimatePresence>
-              {expandedCategories.has(category.id) && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  {showForumPreviews && (forumsByCategory[category.id]?.length ?? 0) > 0 ? (
-                    (forumsByCategory[category.id] ?? []).map((forum, index) => (
-                      <ForumRow
-                        key={forum.id}
-                        forum={forum}
-                        index={index}
-                        primaryColor={primaryColor}
-                        variant={variant}
-                        onForumClick={onForumClick}
-                      />
-                    ))
-                  ) : (
-                    <div className="border-t border-dark-700/50 p-4 pl-14 text-sm text-gray-500">
-                      No forums in this category yet
-                    </div>
+                <AnimatePresence>
+                  {expandedCategories.has(category.id) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                    >
+                      {showForumPreviews && (forumsByCategory[category.id]?.length ?? 0) > 0 ? (
+                        (forumsByCategory[category.id] ?? []).map((forum, index) => (
+                          <ForumRow
+                            key={forum.id}
+                            forum={forum}
+                            index={index}
+                            primaryColor={primaryColor}
+                            variant={variant}
+                            onForumClick={onForumClick}
+                          />
+                        ))
+                      ) : (
+                        <div className="border-t border-dark-700/50 p-4 pl-14 text-sm text-gray-500">
+                          No forums in this category yet
+                        </div>
+                      )}
+                    </motion.div>
                   )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </GlassCard>
-          </motion.div>
-        ))}
+                </AnimatePresence>
+              </GlassCard>
+            </motion.div>
+          ))}
       </motion.div>
 
       {categories.length === 0 && (

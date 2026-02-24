@@ -9,7 +9,6 @@ vi.mock('framer-motion', () => ({
       onClick,
       className,
       title,
-      ...rest
     }: React.PropsWithChildren<Record<string, unknown>>) => (
       <button
         onClick={onClick as React.MouseEventHandler}

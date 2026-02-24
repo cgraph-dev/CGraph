@@ -1,9 +1,10 @@
 # CGraph Project Status
 
-> **Version: 0.9.47** | Last Updated: Session 50 (Feb 23, 2026)
+> **Version: 0.9.48** | Last Updated: Session 55 (Feb 24, 2026)
 >
 > **⚠️ Scores re-calibrated in Session 36 after verification audit, updated Session 40 after Tiers
-> 1-10 code-quality sprints. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
+> 1-10 code-quality sprints, updated Session 55 after TypeScript error elimination (429 → 0) and
+> backend config fixes. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
 
 ---
 
@@ -33,27 +34,27 @@
 
 ### Key Improvements (v0.9.13)
 
-| Metric                | Before  | After       | Status                                |
-| --------------------- | ------- | ----------- | ------------------------------------- |
-| `.env` with secrets   | Present | **DELETED** | ✅                                    |
-| `as any` casts        | 27      | **10**      | ✅ 63% reduction                      |
-| `console.log` calls   | 325     | **65**      | ✅ 80% reduction                      |
-| Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction                      |
-| UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction                      |
-| SocketManager.ts      | 960     | **616**     | ✅ 36% reduction                      |
-| ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction                      |
-| Store facades         | 0       | **7**       | ✅ Consolidation done                 |
-| Facade hooks (new)    | 0       | **7**       | ✅                                    |
-| Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages                      |
-| Mobile screens (new)  | 0       | **7**       | ✅ Platform parity                    |
-| Passing tests         | 840     | **1,633**   | ✅ +793 tests                         |
-| Test failures         | 635     | **0**       | ✅ All resolved                       |
-| Facade test coverage  | 0       | **132**     | ✅ 7 test files                       |
-| Backend test files    | 127     | **163**     | ✅ +36 (83 ctrl, 70 ctx)              |
-| Web test files        | 0       | **171**     | ⚠️ Files exist but ~20% line coverage |
-| Mobile test files     | 0       | **15**      | ⚠️ Files exist but ~25% line coverage |
-| Build chunks          | ~150    | **168**     | ✅ Optimized                          |
-| TypeScript errors     | 0       | **0**       | ✅ Clean                              |
+| Metric                | Before  | After       | Status                                         |
+| --------------------- | ------- | ----------- | ---------------------------------------------- |
+| `.env` with secrets   | Present | **DELETED** | ✅                                             |
+| `as any` casts        | 27      | **10**      | ✅ 63% reduction                               |
+| `console.log` calls   | 325     | **65**      | ✅ 80% reduction                               |
+| Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction                               |
+| UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction                               |
+| SocketManager.ts      | 960     | **616**     | ✅ 36% reduction                               |
+| ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction                               |
+| Store facades         | 0       | **7**       | ✅ Consolidation done                          |
+| Facade hooks (new)    | 0       | **7**       | ✅                                             |
+| Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages                               |
+| Mobile screens (new)  | 0       | **7**       | ✅ Platform parity                             |
+| Passing tests         | 840     | **1,633**   | ✅ +793 tests                                  |
+| Test failures         | 635     | **0**       | ✅ All resolved                                |
+| Facade test coverage  | 0       | **132**     | ✅ 7 test files                                |
+| Backend test files    | 127     | **163**     | ✅ +36 (83 ctrl, 70 ctx)                       |
+| Web test files        | 0       | **171**     | ⚠️ Files exist but ~20% line coverage          |
+| Mobile test files     | 0       | **15**      | ⚠️ Files exist but ~25% line coverage          |
+| Build chunks          | ~150    | **168**     | ✅ Optimized                                   |
+| TypeScript errors     | 429     | **0**       | ✅ Session 55: FM type root cause + test fixes |
 
 ### Overall Health Score
 

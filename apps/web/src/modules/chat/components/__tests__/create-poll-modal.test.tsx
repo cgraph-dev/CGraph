@@ -20,10 +20,16 @@ vi.mock('framer-motion', () => {
         if (!cache.has(prop)) {
           const Tag = (
             typeof prop === 'string' ? prop : 'div'
-          ) as keyof React.JSX.IntrinsicElements;
+          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any;
           cache.set(
             prop,
-            function MotionMock({ children, className, onClick, disabled, ..._rest }) {
+            function MotionMock({
+              children,
+              className,
+              onClick,
+              disabled,
+            }: React.PropsWithChildren<Record<string, unknown>>) {
               return (
                 <Tag
                   className={className as string}
@@ -99,7 +105,7 @@ describe('CreatePollModal', () => {
 
     // Click first trash icon
     const trashButtons = screen.getAllByTestId('trash-icon');
-    fireEvent.click(trashButtons[0].closest('button')!);
+    fireEvent.click(trashButtons[0]!.closest('button')!);
     expect(screen.getAllByPlaceholderText(/Option \d/)).toHaveLength(2);
   });
 
@@ -120,9 +126,9 @@ describe('CreatePollModal', () => {
     await user.type(questionInput, 'Fav?');
 
     // Fill options — re-query after each to avoid stale refs
-    const opt1 = screen.getAllByPlaceholderText(/Option \d/)[0];
+    const opt1 = screen.getAllByPlaceholderText(/Option \d/)[0]!;
     await user.type(opt1, 'Red');
-    const opt2 = screen.getAllByPlaceholderText(/Option \d/)[1];
+    const opt2 = screen.getAllByPlaceholderText(/Option \d/)[1]!;
     await user.type(opt2, 'Blue');
 
     // Submit should now be enabled

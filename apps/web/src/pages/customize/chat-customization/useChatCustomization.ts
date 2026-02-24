@@ -28,12 +28,13 @@ import type {
   MessageEffect,
   ReactionStyle,
   CategoryDefinition,
+  EntranceAnimation,
 } from './types';
 import { BUBBLE_STYLES, MESSAGE_EFFECTS, REACTION_STYLES } from './constants';
 
-/** Entrance animation literal union used by the customization store */
-type EntranceAnimation = 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
-
+/**
+ *
+ */
 export function useChatCustomization() {
   const { user } = useAuthStore();
   const store = useCustomizationStore();

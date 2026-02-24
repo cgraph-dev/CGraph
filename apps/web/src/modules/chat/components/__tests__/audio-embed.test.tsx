@@ -3,7 +3,7 @@
  * @module chat/components/rich-media-embed/audio-embed
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 vi.mock('@heroicons/react/24/outline', () => ({

@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div className={className as string}>{children}</div>
     ),
   },
@@ -85,7 +85,7 @@ describe('NotificationSettingsPanel', () => {
     });
 
     const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]!);
 
     await waitFor(() => {
       expect(mockUpdateNotificationSettings).toHaveBeenCalled();

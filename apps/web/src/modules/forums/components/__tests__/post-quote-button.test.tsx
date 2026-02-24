@@ -53,7 +53,7 @@ import { useForumStore } from '@/modules/forums/store';
 describe('PostQuoteButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: [] as string[],
@@ -76,7 +76,7 @@ describe('PostQuoteButton', () => {
   });
 
   it('renders solid icon when post is in buffer', () => {
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: ['post-1'],
@@ -91,7 +91,7 @@ describe('PostQuoteButton', () => {
   });
 
   it('shows "Remove from multi-quote" title when selected', () => {
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: ['post-1'],
@@ -112,7 +112,7 @@ describe('PostQuoteButton', () => {
   });
 
   it('calls removeFromMultiQuote when selected post clicked', () => {
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: ['post-1'],
@@ -128,7 +128,7 @@ describe('PostQuoteButton', () => {
   });
 
   it('shows checkmark when selected', () => {
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: ['post-1'],
@@ -143,7 +143,7 @@ describe('PostQuoteButton', () => {
   });
 
   it('shows label when showLabel is true and selected', () => {
-    vi.mocked(useForumStore).mockImplementation(
+    (useForumStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) => {
         const state = {
           multiQuoteBuffer: ['post-1'],

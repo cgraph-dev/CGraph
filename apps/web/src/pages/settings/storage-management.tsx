@@ -13,7 +13,7 @@ import {
   DocumentIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
-import { tweens, springs } from '@/lib/animation-presets';
+import { tweens, springs, entranceVariants } from '@/lib/animation-presets';
 
 interface StorageBreakdown {
   messages: number; // bytes
@@ -42,6 +42,9 @@ const CATEGORIES = [
 
 type AutoDownloadOption = 'always' | 'wifi' | 'never';
 
+/**
+ *
+ */
 export function StorageManagement() {
   const [storage, setStorage] = useState<StorageBreakdown>({
     messages: 0,

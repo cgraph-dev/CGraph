@@ -21,7 +21,7 @@ const resultItem = {
 import { GlassCard } from '@/shared/components/ui';
 import { SearchResultItem } from './search-result-item';
 import type { SearchResult } from './types';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, staggerConfigs } from '@/lib/animation-presets';
 
 interface SearchResultsProps {
   isOpen: boolean;
@@ -35,6 +35,9 @@ interface SearchResultsProps {
   onSuggestionClick: (suggestion: string) => void;
 }
 
+/**
+ *
+ */
 export function SearchResults({
   isOpen,
   isLoading,
@@ -61,7 +64,12 @@ export function SearchResults({
             {isLoading ? (
               <LoadingState primaryColor={primaryColor} />
             ) : results.length > 0 ? (
-              <motion.div className="divide-y divide-dark-700" variants={resultContainer} initial="hidden" animate="show">
+              <motion.div
+                className="divide-y divide-dark-700"
+                variants={resultContainer}
+                initial="hidden"
+                animate="show"
+              >
                 {results.map((result, index) => (
                   <motion.div key={result.id} variants={resultItem}>
                     <SearchResultItem

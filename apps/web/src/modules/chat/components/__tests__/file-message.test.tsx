@@ -13,15 +13,11 @@ vi.mock('framer-motion', () => ({
     {
       get:
         (_target, prop) =>
-        ({
-          children,
-          className,
-          onClick,
-          ..._rest
-        }: React.PropsWithChildren<Record<string, unknown>>) => {
+        ({ children, className, onClick }: React.PropsWithChildren<Record<string, unknown>>) => {
           const Tag = (
             typeof prop === 'string' ? prop : 'div'
-          ) as keyof React.JSX.IntrinsicElements;
+          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any;
           return (
             <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>
               {children}

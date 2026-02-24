@@ -56,6 +56,9 @@ import type {
   ThreadPollData,
 } from './socket-manager-forum-thread';
 
+/**
+ *
+ */
 export class SocketManager {
   private state: SocketManagerState = {
     socket: null,
@@ -75,8 +78,11 @@ export class SocketManager {
   private readonly JOIN_DEBOUNCE_MS = 1000;
   private peekTimeouts = new Set<ReturnType<typeof setTimeout>>();
 
-  // State accessors
-  private get socket() {
+  // State accessors — socket is public for collaborative editor access
+  /**
+   *
+   */
+  get socket() {
     return this.state.socket;
   }
   private get channels() {
@@ -94,23 +100,26 @@ export class SocketManager {
   private get lastJoinAttempts() {
     return this.state.lastJoinAttempts;
   }
-  private get forumCallbacks() {
-    return this.state.forumCallbacks;
-  }
-  private get threadCallbacks() {
-    return this.state.threadCallbacks;
-  }
 
   // ── Connection Lifecycle ──────────────────────────────────────────
 
+  /**
+   *
+   */
   connect(): Promise<void> {
     return connectSocket(this.state);
   }
 
+  /**
+   *
+   */
   disconnect() {
     disconnectSocket(this.state);
   }
 
+  /**
+   *
+   */
   async reconnectWithNewToken(): Promise<void> {
     logger.log('Reconnecting socket with new token...');
     this.disconnect();
@@ -123,13 +132,22 @@ export class SocketManager {
     }
   }
 
+  /**
+   *
+   */
   isConnected(): boolean {
     return this.socket?.isConnected() ?? false;
   }
+  /**
+   *
+   */
   getSocket() {
     return this.socket;
   }
 
+  /**
+   *
+   */
   joinUserChannel(userId: string): Channel | null {
     return joinUserChannelImpl(
       this.socket,
@@ -140,10 +158,16 @@ export class SocketManager {
     );
   }
 
+  /**
+   *
+   */
   leaveUserChannel(userId: string) {
     leaveUserChannelImpl(userId, this.channels);
   }
 
+  /**
+   *
+   */
   joinPresenceLobby(): Channel | null {
     return joinPresenceLobbyImpl(
       this.socket,
@@ -154,18 +178,30 @@ export class SocketManager {
     );
   }
 
+  /**
+   *
+   */
   leavePresenceLobby() {
     leavePresenceLobbyImpl(this.channels, this.presences, this.onlineUsers);
   }
 
+  /**
+   *
+   */
   isFriendOnline(userId: string): boolean {
     return isFriendOnlineImpl(userId, this.onlineUsers);
   }
 
+  /**
+   *
+   */
   getOnlineFriends(): string[] {
     return getOnlineFriendsImpl(this.onlineUsers);
   }
 
+  /**
+   *
+   */
   onStatusChange(cb: (cId: string, uId: string, online: boolean) => void): () => void {
     this.statusListeners.add(cb);
     return () => this.statusListeners.delete(cb);
@@ -175,18 +211,30 @@ export class SocketManager {
     this.statusListeners.forEach((cb) => cb(cId, uId, online));
   }
 
+  /**
+   *
+   */
   getOnlineUsers(conversationId: string): string[] {
     return getOnlineUsersImpl(conversationId, this.onlineUsers);
   }
 
+  /**
+   *
+   */
   isUserOnline(conversationId: string, userId: string): boolean {
     return isUserOnlineImpl(conversationId, userId, this.onlineUsers);
   }
 
+  /**
+   *
+   */
   getAllOnlineStatuses(): Map<string, Set<string>> {
     return getAllOnlineStatusesImpl(this.onlineUsers);
   }
 
+  /**
+   *
+   */
   joinConversation(conversationId: string): Channel | null {
     return joinConversationImpl(
       this.socket,
@@ -202,6 +250,9 @@ export class SocketManager {
     );
   }
 
+  /**
+   *
+   */
   leaveConversation(conversationId: string) {
     leaveConversationImpl(
       conversationId,
@@ -213,66 +264,122 @@ export class SocketManager {
     );
   }
 
+  /**
+   *
+   */
   joinGroupChannel(channelId: string): Channel | null {
     return joinGroupChannelImpl(this.socket, channelId, this.channels, this.connect.bind(this));
   }
 
+  /**
+   *
+   */
   leaveGroupChannel(channelId: string) {
     leaveGroupChannelImpl(channelId, this.channels);
   }
 
+  /**
+   *
+   */
   joinForum(forumId: string, callbacks?: ForumChannelCallbacks): Channel | null {
     return joinForumFT(this.state, forumId, callbacks);
   }
 
+  /**
+   *
+   */
   leaveForum(forumId: string) {
     leaveForumFT(this.state, forumId);
   }
 
+  /**
+   *
+   */
   subscribeToForum(forumId: string): Promise<{ subscribed: boolean }> {
     return subscribeToForumFT(this.state, forumId);
   }
 
+  /**
+   *
+   */
   unsubscribeFromForum(forumId: string): Promise<{ subscribed: boolean }> {
     return unsubscribeFromForumFT(this.state, forumId);
   }
 
+  /**
+   *
+   */
   joinThread(threadId: string, callbacks?: ThreadChannelCallbacks): Channel | null {
     return joinThreadFT(this.state, threadId, callbacks);
   }
 
+  /**
+   *
+   */
   leaveThread(threadId: string) {
     leaveThreadFT(this.state, threadId);
   }
 
+  /**
+   *
+   */
   voteOnThread(threadId: string, value: 1 | -1 | 0): Promise<ThreadVotePayload> {
     return voteOnThreadFT(this.state, threadId, value);
   }
 
-  voteOnComment(threadId: string, commentId: string, value: 1 | -1 | 0): Promise<CommentVotePayload> {
+  /**
+   *
+   */
+  voteOnComment(
+    threadId: string,
+    commentId: string,
+    value: 1 | -1 | 0
+  ): Promise<CommentVotePayload> {
     return voteOnCommentFT(this.state, threadId, commentId, value);
   }
 
-  sendComment(threadId: string, content: string, parentId?: string): Promise<{ comment_id: string }> {
+  /**
+   *
+   */
+  sendComment(
+    threadId: string,
+    content: string,
+    parentId?: string
+  ): Promise<{ comment_id: string }> {
     return sendCommentFT(this.state, threadId, content, parentId);
   }
 
+  /**
+   *
+   */
   sendThreadTyping(threadId: string, isTyping: boolean) {
     sendThreadTypingFT(this.state, threadId, isTyping);
   }
 
+  /**
+   *
+   */
   voteOnPoll(threadId: string, optionId: string): Promise<{ poll: ThreadPollData }> {
     return voteOnPollFT(this.state, threadId, optionId);
   }
 
+  /**
+   *
+   */
   getThreadViewers(threadId: string): Promise<{ viewers: ThreadViewerPayload[] }> {
     return getThreadViewersFT(this.state, threadId);
   }
 
+  /**
+   *
+   */
   sendTyping(topic: string, isTyping: boolean) {
     sendTypingImpl(topic, isTyping, this.channels);
   }
 
+  /**
+   *
+   */
   sendReaction(
     conversationId: string,
     messageId: string,
@@ -282,10 +389,16 @@ export class SocketManager {
     sendReactionImpl(conversationId, messageId, emoji, action, this.channels);
   }
 
+  /**
+   *
+   */
   getChannel(topic: string): Channel | undefined {
     return this.channels.get(topic);
   }
 
+  /**
+   *
+   */
   async peekConversationsPresence(conversationIds: string[]): Promise<() => void> {
     return peekPresenceImpl(
       conversationIds,

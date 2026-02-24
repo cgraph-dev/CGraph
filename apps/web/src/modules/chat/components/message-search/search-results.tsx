@@ -9,7 +9,7 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import { MessageSkeleton } from '@/components/ui/skeletons';
 import type { SearchResultsProps } from './types';
 import { SearchResultCard } from './search-result-card';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, staggerConfigs } from '@/lib/animation-presets';
 
 const resultContainer = {
   hidden: {},
@@ -46,7 +46,12 @@ export function SearchResults({
   // Results found
   if (searchQuery && results.length > 0) {
     return (
-      <motion.div className="flex-1 space-y-2 overflow-y-auto p-4" variants={resultContainer} initial="hidden" animate="show">
+      <motion.div
+        className="flex-1 space-y-2 overflow-y-auto p-4"
+        variants={resultContainer}
+        initial="hidden"
+        animate="show"
+      >
         <p className="mb-2 text-xs text-white/50">
           {results.length} result{results.length !== 1 ? 's' : ''} found
         </p>

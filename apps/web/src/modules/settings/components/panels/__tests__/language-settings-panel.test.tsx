@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ..._props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    div: ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div className={className as string}>{children}</div>
     ),
   },
@@ -60,7 +60,7 @@ describe('LanguageSettingsPanel', () => {
     render(<LanguageSettingsPanel />);
     const selects = screen.getAllByRole('combobox');
     // Language select should have 10 options
-    const languageSelect = selects[0];
+    const languageSelect = selects[0]!;
     expect(languageSelect).toBeInTheDocument();
     expect(languageSelect.querySelectorAll('option').length).toBeGreaterThanOrEqual(5);
   });
@@ -81,7 +81,7 @@ describe('LanguageSettingsPanel', () => {
   it('calls updateLocaleSettings when language changes', async () => {
     render(<LanguageSettingsPanel />);
     const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'es' } });
+    fireEvent.change(selects[0]!, { target: { value: 'es' } });
 
     await waitFor(() => {
       expect(mockUpdateLocaleSettings).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe('LanguageSettingsPanel', () => {
   it('calls updateLocaleSettings when date format changes', async () => {
     render(<LanguageSettingsPanel />);
     const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[1], { target: { value: 'dmy' } });
+    fireEvent.change(selects[1]!, { target: { value: 'dmy' } });
 
     await waitFor(() => {
       expect(mockUpdateLocaleSettings).toHaveBeenCalledWith(
@@ -105,7 +105,7 @@ describe('LanguageSettingsPanel', () => {
   it('calls updateLocaleSettings when time format changes', async () => {
     render(<LanguageSettingsPanel />);
     const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[2], { target: { value: 'twenty_four_hour' } });
+    fireEvent.change(selects[2]!, { target: { value: 'twenty_four_hour' } });
 
     await waitFor(() => {
       expect(mockUpdateLocaleSettings).toHaveBeenCalledWith(

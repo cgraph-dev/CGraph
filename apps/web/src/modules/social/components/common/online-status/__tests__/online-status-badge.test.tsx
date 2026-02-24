@@ -19,8 +19,9 @@ vi.mock('framer-motion', () => {
           if (!cache.has(prop)) {
             const Tag = (
               typeof prop === 'string' ? prop : 'div'
-            ) as keyof React.JSX.IntrinsicElements;
-            cache.set(prop, function MotionMock({ children, className, ..._rest }) {
+            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any;
+            cache.set(prop, function MotionMock({ children, className }) {
               return <Tag className={className as string}>{children}</Tag>;
             });
           }

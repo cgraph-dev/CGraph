@@ -13,7 +13,7 @@ import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
-import { tweens, loop, springs } from '@/lib/animation-presets';
+import { tweens, loop, springs, staggerConfigs } from '@/lib/animation-presets';
 
 interface SidebarProps {
   user: User | null;
@@ -24,6 +24,9 @@ interface SidebarProps {
   navItems: NavItem[];
 }
 
+/**
+ *
+ */
 export default function Sidebar({
   user,
   location,

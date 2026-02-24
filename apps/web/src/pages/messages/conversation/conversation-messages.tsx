@@ -8,6 +8,7 @@ import { formatDateHeader } from '@/lib/chat/messageUtils';
 import type { MessageGroup } from '@/lib/chat/messageUtils';
 import { TypingIndicator } from '@/modules/chat/components';
 import { GlassCard } from '@/shared/components/ui';
+import { springs } from '@/lib/animation-presets';
 import { ScrollToBottomButton } from '@/modules/chat/components/scroll-to-bottom-button';
 import { MessageListSkeleton } from '@/components/ui/skeletons';
 import { MessageRow } from './message-row';

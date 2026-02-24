@@ -152,14 +152,14 @@ describe('coinShopData — DEFAULT_PACKAGES', () => {
 
   it('packages are sorted by price ascending', () => {
     for (let i = 1; i < DEFAULT_PACKAGES.length; i++) {
-      expect(DEFAULT_PACKAGES[i].price).toBeGreaterThan(DEFAULT_PACKAGES[i - 1].price);
+      expect(DEFAULT_PACKAGES[i]!.price).toBeGreaterThan(DEFAULT_PACKAGES[i - 1]!.price);
     }
   });
 
   it('exactly one package is marked popular', () => {
     const popular = DEFAULT_PACKAGES.filter((p) => p.isPopular);
     expect(popular).toHaveLength(1);
-    expect(popular[0].id).toBe('popular');
+    expect(popular[0]!.id).toBe('popular');
   });
 
   it('all packages use USD currency', () => {
@@ -170,7 +170,7 @@ describe('coinShopData — DEFAULT_PACKAGES', () => {
 
   it('coins increase with price', () => {
     for (let i = 1; i < DEFAULT_PACKAGES.length; i++) {
-      expect(DEFAULT_PACKAGES[i].coins).toBeGreaterThan(DEFAULT_PACKAGES[i - 1].coins);
+      expect(DEFAULT_PACKAGES[i]!.coins).toBeGreaterThan(DEFAULT_PACKAGES[i - 1]!.coins);
     }
   });
 

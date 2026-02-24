@@ -1,6 +1,6 @@
 /** @module keyboard-shortcuts-modal tests */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { KeyboardShortcutsModal } from '../keyboard-shortcuts-modal';
 
 vi.mock('framer-motion', () => {
@@ -19,8 +19,9 @@ vi.mock('framer-motion', () => {
           if (!cache.has(prop)) {
             const Tag = (
               typeof prop === 'string' ? prop : 'div'
-            ) as keyof React.JSX.IntrinsicElements;
-            cache.set(prop, function MotionMock({ children, className, onClick, ..._rest }) {
+            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any;
+            cache.set(prop, function MotionMock({ children, className, onClick }) {
               return (
                 <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>
                   {children}

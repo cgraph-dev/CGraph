@@ -44,15 +44,15 @@ describe('ListenerManager', () => {
       await manager.initializeHRTF();
 
       const listener = ctx.listener as unknown as Record<string, { value: number }>;
-      expect(listener.positionX.value).toBe(0);
-      expect(listener.positionY.value).toBe(0);
-      expect(listener.positionZ.value).toBe(0);
-      expect(listener.forwardX.value).toBe(0);
-      expect(listener.forwardY.value).toBe(0);
-      expect(listener.forwardZ.value).toBe(-1);
-      expect(listener.upX.value).toBe(0);
-      expect(listener.upY.value).toBe(1);
-      expect(listener.upZ.value).toBe(0);
+      expect(listener.positionX!.value).toBe(0);
+      expect(listener.positionY!.value).toBe(0);
+      expect(listener.positionZ!.value).toBe(0);
+      expect(listener.forwardX!.value).toBe(0);
+      expect(listener.forwardY!.value).toBe(0);
+      expect(listener.forwardZ!.value).toBe(-1);
+      expect(listener.upX!.value).toBe(0);
+      expect(listener.upY!.value).toBe(1);
+      expect(listener.upZ!.value).toBe(0);
     });
 
     it('should handle null audio context', async () => {
@@ -70,9 +70,9 @@ describe('ListenerManager', () => {
         string,
         { setValueAtTime: ReturnType<typeof vi.fn> }
       >;
-      expect(listener.positionX.setValueAtTime).toHaveBeenCalledWith(10, 0);
-      expect(listener.positionY.setValueAtTime).toHaveBeenCalledWith(20, 0);
-      expect(listener.positionZ.setValueAtTime).toHaveBeenCalledWith(30, 0);
+      expect(listener.positionX!.setValueAtTime).toHaveBeenCalledWith(10, 0);
+      expect(listener.positionY!.setValueAtTime).toHaveBeenCalledWith(20, 0);
+      expect(listener.positionZ!.setValueAtTime).toHaveBeenCalledWith(30, 0);
     });
   });
 

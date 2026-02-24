@@ -113,12 +113,6 @@ vi.mock('../sessionManager', () => ({
 }));
 
 // Mock logger
-const _mockLoggerFactory = () => ({
-  log: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-  debug: vi.fn(),
-});
 vi.mock('../../logger', () => {
   const ml = { log: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() };
   return { e2eeLogger: ml, createLogger: () => ml, logger: ml };

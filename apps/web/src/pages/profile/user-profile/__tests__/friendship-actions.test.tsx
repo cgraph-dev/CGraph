@@ -12,10 +12,11 @@ vi.mock('framer-motion', () => ({
     {
       get:
         (_target, prop) =>
-        ({ children, className, ..._rest }: React.PropsWithChildren<Record<string, unknown>>) => {
+        ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
           const Tag = (
             typeof prop === 'string' ? prop : 'div'
-          ) as keyof React.JSX.IntrinsicElements;
+          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any;
           return <Tag className={className as string}>{children}</Tag>;
         },
     }
@@ -37,7 +38,6 @@ vi.mock('@/components', () => ({
     variant,
     isLoading,
     leftIcon,
-    ..._rest
   }: React.PropsWithChildren<Record<string, unknown>>) => (
     <button
       onClick={onClick as React.MouseEventHandler}
@@ -46,7 +46,7 @@ vi.mock('@/components', () => ({
     >
       {leftIcon as React.ReactNode}
       {children}
-      {isLoading && <span data-testid="loading" />}
+      {!!isLoading && <span data-testid="loading" />}
     </button>
   ),
 }));
@@ -62,7 +62,6 @@ vi.mock('@/components/navigation/dropdown', () => ({
     children,
     onClick,
     danger,
-    ..._rest
   }: React.PropsWithChildren<{ onClick: () => void; danger?: boolean }>) => (
     <button onClick={onClick} data-danger={danger}>
       {children}

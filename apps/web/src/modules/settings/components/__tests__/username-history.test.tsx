@@ -18,8 +18,20 @@ vi.mock('lucide-react', () => ({
 import { UsernameHistorySection } from '../username-history';
 
 const mockHistory = [
-  { id: '1', oldUsername: 'oldname1', newUsername: 'newname1', changedAt: new Date('2024-01-15') },
-  { id: '2', oldUsername: 'oldname2', newUsername: 'newname2', changedAt: new Date('2024-03-20') },
+  {
+    id: '1',
+    oldUsername: 'oldname1',
+    newUsername: 'newname1',
+    changedAt: new Date('2024-01-15'),
+    changedByAdmin: false,
+  },
+  {
+    id: '2',
+    oldUsername: 'oldname2',
+    newUsername: 'newname2',
+    changedAt: new Date('2024-03-20'),
+    changedByAdmin: false,
+  },
 ];
 
 describe('UsernameHistorySection', () => {

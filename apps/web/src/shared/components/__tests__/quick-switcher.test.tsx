@@ -25,21 +25,19 @@ vi.mock('framer-motion', () => {
           if (!cache.has(prop)) {
             const Tag = (
               typeof prop === 'string' ? prop : 'div'
-            ) as keyof React.JSX.IntrinsicElements;
-            cache.set(
-              prop,
-              function MotionMock({ children, className, onClick, onMouseEnter, ..._rest }) {
-                return (
-                  <Tag
-                    className={className as string}
-                    onClick={onClick as React.MouseEventHandler}
-                    onMouseEnter={onMouseEnter as React.MouseEventHandler}
-                  >
-                    {children}
-                  </Tag>
-                );
-              }
-            );
+            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any;
+            cache.set(prop, function MotionMock({ children, className, onClick, onMouseEnter }) {
+              return (
+                <Tag
+                  className={className as string}
+                  onClick={onClick as React.MouseEventHandler}
+                  onMouseEnter={onMouseEnter as React.MouseEventHandler}
+                >
+                  {children}
+                </Tag>
+              );
+            });
           }
           return cache.get(prop);
         },

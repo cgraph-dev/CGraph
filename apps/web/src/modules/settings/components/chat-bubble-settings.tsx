@@ -8,9 +8,7 @@ import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from '
 import { useChatCustomization } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import {
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import {
   CHAT_BACKGROUNDS,
   type BackgroundCategory,
@@ -34,6 +32,9 @@ import { tweens } from '@/lib/animation-presets';
  * Includes animated backgrounds, advanced effects, and premium features.
  */
 
+/**
+ *
+ */
 export default function ChatBubbleSettings() {
   const themeStore = useChatBubbleStore();
   const style = themeStore.chatBubble;

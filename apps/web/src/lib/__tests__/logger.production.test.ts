@@ -126,14 +126,14 @@ describe('ProductionLogger', () => {
     it('should include level in output', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       logger.info('hello');
-      expect(spy.mock.calls[0][0]).toContain('[INFO]');
+      expect(spy.mock.calls[0]![0]).toContain('[INFO]');
       spy.mockRestore();
     });
 
     it('should include context as JSON', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       logger.info('event', { userId: '42' });
-      const output = spy.mock.calls[0][0];
+      const output = spy.mock.calls[0]![0];
       expect(output).toContain('"userId"');
       expect(output).toContain('"42"');
       spy.mockRestore();
@@ -143,7 +143,7 @@ describe('ProductionLogger', () => {
       logger.configure({ includeTimestamp: true });
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       logger.info('timestamped');
-      const output = spy.mock.calls[0][0];
+      const output = spy.mock.calls[0]![0];
       // ISO timestamp format
       expect(output).toMatch(/\d{4}-\d{2}-\d{2}T/);
       spy.mockRestore();
@@ -260,28 +260,28 @@ describe('ProductionLogger', () => {
     it('authLogger should prefix with [Auth]', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       authLogger.log('login success');
-      expect(spy.mock.calls[0][0]).toContain('[Auth]');
+      expect(spy.mock.calls[0]![0]).toContain('[Auth]');
       spy.mockRestore();
     });
 
     it('e2eeLogger should prefix with [E2EE]', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       e2eeLogger.log('keys rotated');
-      expect(spy.mock.calls[0][0]).toContain('[E2EE]');
+      expect(spy.mock.calls[0]![0]).toContain('[E2EE]');
       spy.mockRestore();
     });
 
     it('apiLogger should prefix with [API]', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       apiLogger.log('request sent');
-      expect(spy.mock.calls[0][0]).toContain('[API]');
+      expect(spy.mock.calls[0]![0]).toContain('[API]');
       spy.mockRestore();
     });
 
     it('wsLogger should prefix with [WebSocket]', () => {
       const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
       wsLogger.log('connected');
-      expect(spy.mock.calls[0][0]).toContain('[WebSocket]');
+      expect(spy.mock.calls[0]![0]).toContain('[WebSocket]');
       spy.mockRestore();
     });
 

@@ -6,7 +6,7 @@
  * (Does NOT test React component rendering — pure logic only)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // ── Mock Stripe SDK ──────────────────────────────────────────────────────
 vi.mock('@stripe/stripe-js', () => ({
