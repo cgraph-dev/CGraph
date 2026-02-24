@@ -12,9 +12,8 @@ import {
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { springs } from '@/lib/animation-presets/presets';
 import type { CommentVoteButtonsProps } from './types';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 const floatingIndicator = {
   initial: { opacity: 1, y: 0, scale: 0.8 },

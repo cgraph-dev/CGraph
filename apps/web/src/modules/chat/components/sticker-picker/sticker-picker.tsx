@@ -15,7 +15,7 @@ import { StickerSearchBar } from './sticker-search-bar';
 import { StickerGrid } from './sticker-grid';
 import { PackInfoBanner } from './pack-info-banner';
 import { useStickerPicker } from './useStickerPicker';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function StickerPicker({
   onSelect,

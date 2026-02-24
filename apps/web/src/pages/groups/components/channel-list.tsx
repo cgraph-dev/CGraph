@@ -8,8 +8,7 @@ import { ChevronDownIcon, Cog6ToothIcon, UserGroupIcon } from '@heroicons/react/
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ChannelListProps } from './types';
 import { ChannelItem } from './channel-item';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ChannelList({
   activeGroup,

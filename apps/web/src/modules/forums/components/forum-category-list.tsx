@@ -4,7 +4,6 @@
  */
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { staggerConfigs } from '@/lib/animation-presets/presets';
 
 const staggerContainer = {
   hidden: {},

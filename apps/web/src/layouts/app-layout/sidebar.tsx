@@ -4,7 +4,6 @@
  */
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
 import AnimatedLogo from '@/components/navigation/animated-logo';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
@@ -14,7 +13,7 @@ import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface SidebarProps {
   user: User | null;

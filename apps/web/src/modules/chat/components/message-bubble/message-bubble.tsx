@@ -27,7 +27,7 @@ import { MessageEditForm } from './message-edit-form';
 import { MessageActionMenu } from './message-action-menu';
 import { MessageMediaContent } from './message-media-content';
 import { ThreadReplyBadge } from './thread-reply-badge';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export const MessageBubble = memo(
   function MessageBubble({

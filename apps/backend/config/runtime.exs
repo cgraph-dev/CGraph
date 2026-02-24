@@ -13,7 +13,13 @@ if config_env() == :prod do
   # Logger — runtime log level override via LOG_LEVEL env var
   # ---------------------------------------------------------------------------
   if log_level = System.get_env("LOG_LEVEL") do
-    config :logger, level: String.to_existing_atom(log_level)
+    valid_levels = ~w(emergency alert critical error warning notice info debug)
+
+    if log_level in valid_levels do
+      config :logger, level: String.to_existing_atom(log_level)
+    else
+      IO.puts("[WARNING] Invalid LOG_LEVEL=#{log_level} — must be one of: #{Enum.join(valid_levels, ", ")}. Using default.")
+    end
   end
 
   database_url =
@@ -150,7 +156,8 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base,
     live_view: [
-      signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT") || :crypto.strong_rand_bytes(16) |> Base.encode64()
+      signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT") ||
+        raise "environment variable LIVE_VIEW_SIGNING_SALT is missing (required for multi-instance LiveView)"
     ]
 
   # Session signing_salt is a key derivation namespace, NOT a secret.
@@ -201,10 +208,18 @@ if config_env() == :prod do
 
   app_url = System.get_env("APP_URL") || "https://web.cgraph.org"
 
+  stripe_price_premium =
+    System.get_env("STRIPE_PRICE_PREMIUM") ||
+      raise "environment variable STRIPE_PRICE_PREMIUM is missing (Stripe price ID for premium plan)"
+
+  stripe_price_enterprise =
+    System.get_env("STRIPE_PRICE_ENTERPRISE") ||
+      raise "environment variable STRIPE_PRICE_ENTERPRISE is missing (Stripe price ID for enterprise plan)"
+
   config :cgraph, CGraph.Subscriptions,
     stripe_price_ids: %{
-      premium: System.get_env("STRIPE_PRICE_PREMIUM"),
-      enterprise: System.get_env("STRIPE_PRICE_ENTERPRISE")
+      premium: stripe_price_premium,
+      enterprise: stripe_price_enterprise
     },
     success_url: app_url <> "/billing/success?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: app_url <> "/billing/cancel",
@@ -246,16 +261,29 @@ if config_env() == :prod do
   IO.puts("[OTel] Tracing enabled → #{otel_endpoint} (sample rate: #{otel_sample_rate})")
 
   # ExAWS for Cloudflare R2
+  r2_access_key = System.get_env("R2_ACCESS_KEY_ID")
+  r2_secret_key = System.get_env("R2_SECRET_ACCESS_KEY")
+  r2_account_id = System.get_env("R2_ACCOUNT_ID")
+
+  unless r2_access_key && r2_secret_key && r2_account_id do
+    IO.puts("[WARNING] R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, or R2_ACCOUNT_ID missing — file uploads will fail")
+  end
+
   config :ex_aws,
-    access_key_id: System.get_env("R2_ACCESS_KEY_ID"),
-    secret_access_key: System.get_env("R2_SECRET_ACCESS_KEY")
+    access_key_id: r2_access_key,
+    secret_access_key: r2_secret_key
 
   config :ex_aws, :s3,
     scheme: "https://",
-    host: "#{System.get_env("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com",
+    host: "#{r2_account_id}.r2.cloudflarestorage.com",
     region: "auto"
 
   # OAuth configuration for production
+  google_client_id = System.get_env("GOOGLE_CLIENT_ID")
+
+  unless google_client_id do
+    IO.puts("[WARNING] GOOGLE_CLIENT_ID not set — Google OAuth login will be unavailable")
+  end
   config :cgraph, :oauth,
     google: [
       client_id: System.get_env("GOOGLE_CLIENT_ID"),

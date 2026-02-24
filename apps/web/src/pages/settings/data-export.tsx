@@ -12,7 +12,7 @@ import {
   DocumentArrowDownIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
-import { springs, entranceVariants } from '@/lib/animation-presets/presets';
+import { springs, entranceVariants } from '@/lib/animation-presets';
 import { api } from '@/lib/api';
 
 type ExportStatus = 'idle' | 'requesting' | 'processing' | 'ready' | 'error';

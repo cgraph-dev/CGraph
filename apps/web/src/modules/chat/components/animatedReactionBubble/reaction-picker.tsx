@@ -5,7 +5,7 @@
 import { motion } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { QUICK_REACTIONS } from '@/modules/chat/components/animatedReactionBubble/constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export interface ReactionPickerProps {
   onSelect: (emoji: string) => void;

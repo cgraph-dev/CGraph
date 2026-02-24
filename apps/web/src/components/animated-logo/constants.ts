@@ -5,7 +5,7 @@
 
 import type { Variants } from 'framer-motion';
 import type { ColorDefinition, SizeDimensions } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * Size presets for different use cases

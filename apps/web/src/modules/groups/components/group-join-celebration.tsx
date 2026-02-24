@@ -17,8 +17,7 @@
 import { useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export interface GroupJoinCelebrationProps {
   /** Name of the group the user just joined */

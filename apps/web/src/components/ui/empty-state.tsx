@@ -3,7 +3,7 @@
  * @module
  */
 import { motion } from 'framer-motion';
-import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { springs, staggerConfigs } from '@/lib/animation-presets';
 import { 
   InboxIcon, 
   ChatBubbleLeftRightIcon, 

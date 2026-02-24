@@ -15,7 +15,7 @@ import { GamingLayout } from './gaming-layout';
 import { SocialLayout } from './social-layout';
 import { CreatorLayout } from './creator-layout';
 import type { ProfileCardProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * ProfileCard Component

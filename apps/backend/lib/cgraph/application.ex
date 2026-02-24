@@ -49,6 +49,10 @@ defmodule CGraph.Application do
         name: CGraph.PubSub,
         pool_size: pubsub_pool_size()},
 
+      # DNS-based clustering for Fly.io multi-instance deployments
+      # Enables Erlang distribution for PubSub, Presence, and Oban PG notifier
+      {DNSCluster, query: Application.get_env(:cgraph, :dns_cluster_query) || :ignore},
+
       # === SUPERVISION HIERARCHY ===
 
       # 0. OpenTelemetry distributed tracing (before other services)

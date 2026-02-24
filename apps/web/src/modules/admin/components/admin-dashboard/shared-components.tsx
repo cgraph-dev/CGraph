@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { ModerationItem } from './types';
 import { RISK_COLORS } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * Stat card with optional trend indicator

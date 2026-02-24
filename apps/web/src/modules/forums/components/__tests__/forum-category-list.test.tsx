@@ -22,7 +22,7 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   staggerConfigs: { standard: { staggerChildren: 0.05 } },
   springs: { default: { type: 'spring', stiffness: 170, damping: 26 } },
 }));

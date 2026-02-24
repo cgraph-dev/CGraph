@@ -18,11 +18,8 @@ defmodule CGraphWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  # Max request body size (bytes). Override with MAX_BODY_BYTES env.
-  @max_body_bytes (case System.get_env("MAX_BODY_BYTES") do
-    nil -> 10_000_000
-    value -> String.to_integer(value)
-  end)
+  # Max request body size (bytes). Override via MAX_BODY_BYTES in runtime.exs.
+  @max_body_bytes Application.compile_env(:cgraph, :max_body_bytes, 10_000_000)
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [connect_info: [session: @session_options]],

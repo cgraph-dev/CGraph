@@ -11,8 +11,7 @@ import { GlassCard } from '@/shared/components/ui';
 
 import { NOTIFICATION_ICONS, NOTIFICATION_COLORS, DEFAULT_NOTIFICATION_COLOR } from './constants';
 import type { ToastItemProps, LevelUpNotification, QuestNotification } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ToastItem({ notification, index: _index, onDismiss }: ToastItemProps) {
   const [progress, setProgress] = useState(100);

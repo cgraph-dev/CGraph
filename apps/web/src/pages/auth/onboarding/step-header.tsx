@@ -4,7 +4,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ONBOARDING_STEPS } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface StepHeaderProps {
   currentStep: number;

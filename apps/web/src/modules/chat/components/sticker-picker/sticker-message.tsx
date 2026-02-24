@@ -8,7 +8,7 @@ import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';
 import type { StickerMessageProps } from './types';
 import { ANIMATION_CONFIGS, STICKER_SIZE_CLASSES } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
   const [isAnimating, setIsAnimating] = useState(true);

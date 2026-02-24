@@ -7,7 +7,7 @@ import { SparklesIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/out
 import { GlassCard } from '@/shared/components/ui';
 import RangeSliderControl from '@/modules/settings/components/customize/range-slider-control';
 import AnimatedToggle from '@/modules/settings/components/customize/animated-toggle';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 import type { AdvancedControlsSectionProps } from './types';
 import { ENTRANCE_ANIMATIONS } from './constants';
 

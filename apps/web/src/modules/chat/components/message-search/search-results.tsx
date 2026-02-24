@@ -6,7 +6,6 @@
 
 import { motion } from 'framer-motion';
 import { ClockIcon } from '@heroicons/react/24/outline';
-import { staggerConfigs } from '@/lib/animation-presets/presets';
 import { MessageSkeleton } from '@/components/ui/skeletons';
 import type { SearchResultsProps } from './types';
 import { SearchResultCard } from './search-result-card';

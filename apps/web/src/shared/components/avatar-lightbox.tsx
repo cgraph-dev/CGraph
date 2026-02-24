@@ -9,8 +9,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 interface AvatarLightboxProps {
   /** Avatar image URL */

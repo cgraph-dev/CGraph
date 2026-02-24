@@ -10,8 +10,7 @@ import type { BorderCategory } from './types';
 import { BORDER_STYLES, AVATAR_CATEGORIES } from './constants';
 import { useAvatarStyle } from './store';
 import AnimatedAvatar from './animated-avatar';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 const CATEGORIES = AVATAR_CATEGORIES;
 

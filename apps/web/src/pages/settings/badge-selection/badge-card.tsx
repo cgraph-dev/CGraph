@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Lock, Sparkles } from 'lucide-react';
 import { RARITY_TEXT_COLORS } from './constants';
 import type { BadgeCardProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function BadgeCard({
   badge,

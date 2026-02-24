@@ -3,9 +3,8 @@
  * @module
  */
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface LevelTransitionProps {
   oldLevel: number;

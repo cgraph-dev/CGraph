@@ -3,7 +3,6 @@
  * @module
  */
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import { TrophyIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -14,7 +13,7 @@ import {
   useAnimatedProgress,
   useAutoDismiss,
 } from '@/modules/gamification/components/achievement-notification/useAchievementEffects';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export interface AchievementNotificationData {
   achievement: Achievement & {

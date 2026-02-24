@@ -12,8 +12,7 @@ import type { SearchCategory } from '@/modules/search/store';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { categories } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 /** Props for SearchHeader */
 export interface SearchHeaderProps {

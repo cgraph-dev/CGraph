@@ -5,7 +5,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { entranceVariants, springs } from '@/lib/animation-presets/presets';
 import {
   CircleStackIcon,
   TrashIcon,
@@ -14,7 +13,7 @@ import {
   DocumentIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 interface StorageBreakdown {
   messages: number; // bytes

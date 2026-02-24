@@ -11,7 +11,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { ChannelMessage } from '@/modules/groups/store';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 const logger = createLogger('PinnedMessagesPanel');
 

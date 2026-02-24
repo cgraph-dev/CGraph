@@ -3,13 +3,12 @@
  * @module
  */
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useChatCustomization } from '@/modules/settings/store/customization';
 import { useChatBubbleStore } from '@/stores/theme';
 import type { UserTheme } from '@/stores/theme';
 import { ThemedAvatar } from './themed-avatar';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface ThemedChatBubbleProps {
   message: string;

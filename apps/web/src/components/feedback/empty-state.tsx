@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { motion } from 'framer-motion';
-import { staggerConfigs } from '@/lib/animation-presets/presets';
+import { staggerConfigs } from '@/lib/animation-presets';
 
 const containerVariants = {
   hidden: {},

@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { getReactionStyleClass } from '@/modules/settings/hooks/useCustomizationApplication';
 import { ReactionParticle } from '@/modules/chat/components/animatedReactionBubble/reaction-particle';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   SPRING_SCALE,
   SPRING_ROTATE,
@@ -33,7 +32,7 @@ import {
   SUPER_GLOW_BURST_ANIMATION,
   SUPER_GLOW_BURST_TRANSITION,
 } from '@/modules/chat/components/animatedReactionBubble/constants';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 // Re-export extracted pieces so existing imports keep working
 export { ReactionPicker } from '@/modules/chat/components/animatedReactionBubble/reaction-picker';

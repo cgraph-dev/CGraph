@@ -49,11 +49,11 @@ export const tweens = {
   /** 0.4s — deliberate panel/modal transition */
   moderate: { duration: 0.4, ease: 'easeInOut' as const },
   /** 0.5s — smooth, attention-getting */
-  smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as readonly number[] }, // type assertion: array literal type widening
+  smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as number[] },
   /** 0.6s — emphatic reveal */
   emphatic: { duration: 0.6, ease: 'easeOut' as const },
   /** 0.8s — dramatic entrance */
-  dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as readonly number[] }, // type assertion: array literal type widening
+  dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as number[] },
   /** 1s — slow reveal, loading loops */
   slow: { duration: 1, ease: 'easeInOut' as const },
   /** 1.5s — extended ambient motion */

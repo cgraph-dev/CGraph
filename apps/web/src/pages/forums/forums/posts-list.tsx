@@ -11,8 +11,7 @@ import { PostCardSkeleton } from '@/components';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { PostCard } from './post-card';
 import type { PostsListProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function PostsList({
   posts,

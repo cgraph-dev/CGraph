@@ -9,8 +9,7 @@ import { PlusIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ServerListProps } from './types';
 import { ServerIcon } from './server-icon';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
   return (

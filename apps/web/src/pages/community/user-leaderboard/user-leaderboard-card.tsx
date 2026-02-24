@@ -13,8 +13,7 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getRankBadge, formatKarma, getUserInitial } from './utils';
 import type { UserLeaderboardCardProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboardCardProps) {
   const isTopThree = user.rank <= 3;

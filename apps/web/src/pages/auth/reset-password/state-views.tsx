@@ -7,7 +7,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from './utils';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * Validating spinner while checking token

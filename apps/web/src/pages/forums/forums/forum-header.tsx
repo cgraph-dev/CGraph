@@ -7,8 +7,7 @@ import { motion } from 'framer-motion';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumHeaderProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: ForumHeaderProps) {
   const isAdminOrMod = forum.ownerId === userId || forum.moderators?.some((m) => m.id === userId);

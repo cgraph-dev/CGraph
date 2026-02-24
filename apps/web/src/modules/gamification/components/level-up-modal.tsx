@@ -3,7 +3,6 @@
  * @module
  */
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import { SparklesIcon, TrophyIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import {
@@ -12,7 +11,7 @@ import {
   RewardsUnlockedList,
   useLevelUpEffects,
 } from './level-up-modal/index';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 /**
  * Level Up Modal Component

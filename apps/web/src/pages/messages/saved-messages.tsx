@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets';
 import {
   BookmarkIcon,
   MagnifyingGlassIcon,

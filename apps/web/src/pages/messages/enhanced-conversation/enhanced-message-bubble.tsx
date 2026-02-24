@@ -10,7 +10,7 @@ import { useChatStore } from '@/modules/chat/store';
 import type { Reaction } from '@/modules/chat/store/chatStore.types';
 import { useAuthStore } from '@/modules/auth/store';
 import { AnimatedMessageWrapper } from '@/modules/chat/components/animated-message-wrapper';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 import {
   AnimatedReactionBubble,
   ReactionPicker,

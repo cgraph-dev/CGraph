@@ -5,7 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 import type { ToggleProps } from './types';
 
 export function Toggle({ value, onChange }: ToggleProps) {

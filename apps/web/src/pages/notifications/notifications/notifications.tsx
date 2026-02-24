@@ -15,7 +15,7 @@ import { NotificationItem } from './notification-item';
 import { EmptyState } from './empty-state';
 import { LoadMoreButton } from './load-more-button';
 import type { NotificationFilter } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export default function Notifications() {
   const navigate = useNavigate();

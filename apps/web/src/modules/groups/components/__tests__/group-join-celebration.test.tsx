@@ -22,7 +22,7 @@ vi.mock('canvas-confetti', () => ({
 }));
 
 // Mock animation presets
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   springs: {
     bouncy: { type: 'spring', stiffness: 300, damping: 20 },
   },

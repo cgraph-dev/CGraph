@@ -3,7 +3,7 @@ import { memo, useRef } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { prefersReducedMotion } from './constants';
 import type { TiltCardProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * TiltCard Component

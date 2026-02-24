@@ -6,13 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { Message } from '@/modules/chat/store';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   useScheduledMessages,
   type GroupedMessages,
 } from '@/modules/chat/hooks/useScheduledMessages';
 import { ScheduledMessageCard } from '@/modules/chat/components/scheduled-message-card';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface ScheduledMessagesListProps {
   isOpen: boolean;

@@ -8,8 +8,7 @@ import { HashtagIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { channelTypeIcons, channelTypeColors } from './constants';
 import type { ChannelItemProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ChannelItem({ channel, isActive }: ChannelItemProps) {
   const { groupId } = useParams();

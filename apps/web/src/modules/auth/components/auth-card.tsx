@@ -16,8 +16,7 @@ import { AuthBackground } from '@/modules/auth/components/auth-backgrounds';
 import { AuthCardHeader } from '@/modules/auth/components/auth-card-header';
 import type { LogoSize } from '@/modules/auth/components/auth-logo';
 import type { BackgroundEffect } from '@/modules/auth/components/auth-backgrounds';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export interface AuthCardProps {
   children: React.ReactNode;

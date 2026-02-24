@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { entranceVariants, springs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs } from '@/lib/animation-presets';
 import {
   SpeakerWaveIcon,
   PlayIcon,

@@ -32,7 +32,7 @@ vi.mock('@/modules/gamification/components/title-badge', () => ({
   TitleBadge: ({ title }: { title: string }) => <span data-testid="title-badge">{title}</span>,
 }));
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   springs: { bouncy: {} },
 }));
 

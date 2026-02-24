@@ -14,8 +14,7 @@ import Dropdown, { DropdownItem } from '@/components/navigation/dropdown';
 import { NotificationActions } from '@/shared/components/notification-actions';
 import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constants';
 import type { NotificationItemProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function NotificationItem({
   notification,

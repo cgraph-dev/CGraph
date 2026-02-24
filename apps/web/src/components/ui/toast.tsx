@@ -4,7 +4,7 @@
  */
 import { create } from 'zustand';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 import { 
   CheckCircleIcon, 
   XCircleIcon, 

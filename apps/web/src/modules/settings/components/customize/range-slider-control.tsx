@@ -7,7 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface RangeSliderControlProps {
   label: string;

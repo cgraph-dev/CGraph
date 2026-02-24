@@ -6,9 +6,8 @@ import { motion } from 'framer-motion';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { springs } from '@/lib/animation-presets/presets';
 import type { LinkMetadata } from './types';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 interface LinkPreviewProps {
   embed: LinkMetadata;

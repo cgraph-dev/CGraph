@@ -5,7 +5,6 @@
 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -25,7 +24,7 @@ import ThreadPrefix from '@/modules/forums/components/thread-prefix';
 import ThreadRating from '@/modules/forums/components/thread-rating';
 import { getVoteScoreClass } from './constants';
 import type { PostCardProps } from './types';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export function PostCard({ post, onVote }: PostCardProps) {
   return (

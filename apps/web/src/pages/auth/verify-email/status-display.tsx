@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { VerificationState } from '@/pages/auth/verify-email/useVerifyEmail';
 import { containerVariants, itemVariants } from '@/pages/auth/verify-email/animations';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface StatusDisplayProps {
   state: VerificationState;

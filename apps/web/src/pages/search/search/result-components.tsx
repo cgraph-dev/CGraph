@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { springs } from '@/lib/animation-presets/presets';
 import type {
   ResultSectionProps,
   UserResultProps,
@@ -16,7 +15,7 @@ import type {
   PostResultProps,
   MessageResultProps,
 } from './types';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 /**
  * Wrapper component for search result sections

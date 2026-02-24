@@ -19,13 +19,12 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useGesture } from '@use-gesture/react';
 import { AnimationEngine, HapticFeedback } from '@/lib/animations/animation-engine';
-import { springs } from '@/lib/animation-presets/presets';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import type { AnimatedMessageWrapperProps } from './animated-message-wrapper.types';
 import { SPEED_MULTIPLIERS } from './animated-message-wrapper.types';
 import { messageVariants } from './animated-message-wrapper.constants';
 import { MessageParticles } from './message-particles';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export type { AnimatedMessageWrapperProps } from './animated-message-wrapper.types';
 

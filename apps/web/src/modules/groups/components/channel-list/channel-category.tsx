@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { SortableChannel } from './sortable-channel';
 import type { CategorySectionProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function CategorySection({
   category,

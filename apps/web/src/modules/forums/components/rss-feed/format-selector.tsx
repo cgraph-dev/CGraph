@@ -7,7 +7,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { FormatSelectorProps, FeedFormat } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 const FORMATS: FeedFormat[] = ['rss', 'atom'];
 

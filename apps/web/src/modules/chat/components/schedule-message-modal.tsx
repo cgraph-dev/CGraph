@@ -7,13 +7,12 @@ import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicon
 import { GlassCard } from '@/shared/components/ui';
 import { useScheduleMessageModal } from '@/modules/chat/hooks/useScheduleMessageModal';
 import { ScheduledTimePreview } from '@/modules/chat/components/scheduled-time-preview';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   QUICK_SCHEDULE_OPTIONS,
   resolveScheduleDate,
   formatDateTimeLocal,
 } from '@/modules/chat/components/scheduleMessageUtils';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface ScheduleMessageModalProps {
   isOpen: boolean;

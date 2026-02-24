@@ -24,7 +24,7 @@ import { useRecentEmojis, useClickOutside, useFilteredEmojis } from './useEmojiP
 import { EmojiSearch } from './emoji-search';
 import { CategoryTabs } from './category-tabs';
 import { EmojiGrid } from './emoji-grid';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: EmojiPickerProps) {
   const [activeCategory, setActiveCategory] = useState<EmojiCategory>('Frequently Used');

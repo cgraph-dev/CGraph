@@ -73,7 +73,7 @@ vi.mock('@/modules/auth/components/auth-card-header', () => ({
   ),
 }));
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   springs: { ultraSmooth: { type: 'spring', stiffness: 100, damping: 15 } },
 }));
 

@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import { entranceVariants } from '@/lib/animation-presets/presets';
+import { entranceVariants } from '@/lib/animation-presets';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/modules/auth/store';
 

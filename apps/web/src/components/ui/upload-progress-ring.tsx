@@ -6,8 +6,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export interface UploadProgressRingProps {
   /** Upload progress 0–100 */

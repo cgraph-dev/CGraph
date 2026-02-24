@@ -6,8 +6,7 @@
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 interface WelcomePanelProps {
   friendsCount: number;

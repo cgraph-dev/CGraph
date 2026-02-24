@@ -7,8 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export function FriendsHeader({
   showAddFriend,

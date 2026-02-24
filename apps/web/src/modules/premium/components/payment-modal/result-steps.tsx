@@ -8,8 +8,7 @@ import { CheckCircleIcon, ExclamationTriangleIcon, GiftIcon } from '@heroicons/r
 import { Button } from '@/components';
 import { calculateSavings } from './utils';
 import type { PaymentItem } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ProcessingStep() {
   return (

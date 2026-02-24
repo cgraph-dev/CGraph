@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { GlassCard, useAvatarStyle } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { BORDER_STYLES } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function BorderStyleCard() {
   const { style, updateStyle } = useAvatarStyle();

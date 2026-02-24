@@ -32,7 +32,7 @@ vi.mock('framer-motion', () => ({
   },
 }));
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   springs: { snappy: { type: 'spring', stiffness: 400, damping: 30 } },
 }));
 

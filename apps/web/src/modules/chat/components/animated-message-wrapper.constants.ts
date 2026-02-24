@@ -2,7 +2,7 @@
  * Animated message wrapper constants.
  * @module
  */
-import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { springs, staggerConfigs } from '@/lib/animation-presets';
 
 export const messageVariants = {
   initial: (isOwnMessage: boolean) => ({

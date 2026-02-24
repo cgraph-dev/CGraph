@@ -70,3 +70,4 @@ kill_timeout = "30s"
 
 [processes]
   app = "/usr/local/bin/start-with-app.sh"
+  pgbouncer = "/usr/local/bin/start-pgbouncer.sh"

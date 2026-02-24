@@ -5,7 +5,6 @@
 import { useParams, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -39,7 +38,7 @@ import {
   BillingSettingsPanel,
   RedirectToCustomize,
 } from '@/modules/settings/components/panels';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 // Reserved for extended settings - mark as used to prevent tree-shaking removal
 const _extendedSettingsComponents = {

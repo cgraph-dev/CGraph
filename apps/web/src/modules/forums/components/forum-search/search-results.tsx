@@ -6,7 +6,6 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { staggerConfigs } from '@/lib/animation-presets/presets';
 
 const resultContainer = {
   hidden: {},

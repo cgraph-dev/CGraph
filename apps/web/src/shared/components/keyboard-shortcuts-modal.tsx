@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { entranceVariants, springs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs } from '@/lib/animation-presets';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface Shortcut {

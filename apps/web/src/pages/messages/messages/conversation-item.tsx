@@ -12,8 +12,7 @@ import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getConversationName, getConversationAvatar, getConversationAvatarBorderId } from './utils';
 import type { ConversationItemProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ConversationItem({
   conversation,

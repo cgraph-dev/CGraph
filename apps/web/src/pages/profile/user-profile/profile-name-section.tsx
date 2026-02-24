@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { UserProfileData } from '@/types/profile.types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface ProfileNameSectionProps {
   profile: UserProfileData;

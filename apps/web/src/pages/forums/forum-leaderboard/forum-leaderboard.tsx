@@ -16,8 +16,7 @@ import type { LeaderboardSort } from './types';
 import { SORT_OPTIONS } from './constants';
 import { ForumLeaderboardCard } from './forum-leaderboard-card';
 import { LeaderboardSidebar } from './leaderboard-sidebar';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export default function ForumLeaderboard() {
   const { isAuthenticated } = useAuthStore();

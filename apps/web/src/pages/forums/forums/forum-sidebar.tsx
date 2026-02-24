@@ -11,7 +11,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { formatTimeAgo } from '@/lib/utils';
 import { LeaderboardSidebar } from '@/modules/forums/components/leaderboard-widget';
 import type { ForumSidebarProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSidebarProps) {
   return (

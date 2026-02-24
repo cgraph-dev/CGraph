@@ -12,7 +12,7 @@ import {
   PencilIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
-import { entranceVariants } from '@/lib/animation-presets/presets';
+import { entranceVariants } from '@/lib/animation-presets';
 
 const channelIcons = {
   text: HashtagIcon,

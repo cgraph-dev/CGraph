@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useActiveBubbleStyle, useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageBubbleProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export const MessageBubble = memo(function MessageBubble({
   children,

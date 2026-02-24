@@ -5,7 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface CompleteStepProps {
   onDone: () => void;

@@ -7,7 +7,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { Message } from '@/modules/chat/store';
 import type { UIPreferences } from './message-bubble';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export interface ReplyPreviewProps {
   replyTo: Message;

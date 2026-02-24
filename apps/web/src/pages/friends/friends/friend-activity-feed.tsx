@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { entranceVariants, staggerConfigs } from '@/lib/animation-presets/presets';
+import { entranceVariants, staggerConfigs } from '@/lib/animation-presets';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { api } from '@/lib/api';
 

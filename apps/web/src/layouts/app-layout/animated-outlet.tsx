@@ -9,7 +9,6 @@
 
 import { useLocation, useOutlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { tweens } from '@/lib/animation-presets/presets';
 import { tweens } from '@/lib/animation-presets';
 
 const pageVariants = {

@@ -2,11 +2,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { springs } from '@/lib/animation-presets/presets';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export default function NotFound() {
   const { t } = useTranslation('common');

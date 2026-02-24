@@ -5,7 +5,6 @@
  */
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { springs } from '@/lib/animation-presets/presets';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
   createContext,
@@ -14,7 +13,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 // ── Types ──────────────────────────────────────────────────
 interface ProfilePhoto {

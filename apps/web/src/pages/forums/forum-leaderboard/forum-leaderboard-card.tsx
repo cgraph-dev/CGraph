@@ -7,7 +7,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -23,7 +22,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumLeaderboardCardProps } from './types';
 import { getRankBadge } from './constants';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 export function ForumLeaderboardCard({
   forum,

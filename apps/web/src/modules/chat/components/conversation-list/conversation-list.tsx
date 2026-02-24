@@ -18,7 +18,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarkIcon as PinIcon } from '@heroicons/react/24/outline';
-import { staggerConfigs } from '@/lib/animation-presets/presets';
+import { staggerConfigs } from '@/lib/animation-presets';
 
 const listContainer = {
   hidden: {},

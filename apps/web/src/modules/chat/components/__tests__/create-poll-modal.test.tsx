@@ -46,7 +46,7 @@ vi.mock('framer-motion', () => {
   };
 });
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   entranceVariants: { fadeUp: {} },
   springs: { gentle: {} },
 }));

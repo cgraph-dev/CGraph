@@ -83,7 +83,7 @@ vi.mock('@/modules/chat/components/scheduleMessageUtils', () => ({
   formatDateTimeLocal: () => '2025-06-01T09:00',
 }));
 
-vi.mock('@/lib/animation-presets/presets', () => ({
+vi.mock('@/lib/animation-presets', () => ({
   springs: { stiff: {} },
 }));
 

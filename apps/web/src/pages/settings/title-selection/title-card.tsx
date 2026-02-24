@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Lock, Sparkles } from 'lucide-react';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleCardProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function TitleCard({
   title,

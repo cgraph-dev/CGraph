@@ -8,7 +8,7 @@ import type { Friend, FriendRequest } from '@/modules/social/store';
 
 import { FriendListItem } from './friend-list-item';
 import { FriendRequestCard } from './friend-request-card';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /* ------------------------------------------------------------------ */
 /*  Pending Tab                                                        */

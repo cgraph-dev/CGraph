@@ -9,7 +9,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { categories, type Category, type CategoryId } from '@/pages/customize/customizeCategories';
 import { Sidebar, LoadingSkeleton } from '@/pages/customize/customize-sidebar';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 // Lazy load heavy customization components for better performance
 const IdentityCustomization = lazy(() => import('./identity-customization'));

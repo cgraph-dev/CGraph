@@ -9,14 +9,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { AnimatedAvatarProps } from './types';
 import { SIZE_CONFIG, STATUS_COLORS } from './constants';
 import { useAvatarStyle } from './store';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   getShapeStyles,
   getBorderGradient,
   getAnimationProps,
   getParticleEmoji,
 } from './animations';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export default function AnimatedAvatar({
   src,

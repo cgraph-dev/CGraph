@@ -11,10 +11,9 @@ import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
-import { springs } from '@/lib/animation-presets/presets';
 import { formatNumber } from './utils';
 import type { VoteButtonsProps } from './types';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 const floatingIndicator = {
   initial: { opacity: 1, y: 0, scale: 0.8 },

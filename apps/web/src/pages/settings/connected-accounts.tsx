@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets';
 import { LinkIcon, XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 

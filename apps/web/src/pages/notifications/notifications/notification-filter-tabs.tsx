@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { NotificationFilterTabsProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export function NotificationFilterTabs({
   filter,

@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './animated-badge';
 import { BadgePickerModal } from './badge-picker-modal';
 import type { Achievement } from '@/modules/gamification/store';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 // Re-export extracted components for backwards compatibility
 export { CompactBadgeShowcase } from './compact-badge-showcase';

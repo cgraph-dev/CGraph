@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { entranceVariants, springs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs } from '@/lib/animation-presets';
 import {
   XMarkIcon,
   PlusIcon,

@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

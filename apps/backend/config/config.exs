@@ -107,7 +107,12 @@ config :cgraph, Oban,
     backups: 2,
     push_notifications: 10,
     email_notifications: 5,
-    archival: 1
+    archival: 1,
+    search: 5,
+    critical: 10,
+    emails: 5,
+    media: 3,
+    sync: 5
   ]
 
 # Swoosh mailer configuration

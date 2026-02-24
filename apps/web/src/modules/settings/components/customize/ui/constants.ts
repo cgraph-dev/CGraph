@@ -4,7 +4,7 @@
  */
 
 import type { ThemePreset } from '@/modules/settings/store/customization';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 export const uiSprings = {
   snappy: springs.snappy,

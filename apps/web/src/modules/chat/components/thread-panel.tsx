@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { entranceVariants, springs } from '@/lib/animation-presets/presets';
+import { entranceVariants, springs } from '@/lib/animation-presets';
 import { XMarkIcon, PaperAirplaneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/modules/auth/store';

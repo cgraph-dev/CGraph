@@ -8,8 +8,7 @@ import { Outlet } from 'react-router-dom';
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ContentAreaProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProps) {
   // Has channel selected

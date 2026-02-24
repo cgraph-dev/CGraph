@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
 import { HoloContainer } from './holo-container';
 import { HoloText } from './holo-text';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface HoloModalProps {
   isOpen: boolean;

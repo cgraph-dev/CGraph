@@ -4,7 +4,6 @@
  */
 import { useRef, RefObject } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   PaperAirplaneIcon,
   PaperClipIcon,
@@ -21,7 +20,7 @@ import { EmojiPicker } from '@/modules/chat/components/emoji-picker';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Sticker } from '@/data/stickers';
 import type { UIPreferences } from './message-bubble';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 export interface MessageInputAreaProps {
   messageInput: string;

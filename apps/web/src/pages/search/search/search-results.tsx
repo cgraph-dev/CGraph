@@ -12,7 +12,6 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { SearchCategory } from '@/modules/search/store';
 import type { SearchState } from './useSearch';
-import { springs } from '@/lib/animation-presets/presets';
 import {
   ResultSection,
   UserResult,
@@ -21,7 +20,7 @@ import {
   PostResult,
   MessageResult,
 } from './result-components';
-import { tweens, loop } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 
 /* ─── animation helpers ─── */
 

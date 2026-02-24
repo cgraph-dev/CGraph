@@ -12,7 +12,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import { entranceVariants } from '@/lib/animation-presets/presets';
+import { entranceVariants } from '@/lib/animation-presets';
 import type { GroupMember, MemberAction } from './types';
 import { ROLE_COLORS } from './types';
 

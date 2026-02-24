@@ -3,7 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 interface ToggleSwitchProps {
   enabled: boolean;

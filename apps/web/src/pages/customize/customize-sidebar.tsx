@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { categories, type CategoryId } from '@/pages/customize/customizeCategories';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 // =============================================================================
 // LOADING SKELETON

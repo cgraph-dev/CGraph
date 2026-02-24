@@ -8,9 +8,8 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
-import { springs } from '@/lib/animation-presets/presets';
-import {
 import { tweens, springs } from '@/lib/animation-presets';
+import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';

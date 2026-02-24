@@ -9,8 +9,7 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SparklesIcon, LockClosedIcon, CheckIcon } from '@heroicons/react/24/outline';
 import type { ChatBackground, BackgroundCategory } from '@/data/chatBackgrounds';
 import { CATEGORY_COLORS, type BackgroundsTabProps } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 function getBackgroundPreviewStyle(bg: ChatBackground): React.CSSProperties {
   if (bg.type === 'solid') {

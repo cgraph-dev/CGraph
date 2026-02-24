@@ -6,7 +6,7 @@
 
 import type { UserStarsTier } from './types';
 import { USER_TIERS } from './constants';
-import { springs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets';
 
 /**
  * Get the tier for a given post count

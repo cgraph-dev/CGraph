@@ -8,8 +8,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { BackgroundCategory, ChatBackground } from '@/data/chatBackgrounds';
 import type { BackgroundsTabProps, CategoryColors } from './types';
-import { springs } from '@/lib/animation-presets/presets';
-import { tweens } from '@/lib/animation-presets';
+import { tweens, springs } from '@/lib/animation-presets';
 
 // Category colors for backgrounds
 const CATEGORY_COLORS: CategoryColors = {

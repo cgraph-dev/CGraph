@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import { entranceVariants } from '@/lib/animation-presets/presets';
+import { entranceVariants } from '@/lib/animation-presets';
 import { api } from '@/lib/api';
 
 const PRESENCE_MODES = [

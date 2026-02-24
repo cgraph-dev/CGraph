@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { springs } from '@/lib/animation-presets/presets';
+import { tweens, springs } from '@/lib/animation-presets';
 import {
   MagnifyingGlassIcon,
   ChatBubbleLeftRightIcon,
@@ -19,7 +19,6 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import { tweens, springs } from '@/lib/animation-presets';
 
 interface QuickSwitcherItem {
   id: string;
