@@ -47,7 +47,7 @@ const {
   mockImportTheme: vi.fn(),
 }));
 
-vi.mock('../ThemeRegistry', () => ({
+vi.mock('../theme-registry', () => ({
   ThemeRegistry: {
     getCurrentTheme: mockGetCurrentTheme,
     getAllThemes: mockGetAllThemes,

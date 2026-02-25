@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.51 | **Audit Date**: February 24, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.52 | **Audit Date**: February 24, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -12,7 +12,7 @@
 | -------------------- | ------- | ------ | -------------------------------- |
 | Rule Compliance      | ~95%    | 100%   | ~5% — testing (Rule 9) remaining |
 | Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done      |
-| Composite Score      | 8.7/10  | 9.5/10 | Testing + real perf audit        |
+| Composite Score      | 8.8/10  | 9.5/10 | Testing + real perf audit        |
 
 ### Critical Gaps (Blocks World-Class)
 
@@ -343,35 +343,34 @@ All other previously listed controllers are now under 500 lines.
 
 ### Rule 9: Testing Requirements — FAIL
 
-| Metric                    | Current | Target       | Gap                |
-| ------------------------- | ------- | ------------ | ------------------ |
-| Web components (non-test) | 2,229   | —            | —                  |
-| Web test files            | 283     | ~2,229 (1:1) | **~1,946 missing** |
-| Web test coverage ratio   | ~12.7%  | 100%         | ~87.3%             |
-| Mobile test files         | 25      | —            | Needs assessment   |
-| Backend test files        | 171     | —            | Likely sufficient  |
+| Metric                    | Current     | Target       | Gap                |
+| ------------------------- | ----------- | ------------ | ------------------ |
+| Web components (non-test) | 2,238       | —            | —                  |
+| Web test files            | 371         | ~2,238 (1:1) | **~1,867 missing** |
+| Web test coverage ratio   | ~16.6%      | 100%         | ~83.4%             |
+| Web test suites passing   | **371/371** | 371/371      | **0 failures**     |
+| Mobile test files         | 25          | —            | Needs assessment   |
+| Backend test files        | 171         | —            | Likely sufficient  |
 
 **Module Test Coverage** (exact audit — February 23, 2026):
 
 | Module       | Tests | Components | Ratio | Gap |
 | ------------ | ----- | ---------- | ----- | --- |
-| chat         | 39    | 115        | 33.9% | 76  |
-| forums       | 19    | 133        | 14.3% | 114 |
-| gamification | 22    | 99         | 22.2% | 77  |
-| social       | 9     | 39         | 23.1% | 30  |
-| settings     | 17    | 116        | 14.7% | 99  |
-| auth         | 9     | 19         | 47.4% | 10  |
-| groups       | 7     | 53         | 13.2% | 46  |
-| moderation   | 4     | 8          | 50.0% | 4   |
-| calls        | 5     | 7          | 71.4% | 2   |
-| premium      | 5     | 21         | 23.8% | 16  |
-| search       | 5     | 10         | 50.0% | 5   |
-| admin        | 8     | 29         | 27.6% | 21  |
-| shared       | 4     | —          | —     | —   |
-| pages        | 3     | —          | —     | —   |
+| chat         | 71    | 192        | 37.0% | 121 |
+| forums       | 37    | 232        | 15.9% | 195 |
+| gamification | 29    | 192        | 15.1% | 163 |
+| social       | 16    | 81         | 19.8% | 65  |
+| settings     | 25    | 186        | 13.4% | 161 |
+| auth         | 9     | 32         | 28.1% | 23  |
+| groups       | 14    | 91         | 15.4% | 77  |
+| moderation   | 4     | 27         | 14.8% | 23  |
+| calls        | 5     | 18         | 27.8% | 13  |
+| premium      | 6     | 38         | 15.8% | 32  |
+| search       | 6     | 26         | 23.1% | 20  |
+| admin        | 10    | 66         | 15.2% | 56  |
 
-> **Module-only ratio**: 145 tests / 649 module components = **22.3%** **Web-wide ratio**: 283 tests
-> / 2,229 non-test .tsx/.ts = **12.7%**
+> **Module-only ratio**: 232 tests / 1,181 module components = **19.6%** **Web-wide ratio**: 371
+> tests / 2,238 non-test .tsx/.ts = **16.6%** **All 371 test suites passing (0 failures)**
 
 **Action Items**:
 
@@ -406,7 +405,13 @@ All other previously listed controllers are now under 500 lines.
       (section-header, privacy-toggle, avatar-preview-card, toggle), premium +1 (minimal-banner)
 - [x] **9.2l** ~~Write tests batch 14~~ **DONE** (Session 52) — gamification +1 (badge-empty-state),
       chat +1 (badges-list), search +1 (filter-actions), calls +1 (video-call-controls)
-- [ ] **9.2m** Write tests for critical path (batch 15+): remaining modules
+- [x] **9.2m** ~~Write tests batch 15~~ **DONE** (Session 56) — 88 new test files across all modules
+      (283→371): chat +32, forums +18, gamification +7, social +7, settings +8, groups +7, admin +2,
+      premium +1, search +1. Global Proxy-based mocks added for heroicons (3 packages),
+      framer-motion, animation-presets, animation-engine. 43 broken per-file mocks stripped. Session
+      57: fixed 3 remaining failures (useTheme mock path, session-manager instanceof,
+      mention-autocomplete fake-timer deadlock). **All 371/371 suites now passing.**
+- [ ] **9.2n** Write tests for critical path (batch 16+): remaining modules
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
       statements/lines 60→65%, branches/functions 50→55%
@@ -782,7 +787,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Documentation (Rule 6)       | **100%** (2,344/2,344 JSDoc + eslint-plugin-jsdoc enforced)                                                          | **100%**       | 100%                |
 | Backend Standards (Rule 7)   | **100%** (4,103 specs; credo strict: true; Specs check enabled)                                                      | **100%**       | 100%                |
 | File Size (Rule 8)           | **100%** (0 Elixir over 500, 0 TSX over 300 — verified `wc -l` Feb 24)                                               | **100%**       | 100%                |
-| Testing (Rule 9)             | **12.7%** (283 tests / 2,229 source files)                                                                           | 25%            | 100%                |
+| Testing (Rule 9)             | **16.6%** (371 tests / 2,238 source files; 371/371 passing)                                                          | 25%            | 100%                |
 | Performance (Rule 10)        | **100%** (cursor pagination done; 0 N+1; 20/20 queries index-covered; 1 missing index added)                         | **100%**       | 100%                |
 | Security (Rule 11)           | **100%** (0 unannotated type assertions; all 250+ casts annotated)                                                   | **100%**       | 100%                |
 | React 19 (Rule 12)           | **~98%** (0 useContext; 12 use() context calls across 10 files; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%**       | 100%                |
@@ -791,8 +796,10 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | API Contract (Rule 15)       | **100%** (cursor + standardized + meta envelopes on all 12 views)                                                    | **100%**       | 100%                |
 | **Overall**                  | **~95%** (13 PASS + 1 ~98% (Rule 12) + 1 FAIL (Rule 9 testing))                                                      | **~98%**       | **100%**            |
 
-> **Methodology**: Equal-weight average across 15 rules. **One gap remains**: Testing at 12.7% (Rule
-> 9 — FAIL). React 19 at ~98% needs React Compiler for useMemo/useCallback removal. Animation
+> **Methodology**: Equal-weight average across 15 rules. **One gap remains**: Testing at 16.6% (Rule
+> 9 — FAIL). Test count increased 283→371 (Session 56: +88 new files). All 371 suites now passing
+> (Session 57: fixed useTheme mock path, session-manager instanceof, mention-autocomplete fake-timer
+> deadlock). React 19 at ~98% needs React Compiler for useMemo/useCallback removal. Animation
 > presets PASS — 317 of 339 inline values migrated (22 dynamic exceptions). EXPLAIN ANALYZE audit
 > PASS — 20/20 queries index-covered, 1 missing index added (Session 55). This is an honest
 > assessment verified by strict codebase audit — all line counts, file counts, and status claims

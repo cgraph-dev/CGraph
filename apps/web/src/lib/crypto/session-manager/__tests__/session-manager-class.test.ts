@@ -31,15 +31,15 @@ const mockGetStats = vi.fn().mockReturnValue({
 const mockDestroy = vi.fn();
 
 vi.mock('../../doubleRatchet', () => ({
-  DoubleRatchetEngine: vi.fn().mockImplementation(() => ({
-    initializeAlice: mockInitializeAlice,
-    initializeBob: mockInitializeBob,
-    encryptMessage: mockEncryptMessage,
-    decryptMessage: mockDecryptMessage,
-    importState: mockImportState,
-    getStats: mockGetStats,
-    destroy: mockDestroy,
-  })),
+  DoubleRatchetEngine: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
+    this.initializeAlice = mockInitializeAlice;
+    this.initializeBob = mockInitializeBob;
+    this.encryptMessage = mockEncryptMessage;
+    this.decryptMessage = mockDecryptMessage;
+    this.importState = mockImportState;
+    this.getStats = mockGetStats;
+    this.destroy = mockDestroy;
+  }),
   generateDHKeyPair: vi.fn().mockResolvedValue({
     publicKey: new Uint8Array([1, 2, 3]),
     privateKey: new Uint8Array([4, 5, 6]),
@@ -77,8 +77,7 @@ vi.mock('../storage', () => ({
 const mockComputeResponderSharedSecret = vi.fn();
 
 vi.mock('../session-x3dh', () => ({
-  computeResponderSharedSecret: (...args: unknown[]) =>
-    mockComputeResponderSharedSecret(...args),
+  computeResponderSharedSecret: (...args: unknown[]) => mockComputeResponderSharedSecret(...args),
 }));
 
 // Mock message-ops
@@ -111,7 +110,14 @@ function makeSecureMessage(overrides: Record<string, unknown> = {}): {
   messageId: string;
   timestamp: number;
   ratchetMessage: {
-    header: { dh: string; pn: number; n: number; sessionId: string; timestamp: number; version: number };
+    header: {
+      dh: string;
+      pn: number;
+      n: number;
+      sessionId: string;
+      timestamp: number;
+      version: number;
+    };
     ciphertext: string;
     nonce: string;
     mac: string;
@@ -129,7 +135,14 @@ function makeSecureMessage(overrides: Record<string, unknown> = {}): {
     messageId: 'msg-1',
     timestamp: Date.now(),
     ratchetMessage: {
-      header: { dh: 'dh-key', pn: 0, n: 0, sessionId: 'session-123', timestamp: Date.now(), version: 1 },
+      header: {
+        dh: 'dh-key',
+        pn: 0,
+        n: 0,
+        sessionId: 'session-123',
+        timestamp: Date.now(),
+        version: 1,
+      },
       ciphertext: 'ciphertext-base64',
       nonce: 'nonce-base64',
       mac: 'mac-base64',
@@ -154,7 +167,7 @@ function makeBundle() {
 describe('SessionManager', () => {
   // Create a fresh SessionManager before each test by clearing internal state
   // via the singleton and resetting mocks.
-  let sm: typeof import('../session-manager-class')['sessionManager'];
+  let sm: (typeof import('../session-manager-class'))['sessionManager'];
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -420,7 +433,14 @@ describe('SessionManager', () => {
         ephemeralPublic: new ArrayBuffer(32),
       });
       mockEncryptMessage.mockResolvedValue({
-        header: { dh: new Uint8Array([7, 8, 9]), pn: 0, n: 0, sessionId: 'session-123', timestamp: Date.now(), version: 1 },
+        header: {
+          dh: new Uint8Array([7, 8, 9]),
+          pn: 0,
+          n: 0,
+          sessionId: 'session-123',
+          timestamp: Date.now(),
+          version: 1,
+        },
         ciphertext: new Uint8Array([10, 11, 12]),
         nonce: new Uint8Array([13, 14]),
         mac: new Uint8Array([15]),
@@ -430,7 +450,14 @@ describe('SessionManager', () => {
       const encoder = new TextEncoder();
       mockDecryptMessage.mockResolvedValue({ plaintext: encoder.encode(plaintext) });
       mockToRatchetMessage.mockReturnValue({
-        header: { dh: new Uint8Array([1]), pn: 0, n: 0, sessionId: 'session-123', timestamp: 0, version: 1 },
+        header: {
+          dh: new Uint8Array([1]),
+          pn: 0,
+          n: 0,
+          sessionId: 'session-123',
+          timestamp: 0,
+          version: 1,
+        },
         ciphertext: new Uint8Array([2]),
         nonce: new Uint8Array([3]),
         mac: new Uint8Array([4]),
@@ -501,7 +528,14 @@ describe('SessionManager', () => {
         ephemeralPublic: new ArrayBuffer(32),
       });
       mockEncryptMessage.mockResolvedValue({
-        header: { dh: new Uint8Array([1]), pn: 0, n: 0, sessionId: 'session-123', timestamp: 0, version: 1 },
+        header: {
+          dh: new Uint8Array([1]),
+          pn: 0,
+          n: 0,
+          sessionId: 'session-123',
+          timestamp: 0,
+          version: 1,
+        },
         ciphertext: new Uint8Array([2]),
         nonce: new Uint8Array([3]),
         mac: new Uint8Array([4]),
@@ -540,7 +574,14 @@ describe('SessionManager', () => {
         ephemeralPublic: new ArrayBuffer(32),
       });
       mockEncryptMessage.mockResolvedValue({
-        header: { dh: new Uint8Array([1]), pn: 0, n: 0, sessionId: 'session-123', timestamp: 0, version: 1 },
+        header: {
+          dh: new Uint8Array([1]),
+          pn: 0,
+          n: 0,
+          sessionId: 'session-123',
+          timestamp: 0,
+          version: 1,
+        },
         ciphertext: new Uint8Array([2]),
         nonce: new Uint8Array([3]),
         mac: new Uint8Array([4]),
