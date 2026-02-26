@@ -187,7 +187,7 @@ vi.mock('@/lib/logger', () => ({
   chatLogger: { debug: vi.fn() },
 }));
 
-vi.mock('./progress-bar', () => ({
+vi.mock('../shared/progress-bar', () => ({
   ProgressBar: ({ label, value, unit }: { label: string; value: number; unit: string }) => (
     <div data-testid={`progress-${label.replace(/\s/g, '-').toLowerCase()}`}>
       {label}: {value}

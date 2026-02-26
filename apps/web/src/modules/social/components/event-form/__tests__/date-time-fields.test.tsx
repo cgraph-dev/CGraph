@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-vi.mock('./hooks', () => ({
+vi.mock('../hooks', () => ({
   formatDateTimeLocal: (d: Date) => '2024-01-15T10:00',
   formatDateLocal: (d: Date) => '2024-01-15',
 }));
@@ -50,10 +50,11 @@ describe('DateTimeFields', () => {
   });
 
   it('shows start and end date fields', () => {
-    render(<DateTimeFields {...defaultProps} />);
-    const inputs =
-      screen.getAllByRole('textbox').length + screen.getAllByDisplayValue(/2024/).length;
-    expect(inputs).toBeGreaterThanOrEqual(1);
+    const { container } = render(<DateTimeFields {...defaultProps} />);
+    const dateInputs = container.querySelectorAll(
+      'input[type="datetime-local"], input[type="date"]'
+    );
+    expect(dateInputs.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders errors when present', () => {

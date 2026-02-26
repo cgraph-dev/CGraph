@@ -12,7 +12,7 @@ vi.mock('react-router-dom', () => ({
   NavLink: ({ children, ...props }: any) => <a {...props}>{children}</a>,
 }));
 
-vi.mock('./sortable-channel', () => ({
+vi.mock('../sortable-channel', () => ({
   SortableChannel: ({ channel }: { channel: { name: string } }) => (
     <div data-testid="channel">{channel.name}</div>
   ),

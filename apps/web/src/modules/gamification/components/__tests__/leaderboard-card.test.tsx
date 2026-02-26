@@ -205,7 +205,7 @@ vi.mock('@/modules/auth/store', () => ({
   }),
 }));
 
-vi.mock('./constants', () => ({
+vi.mock('../leaderboard-widget/constants', () => ({
   LEADERBOARD_TYPES: [
     {
       value: 'xp',
@@ -225,17 +225,17 @@ vi.mock('./constants', () => ({
   ],
 }));
 
-vi.mock('./podium', () => ({
+vi.mock('../leaderboard-widget/podium', () => ({
   Podium: ({ entries }: { entries: unknown[] }) => <div data-testid="podium">Podium</div>,
 }));
 
-vi.mock('./leaderboard-entry-row', () => ({
+vi.mock('../leaderboard-widget/leaderboard-entry-row', () => ({
   LeaderboardEntryRow: ({ entry }: { entry: { username: string } }) => (
     <div data-testid="leaderboard-entry">{entry.username}</div>
   ),
 }));
 
-vi.mock('./sidebar-variant', () => ({
+vi.mock('../leaderboard-widget/sidebar-variant', () => ({
   SidebarVariant: () => <div data-testid="sidebar-variant">Sidebar</div>,
 }));
 

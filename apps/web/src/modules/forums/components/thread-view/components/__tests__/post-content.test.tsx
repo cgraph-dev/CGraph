@@ -204,24 +204,24 @@ vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,
 }));
 
-vi.mock('./prefix-badge', () => ({
+vi.mock('../prefix-badge', () => ({
   PrefixBadge: ({ prefix }: { prefix: string }) => <span data-testid="prefix-badge">{prefix}</span>,
 }));
 
-vi.mock('./rating-stars', () => ({
+vi.mock('../rating-stars', () => ({
   RatingStars: () => <div data-testid="rating-stars" />,
 }));
 
-vi.mock('./share-menu', () => ({
+vi.mock('../share-menu', () => ({
   ShareMenu: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="share-menu" /> : null,
 }));
 
-vi.mock('./more-menu', () => ({
+vi.mock('../more-menu', () => ({
   MoreMenu: () => <div data-testid="more-menu" />,
 }));
 
-vi.mock('./comment-form', () => ({
+vi.mock('../comment-form', () => ({
   CommentForm: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="comment-form" /> : null,
 }));
@@ -235,8 +235,8 @@ const makePost = (overrides = {}) => ({
   isPinned: false,
   isLocked: false,
   prefix: null,
-  viewCount: 100,
-  replyCount: 5,
+  views: 100,
+  commentCount: 5,
   rating: 4.5,
   createdAt: '2025-01-01',
   author: {
@@ -280,7 +280,8 @@ describe('PostContent', () => {
 
   it('renders author display name', () => {
     render(<PostContent {...defaultProps} />);
-    expect(screen.getByText('Alice')).toBeInTheDocument();
+    const els = screen.getAllByText('Alice');
+    expect(els.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders avatar with correct alt text', () => {

@@ -230,7 +230,7 @@ vi.mock('@/modules/groups/store', () => ({
   }),
 }));
 
-vi.mock('./member-item', () => ({
+vi.mock('../member-list/member-item', () => ({
   RoleSection: ({ role, members }: { role: { name: string }; members: unknown[] }) => (
     <div data-testid={`role-section-${role.name}`}>
       {members.length} members in {role.name}

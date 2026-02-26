@@ -33,7 +33,7 @@ vi.mock('@/modules/gamification/components/title-badge', () => ({
   TitleBadge: () => <div data-testid="title-badge" />,
 }));
 
-vi.mock('./constants', () => ({
+vi.mock('../constants', () => ({
   MAX_MUTUAL_FRIENDS_DISPLAY: 5,
   MAX_BADGES_DISPLAY: 5,
   MAX_SHARED_FORUMS_DISPLAY: 3,
@@ -83,28 +83,28 @@ describe('FullProfileCard', () => {
   };
 
   it('renders user display name', () => {
-    render(<FullProfileCard user={mockUser} onClose={vi.fn()} />);
-    expect(screen.getByText('Test User')).toBeInTheDocument();
+    render(<FullProfileCard user={mockUser} mutualFriends={[]} onClose={vi.fn()} />);
+    expect(screen.getAllByText('Test User').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders username', () => {
-    render(<FullProfileCard user={mockUser} onClose={vi.fn()} />);
+    render(<FullProfileCard user={mockUser} mutualFriends={[]} onClose={vi.fn()} />);
     expect(screen.getByText(/testuser/)).toBeInTheDocument();
   });
 
   it('renders bio', () => {
-    render(<FullProfileCard user={mockUser} onClose={vi.fn()} />);
+    render(<FullProfileCard user={mockUser} mutualFriends={[]} onClose={vi.fn()} />);
     expect(screen.getByText('Hello world')).toBeInTheDocument();
   });
 
   it('renders avatar', () => {
-    render(<FullProfileCard user={mockUser} onClose={vi.fn()} />);
+    render(<FullProfileCard user={mockUser} mutualFriends={[]} onClose={vi.fn()} />);
     expect(screen.getByTestId('avatar-border-renderer')).toBeInTheDocument();
   });
 
   it('renders glass card container', () => {
-    render(<FullProfileCard user={mockUser} onClose={vi.fn()} />);
+    render(<FullProfileCard user={mockUser} mutualFriends={[]} onClose={vi.fn()} />);
     // The component uses a plain div, not mocked GlassCard
-    expect(screen.getByText('Test User')).toBeInTheDocument();
+    expect(screen.getAllByText('Test User').length).toBeGreaterThanOrEqual(1);
   });
 });

@@ -221,19 +221,19 @@ vi.mock('@/contexts/theme-context-enhanced', () => ({
   useThemeEnhanced: () => mockThemeContext,
 }));
 
-vi.mock('./theme-selection', () => ({
+vi.mock('../appearance-settings/theme-selection', () => ({
   ThemeSelection: () => <div data-testid="theme-selection">ThemeSelection</div>,
 }));
-vi.mock('./display-options', () => ({
+vi.mock('../appearance-settings/display-options', () => ({
   DisplayOptions: () => <div data-testid="display-options">DisplayOptions</div>,
 }));
-vi.mock('./background-effects', () => ({
+vi.mock('../appearance-settings/background-effects', () => ({
   BackgroundEffects: () => <div data-testid="bg-effects">BackgroundEffects</div>,
 }));
-vi.mock('./accessibility', () => ({
+vi.mock('../appearance-settings/accessibility', () => ({
   Accessibility: () => <div data-testid="accessibility">Accessibility</div>,
 }));
-vi.mock('./live-preview', () => ({
+vi.mock('../appearance-settings/live-preview', () => ({
   LivePreview: () => <div data-testid="live-preview">LivePreview</div>,
 }));
 

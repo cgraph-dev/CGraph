@@ -201,19 +201,19 @@ vi.mock('@/lib/utils', () => ({
   cn: (...args: (string | boolean | undefined)[]) => args.filter(Boolean).join(' '),
 }));
 
-vi.mock('./hooks', () => ({
+vi.mock('../hooks', () => ({
   useTextSelection: () => ({ getSelection: () => ({ start: 0, end: 0, text: '' }) }),
   useBBCodeInsertion: () => ({ insertTag: vi.fn(), insertAtCursor: vi.fn() }),
   useDropdownClose: vi.fn(),
 }));
 
-vi.mock('./editor-toolbar', () => ({
+vi.mock('../editor-toolbar', () => ({
   EditorToolbar: (props: { isPreviewMode: boolean }) => (
     <div data-testid="editor-toolbar">{props.isPreviewMode ? 'preview' : 'edit'}</div>
   ),
 }));
 
-vi.mock('./editor-footer', () => ({
+vi.mock('../editor-footer', () => ({
   EditorFooter: ({ charCount }: { charCount: number }) => (
     <div data-testid="editor-footer">chars:{charCount}</div>
   ),

@@ -194,24 +194,24 @@ vi.mock('@/modules/auth/store', () => ({
   useAuthStore: { getState: () => ({ user: { id: 'current-user' } }) },
 }));
 
-vi.mock('./comment-header', () => ({
+vi.mock('../comment-header', () => ({
   CommentHeader: ({ comment }: { comment: { author: { displayName: string } } }) => (
     <div data-testid="comment-header">{comment.author.displayName}</div>
   ),
 }));
 
-vi.mock('./comment-vote-buttons', () => ({
+vi.mock('../comment-vote-buttons', () => ({
   CommentVoteButtons: () => <div data-testid="vote-buttons" />,
 }));
 
-vi.mock('./comment-forms', () => ({
+vi.mock('../comment-forms', () => ({
   ReplyForm: ({ authorUsername }: { authorUsername: string }) => (
     <div data-testid="reply-form">Reply to {authorUsername}</div>
   ),
   EditForm: () => <div data-testid="edit-form" />,
 }));
 
-vi.mock('./best-answer-badge', () => ({
+vi.mock('../best-answer-badge', () => ({
   BestAnswerBadge: () => <div data-testid="best-answer-badge" />,
 }));
 

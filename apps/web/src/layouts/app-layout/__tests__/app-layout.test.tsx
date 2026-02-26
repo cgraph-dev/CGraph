@@ -233,15 +233,15 @@ vi.mock('@/shared/components/ui', () => ({
   ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
-vi.mock('@/components/shaders/ShaderBackground', () => ({
+vi.mock('@/components/shaders/shader-background', () => ({
   default: () => <div data-testid="shader-background" />,
 }));
 
-vi.mock('@/components/navigation/AnimatedLogo', () => ({
+vi.mock('@/components/navigation/animated-logo', () => ({
   default: () => <div data-testid="animated-logo" />,
 }));
 
-vi.mock('@/components/theme/ThemedAvatar', () => ({
+vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: any) => <div data-testid="themed-avatar">{alt}</div>,
 }));
 
@@ -249,7 +249,7 @@ vi.mock('@/lib/utils', () => ({
   getAvatarBorderId: vi.fn(() => 'default'),
 }));
 
-vi.mock('@/lib/animations/AnimationEngine', () => ({
+vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn() },
 }));
 

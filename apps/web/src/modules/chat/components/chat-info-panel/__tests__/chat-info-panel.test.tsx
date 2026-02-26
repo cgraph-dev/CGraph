@@ -211,7 +211,7 @@ vi.mock('@/lib/animations/transitions', () => ({
   springs: { smooth: { type: 'spring' } },
 }));
 
-vi.mock('./useChatInfoPanel', () => ({
+vi.mock('../useChatInfoPanel', () => ({
   useChatInfoPanel: () => ({
     isMuted: false,
     isBlocking: false,
@@ -235,13 +235,13 @@ vi.mock('./useChatInfoPanel', () => ({
   }),
 }));
 
-vi.mock('./profile-section', () => ({
+vi.mock('../profile-section', () => ({
   ProfileSection: ({ user }: { user: { displayName?: string } }) => (
     <div data-testid="profile-section">{user.displayName}</div>
   ),
 }));
 
-vi.mock('./stats-grid', () => ({
+vi.mock('../stats-grid', () => ({
   StatsGrid: ({ karma, streak }: { karma: number; streak: number }) => (
     <div data-testid="stats-grid">
       karma:{karma} streak:{streak}
@@ -249,36 +249,36 @@ vi.mock('./stats-grid', () => ({
   ),
 }));
 
-vi.mock('./badges-list', () => ({
+vi.mock('../badges-list', () => ({
   BadgesList: ({ badges }: { badges: unknown[] }) => (
     <div data-testid="badges-list">{badges.length} badges</div>
   ),
 }));
 
-vi.mock('./mutual-friends-list', () => ({
+vi.mock('../mutual-friends-list', () => ({
   MutualFriendsList: ({ friends }: { friends: unknown[] }) => (
     <div data-testid="mutual-friends">{friends.length} mutual friends</div>
   ),
 }));
 
-vi.mock('./shared-forums-list', () => ({
+vi.mock('../shared-forums-list', () => ({
   SharedForumsList: ({ forums }: { forums: unknown[] }) => (
     <div data-testid="shared-forums">{forums.length} shared forums</div>
   ),
 }));
 
-vi.mock('./quick-actions', () => ({
+vi.mock('../quick-actions', () => ({
   QuickActions: () => <div data-testid="quick-actions" />,
 }));
 
-vi.mock('./confirmation-modals', () => ({
+vi.mock('../confirmation-modals', () => ({
   BlockConfirmModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="block-confirm-modal" /> : null,
   ReportModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="report-modal" /> : null,
 }));
 
-vi.mock('../disappearing-messages-toggle', () => ({
+vi.mock('../../disappearing-messages-toggle', () => ({
   DisappearingMessagesToggle: () => <div data-testid="disappearing-messages" />,
 }));
 
@@ -363,7 +363,7 @@ describe('ChatInfoPanel', () => {
 
   it('calls onClose when close button is clicked', () => {
     render(<ChatInfoPanel {...defaultProps} />);
-    const closeBtn = screen.getByTestId('x-mark-icon').closest('button');
+    const closeBtn = screen.getByTestId('icon-XMarkIcon').closest('button');
     if (closeBtn) fireEvent.click(closeBtn);
     expect(defaultProps.onClose).toHaveBeenCalled();
   });

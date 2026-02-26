@@ -199,7 +199,7 @@ const mockHandleSend = vi.fn();
 const mockHandleChange = vi.fn();
 const mockHandleKeyDown = vi.fn();
 
-vi.mock('./useMessageInput', () => ({
+vi.mock('../useMessageInput', () => ({
   useMessageInput: () => ({
     message: '',
     attachments: [],
@@ -226,26 +226,26 @@ vi.mock('./useMessageInput', () => ({
   }),
 }));
 
-vi.mock('./reply-preview', () => ({
+vi.mock('../reply-preview', () => ({
   ReplyPreview: ({ replyTo }: { replyTo?: { content: string } | null }) =>
     replyTo ? <div data-testid="reply-preview">{replyTo.content}</div> : null,
 }));
 
-vi.mock('./attachments-preview', () => ({
+vi.mock('../attachments-preview', () => ({
   AttachmentsPreview: ({ attachments }: { attachments: unknown[] }) => (
     <div data-testid="attachments-preview">{attachments.length} attachments</div>
   ),
 }));
 
-vi.mock('./attachment-menu', () => ({
+vi.mock('../attachment-menu', () => ({
   AttachmentMenu: () => <div data-testid="attachment-menu" />,
 }));
 
-vi.mock('./input-toolbar', () => ({
+vi.mock('../input-toolbar', () => ({
   InputToolbar: () => <div data-testid="input-toolbar" />,
 }));
 
-vi.mock('./mention-autocomplete', () => ({
+vi.mock('../mention-autocomplete', () => ({
   MentionAutocomplete: () => <div data-testid="mention-autocomplete" />,
 }));
 

@@ -185,7 +185,41 @@ vi.mock('@/stores/theme', () => ({
     particlesEnabled: false,
     glowEnabled: false,
   }),
-  useChatBubbleStore: () => ({ ownMessageBg: '#10b981', otherMessageBg: '#1f2937' }),
+  useChatBubbleStore: vi.fn((sel?: (s: Record<string, unknown>) => unknown) => {
+    const __cbs = {
+      chatBubble: {
+        ownMessageBg: '#10b981',
+        otherMessageBg: '#1f2937',
+        ownMessageText: '#ffffff',
+        otherMessageText: '#ffffff',
+        useGradient: false,
+        gradientDirection: 'diagonal',
+        borderRadius: 12,
+        bubbleShape: 'rounded',
+        showTail: true,
+        borderStyle: 'none',
+        glassEffect: false,
+        glassBlur: 10,
+        shadowIntensity: 20,
+        borderWidth: 0,
+        entranceAnimation: 'slide',
+        hoverEffect: true,
+        maxWidth: 70,
+        spacing: 4,
+        showTimestamp: true,
+        timestampPosition: 'inside',
+        showAvatar: true,
+        avatarSize: 'md',
+        alignSent: 'right',
+        alignReceived: 'left',
+        groupMessages: true,
+      },
+      updateChatBubble: mockUpdateChatBubble,
+      resetChatBubble: mockResetChatBubble,
+      applyPreset: mockApplyPreset,
+    };
+    return typeof sel === 'function' ? sel(__cbs) : __cbs;
+  }),
   useProfileThemeStore: () => ({ profileThemeId: 'default', profileCardLayout: 'default' }),
   getPresetCategory: () => 'basic',
   getColorsForPreset: () => ({
@@ -214,18 +248,21 @@ vi.mock('@/data/chatBackgrounds', () => ({
   getBackgroundsByCategory: () => [],
 }));
 
-vi.mock('./chat-bubble-settings.constants', () => ({
-  CHAT_BUBBLE_PRESETS_UI: [
-    { id: 'default', label: 'Default', preview: 'bg-gray-700' },
-    { id: 'neon', label: 'Neon', preview: 'bg-green-500' },
-  ],
-  CHAT_BUBBLE_TABS: [
-    { id: 'colors', label: 'Colors' },
-    { id: 'shape', label: 'Shape' },
-  ],
-}));
+vi.mock('../chat-bubble-settings.constants', () => {
+  const StubIcon = (props: Record<string, unknown>) => <svg {...props} />;
+  return {
+    CHAT_BUBBLE_PRESETS_UI: [
+      { id: 'default', label: 'Default', preview: 'bg-gray-700' },
+      { id: 'neon', label: 'Neon', preview: 'bg-green-500' },
+    ],
+    CHAT_BUBBLE_TABS: [
+      { id: 'colors', label: 'Colors', icon: StubIcon },
+      { id: 'shape', label: 'Shape', icon: StubIcon },
+    ],
+  };
+});
 
-vi.mock('./chat-bubble-tabs', () => ({
+vi.mock('../chat-bubble-tabs', () => ({
   ColorsTab: () => <div data-testid="colors-tab">Colors Tab</div>,
   ShapeTab: () => <div data-testid="shape-tab">Shape Tab</div>,
   EffectsTab: () => <div data-testid="effects-tab">Effects Tab</div>,

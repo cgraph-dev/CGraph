@@ -193,27 +193,33 @@ vi.mock('@/shared/components/ui', () => ({
   ),
 }));
 
-vi.mock('@/lib/animations/AnimationEngine', () => ({
+vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { success: vi.fn(), light: vi.fn(), warning: vi.fn() },
+}));
+
+vi.mock('@heroicons/react/24/outline', () => ({
+  GiftIcon: (props: Record<string, unknown>) => <svg data-testid="gift-icon" {...props} />,
+  CheckCircleIcon: (props: Record<string, unknown>) => <svg data-testid="check-icon" {...props} />,
+  LockClosedIcon: (props: Record<string, unknown>) => <svg data-testid="lock-icon" {...props} />,
 }));
 
 vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
 
-vi.mock('../streak-tracker/FireAnimation', () => ({
+vi.mock('../streak-tracker/fire-animation', () => ({
   FireAnimation: ({ currentStreak }: { currentStreak?: number }) => (
     <div data-testid="fire-animation">{currentStreak}</div>
   ),
 }));
 
-vi.mock('../streak-tracker/WeeklyCalendar', () => ({
+vi.mock('../streak-tracker/weekly-calendar', () => ({
   WeeklyCalendar: () => <div data-testid="weekly-calendar" />,
 }));
 
-vi.mock('../streak-tracker/MilestoneProgress', () => ({
+vi.mock('../streak-tracker/milestone-progress', () => ({
   MilestoneProgress: () => <div data-testid="milestone-progress" />,
 }));
 
-vi.mock('../streak-tracker/ClaimableMilestones', () => ({
+vi.mock('../streak-tracker/claimable-milestones', () => ({
   ClaimableMilestones: ({ onClaim }: { onClaim: (n: number) => void }) => (
     <div data-testid="claimable-milestones">
       <button data-testid="claim-milestone" onClick={() => onClaim(7)}>
@@ -223,12 +229,12 @@ vi.mock('../streak-tracker/ClaimableMilestones', () => ({
   ),
 }));
 
-vi.mock('../streak-tracker/MilestonesList', () => ({
+vi.mock('../streak-tracker/milestones-list', () => ({
   MilestonesList: ({ isVisible }: { isVisible?: boolean }) =>
     isVisible ? <div data-testid="milestones-list" /> : null,
 }));
 
-vi.mock('../streak-tracker/StreakVariants', () => ({
+vi.mock('../streak-tracker/streak-variants', () => ({
   StreakWidgetVariant: ({
     currentStreak,
     onClaimDaily,

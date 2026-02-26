@@ -226,22 +226,22 @@ vi.mock('../../hooks/useGroups', () => ({
   useGroups: () => ({ groups: mockGroups, isLoading: false, create: vi.fn() }),
 }));
 
-vi.mock('./group-icon', () => ({ GroupIcon: () => <div data-testid="group-icon" /> }));
-vi.mock('./group-card', () => ({
+vi.mock('../group-list/group-icon', () => ({ GroupIcon: () => <div data-testid="group-icon" /> }));
+vi.mock('../group-list/group-card', () => ({
   GroupCard: ({ group, onClick }: { group: { name: string }; onClick: () => void }) => (
     <div data-testid="group-card" onClick={onClick}>
       {group.name}
     </div>
   ),
 }));
-vi.mock('./group-list-item', () => ({
+vi.mock('../group-list/group-list-item', () => ({
   GroupListItem: ({ group, onClick }: { group: { name: string }; onClick: () => void }) => (
     <div data-testid="group-list-item" onClick={onClick}>
       {group.name}
     </div>
   ),
 }));
-vi.mock('./create-group-modal', () => ({
+vi.mock('../group-list/create-group-modal', () => ({
   CreateGroupModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="create-modal">Create Modal</div> : null,
 }));

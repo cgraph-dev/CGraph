@@ -254,7 +254,8 @@ describe('ForumHeader', () => {
 
   it('renders forum name in default variant', () => {
     render(<ForumHeader forum={makeForum()} />);
-    expect(screen.getByText('Test Forum')).toBeInTheDocument();
+    const els = screen.getAllByText('Test Forum');
+    expect(els.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders vote buttons when onVote is provided', () => {

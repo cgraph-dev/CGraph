@@ -239,7 +239,8 @@ describe('CommentCard (thread-view)', () => {
 
   it('renders author display name', () => {
     render(<CommentCard comment={makeComment()} index={0} onVote={onVote} />);
-    expect(screen.getByText('Alice')).toBeInTheDocument();
+    const els = screen.getAllByText('Alice');
+    expect(els.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders score', () => {

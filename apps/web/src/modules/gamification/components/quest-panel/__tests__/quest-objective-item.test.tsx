@@ -2,6 +2,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
+vi.mock('@heroicons/react/24/solid', () => ({
+  CheckCircleIcon: (props: Record<string, unknown>) => (
+    <svg data-testid="icon-CheckCircleIcon" {...props} />
+  ),
+}));
+
 import { QuestObjectiveItem } from '../quest-objective-item';
 
 describe('QuestObjectiveItem', () => {
@@ -28,8 +34,7 @@ describe('QuestObjectiveItem', () => {
 
   it('renders progress values', () => {
     render(<QuestObjectiveItem objective={incompleteObjective} index={0} />);
-    expect(screen.getByText(/1/)).toBeInTheDocument();
-    expect(screen.getByText(/3/)).toBeInTheDocument();
+    expect(screen.getByText('1/3')).toBeInTheDocument();
   });
 
   it('shows check icon when completed', () => {

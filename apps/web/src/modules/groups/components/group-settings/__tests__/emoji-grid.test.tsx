@@ -53,8 +53,8 @@ describe('EmojiGrid', () => {
 
   it('renders emoji names', () => {
     render(<EmojiGrid {...defaultProps} />);
-    expect(screen.getByText('thumbsup')).toBeInTheDocument();
-    expect(screen.getByText('party')).toBeInTheDocument();
+    expect(screen.getByText(':thumbsup:')).toBeInTheDocument();
+    expect(screen.getByText(':party:')).toBeInTheDocument();
   });
 
   it('renders emoji images', () => {

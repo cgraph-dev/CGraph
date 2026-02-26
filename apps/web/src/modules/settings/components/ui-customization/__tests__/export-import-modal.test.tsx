@@ -35,12 +35,12 @@ describe('ExportImportModal', () => {
 
   it('renders copy button', () => {
     render(<ExportImportModal {...defaultProps} />);
-    expect(screen.getByText(/Copy/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Copy/ })).toBeInTheDocument();
   });
 
   it('renders import section', () => {
     render(<ExportImportModal {...defaultProps} />);
-    expect(screen.getByText(/Import/i)).toBeInTheDocument();
+    expect(screen.getByText('Import Settings')).toBeInTheDocument();
   });
 
   it('calls onClose when backdrop clicked', () => {

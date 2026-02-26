@@ -187,7 +187,7 @@ vi.mock('@/lib/logger', () => ({
   chatLogger: { debug: vi.fn() },
 }));
 
-vi.mock('./emojiData', () => ({
+vi.mock('../emojiData', () => ({
   EMOJI_CATEGORIES: {
     'Frequently Used': ['😀'],
     'Smileys & People': ['😊'],
