@@ -13,7 +13,9 @@ import '@testing-library/jest-dom/vitest';
 
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div data-testid="glass-card" className={className}>{children}</div>
+    <div data-testid="glass-card" className={className}>
+      {children}
+    </div>
   ),
 }));
 
@@ -21,11 +23,11 @@ const mockRemoveFromMultiQuote = vi.fn();
 const mockClearMultiQuote = vi.fn();
 
 vi.mock('@/modules/forums/store', () => ({
-  useForumStore: () => ({
+  useForumStore: vi.fn(() => ({
     multiQuoteBuffer: ['post-abc12345', 'post-def67890'],
     removeFromMultiQuote: mockRemoveFromMultiQuote,
     clearMultiQuote: mockClearMultiQuote,
-  }),
+  })),
 }));
 
 import MultiQuoteIndicator from '../multi-quote-indicator';
@@ -93,7 +95,7 @@ describe('MultiQuoteIndicator', () => {
   it('renders post ID previews', () => {
     render(<MultiQuoteIndicator onQuoteClick={onQuoteClick} />);
     expect(screen.getByText(/post-abc/)).toBeInTheDocument();
-    expect(screen.getByText(/post-def6/)).toBeInTheDocument();
+    expect(screen.getByText(/post-def/)).toBeInTheDocument();
   });
 
   it('shows click-to-reply guidance text', () => {

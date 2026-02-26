@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any */
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -27,7 +28,7 @@ vi.mock('@/components', () => ({
   ),
 }));
 
-vi.mock('../advanced-search/SearchBar', () => ({
+vi.mock('../advanced-search/search-bar', () => ({
   SearchBar: ({
     filters,
     updateFilter,
@@ -55,7 +56,7 @@ vi.mock('../advanced-search/SearchBar', () => ({
   ),
 }));
 
-vi.mock('../advanced-search/FilterPanel', () => ({
+vi.mock('../advanced-search/filter-panel', () => ({
   FilterPanel: ({ filters, updateFilter, handleSearch, handleReset, isLoading, forums }: any) => (
     <div data-testid="filter-panel">
       <input

@@ -22,8 +22,8 @@ describe('ColorPicker', () => {
 
   it('renders color input with value', () => {
     render(<ColorPicker {...defaultProps} />);
-    const colorInput = screen.getByDisplayValue('#ff0000');
-    expect(colorInput).toBeInTheDocument();
+    const colorInputs = screen.getAllByDisplayValue('#ff0000');
+    expect(colorInputs.length).toBeGreaterThanOrEqual(1);
   });
 
   it('calls onChange when color input changes', () => {

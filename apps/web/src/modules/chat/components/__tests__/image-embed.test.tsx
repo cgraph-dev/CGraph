@@ -23,18 +23,18 @@ describe('ImageEmbed', () => {
 
   it('renders the image with correct src', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    const img = screen.getByAlt('Test Photo');
+    const img = screen.getByAltText('Test Photo');
     expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg');
   });
 
   it('uses fallback alt text when title is not provided', () => {
     render(<ImageEmbed embed={makeEmbed({ title: undefined })} onExpand={onExpand} />);
-    expect(screen.getByAlt('Image')).toBeInTheDocument();
+    expect(screen.getByAltText('Image')).toBeInTheDocument();
   });
 
   it('calls onExpand when clicked', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    fireEvent.click(screen.getByAlt('Test Photo'));
+    fireEvent.click(screen.getByAltText('Test Photo'));
     expect(onExpand).toHaveBeenCalledOnce();
   });
 
@@ -46,7 +46,7 @@ describe('ImageEmbed', () => {
 
   it('hides loading spinner after image loads', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    const img = screen.getByAlt('Test Photo');
+    const img = screen.getByAltText('Test Photo');
     fireEvent.load(img);
     const spinner = document.querySelector('.animate-spin');
     expect(spinner).not.toBeInTheDocument();
@@ -54,17 +54,17 @@ describe('ImageEmbed', () => {
 
   it('renders photo icon in hover overlay', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    expect(screen.getByTestId('photo-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-PhotoIcon')).toBeInTheDocument();
   });
 
   it('renders expand icon in hover overlay', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    expect(screen.getByTestId('expand-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-ArrowTopRightOnSquareIcon')).toBeInTheDocument();
   });
 
   it('applies lazy loading to the image', () => {
     render(<ImageEmbed embed={makeEmbed()} onExpand={onExpand} />);
-    const img = screen.getByAlt('Test Photo');
+    const img = screen.getByAltText('Test Photo');
     expect(img).toHaveAttribute('loading', 'lazy');
   });
 

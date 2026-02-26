@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * MessageBubble Customization Integration Tests
  * Verifies that bubble renders with custom style class, sender title,
@@ -26,7 +27,14 @@ vi.mock('@/modules/settings/store/customization', () => ({
       };
       return selector(state);
     }),
-    { getState: () => ({ chatBubbleStyle: 'neon', bubbleBorderRadius: 'lg', messageEffect: 'none', equippedTitle: null }) },
+    {
+      getState: () => ({
+        chatBubbleStyle: 'neon',
+        bubbleBorderRadius: 'lg',
+        messageEffect: 'none',
+        equippedTitle: null,
+      }),
+    }
   ),
 }));
 
@@ -36,29 +44,32 @@ vi.mock('@/modules/auth/store', () => ({
       const state = { user: { id: 'user-1' } };
       return selector ? selector(state) : state;
     }),
-    { getState: () => ({ user: { id: 'user-1' } }) },
+    { getState: () => ({ user: { id: 'user-1' } }) }
   ),
 }));
 
 // Mock heavy sub-components to isolate MessageBubble logic
-vi.mock('@/modules/chat/components/MessageReactions', () => ({
+vi.mock('@/modules/chat/components/message-reactions', () => ({
   default: () => <div data-testid="message-reactions" />,
 }));
-vi.mock('@/modules/chat/components/RichMediaEmbed', () => ({
+vi.mock('@/modules/chat/components/rich-media-embed', () => ({
   default: () => <div data-testid="rich-media-embed" />,
 }));
-vi.mock('@/modules/social/components/UserProfileCard', () => ({
+vi.mock('@/modules/social/components/user-profile-card', () => ({
   default: ({ children }: any) => <div>{children}</div>,
 }));
-vi.mock('@/modules/gamification/components/TitleBadge', () => ({
+vi.mock('@/modules/gamification/components/title-badge', () => ({
   TitleBadge: () => <span data-testid="title-badge" />,
 }));
-vi.mock('@/components/theme/ThemedAvatar', () => ({
+vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ username }: any) => <div data-testid="avatar">{username}</div>,
 }));
 vi.mock('@/modules/settings/hooks/useCustomizationApplication', () => ({
   getMessageBubbleClass: () => 'mock-bubble-class',
   getMessageEffectClass: () => '',
+}));
+vi.mock('@/modules/chat/components/markdown-content', () => ({
+  MarkdownContent: ({ content }: { content: string }) => <span>{content}</span>,
 }));
 vi.mock('@/lib/chat', () => ({
   aggregateReactions: () => [],
@@ -200,12 +211,7 @@ describe('MessageBubble Customization', () => {
       ...DEFAULT_UI_PREFERENCES,
       animationIntensity: 'low',
     };
-    rerender(
-      <MessageBubble
-        {...defaultProps}
-        uiPreferences={updatedPrefs}
-      />,
-    );
+    rerender(<MessageBubble {...defaultProps} uiPreferences={updatedPrefs} />);
     expect(screen.getByText('Hello world')).toBeTruthy();
   });
 });

@@ -38,6 +38,6 @@ describe('ScrollToBottomButton', () => {
 
   it('renders chevron icon', () => {
     render(<ScrollToBottomButton visible={true} onClick={vi.fn()} />);
-    expect(screen.getByTestId('chevron-icon')).toBeTruthy();
+    expect(screen.getByTestId('icon-ChevronDownIcon')).toBeTruthy();
   });
 });

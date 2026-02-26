@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 /**
  * Referral Store Unit Tests
@@ -22,6 +23,7 @@ vi.mock('@/lib/apiUtils', () => ({
     if (key && Array.isArray(data[key])) return data[key];
     return [];
   }),
+  isRecord: vi.fn((v: unknown) => v != null && typeof v === 'object' && !Array.isArray(v)),
 }));
 
 import { api } from '@/lib/api';

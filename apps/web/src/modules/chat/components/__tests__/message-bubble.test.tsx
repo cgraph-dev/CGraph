@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MessageBubble, type UIPreferences, type MessageBubbleProps } from '../message-bubble';
@@ -10,45 +11,83 @@ vi.mock('@/lib/chat', () => ({
 }));
 
 vi.mock('@/modules/auth/store', () => ({
-  useAuthStore: {
-    getState: () => ({
-      user: { id: 'current-user-1' },
+  useAuthStore: Object.assign(
+    vi.fn((selector: any) => {
+      const state = { user: { id: 'current-user-1' } };
+      return selector ? selector(state) : state;
     }),
-  },
+    { getState: () => ({ user: { id: 'current-user-1' } }) }
+  ),
 }));
 
-vi.mock('@/modules/social/components/UserProfileCard', () => ({
+vi.mock('@/modules/settings/store/customization', () => ({
+  useCustomizationStore: Object.assign(
+    vi.fn((selector: any) => {
+      const state = {
+        chatBubbleStyle: 'default',
+        chatBubbleColor: null,
+        bubbleBorderRadius: null,
+        messageEffect: 'none',
+        equippedTitle: null,
+      };
+      return selector(state);
+    }),
+    {
+      getState: () => ({
+        chatBubbleStyle: 'default',
+        bubbleBorderRadius: null,
+        messageEffect: 'none',
+        equippedTitle: null,
+      }),
+    }
+  ),
+}));
+
+vi.mock('@/modules/settings/hooks/useCustomizationApplication', () => ({
+  getMessageBubbleClass: () => '',
+  getMessageEffectClass: () => '',
+}));
+
+vi.mock('@/modules/social/components/user-profile-card', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="profile-card">{children}</div>
   ),
 }));
 
-vi.mock('@/components/theme/ThemedAvatar', () => ({
+vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,
 }));
 
-vi.mock('@/modules/chat/components/audio/AdvancedVoiceVisualizer', () => ({
+vi.mock('@/modules/chat/components/audio/advanced-voice-visualizer', () => ({
   default: () => <div data-testid="voice-visualizer">Voice Visualizer</div>,
 }));
 
-vi.mock('@/modules/chat/components/MessageReactions', () => ({
+vi.mock('@/modules/chat/components/message-reactions', () => ({
   default: () => <div data-testid="reactions">Reactions</div>,
 }));
 
-vi.mock('@/modules/chat/components/RichMediaEmbed', () => ({
+vi.mock('@/modules/chat/components/rich-media-embed', () => ({
   default: () => <div data-testid="rich-embed">Rich Embed</div>,
 }));
 
-vi.mock('@/modules/chat/components/GifMessage', () => ({
+vi.mock('@/modules/chat/components/markdown-content', () => ({
+  MarkdownContent: ({ content }: { content: string }) => <span>{content}</span>,
+}));
+
+vi.mock('@/modules/chat/components/gif-message', () => ({
   GifMessage: () => <div data-testid="gif-message">GIF</div>,
 }));
 
-vi.mock('@/modules/chat/components/FileMessage', () => ({
+vi.mock('@/modules/chat/components/file-message', () => ({
   FileMessage: () => <div data-testid="file-message">File</div>,
 }));
 
-vi.mock('@/components/media/VoiceMessagePlayer', () => ({
+vi.mock('@/components/media/voice-message-player', () => ({
   VoiceMessagePlayer: () => <div data-testid="voice-player">Voice Player</div>,
+}));
+
+vi.mock('@/modules/gamification/components/title-badge', () => ({
+  TitleBadge: () => null,
 }));
 
 const defaultUIPreferences: UIPreferences = {

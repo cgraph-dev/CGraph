@@ -19,7 +19,7 @@ vi.mock('react-router-dom', () => ({
 }));
 
 const mockHapticMedium = vi.fn();
-vi.mock('@/lib/animations/AnimationEngine', () => ({
+vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { medium: () => mockHapticMedium() },
 }));
 

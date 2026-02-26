@@ -15,21 +15,29 @@ vi.mock('@/data/avatar-borders', () => ({
 }));
 
 vi.mock('@/modules/social/components/avatar/avatar-border-renderer', () => ({
-  AvatarBorderRenderer: ({ alt }: { alt: string }) => <div data-testid="avatar-border-renderer">{alt}</div>,
+  AvatarBorderRenderer: ({ alt }: { alt: string }) => (
+    <div data-testid="avatar-border-renderer" aria-label={alt} />
+  ),
 }));
 
 vi.mock('@/shared/components/ui', () => ({
   AnimatedAvatar: ({ alt, size }: { alt: string; size: string }) => (
-    <div data-testid="mini-avatar" data-size={size}>{alt}</div>
+    <div data-testid="mini-avatar" data-size={size}>
+      {alt}
+    </div>
   ),
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div className={className} data-testid="glass-card">{children}</div>
+    <div className={className} data-testid="glass-card">
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt, size }: { alt: string; size: string }) => (
-    <div data-testid="themed-avatar" data-size={size}>{alt}</div>
+    <div data-testid="themed-avatar" data-size={size}>
+      {alt}
+    </div>
   ),
 }));
 

@@ -67,16 +67,18 @@ describe('StickerItem', () => {
 
   it('shows lock overlay when locked', () => {
     render(<StickerItem sticker={makeSticker()} onSelect={onSelect} isLocked={true} />);
-    expect(screen.getByTestId('lock-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-LockClosedIcon')).toBeInTheDocument();
   });
 
   it('does not show lock overlay when unlocked', () => {
     render(<StickerItem sticker={makeSticker()} onSelect={onSelect} isLocked={false} />);
-    expect(screen.queryByTestId('lock-icon')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('icon-LockClosedIcon')).not.toBeInTheDocument();
   });
 
   it('shows unlock price in title when locked', () => {
-    render(<StickerItem sticker={makeSticker()} onSelect={onSelect} isLocked={true} packPrice={500} />);
+    render(
+      <StickerItem sticker={makeSticker()} onSelect={onSelect} isLocked={true} packPrice={500} />
+    );
     expect(screen.getByTitle('Unlock for 500 coins')).toBeInTheDocument();
   });
 
@@ -93,12 +95,20 @@ describe('StickerItem', () => {
   });
 
   it('renders rarity indicator for non-common stickers', () => {
-    render(<StickerItem sticker={makeSticker({ rarity: 'rare' })} onSelect={onSelect} isLocked={false} />);
+    render(
+      <StickerItem sticker={makeSticker({ rarity: 'rare' })} onSelect={onSelect} isLocked={false} />
+    );
     expect(screen.getByText('💎')).toBeInTheDocument();
   });
 
   it('does not render rarity indicator for common stickers', () => {
-    render(<StickerItem sticker={makeSticker({ rarity: 'common' })} onSelect={onSelect} isLocked={false} />);
+    render(
+      <StickerItem
+        sticker={makeSticker({ rarity: 'common' })}
+        onSelect={onSelect}
+        isLocked={false}
+      />
+    );
     expect(screen.queryByText('💎')).not.toBeInTheDocument();
     expect(screen.queryByText('🌟')).not.toBeInTheDocument();
   });

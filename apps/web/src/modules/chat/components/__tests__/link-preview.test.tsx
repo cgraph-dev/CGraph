@@ -52,19 +52,19 @@ describe('LinkPreview', () => {
 
   it('renders an image when provided', () => {
     render(<LinkPreview embed={makeEmbed()} />);
-    const img = screen.getByAlt('Example Site');
+    const img = screen.getByAltText('Example Site');
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute('src', 'https://example.com/preview.jpg');
   });
 
   it('does not render image when not provided', () => {
     render(<LinkPreview embed={makeEmbed({ image: undefined })} />);
-    expect(screen.queryByAlt('Example Site')).not.toBeInTheDocument();
+    expect(screen.queryByAltText('Example Site')).not.toBeInTheDocument();
   });
 
   it('renders favicon when provided', () => {
     render(<LinkPreview embed={makeEmbed()} />);
-    const favicon = screen.getByAlt('');
+    const favicon = screen.getByAltText('');
     expect(favicon).toHaveAttribute('src', 'https://example.com/favicon.ico');
   });
 
@@ -83,7 +83,7 @@ describe('LinkPreview', () => {
 
   it('renders external link icon', () => {
     render(<LinkPreview embed={makeEmbed()} />);
-    expect(screen.getByTestId('external-link-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-ArrowTopRightOnSquareIcon')).toBeInTheDocument();
   });
 
   it('renders without title or description', () => {

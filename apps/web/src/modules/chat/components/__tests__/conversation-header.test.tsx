@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ConversationHeader } from '../conversation-header';
@@ -8,15 +9,15 @@ vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, ...props }: any) => <div {...props}>{children}</div>,
 }));
 
-vi.mock('@/components/theme/ThemedAvatar', () => ({
+vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,
 }));
 
-vi.mock('@/modules/social/components/UserProfileCard', () => ({
+vi.mock('@/modules/social/components/user-profile-card', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-vi.mock('@/lib/animations/AnimationEngine', () => ({
+vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { light: vi.fn() },
 }));
 

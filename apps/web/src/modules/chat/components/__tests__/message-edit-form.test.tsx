@@ -48,7 +48,7 @@ describe('MessageEditForm', () => {
   it('textarea has autoFocus', () => {
     render(<MessageEditForm {...defaultProps} />);
     const textarea = screen.getByDisplayValue('Original message text');
-    expect(textarea).toHaveAttribute('autofocus');
+    expect(textarea).toHaveFocus();
   });
 
   it('renders without optional handlers', () => {

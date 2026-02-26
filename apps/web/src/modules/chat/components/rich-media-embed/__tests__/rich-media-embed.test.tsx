@@ -6,35 +6,43 @@ import RichMediaEmbed from '../rich-media-embed';
 
 const mockUseMediaEmbeds = vi.fn();
 
-vi.mock('./hooks', () => ({
+vi.mock('../hooks', () => ({
   useMediaEmbeds: (...args: unknown[]) => mockUseMediaEmbeds(...args),
 }));
 
-vi.mock('./lightbox', () => ({
+vi.mock('../lightbox', () => ({
   __esModule: true,
   default: ({ lightboxMedia }: { lightboxMedia: unknown }) => (
     <div data-testid="lightbox" data-open={String(!!lightboxMedia)} />
   ),
 }));
 
-vi.mock('./image-embed', () => ({
+vi.mock('../image-embed', () => ({
   __esModule: true,
-  default: ({ embed }: { embed: { url: string } }) => <div data-testid="image-embed">{embed.url}</div>,
+  default: ({ embed }: { embed: { url: string } }) => (
+    <div data-testid="image-embed">{embed.url}</div>
+  ),
 }));
 
-vi.mock('./video-embed', () => ({
+vi.mock('../video-embed', () => ({
   __esModule: true,
-  default: ({ embed }: { embed: { url: string } }) => <div data-testid="video-embed">{embed.url}</div>,
+  default: ({ embed }: { embed: { url: string } }) => (
+    <div data-testid="video-embed">{embed.url}</div>
+  ),
 }));
 
-vi.mock('./audio-embed', () => ({
+vi.mock('../audio-embed', () => ({
   __esModule: true,
-  default: ({ embed }: { embed: { url: string } }) => <div data-testid="audio-embed">{embed.url}</div>,
+  default: ({ embed }: { embed: { url: string } }) => (
+    <div data-testid="audio-embed">{embed.url}</div>
+  ),
 }));
 
-vi.mock('./link-preview', () => ({
+vi.mock('../link-preview', () => ({
   __esModule: true,
-  default: ({ embed }: { embed: { url: string } }) => <div data-testid="link-preview">{embed.url}</div>,
+  default: ({ embed }: { embed: { url: string } }) => (
+    <div data-testid="link-preview">{embed.url}</div>
+  ),
 }));
 
 describe('RichMediaEmbed', () => {

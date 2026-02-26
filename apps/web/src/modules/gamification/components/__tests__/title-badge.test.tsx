@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
@@ -62,7 +63,7 @@ vi.mock('../title-badge/hooks/useAnimationConfig', () => ({
   useAnimationConfig: () => ({ getAnimation: () => ({}) }),
 }));
 
-vi.mock('../title-badge/TitleBadgeTooltip', () => ({
+vi.mock('../title-badge/title-badge-tooltip', () => ({
   TitleBadgeTooltip: ({ title }: any) => <div data-testid="tooltip">{title.description}</div>,
 }));
 
@@ -96,17 +97,17 @@ describe('TitleBadge', () => {
 
   it('renders sparkle icon for legendary rarity', () => {
     render(<TitleBadge title={mockLegendaryTitle} />);
-    expect(screen.getByTestId('sparkle-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-SparklesIcon')).toBeInTheDocument();
   });
 
   it('renders sparkle icon for mythic rarity', () => {
     render(<TitleBadge title={mockRainbowTitle} />);
-    expect(screen.getByTestId('sparkle-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-SparklesIcon')).toBeInTheDocument();
   });
 
   it('does NOT render sparkle icon for epic rarity', () => {
     render(<TitleBadge title={mockTitleData} />);
-    expect(screen.queryByTestId('sparkle-icon')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('icon-SparklesIcon')).not.toBeInTheDocument();
   });
 
   it('calls onClick handler when clicked', () => {

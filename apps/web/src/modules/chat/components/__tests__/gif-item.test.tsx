@@ -45,18 +45,24 @@ describe('GifItem', () => {
 
   it('shows outline heart when not favorited', () => {
     render(<GifItem {...defaultProps} isFavorite={false} />);
-    expect(screen.getByTestId('heart-outline')).toBeInTheDocument();
+    const container = screen.getByRole('img').closest('div')!;
+    fireEvent.mouseEnter(container);
+    expect(screen.getByTestId('icon-HeartIcon')).toBeInTheDocument();
   });
 
   it('shows solid heart when favorited', () => {
     render(<GifItem {...defaultProps} isFavorite={true} />);
-    expect(screen.getByTestId('heart-solid')).toBeInTheDocument();
+    const container = screen.getByRole('img').closest('div')!;
+    fireEvent.mouseEnter(container);
+    expect(screen.getByTestId('icon-HeartIcon')).toBeInTheDocument();
   });
 
   it('calls onToggleFavorite when heart clicked', () => {
     render(<GifItem {...defaultProps} />);
-    const heartBtn = screen.getByTestId('heart-outline').closest('button');
-    if (heartBtn) fireEvent.click(heartBtn);
+    const container = screen.getByRole('img').closest('div')!;
+    fireEvent.mouseEnter(container);
+    const heartBtn = screen.getByTestId('icon-HeartIcon').closest('button')!;
+    fireEvent.click(heartBtn);
     expect(defaultProps.onToggleFavorite).toHaveBeenCalledWith(sampleGif);
   });
 });

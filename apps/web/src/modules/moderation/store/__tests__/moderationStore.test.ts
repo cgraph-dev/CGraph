@@ -33,6 +33,7 @@ vi.mock('@/lib/apiUtils', () => ({
     if (key && data[key] && typeof data[key] === 'object') return data[key];
     return data;
   }),
+  isRecord: vi.fn((v: unknown) => v != null && typeof v === 'object' && !Array.isArray(v)),
 }));
 
 import { api } from '@/lib/api';

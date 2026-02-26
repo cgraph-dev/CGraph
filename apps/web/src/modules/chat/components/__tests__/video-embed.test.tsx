@@ -51,8 +51,8 @@ describe('VideoEmbed', () => {
 
   it('renders YouTube thumbnail with play button', () => {
     render(<VideoEmbed embed={makeYouTubeEmbed()} onExpand={onExpand} />);
-    expect(screen.getByAlt('Test YouTube Video')).toBeInTheDocument();
-    expect(screen.getAllByTestId('play-icon').length).toBeGreaterThan(0);
+    expect(screen.getByAltText('Test YouTube Video')).toBeInTheDocument();
+    expect(screen.getAllByTestId('icon-PlayCircleIcon').length).toBeGreaterThan(0);
   });
 
   it('renders video title for YouTube embed', () => {
@@ -67,7 +67,7 @@ describe('VideoEmbed', () => {
 
   it('shows YouTube iframe after clicking play', () => {
     render(<VideoEmbed embed={makeYouTubeEmbed()} onExpand={onExpand} />);
-    const thumbnail = screen.getByAlt('Test YouTube Video');
+    const thumbnail = screen.getByAltText('Test YouTube Video');
     fireEvent.click(thumbnail);
     const iframe = document.querySelector('iframe');
     expect(iframe).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('VideoEmbed', () => {
 
   it('renders iframe with sandbox and allow attributes', () => {
     render(<VideoEmbed embed={makeYouTubeEmbed()} onExpand={onExpand} />);
-    fireEvent.click(screen.getByAlt('Test YouTube Video'));
+    fireEvent.click(screen.getByAltText('Test YouTube Video'));
     const iframe = document.querySelector('iframe');
     expect(iframe).toHaveAttribute('sandbox');
     expect(iframe).toHaveAttribute('allowFullScreen');
@@ -100,7 +100,7 @@ describe('VideoEmbed', () => {
 
   it('renders play icon for native video', () => {
     render(<VideoEmbed embed={makeNativeEmbed()} onExpand={onExpand} />);
-    expect(screen.getAllByTestId('play-icon').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('icon-PlayCircleIcon').length).toBeGreaterThan(0);
   });
 
   it('renders GlassCard wrapper for YouTube embed', () => {

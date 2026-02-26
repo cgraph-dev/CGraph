@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any */
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -43,27 +44,27 @@ vi.mock('@/lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 
-vi.mock('../profile-card/MinimalLayout', () => ({
+vi.mock('../profile-card/minimal-layout', () => ({
   MinimalLayout: ({ user }: any) => <div data-testid="minimal-layout">{user.displayName}</div>,
 }));
 
-vi.mock('../profile-card/CompactLayout', () => ({
+vi.mock('../profile-card/compact-layout', () => ({
   CompactLayout: ({ user }: any) => <div data-testid="compact-layout">{user.displayName}</div>,
 }));
 
-vi.mock('../profile-card/DetailedLayout', () => ({
+vi.mock('../profile-card/detailed-layout', () => ({
   DetailedLayout: ({ user }: any) => <div data-testid="detailed-layout">{user.displayName}</div>,
 }));
 
-vi.mock('../profile-card/GamingLayout', () => ({
+vi.mock('../profile-card/gaming-layout', () => ({
   GamingLayout: ({ user }: any) => <div data-testid="gaming-layout">{user.displayName}</div>,
 }));
 
-vi.mock('../profile-card/SocialLayout', () => ({
+vi.mock('../profile-card/social-layout', () => ({
   SocialLayout: ({ user }: any) => <div data-testid="social-layout">{user.displayName}</div>,
 }));
 
-vi.mock('../profile-card/CreatorLayout', () => ({
+vi.mock('../profile-card/creator-layout', () => ({
   CreatorLayout: ({ user }: any) => <div data-testid="creator-layout">{user.displayName}</div>,
 }));
 

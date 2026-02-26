@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * useWebRTC Hook Unit Tests
  *
@@ -53,7 +54,7 @@ vi.mock('@/lib/socket', () => ({
   })),
 }));
 
-vi.mock('@/components/feedback/Toast', () => ({
+vi.mock('@/components/feedback/toast', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),

@@ -7,8 +7,20 @@ import { ReadReceipts } from '../message-bubble/read-receipts';
 describe('ReadReceipts', () => {
   it('renders avatar images for readers with avatarUrl', () => {
     const readBy = [
-      { id: '1', userId: 'u1', readAt: '2026-02-24T12:00:00Z', avatarUrl: 'https://example.com/a.png', username: 'alice' },
-      { id: '2', userId: 'u2', readAt: '2026-02-24T12:01:00Z', avatarUrl: 'https://example.com/b.png', username: 'bob' },
+      {
+        id: '1',
+        userId: 'u1',
+        readAt: '2026-02-24T12:00:00Z',
+        avatarUrl: 'https://example.com/a.png',
+        username: 'alice',
+      },
+      {
+        id: '2',
+        userId: 'u2',
+        readAt: '2026-02-24T12:01:00Z',
+        avatarUrl: 'https://example.com/b.png',
+        username: 'bob',
+      },
     ];
     render(<ReadReceipts readBy={readBy} />);
     const imgs = screen.getAllByRole('img');
@@ -17,15 +29,27 @@ describe('ReadReceipts', () => {
 
   it('renders initials when no avatarUrl', () => {
     const readBy = [
-      { id: '1', userId: 'u1', readAt: '2026-02-24T12:00:00Z', avatarUrl: undefined, username: 'alice' },
+      {
+        id: '1',
+        userId: 'u1',
+        readAt: '2026-02-24T12:00:00Z',
+        avatarUrl: undefined,
+        username: 'alice',
+      },
     ];
     render(<ReadReceipts readBy={readBy} />);
-    expect(screen.getByText('a')).toBeInTheDocument();
+    expect(screen.getByText('A')).toBeInTheDocument();
   });
 
   it('shows Seen label', () => {
     const readBy = [
-      { id: '1', userId: 'u1', readAt: '2026-02-24T12:00:00Z', avatarUrl: undefined, username: 'alice' },
+      {
+        id: '1',
+        userId: 'u1',
+        readAt: '2026-02-24T12:00:00Z',
+        avatarUrl: undefined,
+        username: 'alice',
+      },
     ];
     render(<ReadReceipts readBy={readBy} />);
     expect(screen.getByText('Seen')).toBeInTheDocument();

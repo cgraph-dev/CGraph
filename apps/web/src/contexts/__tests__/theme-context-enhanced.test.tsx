@@ -57,7 +57,7 @@ const DEFAULT_PREFS = {
 // vi.mock – factory must be self-contained (hoisted above all declarations)
 // ---------------------------------------------------------------------------
 
-vi.mock('@/lib/theme/ThemeEngine', () => {
+vi.mock('@/lib/theme/theme-engine', () => {
   const dark = {
     id: 'dark',
     name: 'Dark',

@@ -18,10 +18,33 @@ vi.mock('../useStickerPicker', () => ({
     userCoins: 500,
     ownedPackIds: new Set(['free-pack']),
     sortedPacks: [
-      { id: 'free-pack', name: 'Free Pack', coverEmoji: '😀', coinPrice: 0, isFree: true, isLimited: false, stickerCount: 5 },
-      { id: 'premium-pack', name: 'Premium', coverEmoji: '✨', coinPrice: 100, isFree: false, isLimited: false, stickerCount: 10 },
+      {
+        id: 'free-pack',
+        name: 'Free Pack',
+        coverEmoji: '😀',
+        coinPrice: 0,
+        isFree: true,
+        isLimited: false,
+        stickerCount: 5,
+      },
+      {
+        id: 'premium-pack',
+        name: 'Premium',
+        coverEmoji: '✨',
+        coinPrice: 100,
+        isFree: false,
+        isLimited: false,
+        stickerCount: 10,
+      },
     ],
-    activePack: { id: 'free-pack', name: 'Free Pack', coverEmoji: '😀', coinPrice: 0, isFree: true },
+    activePack: {
+      id: 'free-pack',
+      name: 'Free Pack',
+      coverEmoji: '😀',
+      coinPrice: 0,
+      isFree: true,
+      rarity: 'common',
+    },
     displayStickers: [],
     handlePurchasePack: vi.fn(),
     handleStickerSelect: vi.fn(),
@@ -31,7 +54,9 @@ vi.mock('../useStickerPicker', () => ({
 
 vi.mock('../pack-tab', () => ({
   PackTab: ({ pack, onClick }: { pack: { name: string }; onClick: () => void }) => (
-    <button data-testid={`pack-tab-${pack.name}`} onClick={onClick}>{pack.name}</button>
+    <button data-testid={`pack-tab-${pack.name}`} onClick={onClick}>
+      {pack.name}
+    </button>
   ),
 }));
 
@@ -101,7 +126,7 @@ describe('StickerPicker', () => {
 
   it('calls onClose when close button is clicked', () => {
     render(<StickerPicker {...defaultProps} />);
-    const closeBtn = screen.getByTestId('x-icon').closest('button');
+    const closeBtn = screen.getByTestId('icon-XMarkIcon').closest('button');
     expect(closeBtn).toBeInTheDocument();
     fireEvent.click(closeBtn!);
     expect(defaultProps.onClose).toHaveBeenCalledOnce();

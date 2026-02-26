@@ -7,7 +7,9 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 vi.mock('@/shared/components/ui', () => ({
-  GlassCard: ({ children }: React.PropsWithChildren) => <div data-testid="glass-card">{children}</div>,
+  GlassCard: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="glass-card">{children}</div>
+  ),
 }));
 
 vi.mock('@/components/theme/themed-avatar', () => ({
@@ -15,8 +17,22 @@ vi.mock('@/components/theme/themed-avatar', () => ({
 }));
 
 const mockConversations = [
-  { id: 'c1', name: 'Alice', isGroup: false, members: [], avatarUrl: null },
-  { id: 'c2', name: 'Team Chat', isGroup: true, members: [], avatarUrl: null },
+  {
+    id: 'c1',
+    name: 'Alice',
+    type: 'direct' as const,
+    isGroup: false,
+    members: [],
+    avatarUrl: null,
+  },
+  {
+    id: 'c2',
+    name: 'Team Chat',
+    type: 'group' as const,
+    isGroup: true,
+    members: [],
+    avatarUrl: null,
+  },
 ];
 
 vi.mock('@/modules/chat/store', () => ({

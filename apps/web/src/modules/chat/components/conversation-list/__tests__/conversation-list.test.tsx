@@ -43,16 +43,18 @@ vi.mock('@/modules/chat/store', () => ({
     conversations: mockConversations,
     activeConversationId: null,
     typing: {},
+    typingUsers: [],
   })),
 }));
 
 vi.mock('@/modules/auth/store', () => ({
-  useAuthStore: {
-    getState: () => ({ user: { id: 'current-user', username: 'me' } }),
-  },
+  useAuthStore: Object.assign(
+    vi.fn(() => ({ user: { id: 'current-user', username: 'me' } })),
+    { getState: () => ({ user: { id: 'current-user', username: 'me' } }) }
+  ),
 }));
 
-vi.mock('./conversation-list-header', () => ({
+vi.mock('../conversation-list-header', () => ({
   ConversationListHeader: ({
     searchQuery,
     onSearch,
@@ -70,7 +72,7 @@ vi.mock('./conversation-list-header', () => ({
   ),
 }));
 
-vi.mock('./conversation-item', () => ({
+vi.mock('../conversation-item', () => ({
   ConversationItem: ({
     conversation,
     onClick,
@@ -84,11 +86,11 @@ vi.mock('./conversation-item', () => ({
   ),
 }));
 
-vi.mock('./empty-state', () => ({
+vi.mock('../empty-state', () => ({
   EmptyState: () => <div data-testid="empty-state">No conversations</div>,
 }));
 
-vi.mock('./new-chat-modal', () => ({
+vi.mock('../new-chat-modal', () => ({
   NewChatModal: ({ onClose }: { onClose: () => void }) => (
     <div data-testid="new-chat-modal">
       <button onClick={onClose}>Close</button>

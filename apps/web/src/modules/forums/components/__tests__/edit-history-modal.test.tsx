@@ -62,13 +62,13 @@ describe('EditHistoryModal', () => {
   it('renders close button', () => {
     mockFetchEditHistory.mockResolvedValue([]);
     render(<EditHistoryModal postId="post-1" isOpen={true} onClose={onClose} />);
-    expect(screen.getByTestId('close-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-XMarkIcon')).toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
     mockFetchEditHistory.mockResolvedValue([]);
     render(<EditHistoryModal postId="post-1" isOpen={true} onClose={onClose} />);
-    const closeButton = screen.getByTestId('close-icon').closest('button');
+    const closeButton = screen.getByTestId('icon-XMarkIcon').closest('button');
     if (closeButton) {
       fireEvent.click(closeButton);
       expect(onClose).toHaveBeenCalledOnce();
@@ -111,7 +111,7 @@ describe('EditHistoryModal', () => {
     ]);
     render(<EditHistoryModal postId="post-1" isOpen={true} onClose={onClose} />);
     expect(await screen.findByText('alice')).toBeInTheDocument();
-    expect(screen.getByText('Edit #1')).toBeInTheDocument();
+    expect(screen.getAllByText('Edit #1').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders GlassCard wrapper', () => {

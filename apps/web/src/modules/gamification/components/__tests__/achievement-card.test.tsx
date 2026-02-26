@@ -20,7 +20,7 @@ vi.mock('@/shared/components/ui', () => ({
   ),
 }));
 
-vi.mock('./constants', () => ({
+vi.mock('../constants', () => ({
   RARITY_COLORS: {
     common: '#9ca3af',
     uncommon: '#22c55e',
@@ -65,28 +65,56 @@ describe('AchievementCard', () => {
 
   it('renders achievement name', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
     expect(screen.getByText('First Message')).toBeInTheDocument();
   });
 
   it('renders achievement description', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
     expect(screen.getByText('Send your first message in chat')).toBeInTheDocument();
   });
 
   it('renders rarity badge', () => {
     render(
-      <AchievementCard achievement={makeAchievement({ rarity: 'epic' })} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement({ rarity: 'epic' })}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
     expect(screen.getByText('epic')).toBeInTheDocument();
   });
 
   it('calls onClick when card is clicked', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
     fireEvent.click(screen.getByText('First Message'));
     expect(onClick).toHaveBeenCalledOnce();
@@ -94,36 +122,71 @@ describe('AchievementCard', () => {
 
   it('shows lock icon when not unlocked', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={false} progress={0} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={false}
+        progress={0}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
-    expect(screen.getByTestId('lock-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-LockClosedIcon')).toBeInTheDocument();
   });
 
   it('does not show lock icon when unlocked', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
-    expect(screen.queryByTestId('lock-icon')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('icon-LockClosedIcon')).not.toBeInTheDocument();
   });
 
   it('shows trophy icon when no icon URL', () => {
     render(
-      <AchievementCard achievement={makeAchievement({ iconUrl: '' })} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement({ iconUrl: '' })}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
-    expect(screen.getByTestId('trophy-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-TrophyIcon')).toBeInTheDocument();
   });
 
   it('shows custom icon when iconUrl is provided', () => {
     render(
-      <AchievementCard achievement={makeAchievement({ iconUrl: 'https://example.com/icon.png' })} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement({ iconUrl: 'https://example.com/icon.png' })}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
-    const img = screen.getByAlt('First Message');
+    const img = screen.getByAltText('First Message');
     expect(img).toHaveAttribute('src', 'https://example.com/icon.png');
   });
 
   it('shows progress bar when showProgress is true and not unlocked', () => {
     render(
-      <AchievementCard achievement={makeAchievement({ targetProgress: 10, currentProgress: 5 })} index={0} unlocked={false} progress={50} showProgress={true} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement({ targetProgress: 10, currentProgress: 5 })}
+        index={0}
+        unlocked={false}
+        progress={50}
+        showProgress={true}
+        onClick={onClick}
+      />
     );
     expect(screen.getByText('5/10')).toBeInTheDocument();
     expect(screen.getByText('Progress')).toBeInTheDocument();
@@ -131,7 +194,14 @@ describe('AchievementCard', () => {
 
   it('renders GlassCard with neon variant when unlocked', () => {
     render(
-      <AchievementCard achievement={makeAchievement()} index={0} unlocked={true} progress={100} showProgress={false} onClick={onClick} />
+      <AchievementCard
+        achievement={makeAchievement()}
+        index={0}
+        unlocked={true}
+        progress={100}
+        showProgress={false}
+        onClick={onClick}
+      />
     );
     expect(screen.getByTestId('glass-card')).toHaveAttribute('data-variant', 'neon');
   });
