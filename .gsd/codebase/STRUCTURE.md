@@ -263,6 +263,13 @@ apps/backend/
 │   │   │   ├── hashing.ex            # Hashing utilities
 │   │   │   └── key_management.ex     # Key management
 │   │   │
+│   │   ├── crypto/                    # Backend E2EE crypto context
+│   │   │   ├── crypto.ex             # Context facade
+│   │   │   ├── encryption.ex         # Encryption utilities
+│   │   │   ├── hashing.ex            # Hashing utilities
+│   │   │   ├── e2ee.ex               # E2EE top-level module
+│   │   │   └── e2ee/                 # E2EE sub-modules
+│   │   │
 │   │   ├── ai/                        # AI context
 │   │   │   ├── llm_client.ex         # LLM API client (via Req)
 │   │   │   ├── sentiment.ex          # Sentiment analysis
@@ -397,7 +404,11 @@ apps/backend/
 │   │   ├── error_reporter/            # Error reporting utilities
 │   │   ├── health_check/              # Health check logic
 │   │   ├── services/registry/         # Service registry
-│   │   └── performance/               # Performance monitoring
+│   │   ├── performance/               # Performance monitoring
+│   │   ├── admin/                     # Admin context
+│   │   │   └── metrics.ex            # Admin metrics
+│   │   └── repo/                      # Repository extensions
+│   │       └── healthcheck.ex         # Database health checks
 │   │
 │   └── mix/                           # Custom Mix tasks
 │

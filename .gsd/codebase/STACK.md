@@ -318,16 +318,16 @@ mobile-test, docker-build, coverage-report, security.
 Local observability via
 [`infrastructure/docker-compose.observability.yml`](infrastructure/docker-compose.observability.yml):
 
-| Service               | Image                       | Port            | Purpose                           |
-| --------------------- | --------------------------- | --------------- | --------------------------------- |
-| **Prometheus**        | `prom/prometheus:v2.53.0`   | `:9090`         | Metrics collection + SLO rules    |
-| **Grafana**           | `grafana/grafana:11.1.0`    | `:3001`         | Dashboards + alerting             |
-| **Alertmanager**      | `prom/alertmanager:v0.27.0` | `:9093`         | Alert routing (Slack + PagerDuty) |
-| **Tempo**             | —                           | `:4317`/`:4318` | Distributed tracing backend       |
-| **Loki**              | —                           | `:3100`         | Log aggregation                   |
-| **Promtail**          | —                           | —               | Log shipper to Loki               |
-| **Redis Exporter**    | —                           | `:9121`         | Redis metrics                     |
-| **Postgres Exporter** | —                           | `:9187`         | PostgreSQL metrics                |
+| Service               | Image                                                   | Port            | Purpose                           |
+| --------------------- | ------------------------------------------------------- | --------------- | --------------------------------- |
+| **Prometheus**        | `prom/prometheus:v2.53.0`                               | `:9090`         | Metrics collection + SLO rules    |
+| **Grafana**           | `grafana/grafana:11.1.0`                                | `:3001`         | Dashboards + alerting             |
+| **Alertmanager**      | `prom/alertmanager:v0.27.0`                             | `:9093`         | Alert routing (Slack + PagerDuty) |
+| **Tempo**             | `grafana/tempo:2.5.0`                                   | `:4317`/`:4318` | Distributed tracing backend       |
+| **Loki**              | `grafana/loki:3.1.0`                                    | `:3100`         | Log aggregation                   |
+| **Promtail**          | `grafana/promtail:3.1.0`                                | —               | Log shipper to Loki               |
+| **Redis Exporter**    | `oliver006/redis_exporter:v1.62.0`                      | `:9121`         | Redis metrics                     |
+| **Postgres Exporter** | `quay.io/prometheuscommunity/postgres-exporter:v0.15.0` | `:9187`         | PostgreSQL metrics                |
 
 Production: **Grafana Cloud** with remote write from Grafana Alloy sidecar on Fly.io.
 

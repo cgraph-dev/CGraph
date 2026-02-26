@@ -245,8 +245,8 @@
   - **Triple Ratchet** — ECDH + ML-KEM-768 (post-quantum KEM)
   - **AES-256-GCM** — Symmetric encryption
   - **X3DH** — Extended Triple Diffie-Hellman
-- **Exports**: `aes`, `utils`, `errors`, `stores`, `kem`, `x3dh`, `pqxdh`, `doubleRatchet`, `spqr`,
-  `tripleRatchet`
+- **Exports**: `aes`, `utils`, `errors`, `stores`, `types-portable`, `kem`, `x3dh`, `pqxdh`,
+  `doubleRatchet`, `spqr`, `tripleRatchet`
 
 ### Mobile Crypto
 

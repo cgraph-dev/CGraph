@@ -77,11 +77,11 @@ CGraph.Supervisor
 ├── CGraphWeb.Telemetry           (telemetry reporters)
 ├── CGraph.Repo                   (primary Ecto repository)
 ├── CGraph.ReadRepo               (read replica, falls back to primary)
+├── Redix                         (Redis connection pool, conditional — only when `redis_enabled?`)
+├── CGraph.Redis                  (Redis GenServer wrapper, conditional — only when `redis_enabled?`)
+├── CGraph.RateLimiter.Distributed (sliding window, always started — Redis or ETS fallback)
 ├── Phoenix.PubSub                (PG2 adapter, auto-clusters via Erlang distribution)
 ├── DNSCluster                    (Fly.io multi-region clustering)
-├── Redix                         (Redis connection pool, conditional — started only when `redis_enabled?`)
-├── CGraph.Redis                  (Redis GenServer wrapper, conditional — started only when `redis_enabled?`)
-├── CGraph.RateLimiter.Distributed (sliding window, Redis or ETS fallback)
 ├── OpenTelemetry                 (distributed tracing setup)
 ├── CGraph.CacheSupervisor        (3-tier cache: L1 ETS, L2 Cachex, L3 Redis)
 ├── CGraph.SecuritySupervisor     (token blacklist, account lockout, TOTP)
@@ -151,7 +151,7 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `:api_auth_strict` — strict rate limiting for auth endpoints (brute-force protection), audit
   logging
 - `:api_relaxed` — relaxed rate limiting for read-heavy public endpoints
-- `:api_auth` — authenticated pipeline with RequireAuth plug
+- `:api_auth` — authenticated pipeline with RequireAuth plug, audit logging (user category)
 - `:api_admin` — admin pipeline with RequireAuth + RequireAdmin plugs (audit-logged)
 - `:browser` — HTML pipeline for Phoenix LiveDashboard
 

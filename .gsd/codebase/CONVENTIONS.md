@@ -50,7 +50,15 @@ Managed by **pnpm workspaces** (`pnpm@10.12.1`) with **Turborepo** for task orch
   "bracketSpacing": true,
   "arrowParens": "always",
   "endOfLine": "lf",
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "proseWrap": "always"
+      }
+    }
+  ]
 }
 ```
 
@@ -159,7 +167,7 @@ From `eslint.config.js`:
 - Type guards (`if ('field' in obj)`)
 - `satisfies` operator
 - Explicit type annotations
-- Exception: test files (`*.test.ts`, `*.spec.ts`, `**/mocks/**`) are exempt
+- Exception: test files (`*.test.ts`, `*.spec.ts`, `**/mocks/**`, `**/__tests__/**`) are exempt
 
 ---
 
@@ -219,8 +227,8 @@ import type { User } from '@cgraph/shared-types';
 ### Path Aliases
 
 - **Web/Landing**: `@/` → `src/` (configured in `vite.config.ts` via `resolve.alias`)
-- **Mobile**: `@/` → `src/`, plus `@components/`, `@hooks/`, `@lib/`, `@screens/`, `@types/` (Jest
-  `moduleNameMapper`)
+- **Mobile**: `@/` → `src/`, plus `@components/`, `@contexts/`, `@hooks/`, `@lib/`, `@screens/`,
+  `@types/` (Jest `moduleNameMapper`)
 
 ### Barrel Files
 
@@ -572,6 +580,7 @@ export const paginationSchema = z.object({
   page: z.number().int().positive().optional(),
   per_page: z.number().int().positive().optional(),
   total: z.number().int().nonnegative().optional(),
+  total_pages: z.number().int().nonnegative().optional(),
   has_more: z.boolean().optional(),
 });
 ```
