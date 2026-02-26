@@ -299,7 +299,7 @@ Client                        Backend
 - `CGraph.Repo` — Primary write repository
 - `CGraph.ReadRepo` — Read replica (falls back to primary)
 
-**Schema highlights (from 80+ migrations):**
+**Schema highlights (from 90+ migrations):**
 
 - `users` — Core user table with random UID, wallet fields, OAuth fields, deactivation
 - `sessions` — Session tracking

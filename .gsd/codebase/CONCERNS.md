@@ -1,6 +1,6 @@
 # CGraph Codebase Concerns
 
-> **Generated**: February 26, 2026 | **Source**: Full monorepo analysis **Codebase Version**: 0.9.53
+> **Generated**: February 26, 2026 | **Source**: Full monorepo analysis **Codebase Version**: 0.9.47
 > | **Composite Score**: 8.7/10
 
 ---

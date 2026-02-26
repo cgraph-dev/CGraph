@@ -512,8 +512,8 @@ export const authApi = {
 ### API URL Convention
 
 - Backend routes follow REST: `/api/v1/{resource}`
-- Production uses Vercel rewrites (relative paths)
-- Development uses Vite proxy: `/api` → `localhost:4000`
+- Production uses `VITE_API_URL` env var (Cloudflare Pages → Fly.io backend)
+- Development uses Vite proxy: `/api` → `https://cgraph-backend.fly.dev` (configurable)
 
 ### HTTP Client Architecture
 

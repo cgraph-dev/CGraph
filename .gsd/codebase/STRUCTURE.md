@@ -397,7 +397,7 @@ apps/backend/
 │
 ├── priv/
 │   ├── repo/
-│   │   ├── migrations/                # 80+ Ecto migrations (2024-12 to 2026-02)
+│   │   ├── migrations/                # 90+ Ecto migrations (2024-12 to 2026-02)
 │   │   │   ├── 20241201000001_create_users.exs
 │   │   │   ├── 20241201000003_create_conversations_and_messages.exs
 │   │   │   ├── 20241201000004_create_groups.exs
@@ -406,7 +406,7 @@ apps/backend/
 │   │   │   ├── 20260213000001_partition_messages_table.exs
 │   │   │   ├── 20260220000001_create_e2ee_kyber_prekeys.exs
 │   │   │   ├── 20260220120000_create_collaboration_documents.exs
-│   │   │   └── ... (80+ migration files total)
+│   │   │   └── ... (90+ migration files total)
 │   │   ├── seeds.exs                  # Database seed script
 │   │   └── seeds/                     # Seed data modules
 │   └── static/                        # Static assets served by Phoenix
@@ -1088,7 +1088,7 @@ scripts/
 
 | Path                                           | Description              |
 | ---------------------------------------------- | ------------------------ |
-| `apps/backend/priv/repo/migrations/`           | 80+ Ecto migration files |
+| `apps/backend/priv/repo/migrations/`           | 90+ Ecto migration files |
 | `apps/backend/lib/cgraph/accounts/user.ex`     | User schema              |
 | `apps/backend/lib/cgraph/messaging/message.ex` | Message schema           |
 | `apps/backend/lib/cgraph/groups/group.ex`      | Group schema             |
