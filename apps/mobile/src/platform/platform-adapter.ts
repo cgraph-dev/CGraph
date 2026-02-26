@@ -65,6 +65,9 @@ export interface BottomSheetConfig {
 // Platform Detection
 // ============================================================================
 
+/**
+ *
+ */
 export function getPlatform(): PlatformType {
   if (Platform.OS === 'ios') return 'ios';
   if (Platform.OS === 'android') return 'android';
@@ -72,18 +75,30 @@ export function getPlatform(): PlatformType {
   return 'unknown';
 }
 
+/**
+ *
+ */
 export function isIOS(): boolean {
   return Platform.OS === 'ios';
 }
 
+/**
+ *
+ */
 export function isAndroid(): boolean {
   return Platform.OS === 'android';
 }
 
+/**
+ *
+ */
 export function isWeb(): boolean {
   return Platform.OS === 'web';
 }
 
+/**
+ *
+ */
 export function getPlatformVersion(): number {
   if (typeof Platform.Version === 'number') {
     return Platform.Version;
@@ -209,6 +224,7 @@ class PlatformAdapterManager {
           break;
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.debug('[Platform] Haptic error:', error);
     }
   }
@@ -398,6 +414,9 @@ export const platformAdapter = new PlatformAdapterManager();
 
 import { useState, useEffect, useCallback } from 'react';
 
+/**
+ *
+ */
 export function usePlatformCapabilities(): UnifiedCapabilities {
   const [capabilities, setCapabilities] = useState<UnifiedCapabilities>(() =>
     platformAdapter.getCapabilities()
@@ -410,15 +429,22 @@ export function usePlatformCapabilities(): UnifiedCapabilities {
   return capabilities;
 }
 
+/**
+ *
+ */
 export function useUnifiedHaptic(): (type: HapticType) => Promise<void> {
   return useCallback((type: HapticType) => platformAdapter.haptic(type), []);
 }
 
+/**
+ *
+ */
 export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemColors> {
   const [colors, setColors] = useState(() => platformAdapter.getSystemColors());
 
   useEffect(() => {
     // Refresh colors when theme changes
+     
     const { Appearance } = require('react-native');
     const listener = Appearance.addChangeListener(() => {
       setColors(platformAdapter.getSystemColors());
@@ -430,6 +456,9 @@ export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemCo
   return colors;
 }
 
+/**
+ *
+ */
 export function usePlatformStyles(): {
   shadow: (elevation?: number) => ViewStyle;
   borderRadius: (size: 'sm' | 'md' | 'lg' | 'xl' | 'full') => number;
@@ -446,6 +475,9 @@ export function usePlatformStyles(): {
 // Platform-Specific Components Wrapper
 // ============================================================================
 
+/**
+ *
+ */
 export function selectPlatform<T>(options: {
   ios?: T;
   android?: T;

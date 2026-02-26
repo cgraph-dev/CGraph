@@ -57,26 +57,39 @@ class MockOffscreenCanvas {
 }
 
 // Setup globals before all tests
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savedResizeObserver = (global as any).ResizeObserver;
 
 beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).window = mockWindow;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).document = mockDocument;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).requestAnimationFrame = mockWindow.requestAnimationFrame;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).cancelAnimationFrame = mockWindow.cancelAnimationFrame;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).ResizeObserver = MockResizeObserver;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).OffscreenCanvas = MockOffscreenCanvas;
 });
 
 afterAll(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (global as any).window;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (global as any).document;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (global as any).requestAnimationFrame;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (global as any).cancelAnimationFrame;
   // Restore the original ResizeObserver instead of deleting
   if (savedResizeObserver) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).ResizeObserver = savedResizeObserver;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (global as any).OffscreenCanvas;
 });
 
@@ -223,6 +236,7 @@ describe('Matrix Engine Initialization', () => {
 
   describe('init()', () => {
     it('should initialize with canvas', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       engine.init(canvas as any);
       
       // Engine calls getContext with optimization options
@@ -230,6 +244,7 @@ describe('Matrix Engine Initialization', () => {
     });
 
     it('should update dimensions from canvas', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       engine.init(canvas as any);
       const state = engine.getState();
       
@@ -238,6 +253,7 @@ describe('Matrix Engine Initialization', () => {
     });
 
     it('should not throw with valid canvas', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => engine.init(canvas as any)).not.toThrow();
     });
   });
@@ -255,6 +271,7 @@ describe('Matrix Engine Lifecycle', () => {
     const mock = createMockCanvas();
     canvas = mock.canvas;
     engine = new MatrixEngine();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(canvas as any);
   });
 
@@ -385,6 +402,7 @@ describe('Matrix Engine Configuration', () => {
     const mock = createMockCanvas();
     canvas = mock.canvas;
     engine = new MatrixEngine();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(canvas as any);
   });
 
@@ -462,6 +480,7 @@ describe('Matrix Engine State', () => {
     const mock = createMockCanvas();
     canvas = mock.canvas;
     engine = new MatrixEngine();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(canvas as any);
   });
 
@@ -516,6 +535,7 @@ describe('Matrix Engine Event Handlers', () => {
     const mock = createMockCanvas();
     canvas = mock.canvas;
     engine = new MatrixEngine();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(canvas as any);
   });
 
@@ -594,6 +614,7 @@ describe('Matrix Engine Dimensions', () => {
     it('should track initial dimensions', () => {
       canvas.width = 1920;
       canvas.height = 1080;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (canvas.getBoundingClientRect as any).mockReturnValue({
         width: 1920,
         height: 1080,
@@ -603,6 +624,7 @@ describe('Matrix Engine Dimensions', () => {
         bottom: 1080,
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       engine.init(canvas as any);
       const state = engine.getState();
 
@@ -636,6 +658,7 @@ describe('Matrix Engine Performance', () => {
     const engine = new MatrixEngine();
     
     const start = performance.now();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(mock.canvas as any);
     const elapsed = performance.now() - start;
     

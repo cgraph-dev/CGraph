@@ -11,6 +11,9 @@ import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import type { FriendRequest, TabType } from '../types';
 
+/**
+ *
+ */
 export function useFriendRequests() {
   const [activeTab, setActiveTab] = useState<TabType>('incoming');
   const [incomingRequests, setIncomingRequests] = useState<FriendRequest[]>([]);
@@ -41,13 +44,19 @@ export function useFriendRequests() {
         incomingRes.data?.data || incomingRes.data?.requests || incomingRes.data || [];
       const normalizedIncoming = (Array.isArray(incomingData) ? incomingData : []).map(
         (r: Record<string, unknown>) => ({
+           
           id: r.id as string,
           user: r.from
             ? {
+                 
                 id: (r.from as Record<string, unknown>).id as string,
+                 
                 username: ((r.from as Record<string, unknown>).username as string) || 'Unknown',
+                 
                 display_name: (r.from as Record<string, unknown>).display_name as string | null,
+                 
                 avatar_url: (r.from as Record<string, unknown>).avatar_url as string | null,
+                 
                 status: ((r.from as Record<string, unknown>).status as string) || 'offline',
               }
             : {
@@ -58,6 +67,7 @@ export function useFriendRequests() {
                 status: 'offline',
               },
           type: 'incoming' as const,
+           
           created_at: r.sent_at as string,
         })
       );
@@ -67,13 +77,19 @@ export function useFriendRequests() {
         outgoingRes.data?.data || outgoingRes.data?.requests || outgoingRes.data || [];
       const normalizedOutgoing = (Array.isArray(outgoingData) ? outgoingData : []).map(
         (r: Record<string, unknown>) => ({
+           
           id: r.id as string,
           user: r.to
             ? {
+                 
                 id: (r.to as Record<string, unknown>).id as string,
+                 
                 username: ((r.to as Record<string, unknown>).username as string) || 'Unknown',
+                 
                 display_name: (r.to as Record<string, unknown>).display_name as string | null,
+                 
                 avatar_url: (r.to as Record<string, unknown>).avatar_url as string | null,
+                 
                 status: ((r.to as Record<string, unknown>).status as string) || 'offline',
               }
             : {
@@ -84,6 +100,7 @@ export function useFriendRequests() {
                 status: 'offline',
               },
           type: 'outgoing' as const,
+           
           created_at: r.sent_at as string,
         })
       );

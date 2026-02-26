@@ -74,6 +74,9 @@ export interface CarouselProps<T extends CarouselItem> {
   hapticFeedback?: boolean;
 }
 
+/**
+ *
+ */
 export default function Carousel<T extends CarouselItem>({
   data,
   renderItem,
@@ -256,6 +259,9 @@ export default function Carousel<T extends CarouselItem>({
 }
 
 // Parallax image helper component
+/**
+ *
+ */
 export function ParallaxImage({
   source,
   scrollX,
@@ -300,6 +306,9 @@ export function ParallaxImage({
 }
 
 // Scale animation helper for items
+/**
+ *
+ */
 export function ScaleItem({
   children,
   scrollX,

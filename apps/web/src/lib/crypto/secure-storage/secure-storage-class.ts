@@ -31,6 +31,7 @@
  * ```
  *
  * @module lib/crypto/secure-storage/secure-storage-class
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 
@@ -94,6 +95,7 @@ class SecureStorage {
       id: key,
       ciphertext,
       iv,
+       
       salt: this.deviceSalt!.buffer as ArrayBuffer, // safe downcast – buffer type
       createdAt: Date.now(),
       expiresAt: ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined,
@@ -128,6 +130,7 @@ class SecureStorage {
           return;
         }
 
+         
         const item = request.result as EncryptedItem; // safe downcast – IDB returns untyped
 
         // Check expiration
@@ -195,6 +198,7 @@ class SecureStorage {
       request.onsuccess = () => {
         const cursor = request.result;
         if (cursor) {
+           
           const item = cursor.value as EncryptedItem; // safe downcast – IDB returns untyped
           if (item.expiresAt && item.expiresAt < Date.now()) {
             cursor.delete();
@@ -250,6 +254,7 @@ class SecureStorage {
     return new Promise((resolve, reject) => {
       const request = store.getAllKeys();
       request.onerror = () => reject(request.error);
+       
       request.onsuccess = () => resolve(request.result as string[]); // type assertion: IndexedDB getAllKeys returns IDBValidKey[], keys are always strings here
     });
   }

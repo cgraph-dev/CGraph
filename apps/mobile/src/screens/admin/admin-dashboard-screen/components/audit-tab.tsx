@@ -26,6 +26,9 @@ function getActionColor(action: string): string {
   return '#6366f1';
 }
 
+/**
+ *
+ */
 export function AuditTab({ logs }: AuditTabProps) {
   return (
     <View style={styles.tabContent}>

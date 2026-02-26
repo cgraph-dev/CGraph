@@ -64,6 +64,9 @@ const DEFAULT_COLORS = [
   '#f97316', // Orange
 ];
 
+/**
+ *
+ */
 export default function ConfettiCelebration({
   active,
   onComplete,
@@ -91,6 +94,7 @@ export default function ConfettiCelebration({
         opacity: new Animated.Value(1),
         color: colors[Math.floor(Math.random() * colors.length)],
         size: 8 + Math.random() * 8,
+         
         shape: ['square', 'rectangle', 'circle'][Math.floor(Math.random() * 3)] as 'square' | 'rectangle' | 'circle',
       }));
 

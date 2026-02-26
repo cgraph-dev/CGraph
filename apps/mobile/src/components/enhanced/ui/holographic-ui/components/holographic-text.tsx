@@ -16,6 +16,9 @@ interface HolographicTextProps {
   style?: TextStyle;
 }
 
+/**
+ *
+ */
 export function HolographicText({
   children,
   variant = 'body',

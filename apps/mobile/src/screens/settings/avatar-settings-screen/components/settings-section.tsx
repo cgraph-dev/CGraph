@@ -10,11 +10,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { SectionProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={[styles.sectionIcon, { backgroundColor: iconColor + '20' }]}>
+          { }
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={18} color={iconColor} />
         </View>
         <Text style={styles.sectionTitle}>{title}</Text>

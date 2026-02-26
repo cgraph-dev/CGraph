@@ -13,6 +13,9 @@ interface CameraTileProps {
   textSecondaryColor: string;
 }
 
+/**
+ *
+ */
 export function CameraTile({ onPress, surfaceColor, textSecondaryColor }: CameraTileProps) {
   return (
     <TouchableOpacity style={styles.cameraTile} onPress={onPress} activeOpacity={0.8}>

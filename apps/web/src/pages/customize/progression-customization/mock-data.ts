@@ -7,8 +7,7 @@ import type { Achievement, LeaderboardEntry, Quest, DailyReward } from './types'
 /**
  * Mock Data for Gamification Features
  *
- * NOTE: These are placeholder data. In production, these should come from the backend API.
- * @todo(api) Create achievements API endpoints and replace this mock data in Phase 3+.
+ * NOTE: These are placeholder data. In production, these should come from the backend API. * @todo(api) Create achievements API endpoints and replace this mock data in Phase 3+.
  */
 
 export const MOCK_ACHIEVEMENTS: Achievement[] = [

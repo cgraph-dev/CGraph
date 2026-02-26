@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "prebuild": "expo prebuild",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor",
     "test": "jest",

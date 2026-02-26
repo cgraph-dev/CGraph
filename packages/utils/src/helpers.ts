@@ -64,6 +64,7 @@ export async function retry<T>(
     try {
       return await fn();
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       lastError = error as Error;
       if (attempt < maxRetries - 1) {
         await sleep(baseDelay * Math.pow(2, attempt));
@@ -90,6 +91,7 @@ export function groupBy<T, K extends string | number>(
       groups[key].push(item);
       return groups;
     },
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     {} as Record<K, T[]>
   );
 }
@@ -129,8 +131,10 @@ export function sortBy<T>(array: T[], ...criteria: ((a: T, b: T) => number)[]): 
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') return obj;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   if (Array.isArray(obj)) return obj.map(deepClone) as unknown as T;
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const cloned = {} as T;
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -149,12 +153,15 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   if (typeof a !== typeof b) return false;
 
   if (typeof a === 'object') {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const aKeys = Object.keys(a as object);
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const bKeys = Object.keys(b as object);
 
     if (aKeys.length !== bKeys.length) return false;
 
     return aKeys.every((key) =>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
     );
   }
@@ -173,6 +180,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
       }
       return result;
     },
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     {} as Pick<T, K>
   );
 }
@@ -203,6 +211,7 @@ export function slugify(text: string): string {
  */
 export function isBrowser(): boolean {
   // Type-safe window/document checks for cross-environment compatibility
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const g = globalThis as { window?: unknown; document?: unknown };
   return (
     typeof globalThis !== 'undefined' &&

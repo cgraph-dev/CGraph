@@ -141,6 +141,9 @@ const DEFAULT_CATEGORIES: NotificationCategory[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function EmailNotificationsScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();

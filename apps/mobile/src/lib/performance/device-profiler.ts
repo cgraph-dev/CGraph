@@ -146,6 +146,7 @@ class DeviceProfiler {
 
     this.capabilities = {
       tier,
+       
       platform: Platform.OS as 'ios' | 'android' | 'web' | 'unknown',
       platformVersion,
       deviceModel,
@@ -437,6 +438,9 @@ export const deviceProfiler = new DeviceProfiler();
 
 import { useState, useEffect } from 'react';
 
+/**
+ *
+ */
 export function useDeviceCapabilities(): DeviceCapabilities | null {
   const [capabilities, setCapabilities] = useState<DeviceCapabilities | null>(null);
 
@@ -447,6 +451,9 @@ export function useDeviceCapabilities(): DeviceCapabilities | null {
   return capabilities;
 }
 
+/**
+ *
+ */
 export function usePerformanceRecommendations(): PerformanceRecommendations | null {
   const [recommendations, setRecommendations] = useState<PerformanceRecommendations | null>(null);
 

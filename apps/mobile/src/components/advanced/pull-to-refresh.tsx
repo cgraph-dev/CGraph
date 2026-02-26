@@ -79,6 +79,9 @@ const DEFAULT_INDICATOR_SIZE = 40;
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
+/**
+ *
+ */
 export function PullToRefresh({
   onRefresh,
   children,
@@ -428,6 +431,9 @@ export interface RefreshableListProps<T = unknown> extends PullToRefreshProps {
   ItemSeparator?: React.ComponentType;
 }
 
+/**
+ *
+ */
 export function RefreshableList({
   data,
   renderItem,

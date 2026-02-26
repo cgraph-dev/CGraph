@@ -286,6 +286,9 @@ const BEHAVIOR_MODIFIERS: Record<ParticleBehavior, Partial<ParticlePhysics>> = {
 // Particle System Engine
 // ============================================================================
 
+/**
+ *
+ */
 export class ParticleEngine {
   private particles: Particle[] = [];
   private nextId: number = 0;
@@ -304,13 +307,16 @@ export class ParticleEngine {
     const { width, height } = Dimensions.get('window');
 
     this.config = {
+       
       particles: {
         type: config.particles?.type || 'dots',
         count: config.particles?.count || 50,
         ...PARTICLE_PRESETS[config.particles?.type || 'dots'],
         ...(config.particles?.colors && { colors: config.particles.colors }),
       } as ParticleConfig,
+       
       emitter: { ...DEFAULT_EMITTER, ...config.emitter } as EmitterConfig,
+       
       physics: { ...DEFAULT_PHYSICS, ...config.physics } as ParticlePhysics,
       behavior: config.behavior || 'float',
       bounds: {
@@ -432,6 +438,9 @@ export class ParticleEngine {
   // Particle Updates
   // ============================================================================
 
+  /**
+   *
+   */
   public update(deltaTime: number = 16): Particle[] {
     this.frameCount++;
 
@@ -617,6 +626,9 @@ export class ParticleEngine {
   // Public API
   // ============================================================================
 
+  /**
+   *
+   */
   public burst(count?: number): void {
     const particleCount = count || this.config.particles.count;
     const toAdd = Math.min(particleCount, this.maxParticles - this.particles.length);
@@ -626,42 +638,69 @@ export class ParticleEngine {
     }
   }
 
+  /**
+   *
+   */
   public clear(): void {
     this.particles = [];
   }
 
+  /**
+   *
+   */
   public setType(type: ParticleType): void {
     this.config.particles.type = type;
     const preset = PARTICLE_PRESETS[type];
     this.config.particles = { ...this.config.particles, ...preset };
   }
 
+  /**
+   *
+   */
   public setBehavior(behavior: ParticleBehavior): void {
     this.config.behavior = behavior;
     const modifier = BEHAVIOR_MODIFIERS[behavior];
     this.config.physics = { ...this.config.physics, ...modifier };
   }
 
+  /**
+   *
+   */
   public setColors(colors: string[]): void {
     this.config.particles.colors = colors;
   }
 
+  /**
+   *
+   */
   public setGravity(gravity: number): void {
     this.config.physics.gravity = gravity;
   }
 
+  /**
+   *
+   */
   public setWind(x: number, y: number): void {
     this.config.physics.wind = { x, y };
   }
 
+  /**
+   *
+   */
   public setEmitterPosition(x: number, y: number): void {
     this.config.emitter.position = { x, y };
   }
 
+  /**
+   *
+   */
   public getParticles(): Particle[] {
     return this.particles;
   }
 
+  /**
+   *
+   */
   public getCount(): number {
     return this.particles.length;
   }
@@ -687,24 +726,36 @@ export class ParticleEngine {
 // Factory Functions
 // ============================================================================
 
+/**
+ *
+ */
 export function createSparkles(count: number = 30): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'sparkles', count } as ParticleConfig,
     behavior: 'float',
     emitter: { shape: 'rectangle', position: { x: 0.5, y: 0.5 }, size: { x: 1, y: 1 } },
   });
 }
 
+/**
+ *
+ */
 export function createConfetti(count: number = 100): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'confetti', count } as ParticleConfig,
     behavior: 'fall',
     emitter: { shape: 'line', position: { x: 0.5, y: 0 }, size: { x: 1, y: 0 }, burst: true },
   });
 }
 
+/**
+ *
+ */
 export function createSnow(count: number = 50): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'snow', count } as ParticleConfig,
     behavior: 'fall',
     emitter: {
@@ -718,8 +769,12 @@ export function createSnow(count: number = 50): ParticleEngine {
   });
 }
 
+/**
+ *
+ */
 export function createRain(count: number = 80): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'rain', count } as ParticleConfig,
     behavior: 'fall',
     emitter: {
@@ -733,8 +788,12 @@ export function createRain(count: number = 80): ParticleEngine {
   });
 }
 
+/**
+ *
+ */
 export function createFireflies(count: number = 20): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'fireflies', count } as ParticleConfig,
     behavior: 'wander',
     emitter: { shape: 'rectangle', position: { x: 0.5, y: 0.5 }, size: { x: 1, y: 1 } },
@@ -742,8 +801,12 @@ export function createFireflies(count: number = 20): ParticleEngine {
   });
 }
 
+/**
+ *
+ */
 export function createBubbles(count: number = 25): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'bubbles', count } as ParticleConfig,
     behavior: 'rise',
     emitter: {
@@ -757,8 +820,12 @@ export function createBubbles(count: number = 25): ParticleEngine {
   });
 }
 
+/**
+ *
+ */
 export function createStars(count: number = 40): ParticleEngine {
   return new ParticleEngine({
+     
     particles: { type: 'stars', count } as ParticleConfig,
     behavior: 'float',
     emitter: {

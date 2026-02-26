@@ -81,6 +81,7 @@ export class WebRTCManager {
               target_ids: [targetUserId],
               type: options.video ? 'video' : 'audio',
             })
+             
             .receive('ok', (resp) => resolve(resp as { room_id: string; ice_servers: unknown[] }))
             .receive('error', (reason) => reject(new Error(JSON.stringify(reason))));
         }

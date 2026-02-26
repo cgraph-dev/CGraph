@@ -18,6 +18,9 @@ interface HolographicProgressProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export function HolographicProgress({
   progress,
   label,

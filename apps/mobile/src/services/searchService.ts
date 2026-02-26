@@ -25,6 +25,7 @@ export interface SearchResult {
   url: string;
   matchContext: string | null;
   timestamp: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>;
 }
 

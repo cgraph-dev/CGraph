@@ -34,6 +34,7 @@ export function CategoryTabs({
         count={categoryCounts.all || { total: 0, unlocked: 0 }}
         onClick={() => onCategoryChange('all')}
       />
+      { }
       {(Object.keys(CATEGORY_LABELS) as AchievementCategory[]).map((category) => { // type assertion: Object.keys returns string[], narrowing to known keys
         const count = categoryCounts[category] || { total: 0, unlocked: 0 };
         if (count.total === 0) return null;

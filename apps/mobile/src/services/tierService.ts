@@ -61,6 +61,9 @@ export async function compareTiers(fromTier: string, toTier: string): Promise<Ti
  */
 export type TierAction = 'create_forum' | 'join_forum' | 'create_thread' | 'create_post' | 'use_ai_moderation';
 
+/**
+ *
+ */
 export async function checkAction(action: TierAction): Promise<TierCheckActionResponse['data']> {
   const response = await api.get<TierCheckActionResponse>(`/api/v1/tiers/check/${action}`);
   return response.data.data;

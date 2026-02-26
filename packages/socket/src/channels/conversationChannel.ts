@@ -156,11 +156,13 @@ export class ConversationChannel {
 
     this.presence.onSync(() => {
       const presences = this.presence?.list() || {};
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       onSync(presences as PresenceState);
     });
 
     if (onDiff) {
       // Phoenix.js Presence.onDiff is available but not in type definitions
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       (this.presence as unknown as { onDiff: (cb: (diff: PresenceDiff) => void) => void }).onDiff(
         (diff: PresenceDiff) => {
           onDiff(diff);

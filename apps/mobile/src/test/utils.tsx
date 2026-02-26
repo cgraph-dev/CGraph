@@ -403,6 +403,10 @@ export function createMockNavigation() {
 /**
  * Creates a mock route prop for screen testing
  */
+ 
+/**
+ *
+ */
 export function createMockRoute<T extends object = object>(name: string, params: T = {} as T) {
   return {
     key: `${name}-key`,

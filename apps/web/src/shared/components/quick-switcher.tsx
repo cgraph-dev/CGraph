@@ -97,6 +97,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
 
   // Scroll selected item into view
   useEffect(() => {
+     
     const el = listRef.current?.children[selectedIndex] as HTMLElement | undefined; // safe downcast – DOM element
     el?.scrollIntoView?.({ block: 'nearest' });
   }, [selectedIndex]);

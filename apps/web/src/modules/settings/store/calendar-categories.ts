@@ -36,6 +36,7 @@ export function createCategoryActions(set: SetState, get: GetState) {
         const response = await api.get('/api/v1/calendar/categories');
         // type assertion: ensureArray returns unknown[], narrowing to Record
         const categories = (
+           
           ensureArray(response.data, 'categories') as Record<string, unknown>[]
         ).map((c) => ({
           id: asString(c.id),

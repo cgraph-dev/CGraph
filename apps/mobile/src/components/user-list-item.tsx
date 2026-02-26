@@ -34,6 +34,9 @@ interface UserListItemProps {
   animationDelay?: number;
 }
 
+/**
+ *
+ */
 export default function UserListItem({
   user,
   subtitle,
@@ -101,6 +104,7 @@ export default function UserListItem({
         source={user.avatar_url}
         name={user.display_name || user.username || 'Unknown'}
         size="md"
+         
         status={showStatus ? (user.status as 'online' | 'idle' | 'dnd' | 'offline') : undefined}
         showStatus={showStatus}
       />

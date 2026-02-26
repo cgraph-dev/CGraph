@@ -12,6 +12,9 @@ import LoadingScreen from '../screens/loading-screen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+/**
+ *
+ */
 export default function RootNavigator() {
   const { isLoading, isAuthenticated } = useAuthStore();
   

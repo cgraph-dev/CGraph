@@ -51,6 +51,9 @@ const formatKarma = (karma: number): string => {
   return karma.toString();
 };
 
+/**
+ *
+ */
 export default function UserProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProps>();
@@ -116,6 +119,7 @@ export default function UserProfileScreen() {
       setUser({ ...user, friend_request_sent: true });
       Alert.alert('Success', 'Friend request sent!');
     } catch (err: unknown) {
+       
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
       let errorMessage =
         typeof error.response?.data?.error === 'object'
@@ -139,6 +143,7 @@ export default function UserProfileScreen() {
       setUser({ ...user, friend_request_sent: false, friend_request_received: false });
       Alert.alert('Cancelled', 'Friend request cancelled');
     } catch (err: unknown) {
+       
       const error = err as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
         'Error',
@@ -157,6 +162,7 @@ export default function UserProfileScreen() {
       setUser({ ...user, is_friend: true, friend_request_received: false });
       Alert.alert('Success', 'Friend request accepted!');
     } catch (err: unknown) {
+       
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
       const errorMessage =
         typeof error.response?.data?.error === 'object'
@@ -176,6 +182,7 @@ export default function UserProfileScreen() {
       setUser({ ...user, friend_request_received: false });
       Alert.alert('Declined', 'Friend request declined');
     } catch (err: unknown) {
+       
       const error = err as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
         'Error',
@@ -275,6 +282,7 @@ export default function UserProfileScreen() {
             source={user.avatar_url}
             name={user.display_name || user.username || 'Unknown'}
             size="xl"
+             
             status={user.status as 'online' | 'offline'}
           />
           <Text style={[styles.displayName, { color: colors.text }]}>

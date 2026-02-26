@@ -100,6 +100,9 @@ function Particle({ data, index }: { data: ParticleData; index: number }) {
   );
 }
 
+/**
+ *
+ */
 export function FloatingParticles({ isActive }: FloatingParticlesProps) {
   const particlesData = useMemo<ParticleData[]>(
     () =>

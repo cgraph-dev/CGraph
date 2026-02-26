@@ -6,8 +6,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { AdminTab } from '../types';
-import { tabs } from '../types';
+import type { AdminTab, tabs } from '../types';
 
 export interface TabBarProps {
   activeTab: AdminTab;
@@ -15,6 +14,9 @@ export interface TabBarProps {
   pendingReports: number;
 }
 
+/**
+ *
+ */
 export function TabBar({ activeTab, onTabChange, pendingReports }: TabBarProps) {
   return (
     <ScrollView

@@ -287,6 +287,9 @@ function renderParticle(particle: Particle) {
 // Main Component
 // ============================================================================
 
+/**
+ *
+ */
 export default function ParticleView({
   type = 'dots',
   behavior = 'float',
@@ -409,14 +412,23 @@ export default function ParticleView({
 // Convenience Components
 // ============================================================================
 
+/**
+ *
+ */
 export function SparklesView(props: Omit<ParticleViewProps, 'type'>) {
   return <ParticleView {...props} type="sparkles" behavior="float" />;
 }
 
+/**
+ *
+ */
 export function ConfettiView(props: Omit<ParticleViewProps, 'type' | 'burst'>) {
   return <ParticleView {...props} type="confetti" behavior="fall" burst continuous={false} />;
 }
 
+/**
+ *
+ */
 export function SnowView(props: Omit<ParticleViewProps, 'type'>) {
   return (
     <ParticleView
@@ -429,6 +441,9 @@ export function SnowView(props: Omit<ParticleViewProps, 'type'>) {
   );
 }
 
+/**
+ *
+ */
 export function RainView(props: Omit<ParticleViewProps, 'type'>) {
   return (
     <ParticleView
@@ -441,10 +456,16 @@ export function RainView(props: Omit<ParticleViewProps, 'type'>) {
   );
 }
 
+/**
+ *
+ */
 export function FirefliesView(props: Omit<ParticleViewProps, 'type'>) {
   return <ParticleView {...props} type="fireflies" behavior="wander" />;
 }
 
+/**
+ *
+ */
 export function BubblesView(props: Omit<ParticleViewProps, 'type'>) {
   return (
     <ParticleView
@@ -457,6 +478,9 @@ export function BubblesView(props: Omit<ParticleViewProps, 'type'>) {
   );
 }
 
+/**
+ *
+ */
 export function StarsView(props: Omit<ParticleViewProps, 'type'>) {
   return <ParticleView {...props} type="stars" behavior="float" />;
 }

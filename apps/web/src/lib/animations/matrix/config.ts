@@ -58,7 +58,9 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
 
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
+       
       const sourceValue = source[key as keyof typeof source]; // safe downcast – structural boundary
+       
       const targetValue = target[key as keyof T]; // safe downcast – structural boundary
 
       if (
@@ -70,12 +72,16 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
+         
         (result as Record<string, unknown>)[key] = deepMerge( // type assertion: building merged config object
           // safe downcast – structural boundary
+           
           targetValue as object, // safe downcast – runtime verified
+           
           sourceValue as DeepPartial<object> // safe downcast – runtime verified
         );
       } else if (sourceValue !== undefined) {
+         
         (result as Record<string, unknown>)[key] = sourceValue; // safe downcast – structural boundary
       }
     }
@@ -110,6 +116,7 @@ export function getPreset(name: ConfigPresetName): MatrixConfig {
     return DEFAULT_CONFIG;
   }
 
+   
   return createConfig(preset as DeepPartial<MatrixConfig>); // safe downcast – structural boundary
 }
 

@@ -98,6 +98,7 @@ const generalStorage = {
     const value = await this.getItem(key);
     if (!value) return null;
     try {
+       
       return JSON.parse(value) as T;
     } catch {
       return null;
@@ -171,6 +172,7 @@ export const storage = {
   // Theme preference
   async getTheme(): Promise<'light' | 'dark' | 'system' | null> {
     const theme = await generalStorage.getItem(KEYS.THEME);
+     
     return theme as 'light' | 'dark' | 'system' | null;
   },
 

@@ -41,7 +41,9 @@ export function useTitlesData() {
           setOwnedTitles(data);
 
           const equippedTitle =
+             
             (user as { equipped_title?: string; equippedTitle?: string })?.equipped_title ||
+             
             (user as { equipped_title?: string; equippedTitle?: string })?.equippedTitle;
           if (equippedTitle) {
             setEquippedTitleId(equippedTitle);
@@ -150,6 +152,7 @@ export function useTitlesData() {
           };
           return acc;
         },
+         
         {} as Record<TitleRarity, { owned: number; total: number }> // safe downcast – structural boundary
       ),
     }),

@@ -97,6 +97,9 @@ interface UseE2EEReturn {
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes for key operations
 
+/**
+ *
+ */
 export function useE2EE(userId?: string): UseE2EEReturn {
   const [state, setState] = useState<E2EEState>({
     isSetUp: false,

@@ -136,6 +136,9 @@ const DEFAULT_COLOR_SCALE = [
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function Heatmap({
   data,
   startDate: propStartDate,
@@ -481,6 +484,9 @@ export interface CalendarHeatmapProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function CalendarHeatmap({
   data,
   year = new Date().getFullYear(),
@@ -521,6 +527,9 @@ export interface MatrixHeatmapProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function MatrixHeatmap({
   data,
   rowLabels,

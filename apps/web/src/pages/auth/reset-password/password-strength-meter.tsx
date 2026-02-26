@@ -42,6 +42,7 @@ export function PasswordStrengthMeter({ strength }: PasswordStrengthMeterProps) 
             key={key}
             label={label}
             // type assertion: iterating config keys which are valid PasswordRequirements keys
+             
             met={strength.requirements[key as keyof PasswordRequirements]}
           />
         ))}

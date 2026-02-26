@@ -145,6 +145,7 @@ export function MessageList({
 
       const { message, groupMessages, msgIndex } = row;
       const messageSenderId =
+         
         getMessageSenderId(message as unknown as Record<string, unknown>) || ''; // type assertion: narrowing for helper function
       const currentUserId = userId || '';
 
@@ -162,6 +163,7 @@ export function MessageList({
 
       const prevMessage = groupMessages[msgIndex - 1];
       const prevSenderId = prevMessage
+         
         ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || '' // type assertion: narrowing for helper function
         : '';
       const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);

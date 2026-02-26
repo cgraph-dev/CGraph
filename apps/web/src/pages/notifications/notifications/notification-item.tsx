@@ -110,11 +110,13 @@ export function NotificationItem({
             {/* Inline action buttons for actionable notifications */}
             {/* type assertion: narrowing notification.type to known union after includes() check */}
             {(['friend_request', 'message', 'group_invite', 'mention'] as const).includes(
+               
               notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention' // type assertion: narrowing notification.type to known union after includes() check
             ) && (
               <div className="mt-2" onClick={(e) => e.stopPropagation()}>
                 <NotificationActions
                   type={
+                     
                     notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention' // type assertion: narrowing notification.type to known union after includes() check
                   }
                   notificationId={notification.id}

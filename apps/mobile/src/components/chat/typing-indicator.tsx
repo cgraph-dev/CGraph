@@ -56,6 +56,9 @@ const ANIMATION_CONFIG = {
   fade: { duration: 800, delay: 200 },
 };
 
+/**
+ *
+ */
 export default function TypingIndicator({
   style = 'dots',
   color = Colors.primary[500],
@@ -378,6 +381,9 @@ export default function TypingIndicator({
 }
 
 // Compact version for inline use
+/**
+ *
+ */
 export function TypingDotsCompact({
   color = Colors.dark[400],
   size = 4,

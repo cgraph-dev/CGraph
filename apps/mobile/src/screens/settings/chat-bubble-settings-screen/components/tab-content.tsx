@@ -17,6 +17,9 @@ interface PresetsTabProps {
   onApplyPreset: (presetId: string) => void;
 }
 
+/**
+ *
+ */
 export function PresetsTab({ onApplyPreset }: PresetsTabProps) {
   return (
     <SettingsSection title="Quick Presets" icon="sparkles" iconColor="#f59e0b">
@@ -28,6 +31,7 @@ export function PresetsTab({ onApplyPreset }: PresetsTabProps) {
             onPress={() => onApplyPreset(preset.id)}
           >
             <LinearGradient
+               
               colors={preset.colors as [string, string]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -46,6 +50,9 @@ interface ColorsTabProps {
   updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
 }
 
+/**
+ *
+ */
 export function ColorsTab({ style, updateStyle }: ColorsTabProps) {
   return (
     <>
@@ -132,6 +139,9 @@ interface ShapeTabProps {
   updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
 }
 
+/**
+ *
+ */
 export function ShapeTab({ style, updateStyle }: ShapeTabProps) {
   return (
     <>
@@ -153,6 +163,7 @@ export function ShapeTab({ style, updateStyle }: ShapeTabProps) {
             { value: 'subtle', label: 'Subtle' },
           ]}
           selected={style.tailStyle}
+           
           onSelect={(value) => updateStyle('tailStyle', value as ChatBubbleStyle['tailStyle'])}
         />
         <SliderRow
@@ -184,6 +195,9 @@ interface LayoutTabProps {
   updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
 }
 
+/**
+ *
+ */
 export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
   return (
     <>
@@ -202,6 +216,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'large', label: 'Large' },
           ]}
           selected={style.avatarSize}
+           
           onSelect={(value) => updateStyle('avatarSize', value as ChatBubbleStyle['avatarSize'])}
         />
       </SettingsSection>
@@ -221,6 +236,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
           ]}
           selected={style.timestampPosition}
           onSelect={(value) =>
+             
             updateStyle('timestampPosition', value as ChatBubbleStyle['timestampPosition'])
           }
         />
@@ -234,6 +250,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'right', label: 'Right' },
           ]}
           selected={style.alignSent}
+           
           onSelect={(value) => updateStyle('alignSent', value as ChatBubbleStyle['alignSent'])}
         />
         <SegmentedRow
@@ -244,6 +261,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
           ]}
           selected={style.alignReceived}
           onSelect={(value) =>
+             
             updateStyle('alignReceived', value as ChatBubbleStyle['alignReceived'])
           }
         />
@@ -255,6 +273,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'spacious', label: 'Spacious' },
           ]}
           selected={style.spacing}
+           
           onSelect={(value) => updateStyle('spacing', value as ChatBubbleStyle['spacing'])}
         />
       </SettingsSection>

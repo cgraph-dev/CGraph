@@ -48,33 +48,54 @@ export interface MarketplaceFilters {
 // ── Normalizer ─────────────────────────────────────────────────────────
 
 function normalizeListing(raw: Record<string, unknown>): MarketplaceListing {
+   
   const seller = raw.seller as Record<string, unknown> | null;
+   
   const buyer = raw.buyer as Record<string, unknown> | undefined;
   return {
+     
     id: raw.id as string,
+     
     itemType: (raw.item_type || raw.itemType || 'badge') as ItemType,
+     
     itemId: (raw.item_id || raw.itemId || '') as string,
+     
     status: (raw.status || 'active') as ListingStatus,
+     
     price: (raw.price || 0) as number,
+     
     currency: (raw.currency || 'coins') as CurrencyType,
+     
     itemName: (raw.item_name || raw.itemName || '') as string,
+     
     itemRarity: (raw.item_rarity || raw.itemRarity || 'common') as string,
+     
     itemPreviewUrl: (raw.item_preview_url || raw.itemPreviewUrl) as string | undefined,
+     
     acceptsTrades: (raw.accepts_trades ?? raw.acceptsTrades ?? false) as boolean,
+     
     listedAt: (raw.listed_at || raw.listedAt || raw.inserted_at || '') as string,
+     
     expiresAt: (raw.expires_at || raw.expiresAt || '') as string,
+     
     soldAt: (raw.sold_at || raw.soldAt) as string | undefined,
     seller: seller
       ? {
+           
           id: (seller.id || '') as string,
+           
           username: (seller.username || '') as string,
+           
           displayName: (seller.display_name || seller.displayName || '') as string,
+           
           avatarUrl: (seller.avatar_url || seller.avatarUrl || '') as string,
         }
       : null,
     buyer: buyer
       ? {
+           
           id: (buyer.id || '') as string,
+           
           username: (buyer.username || '') as string,
         }
       : undefined,
@@ -169,6 +190,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       const response = await api.get(`/api/v1/marketplace/${listingId}`);
       const raw = response.data?.listing || response.data?.data || response.data;
       if (raw) {
+         
         set({ selectedListing: normalizeListing(raw as Record<string, unknown>) });
       }
     } catch {

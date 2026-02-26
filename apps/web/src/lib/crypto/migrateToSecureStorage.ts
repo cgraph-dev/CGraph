@@ -26,6 +26,7 @@
  *
  * @module lib/crypto/migrateToSecureStorage
  * @version 1.0.0
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 
@@ -195,6 +196,7 @@ export function restoreFromBackup(): boolean {
       return false;
     }
 
+     
     const backup = JSON.parse(backupData) as Record<string, string>; // safe downcast – structural boundary
 
     Object.entries(LEGACY_KEYS).forEach(([name, key]) => {

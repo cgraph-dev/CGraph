@@ -17,6 +17,9 @@ interface HolographicContainerProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export function HolographicContainer({
   children,
   config: userConfig,

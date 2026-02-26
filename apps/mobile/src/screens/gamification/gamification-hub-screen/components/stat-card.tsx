@@ -33,6 +33,9 @@ export interface StatCardProps {
   index?: number;
 }
 
+/**
+ *
+ */
 export function StatCard({ icon, label, value, color, onPress, index = 0 }: StatCardProps) {
   const scaleAnim = useSharedValue(0.8);
   const opacityAnim = useSharedValue(0);
@@ -91,6 +94,7 @@ export function StatCard({ icon, label, value, color, onPress, index = 0 }: Stat
 
       <LinearGradient colors={[color + '30', '#1f293780']} style={styles.card}>
         <Animated.View style={iconStyle}>
+          { }
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={28} color={color} />
         </Animated.View>
         <Text style={styles.value}>{value}</Text>

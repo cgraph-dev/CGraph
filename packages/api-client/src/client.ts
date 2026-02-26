@@ -93,6 +93,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     const combinedHeaders: Record<string, string> = Object.assign(
       { 'Content-Type': 'application/json', Accept: 'application/json' },
       defaultHeaders,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       reqHeaders as Record<string, string> | undefined
     );
 
@@ -127,14 +128,17 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 
     // Handle 204 No Content
     if (response.status === 204) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return undefined as T;
     }
 
     const contentType = response.headers.get('Content-Type') ?? '';
     if (contentType.includes('application/json')) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return (await response.json()) as T;
     }
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return (await response.text()) as T;
   }
 

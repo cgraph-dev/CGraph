@@ -105,12 +105,16 @@ const INITIAL_STATE = {
   streak: 0,
   levelProgress: 0,
   xpForNextLevel: 100,
+   
   achievements: [] as Achievement[],
   totalAchievements: 0,
   achievementsUnlocked: 0,
+   
   activeQuests: [] as Quest[],
   questsCompleted: 0,
+   
   currentTitle: null as string | null,
+   
   equippedTitleId: null as string | null,
   isLoading: false,
   isLoadingAchievements: false,

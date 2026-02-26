@@ -21,8 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { AuthStackParamList } from '../../types';
 import { OAuthButtonGroup, AuthDivider } from '../../components/o-auth-buttons';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -31,6 +30,9 @@ type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 };
 
+/**
+ *
+ */
 export default function RegisterScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { register } = useAuthStore();
@@ -153,6 +155,7 @@ export default function RegisterScreen({ navigation }: Props) {
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
+       
       const err = error as {
         response?: {
           data?: {
@@ -199,10 +202,10 @@ export default function RegisterScreen({ navigation }: Props) {
       // Log for debugging in development
       if (__DEV__) {
         if (__DEV__)
-          console.warn(
+          {console.warn(
             'Registration error:',
             JSON.stringify(err.response?.data || err.message, null, 2)
-          );
+          );}
       }
 
       Alert.alert('Registration Failed', errorMessage);

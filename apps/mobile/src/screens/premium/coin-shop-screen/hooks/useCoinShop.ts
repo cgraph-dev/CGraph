@@ -11,6 +11,9 @@ import paymentService, { PRODUCT_IDS } from '../../../../lib/payment';
 import { SHOP_ITEMS, COIN_BUNDLES, CoinBundle, ShopItem } from '../components';
 import { CategoryId } from '../types';
 
+/**
+ *
+ */
 export function useCoinShop() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('bundles');
   const [userCoins, setUserCoins] = useState(0);
@@ -108,6 +111,7 @@ export function useCoinShop() {
                 );
               }
             } catch (err) {
+               
               const error = err as Error & {
                 response?: { status: number; data?: { message?: string } };
               };
@@ -153,6 +157,7 @@ export function useCoinShop() {
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               Alert.alert('Success!', `You've purchased ${item.name}!`);
             } catch (err) {
+               
               const error = err as Error & {
                 response?: { status: number; data?: { message?: string } };
               };
@@ -199,6 +204,7 @@ export function useCoinShop() {
         [{ text: 'Awesome!', style: 'default' }]
       );
     } catch (err) {
+       
       const error = err as Error & { response?: { status: number; data?: { message?: string } } };
       console.error('[CoinShop] Daily claim error:', error);
 

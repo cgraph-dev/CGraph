@@ -32,6 +32,7 @@ export function UserDropdown() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+       
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); // type assertion: EventTarget to Node for contains check
     };
     document.addEventListener('mousedown', handler);

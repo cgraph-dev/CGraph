@@ -168,6 +168,7 @@ export function useCall(socket: Socket | null): UseCallReturn {
       ) {
         // Optionally end call when app goes to background
         // For now, just log - user might want to continue call
+        // eslint-disable-next-line no-console
         if (__DEV__) console.log('[useCall] App went to background during call');
       }
       appStateRef.current = nextAppState;
@@ -292,6 +293,7 @@ export function useIncomingCallListener(
     channel
       .join()
       .receive('ok', () => {
+        // eslint-disable-next-line no-console
         if (__DEV__) console.log('[useIncomingCallListener] Joined call lobby');
       })
       .receive('error', (resp) => {
@@ -299,6 +301,7 @@ export function useIncomingCallListener(
       });
 
     channel.on('incoming_call', (payload: unknown) => {
+       
       const { caller_id, caller_name, room_id } = payload as {
         caller_id: string;
         caller_name: string;

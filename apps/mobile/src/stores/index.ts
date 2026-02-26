@@ -174,9 +174,11 @@ export function useCommunityFacade() {
     () => ({
       groups,
       channels: activeGroupId
+         
         ? ((groups.find((g) => g.id === activeGroupId) as unknown as Record<string, unknown>)
             ?.channels as unknown[]) || []
         : [],
+       
       forums: [] as unknown[], // TODO: wire to forum store
       activeGroup: activeGroupId ? groups.find((g) => g.id === activeGroupId) || null : null,
       activeChannel: activeChannelId,
@@ -285,6 +287,7 @@ export function useUIFacade() {
       // Stub: sidebar/modal/toast state
       isSidebarOpen: false,
       setSidebarOpen: (_open: boolean) => {},
+       
       activeModal: null as string | null,
       showModal: (_id: string) => {},
       hideModal: () => {},

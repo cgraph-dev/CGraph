@@ -160,10 +160,12 @@ describe('ThemeRegistry – validateTheme', () => {
   });
 
   it('rejects a theme missing id', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(ThemeRegistry.validateTheme({ name: 'X', colors: {} as any })).toBe(false);
   });
 
   it('rejects a theme missing name', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(ThemeRegistry.validateTheme({ id: 'x', colors: {} as any })).toBe(false);
   });
 
@@ -199,6 +201,7 @@ describe('ThemeRegistry – createCustomTheme', () => {
 
   it('merges color overrides into the base theme', () => {
     const custom = ThemeRegistry.createCustomTheme('default', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       colors: { primary: '#ff0000' } as any,
     });
     expect(custom.colors.primary).toBe('#ff0000');

@@ -21,6 +21,9 @@ import { Header, LoadingSpinner } from '../../../components';
 import { useFriendRequests } from './hooks/useFriendRequests';
 import { RequestCard, EmptyRequestsState, TabsHeader, StatsHeader } from './components';
 
+/**
+ *
+ */
 export default function FriendRequestsScreen() {
   const navigation = useNavigation();
   const { colors } = useThemeStore();

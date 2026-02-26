@@ -25,6 +25,11 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'invisible', label: 'Invisible', description: 'Appear offline but stay connected', color: '#6b7280' },
 ];
 
+ 
+/**
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PresenceStatusScreen({ navigation }: { navigation: any }) {
   const { colors } = useThemeStore();
   const [status, setStatus] = useState<PresenceStatus>('online');

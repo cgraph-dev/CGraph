@@ -56,6 +56,7 @@ export function VideoTile({
               size="xlarge"
               className="h-24 w-24 ring-4 ring-dark-700"
               avatarBorderId={
+                 
                 (user as CallUser)?.avatarBorderId ?? (user as CallUser)?.avatar_border_id ?? null // safe downcast – structural boundary
               }
             />

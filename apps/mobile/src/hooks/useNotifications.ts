@@ -58,6 +58,9 @@ interface UseNotificationsReturn extends NotificationsState {
   readNotifications: Notification[];
 }
 
+/**
+ *
+ */
 export function useNotifications(options: UseNotificationsOptions = {}): UseNotificationsReturn {
   const { autoLoad = true, limit = 50 } = options;
 

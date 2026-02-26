@@ -63,7 +63,9 @@ export type {
 // ============================================================================
 
 const Interactions = {
+   
   FeedbackSystem: require('./feedback-system').default,
+   
   HapticPatterns: require('./haptic-patterns').default,
 };
 

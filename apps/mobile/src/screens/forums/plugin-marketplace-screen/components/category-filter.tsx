@@ -21,6 +21,9 @@ interface CategoryFilterProps {
   };
 }
 
+/**
+ *
+ */
 export function CategoryFilter({ selectedCategory, onSelect, colors }: CategoryFilterProps) {
   return (
     <View style={styles.categoryContainer}>
@@ -38,9 +41,11 @@ export function CategoryFilter({ selectedCategory, onSelect, colors }: CategoryF
                 borderColor: colors.border,
               },
             ]}
+             
             onPress={() => onSelect(item.key as PluginCategory | null)}
           >
             <Ionicons
+               
               name={item.icon as keyof typeof Ionicons.glyphMap}
               size={16}
               color={selectedCategory === item.key ? '#fff' : colors.text}

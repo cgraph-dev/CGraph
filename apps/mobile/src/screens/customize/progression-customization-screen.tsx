@@ -30,6 +30,9 @@ const STATS: ProgressStat[] = [
   { label: 'Quests', value: '3 Active', icon: 'map', color: '#ec4899' },
 ];
 
+/**
+ *
+ */
 export default function ProgressionCustomizationScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();

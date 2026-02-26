@@ -66,6 +66,7 @@ export function useInviteManager(groupId?: string) {
     api.get(`/api/v1/groups/${groupId}/invites`)
       .then((res) => {
         const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setInvites(data.map((inv: Record<string, any>) => ({
           id: inv.id,
           code: inv.code,

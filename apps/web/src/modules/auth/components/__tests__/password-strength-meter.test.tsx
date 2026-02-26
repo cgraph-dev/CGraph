@@ -7,7 +7,9 @@ import { PasswordStrengthMeter } from '../password-strength-meter';
 
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     div: ({ children, ...props }: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const clean: Record<string, any> = {};
       for (const [k, v] of Object.entries(props)) {
         if (!['initial', 'animate', 'exit', 'transition'].includes(k) && !k.startsWith('while')) {
@@ -16,22 +18,31 @@ vi.mock('framer-motion', () => ({
       }
       return <div {...clean}>{children}</div>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     span: ({ children, ...props }: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { initial, animate, exit, transition, ...rest } = props as any;
       return <span {...rest}>{children}</span>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     li: ({ children, ...props }: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { initial, animate, exit, transition, ...rest } = props as any;
       return <li {...rest}>{children}</li>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ul: ({ children, ...props }: any) => <ul {...props}>{children}</ul>,
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 vi.mock('@heroicons/react/24/outline', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CheckIcon: (props: any) => <svg data-testid="check-icon" {...props} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   XMarkIcon: (props: any) => <svg data-testid="x-icon" {...props} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ShieldCheckIcon: (props: any) => <svg data-testid="shield-icon" {...props} />,
 }));
 

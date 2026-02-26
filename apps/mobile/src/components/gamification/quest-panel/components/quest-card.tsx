@@ -17,6 +17,9 @@ import { QuestProgressBar } from './quest-progress-bar';
 import { RewardBadge } from './reward-badge';
 import { CountdownTimer } from './countdown-timer';
 
+/**
+ *
+ */
 export function QuestCard({ quest, onClaim }: QuestCardProps) {
   const [isClaiming, setIsClaiming] = useState(false);
   const scaleAnim = useSharedValue(1);
@@ -82,6 +85,7 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
             end={{ x: 1, y: 1 }}
             style={styles.questTypeIconContainer}
           >
+            { }
             <Ionicons name={config.icon as keyof typeof Ionicons.glyphMap} size={14} color="#fff" />
           </LinearGradient>
           <Text style={[styles.questTypeLabel, { color: config.colors[0] }]}>{config.label}</Text>
@@ -92,6 +96,7 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
           <View style={styles.questHeader}>
             <View style={styles.questIconContainer}>
               <Ionicons
+                 
                 name={quest.iconName as keyof typeof Ionicons.glyphMap}
                 size={24}
                 color={isLocked ? '#6b7280' : config.colors[0]}

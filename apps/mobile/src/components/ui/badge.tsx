@@ -200,6 +200,7 @@ export default function Badge({
     >
       {gradient && currentVariant.gradient ? (
         <LinearGradient
+           
           colors={currentVariant.gradient as unknown}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -222,6 +223,9 @@ export default function Badge({
 }
 
 // Predefined badge variants for common use cases
+/**
+ *
+ */
 export function NewBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="success" size="sm" style={style} pulse>
@@ -230,6 +234,9 @@ export function NewBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function HotBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="danger" size="sm" style={style} pulse glow>
@@ -238,6 +245,9 @@ export function HotBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function NsfwBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="danger" size="sm" style={style}>
@@ -246,6 +256,9 @@ export function NsfwBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function PinnedBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="success" size="sm" style={style}>
@@ -254,6 +267,9 @@ export function PinnedBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function PrivateBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="warning" size="sm" style={style}>
@@ -262,6 +278,9 @@ export function PrivateBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function PublicBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="info" size="sm" style={style}>
@@ -270,6 +289,9 @@ export function PublicBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function OwnerBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="premium" size="sm" style={style} glow gradient>
@@ -278,6 +300,9 @@ export function OwnerBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function ModeratorBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="success" size="sm" style={style}>
@@ -286,6 +311,9 @@ export function ModeratorBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function MemberBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="default" size="sm" style={style}>
@@ -294,6 +322,9 @@ export function MemberBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function PremiumBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="premium" size="sm" style={style} glow gradient>
@@ -302,6 +333,9 @@ export function PremiumBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function LegendaryBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="legendary" size="sm" style={style} glow pulse gradient>
@@ -310,6 +344,9 @@ export function LegendaryBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function RareBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="rare" size="sm" style={style} glow>
@@ -318,6 +355,9 @@ export function RareBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function EpicBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="epic" size="sm" style={style} glow>
@@ -326,6 +366,9 @@ export function EpicBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function OnlineBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="success" size="xs" style={style} dot animated={false}>
@@ -334,6 +377,9 @@ export function OnlineBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function OfflineBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="default" size="xs" style={style} dot animated={false}>
@@ -342,6 +388,9 @@ export function OfflineBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function AwayBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="warning" size="xs" style={style} dot animated={false}>
@@ -350,6 +399,9 @@ export function AwayBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function BusyBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="danger" size="xs" style={style} dot animated={false}>
@@ -358,6 +410,9 @@ export function BusyBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function VerifiedBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="info" size="sm" style={style} glow>
@@ -366,6 +421,9 @@ export function VerifiedBadge({ style }: { style?: ViewStyle }) {
   );
 }
 
+/**
+ *
+ */
 export function AdminBadge({ style }: { style?: ViewStyle }) {
   return (
     <Badge variant="danger" size="sm" style={style} glow>

@@ -35,8 +35,17 @@ describe('ConversationMenu', () => {
   const defaultProps = {
     conversation: {
       id: 'conv-1',
+      type: 'direct' as const,
+      name: 'Test Chat',
+      avatarUrl: null,
+      participants: [],
+      lastMessage: null,
+      unreadCount: 0,
+      isGroup: false,
       isPinned: false,
       isMuted: false,
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
     },
     onAction: vi.fn(),
   };

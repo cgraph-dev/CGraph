@@ -120,6 +120,7 @@ export function useConversationData({
       // Find other participant
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId =
+           
           p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(participantUserId) !== String(userId);
       });
@@ -128,6 +129,7 @@ export function useConversationData({
       const rawOtherUserId =
         otherParticipant?.userId ||
         otherParticipant?.user_id ||
+         
         (otherParticipant?.user as Record<string, unknown>)?.id;
       const extractedOtherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
 
@@ -138,15 +140,20 @@ export function useConversationData({
         const otherUserInfo: UserBasic = {
           id: extractedOtherUserId,
           username:
+             
             (otherParticipant?.user as Record<string, unknown>)?.username ||
             otherParticipant?.username ||
             null,
           display_name:
+             
             (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+             
             (otherParticipant?.user as Record<string, unknown>)?.display_name ||
             null,
           avatar_url:
+             
             (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
+             
             (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
             null,
           status: 'offline',
@@ -157,15 +164,19 @@ export function useConversationData({
         const displayName =
           conv.name ||
           otherParticipant?.nickname ||
+           
           (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+           
           (otherParticipant?.user as Record<string, unknown>)?.display_name ||
           otherParticipant?.displayName ||
           otherParticipant?.display_name ||
+           
           (otherParticipant?.user as Record<string, unknown>)?.username ||
           otherParticipant?.username ||
           'Conversation';
 
         // Extract last seen
+         
         const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
 
         // Check presence
@@ -178,6 +189,7 @@ export function useConversationData({
           displayName,
           otherParticipantId: extractedOtherUserId,
           otherUser: otherUserInfo,
+           
           lastSeen: lastSeen as string | null,
           isOnline,
         });

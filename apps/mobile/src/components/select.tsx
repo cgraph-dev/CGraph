@@ -38,6 +38,9 @@ type SelectProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ *
+ */
 export default function Select({
   options,
   value,

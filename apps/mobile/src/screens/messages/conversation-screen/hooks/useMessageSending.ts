@@ -234,6 +234,7 @@ export function useMessageSending({
         const formData = new FormData();
         const fileName = `voice_${Date.now()}.m4a`;
 
+         
         formData.append('file', {
           uri: voiceData.uri,
           type: 'audio/m4a',
@@ -321,6 +322,7 @@ export function useMessageSending({
         const fileMimeType = mimeType || getMimeType(fileName, 'application/octet-stream');
 
         const formData = new FormData();
+         
         formData.append('file', {
           uri,
           type: fileMimeType,
@@ -352,6 +354,7 @@ export function useMessageSending({
         onMessageSent(normalized);
         onScrollToBottom();
       } catch (error: unknown) {
+         
         const err = error as {
           response?: { data?: { error?: { message?: string } } };
           message?: string;
@@ -396,6 +399,7 @@ export function useMessageSending({
           const mimeType =
             attachment.mimeType || (attachment.type === 'video' ? 'video/mp4' : 'image/jpeg');
 
+           
           formData.append('file', {
             uri: attachment.uri,
             type: mimeType,

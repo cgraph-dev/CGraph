@@ -58,6 +58,9 @@ interface UseGamificationReturn extends GamificationState {
   inProgressAchievements: AchievementWithProgress[];
 }
 
+/**
+ *
+ */
 export function useGamification(): UseGamificationReturn {
   const [state, setState] = useState<GamificationState>({
     stats: null,
@@ -216,6 +219,7 @@ export function useGamification(): UseGamificationReturn {
     } catch (error: unknown) {
       setState((prev) => ({
         ...prev,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         error: (error as any)?.response?.data?.message || 'Failed to claim streak',
       }));
       return null;
@@ -233,6 +237,7 @@ export function useGamification(): UseGamificationReturn {
       } catch (error: unknown) {
         setState((prev) => ({
           ...prev,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           error: (error as any)?.response?.data?.message || 'Failed to accept quest',
         }));
         return null;
@@ -253,6 +258,7 @@ export function useGamification(): UseGamificationReturn {
       } catch (error: unknown) {
         setState((prev) => ({
           ...prev,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           error: (error as any)?.response?.data?.message || 'Failed to claim rewards',
         }));
         return false;

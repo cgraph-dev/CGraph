@@ -39,6 +39,9 @@ const COLORS: Record<ToastType, string> = {
   info: '#3b82f6',
 };
 
+/**
+ *
+ */
 export default function Toast({
   message,
   type = 'info',

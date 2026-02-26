@@ -40,8 +40,10 @@ export default function Dropdown({
     const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
+         
         !dropdownRef.current.contains(e.target as Node) && // type assertion: EventTarget to Node for contains check
         triggerRef.current &&
+         
         !triggerRef.current.contains(e.target as Node) // type assertion: EventTarget to Node for contains check
       ) {
         setIsOpen(false);

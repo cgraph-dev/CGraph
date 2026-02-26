@@ -28,9 +28,11 @@ export function ThreadStatusFilters({ filters, updateFilter }: ThreadStatusFilte
           <label key={key} className="flex items-center gap-2 text-gray-300">
             <input
               type="checkbox"
+               
               checked={plain ? (filters[key] as boolean) : (filters[key] as boolean) || false} // type assertion: filter values are boolean for checkbox inputs
               onChange={(e) => {
                 const val = plain ? e.target.checked : e.target.checked || undefined;
+                 
                 updateFilter(key, val as AdvancedSearchFilters[typeof key]); // type assertion: dynamic filter key value type
               }}
               className={CHECKBOX_CLS}

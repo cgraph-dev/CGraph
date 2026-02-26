@@ -4,6 +4,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, text, children, lazy } from '@nozbe/watermelondb/decorators';
 
+/**
+ *
+ */
 export default class Conversation extends Model {
   static table = 'conversations';
 

@@ -95,6 +95,9 @@ const DEFAULT_VISIBLE_ITEMS = 3;
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function Carousel3D<T>({
   data,
   renderItem,
@@ -463,6 +466,9 @@ export interface ImageCarouselProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function ImageCarousel({ images, onImagePress, style }: ImageCarouselProps) {
   return (
     <Carousel3D
@@ -484,6 +490,9 @@ export interface CardCarouselProps<T> {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function CardCarousel<T>({ cards, renderCard, onCardPress, style }: CardCarouselProps<T>) {
   return (
     <Carousel3D

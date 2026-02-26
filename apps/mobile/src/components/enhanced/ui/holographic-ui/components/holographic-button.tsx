@@ -28,6 +28,9 @@ interface HolographicButtonProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export function HolographicButton({
   children,
   onPress,

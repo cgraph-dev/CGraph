@@ -46,6 +46,7 @@ export function SearchFilterBar({
       {(activeSection === 'borders' || activeSection === 'badges') && (
         <select
           value={selectedRarity}
+           
           onChange={(e) => onRarityChange(e.target.value as Rarity | 'all')} // safe downcast – select event value
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
         >

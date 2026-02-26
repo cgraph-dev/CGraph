@@ -45,6 +45,7 @@ export function IdSearchBar({
           <div className="flex items-center gap-3">
             <select
               value={idSearchType}
+               
               onChange={(e) => setIdSearchType(e.target.value as IdSearchType)} // safe downcast – select event value
               className="rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             >

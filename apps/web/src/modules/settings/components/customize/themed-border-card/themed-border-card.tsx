@@ -28,6 +28,7 @@ export default function ThemedBorderCard({
 }: ThemedBorderCardProps) {
   const config = SIZE_CONFIG[size];
   // type assertion: border.rarity is a valid BorderRarity value from API
+   
   const rarityColor = RARITY_COLORS[border.rarity as BorderRarity];
   const isLocked = !border.unlocked && !allowPreview;
   const canInteract = !isLocked;
@@ -36,6 +37,7 @@ export default function ThemedBorderCard({
   const showParticles =
     showAnimation &&
     PARTICLE_ANIMATION_TYPES.includes(
+       
       border.animationType as (typeof PARTICLE_ANIMATION_TYPES)[number] // safe downcast – data-driven animation type
     );
 
@@ -58,9 +60,11 @@ export default function ThemedBorderCard({
           ...borderAnimation.style,
         }}
         animate={
+           
           borderAnimation.animate as TargetAndTransition /* safe downcast – framer-motion typing */
         }
         transition={
+           
           borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
         }
       >

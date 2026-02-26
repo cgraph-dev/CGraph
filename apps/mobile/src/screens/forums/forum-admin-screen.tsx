@@ -76,6 +76,9 @@ interface ForumStats {
 
 type AdminTab = 'overview' | 'modqueue' | 'banned' | 'moderators';
 
+/**
+ *
+ */
 export default function ForumAdminScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -364,6 +367,7 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
             }}
           >
             <Ionicons
+               
               name={tab.icon as string}
               size={20}
               color={activeTab === tab.key ? colors.primary : colors.textSecondary}

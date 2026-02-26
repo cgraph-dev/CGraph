@@ -46,6 +46,7 @@ export function useVerifyEmail() {
           await checkAuth?.();
         }
       } catch (error: unknown) {
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');

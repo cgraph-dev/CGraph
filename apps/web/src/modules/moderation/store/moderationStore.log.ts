@@ -47,17 +47,28 @@ export function createLogActions(set: Set) {
         if (filters.page) params.page = filters.page;
 
         const response = await api.get('/api/v1/admin/moderation/log', { params });
+         
         const entries = (ensureArray(response.data, 'entries') as Record<string, unknown>[]).map( // safe downcast – API response field
           (e) => ({
+             
             id: e.id as string, // safe downcast – API response field
+             
             action: e.action as string, // safe downcast – API response field
+             
             targetType: e.target_type as ModerationLogEntry['targetType'], // safe downcast – API response field
+             
             targetId: e.target_id as string, // safe downcast – API response field
+             
             targetTitle: e.target_title as string | undefined, // safe downcast – API response field
+             
             moderatorId: e.moderator_id as string, // safe downcast – API response field
+             
             moderatorUsername: e.moderator_username as string, // safe downcast – API response field
+             
             reason: e.reason as string | undefined, // safe downcast – API response field
+             
             details: e.details as Record<string, unknown> | undefined, // safe downcast – API response field
+             
             createdAt: (e.created_at as string) || (e.inserted_at as string), // safe downcast – API response field
           })
         );

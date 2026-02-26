@@ -23,6 +23,9 @@ interface CoinBalanceProps {
   showAddButton?: boolean;
 }
 
+/**
+ *
+ */
 export default function CoinBalance({ 
   balance, 
   onPress,

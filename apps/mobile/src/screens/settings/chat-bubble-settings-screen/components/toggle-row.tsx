@@ -13,6 +13,9 @@ interface ToggleRowProps {
   onToggle: (value: boolean) => void;
 }
 
+/**
+ *
+ */
 export function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
   return (
     <View style={styles.optionRow}>

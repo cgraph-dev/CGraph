@@ -289,6 +289,7 @@ export class AnimationEngine {
   } {
     return {
       activeAnimations: this.activeAnimations.size,
+       
       fps: gsap.ticker.fps as unknown as number, // type assertion: library type compatibility
     };
   }

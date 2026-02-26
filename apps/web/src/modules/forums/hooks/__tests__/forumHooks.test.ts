@@ -164,8 +164,10 @@ describe('useForumSocket', () => {
 
   it('invokes onNewThread callback when the channel fires the event', async () => {
     const onNewThread = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     let capturedCallbacks: Record<string, Function> = {};
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     mockJoinForum.mockImplementation((_id: string, cbs: Record<string, Function>) => {
       capturedCallbacks = cbs;
       return { on: vi.fn() };
@@ -187,8 +189,10 @@ describe('useForumSocket', () => {
 
   it('invokes onStatsUpdate callback and updates stats state', async () => {
     const onStatsUpdate = vi.fn();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     let capturedCallbacks: Record<string, Function> = {};
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     mockJoinForum.mockImplementation((_id: string, cbs: Record<string, Function>) => {
       capturedCallbacks = cbs;
       return { on: vi.fn() };

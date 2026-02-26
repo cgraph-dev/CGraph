@@ -8,14 +8,16 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import type { CalendarEvent } from '../types';
-import { EVENT_TYPE_CONFIG, formatTime } from '../types';
+import type { CalendarEvent, EVENT_TYPE_CONFIG, formatTime } from '../types';
 
 interface EventCardProps {
   event: CalendarEvent;
   onPress: (event: CalendarEvent) => void;
 }
 
+/**
+ *
+ */
 export function EventCard({ event, onPress }: EventCardProps) {
   const config = EVENT_TYPE_CONFIG[event.type];
   const color = event.color || config.color;
@@ -27,6 +29,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
         <View style={styles.eventContent}>
           <View style={styles.eventHeader}>
             <View style={[styles.eventIcon, { backgroundColor: color + '30' }]}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <Ionicons name={config.icon as any} size={16} color={color} />
             </View>
             <View style={styles.eventInfo}>

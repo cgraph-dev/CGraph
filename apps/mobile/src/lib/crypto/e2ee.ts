@@ -282,6 +282,7 @@ export enum CryptoProtocol {
 
 /** Check if a server prekey bundle includes KEM prekeys (PQ-capable peer) */
 export function bundleSupportsPQ(bundle: ServerPrekeyBundle): boolean {
+   
   return !!(bundle && 'kyber_prekey' in bundle && (bundle as Record<string, unknown>).kyber_prekey);
 }
 
@@ -796,11 +797,15 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   const map = new Map<string, Session>();
 
   for (const [recipientId, session] of Object.entries(sessions)) {
+     
     const s = session as Session;
     map.set(recipientId, {
       ...s,
+       
       recipientIdentityKey: Buffer.from(s.recipientIdentityKey as unknown as string, 'base64'),
+       
       sharedSecret: Buffer.from(s.sharedSecret as unknown as string, 'base64'),
+       
       chainKey: Buffer.from(s.chainKey as unknown as string, 'base64'),
     });
   }
@@ -808,6 +813,9 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   return map;
 }
 
+/**
+ *
+ */
 export async function saveSession(recipientId: string, session: Session): Promise<void> {
   const sessions = await loadSessions();
   sessions.set(recipientId, session);
@@ -825,6 +833,9 @@ export async function saveSession(recipientId: string, session: Session): Promis
   await SecureStore.setItemAsync(SESSIONS_KEY, JSON.stringify(serialized));
 }
 
+/**
+ *
+ */
 export async function getSession(recipientId: string): Promise<Session | null> {
   const sessions = await loadSessions();
   return sessions.get(recipientId) || null;

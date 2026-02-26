@@ -10,6 +10,9 @@ import NotificationsInboxScreen from '../screens/notifications/notifications-inb
 
 const Stack = createNativeStackNavigator<NotificationsStackParamList>();
 
+/**
+ *
+ */
 export default function NotificationsNavigator() {
   const { colors } = useThemeStore();
   

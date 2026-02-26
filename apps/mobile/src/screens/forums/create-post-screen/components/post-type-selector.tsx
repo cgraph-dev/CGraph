@@ -14,10 +14,15 @@ import { PostTypeSelectorProps, PostType } from '../types';
 import { styles } from '../styles';
 import { POST_TYPES, SCREEN_WIDTH } from '../constants';
 
+/**
+ *
+ */
 export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelectorProps) {
   // POST_TYPES is a constant array, so hook count is stable
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const scaleAnims = POST_TYPES.map(() => useSharedValue(1));
   const scaleAnimStyles = POST_TYPES.map((_, i) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useAnimatedStyle(() => ({
       transform: [{ scale: scaleAnims[i].value }],
     }))

@@ -7,6 +7,9 @@ import { useChatBubbleStyle } from './hooks/useChatBubbleStyle';
 import { MessagePreview, TabBar, PresetsTab, ColorsTab, ShapeTab, LayoutTab } from './components';
 import type { Props, TabId } from './types';
 
+/**
+ *
+ */
 export default function ChatBubbleSettingsScreen({ navigation }: Props) {
   const { style, updateStyle, applyPreset, resetToDefaults } = useChatBubbleStyle();
   const [activeTab, setActiveTab] = useState<TabId>('presets');

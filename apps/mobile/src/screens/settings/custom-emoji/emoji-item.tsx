@@ -18,6 +18,9 @@ interface EmojiItemProps {
   onLongPress: () => void;
 }
 
+/**
+ *
+ */
 export function EmojiItem({ emoji, onPress, onLongPress }: EmojiItemProps) {
   return (
     <TouchableOpacity

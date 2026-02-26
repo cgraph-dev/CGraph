@@ -96,6 +96,7 @@ export function initErrorTracking(): void {
 
   startQueueProcessor();
   document.addEventListener('visibilitychange', startQueueProcessor);
+  // eslint-disable-next-line no-console
   if (CONFIG.debug) console.info('[ErrorTracking] Initialized');
 }
 
@@ -121,6 +122,7 @@ export function cleanupErrorTracking(): void {
   }
 
   isInitialized = false;
+  // eslint-disable-next-line no-console
   if (CONFIG.debug) console.info('[ErrorTracking] Cleaned up');
 }
 

@@ -5,6 +5,7 @@
  * E2EE sessions in SecureStorage (IndexedDB).
  *
  * @module lib/crypto/e2ee-secure/sessions
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 

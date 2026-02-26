@@ -19,6 +19,9 @@ import { SPRING_PRESETS } from '../../../animations/animation-library';
 import { ErrorAnimationProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function ErrorAnimation({
   visible,
   size = 80,

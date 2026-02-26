@@ -46,6 +46,7 @@ const toolbarButtons: ToolbarButton[] = [
   { icon: ItalicIcon, label: 'Italic', prefix: '_', suffix: '_' },
   {
     // type assertion: StrikethroughIcon component type compatible with toolbar interface
+     
     icon: StrikethroughIcon as React.ComponentType<{ className?: string }>,
     label: 'Strikethrough',
     prefix: '~~',

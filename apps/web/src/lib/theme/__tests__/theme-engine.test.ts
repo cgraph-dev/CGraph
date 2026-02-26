@@ -91,6 +91,7 @@ const mockMatchMedia = vi.fn(() => ({
 
 // Save original globals
 const originalLocalStorage = global.localStorage;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const originalBroadcastChannel = (global as any).BroadcastChannel;
 const originalDocument = global.document;
 const originalMatchMedia = global.matchMedia;
@@ -101,6 +102,7 @@ const originalMatchMedia = global.matchMedia;
 
 beforeAll(() => {
   Object.defineProperty(global, 'localStorage', { value: localStorageMock, writable: true });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).BroadcastChannel = MockBroadcastChannel;
   Object.defineProperty(global, 'document', { value: mockDocument, writable: true });
   Object.defineProperty(global, 'matchMedia', { value: mockMatchMedia, writable: true });
@@ -108,6 +110,7 @@ beforeAll(() => {
 
 afterAll(() => {
   Object.defineProperty(global, 'localStorage', { value: originalLocalStorage, writable: true });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).BroadcastChannel = originalBroadcastChannel;
   Object.defineProperty(global, 'document', { value: originalDocument, writable: true });
   Object.defineProperty(global, 'matchMedia', { value: originalMatchMedia, writable: true });
@@ -379,6 +382,7 @@ describe('ThemeEngine', () => {
   // ===========================================================================
 
   // Helper to create a complete custom theme with all required properties
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createCompleteCustomTheme = (overrides: Partial<any> = {}) => ({
     id: overrides.id || 'test-custom',
     name: overrides.name || 'Test Custom Theme',
@@ -630,6 +634,7 @@ describe('ThemeEngine', () => {
         expect(true).toBe(true);
         return;
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       themeEngine.updatePreferences({ messageDisplay: 'invalid' as any });
       const currentDisplay = themeEngine.getPreferences()?.settings?.messageDisplay;
       // Either validation rejects it, or it accepts anything

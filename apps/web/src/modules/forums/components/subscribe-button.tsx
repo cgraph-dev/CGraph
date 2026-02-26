@@ -73,6 +73,7 @@ export function SubscribeButton({
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e: MouseEvent) => {
+       
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) { // safe downcast – DOM element
         setMenuOpen(false);
       }

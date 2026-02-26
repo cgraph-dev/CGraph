@@ -240,6 +240,7 @@ export function getChatThemeColor(chatThemeId: string | null): ThemePreset {
  */
 export function isRareTitle(titleId: string | null): boolean {
   // type assertion: widening readonly tuple to string[] for Array.includes() compatibility
+   
   return titleId !== null && (RARE_TITLE_IDS as readonly string[]).includes(titleId);
 }
 

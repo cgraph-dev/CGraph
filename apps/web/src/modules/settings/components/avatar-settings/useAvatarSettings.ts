@@ -82,6 +82,7 @@ export function useAvatarSettings(): UseAvatarSettingsReturn {
       const reader = new FileReader();
       reader.onloadend = () => {
         // type assertion: FileReader.result is string when readAsDataURL() is used
+         
         setAvatarUpload({ file, preview: reader.result as string });
       };
       reader.readAsDataURL(file);
@@ -95,6 +96,7 @@ export function useAvatarSettings(): UseAvatarSettingsReturn {
       const reader = new FileReader();
       reader.onloadend = () => {
         // type assertion: FileReader.result is string when readAsDataURL() is used
+         
         setBannerUpload({ file, preview: reader.result as string });
       };
       reader.readAsDataURL(file);

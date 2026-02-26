@@ -158,6 +158,9 @@ export interface AnimatedViewProps {
   onAnimationComplete?: () => void;
 }
 
+/**
+ *
+ */
 export function AnimatedView({
   children,
   entering = 'fadeIn',
@@ -207,9 +210,11 @@ export function AnimatedView({
       const scale = interpolate(
         progress,
         [0, 1],
+         
         [current.scale as number, next.scale as number],
         Extrapolation.CLAMP
       );
+       
       (result.transform as unknown[]).push({ scale });
     }
 
@@ -217,9 +222,11 @@ export function AnimatedView({
       const translateX = interpolate(
         progress,
         [0, 1],
+         
         [current.translateX as number, next.translateX as number],
         Extrapolation.CLAMP
       );
+       
       (result.transform as unknown[]).push({ translateX });
     }
 
@@ -227,9 +234,11 @@ export function AnimatedView({
       const translateY = interpolate(
         progress,
         [0, 1],
+         
         [current.translateY as number, next.translateY as number],
         Extrapolation.CLAMP
       );
+       
       (result.transform as unknown[]).push({ translateY });
     }
 
@@ -237,6 +246,7 @@ export function AnimatedView({
       result.opacity = interpolate(
         progress,
         [0, 1],
+         
         [current.opacity as number, next.opacity as number],
         Extrapolation.CLAMP
       );
@@ -275,6 +285,9 @@ export interface AnimatedTextProps {
   characterAnimation?: boolean;
 }
 
+/**
+ *
+ */
 export function AnimatedText({
   children,
   style,
@@ -324,6 +337,9 @@ export interface AnimatedButtonProps {
   disabled?: boolean;
 }
 
+/**
+ *
+ */
 export function AnimatedButton({
   children,
   onPress,
@@ -416,6 +432,9 @@ export interface AnimatedListProps<T> {
   itemStyle?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function AnimatedList<T>({
   data,
   renderItem,
@@ -455,6 +474,9 @@ export interface AnimatedImageProps {
   loadingEffect?: 'fade' | 'blur' | 'shimmer';
 }
 
+/**
+ *
+ */
 export function AnimatedImage({
   source,
   style,
@@ -509,6 +531,9 @@ export interface AnimatedCounterProps {
   decimals?: number;
 }
 
+/**
+ *
+ */
 export function AnimatedCounter({
   value,
   duration = 1000,
@@ -559,6 +584,9 @@ export interface AnimatedProgressProps {
   animated?: boolean;
 }
 
+/**
+ *
+ */
 export function AnimatedProgress({
   progress,
   width = 200,

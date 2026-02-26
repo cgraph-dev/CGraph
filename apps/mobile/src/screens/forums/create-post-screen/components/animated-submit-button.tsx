@@ -13,6 +13,9 @@ import { SubmitButtonProps } from '../types';
 import { styles } from '../styles';
 import { SCREEN_WIDTH } from '../constants';
 
+/**
+ *
+ */
 export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonProps) {
   const scaleAnim = useSharedValue(1);
   const glowAnim = useSharedValue(0);

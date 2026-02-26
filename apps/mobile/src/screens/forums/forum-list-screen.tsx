@@ -202,6 +202,9 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
+/**
+ *
+ */
 export default function ForumListScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const [forums, setForums] = useState<Forum[]>([]);

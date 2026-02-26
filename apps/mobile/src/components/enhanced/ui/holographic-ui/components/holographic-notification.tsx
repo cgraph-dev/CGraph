@@ -49,6 +49,9 @@ const TYPE_THEMES: Record<NotificationType, HolographicConfig['colorTheme']> = {
   error: 'purple', // Could add 'red' theme if needed
 };
 
+/**
+ *
+ */
 export function HolographicNotification({
   visible,
   title,

@@ -12,6 +12,9 @@ interface CategoryTabsProps {
   onSelect: (categoryId: CategoryId) => void;
 }
 
+/**
+ *
+ */
 export function CategoryTabs({ selectedCategory, onSelect }: CategoryTabsProps) {
   return (
     <ScrollView
@@ -28,6 +31,7 @@ export function CategoryTabs({ selectedCategory, onSelect }: CategoryTabsProps) 
           activeOpacity={0.8}
         >
           <Ionicons
+             
             name={category.icon as React.ComponentProps<typeof Ionicons>['name']}
             size={20}
             color={selectedCategory === category.id ? '#fff' : 'rgba(255,255,255,0.6)'}

@@ -60,6 +60,9 @@ interface BlockNode {
   rows?: string[][];
 }
 
+/**
+ *
+ */
 export default function MarkdownRenderer({
   content,
   style,

@@ -198,6 +198,7 @@ export async function signInWithApple(): Promise<OAuthResult> {
     // Verify with our backend
     return verifyWithBackend('apple', credential.authorizationCode || '', credential.identityToken);
   } catch (error: unknown) {
+     
     if ((error as { code?: string })?.code === 'ERR_CANCELED') {
       throw new Error('Sign in was cancelled');
     }

@@ -56,6 +56,9 @@ const actionIcons: Record<string, string> = {
   settings_updated: 'settings-outline',
 };
 
+/**
+ *
+ */
 export default function GroupModerationScreen({ route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
@@ -71,11 +74,17 @@ export default function GroupModerationScreen({ route }: Props) {
       const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       setBans(
         data.map((b: Record<string, unknown>) => ({
+           
           id: (b.id ?? b.user_id ?? '') as string,
+           
           userId: (b.user_id ?? b.userId ?? '') as string,
+           
           username: (b.username ?? (b.user as Record<string, unknown>)?.username ?? 'unknown') as string,
+           
           reason: (b.reason ?? null) as string | null,
+           
           bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
+           
           expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
         }))
       );
@@ -93,11 +102,17 @@ export default function GroupModerationScreen({ route }: Props) {
       const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       setAuditLog(
         data.map((e: Record<string, unknown>) => ({
+           
           id: (e.id ?? '') as string,
+           
           action: (e.action ?? e.action_type ?? '') as string,
+           
           actorUsername: (e.actor_username ?? e.actorUsername ?? (e.actor as Record<string, unknown>)?.username ?? 'unknown') as string,
+           
           targetUsername: (e.target_username ?? e.targetUsername ?? (e.target as Record<string, unknown>)?.username ?? null) as string | null,
+           
           details: (e.details ?? e.reason ?? null) as string | null,
+           
           createdAt: (e.created_at ?? e.createdAt ?? e.inserted_at ?? '') as string,
         }))
       );
@@ -167,6 +182,7 @@ export default function GroupModerationScreen({ route }: Props) {
       <View style={[styles.item, { backgroundColor: colors.surface }]}>
         <View style={[styles.avatar, { backgroundColor: colors.textTertiary + '20' }]}>
           <Ionicons
+             
             name={(actionIcons[item.action] || 'document-text-outline') as keyof typeof Ionicons.glyphMap}
             size={18}
             color={colors.textSecondary}

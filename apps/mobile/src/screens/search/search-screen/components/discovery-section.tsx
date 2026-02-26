@@ -39,6 +39,9 @@ interface RecentSearchesSectionProps {
   colors: ThemeColors;
 }
 
+/**
+ *
+ */
 export function RecentSearchesSection({
   recentSearches,
   onSearchSelect,
@@ -103,6 +106,9 @@ interface TrendingSectionProps {
   colors: ThemeColors;
 }
 
+/**
+ *
+ */
 export function TrendingSection({ onTopicSelect, isDark, colors }: TrendingSectionProps) {
   return (
     <View style={styles.trendingSection}>
@@ -151,32 +157,43 @@ const QUICK_ACTIONS = [
     icon: 'person-add' as const,
     label: 'Find Friends',
     color: '#10b981',
+     
     gradient: ['#10b981', '#059669'] as [string, string],
+     
     category: 'users' as SearchCategory,
   },
   {
     icon: 'people' as const,
     label: 'Join Groups',
     color: '#f59e0b',
+     
     gradient: ['#f59e0b', '#d97706'] as [string, string],
+     
     category: 'groups' as SearchCategory,
   },
   {
     icon: 'newspaper' as const,
     label: 'Explore Forums',
     color: '#ec4899',
+     
     gradient: ['#ec4899', '#db2777'] as [string, string],
+     
     category: 'forums' as SearchCategory,
   },
   {
     icon: 'sparkles' as const,
     label: 'Discover',
     color: '#8b5cf6',
+     
     gradient: ['#8b5cf6', '#7c3aed'] as [string, string],
+     
     category: 'all' as SearchCategory,
   },
 ];
 
+/**
+ *
+ */
 export function QuickActionsSection({
   onCategorySelect,
   onFocusInput,
@@ -217,6 +234,9 @@ interface SearchTipsProps {
   colors: ThemeColors;
 }
 
+/**
+ *
+ */
 export function SearchTips({ colors }: SearchTipsProps) {
   return (
     <GlassCard variant="frosted" intensity="subtle" style={styles.tipsCard}>
@@ -250,6 +270,9 @@ interface DiscoverySectionProps {
   isDark: boolean;
 }
 
+/**
+ *
+ */
 export function DiscoverySection({
   recentSearches,
   onSearchSelect,

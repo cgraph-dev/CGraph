@@ -4,6 +4,7 @@
  * Re-exports all public API from secure-storage submodules.
  *
  * @module lib/crypto/secure-storage
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 

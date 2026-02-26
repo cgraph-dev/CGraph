@@ -157,6 +157,7 @@ export default function ReferralDashboard() {
         <div className="space-y-6 lg:col-span-2">
           <ReferralLinkCard
             referralCode={
+               
               referralCode as ReferralLinkCardProps['referralCode'] /* safe downcast – structural boundary */
             }
             isLoading={isLoading}
@@ -175,6 +176,7 @@ export default function ReferralDashboard() {
 
           <RecentReferrals
             referrals={
+               
               recentReferrals as RecentReferralsProps['referrals'] /* safe downcast – structural boundary */
             }
           />
@@ -184,6 +186,7 @@ export default function ReferralDashboard() {
         <div className="space-y-6">
           <ReferralLeaderboard
             leaderboard={
+               
               leaderboard as LeaderboardProps['leaderboard'] /* safe downcast – structural boundary */
             }
             period={leaderboardPeriod}

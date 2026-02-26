@@ -18,8 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import AnimatedAvatar from '../../../../components/ui/animated-avatar';
 import { safeFormatDistanceToNow } from '../../../../lib/dateUtils';
-import type { Notification } from '../types';
-import { typeIcons, typeGradients } from '../types';
+import type { Notification, typeGradients, typeIcons } from '../types';
 import { useSwipeableNotification } from '../hooks';
 
 export interface SwipeableNotificationItemProps {
@@ -36,6 +35,9 @@ export interface SwipeableNotificationItemProps {
   onDelete: () => void;
 }
 
+/**
+ *
+ */
 export function SwipeableNotificationItem({
   item,
   index,

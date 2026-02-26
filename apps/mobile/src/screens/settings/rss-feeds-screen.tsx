@@ -163,6 +163,9 @@ function FeedItem({ feed, onCopy, onShare, onOpen }: FeedItemProps) {
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function RSSFeedsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RouteParams, 'RSSFeeds'>>();

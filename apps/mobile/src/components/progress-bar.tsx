@@ -21,6 +21,9 @@ type ProgressBarProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ *
+ */
 export default function ProgressBar({
   value,
   size = 'md',

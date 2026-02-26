@@ -207,6 +207,7 @@ export default function ElectricBorder({
         );
         const dx = pt.x + xn * cfg.disp;
         const dy = pt.y + yn * cfg.disp;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         i === 0 ? ctx.moveTo(dx, dy) : ctx.lineTo(dx, dy);
       }
       ctx.closePath();

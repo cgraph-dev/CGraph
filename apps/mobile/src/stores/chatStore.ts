@@ -84,29 +84,49 @@ export interface Conversation {
 const MAX_MESSAGES = 500;
 
 function normalizeMessage(raw: Record<string, unknown>): Message {
+   
   const sender = (raw.sender || {}) as Record<string, unknown>;
   return {
+     
     id: raw.id as string,
+     
     conversationId: (raw.conversation_id || raw.conversationId) as string,
+     
     senderId: (raw.sender_id || raw.senderId || sender.id) as string,
+     
     content: (raw.content || '') as string,
+     
     messageType: (raw.message_type || raw.messageType || 'text') as Message['messageType'],
+     
     replyToId: (raw.reply_to_id || raw.replyToId || null) as string | null,
+     
     replyTo: raw.reply_to ? normalizeMessage(raw.reply_to as Record<string, unknown>) : null,
+     
     isPinned: (raw.is_pinned ?? raw.isPinned ?? false) as boolean,
+     
     isEdited: (raw.is_edited ?? raw.isEdited ?? false) as boolean,
+     
     isEncrypted: (raw.is_encrypted ?? raw.isEncrypted ?? false) as boolean,
+     
     encryptedContent: (raw.encrypted_content || raw.encryptedContent || null) as string | null,
+     
     deletedAt: (raw.deleted_at || raw.deletedAt || null) as string | null,
+     
     metadata: (raw.metadata || {}) as Record<string, unknown>,
     reactions: normalizeReactions(raw.reactions),
     sender: {
+       
       id: (sender.id || '') as string,
+       
       username: (sender.username || '') as string,
+       
       displayName: (sender.display_name || sender.displayName || null) as string | null,
+       
       avatarUrl: (sender.avatar_url || sender.avatarUrl || null) as string | null,
     },
+     
     createdAt: (raw.created_at || raw.createdAt || raw.inserted_at || '') as string,
+     
     updatedAt: (raw.updated_at || raw.updatedAt || '') as string,
   };
 }
@@ -114,11 +134,16 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
 function normalizeReactions(raw: unknown): Reaction[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((r: Record<string, unknown>) => ({
+     
     id: (r.id || `${r.emoji}-${r.user_id || (r.user as Record<string, unknown>)?.id}`) as string,
+     
     emoji: r.emoji as string,
+     
     userId: (r.user_id || r.userId || (r.user as Record<string, unknown>)?.id || '') as string,
     user: {
+       
       id: ((r.user as Record<string, unknown>)?.id || r.user_id || '') as string,
+       
       username: ((r.user as Record<string, unknown>)?.username || '') as string,
     },
   }));
@@ -127,18 +152,28 @@ function normalizeReactions(raw: unknown): Reaction[] {
 function normalizeConversation(raw: Record<string, unknown>): Conversation {
   const participants = Array.isArray(raw.participants)
     ? raw.participants.map((p: Record<string, unknown>) => {
+         
         const user = (p.user || {}) as Record<string, unknown>;
         return {
+           
           id: (p.id || '') as string,
+           
           userId: (p.user_id || p.userId || user.id || '') as string,
           user: {
+             
             id: (user.id || '') as string,
+             
             username: (user.username || '') as string,
+             
             displayName: (user.display_name || user.displayName || null) as string | null,
+             
             avatarUrl: (user.avatar_url || user.avatarUrl || null) as string | null,
+             
             status: (user.status || 'offline') as string,
           },
+           
           nickname: (p.nickname || null) as string | null,
+           
           joinedAt: (p.joined_at || p.joinedAt || '') as string,
         };
       })
@@ -146,16 +181,26 @@ function normalizeConversation(raw: Record<string, unknown>): Conversation {
 
   const lastMsg = raw.last_message || raw.lastMessage;
   return {
+     
     id: raw.id as string,
+     
     type: (raw.type || 'direct') as 'direct' | 'group',
+     
     name: (raw.name || null) as string | null,
+     
     avatarUrl: (raw.avatar_url || raw.avatarUrl || null) as string | null,
     participants,
+     
     lastMessage: lastMsg ? normalizeMessage(lastMsg as Record<string, unknown>) : null,
+     
     unreadCount: (raw.unread_count ?? raw.unreadCount ?? 0) as number,
+     
     isPinned: (raw.is_pinned ?? raw.isPinned ?? false) as boolean,
+     
     isMuted: (raw.is_muted ?? raw.isMuted ?? false) as boolean,
+     
     createdAt: (raw.created_at || raw.createdAt || '') as string,
+     
     updatedAt: (raw.updated_at || raw.updatedAt || '') as string,
   };
 }
@@ -299,6 +344,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
       const rawMessage = response.data?.message || response.data?.data || response.data;
       if (rawMessage) {
+         
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         get().addMessage(message);
       }
@@ -315,6 +361,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       );
       const rawMessage = response.data?.message || response.data?.data || response.data;
       if (rawMessage) {
+         
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         get().updateMessage(message);
       }
@@ -370,6 +417,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       participant_ids: userIds,
     });
     const raw = response.data?.conversation || response.data?.data || response.data;
+     
     const conversation = normalizeConversation(raw as Record<string, unknown>);
     set((state) => ({
       conversations: [conversation, ...state.conversations],
@@ -528,11 +576,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     // Listen for real-time events
     const unsubMessage = socketManager.onChannelMessage(topic, (event, payload) => {
+       
       const data = payload as Record<string, unknown>;
 
       switch (event) {
         case 'new_message': {
           const msg = normalizeMessage(
+             
             data.message ? (data.message as Record<string, unknown>) : data
           );
           useChatStore.getState().addMessage(msg);
@@ -540,26 +590,34 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }
         case 'message_updated': {
           const msg = normalizeMessage(
+             
             data.message ? (data.message as Record<string, unknown>) : data
           );
           useChatStore.getState().updateMessage(msg);
           break;
         }
         case 'message_deleted': {
+           
           const msgId = (data.message_id || data.id) as string;
           if (msgId) useChatStore.getState().removeMessage(msgId, conversationId);
           break;
         }
         case 'typing': {
+           
           const userId = (data.user_id || data.userId) as string;
+           
           const isTyping = (data.typing ?? data.is_typing ?? false) as boolean;
           if (userId) useChatStore.getState().setTypingUser(conversationId, userId, isTyping);
           break;
         }
         case 'reaction_added': {
+           
           const msgId = (data.message_id || data.messageId) as string;
+           
           const emoji = data.emoji as string;
+           
           const userId = (data.user_id || data.userId) as string;
+           
           const username = (data.username || '') as string;
           if (msgId && emoji && userId) {
             useChatStore.getState().addReactionToMessage(msgId, emoji, userId, username);
@@ -567,8 +625,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
           break;
         }
         case 'reaction_removed': {
+           
           const msgId = (data.message_id || data.messageId) as string;
+           
           const emoji = data.emoji as string;
+           
           const userId = (data.user_id || data.userId) as string;
           if (msgId && emoji && userId) {
             useChatStore.getState().removeReactionFromMessage(msgId, emoji, userId);

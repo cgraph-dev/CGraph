@@ -304,6 +304,7 @@ describe('AuthStore', () => {
   describe('logout', () => {
     it('clears all auth state', async () => {
       useAuthStore.setState({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user: { id: 'x' } as any,
         token: 'tok',
         refreshToken: 'ref',
@@ -362,6 +363,7 @@ describe('AuthStore', () => {
       useAuthStore.setState({
         refreshToken: 'old',
         isAuthenticated: true,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user: { id: 'x' } as any,
       });
       mockedApi.post.mockRejectedValueOnce(new Error('expired'));
@@ -420,6 +422,7 @@ describe('AuthStore', () => {
 
   describe('updateUser', () => {
     it('merges partial user data', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       useAuthStore.setState({ user: { id: 'u1', username: 'old' } as any });
       useAuthStore.getState().updateUser({ username: 'new' });
       expect(useAuthStore.getState().user?.username).toBe('new');

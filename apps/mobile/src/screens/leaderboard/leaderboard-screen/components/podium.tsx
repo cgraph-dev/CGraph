@@ -5,8 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { LeaderboardEntry, CategoryConfig } from '../types';
-import { RANK_CONFIGS, formatValue } from '../types';
+import type { CategoryConfig, LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -16,6 +15,9 @@ export interface PodiumProps {
   onUserPress: (userId: string) => void;
 }
 
+/**
+ *
+ */
 export function Podium({ entries, category, onUserPress }: PodiumProps) {
   const top3 = entries.slice(0, 3);
 

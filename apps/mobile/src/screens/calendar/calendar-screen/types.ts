@@ -135,6 +135,7 @@ export function transformApiEvents(data: unknown[]): CalendarEvent[] {
   if (!Array.isArray(data)) return [];
 
   return data.map((item: unknown) => {
+     
     const event = item as Record<string, unknown>;
     return {
       id: String(event.id || Math.random()),
@@ -149,6 +150,7 @@ export function transformApiEvents(data: unknown[]): CalendarEvent[] {
           ? String(event.end_date || event.endDate || event.ends_at)
           : undefined,
       allDay: Boolean(event.all_day ?? event.allDay ?? false),
+       
       type: (event.type || event.event_type || 'event') as EventType,
       categoryId:
         event.category_id || event.categoryId

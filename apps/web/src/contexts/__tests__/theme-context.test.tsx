@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
@@ -20,6 +21,7 @@ beforeEach(() => {
     writable: true,
     value: vi.fn(() => ({
       matches: matchMediaMatches,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       addEventListener: vi.fn((_: string, handler: any) => {
         _changeHandler = handler;
       }),

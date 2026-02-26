@@ -138,6 +138,9 @@ function FloatingParticle({ delay, startX, size, duration, color }: ParticleProp
   );
 }
 
+/**
+ *
+ */
 export default function LoadingScreen() {
   const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';

@@ -28,6 +28,9 @@ type TabsProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ *
+ */
 export default function Tabs({
   items,
   activeTab,

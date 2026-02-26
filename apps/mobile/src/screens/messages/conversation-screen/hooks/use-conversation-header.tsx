@@ -102,6 +102,7 @@ export function useConversationHeader({
             style={styles.headerTitleContainer}
             onPress={() => {
               if (otherParticipantId) {
+                 
                 (navigation as NavigationProp<ParamListBase>).navigate('FriendsTab', {
                   screen: 'UserProfile',
                   params: { userId: otherParticipantId },

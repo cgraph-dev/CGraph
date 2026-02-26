@@ -63,6 +63,7 @@ export function CreateListingSection() {
             <label className="mb-2 block text-sm font-medium text-gray-400">Item Type</label>
             <select
               value={formData.itemType}
+               
               onChange={(e) => setFormData({ ...formData, itemType: e.target.value as ItemType })} // type assertion: select value constrained to ItemType
               className="w-full rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"
               required
@@ -107,6 +108,7 @@ export function CreateListingSection() {
               <select
                 value={formData.currency}
                 onChange={(e) =>
+                   
                   setFormData({ ...formData, currency: e.target.value as 'coins' | 'gems' })
                 }
                 className="rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"

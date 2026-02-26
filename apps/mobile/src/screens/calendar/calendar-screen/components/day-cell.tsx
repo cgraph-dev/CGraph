@@ -7,8 +7,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { AnimationColors } from '@/lib/animations/animation-engine';
-import type { CalendarEvent } from '../types';
-import { EVENT_TYPE_CONFIG } from '../types';
+import type { CalendarEvent, EVENT_TYPE_CONFIG } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = (SCREEN_WIDTH - 32) / 7;
@@ -21,6 +20,9 @@ interface DayCellProps {
   onPress: (date: Date) => void;
 }
 
+/**
+ *
+ */
 export function DayCell({ date, isToday, isSelected, events, onPress }: DayCellProps) {
   if (!date) {
     return <View style={styles.dayCell} />;

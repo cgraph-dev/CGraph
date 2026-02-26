@@ -21,6 +21,9 @@ interface AttachmentListProps {
   onDownload?: (attachment: PostAttachment) => void;
 }
 
+/**
+ *
+ */
 export default function AttachmentList({
   attachments,
   onDownload,

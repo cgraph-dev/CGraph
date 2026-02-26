@@ -26,6 +26,7 @@ export function ReferralLeaderboard({ leaderboard, period, onPeriodChange }: Lea
           </h3>
           <select
             value={period}
+             
             onChange={(e) => onPeriodChange(e.target.value as typeof period)}
             className="bg-muted rounded border-0 px-2 py-1 text-xs"
           >

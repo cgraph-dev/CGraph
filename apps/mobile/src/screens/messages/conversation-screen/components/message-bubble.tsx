@@ -340,6 +340,7 @@ function MessageContent({
               reaction={reaction}
               isOwnMessage={isOwnMessage}
               onPress={() => onReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
+               
               colors={colors as Parameters<typeof AnimatedReactionBubble>[0]['colors']}
             />
           ))}
@@ -357,6 +358,7 @@ function ImageGridContent({
   item: Message;
   onImagePress: (url: string, gallery?: string[], index?: number) => void;
 }) {
+   
   const images = item.metadata!.grid_images as string[];
   const count = images.length;
 
@@ -450,6 +452,7 @@ function FileContent({
         ]}
       >
         <Ionicons
+           
           name={getFileIcon(item.metadata?.filename) as 'document-outline'}
           size={20}
           color={isOwnMessage ? '#fff' : colors.primary}

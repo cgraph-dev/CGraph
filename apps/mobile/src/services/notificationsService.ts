@@ -40,6 +40,7 @@ export interface Notification {
   body: string;
   imageUrl: string | null;
   actionUrl: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
   read: boolean;
   createdAt: string;
@@ -305,14 +306,17 @@ function transformNotificationGroup(data: ApiData): NotificationGroup {
 }
 
 function transformNotificationStats(data: ApiData): NotificationStats {
+   
   const byType: Record<NotificationType, number> = {} as Record<NotificationType, number>;
 
   if (data.by_type) {
     Object.entries(data.by_type).forEach(([key, value]) => {
+       
       byType[key as NotificationType] = value as number;
     });
   } else if (data.byType) {
     Object.entries(data.byType).forEach(([key, value]) => {
+       
       byType[key as NotificationType] = value as number;
     });
   }

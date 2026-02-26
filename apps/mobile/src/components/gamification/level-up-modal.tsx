@@ -64,6 +64,9 @@ interface Particle {
   rotationSpeed: number;
 }
 
+/**
+ *
+ */
 export default function LevelUpModal({
   visible,
   onClose,

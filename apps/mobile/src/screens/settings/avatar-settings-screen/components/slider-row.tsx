@@ -10,6 +10,9 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SliderRowProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRowProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 

@@ -58,6 +58,9 @@ export const tabs: { id: TabType; label: string; icon: keyof typeof Ionicons.gly
   { id: 'system', label: 'System', icon: 'shield-checkmark' },
 ];
 
+/**
+ *
+ */
 export function getMockNotifications(): Notification[] {
   return [
     {

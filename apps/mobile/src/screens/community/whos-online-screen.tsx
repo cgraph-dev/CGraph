@@ -15,10 +15,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAdaptiveInterval } from '../../hooks/useAdaptiveInterval';
-import { ParamListBase } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import api from '../../lib/api';
 import {
@@ -99,6 +98,9 @@ function generateFallbackUsers(): OnlineUser[] {
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function WhosOnlineScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -139,15 +141,24 @@ export default function WhosOnlineScreen() {
   // Transform API response
   const transformApiUsers = (data: unknown[]): OnlineUser[] => {
     return data.map((u) => {
+       
       const user = u as Record<string, unknown>;
       return {
+         
         id: user.id as string,
+         
         username: (user.username as string) || 'Unknown',
+         
         displayName: (user.display_name as string) || null,
+         
         avatarUrl: (user.avatar_url as string) || null,
+         
         userGroup: (user.user_group as string) || 'Member',
+         
         userGroupColor: (user.user_group_color as string) || null,
+         
         lastActivity: (user.last_activity as string) || new Date().toISOString(),
+         
         currentActivity: (user.current_activity as string) || null,
       };
     });
@@ -181,6 +192,7 @@ export default function WhosOnlineScreen() {
           (a: Record<string, unknown>) => ({
             activity: a.activity || 'Unknown',
             count: a.count || 0,
+             
             icon: getActivityIcon(a.activity as string),
           })
         );

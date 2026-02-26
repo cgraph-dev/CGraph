@@ -31,6 +31,7 @@ export function createToggle<T extends BaseStoreState>(
   return () =>
     set(
       (state: T) =>
+         
         ({
           [field]: !state[field],
           ...(markDirty ? { isDirty: true } : {}),

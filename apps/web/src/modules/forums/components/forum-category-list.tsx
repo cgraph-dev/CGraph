@@ -84,6 +84,7 @@ interface _ForumPreview {
   isNew?: boolean;
   isHot?: boolean;
 }
+ 
 void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
 /**

@@ -45,6 +45,9 @@ const sections: LegalSection[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function CookiePolicyScreen() {
   return (
     <LegalScreen

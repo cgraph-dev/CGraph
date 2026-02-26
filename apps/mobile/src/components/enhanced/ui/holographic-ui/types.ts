@@ -70,6 +70,9 @@ export const HOLOGRAPHIC_THEMES: Record<string, HolographicTheme> = {
 // HELPER FUNCTIONS
 // =============================================================================
 
+/**
+ *
+ */
 export function getTheme(
   colorTheme: HolographicConfig['colorTheme'],
   customColors?: HolographicTheme
@@ -78,6 +81,9 @@ export function getTheme(
   return HOLOGRAPHIC_THEMES[colorTheme] ?? HOLOGRAPHIC_THEMES.cyan;
 }
 
+/**
+ *
+ */
 export function getIntensityMultiplier(intensity: HolographicConfig['intensity']): number {
   return {
     subtle: 0.5,

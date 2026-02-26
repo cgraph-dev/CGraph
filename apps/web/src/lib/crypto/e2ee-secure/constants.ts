@@ -5,6 +5,7 @@
  * Kept separate from legacy keys to prevent conflicts.
  *
  * @module lib/crypto/e2ee-secure/constants
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 

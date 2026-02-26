@@ -89,6 +89,9 @@ export type LeaderboardItem = LeaderboardForum | TopContributor;
 // MAIN COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function ForumLeaderboardScreen({ navigation, route }: Props) {
   const { forumId } = route.params || {};
   const { colors } = useThemeStore();
@@ -172,6 +175,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
 
   const handleContributorPress = (contributor: TopContributor) => {
     // Navigate to user profile
+    // eslint-disable-next-line no-console
     if (__DEV__) console.log('Navigate to user:', contributor.user?.username);
   };
 
@@ -214,7 +218,9 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
             type={activeTab}
             onPress={() =>
               activeTab === 'forums'
+                 
                 ? handleForumPress(item as LeaderboardForum)
+                 
                 : handleContributorPress(item as TopContributor)
             }
             colors={colors}
@@ -232,7 +238,9 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
                 type={activeTab}
                 onItemPress={(item) =>
                   activeTab === 'forums'
+                     
                     ? handleForumPress(item as LeaderboardForum)
+                     
                     : handleContributorPress(item as TopContributor)
                 }
               />

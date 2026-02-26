@@ -52,6 +52,9 @@ const CATEGORIES: CustomizeCategory[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function CustomizeScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();
@@ -79,6 +82,7 @@ export default function CustomizeScreen() {
           <TouchableOpacity
             key={cat.id}
             style={[styles.card, { backgroundColor: colors.surface }]}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onPress={() => navigation.navigate(cat.screen as any)}
             activeOpacity={0.7}
           >

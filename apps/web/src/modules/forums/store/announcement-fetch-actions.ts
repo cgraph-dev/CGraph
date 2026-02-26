@@ -34,14 +34,18 @@ export function createFetchActions(set: Set) {
         });
 
         const data = response.data;
+         
         const announcements = (ensureArray(data, 'announcements') as Record<string, unknown>[]).map( // safe downcast – API response field
           mapAnnouncementFromApi
         );
 
         set({
           announcements,
+           
           page: (data.page as number) || 1, // safe downcast – API pagination field
+           
           totalPages: (data.total_pages as number) || 1, // safe downcast – API pagination field
+           
           totalCount: (data.total_count as number) || announcements.length, // safe downcast – API pagination field
           isLoading: false,
         });
@@ -55,6 +59,7 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get('/api/v1/announcements/global');
         const announcements = (
+           
           ensureArray(response.data, 'announcements') as Record<string, unknown>[] // safe downcast – API response field
         )
           .map(mapAnnouncementFromApi);
@@ -79,6 +84,7 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get(`/api/v1/forums/${forumId}/announcements`);
         const announcements = (
+           
           ensureArray(response.data, 'announcements') as Record<string, unknown>[] // safe downcast – API response field
         )
           .map(mapAnnouncementFromApi);

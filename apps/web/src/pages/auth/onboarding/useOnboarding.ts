@@ -36,6 +36,7 @@ export function useOnboarding() {
       setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
+         
         setAvatarPreview(reader.result as string); // type assertion: FileReader result is always string when readAsDataURL
       };
       reader.readAsDataURL(file);
@@ -59,6 +60,7 @@ export function useOnboarding() {
         }
 
         // Update profile via API
+         
         await api.patch('/api/v1/users/profile', {
           display_name: profileData.displayName,
           bio: profileData.bio,

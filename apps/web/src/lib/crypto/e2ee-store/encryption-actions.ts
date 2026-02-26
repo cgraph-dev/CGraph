@@ -157,6 +157,7 @@ export const createUploadMorePrekeys =
       const publicKey = await crypto.subtle.exportKey('raw', keyPair.publicKey);
 
       prekeys.push({
+         
         key_id: e2ee.arrayBufferToHex(e2ee.randomBytes(8).buffer as ArrayBuffer), // safe downcast – structural boundary
         public_key: e2ee.arrayBufferToBase64(publicKey),
       });

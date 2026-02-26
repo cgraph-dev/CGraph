@@ -68,6 +68,9 @@ export interface AnimatedGradientState {
 // Color Utilities
 // ============================================================================
 
+/**
+ *
+ */
 export function interpolateColor(color1: string, color2: string, t: number): string {
   try {
     return chroma.mix(color1, color2, t).hex();
@@ -76,6 +79,9 @@ export function interpolateColor(color1: string, color2: string, t: number): str
   }
 }
 
+/**
+ *
+ */
 export function lightenColor(color: string, amount: number): string {
   try {
     return chroma(color).brighten(amount).hex();
@@ -84,6 +90,9 @@ export function lightenColor(color: string, amount: number): string {
   }
 }
 
+/**
+ *
+ */
 export function darkenColor(color: string, amount: number): string {
   try {
     return chroma(color).darken(amount).hex();
@@ -92,6 +101,9 @@ export function darkenColor(color: string, amount: number): string {
   }
 }
 
+/**
+ *
+ */
 export function saturateColor(color: string, amount: number): string {
   try {
     return chroma(color).saturate(amount).hex();
@@ -100,6 +112,9 @@ export function saturateColor(color: string, amount: number): string {
   }
 }
 
+/**
+ *
+ */
 export function setColorAlpha(color: string, alpha: number): string {
   try {
     return chroma(color).alpha(alpha).css();
@@ -108,6 +123,9 @@ export function setColorAlpha(color: string, alpha: number): string {
   }
 }
 
+/**
+ *
+ */
 export function generateColorScale(baseColor: string, steps: number = 9): string[] {
   try {
     const base = chroma(baseColor);
@@ -395,6 +413,9 @@ export const SHADOW_PRESETS: Record<ShadowPreset, ShadowConfig> = {
 // Gradient Generation
 // ============================================================================
 
+/**
+ *
+ */
 export function createLinearGradient(config: GradientConfig): {
   colors: string[];
   locations: number[];
@@ -422,6 +443,9 @@ export function createLinearGradient(config: GradientConfig): {
   };
 }
 
+/**
+ *
+ */
 export function createRadialGradient(config: GradientConfig): {
   colors: string[];
   locations: number[];
@@ -440,6 +464,9 @@ export function createRadialGradient(config: GradientConfig): {
 // Animated Gradient Utilities
 // ============================================================================
 
+/**
+ *
+ */
 export function interpolateGradientStops(
   stops1: GradientStop[],
   stops2: GradientStop[],
@@ -462,6 +489,9 @@ export function interpolateGradientStops(
   return result;
 }
 
+/**
+ *
+ */
 export function rotateGradientStops(stops: GradientStop[], offset: number): GradientStop[] {
   return stops
     .map((stop) => ({
@@ -471,6 +501,9 @@ export function rotateGradientStops(stops: GradientStop[], offset: number): Grad
     .sort((a, b) => a.position - b.position);
 }
 
+/**
+ *
+ */
 export function calculateAnimatedAngle(baseAngle: number, time: number, duration: number): number {
   const progress = (time % duration) / duration;
   return baseAngle + progress * 360;
@@ -480,6 +513,9 @@ export function calculateAnimatedAngle(baseAngle: number, time: number, duration
 // Glow Style Generation
 // ============================================================================
 
+/**
+ *
+ */
 export function createGlowStyle(config: GlowConfig): ViewStyle {
   const { color, intensity, spread, blur } = config;
 
@@ -492,6 +528,9 @@ export function createGlowStyle(config: GlowConfig): ViewStyle {
   };
 }
 
+/**
+ *
+ */
 export function createMultiLayerGlow(config: GlowConfig, layers: number = 3): ViewStyle[] {
   const styles: ViewStyle[] = [];
 
@@ -513,6 +552,9 @@ export function createMultiLayerGlow(config: GlowConfig, layers: number = 3): Vi
 // Shadow Style Generation
 // ============================================================================
 
+/**
+ *
+ */
 export function createShadowStyle(config: ShadowConfig): ViewStyle {
   const preset = config.preset ? SHADOW_PRESETS[config.preset] : {};
   const merged = { ...preset, ...config };
@@ -526,6 +568,9 @@ export function createShadowStyle(config: ShadowConfig): ViewStyle {
   };
 }
 
+/**
+ *
+ */
 export function getElevationShadow(elevation: number): ViewStyle {
   // Generate shadow based on Material Design elevation scale
   const shadowOpacity = Math.min(0.05 + elevation * 0.015, 0.3);
@@ -553,6 +598,9 @@ export interface BorderGradientConfig {
   animationDuration?: number;
 }
 
+/**
+ *
+ */
 export function createBorderGradientColors(
   config: BorderGradientConfig,
   time?: number
@@ -570,6 +618,7 @@ export function createBorderGradientColors(
   const radians = (angle * Math.PI) / 180;
 
   return {
+     
     colors: config.colors as [string, string, ...string[]],
     start: {
       x: 0.5 - Math.cos(radians) * 0.5,

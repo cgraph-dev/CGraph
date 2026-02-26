@@ -597,6 +597,7 @@ export class TripleRatchetEngine {
       Ns: s.Ns,
       Nr: s.Nr,
       skippedKeys: new Map(
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         (s.skippedKeys as [string, number[]][]).map(([k, v]) => [k, new Uint8Array(v)])
       ),
       maxSkip: s.maxSkip,

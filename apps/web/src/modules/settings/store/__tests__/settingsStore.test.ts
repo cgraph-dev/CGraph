@@ -433,6 +433,7 @@ describe('settingsStore (modules)', () => {
         notifications: { emailNotifications: false },
         appearance: { theme: 'dark' },
         locale: { language: 'es' },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { settings } = useSettingsStore.getState();
@@ -448,6 +449,7 @@ describe('settingsStore (modules)', () => {
 
       await useSettingsStore.getState().updateAllSettings({
         appearance: { theme: 'light' },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       expect(mockedApi.put).toHaveBeenCalledWith(
@@ -463,6 +465,7 @@ describe('settingsStore (modules)', () => {
         useSettingsStore.getState().updateAllSettings({
           appearance: { theme: 'dark' },
           locale: { language: 'pt' },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any)
       ).rejects.toThrow();
 
@@ -476,6 +479,7 @@ describe('settingsStore (modules)', () => {
 
       await useSettingsStore.getState().updateAllSettings({
         appearance: { theme: 'dark' },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       expect(useSettingsStore.getState().lastSyncedAt).toBeTypeOf('number');
@@ -676,6 +680,7 @@ describe('settingsStore (modules)', () => {
       mockedApi.put.mockRejectedValue(axiosError);
 
       await expect(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useSettingsStore.getState().updateAllSettings({ appearance: { theme: 'dark' } } as any)
       ).rejects.toThrow();
 

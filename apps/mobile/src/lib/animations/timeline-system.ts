@@ -66,26 +66,41 @@ export interface ChoreographyConfig {
 // Keyframe Builder
 // ============================================================================
 
+/**
+ *
+ */
 export class KeyframeBuilder {
   private keyframes: Keyframe[] = [];
   private currentDuration: number = 0;
 
+  /**
+   *
+   */
   static create(): KeyframeBuilder {
     return new KeyframeBuilder();
   }
 
+  /**
+   *
+   */
   to(value: number, duration: number = 300): KeyframeBuilder {
     this.keyframes.push({ value, duration });
     this.currentDuration += duration;
     return this;
   }
 
+  /**
+   *
+   */
   spring(value: number, preset: keyof typeof SPRING_PRESETS = 'default'): KeyframeBuilder {
     this.keyframes.push({ value, spring: preset });
     this.currentDuration += 500; // Approximate spring duration
     return this;
   }
 
+  /**
+   *
+   */
   eased(
     value: number,
     duration: number = 300,
@@ -96,6 +111,9 @@ export class KeyframeBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   hold(duration: number): KeyframeBuilder {
     if (this.keyframes.length > 0) {
       const lastKeyframe = this.keyframes[this.keyframes.length - 1];
@@ -107,6 +125,9 @@ export class KeyframeBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   build(): KeyframeAnimation {
     return {
       keyframes: [...this.keyframes],
@@ -119,10 +140,16 @@ export class KeyframeBuilder {
 // Timeline Builder
 // ============================================================================
 
+/**
+ *
+ */
 export class TimelineBuilder {
   private steps: TimelineStep[] = [];
   private stepIdCounter: number = 0;
 
+  /**
+   *
+   */
   static create(): TimelineBuilder {
     return new TimelineBuilder();
   }
@@ -131,6 +158,9 @@ export class TimelineBuilder {
     return `step_${this.stepIdCounter++}`;
   }
 
+  /**
+   *
+   */
   animate(
     target: SharedValue<number>,
     animation: KeyframeAnimation,
@@ -146,6 +176,9 @@ export class TimelineBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   delay(duration: number): TimelineBuilder {
     this.steps.push({
       id: this.generateStepId(),
@@ -155,6 +188,9 @@ export class TimelineBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   call(callback: () => void): TimelineBuilder {
     this.steps.push({
       id: this.generateStepId(),
@@ -164,6 +200,9 @@ export class TimelineBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   parallel(
     animations: Array<{ target: SharedValue<number>; animation: KeyframeAnimation }>
   ): TimelineBuilder {
@@ -179,6 +218,9 @@ export class TimelineBuilder {
     return this;
   }
 
+  /**
+   *
+   */
   build(): Timeline {
     return {
       steps: [...this.steps],
@@ -190,6 +232,9 @@ export class TimelineBuilder {
 // Timeline Runner
 // ============================================================================
 
+/**
+ *
+ */
 export function runKeyframeAnimation(
   target: SharedValue<number>,
   animation: KeyframeAnimation
@@ -215,10 +260,14 @@ export function runKeyframeAnimation(
   if (animations.length === 1 && animations[0]) {
     target.value = animations[0];
   } else if (animations.length > 1) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target.value = withSequence(...(animations as [any, any, ...any[]]));
   }
 }
 
+/**
+ *
+ */
 export async function runTimeline(timeline: Timeline): Promise<void> {
   const { steps } = timeline;
   let currentIndex = 0;
@@ -266,6 +315,9 @@ export async function runTimeline(timeline: Timeline): Promise<void> {
 // Choreography Utilities
 // ============================================================================
 
+/**
+ *
+ */
 export function createStaggeredAnimation(
   targets: SharedValue<number>[],
   animation: KeyframeAnimation,
@@ -331,11 +383,15 @@ export function createStaggeredAnimation(
     if (animations.length === 1 && animations[0]) {
       target.value = withDelay(delay, animations[0]);
     } else if (animations.length > 1) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       target.value = withDelay(delay, withSequence(...(animations as [any, any, ...any[]])));
     }
   });
 }
 
+/**
+ *
+ */
 export function createWaveAnimation(
   targets: SharedValue<number>[],
   fromValue: number,
@@ -370,6 +426,9 @@ export function createWaveAnimation(
   });
 }
 
+/**
+ *
+ */
 export function createPulseAnimation(
   target: SharedValue<number>,
   config: {
@@ -391,6 +450,9 @@ export function createPulseAnimation(
   );
 }
 
+/**
+ *
+ */
 export function createShakeAnimation(
   target: SharedValue<number>,
   config: {
@@ -414,9 +476,13 @@ export function createShakeAnimation(
 
   shakeAnimations.push(withTiming(0, { duration: shakeDuration }));
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target.value = withSequence(...(shakeAnimations as [any, any, ...any[]]));
 }
 
+/**
+ *
+ */
 export function createBounceAnimation(
   target: SharedValue<number>,
   config: {
@@ -440,13 +506,20 @@ export function createBounceAnimation(
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target.value = withSequence(...(bounceAnimations as [any, any, ...any[]]));
 }
 
+/**
+ *
+ */
 export function stopAnimation(target: SharedValue<number>): void {
   cancelAnimation(target);
 }
 
+/**
+ *
+ */
 export function stopAllAnimations(targets: SharedValue<number>[]): void {
   targets.forEach((target) => cancelAnimation(target));
 }

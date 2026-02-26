@@ -12,8 +12,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
-import { useAuthStore } from '@/stores';
-import { useSettingsStore } from '@/stores';
+import { useAuthStore, useSettingsStore } from '@/stores';
 import pushService, {
   registerForPushNotifications,
   shouldAttemptPushRegistration,
@@ -31,6 +30,9 @@ export interface UsePushNotificationsResult {
 // Module-level flag to track if we've already attempted registration in this session
 let hasAttemptedInSession = false;
 
+/**
+ *
+ */
 export function usePushNotifications(): UsePushNotificationsResult {
   const { isAuthenticated } = useAuthStore();
   const { settings } = useSettingsStore();
@@ -50,6 +52,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (!type || !id) return;
 
+       
       const nav = navigation as NavigationProp<ParamListBase>;
 
       switch (type) {
@@ -118,6 +121,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (result.success) {
         setIsRegistered(true);
+        // eslint-disable-next-line no-console
         if (__DEV__) console.log('[Push Hook] Registration successful');
       } else {
         setError(result.error || 'Registration failed');
@@ -147,12 +151,14 @@ export function usePushNotifications(): UsePushNotificationsResult {
     // Listener for notifications received while app is foregrounded
     notificationListener.current = pushService.addNotificationReceivedListener((notification) => {
       if (__DEV__)
-        console.log('[Push Hook] Notification received:', notification.request.content.title);
+        // eslint-disable-next-line no-console
+        {console.log('[Push Hook] Notification received:', notification.request.content.title);}
       // Could trigger a toast or badge update here
     });
 
     // Listener for user tapping on a notification
     responseListener.current = pushService.addNotificationResponseReceivedListener((response) => {
+      // eslint-disable-next-line no-console
       if (__DEV__) console.log('[Push Hook] Notification tapped');
       const data = parseNotificationData(response);
       handleNotificationNavigation(data);
@@ -161,6 +167,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
     // Check if app was opened from a notification
     pushService.getLastNotificationResponse().then((response) => {
       if (response) {
+        // eslint-disable-next-line no-console
         if (__DEV__) console.log('[Push Hook] App opened from notification');
         const data = parseNotificationData(response);
         handleNotificationNavigation(data);

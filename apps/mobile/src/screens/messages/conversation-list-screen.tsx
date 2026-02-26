@@ -23,9 +23,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import type { ThemeColors } from '@/stores';
-import { useAuthStore } from '@/stores';
+import type { ThemeColors, useAuthStore, useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { safeFormatConversationTime } from '../../lib/dateUtils';
@@ -225,6 +223,9 @@ const AnimatedConversationItem = ({
   );
 };
 
+/**
+ *
+ */
 export default function ConversationListScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user } = useAuthStore();
@@ -320,13 +321,16 @@ export default function ConversationListScreen({ navigation }: Props) {
       const convos = response.data.data || [];
       setConversations(convos);
 
+       
       const participantIds = convos
         .map((conv: Conversation) => {
           const other = conv.participants?.find((p: ConversationParticipant) => {
             const pUserId =
+               
               p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
             return String(pUserId) !== String(user?.id);
           });
+           
           return other?.userId || other?.user_id || (other?.user as Record<string, unknown>)?.id;
         })
         .filter(Boolean) as string[];
@@ -352,6 +356,7 @@ export default function ConversationListScreen({ navigation }: Props) {
     const otherParticipant = currentUserId
       ? item.participants?.find((p: ConversationParticipant) => {
           const participantUserId =
+             
             p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
           return String(participantUserId) !== String(currentUserId);
         })
@@ -360,16 +365,21 @@ export default function ConversationListScreen({ navigation }: Props) {
     const displayName =
       item.name ||
       otherParticipant?.nickname ||
+       
       (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+       
       (otherParticipant?.user as Record<string, unknown>)?.display_name ||
       otherParticipant?.displayName ||
       otherParticipant?.display_name ||
+       
       (otherParticipant?.user as Record<string, unknown>)?.username ||
       otherParticipant?.username ||
       'Unknown';
 
     const avatarUrl =
+       
       (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
+       
       (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
       otherParticipant?.avatarUrl ||
       otherParticipant?.avatar_url;
@@ -377,9 +387,11 @@ export default function ConversationListScreen({ navigation }: Props) {
     const otherUserId =
       otherParticipant?.userId ||
       otherParticipant?.user_id ||
+       
       (otherParticipant?.user as Record<string, unknown>)?.id ||
       '';
     const isOnline = onlineUsers.has(String(otherUserId));
+     
     const isPremium = (otherParticipant?.user as Record<string, unknown>)?.is_premium || false;
 
     return (

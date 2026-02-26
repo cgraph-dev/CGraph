@@ -38,9 +38,11 @@ import {
 const chatEffectsInitialState = {
   activeMessageEffect: { effect: 'fade-in' as const, intensity: 'low' as const, duration: 400 },
   // safe downcast – structural boundary
+   
   activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle }, // type assertion: preset conforms to extended config type
   activeEmojiPack: 'default' as const,
   // safe downcast – structural boundary
+   
   activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & { // type assertion: preset conforms to extended config type
     style: TypingIndicator;
   },
@@ -48,12 +50,16 @@ const chatEffectsInitialState = {
   soundEffects: SOUND_EFFECT_LIBRARY,
   masterVolume: 0.7,
   soundsEnabled: true,
+   
   unlockedEffects: [] as UnlockedEffect[], // safe downcast – structural boundary
   reduceMotion: false,
   showEffectsInCompactMode: false,
   autoPlayEffects: true,
+   
   previewEffect: null as MessageEffect | null, // safe downcast – structural boundary
+   
   previewBubble: null as BubbleStyle | null, // safe downcast – structural boundary
+   
   lastSyncedAt: null as string | null, // safe downcast – structural boundary
   isSyncing: false,
   messageEffects: MESSAGE_EFFECTS_LIST,

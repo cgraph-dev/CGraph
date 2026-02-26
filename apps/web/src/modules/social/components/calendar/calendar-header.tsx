@@ -92,6 +92,7 @@ export function CalendarHeader({
 
           <div className="bg-muted flex items-center rounded-lg p-1">
             // type assertion: array literal matches ViewMode union type
+            { }
             {(['month', 'week', 'day'] as ViewMode[]).map((mode) => (
               <button
                 key={mode}

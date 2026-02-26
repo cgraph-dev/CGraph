@@ -14,6 +14,9 @@ interface SkeletonProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style }: SkeletonProps) {
   const { colors } = useThemeStore();
   const animatedValue = useSharedValue(0);
@@ -36,6 +39,7 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
     <Animated.View
       style={[
         {
+           
           width: width as unknown,
           height,
           borderRadius,
@@ -48,6 +52,9 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
   );
 }
 
+/**
+ *
+ */
 export function ForumCardSkeleton() {
   const { colors } = useThemeStore();
 
@@ -63,6 +70,9 @@ export function ForumCardSkeleton() {
   );
 }
 
+/**
+ *
+ */
 export function PostCardSkeleton() {
   const { colors } = useThemeStore();
 
@@ -87,6 +97,9 @@ export function PostCardSkeleton() {
   );
 }
 
+/**
+ *
+ */
 export function CommentSkeleton() {
   const { colors } = useThemeStore();
 
@@ -105,6 +118,9 @@ export function CommentSkeleton() {
   );
 }
 
+/**
+ *
+ */
 export function UserCardSkeleton() {
   const { colors } = useThemeStore();
 

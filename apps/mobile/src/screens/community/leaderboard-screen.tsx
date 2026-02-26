@@ -133,6 +133,9 @@ function RankChangeIndicator({ current, previous }: { current: number; previous?
   );
 }
 
+/**
+ *
+ */
 export default function LeaderboardScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
@@ -307,6 +310,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
               source={
                 getValidImageUrl(item.avatar_url)
                   ? { uri: getValidImageUrl(item.avatar_url)! }
+                   
                   : require('../../assets/default-avatar.png')
               }
               size={44}
@@ -397,6 +401,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
                   source={
                     getValidImageUrl(user.avatar_url)
                       ? { uri: getValidImageUrl(user.avatar_url)! }
+                       
                       : require('../../assets/default-avatar.png')
                   }
                   size={avatarSize}

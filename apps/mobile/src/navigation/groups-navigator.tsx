@@ -18,6 +18,9 @@ import GroupModerationScreen from '../screens/groups/group-moderation-screen';
 
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
+/**
+ *
+ */
 export default function GroupsNavigator() {
   const { colors } = useThemeStore();
   

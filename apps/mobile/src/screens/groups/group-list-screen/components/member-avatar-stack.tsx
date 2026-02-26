@@ -16,6 +16,9 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import type { MemberAvatarStackProps } from '../types';
 
+/**
+ *
+ */
 export function MemberAvatarStack({ memberCount, colors }: MemberAvatarStackProps) {
   const displayCount = Math.min(3, memberCount);
   const anim0 = useSharedValue(0);

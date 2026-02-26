@@ -4,6 +4,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, text, relation } from '@nozbe/watermelondb/decorators';
 
+/**
+ *
+ */
 export default class Channel extends Model {
   static table = 'channels';
 

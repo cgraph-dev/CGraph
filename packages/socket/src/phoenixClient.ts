@@ -182,6 +182,7 @@ export function createChannelHandler<T>(
 ): () => void {
   const ref = channel.on(
     event,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     handler as (payload?: unknown, ref?: string, joinRef?: string) => void
   );
   return () => channel.off(event, ref);
@@ -198,7 +199,9 @@ export function pushToChannel<TPayload extends object, TResponse>(
 ): Promise<TResponse> {
   return new Promise((resolve, reject) => {
     channel
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .push(event, payload as Record<string, unknown>, timeout)
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (response: unknown) => resolve(response as TResponse))
       .receive('error', (error: unknown) => reject(error))
       .receive('timeout', () => reject(new Error('Channel push timeout')));

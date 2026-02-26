@@ -40,6 +40,9 @@ interface PodiumProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
   const [first, second, third] = [items[0], items[1], items[2]];
 
@@ -207,17 +210,23 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
 
     const name =
       type === 'forums'
+         
         ? `c/${(item as LeaderboardForum).slug}`
+         
         : `u/${(item as TopContributor).user?.username || 'unknown'}`;
 
     const iconUrl =
       type === 'forums'
+         
         ? (item as LeaderboardForum).icon_url
+         
         : (item as TopContributor).user?.avatar_url;
 
     const initial =
       type === 'forums'
+         
         ? (item as LeaderboardForum).name.charAt(0)
+         
         : (item as TopContributor).user?.username?.charAt(0).toUpperCase() || '?';
 
     return (
@@ -285,11 +294,13 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
           >
             {type === 'contributors' && (
               <Text style={styles.pedestalXp}>
+                { }
                 {((item as TopContributor).xp || 0).toLocaleString()} XP
               </Text>
             )}
             {type === 'forums' && (
               <Text style={styles.pedestalXp}>
+                { }
                 {((item as LeaderboardForum).member_count || 0).toLocaleString()}
               </Text>
             )}

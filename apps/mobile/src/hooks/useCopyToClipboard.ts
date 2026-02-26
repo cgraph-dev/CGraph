@@ -80,6 +80,7 @@ export function useCopyToClipboard(
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
       
+       
       setState({ copied: false, error: error as Error });
       return false;
     }

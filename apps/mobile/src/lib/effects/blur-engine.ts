@@ -85,6 +85,9 @@ export interface BlurLayerConfig {
 
 let cachedCapabilities: BlurCapabilities | null = null;
 
+/**
+ *
+ */
 export function getBlurCapabilities(): BlurCapabilities {
   if (cachedCapabilities) return cachedCapabilities;
 
@@ -92,6 +95,7 @@ export function getBlurCapabilities(): BlurCapabilities {
   const screenSize = width * height;
 
   if (Platform.OS === 'ios') {
+     
     const iosVersion = parseInt(Platform.Version as string, 10);
 
     cachedCapabilities = {
@@ -104,6 +108,7 @@ export function getBlurCapabilities(): BlurCapabilities {
       useFallback: iosVersion < 13,
     };
   } else if (Platform.OS === 'android') {
+     
     const androidVersion = Platform.Version as number;
 
     // Android 12+ (API 31+) supports RenderEffect blur
@@ -145,6 +150,9 @@ export function getBlurCapabilities(): BlurCapabilities {
   return cachedCapabilities;
 }
 
+/**
+ *
+ */
 export function clearCapabilitiesCache(): void {
   cachedCapabilities = null;
 }
@@ -161,6 +169,9 @@ const INTENSITY_MAP: Record<BlurIntensity, number> = {
   ultraStrong: 100,
 };
 
+/**
+ *
+ */
 export function getIntensityValue(intensity: BlurIntensity | number): number {
   if (typeof intensity === 'number') {
     return Math.max(0, Math.min(100, intensity));
@@ -168,6 +179,9 @@ export function getIntensityValue(intensity: BlurIntensity | number): number {
   return INTENSITY_MAP[intensity];
 }
 
+/**
+ *
+ */
 export function scaleIntensityForDevice(intensity: number): number {
   const capabilities = getBlurCapabilities();
   const scaled = (intensity / 100) * capabilities.maxBlurIntensity;
@@ -364,6 +378,9 @@ const BLUR_STYLE_COLORS: Record<
   },
 };
 
+/**
+ *
+ */
 export function getBlurStyleColors(style: BlurStyle, tint: BlurTint): BlurFallbackColors {
   const isDark = tint === 'dark' || tint === 'systemMaterial' || tint === 'systemThickMaterial';
   return BLUR_STYLE_COLORS[style][isDark ? 'dark' : 'light'];
@@ -373,6 +390,9 @@ export function getBlurStyleColors(style: BlurStyle, tint: BlurTint): BlurFallba
 // Blur Configuration Builder
 // ============================================================================
 
+/**
+ *
+ */
 export function createBlurConfig(options: Partial<BlurConfig> = {}): BlurLayerConfig {
   const capabilities = getBlurCapabilities();
 
@@ -430,6 +450,9 @@ type ExpoBlurTint =
   | 'systemChromeMaterialDark'
   | 'regular';
 
+/**
+ *
+ */
 export function mapTintToExpoBlur(tint: BlurTint): ExpoBlurTint {
   const mapping: Record<BlurTint, ExpoBlurTint> = {
     light: 'light',
@@ -456,6 +479,9 @@ export interface FallbackGradientConfig {
   end: { x: number; y: number };
 }
 
+/**
+ *
+ */
 export function generateFallbackGradient(
   style: BlurStyle,
   tint: BlurTint,
@@ -491,11 +517,17 @@ function adjustOpacity(color: string, opacity: number): string {
 // Performance Utilities
 // ============================================================================
 
+/**
+ *
+ */
 export function shouldReduceBlur(): boolean {
   const capabilities = getBlurCapabilities();
   return capabilities.deviceTier === 'low' || capabilities.useFallback;
 }
 
+/**
+ *
+ */
 export function getOptimalBlurLayers(intensity: number): number {
   const capabilities = getBlurCapabilities();
 

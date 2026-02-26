@@ -132,7 +132,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
 
       // Set token for API calls
-      api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      api.defaults.headers.common.Authorization = `Bearer ${storedToken}`;
       set({ user: parsedUser, token: storedToken, isAuthenticated: true });
 
       // Verify token is still valid
@@ -149,7 +149,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       } catch {
         // Token invalid — clear auth
         await clearStorage();
-        delete api.defaults.headers.common['Authorization'];
+        delete api.defaults.headers.common.Authorization;
         set({ ...INITIAL_STATE, isLoading: false });
       }
     } catch {
@@ -228,7 +228,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
 
     await clearStorage();
-    delete api.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common.Authorization;
 
     // SECURITY: Reset ALL stores to prevent data leakage between user sessions
     try {
@@ -323,7 +323,7 @@ async function saveAuth(token: string, refreshToken: string, user: User): Promis
   // Note: httpClient interceptor also reads token from SecureStore per-request.
   // This default header ensures the token is available immediately after login
   // without waiting for the next interceptor cycle.
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  api.defaults.headers.common.Authorization = `Bearer ${token}`;
 }
 
 async function clearStorage(): Promise<void> {

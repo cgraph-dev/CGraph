@@ -27,6 +27,9 @@ interface PluginDetailModalProps {
   onUninstall: (plugin: Plugin) => void;
 }
 
+/**
+ *
+ */
 export function PluginDetailModal({
   plugin,
   visible,

@@ -230,6 +230,7 @@ describe('Matrix Themes', () => {
     });
 
     it('should return default theme for invalid id', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const theme = getTheme('invalid-theme-id' as any);
       expect(theme).toBeDefined();
     });
@@ -237,6 +238,7 @@ describe('Matrix Themes', () => {
     it('should return all themes from registry', () => {
       const validThemes = ['matrix-green', 'cyber-blue', 'blood-red', 'golden', 'purple-haze', 'neon-pink', 'ice', 'fire'];
       for (const id of validThemes) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const theme = getTheme(id as any);
         expect(theme).toBeDefined();
         expect(theme.id).toBe(id);

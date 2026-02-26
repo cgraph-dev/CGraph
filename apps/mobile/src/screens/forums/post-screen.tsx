@@ -19,8 +19,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { VoteButtons } from './components/vote-buttons';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/skeleton';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
@@ -36,6 +35,9 @@ type Props = {
   route: RouteProp<ForumsStackParamList, 'Post'>;
 };
 
+/**
+ *
+ */
 export default function PostScreen({ navigation: _navigation, route }: Props) {
   const { postId } = route.params;
   const { colors } = useThemeStore();
@@ -315,6 +317,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
           <View style={styles.postActions}>
             <VoteButtons
               voteCount={post.vote_count}
+               
               myVote={(post.my_vote || 0) as 0 | 1 | -1}
               onVote={(dir) => handleVotePost(dir)}
               size={22}

@@ -41,6 +41,9 @@ export interface UseSocketReturn {
   isInChannel: (topic: string) => boolean;
 }
 
+/**
+ *
+ */
 export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
   const { autoConnect = true, reconnectOnAuthChange = true } = options;
   

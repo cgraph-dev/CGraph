@@ -5,6 +5,7 @@
  *
  * @module lib/crypto/e2ee-secure
  * @version 2.0.0
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 

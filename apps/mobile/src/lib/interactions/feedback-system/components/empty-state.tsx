@@ -18,6 +18,9 @@ import { SPRING_PRESETS } from '../../../animations/animation-library';
 import { EmptyStateProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function EmptyState({
   icon,
   title,

@@ -86,6 +86,9 @@ interface UsePremiumReturn extends PremiumState {
   hasActiveSubscription: boolean;
 }
 
+/**
+ *
+ */
 export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const { autoLoad = true } = options;
 

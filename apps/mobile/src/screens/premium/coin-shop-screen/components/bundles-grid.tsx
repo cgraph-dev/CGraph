@@ -9,6 +9,9 @@ interface BundlesGridProps {
   onPurchase: (bundle: CoinBundle) => void;
 }
 
+/**
+ *
+ */
 export function BundlesGrid({ onPurchase }: BundlesGridProps) {
   return (
     <View style={styles.bundlesGrid}>

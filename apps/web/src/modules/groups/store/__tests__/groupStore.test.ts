@@ -32,6 +32,7 @@ import { api } from '@/lib/api';
 const mockedApi = {
   get: api.get as MockedFunction<typeof api.get>,
   post: api.post as MockedFunction<typeof api.post>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   put: (api as any).put as MockedFunction<(url: string, data?: any) => Promise<any>>,
   patch: api.patch as MockedFunction<typeof api.patch>,
   delete: api.delete as MockedFunction<typeof api.delete>,

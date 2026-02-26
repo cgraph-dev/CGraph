@@ -22,7 +22,9 @@ export function buildFeedUrl(
   );
 
   if (isNewConvention) {
+     
     const feedType = feedTypeOrBaseUrl as FeedType; // safe downcast — validated by isNewConvention check
+     
     const format = (formatOrFeedType as FeedFormat) ?? 'rss'; // safe downcast — caller convention
     const forumSlug = forumSlugOrResourceId;
     const parts = ['/api/v1/feeds', feedType];
@@ -34,8 +36,10 @@ export function buildFeedUrl(
 
   // Legacy convention
   const baseUrl = feedTypeOrBaseUrl;
+   
   const feedType = (formatOrFeedType as FeedType) ?? 'global'; // safe downcast — legacy calling convention
   const resourceId = forumSlugOrResourceId;
+   
   const format: FeedFormat = (categorySlug as FeedFormat) ?? 'rss'; // safe downcast — legacy calling convention
   const endpoint = FEED_TYPE_ENDPOINTS[feedType](resourceId);
   const formatParam = format === 'atom' ? '?format=atom' : '';

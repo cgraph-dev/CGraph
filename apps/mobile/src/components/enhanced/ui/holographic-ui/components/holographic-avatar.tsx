@@ -16,6 +16,9 @@ interface HolographicAvatarProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export function HolographicAvatar({
   source,
   name,

@@ -356,6 +356,7 @@ class PaymentService {
       console.error('[PaymentService] Purchase failed:', error);
 
       // Show user-friendly error
+       
       const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -481,6 +482,7 @@ class PaymentService {
     } catch (error: unknown) {
       console.error('[PaymentService] Coin purchase failed:', error);
 
+       
       const axiosError = error as { response?: { data?: { message?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -509,6 +511,7 @@ class PaymentService {
         nextClaimAt: response.data.next_claim_at || null,
       };
     } catch (error: unknown) {
+       
       const axiosError = error as { response?: { data?: { next_claim_at?: string } } };
       return {
         success: false,

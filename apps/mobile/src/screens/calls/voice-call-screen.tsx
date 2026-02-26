@@ -52,6 +52,9 @@ type ConnectionQuality = 'excellent' | 'good' | 'fair' | 'poor';
 
 const AUDIO_LEVELS_COUNT = 32;
 
+/**
+ *
+ */
 export default function VoiceCallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CallStackParamList>>();
   const route = useRoute<VoiceCallRouteProp>();
@@ -320,6 +323,7 @@ export default function VoiceCallScreen() {
                   source={
                     recipientAvatar
                       ? { uri: recipientAvatar }
+                       
                       : require('@/assets/default-avatar.png')
                   }
                   size={140}

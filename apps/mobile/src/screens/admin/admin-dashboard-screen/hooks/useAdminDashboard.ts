@@ -4,8 +4,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import api from '../../../../lib/api';
-import type { DashboardStats, RecentUser, Report, AuditLog } from '../types';
-import { FALLBACK_STATS, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_AUDIT } from '../types';
+import type { AuditLog, DashboardStats, FALLBACK_AUDIT, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_STATS, RecentUser, Report } from '../types';
 
 export interface UseAdminDashboardReturn {
   stats: DashboardStats;
@@ -19,6 +18,9 @@ export interface UseAdminDashboardReturn {
   updateReportStatus: (id: string, status: 'resolved' | 'dismissed') => void;
 }
 
+/**
+ *
+ */
 export function useAdminDashboard(): UseAdminDashboardReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -81,13 +83,16 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
           Array.isArray(reportsData)
             ? reportsData.map((r: Record<string, unknown>) => ({
                 id: String(r.id),
+                 
                 type: (r.type || r.report_type || 'post') as 'post' | 'user' | 'thread',
                 reason: String(r.reason || ''),
                 reportedBy: String(
+                   
                   r.reported_by || (r.reporter as { username?: string })?.username || 'Anonymous'
                 ),
                 targetId: String(r.target_id || r.content_id || ''),
                 targetName: String(r.target_name || r.content_preview || 'Unknown'),
+                 
                 status: (r.status || 'pending') as 'pending' | 'resolved' | 'dismissed',
                 createdAt: String(r.created_at || r.inserted_at),
               }))
@@ -103,6 +108,7 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
             ? logs.map((l: Record<string, unknown>) => ({
                 id: String(l.id),
                 action: String(l.action || ''),
+                 
                 actor: String(l.actor || (l.user as { username?: string })?.username || 'System'),
                 target: String(l.target || l.resource || ''),
                 details: String(l.details || l.metadata || ''),

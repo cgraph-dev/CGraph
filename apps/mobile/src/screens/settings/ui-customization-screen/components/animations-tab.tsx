@@ -17,6 +17,9 @@ interface AnimationsTabProps {
   updateTheme: (update: Partial<ThemeConfig>) => void;
 }
 
+/**
+ *
+ */
 export function AnimationsTab({ theme, updateTheme }: AnimationsTabProps) {
   return (
     <>

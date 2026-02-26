@@ -47,6 +47,7 @@ export const ProfileCard = memo(function ProfileCard({
 
     const { colors, glassmorphism, borderRadius } = theme;
 
+     
     return {
       '--glow-color': colors.accent,
       '--accent-color': colors.accent,

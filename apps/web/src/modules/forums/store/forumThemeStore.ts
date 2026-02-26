@@ -192,6 +192,7 @@ export const useForumThemeStore = useThemeStore;
 export const useActiveForumTheme = () => {
   const themeId = useThemeStore((s) => s.activeForumThemeId);
   return themeId
+     
     ? FORUM_THEME_PRESETS[themeId as keyof typeof FORUM_THEME_PRESETS]
     : FORUM_THEME_PRESETS['dark-elite'];
 };

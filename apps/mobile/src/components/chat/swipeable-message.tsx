@@ -30,6 +30,9 @@ interface SwipeableMessageProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function SwipeableMessage({
   messageId,
   content,

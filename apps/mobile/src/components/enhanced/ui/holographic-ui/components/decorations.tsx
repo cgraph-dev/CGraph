@@ -16,6 +16,9 @@ interface CornerDecorationProps {
   position: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 }
 
+/**
+ *
+ */
 export function CornerDecoration({ color, position }: CornerDecorationProps) {
   const rotation = {
     topLeft: '0deg',
@@ -57,6 +60,9 @@ interface ScanlinesProps {
   animated?: boolean;
 }
 
+/**
+ *
+ */
 export function Scanlines({
   color,
   intensity = 'medium',

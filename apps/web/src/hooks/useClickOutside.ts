@@ -36,6 +36,7 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
     if (!enabled) return;
 
     const handleClick = (event: MouseEvent | TouchEvent) => {
+       
       const target = event.target as Node; // type assertion: EventTarget to Node for contains check
       
       if (ref.current && !ref.current.contains(target)) {
@@ -90,6 +91,7 @@ export function useClickOutsideRef<T extends HTMLElement>(
     if (!enabled) return;
 
     const handleClick = (event: MouseEvent | TouchEvent) => {
+       
       const target = event.target as Node; // type assertion: EventTarget to Node for contains check
       
       if (ref.current && !ref.current.contains(target)) {

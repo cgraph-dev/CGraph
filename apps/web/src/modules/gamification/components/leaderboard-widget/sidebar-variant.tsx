@@ -62,6 +62,7 @@ export function SidebarVariant({
               size="xs"
               avatarBorderId={
                 entry.avatarBorderId ??
+                 
                 (entry as LeaderboardEntry & { avatar_border_id?: string | null }).avatar_border_id // type assertion: extending entry with optional field
               }
             />
@@ -83,6 +84,7 @@ export function SidebarVariant({
               size="xs"
               avatarBorderId={
                 currentUserEntry.avatarBorderId ??
+                 
                 (currentUserEntry as LeaderboardEntry & { avatar_border_id?: string | null }) // type assertion: extending entry with optional field
                   .avatar_border_id
               }

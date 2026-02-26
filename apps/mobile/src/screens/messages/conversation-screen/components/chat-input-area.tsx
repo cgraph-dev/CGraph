@@ -8,8 +8,7 @@
 
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { VoiceMessageRecorder, MorphingInputButton } from '../../../../components';
 import type { Message } from '../../../../types';

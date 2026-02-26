@@ -36,6 +36,9 @@ interface UsernameHistory {
 const COOLDOWN_DAYS_STANDARD = 30;
 const COOLDOWN_DAYS_PREMIUM = 7;
 
+/**
+ *
+ */
 export function UsernameChangeScreen({
   currentUsername,
   lastChangeDate,
@@ -96,6 +99,7 @@ export function UsernameChangeScreen({
         const response = await fetch(
           `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`
         );
+         
         const data = await response.json() as { available: boolean; reason?: string };
         setIsAvailable(data.available);
         setAvailabilityMessage(
@@ -123,6 +127,7 @@ export function UsernameChangeScreen({
     setLoadingHistory(true);
     try {
       const response = await fetch('/api/users/me/username-history');
+       
       const data = await response.json() as { history?: UsernameHistory[] };
       setHistory(data.history || []);
     } catch {
@@ -148,6 +153,7 @@ export function UsernameChangeScreen({
       });
       
       if (!response.ok) {
+         
         const data = await response.json() as { message?: string };
         throw new Error(data.message || 'Failed to change username');
       }

@@ -13,6 +13,9 @@ export interface LoadingStateProps {
   };
 }
 
+/**
+ *
+ */
 export function LoadingState({ colors }: LoadingStateProps) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

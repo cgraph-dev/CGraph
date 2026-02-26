@@ -63,6 +63,7 @@ export interface RewardCardProps {
  */
 export function RewardCard({ reward, size = 'md', showLabel = true }: RewardCardProps) {
   const rarityColor = reward.rarity
+     
     ? RARITY_COLORS[reward.rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.common
     : RARITY_FALLBACK;
 

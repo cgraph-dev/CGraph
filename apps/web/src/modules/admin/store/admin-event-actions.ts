@@ -33,6 +33,7 @@ export function createEventActions(set: Set, get: Get) {
         const { api } = await import('@/lib/api');
         const response = await api.get('/api/v1/admin/events');
         set({
+           
           events: (response.data as AdminEvent[]) /* safe downcast – API response */
             .map((event) => ({
               ...event,
@@ -62,6 +63,7 @@ export function createEventActions(set: Set, get: Get) {
       try {
         const { api } = await import('@/lib/api');
         const response = await api.post('/api/v1/admin/events', event);
+         
         const newEvent = response.data as AdminEvent; // safe downcast – API response
         set((state) => ({
           events: [
@@ -82,6 +84,7 @@ export function createEventActions(set: Set, get: Get) {
         set((state) => ({
           events: [
             ...state.events,
+             
             {
               ...event,
               id: `event_${Date.now()}`,

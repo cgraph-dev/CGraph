@@ -32,20 +32,32 @@ export interface Notification {
 }
 
 function normalizeNotification(raw: Record<string, unknown>): Notification {
+   
   const actor = raw.actor as Record<string, unknown> | undefined;
   return {
+     
     id: raw.id as string,
+     
     type: (raw.type || 'general') as string,
+     
     title: (raw.title || '') as string,
+     
     body: (raw.body || raw.message || '') as string,
+     
     data: (raw.data || raw.metadata || {}) as Record<string, unknown>,
+     
     read: (raw.read ?? raw.is_read ?? false) as boolean,
+     
     readAt: (raw.read_at || raw.readAt || null) as string | null,
+     
     createdAt: (raw.created_at || raw.createdAt || raw.inserted_at || '') as string,
     actor: actor
       ? {
+           
           id: (actor.id || '') as string,
+           
           username: (actor.username || '') as string,
+           
           avatarUrl: (actor.avatar_url || actor.avatarUrl || null) as string | null,
         }
       : undefined,

@@ -173,6 +173,7 @@ export function useIdentityCustomization() {
       return;
     }
     updateIdentity('profileLayout', layoutId);
+     
     store.setProfileCardStyle(layoutId as ProfileCardStyle);
   };
 

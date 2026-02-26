@@ -24,6 +24,9 @@ type Props = {
   route: RouteProp<GroupsStackParamList, 'Group'>;
 };
 
+/**
+ *
+ */
 export default function GroupScreen({ navigation, route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();

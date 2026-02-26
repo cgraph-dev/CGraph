@@ -14,6 +14,9 @@ import { QUEST_TYPE_CONFIG } from '../constants';
 import { styles } from '../styles';
 import { QuestCard } from './quest-card';
 
+/**
+ *
+ */
 export function QuestSection({ type, quests, onClaim, initialExpanded = true }: QuestSectionProps) {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const heightAnim = useSharedValue(initialExpanded ? 1 : 0);
@@ -52,6 +55,7 @@ export function QuestSection({ type, quests, onClaim, initialExpanded = true }: 
               style={styles.sectionIcon}
             >
               <Ionicons
+                 
                 name={config.icon as keyof typeof Ionicons.glyphMap}
                 size={18}
                 color="#fff"

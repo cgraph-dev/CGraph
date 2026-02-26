@@ -202,6 +202,9 @@ function SelectSetting({ label, value, options, onChange }: SelectSettingProps) 
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function ProfileVisibilityScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -426,6 +429,7 @@ export default function ProfileVisibilityScreen() {
                 label="Who can message you"
                 value={settings.allowMessaging}
                 options={MESSAGING_OPTIONS}
+                 
                 onChange={(v) => updateSetting('allowMessaging', v as unknown)}
               />
             </View>

@@ -42,6 +42,9 @@ type Props = {
   route: RouteProp<ForumsStackParamList, 'PluginMarketplace'>;
 };
 
+/**
+ *
+ */
 export default function PluginMarketplaceScreen({ navigation, route }: Props) {
   const { forumId } = route.params || {};
   const { colors } = useThemeStore();

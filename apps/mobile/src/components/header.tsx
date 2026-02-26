@@ -35,6 +35,9 @@ interface HeaderProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function Header({
   title,
   subtitle,

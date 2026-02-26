@@ -131,6 +131,7 @@ export const AnimatedForumTitle = memo(function AnimatedForumTitle({
     <motion.span
       className={cn('inline-block', className)}
       style={getAnimationStyles()}
+       
       {...(getMotionProps() as Record<string, unknown>)} // safe downcast – structural boundary
     >
       <Component className="m-0">{title}</Component>

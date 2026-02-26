@@ -46,6 +46,7 @@ export function joinPresenceLobby(
   });
 
   channel.on('friend_online', (payload: unknown) => {
+     
     const data = payload as { user_id: string; status: string };
     onlineUsers.get('lobby')?.add(data.user_id);
     notifyStatusChange('lobby', data.user_id, true);
@@ -53,6 +54,7 @@ export function joinPresenceLobby(
   });
 
   channel.on('friend_offline', (payload: unknown) => {
+     
     const data = payload as { user_id: string; last_seen?: string };
     onlineUsers.get('lobby')?.delete(data.user_id);
     notifyStatusChange('lobby', data.user_id, false);
@@ -60,6 +62,7 @@ export function joinPresenceLobby(
   });
 
   const handleStatusUpdate = (payload: unknown) => {
+     
     const data = payload as { user_id: string; status: string };
     logger.log('Friend status update:', data.user_id, '->', data.status);
   };

@@ -59,6 +59,9 @@ interface UserResultItemProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export function UserResultItem({ user, index, colors, onPress }: UserResultItemProps) {
   return (
     <AnimatedResultItem index={index} onPress={onPress || (() => {})}>
@@ -123,7 +126,11 @@ interface GroupResultItemProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export function GroupResultItem({ group, index, colors, onPress }: GroupResultItemProps) {
+   
   const gradient = ['#f59e0b', '#f97316'] as [string, string];
 
   return (
@@ -162,7 +169,11 @@ interface ForumResultItemProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export function ForumResultItem({ forum, index, colors, onPress }: ForumResultItemProps) {
+   
   const gradient = ['#ec4899', '#f43f5e'] as [string, string];
 
   return (

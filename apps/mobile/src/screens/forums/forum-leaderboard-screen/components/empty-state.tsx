@@ -17,6 +17,9 @@ import { Ionicons } from '@expo/vector-icons';
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function EmptyState() {
   const floatAnim = useSharedValue(0);
   const pulseAnim = useSharedValue(1);

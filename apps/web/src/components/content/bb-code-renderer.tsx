@@ -183,6 +183,7 @@ export function InlineBBCodeRenderer({
 
     for (const { pattern, replace } of inlineTags) {
       if (typeof replace === 'function') {
+         
         text = text.replace(pattern, replace as (substring: string, ...args: string[]) => string);
       } else {
         text = text.replace(pattern, replace);

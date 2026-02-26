@@ -39,6 +39,7 @@ describe('Auth Hooks', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(useAuthStore).mockReturnValue(mockAuthStore as any);
   });
 
@@ -57,6 +58,7 @@ describe('Auth Hooks', () => {
         ...mockAuthStore,
         isAuthenticated: true,
         user: mockUser,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { result } = renderHook(() => useAuth());
@@ -153,6 +155,7 @@ describe('Auth Hooks', () => {
       vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthStore,
         user: { ...mockUser, twoFactorEnabled: true },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { result } = renderHook(() => useTwoFactor());

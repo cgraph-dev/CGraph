@@ -317,6 +317,7 @@ export function HolographicV4Demo({
               onDismiss={() => setShowNotification(false)}
               action={{
                 label: 'View Details',
+                // eslint-disable-next-line no-console
                 onClick: () => console.log('Action clicked'),
               }}
             />

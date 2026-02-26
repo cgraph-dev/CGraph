@@ -38,6 +38,9 @@ const DEFAULT_PACKAGES: CoinPackage[] = [
   { id: 'pack_5000', coins: 5000, bonusCoins: 1000, price: 39.99, bestValue: true },
 ];
 
+/**
+ *
+ */
 export function CoinShopWidget({
   packages = DEFAULT_PACKAGES,
   currentBalance = 0,
@@ -74,6 +77,7 @@ export function CoinShopWidget({
       >
         <GlassCard
           style={
+             
             [
               variant === 'compact' ? styles.compactPackage : styles.packageCard,
               (pkg.popular || pkg.bestValue) && styles.highlightedPackage,

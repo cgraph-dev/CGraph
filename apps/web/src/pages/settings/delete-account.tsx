@@ -47,6 +47,7 @@ export function DeleteAccount() {
       logout();
     } catch (err: unknown) {
       const errMsg =
+         
         (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
           ?.message || 'Failed to delete account. Please check your password.';
       setError(errMsg);

@@ -34,6 +34,9 @@ interface Role {
   memberCount?: number;
 }
 
+/**
+ *
+ */
 export default function GroupRolesScreen({ route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();

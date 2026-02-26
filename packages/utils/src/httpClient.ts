@@ -142,6 +142,7 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const cfg = error.config as
         | (InternalAxiosRequestConfig & { _retry?: boolean; metadata?: RequestMeta })
         | undefined;
@@ -267,6 +268,7 @@ export function extractApiError(error: unknown): {
 } {
   if (axios.isAxiosError(error)) {
     const status = error.response?.status;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = (error.response?.data || {}) as Record<string, unknown>;
     const message =
       (typeof data.message === 'string' && data.message) ||

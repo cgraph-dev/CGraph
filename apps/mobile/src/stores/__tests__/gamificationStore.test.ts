@@ -334,6 +334,7 @@ describe('gamificationStore', () => {
         level: 10,
         coins: 500,
         streak: 20,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         achievements: MOCK_ACHIEVEMENTS as any,
       });
 

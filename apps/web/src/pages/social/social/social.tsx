@@ -74,6 +74,7 @@ export function Social() {
     () =>
       storeNotifications.map((n) => ({
         id: n.id,
+         
         type: n.type as Notification['type'], // safe downcast – store type matches UI union
         title: n.title,
         message: n.body,

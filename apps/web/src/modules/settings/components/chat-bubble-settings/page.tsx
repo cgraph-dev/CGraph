@@ -34,6 +34,7 @@ export default function ChatBubbleSettings() {
   const themeStore = useChatBubbleStore();
   const style = themeStore.chatBubble;
   const updateStyle = <K extends keyof ChatBubbleConfig>(key: K, value: ChatBubbleConfig[K]) =>
+     
     themeStore.updateChatBubble({ [key]: value } as Partial<ChatBubbleConfig>); // type assertion: computed property key as config partial
   const resetStyle = themeStore.resetChatBubble;
   const applyPreset = themeStore.applyPreset;
@@ -118,6 +119,7 @@ export default function ChatBubbleSettings() {
               key={preset.id}
               onClick={() => {
                 // type assertion: preset.id is a known key of CHAT_BUBBLE_PRESETS
+                 
                 applyPreset(preset.id as keyof typeof CHAT_BUBBLE_PRESETS);
                 HapticFeedback.light();
               }}

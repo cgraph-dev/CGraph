@@ -184,6 +184,7 @@ export function MessageActionsMenu({
         >
           <View style={[styles.modernActionIconWrap, { backgroundColor: `${item.color}18` }]}>
             <Ionicons
+               
               name={item.icon as keyof typeof Ionicons.glyphMap}
               size={20}
               color={item.color}

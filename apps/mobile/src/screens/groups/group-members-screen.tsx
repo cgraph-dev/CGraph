@@ -43,6 +43,9 @@ const roleColors: Record<string, string> = {
   member: '#9ca3af',
 };
 
+/**
+ *
+ */
 export default function GroupMembersScreen({ route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
@@ -57,11 +60,17 @@ export default function GroupMembersScreen({ route }: Props) {
       const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       setMembers(
         data.map((m: Record<string, unknown>) => ({
+           
           id: m.id as string,
+           
           userId: (m.user_id ?? m.userId ?? m.id) as string,
+           
           username: (m.username ?? (m.user as Record<string, unknown>)?.username ?? 'unknown') as string,
+           
           displayName: (m.display_name ?? m.displayName ?? null) as string | null,
+           
           avatarUrl: (m.avatar_url ?? m.avatarUrl ?? null) as string | null,
+           
           role: (m.role ?? 'member') as string,
           isMuted: !!(m.is_muted ?? m.isMuted),
         }))

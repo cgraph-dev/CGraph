@@ -55,6 +55,9 @@ const CHANNEL_ICONS: Record<Channel['type'], keyof typeof MaterialCommunityIcons
   stage: 'access-point',
 };
 
+/**
+ *
+ */
 export function ChannelList({
   channels,
   categories = [],

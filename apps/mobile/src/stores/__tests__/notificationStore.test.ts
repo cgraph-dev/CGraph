@@ -3,8 +3,7 @@
  * @module stores/__tests__/notificationStore
  */
 
-import { useNotificationStore } from '../notificationStore';
-import type { Notification } from '../notificationStore';
+import type { Notification, useNotificationStore } from '../notificationStore';
 
 // ── Mocks ──────────────────────────────────────────────────────────────
 

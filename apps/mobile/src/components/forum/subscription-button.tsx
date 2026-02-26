@@ -25,6 +25,9 @@ interface SubscriptionButtonProps {
   showLabel?: boolean;
 }
 
+/**
+ *
+ */
 export function SubscriptionButton({
   type,
   isSubscribed,

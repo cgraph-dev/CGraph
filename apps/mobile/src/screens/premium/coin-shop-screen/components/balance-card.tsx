@@ -13,6 +13,9 @@ interface BalanceCardProps {
   scaleAnim: SharedValue<number>;
 }
 
+/**
+ *
+ */
 export function BalanceCard({
   userCoins,
   canClaimDaily,

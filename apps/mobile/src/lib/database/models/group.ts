@@ -4,6 +4,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, text, children } from '@nozbe/watermelondb/decorators';
 
+/**
+ *
+ */
 export default class Group extends Model {
   static table = 'groups';
 

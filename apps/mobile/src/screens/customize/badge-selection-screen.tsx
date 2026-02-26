@@ -108,6 +108,9 @@ const FALLBACK_BADGES: Badge[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function BadgeSelectionScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();

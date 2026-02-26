@@ -66,6 +66,9 @@ export interface UseRealtimeChannelReturn {
   typingUsers: string[];
 }
 
+/**
+ *
+ */
 export function useRealtimeChannel(
   topic: string,
   options: UseRealtimeChannelOptions = {}
@@ -139,6 +142,7 @@ export function useRealtimeChannel(
       // For now, just log the push attempt
       // The actual push is handled through specific methods on socketManager
       logger.log('Push to channel:', topic, event, payload);
+       
       resolve(undefined as T);
     });
   }, [topic, isJoined]);
@@ -308,6 +312,7 @@ export function useForumChannel(forumSlug: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'stats_update') {
+         
         setStats(event.payload as typeof stats);
       }
     },
@@ -342,11 +347,13 @@ export function useThreadChannel(threadId: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'vote_update') {
+         
         const payload = event.payload as { upvotes: number; downvotes: number };
         setVotes(payload);
       }
     },
     onJoin: (response) => {
+       
       const resp = response as { viewers?: string[]; votes?: { upvotes: number; downvotes: number } };
       if (resp.viewers) setViewers(resp.viewers);
       if (resp.votes) setVotes(resp.votes);

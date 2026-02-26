@@ -181,7 +181,9 @@ export function ForwardMessageModal({
                   filteredConversations.map((conversation) => {
                     const isSelected = selectedConversations.has(conversation.id);
                     const avatarBorderId =
+                       
                       (conversation as { avatarBorderId?: string | null })?.avatarBorderId ??
+                       
                       (conversation as { avatar_border_id?: string | null })?.avatar_border_id ??
                       null;
                     return (

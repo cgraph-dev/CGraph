@@ -12,6 +12,9 @@ export interface FallbackData {
   leaderboard: LeaderboardEntry[];
 }
 
+/**
+ *
+ */
 export function generateFallbackData(): FallbackData {
   const referralCode: ReferralCode = {
     code: 'CGRAPH2026',

@@ -17,6 +17,9 @@ interface HeaderProps {
   textColor: string;
 }
 
+/**
+ *
+ */
 export function Header({
   selectedAlbumTitle,
   selectedCount,

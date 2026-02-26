@@ -127,6 +127,7 @@ class SessionManager {
 
     // Check if we should use PQXDH + Triple Ratchet
     // type assertion: widen to PQPreKeyBundle to check for PQ support via bundleSupportsPQ guard
+     
     const pqBundle = recipientBundle as PQPreKeyBundle;
     if (this._useTripleRatchet && bundleSupportsPQ(pqBundle)) {
       const { session, pendingPQData } = await createPQSessionForRecipient(

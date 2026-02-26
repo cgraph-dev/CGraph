@@ -14,6 +14,9 @@ interface CancelButtonProps {
   onPress: () => void;
 }
 
+/**
+ *
+ */
 export function CancelButton({ onPress }: CancelButtonProps) {
   const scaleAnim = useSharedValue(1);
 

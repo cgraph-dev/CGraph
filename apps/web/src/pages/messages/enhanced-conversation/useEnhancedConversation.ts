@@ -71,6 +71,7 @@ export function useEnhancedConversation() {
     const content = messageInput.trim();
 
     // Optimistic: show message in the list immediately with a sending indicator
+     
     addOptimisticMessage({
       id: `optimistic-${Date.now()}`,
       conversationId,
@@ -84,6 +85,7 @@ export function useEnhancedConversation() {
       isPinned: false,
       isEdited: false,
       deletedAt: null,
+       
       metadata: {} as Message['metadata'], // safe downcast – optimistic message placeholder
       reactions: [],
       sender: {

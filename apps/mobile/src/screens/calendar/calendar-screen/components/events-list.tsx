@@ -18,6 +18,9 @@ interface EventsListProps {
   onCreateEvent: () => void;
 }
 
+/**
+ *
+ */
 export function EventsList({ selectedDate, events, onEventPress, onCreateEvent }: EventsListProps) {
   if (!selectedDate) return null;
 

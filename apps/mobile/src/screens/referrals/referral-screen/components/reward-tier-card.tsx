@@ -16,6 +16,9 @@ export interface RewardTierCardProps {
   onClaim: (tierId: string) => void;
 }
 
+/**
+ *
+ */
 export function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps) {
   const progress = Math.min((currentReferrals / tier.referralsRequired) * 100, 100);
   const canClaim = tier.achieved && !tier.claimed;
@@ -87,6 +90,7 @@ export function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCa
         {tier.rewards.map((reward, index) => (
           <View key={index} style={styles.rewardTag}>
             <Ionicons
+               
               name={getRewardIcon(reward.type) as keyof typeof Ionicons.glyphMap}
               size={12}
               color={tier.achieved ? AnimationColors.primary : '#9ca3af'}

@@ -19,6 +19,9 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Appearance'>;
 };
 
+/**
+ *
+ */
 export default function AppearanceScreen({ navigation: _navigation }: Props) {
   const { colors, themePreference, setThemePreference } = useThemeStore();
   

@@ -17,8 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { SettingsStackParamList } from '../../types';
@@ -28,6 +27,9 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Profile'>;
 };
 
+/**
+ *
+ */
 export default function ProfileScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user, updateUser } = useAuthStore();
@@ -57,6 +59,7 @@ export default function ProfileScreen({ navigation }: Props) {
       const uri = result.assets[0].uri;
       const filename = uri.split('/').pop() || 'avatar.jpg';
 
+       
       formData.append('avatar', {
         uri,
         name: filename,
@@ -113,6 +116,7 @@ export default function ProfileScreen({ navigation }: Props) {
       });
       Alert.alert('Success', 'Username changed successfully');
     } catch (err: unknown) {
+       
       const error = err as {
         response?: { data?: { error?: { message?: string }; message?: string } };
       };
@@ -156,6 +160,7 @@ export default function ProfileScreen({ navigation }: Props) {
           <View style={{ marginTop: 12 }}>
             <TitleBadge
               title={user.title}
+               
               rarity={(user.title_rarity as unknown) || 'common'}
               animation="shimmer"
               showSparkles={true}

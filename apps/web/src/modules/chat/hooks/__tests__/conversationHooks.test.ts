@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
@@ -15,12 +16,14 @@ const { mockChatState, mockAuthStore, mockFriendStore, mockUnsubscribe } = vi.ho
           { user_id: 'user-2', display_name: 'Alice' },
         ],
       },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any[],
     messages: {
       'conv-1': [
         { id: 'm1', content: 'hi' },
         { id: 'm2', content: 'hey' },
       ],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     isLoadingMessages: false,
     typingUsers: { 'conv-1': ['user-2'] } as Record<string, string[]>,
@@ -29,6 +32,7 @@ const { mockChatState, mockAuthStore, mockFriendStore, mockUnsubscribe } = vi.ho
     sendMessage: vi.fn().mockResolvedValue(undefined),
     markAsRead: vi.fn(),
     setActiveConversation: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     scheduledMessages: {} as Record<string, any[]>,
     fetchScheduledMessages: vi.fn().mockResolvedValue(undefined),
     cancelScheduledMessage: vi.fn().mockResolvedValue(undefined),
@@ -50,6 +54,7 @@ vi.mock('@/modules/chat/store', () => {
     if (typeof selector === 'function') return selector(mockChatState);
     return mockChatState;
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (storeSelector as any).getState = () => mockChatState;
   return { useChatStore: storeSelector, Message: {}, Conversation: {} };
 });
@@ -70,7 +75,9 @@ vi.mock('@/lib/socket', () => ({
 }));
 
 vi.mock('@/lib/apiUtils', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getParticipantUserId: vi.fn((p: any) => p?.user_id ?? null),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getParticipantDisplayName: vi.fn((p: any) => p?.display_name ?? 'Unknown'),
 }));
 

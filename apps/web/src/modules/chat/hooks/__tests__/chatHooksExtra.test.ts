@@ -15,6 +15,7 @@ vi.mock('@/modules/chat/store', () => {
     if (typeof selector === 'function') return selector(mockChatState);
     return mockChatState;
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (storeSelector as any).getState = () => mockChatState;
   return { useChatStore: storeSelector, Message: {} };
 });
@@ -84,6 +85,7 @@ describe('useE2EEError', () => {
       result.current.showError('Error', pending);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let returned: any;
     act(() => {
       returned = result.current.retryPendingMessage();
@@ -98,6 +100,7 @@ describe('useE2EEError', () => {
   it('retryPendingMessage returns null when no pending message', () => {
     const { result } = renderHook(() => useE2EEError());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let returned: any;
     act(() => {
       returned = result.current.retryPendingMessage();
@@ -187,6 +190,7 @@ describe('useScheduleMessage', () => {
     mockChatState.rescheduleMessage.mockResolvedValueOnce(undefined);
     const { result } = renderHook(() => useScheduleMessage());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const msg = { id: 'msg-1', content: 'old content' } as any;
     act(() => {
       result.current.handleRescheduleClick(msg);
@@ -222,6 +226,7 @@ describe('useScheduleMessage', () => {
   it('handleRescheduleClick sets state from message', () => {
     const { result } = renderHook(() => useScheduleMessage());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const msg = { id: 'msg-2', content: 'reschedule me' } as any;
     act(() => {
       result.current.handleRescheduleClick(msg);

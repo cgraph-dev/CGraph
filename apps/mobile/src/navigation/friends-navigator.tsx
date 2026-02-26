@@ -13,6 +13,9 @@ import LeaderboardScreen from '../screens/community/leaderboard-screen';
 
 const Stack = createNativeStackNavigator<FriendsStackParamList>();
 
+/**
+ *
+ */
 export default function FriendsNavigator() {
   return (
     <Stack.Navigator

@@ -154,6 +154,9 @@ const EMOJIS: Record<EmojiCategory, string[]> = {
 
 const SKIN_TONES = ['👋', '👋🏻', '👋🏼', '👋🏽', '👋🏾', '👋🏿'];
 
+/**
+ *
+ */
 export default function EmojiPicker({
   visible,
   onClose,

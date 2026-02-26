@@ -27,6 +27,7 @@ vi.mock('@/modules/chat/store', () => {
     if (typeof selector === 'function') return selector(mockChatState);
     return mockChatState;
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (storeSelector as any).getState = () => mockChatState;
   return { useChatStore: storeSelector };
 });
@@ -101,6 +102,7 @@ describe('useMessageActions', () => {
   it('handleStartEdit should set editing state and close menu', () => {
     const { result } = renderHook(() => useMessageActions());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockMessage = { id: 'msg-1', content: 'Hello world' } as any;
 
     act(() => {
@@ -121,6 +123,7 @@ describe('useMessageActions', () => {
     const { result } = renderHook(() => useMessageActions());
 
     act(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       result.current.handleStartEdit({ id: 'msg-1', content: 'test' } as any);
     });
     expect(result.current.editingMessageId).toBe('msg-1');
@@ -139,6 +142,7 @@ describe('useMessageActions', () => {
     const { result } = renderHook(() => useMessageActions());
 
     act(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       result.current.handleStartEdit({ id: 'msg-99', content: 'original' } as any);
       result.current.setEditContent('updated content');
     });
@@ -192,6 +196,7 @@ describe('useMessageActions', () => {
   it('handleOpenForward / handleCloseForward should manage forward modal state', () => {
     const { result } = renderHook(() => useMessageActions());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const msg = { id: 'msg-5', content: 'fwd', messageType: 'text' } as any;
 
     act(() => {
@@ -311,6 +316,7 @@ describe('useMessageInputState', () => {
   it('setReplyTo / clearReply should manage reply state', () => {
     const { result } = renderHook(() => useMessageInputState());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const msg = { id: 'msg-1', content: 'hi' } as any;
 
     act(() => {
@@ -360,6 +366,7 @@ describe('useMessageInputState', () => {
     act(() => {
       result.current.setMessageInput('Draft message');
       result.current.setIsSending(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       result.current.setReplyTo({ id: 'msg-1' } as any);
       result.current.togglePicker('showGifPicker');
     });

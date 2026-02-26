@@ -28,6 +28,11 @@ interface ReportDetailParams {
   createdAt: string;
 }
 
+ 
+/**
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ReportDetailScreen({ route, navigation }: any) {
   const params: ReportDetailParams = route?.params ?? {};
   const { colors } = useThemeStore();

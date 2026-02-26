@@ -8,21 +8,22 @@
  * @since v0.8.3
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useGamification } from '@/hooks/useGamification';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
-import type { AchievementCategory, AchievementRarity, AchievementWithProgress } from './types';
-import { CATEGORIES, RARITIES, RARITY_COLORS } from './types';
+import type { AchievementCategory, AchievementRarity, AchievementWithProgress, CATEGORIES, RARITIES, RARITY_COLORS } from './types';
 import { AchievementCard } from './achievement-card';
 import { DetailModal } from './detail-modal';
 import { styles } from './styles';
 
+/**
+ *
+ */
 export default function AchievementsScreen() {
   const navigation = useNavigation();
   const { achievements, refreshAchievements, isLoading } = useGamification();
@@ -127,6 +128,7 @@ export default function AchievementsScreen() {
               }}
             >
               <Ionicons
+                 
                 name={item.icon as ComponentProps<typeof Ionicons>['name']} // type assertion: icon names from CATEGORIES constant are valid Ionicons names
                 size={16}
                 color={selectedCategory === item.id ? '#fff' : '#6b7280'}

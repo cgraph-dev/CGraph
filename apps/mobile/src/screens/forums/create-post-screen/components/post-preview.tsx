@@ -18,6 +18,9 @@ interface PostPreviewProps {
   postType: PostType;
 }
 
+/**
+ *
+ */
 export function PostPreview({ title, content, postType }: PostPreviewProps) {
   if (!title.trim()) {
     return null;

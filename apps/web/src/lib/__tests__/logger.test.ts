@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- logger tests must access console methods directly */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createLogger } from '../logger';
 

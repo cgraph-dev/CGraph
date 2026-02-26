@@ -17,18 +17,24 @@ vi.mock('@/modules/forums/store', () => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     div: ({ children, ...props }: any) => <div {...stripMotion(props)}>{children}</div>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     button: ({ children, ...props }: any) => <button {...stripMotion(props)}>{children}</button>,
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 vi.mock('@heroicons/react/24/outline', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   XMarkIcon: (props: any) => <svg data-testid="x-icon" {...props} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   FlagIcon: (props: any) => <svg data-testid="flag-icon" {...props} />,
 }));
 
 vi.mock('@/shared/components/ui', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GlassCard: ({ children, className }: any) => <div className={className}>{children}</div>,
   toast: { error: mockToastError, success: mockToastSuccess },
 }));
@@ -37,7 +43,9 @@ vi.mock('@/lib/animations/AnimationEngine', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function stripMotion(props: Record<string, any>) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const clean: Record<string, any> = {};
   for (const [k, v] of Object.entries(props)) {
     if (

@@ -201,6 +201,9 @@ function MemberItem({ member, onPress }: MemberItemProps) {
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function MemberListScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 

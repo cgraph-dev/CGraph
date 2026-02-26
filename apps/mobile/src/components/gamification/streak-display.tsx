@@ -39,6 +39,9 @@ const MILESTONE_REWARDS = [
   { days: 365, label: '1 Year', coins: 10000 },
 ];
 
+/**
+ *
+ */
 export function StreakDisplay({
   currentStreak,
   longestStreak,

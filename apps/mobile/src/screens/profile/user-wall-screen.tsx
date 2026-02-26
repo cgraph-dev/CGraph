@@ -126,6 +126,9 @@ const MOCK_POSTS: WallPost[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function UserWallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { colors } = useThemeStore();
@@ -266,6 +269,7 @@ export default function UserWallScreen() {
                 source={
                   item.userAvatar
                     ? { uri: item.userAvatar }
+                     
                     : require('@/assets/default-avatar.png')
                 }
                 size={44}

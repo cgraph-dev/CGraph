@@ -56,6 +56,9 @@ type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations' | 'ac
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function UICustomizationScreen({ navigation }: Props) {
   const { theme } = useCustomizationStore();
   const isDirty = useIsDirty();

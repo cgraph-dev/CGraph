@@ -53,6 +53,7 @@ vi.mock('framer-motion', () => ({
               htmlProps[key] = val;
             }
           }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const Tag = prop as any;
           return <Tag {...htmlProps}>{children}</Tag>;
         };

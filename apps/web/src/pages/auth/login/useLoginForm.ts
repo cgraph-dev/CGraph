@@ -58,6 +58,7 @@ export function useLoginForm() {
 
       // Request account access
       // type assertion: MetaMask ethereum.request() returns unknown, provider API is typed externally
+       
       const accounts = (await window.ethereum.request({
         method: 'eth_requestAccounts',
       })) as string[];
@@ -71,6 +72,7 @@ export function useLoginForm() {
 
       // Step 2: Sign the challenge message with MetaMask
       // type assertion: MetaMask ethereum.request() returns unknown, provider API is typed externally
+       
       const signature = (await window.ethereum.request({
         method: 'personal_sign',
         params: [challenge.message, walletAddress],

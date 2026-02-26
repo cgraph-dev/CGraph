@@ -60,12 +60,15 @@ export function usePinAndDelete({
       channel
         .push(event, { message_id: message.id })
         .receive('ok', (response?: unknown) => {
+           
           const res = response as Record<string, unknown> | undefined;
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           onMessagePinned(
             message.id,
             !isPinned,
+             
             !isPinned ? (res?.pinned_at as string) || new Date().toISOString() : undefined,
+             
             !isPinned ? (res?.pinned_by_id as string) || userId : undefined
           );
         })
@@ -73,7 +76,9 @@ export function usePinAndDelete({
           const reason =
             typeof err === 'string'
               ? err
+               
               : (err as Record<string, unknown>)?.reason ||
+                 
                 (err as Record<string, unknown>)?.error ||
                 '';
           logger.warn('Pin error:', reason);

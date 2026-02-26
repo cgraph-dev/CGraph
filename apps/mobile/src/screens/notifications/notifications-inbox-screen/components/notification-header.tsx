@@ -21,6 +21,9 @@ export interface NotificationHeaderProps {
   onMarkAllRead: () => void;
 }
 
+/**
+ *
+ */
 export function NotificationHeader({
   unreadCount,
   colors,

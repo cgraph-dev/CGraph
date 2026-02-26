@@ -95,6 +95,7 @@ export function VideoCallModal({
               <VideoGrid
                 localStream={localStream}
                 remoteStreams={callState.remoteStreams}
+                 
                 participants={callState.participants as unknown as CallParticipant[]} // type assertion: bridging participant type mismatch
                 isVideoEnabled={callState.isVideoEnabled}
                 isMuted={callState.isMuted}

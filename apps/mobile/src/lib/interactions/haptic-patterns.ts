@@ -294,6 +294,7 @@ class HapticEngine {
       await Haptics.impactAsync(effectiveStyle);
     } catch (error) {
       // Silently fail if haptics not available
+      // eslint-disable-next-line no-console
       console.debug('Haptic feedback not available:', error);
     }
   }
@@ -307,6 +308,7 @@ class HapticEngine {
     try {
       await Haptics.notificationAsync(type);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.debug('Haptic notification not available:', error);
     }
   }
@@ -320,6 +322,7 @@ class HapticEngine {
     try {
       await Haptics.selectionAsync();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.debug('Haptic selection not available:', error);
     }
   }
@@ -348,6 +351,7 @@ class HapticEngine {
         switch (step.type) {
           case 'impact':
             if (step.style) {
+               
               const effectiveStyle = this.getEffectiveStyle(step.style as Haptics.ImpactFeedbackStyle);
               if (effectiveStyle) {
                 await Haptics.impactAsync(effectiveStyle);
@@ -357,6 +361,7 @@ class HapticEngine {
 
           case 'notification':
             if (step.style) {
+               
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;
@@ -396,12 +401,14 @@ class HapticEngine {
         switch (step.type) {
           case 'impact':
             if (step.style) {
+               
               await Haptics.impactAsync(step.style as Haptics.ImpactFeedbackStyle);
             }
             break;
 
           case 'notification':
             if (step.style) {
+               
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;
@@ -495,34 +502,58 @@ export const hapticEngine = new HapticEngine();
 // Convenience Functions
 // ============================================================================
 
+/**
+ *
+ */
 export function hapticTap(): void {
   hapticEngine.impact(Haptics.ImpactFeedbackStyle.Light);
 }
 
+/**
+ *
+ */
 export function hapticMedium(): void {
   hapticEngine.impact(Haptics.ImpactFeedbackStyle.Medium);
 }
 
+/**
+ *
+ */
 export function hapticHeavy(): void {
   hapticEngine.impact(Haptics.ImpactFeedbackStyle.Heavy);
 }
 
+/**
+ *
+ */
 export function hapticSuccess(): void {
   hapticEngine.notification(Haptics.NotificationFeedbackType.Success);
 }
 
+/**
+ *
+ */
 export function hapticError(): void {
   hapticEngine.notification(Haptics.NotificationFeedbackType.Error);
 }
 
+/**
+ *
+ */
 export function hapticWarning(): void {
   hapticEngine.notification(Haptics.NotificationFeedbackType.Warning);
 }
 
+/**
+ *
+ */
 export function hapticSelection(): void {
   hapticEngine.selection();
 }
 
+/**
+ *
+ */
 export function playHapticPattern(pattern: HapticPattern): Promise<void> {
   return hapticEngine.playPattern(pattern);
 }
@@ -533,6 +564,9 @@ export function playHapticPattern(pattern: HapticPattern): Promise<void> {
 
 import { useCallback } from 'react';
 
+/**
+ *
+ */
 export function useHaptics() {
   const tap = useCallback(() => hapticTap(), []);
   const medium = useCallback(() => hapticMedium(), []);

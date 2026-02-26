@@ -87,6 +87,7 @@ export class AIThemeEngine {
     hsl.l = modifiers.lightness;
 
     const primary = ColorTheory.rgbToHex(
+       
       ...(Object.values(ColorTheory.hslToRgb(hsl.h, hsl.s, hsl.l)) as [number, number, number]) // type assertion: hslToRgb returns {r,g,b}, Object.values yields number tuple
     );
 

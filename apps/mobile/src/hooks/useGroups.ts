@@ -88,6 +88,9 @@ interface UseGroupsReturn extends GroupsState {
   joinByInvite: (code: string) => Promise<Group | null>;
 }
 
+/**
+ *
+ */
 export function useGroups(options: UseGroupsOptions = {}): UseGroupsReturn {
   const { autoLoad = true, groupId } = options;
 

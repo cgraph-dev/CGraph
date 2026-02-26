@@ -18,6 +18,9 @@ const sanitize = (raw: unknown) => {
   return raw ?? null;
 };
 
+/**
+ *
+ */
 export default class OfflineQueueItem extends Model {
   static table = 'offline_queue';
 

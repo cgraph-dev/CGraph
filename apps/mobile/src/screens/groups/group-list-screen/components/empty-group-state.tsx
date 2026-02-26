@@ -16,6 +16,9 @@ interface EmptyGroupStateProps {
   colors: ThemeColors;
 }
 
+/**
+ *
+ */
 export function EmptyGroupState({ colors }: EmptyGroupStateProps) {
   return (
     <View style={styles.emptyState}>

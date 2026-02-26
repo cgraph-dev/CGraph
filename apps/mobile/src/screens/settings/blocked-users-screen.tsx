@@ -58,6 +58,9 @@ interface BlockedUser {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function BlockedUsersScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
 

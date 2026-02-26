@@ -13,9 +13,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useSettingsStore } from '@/stores';
-import type { PrivacySettings } from '@/stores';
+import type { PrivacySettings, useSettingsStore, useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -31,6 +29,9 @@ interface SettingItem {
   description: string;
 }
 
+/**
+ *
+ */
 export default function PrivacyScreen({ navigation: _navigation }: Props) {
   const { colors } = useThemeStore();
   const { settings, updatePrivacySettings, isLoading, isSaving, fetchSettings } = useSettingsStore();

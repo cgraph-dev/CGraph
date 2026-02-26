@@ -530,6 +530,9 @@ function AchievementToast({ data, index, onDismiss, onViewDetails }: Achievement
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function AchievementNotification({
   notifications,
   onDismiss,

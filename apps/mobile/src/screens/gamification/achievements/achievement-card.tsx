@@ -9,8 +9,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { AchievementWithProgress } from './types';
-import { RARITY_COLORS } from './types';
+import type { AchievementWithProgress, RARITY_COLORS } from './types';
 import { styles } from './styles';
 
 interface AchievementCardProps {
@@ -18,6 +17,9 @@ interface AchievementCardProps {
   onPress: (achievement: AchievementWithProgress) => void;
 }
 
+/**
+ *
+ */
 export function AchievementCard({ achievement, onPress }: AchievementCardProps) {
   const colors = RARITY_COLORS[achievement.rarity];
   const progressPercent = Math.min(100, (achievement.progress / achievement.requirement) * 100);

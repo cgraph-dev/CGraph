@@ -226,6 +226,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
     set({
       query: '',
       // type assertion: string literal matches SearchCategory union type
+       
       category: 'all' as SearchCategory,
       users: [],
       groups: [],

@@ -68,6 +68,7 @@ export function LeaderboardEntryRow({
         size="small"
         avatarBorderId={
           entry.avatarBorderId ??
+           
           (entry as LeaderboardEntry & { avatar_border_id?: string | null }).avatar_border_id // type assertion: extending entry with optional field
         }
       />

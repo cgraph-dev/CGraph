@@ -31,6 +31,9 @@ import { QuestSection } from './components';
 // Re-export types for external use
 export type { Quest, QuestType, QuestStatus, QuestReward, QuestPanelProps } from './types';
 
+/**
+ *
+ */
 export default function QuestPanel({
   quests,
   onClaimQuest,
@@ -49,6 +52,7 @@ export default function QuestPanel({
       acc[quest.type].push(quest);
       return acc;
     },
+     
     {} as Record<QuestType, Quest[]>
   );
 
@@ -121,6 +125,7 @@ export default function QuestPanel({
         {Object.entries(questsByType).map(([type, typeQuests]) => (
           <QuestSection
             key={type}
+             
             type={type as QuestType}
             quests={typeQuests}
             onClaim={onClaimQuest}

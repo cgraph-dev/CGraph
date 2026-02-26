@@ -109,6 +109,7 @@ export function useCreateForum() {
       navigate(`/forums/${forum.slug}`);
     } catch (err: unknown) {
       logger.error('[CreateForum] Error:', err);
+       
       const errorObj = err as {
         response?: {
           data?: {

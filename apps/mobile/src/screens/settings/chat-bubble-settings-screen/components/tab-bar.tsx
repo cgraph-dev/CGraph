@@ -13,6 +13,9 @@ interface TabBarProps {
   onTabChange: (tab: TabId) => void;
 }
 
+/**
+ *
+ */
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
   return (
     <View style={styles.tabBar}>
@@ -26,6 +29,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
           }}
         >
           <Ionicons
+             
             name={tab.icon as keyof typeof Ionicons.glyphMap}
             size={20}
             color={activeTab === tab.id ? '#10b981' : '#6b7280'}

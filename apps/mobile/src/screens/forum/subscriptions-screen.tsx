@@ -36,6 +36,9 @@ interface Subscription {
   createdAt: Date;
 }
 
+/**
+ *
+ */
 export function SubscriptionsScreen(): React.ReactElement {
   const navigation = useNavigation();
   const { colors } = useThemeStore();
@@ -48,6 +51,7 @@ export function SubscriptionsScreen(): React.ReactElement {
   const fetchSubscriptions = useCallback(async () => {
     try {
       const response = await fetch('/api/forum/subscriptions');
+       
       const data = await response.json() as { subscriptions?: Subscription[] };
       setSubscriptions(data.subscriptions || []);
     } catch (error) {

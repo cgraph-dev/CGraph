@@ -20,6 +20,9 @@ import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
+/**
+ *
+ */
 export default function ForumsNavigator() {
   const { colors } = useThemeStore();
   

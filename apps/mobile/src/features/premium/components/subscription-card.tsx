@@ -26,6 +26,9 @@ const TIER_COLORS = {
   enterprise: { bg: ['#4A3728', '#1F1610'] as const, accent: '#F59E0B' },
 };
 
+/**
+ *
+ */
 export default function SubscriptionCard({
   tier,
   name,

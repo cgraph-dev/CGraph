@@ -45,6 +45,7 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
     setFile(selected);
     const reader = new FileReader();
     // type assertion: FileReader.result is string when readAsDataURL() is used
+     
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(selected);
 

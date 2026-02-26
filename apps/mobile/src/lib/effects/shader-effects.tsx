@@ -160,6 +160,9 @@ export interface ScanlineEffectProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function ScanlineEffect({ config, style }: ScanlineEffectProps) {
   const mergedConfig = { ...DEFAULT_SCANLINE_CONFIG, ...config };
   const scanlineOffset = useSharedValue(0);
@@ -242,6 +245,9 @@ export interface HolographicEffectProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function HolographicEffect({ config, style }: HolographicEffectProps) {
   const mergedConfig = { ...DEFAULT_HOLOGRAPHIC_CONFIG, ...config };
   const rotation = useSharedValue(0);
@@ -262,6 +268,7 @@ export function HolographicEffect({ config, style }: HolographicEffectProps) {
     <View style={[styles.effectContainer, style]} pointerEvents="none">
       <Animated.View style={[styles.holographicWrapper, animatedStyle]}>
         <LinearGradient
+           
           colors={mergedConfig.colors as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -282,6 +289,9 @@ export interface GlitchEffectProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
   const mergedConfig = { ...DEFAULT_GLITCH_CONFIG, ...config };
 
@@ -361,6 +371,9 @@ export interface ChromaticEffectProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function ChromaticEffect({ config, style, children }: ChromaticEffectProps) {
   const mergedConfig = { ...DEFAULT_CHROMATIC_CONFIG, ...config };
   const pulseValue = useSharedValue(1);
@@ -429,6 +442,9 @@ export interface GrainEffectProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function GrainEffect({ config, style }: GrainEffectProps) {
   const mergedConfig = { ...DEFAULT_GRAIN_CONFIG, ...config };
   const noiseOffset = useSharedValue(0);
@@ -492,6 +508,9 @@ export interface VignetteEffectProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function VignetteEffect({ config, style }: VignetteEffectProps) {
   const mergedConfig = { ...DEFAULT_VIGNETTE_CONFIG, ...config };
 
@@ -525,6 +544,9 @@ export interface CRTEffectProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function CRTEffect({ config, style, children }: CRTEffectProps) {
   const mergedConfig = { ...DEFAULT_CRT_CONFIG, ...config };
   const flickerOpacity = useSharedValue(1);
@@ -610,6 +632,9 @@ export interface ShaderOverlayProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function ShaderOverlay({
   effects = [],
   scanlines,

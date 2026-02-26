@@ -18,6 +18,9 @@ interface AccessibilityTabProps {
   updateTheme: (update: Partial<ThemeConfig>) => void;
 }
 
+/**
+ *
+ */
 export function AccessibilityTab({ theme, updateTheme }: AccessibilityTabProps) {
   return (
     <>

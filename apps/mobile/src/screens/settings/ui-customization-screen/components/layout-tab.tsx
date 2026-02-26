@@ -17,6 +17,9 @@ interface LayoutTabProps {
   updateTheme: (update: Partial<ThemeConfig>) => void;
 }
 
+/**
+ *
+ */
 export function LayoutTab({ theme, updateTheme }: LayoutTabProps) {
   return (
     <>

@@ -17,8 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import GlassCard from '../../components/ui/glass-card';
 import AnimatedAvatar from '../../components/ui/animated-avatar';
 import { getValidImageUrl } from '../../lib/imageUtils';
@@ -34,6 +33,9 @@ const formatKarma = (karma: number): string => {
   return karma.toString();
 };
 
+/**
+ *
+ */
 export default function SettingsScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user, logout } = useAuthStore();
@@ -81,6 +83,7 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Premium',
       icon: 'star',
+       
       gradient: ['#F59E0B', '#EF4444'] as [string, string],
       items: [
         {
@@ -88,6 +91,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'star' as const,
           onPress: () => navigation.navigate('Premium'),
           isPremium: true,
+           
           gradient: ['#F59E0B', '#EF4444'] as [string, string],
         },
         {
@@ -95,6 +99,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'logo-bitcoin' as const,
           onPress: () => navigation.navigate('CoinShop'),
           isShop: true,
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
@@ -102,42 +107,49 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Features',
       icon: 'apps',
+       
       gradient: ['#3b82f6', '#8b5cf6'] as [string, string],
       items: [
         {
           title: 'Calendar',
           icon: 'calendar' as const,
           onPress: () => navigation.navigate('Calendar'),
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
           title: 'Leaderboard',
           icon: 'trophy' as const,
           onPress: () => navigation.navigate('Leaderboard'),
+           
           gradient: ['#f59e0b', '#fbbf24'] as [string, string],
         },
         {
           title: 'Gamification',
           icon: 'game-controller' as const,
           onPress: () => navigation.navigate('GamificationHub'),
+           
           gradient: ['#8b5cf6', '#c084fc'] as [string, string],
         },
         {
           title: 'Achievements',
           icon: 'ribbon' as const,
           onPress: () => navigation.navigate('Achievements'),
+           
           gradient: ['#f59e0b', '#eab308'] as [string, string],
         },
         {
           title: 'Referral Program',
           icon: 'gift' as const,
           onPress: () => navigation.navigate('Referrals'),
+           
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
           title: 'Holographic UI Demo',
           icon: 'sparkles' as const,
           onPress: () => navigation.navigate('HolographicDemo'),
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
       ],
@@ -145,30 +157,35 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Account',
       icon: 'person',
+       
       gradient: ['#10b981', '#34d399'] as [string, string],
       items: [
         {
           title: 'Edit Profile',
           icon: 'person' as const,
           onPress: () => navigation.navigate('Profile'),
+           
           gradient: ['#3b82f6', '#60a5fa'] as [string, string],
         },
         {
           title: 'Account',
           icon: 'lock-closed' as const,
           onPress: () => navigation.navigate('Account'),
+           
           gradient: ['#6366f1', '#818cf8'] as [string, string],
         },
         {
           title: 'Privacy',
           icon: 'shield' as const,
           onPress: () => navigation.navigate('Privacy'),
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
         {
           title: 'Sessions',
           icon: 'phone-portrait' as const,
           onPress: () => navigation.navigate('Sessions'),
+           
           gradient: ['#f97316', '#fb923c'] as [string, string],
         },
       ],
@@ -176,36 +193,42 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Preferences',
       icon: 'settings',
+       
       gradient: ['#6366f1', '#818cf8'] as [string, string],
       items: [
         {
           title: 'Appearance',
           icon: 'color-palette' as const,
           onPress: () => navigation.navigate('Appearance'),
+           
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
           title: 'UI Customization',
           icon: 'options' as const,
           onPress: () => navigation.navigate('UICustomization'),
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
           title: 'Chat Bubbles',
           icon: 'chatbubbles' as const,
           onPress: () => navigation.navigate('ChatBubbles'),
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
           title: 'Avatar Settings',
           icon: 'person-circle' as const,
           onPress: () => navigation.navigate('AvatarSettings'),
+           
           gradient: ['#f59e0b', '#fbbf24'] as [string, string],
         },
         {
           title: 'Notifications',
           icon: 'notifications' as const,
           onPress: () => navigation.navigate('Notifications'),
+           
           gradient: ['#ef4444', '#f87171'] as [string, string],
         },
       ],
@@ -213,24 +236,28 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'About',
       icon: 'information-circle',
+       
       gradient: ['#6b7280', '#9ca3af'] as [string, string],
       items: [
         {
           title: 'Help & Support',
           icon: 'help-circle' as const,
           onPress: () => {},
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
           title: 'Terms of Service',
           icon: 'document-text' as const,
           onPress: () => navigation.navigate('TermsOfService'),
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
           title: 'Privacy Policy',
           icon: 'shield-checkmark' as const,
           onPress: () => navigation.navigate('PrivacyPolicy'),
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
@@ -419,6 +446,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 end={{ x: 1, y: 1 }}
                 style={styles.sectionIconContainer}
               >
+                { }
                 <Ionicons name={section.icon as keyof typeof Ionicons.glyphMap} size={12} color="#fff" />
               </LinearGradient>
               <Text style={[

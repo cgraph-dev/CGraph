@@ -9,8 +9,7 @@
 
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import type { UserBasic } from '../../../../types';
 import { styles } from '../styles';
 

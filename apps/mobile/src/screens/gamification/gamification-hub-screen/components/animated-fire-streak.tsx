@@ -93,6 +93,9 @@ function FlameEmoji({ index }: { index: number }) {
   );
 }
 
+/**
+ *
+ */
 export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireStreakProps) {
   const claimPulse = useSharedValue(1);
   const shimmerAnim = useSharedValue(0);

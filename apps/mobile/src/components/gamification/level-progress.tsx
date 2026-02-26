@@ -320,6 +320,9 @@ function StreakIndicator({ streak, showMultiplier = true }: StreakIndicatorProps
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function LevelProgress({
   level,
   currentXP,

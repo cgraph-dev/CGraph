@@ -124,6 +124,7 @@ export class GroupChannel {
 
     this.presence.onSync(() => {
       const presences = this.presence?.list() || {};
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       onSync(presences as PresenceState);
     });
   }

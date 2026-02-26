@@ -59,6 +59,9 @@ let config: SyncConfig = {
 let lastSyncAt = 0;
 let isSyncing = false;
 
+/**
+ *
+ */
 export function configureSyncEngine(overrides: Partial<SyncConfig>): void {
   config = { ...config, ...overrides };
 }
@@ -119,6 +122,7 @@ export async function sync(force = false): Promise<SyncStats | null> {
         conflicts = data.conflicts ?? 0;
 
         return {
+           
           changes: data.changes as SyncDatabaseChangeSet,
           timestamp: data.timestamp,
         };
@@ -340,6 +344,9 @@ export function startAutoSync(): void {
   sync(true).then(() => processOfflineQueue());
 }
 
+/**
+ *
+ */
 export function stopAutoSync(): void {
   if (syncInterval) {
     clearInterval(syncInterval);

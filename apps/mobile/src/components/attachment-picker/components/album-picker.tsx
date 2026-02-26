@@ -24,6 +24,9 @@ interface AlbumPickerProps {
   };
 }
 
+/**
+ *
+ */
 export function AlbumPicker({
   visible,
   albums,

@@ -27,6 +27,9 @@ type Props = {
   route: RouteProp<ForumsStackParamList, 'Forum'>;
 };
 
+/**
+ *
+ */
 export default function ForumScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -110,6 +113,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       {/* Vote buttons */}
       <VoteButtons
         voteCount={item.vote_count}
+         
         myVote={(item.my_vote || 0) as 0 | 1 | -1}
         onVote={(dir) => handleVote(item.id, dir)}
         size={24}

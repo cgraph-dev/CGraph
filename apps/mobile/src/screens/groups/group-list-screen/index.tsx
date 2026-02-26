@@ -21,6 +21,9 @@ import api from '../../../lib/api';
 import type { GroupListScreenProps, Group } from './types';
 import { AnimatedHeader, MorphingGroupCard, EmptyGroupState } from './components';
 
+/**
+ *
+ */
 export default function GroupListScreen({ navigation }: GroupListScreenProps) {
   const { colors, isDark } = useThemeStore();
   const [groups, setGroups] = useState<Group[]>([]);

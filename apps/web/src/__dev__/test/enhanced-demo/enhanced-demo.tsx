@@ -113,6 +113,7 @@ export default function EnhancedDemo() {
             <>
               <select
                 value={backgroundType}
+                 
                 onChange={(e) => setBackgroundType(e.target.value as BackgroundType)} // safe downcast – event value
                 className="rounded border border-white/20 bg-black/50 px-3 py-1.5 text-white"
               >
@@ -123,6 +124,7 @@ export default function EnhancedDemo() {
               {backgroundType === 'shader' && (
                 <select
                   value={shaderVariant}
+                   
                   onChange={(e) => setShaderVariant(e.target.value as ShaderVariant)} // safe downcast – event value
                   className="rounded border border-white/20 bg-black/50 px-3 py-1.5 text-white"
                 >
@@ -137,6 +139,7 @@ export default function EnhancedDemo() {
               {backgroundType === 'matrix3d' && (
                 <select
                   value={matrixTheme}
+                   
                   onChange={(e) => setMatrixTheme(e.target.value as MatrixTheme)} // safe downcast – event value
                   className="rounded border border-white/20 bg-black/50 px-3 py-1.5 text-white"
                 >

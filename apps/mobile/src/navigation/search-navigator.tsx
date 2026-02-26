@@ -9,6 +9,9 @@ import SearchScreen from '../screens/search/search-screen';
 
 const Stack = createNativeStackNavigator<SearchStackParamList>();
 
+/**
+ *
+ */
 export default function SearchNavigator() {
   return (
     <Stack.Navigator

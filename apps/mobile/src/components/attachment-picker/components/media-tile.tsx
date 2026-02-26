@@ -15,6 +15,9 @@ interface MediaTileProps {
   onPress: () => void;
 }
 
+/**
+ *
+ */
 export function MediaTile({ item, isSelected, selectionOrder, onPress }: MediaTileProps) {
   return (
     <TouchableOpacity style={styles.mediaTile} onPress={onPress} activeOpacity={0.8}>

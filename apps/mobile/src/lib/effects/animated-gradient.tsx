@@ -45,6 +45,9 @@ export interface AnimatedGradientProps {
   borderRadius?: number;
 }
 
+/**
+ *
+ */
 export function AnimatedGradientView({
   preset,
   config,
@@ -133,7 +136,9 @@ export function AnimatedGradientView({
     <View style={[styles.container, style, { borderRadius }]}>
       <Animated.View style={combinedStyle}>
         <LinearGradient
+           
           colors={gradientData.colors as [string, string, ...string[]]}
+           
           locations={gradientData.locations as [number, number, ...number[]]}
           start={gradientData.start}
           end={gradientData.end}
@@ -195,6 +200,9 @@ export interface AnimatedBorderGradientProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function AnimatedBorderGradient({
   colors = ['#10b981', '#8b5cf6', '#ec4899', '#10b981'],
   width = 2,
@@ -225,6 +233,7 @@ export function AnimatedBorderGradient({
       {/* Gradient border (enlarged and clipped) */}
       <Animated.View style={[styles.gradientBorderWrapper, animatedStyle]}>
         <LinearGradient
+           
           colors={colors as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -260,6 +269,9 @@ export interface GlowViewProps {
   layers?: number;
 }
 
+/**
+ *
+ */
 export function GlowView({ preset = 'soft', config, style, children, layers = 3 }: GlowViewProps) {
   const glowConfig: GlowConfig = useMemo(
     () => ({
@@ -323,6 +335,9 @@ export interface MeshGradientProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function MeshGradientBackground({
   colors,
   style,
@@ -371,6 +386,7 @@ export function MeshGradientBackground({
     <View style={[styles.meshContainer, style]}>
       {/* Base layer */}
       <LinearGradient
+         
         colors={[color1, color2] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -380,6 +396,7 @@ export function MeshGradientBackground({
       {/* Animated overlay layers */}
       <Animated.View style={[styles.meshLayer, layer1Style]}>
         <LinearGradient
+           
           colors={[`${color2}80`, 'transparent'] as [string, string]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -389,6 +406,7 @@ export function MeshGradientBackground({
 
       <Animated.View style={[styles.meshLayer, layer2Style]}>
         <LinearGradient
+           
           colors={[`${color3}60`, 'transparent'] as [string, string]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}
@@ -406,30 +424,51 @@ export function MeshGradientBackground({
 // Preset Exports
 // ============================================================================
 
+/**
+ *
+ */
 export function AuroraGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="aurora" />;
 }
 
+/**
+ *
+ */
 export function NeonGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="neonCyber" />;
 }
 
+/**
+ *
+ */
 export function HolographicGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="holographic" />;
 }
 
+/**
+ *
+ */
 export function SunsetGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="sunset" />;
 }
 
+/**
+ *
+ */
 export function OceanGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="ocean" />;
 }
 
+/**
+ *
+ */
 export function EmberGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="ember" />;
 }
 
+/**
+ *
+ */
 export function MatrixGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
   return <AnimatedGradientView {...props} preset="matrix" />;
 }

@@ -114,6 +114,9 @@ export const RANK_CONFIGS: Record<
 // Helper Functions
 // ============================================================================
 
+/**
+ *
+ */
 export function formatValue(value: number | undefined | null): string {
   const num = value ?? 0;
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -122,6 +125,9 @@ export function formatValue(value: number | undefined | null): string {
 }
 
 // Fallback mock data generator (used when API fails or in development)
+/**
+ *
+ */
 export function generateFallbackData(category: LeaderboardCategory, page: number): LeaderboardData {
   const mockNames = [
     'CryptoKing',
@@ -185,58 +191,84 @@ export function generateFallbackData(category: LeaderboardCategory, page: number
 }
 
 // Transform API response to LeaderboardData format
+/**
+ *
+ */
 export function transformApiResponse(
   data: Record<string, unknown>,
   category: LeaderboardCategory
 ): LeaderboardData {
+   
   const rawEntries = (data.entries || data.data || []) as Record<string, unknown>[];
   const entries: LeaderboardEntry[] = rawEntries.map((entry, index) => ({
+     
     rank: (entry.rank as number) || index + 1,
     previousRank:
+       
       (entry.previous_rank as number) ||
+       
       (entry.previousRank as number) ||
+       
       (entry.rank as number) ||
       index + 1,
     userId: String(entry.user_id || entry.userId || entry.id),
     username: String(entry.username || 'unknown'),
+     
     displayName: (entry.display_name || entry.displayName || entry.username) as string | null,
+     
     avatarUrl: (entry.avatar_url || entry.avatarUrl || null) as string | null,
+     
     level: (entry.level as number) || 1,
     value:
+       
       (entry.value as number) ||
+       
       (entry[category] as number) ||
+       
       (entry.xp as number) ||
+       
       (entry.karma as number) ||
       0,
     isOnline: Boolean(entry.is_online || entry.isOnline || entry.status === 'online'),
     isPremium: Boolean(entry.is_premium || entry.isPremium),
     isVerified: Boolean(entry.is_verified || entry.isVerified),
+     
     title: entry.title as string | undefined,
   }));
 
+   
   const userRankData = (data.user_rank || data.userRank || data.current_user) as Record<
     string,
     unknown
   > | null;
   const userRank: LeaderboardEntry | null = userRankData
     ? {
+         
         rank: (userRankData.rank as number) || 0,
         previousRank:
+           
           (userRankData.previous_rank as number) ||
+           
           (userRankData.previousRank as number) ||
+           
           (userRankData.rank as number) ||
           0,
         userId: String(userRankData.user_id || userRankData.userId || userRankData.id),
         username: String(userRankData.username || 'you'),
+         
         displayName: (userRankData.display_name || userRankData.displayName || 'You') as
           | string
           | null,
+         
         avatarUrl: (userRankData.avatar_url || userRankData.avatarUrl || null) as string | null,
+         
         level: (userRankData.level as number) || 1,
+         
         value: (userRankData.value as number) || (userRankData[category] as number) || 0,
         isOnline: true,
         isPremium: Boolean(userRankData.is_premium || userRankData.isPremium),
         isVerified: Boolean(userRankData.is_verified || userRankData.isVerified),
+         
         title: userRankData.title as string | undefined,
       }
     : null;
@@ -244,8 +276,11 @@ export function transformApiResponse(
   return {
     entries,
     totalCount:
+       
       (data.total_count as number) ||
+       
       (data.totalCount as number) ||
+       
       (data.total as number) ||
       entries.length,
     userRank,

@@ -118,6 +118,7 @@ export default function EventFormFields({
           <select
             value={formData.recurrence?.pattern || ''}
             // type assertion: select element value matches RecurrencePattern union
+             
             onChange={(e) => handleRecurrenceChange(e.target.value as RecurrencePattern | '')}
             className="bg-background border-border focus:ring-primary w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
           >

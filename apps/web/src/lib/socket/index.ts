@@ -50,6 +50,7 @@ function getSocketManager(): SocketManager {
  * via Proxy to avoid unnecessary construction at import time.
  */
 // type assertion: Proxy target placeholder, all access is intercepted by handler
+ 
 export const socketManager: SocketManager = new Proxy({} as SocketManager, {
   get(_target, prop, receiver) {
     return Reflect.get(getSocketManager(), prop, receiver);

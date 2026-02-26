@@ -11,6 +11,7 @@
  * 4. IndexedDB provides domain isolation (better than localStorage)
  *
  * @module lib/crypto/secure-storage/crypto-ops
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 
@@ -27,6 +28,7 @@ export function initDB(): Promise<IDBDatabase> {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
+       
       const db = (event.target as IDBOpenDBRequest).result; // safe downcast – DOM element
 
       // Create object stores
@@ -136,6 +138,7 @@ export async function encryptData(
     data
   );
 
+   
   return { ciphertext, iv: iv.buffer as ArrayBuffer }; // safe downcast – structural boundary
 }
 

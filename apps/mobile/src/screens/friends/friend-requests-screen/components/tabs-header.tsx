@@ -20,6 +20,9 @@ import type { TabsHeaderProps, TabType } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+/**
+ *
+ */
 export function TabsHeader({
   activeTab,
   onTabPress,

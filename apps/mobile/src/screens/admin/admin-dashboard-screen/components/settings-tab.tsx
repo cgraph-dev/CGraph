@@ -43,6 +43,9 @@ const settingsGroups = [
   },
 ];
 
+/**
+ *
+ */
 export function SettingsTab({ onNavigate }: SettingsTabProps) {
   return (
     <View style={styles.tabContent}>
@@ -64,6 +67,7 @@ export function SettingsTab({ onNavigate }: SettingsTabProps) {
               >
                 <View style={styles.settingsItemIcon}>
                   <Ionicons
+                     
                     name={item.icon as keyof typeof Ionicons.glyphMap}
                     size={20}
                     color="#10b981"

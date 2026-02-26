@@ -20,6 +20,7 @@ interface CategoryTabsProps {
  * Category Tabs component.
  */
 export function CategoryTabs({ activeCategory, onCategoryChange }: CategoryTabsProps) {
+   
   const categories = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[]; // type assertion: Object.keys returns string[], narrowing to known keys
 
   return (

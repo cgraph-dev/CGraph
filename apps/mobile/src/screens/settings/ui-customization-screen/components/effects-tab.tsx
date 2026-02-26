@@ -16,6 +16,9 @@ interface EffectsTabProps {
   updateTheme: (update: Partial<ThemeConfig>) => void;
 }
 
+/**
+ *
+ */
 export function EffectsTab({ theme, updateTheme }: EffectsTabProps) {
   return (
     <>

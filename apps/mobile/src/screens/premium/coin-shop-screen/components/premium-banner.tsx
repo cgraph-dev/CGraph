@@ -3,11 +3,14 @@
  * @module screens/premium/coin-shop-screen/components/premium-banner
  */
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
+/**
+ *
+ */
 export function PremiumBanner() {
   return (
     <TouchableOpacity
@@ -31,8 +34,10 @@ export function PremiumBanner() {
   );
 }
 
-import { View, Text } from 'react-native';
 
+/**
+ *
+ */
 export function PremiumBannerFull() {
   return (
     <TouchableOpacity

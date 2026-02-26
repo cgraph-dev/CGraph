@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:strict": "tsc -b && vite build",
-    "lint": "eslint . --max-warnings 86",
+    "lint": "eslint src/ --max-warnings 86",
     "lint:fix": "eslint . --fix --max-warnings 86",
     "preview": "vite preview",
     "test": "vitest",

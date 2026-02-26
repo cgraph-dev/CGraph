@@ -52,6 +52,7 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
             return {
               id: asString(c.id),
               name: asString(c.name),
+               
               type: (channelType === 'voice' || channelType === 'announcement' ? channelType : 'text') as 'text' | 'voice' | 'announcement', // type assertion: narrowing validated string to union
               topic: asString(c.topic) || null,
               position: asNumber(c.position),

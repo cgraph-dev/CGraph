@@ -35,8 +35,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
 
-import type { ReferralCode, ReferralStats, Referral, RewardTier, LeaderboardEntry } from './types';
 import {
+  type ReferralCode,
+  type ReferralStats,
+  type Referral,
+  type RewardTier,
+  type LeaderboardEntry,
   transformApiReferralCode,
   transformApiStats,
   transformApiReferral,
@@ -53,6 +57,9 @@ import {
   NextTierProgress,
 } from './components';
 
+/**
+ *
+ */
 export default function ReferralScreen() {
   const [referralCode, setReferralCode] = useState<ReferralCode | null>(null);
   const [stats, setStats] = useState<ReferralStats | null>(null);

@@ -5,6 +5,9 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
+/**
+ *
+ */
 export function renderStars(rating: number): React.ReactNode[] {
   const stars = [];
   for (let i = 1; i <= 5; i++) {

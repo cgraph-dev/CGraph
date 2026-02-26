@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -154,6 +155,7 @@ describe('messageUtils', () => {
 
     it('groups same-day messages together', () => {
       const msgs = [makeMsg('1', '2025-03-01T10:00:00Z'), makeMsg('2', '2025-03-01T14:00:00Z')];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const groups = groupMessagesByDate(msgs as any);
       expect(groups).toHaveLength(1);
       expect(groups[0].messages).toHaveLength(2);
@@ -161,11 +163,13 @@ describe('messageUtils', () => {
 
     it('creates separate groups for different days', () => {
       const msgs = [makeMsg('1', '2025-03-01T10:00:00Z'), makeMsg('2', '2025-03-02T10:00:00Z')];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const groups = groupMessagesByDate(msgs as any);
       expect(groups).toHaveLength(2);
     });
 
     it('handles a single message', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const groups = groupMessagesByDate([makeMsg('1', '2025-03-01T10:00:00Z')] as any);
       expect(groups).toHaveLength(1);
       expect(groups[0].messages).toHaveLength(1);
@@ -234,6 +238,7 @@ describe('reactionUtils', () => {
     });
 
     it('handles missing user data gracefully', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const noUser = { id: 'r1', emoji: '👍', userId: 'u1', user: undefined } as any;
       const result = aggregateReactions([noUser], 'me');
       expect(result).toHaveLength(1);

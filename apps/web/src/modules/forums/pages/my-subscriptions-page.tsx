@@ -195,6 +195,7 @@ export function MySubscriptionsPage() {
                   <select
                     value={sub.notification_level}
                     onChange={(e) =>
+                       
                       handleUpdateLevel(sub.id, e.target.value as 'all' | 'mentions' | 'none')
                     }
                     className="rounded-lg border border-white/10 bg-dark-700 px-2 py-1 text-xs text-gray-300"

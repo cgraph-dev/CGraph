@@ -59,6 +59,7 @@ export class MatrixRenderer {
 
     // Apply background fade (creates trail effect) - single draw call
     ctx.fillStyle = toRGBA(
+       
       ...(Object.values(parseColor(theme.backgroundColor)) as [number, number, number]), // type assertion: parseColor returns {r,g,b}, Object.values yields number tuple
       effects.backgroundFade
     );
@@ -182,6 +183,7 @@ export class MatrixRenderer {
       ctx.globalAlpha = alpha;
 
       for (const item of items) {
+         
         ctx.drawImage(item.glyph.canvas as CanvasImageSource, item.x, item.y); // safe downcast – DOM element
       }
     }

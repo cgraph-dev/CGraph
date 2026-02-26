@@ -118,6 +118,7 @@ describe('useAdminDashboard', () => {
   });
 
   it('returns dashboard state correctly', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.activeTab = 'events' as any;
     mockAdminStore.sidebarCollapsed = true;
     mockAdminStore.isLoading = true;
@@ -172,6 +173,7 @@ describe('useAdminEvents', () => {
   });
 
   it('filters events by status', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.eventFilters = { status: 'active' as any };
     const { result } = renderHook(() => useAdminEvents());
     expect(result.current.events).toHaveLength(2);
@@ -231,6 +233,7 @@ describe('useAdminUsers', () => {
   });
 
   it('filters users by status', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.userFilters = { status: 'active' as any, role: 'all' };
     const { result } = renderHook(() => useAdminUsers());
     expect(result.current.users).toHaveLength(2);
@@ -238,6 +241,7 @@ describe('useAdminUsers', () => {
   });
 
   it('filters users by role', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.userFilters = { status: 'all', role: 'user' as any };
     const { result } = renderHook(() => useAdminUsers());
     expect(result.current.users).toHaveLength(2);
@@ -372,12 +376,14 @@ describe('useModerationQueue (admin)', () => {
   });
 
   it('filters by status', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.moderationFilters = { status: 'pending' as any, riskLevel: 'all', type: 'all' };
     const { result } = renderHook(() => useModerationQueue());
     expect(result.current.queue).toHaveLength(2);
   });
 
   it('filters by risk level', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockAdminStore.moderationFilters = { status: 'all', riskLevel: 'critical' as any, type: 'all' };
     const { result } = renderHook(() => useModerationQueue());
     expect(result.current.queue).toHaveLength(1);

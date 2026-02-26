@@ -55,6 +55,7 @@ export function NotificationProvider({
   const addNotification = useCallback(
     (notification: Omit<Notification, 'id'>) => {
       const id = generateId();
+       
       const newNotification = {
         ...notification,
         id,
@@ -119,6 +120,7 @@ export function NotificationProvider({
   // Level up notification
   const showLevelUp = useCallback(
     (newLevel: number, rewards?: string[]) => {
+       
       addNotification({
         type: 'levelup',
         title: `Level Up!`,
@@ -155,6 +157,7 @@ export function NotificationProvider({
   // Quest complete notification
   const showQuestComplete = useCallback(
     (questTitle: string, xpReward: number) => {
+       
       addNotification({
         type: 'quest',
         title: 'Quest Complete!',

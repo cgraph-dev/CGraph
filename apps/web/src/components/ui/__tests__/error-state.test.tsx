@@ -9,7 +9,9 @@ import ErrorState, {
 } from '../error-state';
 
 vi.mock('@heroicons/react/24/outline', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ExclamationTriangleIcon: (props: any) => <svg data-testid="exclamation-icon" {...props} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ArrowPathIcon: (props: any) => <svg data-testid="arrow-path-icon" {...props} />,
 }));
 

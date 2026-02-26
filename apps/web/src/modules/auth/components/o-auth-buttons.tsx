@@ -104,6 +104,7 @@ export function OAuthButton({
 
       // Update auth store with response using proper mapper
       useAuthStore.setState({
+         
         user: mapUserFromApi(response.user as unknown as Record<string, unknown>), // type assertion: mapping API user response
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token,

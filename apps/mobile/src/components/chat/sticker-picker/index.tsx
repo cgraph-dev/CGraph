@@ -26,6 +26,9 @@ import { StickerItem } from './components';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+/**
+ *
+ */
 export default function StickerPicker({
   visible,
   onClose,

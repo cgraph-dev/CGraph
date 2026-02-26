@@ -265,6 +265,7 @@ export function createHandleAchievementUnlock(set: SetState, get: GetState) {
             borderId: b.id,
             unlockedAt: new Date().toISOString(),
             // type assertion: hardcoded string literal matches BorderUnlockType union
+             
             unlockSource: 'achievement' as BorderUnlockType,
             achievementId,
           })),

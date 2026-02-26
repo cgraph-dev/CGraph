@@ -30,14 +30,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { MatrixAuthBackground } from '../../../components/matrix';
 import api from '../../../lib/api';
-import type { OnboardingProps, NotificationSettings } from './types';
-import { SCREEN_WIDTH, STEPS, FEATURES } from './types';
+import type { FEATURES, NotificationSettings, OnboardingProps, SCREEN_WIDTH, STEPS } from './types';
 import { styles } from './styles';
 
+/**
+ *
+ */
 export default function OnboardingScreen({ navigation }: OnboardingProps) {
   const { colors } = useThemeStore();
   const { user } = useAuthStore();
@@ -142,6 +143,7 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
       try {
         if (avatarUri && avatarUri !== user?.avatar_url) {
           const formData = new FormData();
+           
           formData.append('avatar', {
             uri: avatarUri,
             type: 'image/jpeg',

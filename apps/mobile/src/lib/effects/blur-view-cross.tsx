@@ -72,7 +72,9 @@ function FallbackLayer({ config, index, totalLayers, borderRadius = 0 }: Fallbac
 
   return (
     <LinearGradient
+       
       colors={gradient.colors as [string, string, ...string[]]}
+       
       locations={gradient.locations as [number, number, ...number[]]}
       start={gradient.start}
       end={gradient.end}
@@ -143,6 +145,9 @@ function ShimmerOverlay({ borderRadius = 0 }: ShimmerOverlayProps) {
 // Main BlurViewCross Component
 // ============================================================================
 
+/**
+ *
+ */
 export default function BlurViewCross({
   children,
   intensity = 'medium',
@@ -252,6 +257,7 @@ export default function BlurViewCross({
 
       {/* Style-specific gradient overlay */}
       <LinearGradient
+         
         colors={[colors.gradientStart, colors.gradientEnd] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -325,42 +331,72 @@ const styles = StyleSheet.create({
 // Convenience Components
 // ============================================================================
 
+/**
+ *
+ */
 export function LightBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
   return <BlurViewCross {...props} tint="light" />;
 }
 
+/**
+ *
+ */
 export function DarkBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
   return <BlurViewCross {...props} tint="dark" />;
 }
 
+/**
+ *
+ */
 export function FrostedGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="frosted" />;
 }
 
+/**
+ *
+ */
 export function CrystalGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="crystal" />;
 }
 
+/**
+ *
+ */
 export function NeonGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="neon" />;
 }
 
+/**
+ *
+ */
 export function HolographicGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="holographic" />;
 }
 
+/**
+ *
+ */
 export function AuroraGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="aurora" />;
 }
 
+/**
+ *
+ */
 export function MidnightGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="midnight" />;
 }
 
+/**
+ *
+ */
 export function OceanGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="ocean" />;
 }
 
+/**
+ *
+ */
 export function EmberGlass(props: Omit<BlurViewCrossProps, 'style'>) {
   return <BlurViewCross {...props} style="ember" />;
 }

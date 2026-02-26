@@ -38,37 +38,61 @@ export function mapReferralFromApi(data: Record<string, unknown>): Referral {
     : undefined;
 
   return {
+     
     id: data.id as string, // type assertion: API response field
+     
     referrerId: data.referrer_id as string, // type assertion: API response field
+     
     referrerUsername: (data.referrer_username as string) || 'Unknown', // type assertion: API response field
+     
     referredId: data.referred_id as string, // type assertion: API response field
+     
     referredUsername: (data.referred_username as string) || 'Unknown', // type assertion: API response field
+     
     referredAvatarUrl: (data.referred_avatar_url as string) || null, // type assertion: API response field
+     
     status: (data.status as ReferralStatus) || 'pending', // safe downcast
+     
     code: (data.code as string) || '', // type assertion: API response field
+     
     source: data.source as string | undefined, // type assertion: API response field
     referrerReward: referrerReward
       ? {
+           
           id: referrerReward.id as string, // type assertion: API response field
+           
           type: (referrerReward.type as ReferralReward['type']) || 'xp', // safe downcast
+           
           amount: (referrerReward.amount as number) || 0, // type assertion: API response field
+           
           description: (referrerReward.description as string) || '', // type assertion: API response field
+           
           claimed: (referrerReward.claimed as boolean) || false, // type assertion: API response field
+           
           claimedAt: (referrerReward.claimed_at as string) || null, // type assertion: API response field
         }
       : undefined,
     referredReward: referredReward
       ? {
+           
           id: referredReward.id as string, // type assertion: API response field
+           
           type: (referredReward.type as ReferralReward['type']) || 'xp', // safe downcast
+           
           amount: (referredReward.amount as number) || 0, // type assertion: API response field
+           
           description: (referredReward.description as string) || '', // type assertion: API response field
+           
           claimed: (referredReward.claimed as boolean) || false, // type assertion: API response field
+           
           claimedAt: (referredReward.claimed_at as string) || null, // type assertion: API response field
         }
       : undefined,
+     
     createdAt: (data.created_at as string) || new Date().toISOString(), // type assertion: API response field
+     
     verifiedAt: (data.verified_at as string) || null, // type assertion: API response field
+     
     rewardedAt: (data.rewarded_at as string) || null, // type assertion: API response field
   };
 }
@@ -149,6 +173,7 @@ export const createReferralActions: StateCreator<ReferralState> = (set, get) => 
     try {
       const response = await api.get('/api/v1/referrals');
       // type assertion: ensureArray returns unknown[], narrowing to Record for field access
+       
       const referrals = (ensureArray(response.data, 'referrals') as Record<string, unknown>[]).map(
         mapReferralFromApi
       );
@@ -164,6 +189,7 @@ export const createReferralActions: StateCreator<ReferralState> = (set, get) => 
       const response = await api.get('/api/v1/referrals/pending');
       // type assertion: ensureArray returns unknown[], narrowing to Record for field access
       const pendingReferrals = (
+         
         ensureArray(response.data, 'referrals') as Record<string, unknown>[]
       ).map(mapReferralFromApi);
       set({ pendingReferrals });

@@ -69,6 +69,7 @@ export function ChannelListItem({
   onPermissions,
 }: ChannelListItemProps) {
   // type assertion: channel.type is a valid key of channelIcons map
+   
   const Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> = channelIcons[channel.type as keyof typeof channelIcons] ?? HashtagIcon;
 
   return (

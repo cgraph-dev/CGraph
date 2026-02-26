@@ -16,6 +16,9 @@ interface SliderRowProps {
   onValueChange: (value: number) => void;
 }
 
+/**
+ *
+ */
 export function SliderRow({ label, value, min, max, step, onValueChange }: SliderRowProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 

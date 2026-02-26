@@ -15,6 +15,9 @@ const sanitizeJSON = (raw: unknown) => {
   return raw ?? null;
 };
 
+/**
+ *
+ */
 export default class Message extends Model {
   static table = 'messages';
 

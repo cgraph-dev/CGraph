@@ -36,7 +36,9 @@ export function MessagesDemo() {
               index={index}
               isNew={index >= 2}
               messageId={msg.id}
+              // eslint-disable-next-line no-console
               onSwipeReply={() => console.log('Reply to:', msg.id)}
+              // eslint-disable-next-line no-console
               onLongPress={() => console.log('Long press:', msg.id)}
               enableGestures
             >

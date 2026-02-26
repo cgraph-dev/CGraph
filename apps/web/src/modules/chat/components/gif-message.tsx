@@ -40,10 +40,15 @@ export function GifMessage({
   const [showFullscreen, setShowFullscreen] = useState(false);
 
   // Extract GIF metadata
+   
   const gifUrl = (message.metadata?.gifUrl as string) || message.metadata?.url || message.content; // type assertion: message metadata field
+   
   const gifPreviewUrl = message.metadata?.gifPreviewUrl as string; // type assertion: message metadata field
+   
   const gifTitle = (message.metadata?.gifTitle as string) || 'GIF'; // type assertion: message metadata field
+   
   const gifWidth = message.metadata?.gifWidth as number; // type assertion: message metadata field
+   
   const gifHeight = message.metadata?.gifHeight as number; // type assertion: message metadata field
 
   // Calculate aspect ratio for proper sizing

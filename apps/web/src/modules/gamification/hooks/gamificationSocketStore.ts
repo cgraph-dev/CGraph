@@ -124,6 +124,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
         // Flush queued messages
         const queue = get().messageQueue;
         queue.forEach(({ event, payload }) => {
+           
           channel.push(event, payload as Record<string, unknown>); // safe downcast – structural boundary
         });
         set({ messageQueue: [] });

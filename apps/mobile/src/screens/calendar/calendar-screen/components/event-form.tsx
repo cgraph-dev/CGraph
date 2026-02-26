@@ -17,8 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
-import type { CalendarEvent, EventType } from '../types';
-import { EVENT_TYPE_CONFIG } from '../types';
+import type { CalendarEvent, EVENT_TYPE_CONFIG, EventType } from '../types';
 
 interface EventFormProps {
   visible: boolean;
@@ -28,6 +27,9 @@ interface EventFormProps {
   onSave: (event: Partial<CalendarEvent>) => void;
 }
 
+/**
+ *
+ */
 export function EventForm({ visible, event, initialDate, onClose, onSave }: EventFormProps) {
   const [title, setTitle] = useState(event?.title || '');
   const [description, setDescription] = useState(event?.description || '');
@@ -106,6 +108,7 @@ export function EventForm({ visible, event, initialDate, onClose, onSave }: Even
           <View style={styles.formSection}>
             <Text style={styles.formLabel}>Type</Text>
             <View style={styles.typeSelector}>
+              { }
               {(Object.keys(EVENT_TYPE_CONFIG) as EventType[]).map((type) => {
                 const config = EVENT_TYPE_CONFIG[type];
                 const isSelected = eventType === type;
@@ -122,6 +125,7 @@ export function EventForm({ visible, event, initialDate, onClose, onSave }: Even
                     ]}
                   >
                     <Ionicons
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       name={config.icon as any}
                       size={18}
                       color={isSelected ? config.color : '#9ca3af'}

@@ -5,6 +5,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
+  type SharedValue,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -16,7 +17,6 @@ import Animated, {
   Extrapolation,
   Easing,
 } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';

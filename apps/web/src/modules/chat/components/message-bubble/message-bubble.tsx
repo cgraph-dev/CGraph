@@ -204,6 +204,8 @@ export const MessageBubble = memo(
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
                 {message.isEdited && <span>(edited)</span>}
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                { }
                 {!!(message as unknown as Record<string, unknown>) // type assertion: checking optional property existence
                   .expiresAt /* safe downcast – optional expiry field */ && (
                   <span
@@ -217,6 +219,7 @@ export const MessageBubble = memo(
                   <MessageStatusIndicator
                     status={
                       (
+                         
                         message.metadata?.readBy as ReadByEntry[] | undefined // type assertion: metadata readBy field type
                       ) /* safe downcast – metadata field */?.length
                         ? 'read'
@@ -270,6 +273,7 @@ export const MessageBubble = memo(
           {isOwn && message.metadata?.readBy && Array.isArray(message.metadata.readBy) && (
             <ReadReceipts
               readBy={
+                 
                 message.metadata
                   .readBy as ReadByEntry[] /* safe downcast – guarded by Array.isArray */
               }

@@ -72,6 +72,7 @@ export default function GlowText({
     : gradient.match(/#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3}|rgb[a]?\([^)]+\)/)?.[0] || '#667eea';
   void _primaryColor; // Reserved for future enhanced glow effects
 
+   
   const MotionComponent = motion[Component] as typeof motion.span; // type assertion: dynamic motion component access returns compatible type
 
   return (

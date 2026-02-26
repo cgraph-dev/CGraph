@@ -19,8 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import GlassCard from '../../components/ui/glass-card';
-import { useAuthStore } from '@/stores';
-import { useThemeStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payment';
 
 /**
@@ -99,6 +98,9 @@ const PREMIUM_TIERS: PremiumTier[] = [
 
 type BillingCycle = 'monthly' | 'yearly';
 
+/**
+ *
+ */
 function PremiumScreen(): React.ReactElement | null {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user: _user } = useAuthStore();
@@ -193,6 +195,7 @@ function PremiumScreen(): React.ReactElement | null {
                 }
               }
             } catch (error: unknown) {
+               
               const err = error as Error;
               console.error('[PremiumScreen] Purchase error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -232,6 +235,7 @@ function PremiumScreen(): React.ReactElement | null {
                 Alert.alert('No Purchases', 'No previous purchases found to restore.');
               }
             } catch (error: unknown) {
+               
               const err = error as Error;
               console.error('[PremiumScreen] Restore error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

@@ -42,6 +42,9 @@ export interface ServerCardProps {
   onJoin?: () => void;
 }
 
+/**
+ *
+ */
 export function ServerCard({
   server,
   variant = 'default',

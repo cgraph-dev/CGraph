@@ -246,6 +246,7 @@ export default function ErrorState({
           variant === 'minimal' && styles.iconContainerMinimal,
         ]}
       >
+        { }
         <IconComponent name={preset.icon as string} size={iconSize} color={preset.color} />
       </Animated.View>
     );
@@ -318,10 +319,16 @@ function adjustColor(color: string, amount: number): string {
 }
 
 // Pre-built error variants
+/**
+ *
+ */
 export function NetworkError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return <ErrorState type="network" onRetry={onRetry} style={style} />;
 }
 
+/**
+ *
+ */
 export function NotFoundError({ type = 'Content', style }: { type?: string; style?: ViewStyle }) {
   return (
     <ErrorState
@@ -333,20 +340,32 @@ export function NotFoundError({ type = 'Content', style }: { type?: string; styl
   );
 }
 
+/**
+ *
+ */
 export function PermissionError({ style }: { style?: ViewStyle }) {
   return <ErrorState type="permission" style={style} />;
 }
 
+/**
+ *
+ */
 export function RateLimitError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return (
     <ErrorState type="rateLimit" onRetry={onRetry} retryLabel="Try Again Later" style={style} />
   );
 }
 
+/**
+ *
+ */
 export function ServerError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return <ErrorState type="server" onRetry={onRetry} style={style} />;
 }
 
+/**
+ *
+ */
 export function EmptyState({
   title = 'Nothing Here',
   message = 'No content to display yet.',
@@ -375,15 +394,24 @@ export function EmptyState({
   );
 }
 
+/**
+ *
+ */
 export function OfflineError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return <ErrorState type="offline" onRetry={onRetry} style={style} />;
 }
 
 // Card variant shortcuts
+/**
+ *
+ */
 export function NetworkErrorCard({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return <ErrorState type="network" onRetry={onRetry} variant="card" style={style} />;
 }
 
+/**
+ *
+ */
 export function ServerErrorCard({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return <ErrorState type="server" onRetry={onRetry} variant="card" style={style} />;
 }

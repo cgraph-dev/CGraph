@@ -20,6 +20,7 @@ export function withErrorTracking<P extends object>(
     try {
       return <WrappedComponent {...props} />;
     } catch (error) {
+       
       captureError(error as Error, { // safe downcast – structural boundary
         component: componentName,
         action: 'render_error',

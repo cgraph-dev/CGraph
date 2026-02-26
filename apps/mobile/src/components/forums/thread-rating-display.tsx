@@ -18,6 +18,9 @@ interface ThreadRatingDisplayProps {
   onRate?: (rating: number) => Promise<void>;
 }
 
+/**
+ *
+ */
 export default function ThreadRatingDisplay({
   rating = 0,
   ratingCount = 0,

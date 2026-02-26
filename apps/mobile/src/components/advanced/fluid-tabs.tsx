@@ -94,6 +94,9 @@ interface TabLayout {
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function FluidTabs({
   tabs,
   activeTab,
@@ -397,6 +400,7 @@ function TabButton({
 
     return {
       color: isActive ? activeTextColor : inactiveTextColor,
+       
       fontWeight: fontWeight as unknown,
     };
   });
@@ -454,6 +458,9 @@ export interface SimpleTabsProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function SimpleTabs({ tabs, activeIndex, onTabChange, style }: SimpleTabsProps) {
   const tabItems: TabItem[] = useMemo(() => {
     return tabs.map((label, index) => ({
@@ -480,6 +487,9 @@ export interface IconTabsProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function IconTabs({
   tabs,
   activeIndex,
@@ -513,6 +523,9 @@ export interface SegmentedControlProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function SegmentedControl({
   segments,
   selectedIndex,

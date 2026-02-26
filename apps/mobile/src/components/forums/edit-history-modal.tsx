@@ -24,6 +24,9 @@ interface EditHistoryModalProps {
   onFetchHistory?: (postId: string) => Promise<PostEditHistory[]>;
 }
 
+/**
+ *
+ */
 export default function EditHistoryModal({
   visible,
   onClose,

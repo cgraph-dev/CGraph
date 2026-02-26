@@ -48,6 +48,7 @@ export const PostIconPicker = memo(function PostIconPicker({
 
   // Get recent icons from stored IDs
   const recentIconsData = useMemo(() => {
+     
     return recentIcons
       .map((id) => icons.find((icon) => icon.id === id))
       .filter(Boolean) as PostIcon[]; // safe downcast – structural boundary
@@ -81,6 +82,7 @@ export const PostIconPicker = memo(function PostIconPicker({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
+       
       const target = event.target as Element; // safe downcast – DOM element
       if (!target.closest('[data-post-icon-picker]')) {
         setIsOpen(false);

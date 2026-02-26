@@ -25,6 +25,9 @@ export interface UseSyncState {
   retryFailed: () => Promise<void>;
 }
 
+/**
+ *
+ */
 export function useSync(): UseSyncState {
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<SyncStats | null>(null);

@@ -59,6 +59,7 @@ export function ContentSortFilter({ filters, updateFilter }: ContentSortFilterPr
             value={filters.sortBy}
             onChange={(e) =>
               // type assertion: select element value matches sortBy filter union
+               
               updateFilter('sortBy', e.target.value as AdvancedSearchFilters['sortBy'])
             }
             className={`flex-1 ${SELECT_CLS}`}
@@ -71,6 +72,7 @@ export function ContentSortFilter({ filters, updateFilter }: ContentSortFilterPr
           </select>
           <select
             value={filters.sortOrder}
+             
             onChange={(e) => updateFilter('sortOrder', e.target.value as 'desc' | 'asc')}
             className="w-32 rounded-lg border border-dark-500 bg-dark-700 px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >

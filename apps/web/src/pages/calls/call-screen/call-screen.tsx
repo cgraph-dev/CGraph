@@ -55,6 +55,7 @@ export default function CallScreen() {
       {/* Header */}
       <CallHeader
         recipient={recipient}
+         
         callStatus={callState.status as CallStatus} // safe downcast – runtime verified
         formattedDuration={formatDuration}
         showControls={showControls}
@@ -64,6 +65,7 @@ export default function CallScreen() {
       <div className="relative z-10 flex-1 p-4">
         {isConnecting ? (
           /* safe downcast – runtime verified */
+           
           <ConnectingState recipient={recipient} callStatus={callState.status as CallStatus} />
         ) : (
           <div className={`grid h-full ${gridClass} gap-4`}>

@@ -19,6 +19,9 @@ interface LoadingSpinnerProps {
   testID?: string;
 }
 
+/**
+ *
+ */
 export default function LoadingSpinner({
   size = 'large',
   text,

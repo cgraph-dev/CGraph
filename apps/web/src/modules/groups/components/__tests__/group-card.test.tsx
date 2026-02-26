@@ -8,11 +8,13 @@ import type { Group } from '../group-list/types';
 
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     div: ({ children, whileHover, whileTap, ...rest }: any) => <div {...rest}>{children}</div>,
   },
 }));
 
 vi.mock('@/shared/components/ui', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GlassCard: ({ children, className }: any) => (
     <div data-testid="glass-card" className={className}>
       {children}
@@ -21,8 +23,11 @@ vi.mock('@/shared/components/ui', () => ({
 }));
 
 vi.mock('@heroicons/react/24/outline', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GlobeAltIcon: (p: any) => <svg data-testid="globe-icon" {...p} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   LockClosedIcon: (p: any) => <svg data-testid="lock-icon" {...p} />,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   UserGroupIcon: (p: any) => <svg data-testid="users-icon" {...p} />,
 }));
 

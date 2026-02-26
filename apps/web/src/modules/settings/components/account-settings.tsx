@@ -88,6 +88,7 @@ export function AccountSettings() {
       toast.success('Username changed successfully');
     } catch (error: unknown) {
       const errorMessage =
+         
         (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
           ?.message || 'Failed to change username';
       toast.error(errorMessage);

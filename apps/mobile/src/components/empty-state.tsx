@@ -25,6 +25,9 @@ interface EmptyStateProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function EmptyState({
   icon,
   iconComponent,

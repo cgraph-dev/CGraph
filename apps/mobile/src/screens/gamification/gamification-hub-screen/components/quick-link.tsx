@@ -21,6 +21,9 @@ export interface QuickLinkProps {
   onPress: () => void;
 }
 
+/**
+ *
+ */
 export function QuickLink({ icon, label, description, color, onPress }: QuickLinkProps) {
   return (
     <TouchableOpacity
@@ -38,6 +41,7 @@ export function QuickLink({ icon, label, description, color, onPress }: QuickLin
         style={styles.gradient}
       >
         <View style={[styles.iconContainer, { backgroundColor: color + '30' }]}>
+          { }
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={24} color={color} />
         </View>
         <View style={styles.content}>

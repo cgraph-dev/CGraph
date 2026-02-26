@@ -18,6 +18,9 @@ import SettingsNavigator from './settings-navigator';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
+/**
+ *
+ */
 export default function MainNavigator() {
   const { colors } = useThemeStore();
   

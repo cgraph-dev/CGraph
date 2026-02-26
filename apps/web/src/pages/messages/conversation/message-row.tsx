@@ -65,6 +65,7 @@ export function MessageRow({
   const navigate = useNavigate();
   const messageSenderId =
     getMessageSenderId(
+       
       message as unknown as Record<string, unknown> /* safe downcast – polymorphic message access */
     ) || '';
   const currentUserId = user?.id || '';
@@ -84,6 +85,7 @@ export function MessageRow({
   const prevMessage = groupMessages[msgIndex - 1];
   const prevSenderId = prevMessage
     ? getMessageSenderId(
+         
         prevMessage as unknown as Record< // safe downcast – structural boundary
           string,
           unknown

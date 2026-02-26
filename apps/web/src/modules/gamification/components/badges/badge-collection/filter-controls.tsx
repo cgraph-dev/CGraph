@@ -57,6 +57,7 @@ export function FilterControls({
           onChange={(e) =>
             onFilterUpdate(
               'rarity',
+               
               e.target.value as AchievementRarity | 'all' /* safe downcast – select event value */
             )
           }
@@ -84,6 +85,7 @@ export function FilterControls({
           onChange={(e) =>
             onFilterUpdate(
               'status',
+               
               e.target.value as FilterState['status'] /* safe downcast – select event value */
             )
           }
@@ -109,6 +111,7 @@ export function FilterControls({
           onChange={(e) =>
             onFilterUpdate(
               'sort',
+               
               e.target.value as SortOption /* safe downcast – select event value */
             )
           }

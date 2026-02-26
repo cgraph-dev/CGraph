@@ -21,8 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeStore } from '@/stores';
-import type { ThemeColors } from '@/stores';
+import type { ThemeColors, useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { UserBasic, FriendsStackParamList } from '../../types';
@@ -100,6 +99,7 @@ const AnimatedFriendItem = ({
 
   const displayName = item.user.display_name || item.user.username || 'User';
   const avatarUrl = item.user.avatar_url;
+   
   const isPremium = (item.user as Record<string, unknown>).is_premium || false;
 
   const getBorderAnimation = (): 'none' | 'glow' | 'holographic' | 'rainbow' => {
@@ -190,6 +190,9 @@ const AnimatedFriendItem = ({
   );
 };
 
+/**
+ *
+ */
 export default function FriendListScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { colors } = useThemeStore();

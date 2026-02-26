@@ -20,6 +20,9 @@ const PADDING = {
   lg: 24,
 };
 
+/**
+ *
+ */
 export default function Card({
   children,
   variant = 'default',

@@ -73,6 +73,9 @@ const SIZE_CONFIG = {
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function StatCounter({
   value,
   previousValue,
@@ -285,6 +288,9 @@ export interface StatGroupProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function StatGroup({
   stats,
   columns = 2,
@@ -348,6 +354,9 @@ export interface ComparisonStatProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function ComparisonStat({
   currentValue,
   previousValue,
@@ -407,6 +416,9 @@ export interface CountdownProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function Countdown({
   targetDate,
   onComplete,

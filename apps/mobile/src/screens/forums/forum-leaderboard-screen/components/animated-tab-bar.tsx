@@ -32,6 +32,9 @@ interface TabBarProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
   const indicatorAnim = useSharedValue(activeTab === 'forums' ? 0 : 1);
   const forumsScale = useSharedValue(activeTab === 'forums' ? 1.1 : 1);

@@ -50,6 +50,7 @@ export function finishTransaction(txId: string, report = false): void {
   const duration = performance.now() - tx.startTime;
 
   if (CONFIG.debug) {
+    // eslint-disable-next-line no-console
     console.debug('[ErrorTracking] Transaction finished:', {
       name: tx.name,
       duration: `${duration.toFixed(2)}ms`,

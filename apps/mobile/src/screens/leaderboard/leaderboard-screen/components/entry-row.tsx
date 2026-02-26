@@ -9,8 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimationColors } from '@/lib/animations/animation-engine';
-import type { LeaderboardEntry, CategoryConfig } from '../types';
-import { RANK_CONFIGS, formatValue } from '../types';
+import type { CategoryConfig, LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
 import { RankChangeIndicator } from './rank-change-indicator';
 
 export interface EntryRowProps {
@@ -20,6 +19,9 @@ export interface EntryRowProps {
   onPress: (userId: string) => void;
 }
 
+/**
+ *
+ */
 export function EntryRow({ entry, category, isCurrentUser, onPress }: EntryRowProps) {
   const scaleAnim = useSharedValue(1);
   const config = RANK_CONFIGS[entry.rank];

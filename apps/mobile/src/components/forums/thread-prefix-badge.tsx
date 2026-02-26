@@ -13,6 +13,9 @@ interface ThreadPrefixBadgeProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export default function ThreadPrefixBadge({
   prefix,
   size = 'md',

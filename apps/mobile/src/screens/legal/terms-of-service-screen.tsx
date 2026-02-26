@@ -66,6 +66,9 @@ const sections: LegalSection[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function TermsOfServiceScreen() {
   return (
     <LegalScreen

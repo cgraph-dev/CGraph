@@ -47,6 +47,7 @@ export default function ResetPassword() {
         await api.post('/api/v1/auth/reset-password/validate', { token });
         setState('form');
       } catch (error: unknown) {
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -76,6 +77,7 @@ export default function ResetPassword() {
         });
         setState('success');
       } catch (error: unknown) {
+         
         const apiError = error as { response?: { data?: { message?: string } } };
         setErrorMessage(
           apiError.response?.data?.message || 'Failed to reset password. Please try again.'

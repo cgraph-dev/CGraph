@@ -33,6 +33,9 @@ interface UserBadgeProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export default function UserBadge({
   userIdDisplay,
   username,

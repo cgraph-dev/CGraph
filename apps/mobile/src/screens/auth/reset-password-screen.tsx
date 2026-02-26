@@ -89,6 +89,9 @@ function calculatePasswordStrength(password: string): PasswordStrength {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function ResetPasswordScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
   const token = route.params?.token;
@@ -129,6 +132,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
         await api.post('/api/v1/auth/reset-password/validate', { token });
         setState('form');
       } catch (error: unknown) {
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -171,6 +175,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setState('success');
     } catch (error: unknown) {
+       
       const apiError = error as { response?: { data?: { message?: string } } };
       setErrorMessage(
         apiError.response?.data?.message || 'Failed to reset password. Please try again.'
@@ -185,11 +190,13 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
   const handleBackToLogin = useCallback(() => {
     navigation.reset({
       index: 0,
+       
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);
 
   const handleRequestNewLink = useCallback(() => {
+     
     navigation.navigate('ForgotPassword' as never);
   }, [navigation]);
 

@@ -18,6 +18,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import type { EmptyRequestsStateProps } from '../types';
 
+/**
+ *
+ */
 export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
   const pulseAnim = useSharedValue(1);
   const floatAnim = useSharedValue(0);

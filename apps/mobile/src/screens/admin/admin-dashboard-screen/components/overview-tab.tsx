@@ -12,6 +12,9 @@ export interface OverviewTabProps {
   recentUsers: RecentUser[];
 }
 
+/**
+ *
+ */
 export function OverviewTab({ stats, recentUsers }: OverviewTabProps) {
   return (
     <View style={styles.tabContent}>

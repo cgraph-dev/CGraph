@@ -20,6 +20,9 @@ import { SPRING_PRESETS } from '../../../animations/animation-library';
 import { SuccessAnimationProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function SuccessAnimation({
   visible,
   size = 80,

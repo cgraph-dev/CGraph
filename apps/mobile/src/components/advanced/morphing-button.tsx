@@ -112,6 +112,9 @@ const STATE_COLORS = {
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function MorphingButton({
   label,
   icon,
@@ -310,6 +313,7 @@ export function MorphingButton({
   const content =
     variant === 'gradient' && gradientColors ? (
       <LinearGradient
+         
         colors={gradientColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -395,6 +399,9 @@ export interface LoadingButtonProps extends Omit<MorphingButtonProps, 'state'> {
   isLoading?: boolean;
 }
 
+/**
+ *
+ */
 export function LoadingButton({ isLoading, ...props }: LoadingButtonProps) {
   return <MorphingButton {...props} state={isLoading ? 'loading' : 'idle'} />;
 }
@@ -403,6 +410,9 @@ export interface SubmitButtonProps extends Omit<MorphingButtonProps, 'state'> {
   status: 'idle' | 'loading' | 'success' | 'error';
 }
 
+/**
+ *
+ */
 export function SubmitButton({ status, ...props }: SubmitButtonProps) {
   return <MorphingButton {...props} state={status} />;
 }
@@ -411,6 +421,9 @@ export interface ActionButtonProps extends Omit<MorphingButtonProps, 'shape' | '
   icon: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function ActionButton({ icon, ...props }: ActionButtonProps) {
   return <MorphingButton {...props} shape="circle" icon={icon} />;
 }
@@ -419,22 +432,37 @@ export function ActionButton({ icon, ...props }: ActionButtonProps) {
 // Preset Buttons
 // ============================================================================
 
+/**
+ *
+ */
 export function PrimaryButton(props: MorphingButtonProps) {
   return <MorphingButton {...props} color="#10b981" variant="solid" />;
 }
 
+/**
+ *
+ */
 export function SecondaryButton(props: MorphingButtonProps) {
   return <MorphingButton {...props} color="#6366f1" variant="solid" />;
 }
 
+/**
+ *
+ */
 export function DangerButton(props: MorphingButtonProps) {
   return <MorphingButton {...props} color="#ef4444" variant="solid" />;
 }
 
+/**
+ *
+ */
 export function GhostButton(props: MorphingButtonProps) {
   return <MorphingButton {...props} variant="ghost" textColor="#e5e7eb" />;
 }
 
+/**
+ *
+ */
 export function GradientButton(props: MorphingButtonProps) {
   return (
     <MorphingButton

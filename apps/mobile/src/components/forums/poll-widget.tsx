@@ -23,6 +23,9 @@ interface PollWidgetProps {
   onClose?: () => Promise<void>;
 }
 
+/**
+ *
+ */
 export default function PollWidget({
   poll,
   isCreator = false,

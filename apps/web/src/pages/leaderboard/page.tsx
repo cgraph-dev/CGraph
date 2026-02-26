@@ -80,6 +80,7 @@ export default function LeaderboardPage() {
         }
       } catch {
         // Mock data for demo
+         
         setLeaderboard(generateMockData(page, user as Parameters<typeof generateMockData>[1])); // safe downcast – structural boundary
         if (page === 1) {
           setShowConfetti(true);

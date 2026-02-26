@@ -379,6 +379,7 @@ async function processItem(item: QueueItem): Promise<boolean> {
     if (item.onFailureCallback) {
       const callback = callbackRegistry.get(item.onFailureCallback);
       if (callback) {
+         
         callback(item, undefined, error as Error);
       }
     }
@@ -504,6 +505,9 @@ export function cleanupOfflineQueue(): void {
 }
 
 // Export state getter for debugging
+/**
+ *
+ */
 export function getState(): Readonly<QueueState> {
   return { ...state };
 }

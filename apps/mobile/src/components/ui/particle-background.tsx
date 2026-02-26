@@ -44,6 +44,9 @@ interface ParticleBackgroundProps {
   children?: React.ReactNode;
 }
 
+/**
+ *
+ */
 export default function ParticleBackground({
   type = 'orbs',
   count = 20,
@@ -140,10 +143,12 @@ export default function ParticleBackground({
           }),
           Animated.sequence([
             Animated.timing(particle.x, {
+               
               toValue: (particle.x as unknown as number) + 30,
               duration: duration / 2,
             }),
             Animated.timing(particle.x, {
+               
               toValue: (particle.x as unknown as number) - 30,
               duration: duration / 2,
             }),

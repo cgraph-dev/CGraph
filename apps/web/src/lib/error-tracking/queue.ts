@@ -26,6 +26,7 @@ let userContext: UserContext | null = null;
 export function setUser(context: UserContext | null): void {
   userContext = context;
   if (CONFIG.debug) {
+    // eslint-disable-next-line no-console
     console.debug('[ErrorTracking] User context set:', context ? { id: context.id } : null);
   }
 }

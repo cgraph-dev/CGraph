@@ -24,6 +24,9 @@ export interface QuestPreviewCardProps {
   };
 }
 
+/**
+ *
+ */
 export function QuestPreviewCard({ quest }: QuestPreviewCardProps) {
   const progress = Object.values(quest.progress).reduce((a, b) => a + b, 0);
   const target = quest.quest.objectives.reduce((a, o) => a + o.targetValue, 0);

@@ -51,6 +51,9 @@ import {
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
+/**
+ *
+ */
 export default function SettingsNavigator() {
   const { colors } = useThemeStore();
 

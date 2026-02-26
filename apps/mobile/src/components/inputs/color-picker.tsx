@@ -125,6 +125,9 @@ function hslToHex(hsl: HSL): string {
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function ColorPicker({
   value,
   onChange,
@@ -370,6 +373,7 @@ function HueSlider({ value, onChange, width, height, hapticFeedback }: SliderPro
   return (
     <View style={[styles.slider, { width, height, borderRadius: height / 2 }]}>
       <LinearGradient
+         
         colors={hueColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

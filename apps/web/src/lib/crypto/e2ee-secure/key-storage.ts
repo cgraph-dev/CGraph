@@ -5,6 +5,7 @@
  * encrypted IndexedDB via SecureStorage (AES-256-GCM, PBKDF2).
  *
  * @module lib/crypto/e2ee-secure/key-storage
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 
@@ -181,6 +182,7 @@ export async function isE2EESetUp(): Promise<boolean> {
  * by kyberPreKeyId. This allows Bob to load the corresponding secret
  * key when receiving a PQXDH initial message.
  *
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL — KEM secret keys enable PQ session acceptance.
  */
 export async function storeKEMPreKey(kyberPreKeyId: number, secretKey: Uint8Array): Promise<void> {
@@ -255,6 +257,7 @@ export async function removeKEMPreKey(kyberPreKeyId: number): Promise<void> {
  * derive the shared secret when the initiator used one of our OPKs.
  *
  * @param prekeys - Array of { keyId, privateKey } pairs
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL — OPK private keys enable enhanced forward secrecy.
  */
 export async function storeOPKPrivateKeys(

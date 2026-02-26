@@ -52,6 +52,9 @@ export const haptic = {
 // SETTINGS SECTION COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
   return (
     <View style={styles.section}>
@@ -72,6 +75,9 @@ export function SettingsSection({ title, icon, iconColor, children }: SectionPro
 // TOGGLE ROW COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
   return (
     <View style={styles.optionRow}>
@@ -96,6 +102,9 @@ export function ToggleRow({ label, description, value, onToggle }: ToggleRowProp
 // SLIDER ROW COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export function SliderRow({
   label,
   value,

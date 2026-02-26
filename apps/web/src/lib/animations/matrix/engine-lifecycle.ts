@@ -250,6 +250,7 @@ export function toggleEngine(ec: EngineContext): void {
 
 /** Update configuration */
 export function updateEngineConfig(ec: EngineContext, updates: DeepPartial<MatrixConfig>): void {
+   
   ec.config = createConfig({ ...ec.config, ...updates } as Partial<MatrixConfig>); // safe downcast – structural boundary
   ec.characters = generateCharacterSet(ec.config);
   ec.animationController.setFrameInterval(ec.config.performance.targetFPS);

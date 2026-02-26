@@ -265,6 +265,7 @@ export function createUserActions(set: Set) {
             description: typeof t.description === 'string' ? t.description : '',
             points: Number(t.points),
             expiryDays: Number(t.expiry_days),
+             
             action: t.action as WarningType['action'], // safe downcast – discriminated union from API
             actionThreshold:
               typeof t.action_threshold === 'number' ? t.action_threshold : undefined,

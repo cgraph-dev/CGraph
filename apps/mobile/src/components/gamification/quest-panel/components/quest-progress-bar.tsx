@@ -10,6 +10,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { QuestProgressBarProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function QuestProgressBar({ current, target, colors }: QuestProgressBarProps) {
   const progressAnim = useSharedValue(0);
   const percent = target > 0 ? Math.min((current / target) * 100, 100) : 0;

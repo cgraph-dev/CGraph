@@ -210,6 +210,7 @@ export function EnhancedMessageBubble({
                 message.metadata?.url && (
                   <AdvancedVoiceVisualizer
                     // type assertion: message metadata URL field is string for voice/media messages
+                     
                     audioUrl={message.metadata.url as string}
                     variant="spectrum"
                     theme="matrix-green"

@@ -85,6 +85,7 @@ export function createRewardActions(
             rewards: (Array.isArray(tier.rewards) ? tier.rewards.filter(isRecord) : []).map(
               (r) => ({
                 id: String(r.id ?? ''),
+                 
                 type: (r.type as ReferralReward['type']) || 'xp', // safe downcast — constrained by ReferralReward
                 amount: Number(r.amount) || 0,
                 description: String(r.description ?? ''),

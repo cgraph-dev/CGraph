@@ -53,6 +53,7 @@ export function getDisplayError(error: unknown, fallback = 'An unexpected error 
 
   // API error object with various message fields
   if (error && typeof error === 'object') {
+     
     const errorObj = error as ErrorLike; // type assertion: unknown error to ErrorLike shape
     return (
       errorObj.message ||

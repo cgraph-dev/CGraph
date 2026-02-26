@@ -124,6 +124,7 @@ export function combineRolePermissions(
  */
 export function getPermissionList(permissions: bigint | number): Permission[] {
   const permValue = BigInt(permissions);
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return (Object.keys(Permissions) as Permission[]).filter(
     (perm) => (permValue & Permissions[perm]) === Permissions[perm]
   );

@@ -73,6 +73,9 @@ interface UseCalendarReturn extends CalendarState {
   todaysEvents: CalendarEvent[];
 }
 
+/**
+ *
+ */
 export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn {
   const { groupId } = options;
 

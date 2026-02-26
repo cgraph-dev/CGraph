@@ -58,6 +58,9 @@ const PIP_WIDTH = 120;
 const PIP_HEIGHT = 160;
 const PIP_MARGIN = 16;
 
+/**
+ *
+ */
 export default function VideoCallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CallStackParamList>>();
   const route = useRoute<VideoCallRouteProp>();
@@ -298,6 +301,7 @@ export default function VideoCallScreen() {
               source={
                 recipientAvatar
                   ? { uri: recipientAvatar }
+                   
                   : require('@/assets/default-avatar.png')
               }
               size={140}
@@ -359,6 +363,7 @@ export default function VideoCallScreen() {
             source={
               recipientAvatar
                 ? { uri: recipientAvatar }
+                 
                 : require('@/assets/default-avatar.png')
             }
             size={100}

@@ -157,10 +157,14 @@ function getDeviceInfo(): Record<string, unknown> {
 // Breadcrumbs
 // ============================================================================
 
+/**
+ *
+ */
 export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
   breadcrumbs.push({
     ...breadcrumb,
     timestamp: Date.now(),
+     
     data: stripPii(breadcrumb.data) as Record<string, unknown> | undefined,
   });
 
@@ -170,6 +174,9 @@ export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
   }
 }
 
+/**
+ *
+ */
 export function clearBreadcrumbs(): void {
   breadcrumbs.length = 0;
 }
@@ -178,6 +185,9 @@ export function clearBreadcrumbs(): void {
 // User Context
 // ============================================================================
 
+/**
+ *
+ */
 export function setUser(user: UserContext): void {
   userContext = {
     id: user.id,
@@ -187,6 +197,9 @@ export function setUser(user: UserContext): void {
   };
 }
 
+/**
+ *
+ */
 export function clearUser(): void {
   userContext = null;
 }
@@ -208,6 +221,9 @@ function isRateLimited(): boolean {
   return errorCount >= CONFIG.maxErrorsPerMinute;
 }
 
+/**
+ *
+ */
 export function captureError(
   error: Error | string,
   context: ErrorContext = {}
@@ -230,6 +246,7 @@ export function captureError(
     id: errorId,
     error: errorObj.message,
     stack: errorObj.stack,
+     
     context: stripPii(context) as ErrorContext,
     userContext,
     breadcrumbs: [...breadcrumbs],
@@ -259,6 +276,9 @@ export function captureError(
   return errorId;
 }
 
+/**
+ *
+ */
 export function captureMessage(
   message: string,
   level: 'info' | 'warning' = 'info',
@@ -267,6 +287,9 @@ export function captureMessage(
   return captureError(message, { ...context, level });
 }
 
+/**
+ *
+ */
 export function captureFatal(error: Error, context: ErrorContext = {}): string | null {
   return captureError(error, { ...context, level: 'fatal' });
 }
@@ -342,6 +365,9 @@ async function processQueue(): Promise<void> {
 // Initialization
 // ============================================================================
 
+/**
+ *
+ */
 export async function initErrorTracking(baseUrl: string): Promise<void> {
   if (isInitialized) return;
 
@@ -350,6 +376,7 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
 
   // Start queue processor — adaptive: 60s active, 4 min backgrounded
   // Store interval ID for cleanup; AppState-aware to reduce background work
+   
   const { AppState } = require('react-native');
   let queueInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -365,6 +392,7 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
   isInitialized = true;
 
   if (CONFIG.debug) {
+     
     console.info('[ErrorTracking] Initialized for mobile');
   }
 }

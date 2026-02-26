@@ -40,6 +40,9 @@ interface ErrorBoundaryState {
   errorInfo: ErrorInfo | null;
 }
 
+/**
+ *
+ */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -50,10 +53,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     };
   }
 
+  /**
+   *
+   */
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return { hasError: true, error };
   }
 
+  /**
+   *
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     const { name = 'Unknown', onError } = this.props;
 
@@ -102,6 +111,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
   };
 
+  /**
+   *
+   */
   render(): ReactNode {
     const { hasError, error, errorInfo } = this.state;
     const {
@@ -208,6 +220,9 @@ interface ScreenErrorBoundaryProps {
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
+/**
+ *
+ */
 export function ScreenErrorBoundary({
   children,
   screenName,
@@ -230,6 +245,9 @@ interface ComponentErrorBoundaryProps {
   fallback?: ReactNode;
 }
 
+/**
+ *
+ */
 export function ComponentErrorBoundary({
   children,
   componentName = 'Component',

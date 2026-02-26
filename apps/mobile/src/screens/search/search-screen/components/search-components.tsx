@@ -34,6 +34,9 @@ interface SkeletonLoaderProps {
   isDark: boolean;
 }
 
+/**
+ *
+ */
 export function SkeletonLoader({ isDark }: SkeletonLoaderProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
@@ -132,6 +135,9 @@ interface TrendingItemProps {
   isDark: boolean;
 }
 
+/**
+ *
+ */
 export function TrendingItem({ item, onPress, isDark }: TrendingItemProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -203,6 +209,7 @@ export function TrendingItem({ item, onPress, isDark }: TrendingItemProps) {
           colors={[item.color, `${item.color}99`]}
           style={trendingStyles.iconContainer}
         >
+          { }
           <Ionicons name={item.icon as keyof typeof Ionicons.glyphMap} size={16} color="#fff" />
         </LinearGradient>
         <View style={trendingStyles.textContainer}>
@@ -279,6 +286,9 @@ interface VoiceSearchButtonProps {
   colors: ThemeColors;
 }
 
+/**
+ *
+ */
 export function VoiceSearchButton({ onPress, isListening, colors }: VoiceSearchButtonProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const waveAnim1 = useRef(new Animated.Value(0)).current;
@@ -373,6 +383,9 @@ interface AnimatedResultItemProps {
   onPress: () => void;
 }
 
+/**
+ *
+ */
 export function AnimatedResultItem({ children, index, onPress }: AnimatedResultItemProps) {
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -453,6 +466,9 @@ interface FilterModalProps {
   isDark: boolean;
 }
 
+/**
+ *
+ */
 export function FilterModal({
   visible,
   onClose,
@@ -507,6 +523,7 @@ export function FilterModal({
           style={filterStyles.toggleIcon}
         >
           <Ionicons
+             
             name={icon as keyof typeof Ionicons.glyphMap}
             size={16}
             color={value ? '#fff' : colors.textSecondary}

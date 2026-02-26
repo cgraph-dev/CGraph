@@ -71,6 +71,7 @@ export function validateWithFallback<T>(
     }
     // Return raw data as-is, cast to expected type
     // This allows the app to continue working even with schema mismatches
+     
     return data as T; // safe downcast – runtime verified
   }
 

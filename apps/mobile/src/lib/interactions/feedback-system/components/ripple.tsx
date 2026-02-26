@@ -43,6 +43,9 @@ function RippleCircle({
   return <Animated.View style={[styles.rippleCircle, { backgroundColor: color }, animatedStyle]} />;
 }
 
+/**
+ *
+ */
 export function Ripple({
   color = 'rgba(255, 255, 255, 0.3)',
   duration = 600,

@@ -70,6 +70,9 @@ interface Thread {
 
 type SortOption = 'newest' | 'popular' | 'active';
 
+/**
+ *
+ */
 export default function ForumBoardScreen({ navigation, route }: Props) {
   const { forumId, boardId, boardName } = route.params;
   const { colors } = useThemeStore();
@@ -145,6 +148,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
         { backgroundColor: colors.surface, borderBottomColor: colors.border },
       ]}
     >
+      { }
       {(['newest', 'popular', 'active'] as SortOption[]).map((sort) => (
         <TouchableOpacity
           key={sort}
@@ -246,6 +250,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
     <View style={[styles.boardHeader, { backgroundColor: colors.surface }]}>
       <View style={styles.boardInfo}>
         <View style={[styles.boardIcon, { backgroundColor: colors.primary }]}>
+          { }
           <Ionicons name={(board?.icon as string) || 'chatbubbles'} size={24} color="#fff" />
         </View>
         <View style={styles.boardDetails}>

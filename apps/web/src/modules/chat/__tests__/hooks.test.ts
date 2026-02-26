@@ -102,6 +102,7 @@ describe('Chat Hooks', () => {
 
       // Set reply
       act(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result.current.setReplyTo(mockMessage as any);
       });
       expect(result.current.replyTo).toEqual(mockMessage);
@@ -120,6 +121,7 @@ describe('Chat Hooks', () => {
       act(() => {
         result.current.setMessageInput('Some message');
         result.current.setIsSending(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result.current.setReplyTo({ id: 'msg-1' } as any);
         result.current.togglePicker('showEmojiPicker', true);
       });

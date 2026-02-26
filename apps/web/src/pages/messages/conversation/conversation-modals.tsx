@@ -136,6 +136,7 @@ export function CallModals({
         conversationId={conversationId}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
+         
         otherParticipantAvatar={(otherParticipant?.user?.avatarUrl as string) ?? undefined} // safe downcast – structural boundary
         incomingRoomId={incomingRoomId ?? undefined}
       />
@@ -145,6 +146,7 @@ export function CallModals({
         conversationId={conversationId}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
+         
         otherParticipantAvatar={(otherParticipant?.user?.avatarUrl as string) ?? undefined} // safe downcast – structural boundary
         incomingRoomId={incomingRoomId ?? undefined}
       />
@@ -179,6 +181,7 @@ export function InfoPanel({
   mutualFriends,
   onClose,
 }: InfoPanelProps) {
+   
   const user = (otherParticipant as Record<string, unknown>)?.user as  // safe downcast – structural boundary
     | Record<string, unknown>
     | undefined;
@@ -187,20 +190,32 @@ export function InfoPanel({
     <AnimatePresence>
       {showInfoPanel && otherParticipant && conversationId && (
         <ChatInfoPanel
+           
           userId={(user?.id as string) || ''} // safe downcast – structural boundary
           conversationId={conversationId}
           user={{
+             
             id: (user?.id as string) || '', // safe downcast – structural boundary
+             
             username: (user?.username as string) || 'Unknown', // safe downcast – structural boundary
+             
             displayName: (user?.displayName as string) || (user?.username as string), // safe downcast – structural boundary
+             
             avatarUrl: (user?.avatarUrl as string) ?? undefined, // safe downcast – structural boundary
+             
             level: (user?.level as number) ?? 1, // safe downcast – structural boundary
+             
             xp: (user?.xp as number) ?? 0, // safe downcast – structural boundary
+             
             karma: (user?.karma as number) ?? 0, // safe downcast – structural boundary
+             
             streak: (user?.streak as number) ?? 0, // safe downcast – structural boundary
             onlineStatus: isOtherUserOnline ? 'online' : 'offline',
+             
             lastSeenAt: (user?.lastSeenAt as string) ?? undefined, // safe downcast – structural boundary
+             
             bio: (user?.bio as string) ?? undefined, // safe downcast – structural boundary
+             
             badges: ((user?.badges as unknown[]) ?? []) as unknown as Array<{ // safe downcast – structural boundary
               id: string;
               name: string;
@@ -210,6 +225,7 @@ export function InfoPanel({
           }}
           mutualFriends={mutualFriends}
           sharedForums={
+             
             (user?.sharedForums ?? []) as Array<{ // safe downcast – structural boundary
               id: string;
               name: string;

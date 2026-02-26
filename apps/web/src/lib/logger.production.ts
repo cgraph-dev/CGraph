@@ -100,6 +100,7 @@ class ProductionLogger {
    */
   debug(message: string, context?: LogContext): void {
     if (this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.debug(this.format('debug', message, context));
     }
   }
@@ -109,6 +110,7 @@ class ProductionLogger {
    */
   info(message: string, context?: LogContext): void {
     if (this.shouldLog('info')) {
+      // eslint-disable-next-line no-console
       console.info(this.format('info', message, context));
     }
   }
@@ -163,12 +165,14 @@ class ProductionLogger {
    */
   time(label: string): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.time(label);
     }
   }
 
   timeEnd(label: string): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.timeEnd(label);
     }
   }
@@ -178,12 +182,14 @@ class ProductionLogger {
    */
   group(label: string): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.group(label);
     }
   }
 
   groupEnd(): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.groupEnd();
     }
   }
@@ -193,6 +199,7 @@ class ProductionLogger {
    */
   table(data: unknown): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.table(data);
     }
   }

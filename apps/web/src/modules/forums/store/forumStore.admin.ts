@@ -51,6 +51,7 @@ export function createAdminActions(set: Set, _get: Get) {
           type: data.type,
           permissions: data.permissions,
         });
+         
         const group = response.data.user_group as UserGroup; // safe downcast – API response
         const MAX_USER_GROUPS = 50;
         set((state) => ({ userGroups: [...state.userGroups, group].slice(-MAX_USER_GROUPS) }));
@@ -69,6 +70,7 @@ export function createAdminActions(set: Set, _get: Get) {
           color: data.color,
           permissions: data.permissions,
         });
+         
         const group = response.data.user_group as UserGroup; // safe downcast – API response
         set((state) => ({
           userGroups: state.userGroups.map((g) => (g.id === groupId ? group : g)),
@@ -98,6 +100,7 @@ export function createAdminActions(set: Set, _get: Get) {
           warning_type_id: warningTypeId,
           reason,
         });
+         
         return response.data.warning as UserWarning; // safe downcast – API response
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'warnUser');
@@ -129,6 +132,7 @@ export function createAdminActions(set: Set, _get: Get) {
           expires_at: data.expiresAt,
           notes: data.notes,
         });
+         
         return response.data.ban as Ban; // safe downcast – API response
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'banUser');

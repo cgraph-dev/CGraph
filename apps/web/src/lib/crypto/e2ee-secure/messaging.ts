@@ -5,6 +5,7 @@
  * key bundles for server registration, using encrypted key storage.
  *
  * @module lib/crypto/e2ee-secure/messaging
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL
  */
 

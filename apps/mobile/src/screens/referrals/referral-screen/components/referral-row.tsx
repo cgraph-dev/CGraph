@@ -12,6 +12,9 @@ export interface ReferralRowProps {
   referral: Referral;
 }
 
+/**
+ *
+ */
 export function ReferralRow({ referral }: ReferralRowProps) {
   const statusConfig = {
     pending: { color: '#f59e0b', icon: 'time', label: 'Pending' },
@@ -46,6 +49,7 @@ export function ReferralRow({ referral }: ReferralRowProps) {
 
       <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
         <Ionicons
+           
           name={statusConfig.icon as keyof typeof Ionicons.glyphMap}
           size={14}
           color={statusConfig.color}

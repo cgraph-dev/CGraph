@@ -5,6 +5,7 @@
 import { type ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LockClosedIcon, SparklesIcon } from '@heroicons/react/24/outline';
+ 
 import { useThemeStore } from '@/stores/theme';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
@@ -42,6 +43,7 @@ export function PremiumThemeGate({
   // Determine user's current tier (from subscription or user data)
   const userTier = user?.subscription?.tier || (theme.isPremium ? 'premium' : 'free');
   const hasAccess =
+     
     tierHierarchy[userTier as keyof typeof tierHierarchy] >= tierHierarchy[requiredTier];
 
   if (hasAccess) {

@@ -74,6 +74,7 @@ export function createMessagingActions(_set: Set, get: Get) {
             );
             const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
             if (rawMessage) {
+               
               const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
               // Store plaintext locally for sender (we know what we sent)
               message.content = content;
@@ -128,12 +129,14 @@ export function createMessagingActions(_set: Set, get: Get) {
         content,
         encryptedContent: null,
         isEncrypted: false,
+         
         messageType: (contentType as Message['messageType']) || 'text', // safe downcast
         replyToId: replyToId || null,
         replyTo: null,
         isPinned: false,
         isEdited: false,
         deletedAt: null,
+         
         metadata: (metadata || {}) as Message['metadata'], // safe downcast
         reactions: [],
         sender: {
@@ -154,6 +157,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
+           
           const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Replace the optimistic message with the real server response
           get().removeMessage(clientMessageId, conversationId);
@@ -203,6 +207,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
+           
           const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Store plaintext locally for sender
           message.content = content;
@@ -233,13 +238,18 @@ export function createMessagingActions(_set: Set, get: Get) {
         const encryptedPayload = {
           ciphertext: message.encryptedContent || message.content,
           ephemeralPublicKey:
+             
             message.ephemeralPublicKey || (metadata.ephemeral_public_key as string), // safe downcast — validated by truthiness check below
+           
           recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '', // safe downcast
+           
           oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined, // safe downcast
+           
           nonce: message.nonce || (metadata.nonce as string), // safe downcast — validated by truthiness check below
         };
 
         const senderIdentityKey =
+           
           message.senderIdentityKey || (metadata.sender_identity_key as string); // safe downcast — validated by truthiness check below
 
         if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {

@@ -18,6 +18,9 @@ interface SegmentedRowProps {
   onSelect: (value: string) => void;
 }
 
+/**
+ *
+ */
 export function SegmentedRow({ label, options, selected, onSelect }: SegmentedRowProps) {
   return (
     <View style={styles.optionRowVertical}>

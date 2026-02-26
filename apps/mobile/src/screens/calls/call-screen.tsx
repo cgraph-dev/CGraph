@@ -76,6 +76,9 @@ const CALL_STATES: Record<CallStatus, string> = {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function CallScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
   const { recipientId, callType, incoming = false, roomId } = route.params;

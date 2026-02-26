@@ -50,6 +50,7 @@ export function useChatInfoPanel({
     if (!conversationId) return;
     api.get(`/api/v1/conversations/${conversationId}`)
       .then((res) => {
+         
         const data = (res as { data?: { data?: { message_ttl?: number | null } } })?.data?.data;
         if (data?.message_ttl !== undefined) {
           setMessageTTL(data.message_ttl);

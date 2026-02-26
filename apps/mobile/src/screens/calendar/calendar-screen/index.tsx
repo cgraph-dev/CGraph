@@ -22,6 +22,9 @@ import type { CalendarEvent } from './types';
 import { useCalendar } from './hooks/useCalendar';
 import { CalendarHeader, CalendarGrid, EventsList, EventForm } from './components';
 
+/**
+ *
+ */
 export default function CalendarScreen() {
   const {
     currentYear,

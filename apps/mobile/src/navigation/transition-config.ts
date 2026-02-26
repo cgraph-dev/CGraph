@@ -116,6 +116,9 @@ export const TransitionPresets = {
 // Get Transition Options
 // ============================================================================
 
+/**
+ *
+ */
 export function getTransitionOptions(options: TransitionOptions): NativeStackNavigationOptions {
   const { type, gestureEnabled = true } = options;
 
@@ -163,6 +166,7 @@ export function getTransitionOptions(options: TransitionOptions): NativeStackNav
 // Platform-Specific Defaults
 // ============================================================================
 
+ 
 export const PlatformTransitionPreset: NativeStackNavigationOptions = Platform.select({
   ios: slideFromRight,
   android: {
@@ -172,6 +176,7 @@ export const PlatformTransitionPreset: NativeStackNavigationOptions = Platform.s
   default: slideFromRight,
 }) as NativeStackNavigationOptions;
 
+ 
 export const ModalTransitionPreset: NativeStackNavigationOptions = Platform.select({
   ios: modalPresentation,
   android: {

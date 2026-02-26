@@ -94,6 +94,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             value={preferences.particleSystem}
             onChange={
               (value) =>
+                 
                 updatePreference('particleSystem', value as UIPreferences['particleSystem']) // safe downcast – runtime verified
             }
             options={[
@@ -108,6 +109,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             label="Particle Color"
             value={preferences.particleColor}
             onChange={
+               
               (value) => updatePreference('particleColor', value as UIPreferences['particleColor']) // safe downcast – runtime verified
             }
             options={[
@@ -120,6 +122,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             label="Particle Shape"
             value={preferences.particleShape}
             onChange={
+               
               (value) => updatePreference('particleShape', value as UIPreferences['particleShape']) // safe downcast – runtime verified
             }
             options={[

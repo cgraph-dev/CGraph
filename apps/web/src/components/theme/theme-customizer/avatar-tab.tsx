@@ -5,6 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
+ 
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
 import { PremiumThemeGate, TierBadge } from '../premium-theme-gate';
 
@@ -84,6 +85,7 @@ export function AvatarTab({
       <div className="mb-6">
         <h4 className="mb-3 text-sm font-semibold text-gray-400">Border Color</h4>
         <div className="flex flex-wrap gap-2">
+          { }
           {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => ( // type assertion: Object.keys returns string[], narrowing to known keys
             <motion.button
               key={preset}

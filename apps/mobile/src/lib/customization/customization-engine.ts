@@ -425,6 +425,9 @@ export const DEFAULT_THEME: ThemeConfig = {
 // CUSTOMIZATION ENGINE
 // ============================================================================
 
+/**
+ *
+ */
 export class CustomizationEngine {
   private static STORAGE_KEY = '@cgraph/customization';
   private static HISTORY_LIMIT = 50;
@@ -464,6 +467,7 @@ export class CustomizationEngine {
       const validateColorShade = (shade: unknown, name: string) => {
         const requiredKeys = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
         requiredKeys.forEach((key) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const s = shade as Record<string, any>;
           if (!s[key] || !chroma.valid(s[key])) {
             errors.push(`Invalid color in ${name}.${key}`);

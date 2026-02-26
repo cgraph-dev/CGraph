@@ -95,6 +95,7 @@ export function AnimationSetsSection({
                                 : anim.speed === 'smooth'
                                   ? 0.7
                                   : 1,
+                         
                         ease: anim.easing as import('framer-motion').Easing,
                         repeat: Infinity,
                         repeatDelay: 0.5,

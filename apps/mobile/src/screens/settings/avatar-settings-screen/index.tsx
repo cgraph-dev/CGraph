@@ -27,8 +27,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SettingsStackParamList } from '../../../types';
 
@@ -52,6 +51,9 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'AvatarSettings'>;
 };
 
+/**
+ *
+ */
 export default function AvatarSettingsScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user } = useAuthStore();
@@ -272,6 +274,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={borderStyles}
             selected={style.borderStyle}
+             
             onSelect={(value) => updateStyle('borderStyle', value as AvatarStyle['borderStyle'])}
             columns={5}
           />
@@ -327,6 +330,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
             options={animationSpeeds}
             selected={style.animationSpeed}
             onSelect={(value) =>
+               
               updateStyle('animationSpeed', value as AvatarStyle['animationSpeed'])
             }
           />
@@ -337,6 +341,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={shapes}
             selected={style.shape}
+             
             onSelect={(value) => updateStyle('shape', value as AvatarStyle['shape'])}
             columns={3}
           />
@@ -346,9 +351,11 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
         <SettingsSection title="Status Indicator" icon="radio-button-on" iconColor="#22c55e">
           <Text style={styles.optionSubtitle}>Indicator Style</Text>
           <OptionGrid
+             
             options={['none', 'dot', 'ring'] as AvatarStyle['statusIndicator'][]}
             selected={style.statusIndicator}
             onSelect={(value) =>
+               
               updateStyle('statusIndicator', value as AvatarStyle['statusIndicator'])
             }
             columns={3}
@@ -379,6 +386,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <Text style={styles.optionSubtitle}>Badge Position</Text>
           <OptionGrid
             options={
+               
               [
                 'top-right',
                 'bottom-right',
@@ -388,6 +396,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
             }
             selected={style.badgePosition}
             onSelect={(value) =>
+               
               updateStyle('badgePosition', value as AvatarStyle['badgePosition'])
             }
           />

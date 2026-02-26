@@ -12,6 +12,9 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useCustomizationStore } from '@/stores';
 
+/**
+ *
+ */
 export function LivePreviewCard() {
   const { theme, getColor, getSpacing, getBorderRadius } = useCustomizationStore();
 

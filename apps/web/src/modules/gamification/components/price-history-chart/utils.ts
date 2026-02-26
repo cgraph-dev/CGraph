@@ -87,6 +87,7 @@ export function calculatePaths(
   areaPoints.push('Z');
 
   const volumeBars: VolumeBar[] = showVolume
+     
     ? (data
         .map((point, i) => {
           if (!point.volume) return null;

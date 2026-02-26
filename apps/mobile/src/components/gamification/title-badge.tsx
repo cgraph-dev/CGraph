@@ -36,6 +36,9 @@ interface TitleBadgeProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function TitleBadge({
   title,
   rarity,

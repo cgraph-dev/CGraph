@@ -19,6 +19,9 @@ import { styles } from '../styles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+/**
+ *
+ */
 export function Skeleton({
   width = '100%',
   height = 20,
@@ -55,6 +58,7 @@ export function Skeleton({
       {animated && (
         <Animated.View style={[styles.shimmerContainer, shimmerStyle]}>
           <LinearGradient
+             
             colors={['transparent', shimmerColor, 'transparent'] as [string, string, string]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -66,6 +70,9 @@ export function Skeleton({
   );
 }
 
+/**
+ *
+ */
 export function SkeletonGroup({
   count = 3,
   variant = 'text',

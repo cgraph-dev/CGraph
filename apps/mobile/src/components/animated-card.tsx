@@ -26,6 +26,9 @@ interface AnimatedCardProps {
   pressable?: boolean;
 }
 
+/**
+ *
+ */
 export default function AnimatedCard({
   children,
   style,

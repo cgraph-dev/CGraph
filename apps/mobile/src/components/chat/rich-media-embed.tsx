@@ -151,6 +151,7 @@ const RichMediaEmbed = memo(function RichMediaEmbed({
         })
       );
 
+       
       const validEmbeds = metadata.filter(
         (m): m is NonNullable<typeof m> => m !== null
       ) as LinkMetadata[];

@@ -144,6 +144,7 @@ export function useE2EEVerification() {
     safetyNumberBlocks,
     formattedForShare,
     isLoading,
+     
     error: error as Error | null, // safe downcast – structural boundary
     isVerifying: verifyMutation.isPending,
     copiedField,

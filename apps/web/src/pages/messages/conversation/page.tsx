@@ -72,6 +72,7 @@ export default function Conversation() {
           isOtherUserOnline={ctx.isOtherUserOnline}
           typing={ctx.typing}
           uiPreferences={
+             
             ctx.uiPreferences as Parameters< // safe downcast – structural boundary
               typeof ConversationHeader
             >[0]['uiPreferences'] 
@@ -225,6 +226,7 @@ export default function Conversation() {
       <InfoPanel
         showInfoPanel={ctx.showInfoPanel}
         otherParticipant={
+           
           ctx.otherParticipant as unknown as Record< // safe downcast – structural boundary
             string,
             unknown

@@ -73,6 +73,7 @@ function buildParticles(
 
       case 'hearts':
         particles.push({
+           
           emoji: ['❤️', '💕', '💖', '💗', '💘'][Math.floor(Math.random() * 5)] as string,
           size: 14 + Math.random() * 12,
           startX,
@@ -103,6 +104,7 @@ function buildParticles(
 
       case 'confetti':
         particles.push({
+           
           emoji: ['🎊', '🎉', '✨', '⭐'][Math.floor(Math.random() * 4)] as string,
           size: 12 + Math.random() * 8,
           startX,
@@ -240,6 +242,9 @@ export const SeasonalEffects = memo(function SeasonalEffects({
 });
 
 // ── Auto Theme ─────────────────────────────────────────────
+/**
+ *
+ */
 export function getAutoSeasonalTheme(): SeasonalTheme {
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -249,7 +254,7 @@ export function getAutoSeasonalTheme(): SeasonalTheme {
   if (month === 1 && day <= 5) return 'snow';
   if (month === 2 && day >= 13 && day <= 15) return 'hearts';
   if ((month === 3 && day >= 20) || (month === 4 && day <= 15))
-    return 'cherry-blossoms';
+    {return 'cherry-blossoms';}
 
   return 'none';
 }

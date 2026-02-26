@@ -36,6 +36,9 @@ interface Invite {
   createdAt: string;
 }
 
+/**
+ *
+ */
 export default function GroupInvitesScreen({ route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
@@ -50,12 +53,19 @@ export default function GroupInvitesScreen({ route }: Props) {
       const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       setInvites(
         data.map((i: Record<string, unknown>) => ({
+           
           id: (i.id ?? '') as string,
+           
           code: (i.code ?? '') as string,
+           
           uses: (i.uses ?? 0) as number,
+           
           maxUses: (i.max_uses ?? i.maxUses ?? null) as number | null,
+           
           expiresAt: (i.expires_at ?? i.expiresAt ?? null) as string | null,
+           
           createdBy: (i.created_by ?? i.createdBy ?? '') as string,
+           
           createdAt: (i.inserted_at ?? i.createdAt ?? '') as string,
         }))
       );

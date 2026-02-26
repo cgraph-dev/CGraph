@@ -97,6 +97,7 @@ const VALID_RARITIES: readonly TitleRarity[] = [
 ];
 
 function toTitleRarity(value: string): TitleRarity {
+   
   return VALID_RARITIES.includes(value as TitleRarity) ? (value as TitleRarity) : 'common';
 }
 

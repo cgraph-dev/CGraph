@@ -33,6 +33,9 @@ export interface PremiumBannerProps {
   onDismiss?: () => void;
 }
 
+/**
+ *
+ */
 export function PremiumBanner({
   title = 'Upgrade to Premium',
   description = 'Unlock all features and get the best experience',

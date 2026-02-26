@@ -44,6 +44,7 @@ export function usePremiumStatus() {
   const tier = status?.tier ?? 'free';
   
   const hasFeature = useCallback((feature: keyof typeof TIER_FEATURES.free) => {
+     
     const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
     const value = tierFeatures[feature];
     
@@ -57,6 +58,7 @@ export function usePremiumStatus() {
   }, [tier]);
 
   const getFeatureLimit = useCallback((feature: keyof typeof TIER_FEATURES.free) => {
+     
     const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
     return tierFeatures[feature];
   }, [tier]);

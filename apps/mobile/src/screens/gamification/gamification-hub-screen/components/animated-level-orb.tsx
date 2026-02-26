@@ -109,6 +109,9 @@ function LevelParticle({ data, index }: { data: ParticleData; index: number }) {
   );
 }
 
+/**
+ *
+ */
 export function AnimatedLevelOrb({ level, progress }: AnimatedLevelOrbProps) {
   const rotateAnim = useSharedValue(0);
   const pulseAnim = useSharedValue(1);

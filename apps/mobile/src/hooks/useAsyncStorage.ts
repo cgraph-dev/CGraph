@@ -31,6 +31,7 @@ export function useAsyncStorage<T>(
       try {
         const item = await AsyncStorage.getItem(key);
         if (item !== null) {
+           
           setStoredValue(JSON.parse(item) as T);
         }
       } catch (error) {

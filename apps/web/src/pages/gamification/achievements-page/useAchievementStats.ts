@@ -29,6 +29,7 @@ export function useAchievementStats(achievements: Achievement[]) {
         };
         return acc;
       },
+       
       {} as Record<AchievementRarity, { unlocked: number; total: number }> // safe downcast – structural boundary
     );
 

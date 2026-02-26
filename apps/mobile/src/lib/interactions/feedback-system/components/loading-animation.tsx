@@ -133,6 +133,9 @@ function PulsingCircle({ size, color }: { size: number; color: string }) {
   );
 }
 
+/**
+ *
+ */
 export function LoadingAnimation({
   visible,
   size = 40,

@@ -59,6 +59,9 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function ProgressRing({
   progress,
   size = 120,
@@ -185,6 +188,7 @@ function AnimatedProgressValue({ value, prefix, suffix, color }: AnimatedProgres
   });
 
   return (
+     
     <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as unknown}>
       {prefix}
       {Math.round(value.value)}
@@ -211,6 +215,9 @@ export interface StackedProgressRingProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function StackedProgressRing({
   rings,
   size = 160,
@@ -291,6 +298,9 @@ export interface GaugeRingProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function GaugeRing({
   value,
   min = 0,

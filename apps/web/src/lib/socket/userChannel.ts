@@ -40,6 +40,7 @@ export function joinUserChannel(
 
   // E2EE key revocation — CRITICAL for forward secrecy
   channel.on('e2ee:key_revoked', (payload) => {
+     
     const data = payload as { user_id: string; key_id: string; revoked_at: string };
     logger.log('E2EE key revoked event received:', data);
     useE2EEStore.getState().handleKeyRevoked(data.user_id, data.key_id);
@@ -55,8 +56,10 @@ export function joinUserChannel(
 
   channel.on('conversation_created', (payload) => {
     logger.log('New conversation created:', payload);
+     
     const data = payload as { conversation: Record<string, unknown> };
     if (data.conversation) {
+       
       const normalized = normalizeConversation(data.conversation) as unknown as Conversation; // safe downcast – structural boundary
       logger.debug('Normalized conversation:', normalized);
       useChatStore.getState().addConversation(normalized);
@@ -65,6 +68,7 @@ export function joinUserChannel(
 
   channel.on('conversation_updated', (payload) => {
     logger.log('Conversation updated:', payload);
+     
     const data = payload as { conversation: Partial<Conversation> & { id: string } };
     if (data.conversation?.id) {
       useChatStore.getState().updateConversation(data.conversation);
@@ -72,6 +76,7 @@ export function joinUserChannel(
   });
 
   channel.on('contact_presence', (payload) => {
+     
     const data = payload as { contacts?: Record<string, { online?: boolean }> };
     const contacts = data.contacts || {};
     const onlineSet = new Set<string>();
@@ -85,6 +90,7 @@ export function joinUserChannel(
   });
 
   channel.on('contact_status_changed', (payload) => {
+     
     const data = payload as { user_id: string; online: boolean };
     const onlineSet = onlineUsers.get('lobby') || new Set<string>();
 
@@ -102,6 +108,7 @@ export function joinUserChannel(
   // Incoming WebRTC calls
   channel.on('incoming_call', (payload) => {
     logger.log('Incoming call received:', payload);
+     
     const data = payload as { room_id: string; caller_id: string; type: 'audio' | 'video' };
 
     const callerUser = useChatStore

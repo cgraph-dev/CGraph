@@ -7,43 +7,70 @@ import * as Haptics from 'expo-haptics';
 
 // ==================== HAPTIC FEEDBACK PATTERNS ====================
 
+/**
+ *
+ */
 export class HapticFeedback {
   // Light tap - UI selections, toggles
+  /**
+   *
+   */
   static light() {
     return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 
   // Medium impact - button presses, swipes
+  /**
+   *
+   */
   static medium() {
     return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
   // Heavy impact - important actions, deletions
+  /**
+   *
+   */
   static heavy() {
     return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }
 
   // Success pattern
+  /**
+   *
+   */
   static success() {
     return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }
 
   // Error pattern
+  /**
+   *
+   */
   static error() {
     return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   }
 
   // Warning pattern
+  /**
+   *
+   */
   static warning() {
     return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   }
 
   // Selection change (iOS only)
+  /**
+   *
+   */
   static selection() {
     return Haptics.selectionAsync();
   }
 
   // Custom pattern: Double tap feedback
+  /**
+   *
+   */
   static async doubleTap() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setTimeout(() => {
@@ -52,6 +79,9 @@ export class HapticFeedback {
   }
 
   // Custom pattern: Celebration burst (3 quick taps)
+  /**
+   *
+   */
   static async celebration() {
     for (let i = 0; i < 3; i++) {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -60,6 +90,9 @@ export class HapticFeedback {
   }
 
   // Custom pattern: Long press confirmed
+  /**
+   *
+   */
   static async longPressConfirm() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await new Promise(resolve => setTimeout(resolve, 150));
@@ -67,6 +100,9 @@ export class HapticFeedback {
   }
 
   // Custom pattern: Level up sequence
+  /**
+   *
+   */
   static async levelUp() {
     // Rising pattern
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -79,6 +115,9 @@ export class HapticFeedback {
   }
 
   // Custom pattern: Swipe to delete warning
+  /**
+   *
+   */
   static async deleteWarning() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await new Promise(resolve => setTimeout(resolve, 50));

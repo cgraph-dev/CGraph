@@ -27,6 +27,9 @@ function getTypeIcon(type: string): keyof typeof Ionicons.glyphMap {
   }
 }
 
+/**
+ *
+ */
 export function ReportsTab({ reports, onResolve, onDismiss }: ReportsTabProps) {
   const pendingReports = reports.filter((r) => r.status === 'pending');
 

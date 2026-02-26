@@ -38,6 +38,7 @@ export const InlineVideoThumbnail = memo(function InlineVideoThumbnail({
 
   useEffect(() => {
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       if (__DEV__) console.log('[Video] Loading thumbnail for:', videoUrl);
     }
     const errorSub = player.addListener('statusChange', (status) => {
@@ -100,6 +101,7 @@ export const VideoPlayerComponent = memo(function VideoPlayerComponent({
 
   useEffect(() => {
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       if (__DEV__) console.log('[Video] Playing video:', videoUrl);
     }
 
@@ -251,6 +253,7 @@ export const AttachmentVideoPreview = memo(function AttachmentVideoPreview({
 
   useEffect(() => {
     if (__DEV__) {
+      // eslint-disable-next-line no-console
       if (__DEV__) console.log('[Video] Attachment preview for:', uri);
     }
     const errorSub = player.addListener('statusChange', (status) => {

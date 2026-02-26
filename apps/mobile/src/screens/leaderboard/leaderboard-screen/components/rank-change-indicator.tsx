@@ -11,6 +11,9 @@ export interface RankChangeIndicatorProps {
   previous: number;
 }
 
+/**
+ *
+ */
 export function RankChangeIndicator({ current, previous }: RankChangeIndicatorProps) {
   const diff = previous - current;
 

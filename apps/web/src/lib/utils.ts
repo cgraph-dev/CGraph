@@ -22,6 +22,7 @@ export function safeParseDate(value: unknown): Date | null {
 
   try {
     // type assertion: value is unknown, narrow to Date constructor-compatible types
+     
     const date = new Date(value as string | number | Date);
     return isNaN(date.getTime()) ? null : date;
   } catch {
@@ -70,6 +71,7 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
  */
 export function getAvatarBorderId(obj: unknown): string | null {
   if (!obj || typeof obj !== 'object') return null;
+   
   const record = obj as Record<string, unknown>; // safe downcast – runtime verified
   const borderId = record.avatarBorderId ?? record.avatar_border_id;
   return typeof borderId === 'string' ? borderId : null;

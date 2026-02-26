@@ -38,6 +38,9 @@ const SIZE_MAP = {
   lg: 28,
 };
 
+/**
+ *
+ */
 export default function PremiumBadge({ tier, size = 'md', animated = true }: PremiumBadgeProps) {
   const rotation = useSharedValue(0);
 
@@ -57,6 +60,7 @@ export default function PremiumBadge({ tier, size = 'md', animated = true }: Pre
 
   const iconSize = SIZE_MAP[size];
   const colors = TIER_COLORS[tier];
+   
   const iconName = TIER_ICONS[tier] as keyof typeof Ionicons.glyphMap;
 
   return (

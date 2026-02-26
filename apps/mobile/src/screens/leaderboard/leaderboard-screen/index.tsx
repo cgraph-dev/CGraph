@@ -18,8 +18,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
-import type { LeaderboardCategory, TimePeriod, LeaderboardData, LeaderboardEntry } from './types';
 import {
+  type LeaderboardCategory,
+  type TimePeriod,
+  type LeaderboardData,
+  type LeaderboardEntry,
   CATEGORIES,
   TIME_PERIODS,
   formatValue,
@@ -28,6 +31,9 @@ import {
 } from './types';
 import { Podium, EntryRow, RankChangeIndicator } from './components';
 
+/**
+ *
+ */
 export default function LeaderboardScreen() {
   const navigation = useNavigation();
   const [category, setCategory] = useState<LeaderboardCategory>('xp');

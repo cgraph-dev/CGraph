@@ -26,6 +26,9 @@ import { MemberAvatarStack } from './member-avatar-stack';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+/**
+ *
+ */
 export function MorphingGroupCard({
   item,
   index,

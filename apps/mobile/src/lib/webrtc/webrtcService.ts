@@ -241,6 +241,7 @@ export class WebRTCManager {
 
     try {
       // Get local media stream (requires react-native-webrtc)
+       
       this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
         video: options.video,
         audio: options.audio,
@@ -258,6 +259,7 @@ export class WebRTCManager {
         call_type: options.video ? 'video' : 'audio',
       });
 
+       
       const roomId = (response as { room_id: string }).room_id;
       this.state.roomId = roomId;
       this.state.status = 'ringing';
@@ -290,6 +292,7 @@ export class WebRTCManager {
 
     try {
       // Get local media stream
+       
       this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
         video: options.video,
         audio: options.audio,
@@ -432,6 +435,7 @@ export class WebRTCManager {
 
     // Handle incoming offer
     this.channel.on('offer', async (payload: unknown) => {
+       
       const { from, sdp } = payload as { from: string; sdp: string };
       try {
         const pc = this.getOrCreatePeerConnection(from);
@@ -448,6 +452,7 @@ export class WebRTCManager {
 
     // Handle incoming answer
     this.channel.on('answer_sdp', async (payload: unknown) => {
+       
       const { from, sdp } = payload as { from: string; sdp: string };
       try {
         const pc = this.peerConnections.get(from);
@@ -461,6 +466,7 @@ export class WebRTCManager {
 
     // Handle ICE candidates
     this.channel.on('ice_candidate', async (payload: unknown) => {
+       
       const { from, candidate } = payload as {
         from: string;
         candidate: RTCIceCandidateInit | null;
@@ -477,6 +483,7 @@ export class WebRTCManager {
 
     // Handle participant joined
     this.channel.on('user_joined', (payload: unknown) => {
+       
       const { user } = payload as { user: CallParticipant };
       this.state.participants.push(user);
       this.eventHandlers.onParticipantJoined?.(user);
@@ -485,6 +492,7 @@ export class WebRTCManager {
 
     // Handle participant left
     this.channel.on('user_left', (payload: unknown) => {
+       
       const { user_id } = payload as { user_id: string };
       this.state.participants = this.state.participants.filter((p) => p.userId !== user_id);
       this.state.remoteStreams.delete(user_id);
@@ -501,6 +509,7 @@ export class WebRTCManager {
 
     // Handle call ended
     this.channel.on('call_ended', (payload: unknown) => {
+       
       const { reason } = payload as { reason: string };
       this.endCall();
       this.eventHandlers.onCallEnded?.(reason);
@@ -540,6 +549,7 @@ export class WebRTCManager {
 
     // Handle connection state changes
     pc.onconnectionstatechange = () => {
+      // eslint-disable-next-line no-console
       if (__DEV__) console.log(`[WebRTC] Connection state for ${userId}: ${pc.connectionState}`);
       if (pc.connectionState === 'connected') {
         this.state.status = 'connected';
@@ -570,6 +580,9 @@ export class WebRTCManager {
 // Singleton instance management
 let managerInstance: WebRTCManager | null = null;
 
+/**
+ *
+ */
 export function getWebRTCManager(socket: Socket): WebRTCManager {
   if (!managerInstance) {
     managerInstance = new WebRTCManager(socket);
@@ -577,6 +590,9 @@ export function getWebRTCManager(socket: Socket): WebRTCManager {
   return managerInstance;
 }
 
+/**
+ *
+ */
 export function destroyWebRTCManager(): void {
   if (managerInstance) {
     managerInstance.endCall();

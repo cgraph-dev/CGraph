@@ -37,6 +37,9 @@ interface ModalProps {
   contentStyle?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function Modal({
   visible,
   onClose,
@@ -98,6 +101,9 @@ interface ConfirmDialogProps {
   loading?: boolean;
 }
 
+/**
+ *
+ */
 export function ConfirmDialog({
   visible,
   onClose,

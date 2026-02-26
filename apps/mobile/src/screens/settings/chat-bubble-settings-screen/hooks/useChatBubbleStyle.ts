@@ -9,6 +9,9 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ChatBubbleStyle, defaultStyle, presets, STORAGE_KEY } from '../types';
 import { invalidateBubbleCache } from '@/hooks/useBubbleCustomization';
 
+/**
+ *
+ */
 export function useChatBubbleStyle() {
   const [style, setStyle] = useState<ChatBubbleStyle>(defaultStyle);
 

@@ -19,8 +19,7 @@ import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated'
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
-import type { Notification, TabType } from './types';
-import { getMockNotifications } from './types';
+import type { Notification, TabType, getMockNotifications } from './types';
 import {
   SwipeableNotificationItem,
   NotificationTabs,
@@ -29,6 +28,9 @@ import {
   LoadingState,
 } from './components';
 
+/**
+ *
+ */
 export default function NotificationsInboxScreen() {
   const { colors, isDark } = useThemeStore();
 
@@ -105,6 +107,7 @@ export default function NotificationsInboxScreen() {
         handleMarkRead(notification.id);
       }
       // Navigation would go here
+      // eslint-disable-next-line no-console
       console.log('Navigate to notification:', notification.type, notification.data);
     },
     [handleMarkRead]

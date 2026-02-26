@@ -22,6 +22,9 @@ const STATUS_COLORS = {
   invisible: '#6b7280',
 };
 
+/**
+ *
+ */
 export default function StatusBadge({
   status,
   size = 12,

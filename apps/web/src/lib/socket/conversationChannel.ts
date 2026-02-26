@@ -111,24 +111,30 @@ export function joinConversation(
     });
 
     channel.on('new_message', (payload) => {
+       
       const data = payload as { message: Record<string, unknown> };
+       
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       logger.log('Received new_message:', normalized);
       useChatStore.getState().addMessage(normalized);
     });
 
     channel.on('message_updated', (payload) => {
+       
       const data = payload as { message: Record<string, unknown> };
+       
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       useChatStore.getState().updateMessage(normalized);
     });
 
     channel.on('message_deleted', (payload) => {
+       
       const data = payload as { message_id: string };
       useChatStore.getState().removeMessage(data.message_id, conversationId);
     });
 
     channel.on('typing', (payload) => {
+       
       const data = payload as { user_id: string; is_typing: boolean; started_at?: string };
       useChatStore
         .getState()
@@ -139,6 +145,7 @@ export function joinConversation(
     channel.on('presence_diff', (diff) => logger.log('Presence diff:', diff));
 
     channel.on('reaction_added', (payload) => {
+       
       const data = payload as {
         message_id: string;
         user_id: string;
@@ -151,6 +158,7 @@ export function joinConversation(
     });
 
     channel.on('reaction_removed', (payload) => {
+       
       const data = payload as { message_id: string; user_id: string; emoji: string };
       useChatStore.getState().removeReactionFromMessage(data.message_id, data.emoji, data.user_id);
     });

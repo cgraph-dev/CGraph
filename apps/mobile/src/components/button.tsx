@@ -38,6 +38,9 @@ interface ButtonProps {
   icon?: ReactNode;
 }
 
+/**
+ *
+ */
 export default function Button({
   children,
   variant = 'primary',

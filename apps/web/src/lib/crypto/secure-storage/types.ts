@@ -2,6 +2,7 @@
  * Secure Storage Types and Constants
  *
  * @module lib/crypto/secure-storage/types
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 

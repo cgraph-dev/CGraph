@@ -156,6 +156,7 @@ export function processMessagesWithReactions(
             return String(u) === String(currentUserId);
           }
           // If u is an object, check various ID fields
+           
           const uObj = u as { id?: string; user_id?: string };
           return (
             String(uObj.id) === String(currentUserId) ||
@@ -421,15 +422,18 @@ export function getSenderInfo(message: Message): {
 } {
   const displayName =
     message.sender?.display_name ||
+     
     (message.sender as Record<string, unknown>)?.displayName ||
     message.sender?.username ||
     'User';
 
   const avatarUrl =
+     
     message.sender?.avatar_url || (message.sender as Record<string, unknown>)?.avatarUrl;
 
   return {
     displayName: String(displayName),
+     
     avatarUrl: avatarUrl as string | undefined,
   };
 }

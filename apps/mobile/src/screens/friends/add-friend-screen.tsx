@@ -159,6 +159,9 @@ function InfoStep({ number, title, description, delay }: {
   );
 }
 
+/**
+ *
+ */
 export default function AddFriendScreen() {
   const navigation = useNavigation();
   const { colors } = useThemeStore();
@@ -295,6 +298,7 @@ export default function AddFriendScreen() {
         navigation.goBack();
       }, 2000);
     } catch (err: unknown) {
+       
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
       let errorMessage = typeof error.response?.data?.error === 'object' 
         ? error.response?.data?.error?.message 

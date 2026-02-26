@@ -47,6 +47,9 @@ interface ProfilePhotoViewerContextValue {
 // ── Context ────────────────────────────────────────────────
 const Ctx = createContext<ProfilePhotoViewerContextValue | null>(null);
 
+/**
+ *
+ */
 export function useProfilePhotoViewer() {
   const ctx = use(Ctx);
   if (!ctx) {
@@ -58,6 +61,9 @@ export function useProfilePhotoViewer() {
 }
 
 // ── Provider ───────────────────────────────────────────────
+/**
+ *
+ */
 export function ProfilePhotoViewerProvider({
   children,
 }: {

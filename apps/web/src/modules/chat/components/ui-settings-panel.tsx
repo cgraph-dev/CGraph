@@ -55,6 +55,7 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'glassEffect',
+                     
                     e.target.value as UIPreferences['glassEffect'] /* safe downcast – event value */
                   )
                 }
@@ -76,6 +77,7 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'voiceVisualizerTheme',
+                     
                     e.target
                       .value as UIPreferences['voiceVisualizerTheme'] /* safe downcast – event value */
                   )
@@ -99,6 +101,7 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'animationIntensity',
+                     
                     e.target.value as AnimationIntensity /* safe downcast – event value */
                   )
                 }
@@ -120,6 +123,7 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'messageEntranceAnimation',
+                     
                     e.target
                       .value as UIPreferences['messageEntranceAnimation'] /* safe downcast – event value */
                   )
@@ -147,11 +151,13 @@ export function UISettingsPanel({
                 onClick={() => {
                   setUiPreferences({
                     ...uiPreferences,
+                     
                     [key]: !uiPreferences[key as keyof typeof uiPreferences],
                   });
                   if (uiPreferences.enableHaptic) HapticFeedback.light();
                 }}
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                   
                   uiPreferences[key as keyof typeof uiPreferences]
                     ? 'bg-primary-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]'
                     : 'border border-dark-600 bg-dark-700/50 text-gray-400'

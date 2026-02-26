@@ -83,6 +83,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
     if (reducedMotion) return {};
 
     const animationType = getAnimationTypeFromBorder(border.type);
+     
     const baseAnimation = ANIMATION_KEYFRAMES[animationType as keyof typeof ANIMATION_KEYFRAMES];
 
     if (typeof baseAnimation === 'function') {
@@ -113,6 +114,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
       ref={containerRef}
       className={cn('relative flex cursor-pointer items-center justify-center', className)}
       style={
+         
         {
           width: size,
           height: size,

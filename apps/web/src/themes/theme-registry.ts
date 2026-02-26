@@ -193,6 +193,7 @@ class ThemeRegistryClass {
    */
   importTheme(json: string): AppTheme {
     try {
+       
       const theme = JSON.parse(json) as AppTheme; // safe downcast – validated below
 
       // Validate theme structure

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useForumHostingStore } from '../forumHostingStore.impl';
@@ -164,6 +165,7 @@ describe('createBoard', () => {
 
 describe('updateBoard', () => {
   it('updates a board in the list', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ boards: [{ id: 'b1', name: 'Old' } as any] });
     mockedApi.put.mockResolvedValueOnce({ data: { data: makeBoardApi({ name: 'Updated' }) } });
     const board = await useForumHostingStore
@@ -176,6 +178,7 @@ describe('updateBoard', () => {
 
 describe('deleteBoard', () => {
   it('removes a board from the list', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ boards: [{ id: 'b1' } as any, { id: 'b2' } as any] });
     mockedApi.delete.mockResolvedValueOnce({});
     await useForumHostingStore.getState().deleteBoard('f1', 'b1');
@@ -212,6 +215,7 @@ describe('createThread', () => {
 
 describe('deleteThread', () => {
   it('removes a thread from the list', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ threads: [{ id: 't1' } as any] });
     mockedApi.delete.mockResolvedValueOnce({});
     await useForumHostingStore.getState().deleteThread('t1');
@@ -221,6 +225,7 @@ describe('deleteThread', () => {
 
 describe('pinThread', () => {
   it('pins a thread', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ threads: [{ id: 't1', isPinned: false } as any] });
     mockedApi.post.mockResolvedValueOnce({});
     await useForumHostingStore.getState().pinThread('t1', true);
@@ -230,6 +235,7 @@ describe('pinThread', () => {
 
 describe('lockThread', () => {
   it('locks a thread', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ threads: [{ id: 't1', isLocked: false } as any] });
     mockedApi.post.mockResolvedValueOnce({});
     await useForumHostingStore.getState().lockThread('t1', true);
@@ -263,6 +269,7 @@ describe('createPost', () => {
 
 describe('deletePost', () => {
   it('removes a post', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useForumHostingStore.setState({ posts: [{ id: 'p1' } as any] });
     mockedApi.delete.mockResolvedValueOnce({});
     await useForumHostingStore.getState().deletePost('t1', 'p1');

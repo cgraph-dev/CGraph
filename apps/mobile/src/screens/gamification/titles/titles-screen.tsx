@@ -18,11 +18,13 @@ import { useGamification } from '@/hooks/useGamification';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { api } from '@/lib/api';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { TitleTab, TitleRarity, UserTitle } from './types';
-import { TABS, RARITIES, RARITY_COLORS, transformTitle } from './types';
+import type { RARITIES, RARITY_COLORS, TABS, TitleRarity, TitleTab, UserTitle, transformTitle } from './types';
 import { TitleCard } from './title-card';
 import { styles } from './styles';
 
+/**
+ *
+ */
 export default function TitlesScreen() {
   const navigation = useNavigation();
   const { stats, refreshStats, isLoading } = useGamification();

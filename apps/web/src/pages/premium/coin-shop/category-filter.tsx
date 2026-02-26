@@ -27,6 +27,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
       >
         All
       </button>
+      { }
       {(Object.entries(CATEGORY_LABELS) as [ShopCategory, string][]).map(
         (
           [key, label] // type assertion: Object.entries returns entries typed correctly

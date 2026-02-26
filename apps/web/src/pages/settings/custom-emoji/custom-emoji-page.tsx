@@ -25,7 +25,9 @@ function EmojiCard({ emoji, onDelete }: { emoji: CustomEmoji; onDelete: (id: str
           className="h-12 w-12 object-contain"
           loading="lazy"
           onError={(e) => {
+             
             (e.target as HTMLImageElement).src = ''; // safe downcast – DOM element
+             
             (e.target as HTMLImageElement).style.display = 'none'; // safe downcast – DOM element
           }}
         />

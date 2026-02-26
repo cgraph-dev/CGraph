@@ -412,10 +412,12 @@ function transformCalendarMonth(data: ApiData, year: number, month: number): Cal
   const days: Record<number, CalendarEvent[]> = {};
 
   if (data.days) {
+     
     Object.entries(data.days as Record<string, ApiData[]>).forEach(([day, events]) => {
       days[parseInt(day)] = events.map(transformCalendarEvent);
     });
   } else if (data.events) {
+     
     (data.events as ApiData[]).forEach((event) => {
       const eventDate = new Date(event.start_time || event.startTime);
       const day = eventDate.getDate();

@@ -38,6 +38,7 @@ export interface SpringConfig {
  */
 export function getSpringConfig(config: SpringConfig): WithSpringConfig {
   const { name, description, ...springConfig } = config;
+   
   return springConfig as WithSpringConfig;
 }
 
@@ -626,14 +627,23 @@ export const LOOP_ANIMATIONS = {
 // Utility Functions
 // ============================================================================
 
+/**
+ *
+ */
 export function getStaggerDelay(index: number, baseDelay: number = 50): number {
   return index * baseDelay;
 }
 
+/**
+ *
+ */
 export function getStaggerDelays(count: number, baseDelay: number = 50): number[] {
   return Array.from({ length: count }, (_, i) => i * baseDelay);
 }
 
+/**
+ *
+ */
 export function combineAnimations(...animations: AnimationPreset[]): AnimationPreset {
   return animations.reduce(
     (combined, animation) => ({
@@ -648,6 +658,9 @@ export function combineAnimations(...animations: AnimationPreset[]): AnimationPr
   );
 }
 
+/**
+ *
+ */
 export function createDelayedAnimation(animation: AnimationPreset, delay: number): AnimationPreset {
   return {
     ...animation,
@@ -655,6 +668,9 @@ export function createDelayedAnimation(animation: AnimationPreset, delay: number
   };
 }
 
+/**
+ *
+ */
 export function createSequencedAnimations(
   animations: AnimationPreset[],
   delayBetween: number = 100

@@ -23,6 +23,7 @@ export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
   }
 
   if (CONFIG.debug) {
+    // eslint-disable-next-line no-console
     console.debug('[ErrorTracking] Breadcrumb:', crumb);
   }
 }

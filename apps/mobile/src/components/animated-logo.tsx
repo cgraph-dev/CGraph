@@ -185,6 +185,9 @@ function GeometricLogo({ size }: { size: number }) {
   );
 }
 
+/**
+ *
+ */
 export function AnimatedLogo({
   size = 'md',
   showText = false,
@@ -330,6 +333,9 @@ export function AnimatedLogo({
 }
 
 // Splash Screen Component
+/**
+ *
+ */
 export function SplashScreen() {
   const progress = useSharedValue(0);
 

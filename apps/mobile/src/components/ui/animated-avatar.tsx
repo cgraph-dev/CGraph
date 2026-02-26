@@ -50,6 +50,9 @@ interface AnimatedAvatarProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function AnimatedAvatar({
   source,
   size = 64,

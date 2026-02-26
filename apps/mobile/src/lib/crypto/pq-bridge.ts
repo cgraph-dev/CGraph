@@ -80,7 +80,7 @@ export function isNativeCryptoAvailable(): boolean {
 
   try {
     // Dynamic require for optional native module detection
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     _quickCrypto = require('react-native-quick-crypto') as QuickCrypto;
     _nativeAvailable = _quickCrypto !== null;
     logger.info(`Native crypto: ${_nativeAvailable ? 'available' : 'unavailable'}`);
@@ -343,14 +343,23 @@ export async function decryptMessage(sessionId: string, ciphertext: Uint8Array):
 // SESSION MANAGEMENT
 // =============================================================================
 
+/**
+ *
+ */
 export function getSession(sessionId: string): PQSession | undefined {
   return activeSessions.get(sessionId);
 }
 
+/**
+ *
+ */
 export function getActiveSessions(): Map<string, PQSession> {
   return new Map(activeSessions);
 }
 
+/**
+ *
+ */
 export async function closeSession(sessionId: string): Promise<void> {
   const session = activeSessions.get(sessionId);
   if (session) {
@@ -361,6 +370,9 @@ export async function closeSession(sessionId: string): Promise<void> {
   }
 }
 
+/**
+ *
+ */
 export async function closeAllSessions(): Promise<void> {
   for (const [id] of activeSessions) {
     await closeSession(id);

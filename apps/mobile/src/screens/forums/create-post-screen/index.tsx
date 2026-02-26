@@ -48,6 +48,9 @@ type Props = {
   route: RouteProp<ForumsStackParamList, 'CreatePost'>;
 };
 
+/**
+ *
+ */
 export default function CreatePostScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -98,6 +101,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
       navigation.goBack();
     } catch (error: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+       
       const apiError = error as { response?: { data?: { message?: string } } };
       Alert.alert('Error', apiError.response?.data?.message || 'Failed to create post');
     } finally {

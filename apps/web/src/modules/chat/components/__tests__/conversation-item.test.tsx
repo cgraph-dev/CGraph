@@ -32,16 +32,41 @@ import { ConversationItem } from '../conversation-list/conversation-item';
 
 const baseConversation = {
   id: 'conv-1',
+  type: 'direct' as const,
   name: 'Alice',
+  avatarUrl: null,
   isGroup: false,
   isPinned: false,
   isMuted: false,
   unreadCount: 0,
+  participants: [],
   lastMessage: {
+    id: 'msg-1',
+    conversationId: 'conv-1',
+    senderId: 'user-2',
     content: 'Hello!',
+    encryptedContent: null,
+    isEncrypted: false,
+    messageType: 'text' as const,
+    replyToId: null,
+    replyTo: null,
+    isPinned: false,
+    isEdited: false,
+    deletedAt: null,
+    metadata: {},
+    reactions: [],
+    sender: {
+      id: 'user-2',
+      username: 'alice',
+      displayName: 'Alice',
+      avatarUrl: null,
+    },
     createdAt: '2026-02-24T12:00:00Z',
+    updatedAt: '2026-02-24T12:00:00Z',
   },
   members: [],
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
 };
 
 function renderWithRouter(ui: React.ReactElement) {

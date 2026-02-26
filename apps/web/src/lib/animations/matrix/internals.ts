@@ -80,10 +80,13 @@ export function createCharacterAtlas(
         : document.createElement('canvas');
 
       if (!supportsOffscreen) {
+         
         (canvas as HTMLCanvasElement).width = glyphSize; // safe downcast – DOM element
+         
         (canvas as HTMLCanvasElement).height = glyphSize; // safe downcast – DOM element
       }
 
+       
       const ctx = canvas.getContext('2d', { alpha: true }) as
         | CanvasRenderingContext2D
         | OffscreenCanvasRenderingContext2D;

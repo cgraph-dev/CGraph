@@ -5,6 +5,7 @@
  * to maintain backward compatibility with existing imports.
  *
  * @module lib/crypto/secureStorage
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 

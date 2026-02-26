@@ -69,6 +69,7 @@ export function LanguageSettingsPanel() {
           value={settings.locale.dateFormat}
           onChange={async (e) => {
             try {
+               
               await updateLocaleSettings({ dateFormat: e.target.value as 'mdy' | 'dmy' | 'ymd' });
               toast.success('Date format updated');
             } catch {
@@ -91,6 +92,7 @@ export function LanguageSettingsPanel() {
           onChange={async (e) => {
             try {
               await updateLocaleSettings({
+                 
                 timeFormat: e.target.value as 'twelve_hour' | 'twenty_four_hour',
               });
               toast.success('Time format updated');

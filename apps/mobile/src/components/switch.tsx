@@ -15,6 +15,9 @@ type SwitchProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ *
+ */
 export default function Switch({
   value,
   onValueChange,

@@ -18,6 +18,7 @@
 
 import Constants from 'expo-constants';
 
+ 
 const SENTRY_DSN = Constants.expoConfig?.extra?.sentryDsn as string | undefined;
 const ENVIRONMENT = __DEV__ ? 'development' : 'production';
 const RELEASE = Constants.expoConfig?.version || '0.9.31';
@@ -66,7 +67,7 @@ export async function initErrorTracking(): Promise<void> {
     });
 
     isInitialized = true;
-    // eslint-disable-next-line no-console
+     
     console.info('[ErrorTracking] Sentry initialized for mobile');
   } catch (error) {
     console.warn('[ErrorTracking] Failed to initialize Sentry:', error);
@@ -143,6 +144,7 @@ export function wrapNavigation(NavigationContainer: React.ComponentType) {
   if (!isInitialized) return NavigationContainer;
 
   try {
+     
     const Sentry = require('@sentry/react-native');
     return Sentry.withProfiler(NavigationContainer);
   } catch {

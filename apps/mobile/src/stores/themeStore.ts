@@ -304,6 +304,7 @@ export type ThemeColors = typeof lightColors | typeof darkColors;
 
 function resolveColorScheme(preference: ThemePreference): ColorScheme {
   if (preference === 'system') {
+     
     return (Appearance.getColorScheme() as ColorSchemeName) === 'dark' ? 'dark' : 'light';
   }
   return preference;
@@ -328,6 +329,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       const preference: ThemePreference =
         stored && ['light', 'dark', 'system'].includes(stored)
+           
           ? (stored as ThemePreference)
           : 'system';
 

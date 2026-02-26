@@ -16,6 +16,9 @@ export interface EmptyNotificationsProps {
   };
 }
 
+/**
+ *
+ */
 export function EmptyNotifications({ activeTab, colors }: EmptyNotificationsProps) {
   return (
     <View style={styles.container}>

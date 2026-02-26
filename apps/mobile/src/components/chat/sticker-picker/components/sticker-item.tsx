@@ -16,6 +16,9 @@ interface StickerItemProps {
   isPurchasing: boolean;
 }
 
+/**
+ *
+ */
 export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: StickerItemProps) {
   const scaleAnim = useSharedValue(1);
   const scaleXAnim = useSharedValue(1);

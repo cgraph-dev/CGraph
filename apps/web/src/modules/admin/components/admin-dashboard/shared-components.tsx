@@ -98,6 +98,7 @@ export function DashboardChart({
   loading?: boolean;
 }) {
   const { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } =
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     React.useMemo(() => require('recharts'), []);
 
   return (

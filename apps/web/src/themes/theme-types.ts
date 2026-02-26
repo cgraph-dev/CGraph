@@ -5,6 +5,7 @@
  * Each theme can completely transform the UI while preserving user customizations
  *
  * @version 2.0.0
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @architecture Modular JSON-based with CSS variables
  */
 

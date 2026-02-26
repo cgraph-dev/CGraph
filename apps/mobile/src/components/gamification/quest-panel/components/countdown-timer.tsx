@@ -9,6 +9,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { CountdownTimerProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function CountdownTimer({ expiresAt, compact = false }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState('');
   const [isUrgent, setIsUrgent] = useState(false);

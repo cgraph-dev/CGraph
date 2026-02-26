@@ -14,6 +14,9 @@ export interface StatCardProps {
   trend?: { value: number; isPositive: boolean };
 }
 
+/**
+ *
+ */
 export function StatCard({ label, value, icon, color, trend }: StatCardProps) {
   return (
     <View style={[styles.statCard, { borderTopColor: color }]}>

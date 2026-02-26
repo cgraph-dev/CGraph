@@ -18,6 +18,7 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
     const { colors, borderRadius, borderWidth, shadows, fontFamily, headerFontFamily, fontSize } =
       theme;
 
+     
     return {
       '--forum-primary': colors.primary,
       '--forum-secondary': colors.secondary,

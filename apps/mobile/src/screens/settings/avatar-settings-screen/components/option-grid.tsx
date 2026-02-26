@@ -9,6 +9,9 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { OptionGridProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function OptionGrid({ options, selected, onSelect, columns = 4 }: OptionGridProps) {
   return (
     <View style={[styles.optionGrid, { flexWrap: 'wrap' }]}>

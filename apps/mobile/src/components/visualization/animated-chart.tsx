@@ -160,6 +160,9 @@ export interface LineChartProps extends ChartProps {
   showArea?: boolean;
 }
 
+/**
+ *
+ */
 export function LineChart({
   data,
   width: propWidth,
@@ -377,6 +380,9 @@ export interface BarChartProps extends ChartProps {
   horizontal?: boolean;
 }
 
+/**
+ *
+ */
 export function BarChart({
   data,
   width: propWidth,
@@ -519,6 +525,9 @@ export interface PieChartProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function PieChart({
   data,
   size = 200,

@@ -55,6 +55,7 @@ export default function AchievementsPage() {
   const mergedAchievements = useMemo(() => {
     return ACHIEVEMENT_DEFINITIONS.map((def) => {
       const storeAchievement = achievements.find((a) => a.id === def.id);
+       
       return {
         ...def,
         progress: storeAchievement?.progress || 0,

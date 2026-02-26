@@ -105,6 +105,7 @@ export function useConversationSocket({
 
         // Handle message read event
         if (event === 'message_read') {
+           
           const data = payload as { user_id: string; message_id: string };
           if (data.message_id && data.user_id !== userId) {
             onMessageRead(data.message_id, data.user_id);
@@ -114,6 +115,7 @@ export function useConversationSocket({
 
         // Handle message deleted
         if (event === 'message_deleted') {
+           
           const data = payload as { message_id?: string; message?: { id: string } };
           const messageId = data.message_id || data.message?.id;
           if (messageId) {
@@ -125,6 +127,7 @@ export function useConversationSocket({
 
         // Handle message unpinned
         if (event === 'message_unpinned') {
+           
           const data = payload as { message_id?: string; message?: { id: string } };
           const messageId = data.message_id || data.message?.id;
           if (messageId) {
@@ -135,6 +138,7 @@ export function useConversationSocket({
 
         // Handle reaction added
         if (event === 'reaction_added') {
+           
           const data = payload as {
             message_id: string;
             emoji: string;
@@ -154,6 +158,7 @@ export function useConversationSocket({
 
         // Handle reaction removed
         if (event === 'reaction_removed') {
+           
           const data = payload as { message_id: string; emoji: string; user_id: string };
           if (data.message_id && data.emoji) {
             onReactionRemoved({
@@ -166,6 +171,7 @@ export function useConversationSocket({
         }
 
         // Handle message events (new, updated, pinned)
+         
         const data = payload as { message: Record<string, unknown> };
 
         if (!data.message || !data.message.id) {

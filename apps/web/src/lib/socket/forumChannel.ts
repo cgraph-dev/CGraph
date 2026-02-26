@@ -111,6 +111,7 @@ export function subscribeToForum(
   return new Promise((resolve, reject) => {
     channel
       .push('subscribe', {})
+       
       .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -131,6 +132,7 @@ export function unsubscribeFromForum(
   return new Promise((resolve, reject) => {
     channel
       .push('unsubscribe', {})
+       
       .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
       .receive('error', (resp: unknown) => reject(resp));
   });

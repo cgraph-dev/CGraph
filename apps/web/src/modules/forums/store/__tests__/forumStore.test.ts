@@ -982,6 +982,7 @@ describe('forumStore (module)', () => {
       isSuperMod: false,
       canModerate: true,
       canAdmin: false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       permissions: {} as any,
     };
 
@@ -999,6 +1000,7 @@ describe('forumStore (module)', () => {
       const result = await useForumStore.getState().createUserGroup({
         name: 'Moderators',
         type: 'custom',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         permissions: { canViewForum: true } as any,
       });
 
@@ -1007,6 +1009,7 @@ describe('forumStore (module)', () => {
     });
 
     it('should delete a user group from state', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       useForumStore.setState({ userGroups: [mockGroup as any] });
       mockedApi.delete.mockResolvedValue({ data: {} });
 

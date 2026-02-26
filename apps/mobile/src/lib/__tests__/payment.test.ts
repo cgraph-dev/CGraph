@@ -42,8 +42,11 @@ beforeEach(() => {
   jest.clearAllMocks();
   // Reset the singleton's internal state for each test by re-initializing
   // We access the private fields through casting
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (paymentService as any).isInitialized = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (paymentService as any).products = new Map();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (paymentService as any).purchaseListeners = [];
 });
 

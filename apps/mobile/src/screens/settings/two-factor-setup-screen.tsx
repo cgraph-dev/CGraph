@@ -67,6 +67,9 @@ const STEPS = [
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function TwoFactorSetupScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
 

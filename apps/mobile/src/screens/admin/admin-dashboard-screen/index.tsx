@@ -27,14 +27,16 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { ParamListBase } from '@react-navigation/native';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { AdminTab } from './types';
 import { useAdminDashboard } from './hooks';
 import { TabBar, OverviewTab, ReportsTab, AuditTab, SettingsTab } from './components';
 
+/**
+ *
+ */
 export default function AdminDashboardScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');

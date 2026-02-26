@@ -254,6 +254,7 @@ export async function claimQuestRewards(userQuestId: string): Promise<QuestRewar
 /**
  * Get all user titles
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getTitles(): Promise<any[]> {
   const response = await api.get('/api/v1/titles');
   return response.data.data || response.data.titles || [];
@@ -332,6 +333,7 @@ function transformAchievement(data: ApiData): AchievementWithProgress {
 }
 
 function transformLeaderboard(data: ApiData, category: string): LeaderboardData {
+   
   const entries = ((data.entries as ApiData[]) || []).map((entry: ApiData, index: number) => ({
     rank: entry.rank || index + 1,
     userId: entry.user_id || entry.userId || entry.id,
@@ -393,6 +395,7 @@ function transformQuest(data: ApiData): Quest {
     name: data.name,
     description: data.description,
     type: data.type || 'daily',
+     
     objectives: ((data.objectives as ApiData[]) || []).map((obj: ApiData) => ({
       id: obj.id,
       description: obj.description,
@@ -400,6 +403,7 @@ function transformQuest(data: ApiData): Quest {
       currentValue: obj.current_value || obj.currentValue || 0,
       completed: obj.completed || false,
     })),
+     
     rewards: ((data.rewards as ApiData[]) || []).map((reward: ApiData) => ({
       type: reward.type || 'xp',
       amount: reward.amount || 0,

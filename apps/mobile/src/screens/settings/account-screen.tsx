@@ -17,8 +17,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 import api from '../../lib/api';
 import {
@@ -33,6 +32,9 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Account'>;
 };
 
+/**
+ *
+ */
 export default function AccountScreen({ navigation: _navigation }: Props) {
   const { colors } = useThemeStore();
   const { user, logout } = useAuthStore();

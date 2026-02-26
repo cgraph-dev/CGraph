@@ -36,23 +36,29 @@ export function joinGroupChannel(
   const channel = socket.channel(topic, {});
 
   channel.on('new_message', (payload) => {
+     
     const data = payload as { message: Record<string, unknown> };
+     
     const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
     useGroupStore.getState().addChannelMessage(normalized);
   });
 
   channel.on('message_updated', (payload) => {
+     
     const data = payload as { message: Record<string, unknown> };
+     
     const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
     useGroupStore.getState().updateChannelMessage(normalized);
   });
 
   channel.on('message_deleted', (payload) => {
+     
     const data = payload as { message_id: string };
     useGroupStore.getState().removeChannelMessage(data.message_id, channelId);
   });
 
   channel.on('typing', (payload) => {
+     
     const data = payload as { user_id: string; is_typing: boolean };
     useGroupStore.getState().setTypingUser(channelId, data.user_id, data.is_typing);
   });

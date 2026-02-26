@@ -6,6 +6,7 @@
  *
  * @version 4.0.0
  * @since v0.7.33
+ // eslint-disable-next-line jsdoc/check-tag-names
  * @updated v0.8.3
  */
 

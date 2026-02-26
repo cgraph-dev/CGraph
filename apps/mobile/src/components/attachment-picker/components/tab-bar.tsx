@@ -15,6 +15,9 @@ interface TabBarProps {
   textSecondaryColor: string;
 }
 
+/**
+ *
+ */
 export function TabBar({ activeTab, onTabPress, isDark, textSecondaryColor }: TabBarProps) {
   return (
     <View
@@ -37,6 +40,7 @@ export function TabBar({ activeTab, onTabPress, isDark, textSecondaryColor }: Ta
             style={[styles.tabIconContainer, activeTab === tab.id && styles.tabIconContainerActive]}
           >
             <Ionicons
+               
               name={tab.icon as keyof typeof Ionicons.glyphMap}
               size={22}
               color={activeTab === tab.id ? '#fff' : textSecondaryColor}

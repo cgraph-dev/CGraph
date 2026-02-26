@@ -64,6 +64,7 @@ export function createThreadActions(set: StoreApi<ForumHostingState>['setState']
 
         const rawThreads = ensureArray<Record<string, unknown>>(response.data, 'data');
         const threads = rawThreads.map(mapThreadFromApi);
+         
         const meta = response.data.meta as PaginationMeta; // safe downcast – API response field
 
         set({
@@ -177,6 +178,7 @@ export function createPostActions(set: StoreApi<ForumHostingState>['setState']) 
 
         const rawPosts = ensureArray<Record<string, unknown>>(response.data, 'data');
         const posts = rawPosts.map(mapPostFromApi);
+         
         const meta = response.data.meta as PaginationMeta; // safe downcast – API response field
 
         set({

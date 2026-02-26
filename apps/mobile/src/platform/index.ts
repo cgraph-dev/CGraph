@@ -67,8 +67,11 @@ export type {
 // ============================================================================
 
 const Platform = {
+   
   PlatformAdapter: require('./platform-adapter').default,
+   
   IOSFeatures: require('./ios/ios-features').default,
+   
   AndroidFeatures: require('./android/android-features').default,
 };
 

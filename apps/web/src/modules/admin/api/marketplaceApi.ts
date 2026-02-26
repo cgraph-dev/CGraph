@@ -56,10 +56,12 @@ function transformFlaggedListing(data: ApiFlaggedListingResponse): FlaggedListin
     sellerUsername: data.seller_username,
     price: data.price,
     // type assertion: API response field maps to known union type
+     
     riskLevel: data.risk_level as FlaggedListing['riskLevel'],
     reason: data.reason,
     flaggedAt: data.flagged_at,
     // type assertion: API response field maps to known union type
+     
     status: data.status as FlaggedListing['status'],
   };
 }

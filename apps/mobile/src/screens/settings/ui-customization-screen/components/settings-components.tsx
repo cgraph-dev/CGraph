@@ -35,6 +35,9 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
+/**
+ *
+ */
 export function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
   return (
     <View style={styles.section}>
@@ -62,6 +65,9 @@ interface ToggleRowProps {
   onToggle: (value: boolean) => void;
 }
 
+/**
+ *
+ */
 export function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
   return (
     <View style={styles.optionRow}>
@@ -92,6 +98,9 @@ interface SliderRowProps {
   onValueChange: (value: number) => void;
 }
 
+/**
+ *
+ */
 export function SliderRow({
   label,
   value,
@@ -147,6 +156,9 @@ interface ColorShadePickerProps {
   onSelect: (shade: keyof ColorShade) => void;
 }
 
+/**
+ *
+ */
 export function ColorShadePicker({ label, shades, onSelect }: ColorShadePickerProps) {
   const shadeKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 
@@ -181,6 +193,9 @@ interface PresetSelectorProps {
   onSelect: (theme: ThemeConfig) => void;
 }
 
+/**
+ *
+ */
 export function PresetSelector({ currentThemeName, themes, onSelect }: PresetSelectorProps) {
   return (
     <View style={styles.presetSection}>

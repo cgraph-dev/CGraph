@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
@@ -112,6 +113,7 @@ describe('getColorsForPreset', () => {
 
   it('returns correct colors for every preset', () => {
     for (const [key, expected] of Object.entries(COLORS)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(getColorsForPreset(key as any)).toEqual(expected);
     }
   });
@@ -193,6 +195,7 @@ describe('PROFILE_CARD_CONFIGS & getProfileCardConfigForLayout', () => {
   });
 
   it('getProfileCardConfigForLayout falls back to minimal for unknown layout', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getProfileCardConfigForLayout('nonexistent' as any);
     expect(config).toEqual(PROFILE_CARD_CONFIGS.minimal);
   });

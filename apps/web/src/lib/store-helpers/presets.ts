@@ -29,6 +29,7 @@ export interface PresetConfig<T> {
  * });
  * // Result: { minimal: { ...baseConfig, layout: 'minimal', showLevel: false }, ... }
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createConfigPresets<T extends Record<string, any>>(
   baseConfig: T,
   overridesMap: Record<string, Partial<T>>
@@ -67,7 +68,6 @@ interface ClassifyRule<T> {
 
 // Function overloads for single item vs array classification
 // These are valid TypeScript function overloads, not actual redeclarations
-/* eslint-disable no-redeclare */
 export function classifyByRules<T>(
   items: T,
   rules: Array<ClassifyRule<T>>,
@@ -93,7 +93,7 @@ export function classifyByRules<T>(
   rules: Array<ClassifyRule<T>>,
   defaultCategory?: string
 ): Record<string, T[]> | string {
-  /* eslint-enable no-redeclare */
+   
 
   // Single item classification (returns string)
   if (!Array.isArray(items) && defaultCategory !== undefined) {

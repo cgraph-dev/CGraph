@@ -128,6 +128,7 @@ function AnimatedTitleText({
   const animProps = getAnimationVariants();
 
   return (
+     
     <motion.h4 className={baseClass} {...(animProps as object)}>
       {name}
     </motion.h4>

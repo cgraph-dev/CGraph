@@ -23,11 +23,17 @@ export function createFetchBlockedUsers(set: Set) {
       const blockedUsers = ensureArray(response.data, 'blocked')
         .filter(isRecord)
         .map((u) => ({
+           
           id: u.id as string, // type assertion: API response field narrowed from unknown
+           
           username: u.username as string, // type assertion: API response field narrowed from unknown
+           
           displayName: (u.display_name as string) || null, // type assertion: API response field narrowed from unknown
+           
           avatarUrl: (u.avatar_url as string) || null, // type assertion: API response field narrowed from unknown
+           
           blockedAt: u.blocked_at as string, // type assertion: API response field narrowed from unknown
+           
           reason: (u.reason as string) || undefined, // type assertion: API response field narrowed from unknown
         }));
       set({ blockedUsers, isLoadingBlocked: false });
@@ -138,8 +144,10 @@ export function createFetchProfileFields(set: Set) {
         .map((f) => ({
           id: asString(f.id),
           name: asString(f.name),
+           
           type: (f.type as ProfileField['type']) || 'text', // type assertion: narrowing unknown to union type after API boundary
           value: null,
+           
           options: f.options as string[] | undefined, // safe downcast – structural boundary
           required: asBool(f.required),
           editable: asBool(f.editable, true),

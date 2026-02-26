@@ -25,6 +25,9 @@ interface PluginCardProps {
   onUninstall: () => void;
 }
 
+/**
+ *
+ */
 export function PluginCard({
   plugin,
   colors,

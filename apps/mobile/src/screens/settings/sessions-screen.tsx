@@ -67,6 +67,9 @@ function getDeviceIcon(ua: string): keyof typeof Ionicons.glyphMap {
   return 'desktop-outline';
 }
 
+/**
+ *
+ */
 export default function SessionsScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const [sessions, setSessions] = useState<Session[]>([]);

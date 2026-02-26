@@ -56,6 +56,7 @@ export function AppearancePanel({
         <div
           className="overflow-hidden rounded-xl border border-dark-600"
           style={
+             
             {
               '--primary': appearance.primaryColor,
               '--secondary': appearance.secondaryColor,

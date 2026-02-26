@@ -28,6 +28,9 @@ interface GlassCardProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export default function GlassCard({
   children,
   variant = 'default',

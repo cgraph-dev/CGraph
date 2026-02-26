@@ -53,9 +53,11 @@ function resolveMediaUrl(url: string | undefined | null): string | undefined {
  */
 export function normalizeMessage(raw: Record<string, unknown>): Message {
   if (!raw || typeof raw !== 'object') {
+     
     return raw as unknown as Message;
   }
 
+   
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
 
   // Extract sender_id - API returns camelCase (senderId), normalize to snake_case
@@ -63,6 +65,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   const senderId = String(raw.senderId ?? raw.sender_id ?? sender?.id ?? '');
 
   // Determine message type from various possible field names
+   
   let messageType = (raw.type ??
     raw.messageType ??
     raw.message_type ??
@@ -71,25 +74,32 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
     'text') as Message['type'];
 
   // Fix type detection based on mime type (backend sometimes returns wrong contentType)
+   
   const rawMeta = raw.metadata as Record<string, unknown> | undefined;
+   
   const mimeType = (raw.fileMimeType ??
     raw.file_mime_type ??
     rawMeta?.mimeType ??
     rawMeta?.mime_type ??
     rawMeta?.file_mime_type ??
+     
     (raw.attachment as Record<string, unknown>)?.mime_type ??
+     
     (raw.attachment as Record<string, unknown>)?.mimeType) as string | undefined;
 
   // Also check file extension in URL as fallback
+   
   const fileUrl = (raw.fileUrl ??
     raw.file_url ??
     rawMeta?.url ??
+     
     (raw.attachment as Record<string, unknown>)?.url) as string | undefined;
   const isVideoByExtension = fileUrl && /\.(mp4|mov|m4v|avi|webm|mkv)$/i.test(fileUrl);
   const isVideoByMime = mimeType && mimeType.startsWith('video/');
 
   // Debug logging for video detection
   if (__DEV__ && (isVideoByMime || isVideoByExtension || messageType === 'video')) {
+    // eslint-disable-next-line no-console
     console.log('[Normalizer] Video detection:', {
       originalType: messageType,
       mimeType,
@@ -115,7 +125,9 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
 
   // Extract metadata - backend now sends populated metadata for voice/file messages
   // We check multiple sources to ensure maximum compatibility
+   
   const rawMetadata = raw.metadata as Record<string, unknown> | undefined;
+   
   const attachment = raw.attachment as Record<string, unknown> | null;
 
   // Build final metadata object
@@ -124,19 +136,30 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   // Check if backend already populated metadata with url
   if (rawMetadata && typeof rawMetadata === 'object' && rawMetadata.url) {
     metadata = {
+       
       url: resolveMediaUrl(rawMetadata.url as string),
+       
       filename: (rawMetadata.filename ?? rawMetadata.fileName) as string,
+       
       size: rawMetadata.size as number,
+       
       mimeType: (rawMetadata.mimeType ?? rawMetadata.mime_type) as string,
+       
       duration: rawMetadata.duration as number,
+       
       waveform: rawMetadata.waveform as number[],
       thumbnail: resolveMediaUrl(
+         
         (rawMetadata.thumbnailUrl as string) ??
+           
           (rawMetadata.thumbnail_url as string) ??
+           
           (rawMetadata.thumbnail as string)
       ),
       // Include grid_images for multi-photo messages
+       
       grid_images: rawMetadata.grid_images as string[] | undefined,
+       
       image_count: rawMetadata.image_count as number | undefined,
     };
     // Resolve URLs in grid_images array
@@ -147,30 +170,44 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
 
   // If metadata.url is still missing, try attachment and root-level fields
   if (!metadata || !metadata.url) {
+     
     const attachmentUrl = attachment?.url as string | undefined;
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
 
     if (fileUrl) {
+       
       const attachmentFilename = attachment?.filename as string | undefined;
+       
       const attachmentSize = attachment?.size as number | undefined;
+       
       const attachmentMimeType = (attachment?.mime_type ?? attachment?.mimeType) as
         | string
         | undefined;
+       
       const attachmentThumbnail = (attachment?.thumbnail_url ?? attachment?.thumbnailUrl) as
         | string
         | undefined;
 
       metadata = {
+         
         url: resolveMediaUrl(fileUrl as string),
+         
         filename: (attachmentFilename ?? raw.fileName ?? raw.file_name) as string,
+         
         size: (attachmentSize ?? raw.fileSize ?? raw.file_size) as number,
+         
         mimeType: (attachmentMimeType ?? raw.fileMimeType ?? raw.file_mime_type) as string,
+         
         duration: rawMetadata?.duration as number,
+         
         waveform: rawMetadata?.waveform as number[],
         thumbnail: resolveMediaUrl(
           attachmentThumbnail ??
+             
             (raw.thumbnailUrl as string) ??
+             
             (raw.thumbnail_url as string) ??
+             
             (raw.thumbnail as string)
         ),
       };
@@ -178,35 +215,49 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   }
 
   return {
+     
     id: raw.id as string,
+     
     content: (raw.content ?? '') as string,
     type: messageType,
+     
     attachments: (raw.attachments ?? []) as Message['attachments'],
     metadata: metadata,
     sender: sender,
     sender_id: senderId,
+     
     conversation_id: (raw.conversationId ?? raw.conversation_id ?? null) as string | undefined,
+     
     channel_id: (raw.channelId ?? raw.channel_id ?? null) as string | undefined,
+     
     reply_to_id: (raw.replyToId ?? raw.reply_to_id ?? null) as string | undefined,
     reply_to:
       (raw.replyTo ?? raw.reply_to)
         ? normalizeMessage(
+             
             (raw.replyTo as Record<string, unknown>) ?? (raw.reply_to as Record<string, unknown>)
           )
         : undefined,
+     
     reactions: (raw.reactions ?? []) as Message['reactions'],
+     
     is_edited: (raw.isEdited ?? raw.is_edited ?? false) as boolean,
     is_deleted: Boolean(
       raw.isDeleted ?? raw.is_deleted ?? raw.deletedAt ?? raw.deleted_at ?? false
     ),
+     
     is_pinned: (raw.isPinned ?? raw.is_pinned ?? false) as boolean,
+     
     pinned_at: (raw.pinnedAt ?? raw.pinned_at) as string | undefined,
+     
     pinned_by_id: (raw.pinnedById ?? raw.pinned_by_id) as string | undefined,
+     
     inserted_at: (raw.createdAt ??
       raw.created_at ??
       raw.insertedAt ??
       raw.inserted_at ??
       new Date().toISOString()) as string,
+     
     updated_at: (raw.updatedAt ??
       raw.updated_at ??
       raw.createdAt ??
@@ -231,11 +282,17 @@ function normalizeSender(sender: Record<string, unknown> | null | undefined): Us
   }
 
   return {
+     
     id: sender.id as string,
+     
     username: (sender.username ?? null) as string | null,
+     
     display_name: (sender.displayName ?? sender.display_name ?? null) as string | null,
+     
     avatar_url: (sender.avatarUrl ?? sender.avatar_url ?? null) as string | null,
+     
     status: (sender.status ?? 'offline') as string,
+     
     karma: sender.karma as number | undefined,
     is_verified: Boolean(sender.isVerified ?? sender.is_verified ?? false) || undefined,
   };
@@ -248,5 +305,6 @@ export function normalizeMessages(messages: unknown[]): Message[] {
   if (!Array.isArray(messages)) {
     return [];
   }
+   
   return messages.map((m) => normalizeMessage(m as Record<string, unknown>));
 }

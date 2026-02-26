@@ -16,6 +16,9 @@ export interface NextTierProgressProps {
   progress: number;
 }
 
+/**
+ *
+ */
 export function NextTierProgress({ tier, currentReferrals, progress }: NextTierProgressProps) {
   const getRewardIcon = (type: string) => {
     switch (type) {
@@ -50,6 +53,7 @@ export function NextTierProgress({ tier, currentReferrals, progress }: NextTierP
         {tier.rewards.slice(0, 3).map((reward, i) => (
           <View key={i} style={styles.reward}>
             <Ionicons
+               
               name={getRewardIcon(reward.type) as keyof typeof Ionicons.glyphMap}
               size={12}
               color="#9ca3af"

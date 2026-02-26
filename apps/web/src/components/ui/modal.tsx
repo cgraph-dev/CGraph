@@ -46,7 +46,9 @@ export function Modal({
         const focusableElements = modalRef.current.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
+         
         const firstElement = focusableElements[0] as HTMLElement; // safe downcast – DOM element
+         
         const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement; // safe downcast – DOM element
 
         if (event.shiftKey && document.activeElement === firstElement) {
@@ -63,11 +65,13 @@ export function Modal({
 
   useEffect(() => {
     if (isOpen) {
+       
       previousActiveElement.current = document.activeElement as HTMLElement; // safe downcast – DOM element
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
 
       // Focus the modal
+       
       const firstFocusable = modalRef.current?.querySelector(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       ) as HTMLElement; // safe downcast – DOM element

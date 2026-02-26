@@ -16,6 +16,9 @@ export interface ReferralLinkCardProps {
   onShare: () => void;
 }
 
+/**
+ *
+ */
 export function ReferralLinkCard({ referralCode, copied, onCopy, onShare }: ReferralLinkCardProps) {
   return (
     <LinearGradient

@@ -83,6 +83,9 @@ const DEFAULT_RUBBER_BAND_FACTOR = 0.3;
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function SwipeableCard({
   children,
   leftActions = [],
@@ -356,6 +359,7 @@ function ActionButton({ action, index, onPress }: ActionButtonProps) {
 
   return (
     <Animated.View
+       
       entering={require('react-native-reanimated').FadeInRight.delay(staggerDelay).springify()}
       style={[styles.actionButton, { backgroundColor: action.color }]}
     >
@@ -382,6 +386,9 @@ export interface SwipeToDeleteProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function SwipeToDelete({
   children,
   onDelete,
@@ -415,6 +422,9 @@ export interface SwipeToArchiveProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function SwipeToArchive({
   children,
   onArchive,

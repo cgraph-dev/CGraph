@@ -67,6 +67,9 @@ export interface UseOfflineQueueReturn {
   queuePost: (forumId: string, title: string, content: string) => Promise<QueueItem>;
 }
 
+/**
+ *
+ */
 export function useOfflineQueue(): UseOfflineQueueReturn {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [failedItems, setFailedItems] = useState<QueueItem[]>([]);
@@ -95,6 +98,7 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
       subscribe('itemFailed', refresh),
       subscribe('syncComplete', refresh),
       subscribe('networkChange', (data) => {
+         
         const { isOnline } = data as { isOnline: boolean };
         setStats((prev) => ({ ...prev, isOnline }));
 

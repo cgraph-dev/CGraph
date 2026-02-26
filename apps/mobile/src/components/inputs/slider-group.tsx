@@ -103,6 +103,9 @@ const SIZE_CONFIG = {
 // Single Slider Component
 // ============================================================================
 
+/**
+ *
+ */
 export function Slider({
   value,
   onChange,
@@ -277,6 +280,9 @@ export function Slider({
 // Range Slider Component
 // ============================================================================
 
+/**
+ *
+ */
 export function RangeSlider({
   values,
   onChange,
@@ -359,6 +365,7 @@ export function RangeSlider({
 
       const value1 = positionToValue(newX);
       const value2 = positionToValue(thumbX2.value);
+       
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {
@@ -394,6 +401,7 @@ export function RangeSlider({
 
       const value1 = positionToValue(thumbX1.value);
       const value2 = positionToValue(newX);
+       
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {
@@ -510,6 +518,9 @@ export function RangeSlider({
 // Slider Group Component
 // ============================================================================
 
+/**
+ *
+ */
 export function SliderGroup({
   sliders,
   onChange,

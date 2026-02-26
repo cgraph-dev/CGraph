@@ -5,6 +5,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import Animated, {
+  type SharedValue,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -13,7 +14,6 @@ import Animated, {
   Extrapolation,
   Easing,
 } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

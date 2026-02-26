@@ -12,6 +12,9 @@ interface HolographicCardProps {
   onPress?: () => void;
 }
 
+/**
+ *
+ */
 export function HolographicCard({
   children,
   header,

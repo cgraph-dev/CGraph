@@ -16,6 +16,9 @@ interface FallbackViewProps {
   textSecondaryColor: string;
 }
 
+/**
+ *
+ */
 export function FallbackView({
   isLoading,
   onOpenImagePicker,

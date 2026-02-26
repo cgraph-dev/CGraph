@@ -13,6 +13,9 @@ export interface LeaderboardSectionProps {
   onSeeAll?: () => void;
 }
 
+/**
+ *
+ */
 export function LeaderboardSection({ leaderboard, onSeeAll }: LeaderboardSectionProps) {
   return (
     <View style={styles.section}>

@@ -16,8 +16,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { AttachmentPicker } from '../../components';
@@ -35,8 +34,7 @@ import {
   ChatInputArea,
   MessageBubble,
 } from './conversation-screen/components';
-import { GifPickerModal } from './conversation-screen/components/gif-picker-modal';
-import type { GifResult } from './conversation-screen/components/gif-picker-modal';
+import type { GifPickerModal, GifResult } from './conversation-screen/components/gif-picker-modal';
 import { styles } from './conversation-screen/styles';
 import {
   useMediaViewer,
@@ -71,6 +69,9 @@ type Props = {
   route: RouteProp<MessagesStackParamList, 'Conversation'>;
 };
 
+/**
+ *
+ */
 export default function ConversationScreen({ navigation, route }: Props) {
   const { conversationId } = route.params;
   const { colors, colorScheme } = useThemeStore();
@@ -451,6 +452,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const conv = _conversation;
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId =
+           
           p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(participantUserId) !== String(user?.id);
       });
@@ -460,12 +462,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const displayName =
         conv.name ||
         otherParticipant?.nickname ||
+         
         (otherParticipant?.user as Record<string, unknown>)?.displayName ||
         otherParticipant?.user?.display_name ||
+         
         (otherParticipant as Record<string, unknown>)?.displayName ||
         otherParticipant?.display_name ||
+         
         (otherParticipant?.user as Record<string, unknown>)?.username ||
         otherParticipant?.user?.username ||
+         
         (otherParticipant as Record<string, unknown>)?.username ||
         'Conversation';
 
@@ -473,7 +479,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
       // Set last seen from participant's user data (if hook callback wasn't used)
       if (otherParticipant) {
+         
         const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
+         
         setOtherParticipantLastSeen(lastSeen as string | null);
       }
     }

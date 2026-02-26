@@ -12,6 +12,9 @@ interface MessagePreviewProps {
   style: ChatBubbleStyle;
 }
 
+/**
+ *
+ */
 export function MessagePreview({ style }: MessagePreviewProps) {
   const avatarSize = style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32;
 

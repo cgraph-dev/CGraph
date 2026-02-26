@@ -74,13 +74,17 @@ const api = createHttpClient({
     endpoint: '/api/v1/auth/refresh',
     buildBody: (rt) => ({ refresh_token: rt }),
     parseTokens: (data: unknown) => {
+       
       const payload = (data as Record<string, unknown>)?.data || data;
+       
       const tokens = ((payload as Record<string, unknown>)?.tokens || payload || {}) as Record<
         string,
         unknown
       >;
       return {
+         
         accessToken: (tokens.access_token || tokens.token) as string | undefined,
+         
         refreshToken: tokens.refresh_token as string | undefined,
       };
     },

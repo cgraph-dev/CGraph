@@ -115,6 +115,9 @@ const settingsSections: SettingsSection[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function ForumSettingsScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -230,6 +233,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
             </View>
             <Switch
               value={Boolean(value)}
+               
               onValueChange={(val) => updateSetting(item.key, val as ForumSettings[typeof item.key])}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor={colors.background}
@@ -247,6 +251,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
                 { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border },
               ]}
               value={String(value)}
+               
               onChangeText={(text) => updateSetting(item.key, text as ForumSettings[typeof item.key])}
               placeholder={`Enter ${item.label.toLowerCase()}`}
               placeholderTextColor={colors.textSecondary}
@@ -275,6 +280,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
               value={String(value)}
               onChangeText={(text) => {
                 const num = parseInt(text, 10);
+                 
                 updateSetting(item.key, (isNaN(num) ? 0 : num) as ForumSettings[typeof item.key]);
               }}
               keyboardType="number-pad"
@@ -299,6 +305,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
                       borderColor: value === option.value ? colors.primary : colors.border,
                     },
                   ]}
+                   
                   onPress={() => updateSetting(item.key, option.value as ForumSettings[typeof item.key])}
                 >
                   <Text

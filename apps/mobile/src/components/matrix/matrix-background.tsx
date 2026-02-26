@@ -246,6 +246,7 @@ export const MatrixBackground = memo(function MatrixBackground(props: MatrixBack
   // Theme
   const theme: MatrixMobileTheme = useMemo(() => {
     if (typeof themeProp === 'string') {
+       
       return getTheme(themeProp as ThemePreset);
     }
     return themeProp;

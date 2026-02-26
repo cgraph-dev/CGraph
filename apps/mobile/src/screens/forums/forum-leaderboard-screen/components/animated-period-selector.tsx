@@ -38,6 +38,9 @@ const PERIODS: { key: TimePeriod; label: string }[] = [
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function AnimatedPeriodSelector({ period, onPeriodChange }: PeriodSelectorProps) {
   return (
     <View style={styles.periodContainer}>

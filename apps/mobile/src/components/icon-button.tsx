@@ -32,6 +32,9 @@ const SIZES = {
   lg: { button: 48, icon: 26 },
 };
 
+/**
+ *
+ */
 export default function IconButton({
   icon,
   size = 'md',

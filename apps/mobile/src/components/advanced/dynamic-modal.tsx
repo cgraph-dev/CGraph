@@ -116,6 +116,9 @@ const DEFAULT_SNAP_POINTS: SnapPoint[] = [
 // Component
 // ============================================================================
 
+/**
+ *
+ */
 export function DynamicModal({
   visible,
   onClose,
@@ -157,6 +160,7 @@ export function DynamicModal({
         const percentage = parseFloat(point.height) / 100;
         return SCREEN_HEIGHT * percentage;
       }
+       
       return point.height as number;
     });
   }, [snapPoints]);
@@ -396,6 +400,9 @@ export interface BottomSheetProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ *
+ */
 export function BottomSheet({ visible, onClose, children, title, style }: BottomSheetProps) {
   return (
     <DynamicModal visible={visible} onClose={onClose} presentation="bottomSheet" style={style}>
@@ -420,6 +427,9 @@ export interface ActionSheetProps {
   cancelLabel?: string;
 }
 
+/**
+ *
+ */
 export function ActionSheet({
   visible,
   onClose,
@@ -463,6 +473,9 @@ export interface AlertModalProps {
   destructive?: boolean;
 }
 
+/**
+ *
+ */
 export function AlertModal({
   visible,
   onClose,

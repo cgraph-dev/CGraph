@@ -105,6 +105,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           value={filters.theme}
           onChange={(e) =>
             // type assertion: select element value matches filter union type
+             
             setFilters((f) => ({ ...f, theme: e.target.value as typeof filters.theme }))
           }
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
@@ -123,6 +124,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           value={filters.rarity}
           onChange={(e) =>
             // type assertion: select element value matches filter union type
+             
             setFilters((f) => ({ ...f, rarity: e.target.value as typeof filters.rarity }))
           }
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"

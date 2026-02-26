@@ -7,14 +7,17 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../../../lib/api';
-import type { CalendarEvent } from '../types';
 import {
+  type CalendarEvent,
   generateCalendarDays,
   generateFallbackEvents,
   transformApiEvents,
   getEventsForDate,
 } from '../types';
 
+/**
+ *
+ */
 export function useCalendar() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -118,6 +121,7 @@ export function useCalendar() {
     if (eventData.id) {
       // Update existing
       setEvents((prev) =>
+         
         prev.map((e) => (e.id === eventData.id ? ({ ...e, ...eventData } as CalendarEvent) : e))
       );
     } else {

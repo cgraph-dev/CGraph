@@ -205,6 +205,7 @@ export const getRarityGlow = (rarity: string): string => {
     legendary: '#f59e0b',
     mythic: '#ec4899',
   };
+   
   return (rarityColors[rarity as keyof typeof rarityColors] ?? rarityColors.common) as string; // type assertion: color utility returns string
 };
 
@@ -217,5 +218,6 @@ export const getTierGlow = (tier: string): string => {
     premium: '#8b5cf6',
     enterprise: '#ec4899',
   };
+   
   return (tierColors[tier as keyof typeof tierColors] ?? tierColors.free) as string; // type assertion: color utility returns string
 };

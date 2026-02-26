@@ -16,6 +16,9 @@ interface ShopHeaderProps {
   animValue: SharedValue<number>;
 }
 
+/**
+ *
+ */
 export function ShopHeader({
   title,
   textColor,

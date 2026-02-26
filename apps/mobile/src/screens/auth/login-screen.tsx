@@ -18,8 +18,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { AuthStackParamList } from '../../types';
 import { OAuthButtonGroup, AuthDivider } from '../../components/o-auth-buttons';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -28,6 +27,9 @@ type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 };
 
+/**
+ *
+ */
 export default function LoginScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { login } = useAuthStore();
@@ -128,6 +130,7 @@ export default function LoginScreen({ navigation }: Props) {
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
+       
       const err = error as {
         response?: {
           data?: {
@@ -167,7 +170,7 @@ export default function LoginScreen({ navigation }: Props) {
       // Log for debugging in development
       if (__DEV__) {
         if (__DEV__)
-          console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
+          {console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));}
       }
 
       Alert.alert('Login Failed', errorMessage);

@@ -36,6 +36,9 @@ export interface SubscriptionCardProps {
   onSubscribe?: (tierId: string) => void;
 }
 
+/**
+ *
+ */
 export function SubscriptionCard({
   tier,
   currentTier,
@@ -57,6 +60,7 @@ export function SubscriptionCard({
 
   if (variant === 'compact') {
     return (
+       
       <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as unknown}>
         <View style={styles.compactHeader}>
           <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
@@ -143,6 +147,7 @@ export function SubscriptionCard({
 
   // Default variant
   return (
+     
     <GlassCard style={[styles.card, tier.popular && styles.popularCard] as unknown}>
       {/* Badge */}
       {tier.popular && (

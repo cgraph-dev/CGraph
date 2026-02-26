@@ -64,6 +64,7 @@ export function getConversationAvatarBorderId(
     return null;
   }
   const otherParticipant = conversation.participants?.find((p) => p.userId !== currentUserId);
+   
   const user = (otherParticipant as Record<string, unknown> | undefined)?.user; // type assertion: dynamic participant shape
   return getAvatarBorderId(user);
 }

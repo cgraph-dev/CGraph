@@ -347,6 +347,7 @@ const AttachmentPicker = memo(
         });
 
         if (data.length > 0) {
+           
           setContacts(data as (Contacts.Contact & { id: string })[]);
           setShowContactPicker(true);
           Animated.spring(contactCardAnim, {

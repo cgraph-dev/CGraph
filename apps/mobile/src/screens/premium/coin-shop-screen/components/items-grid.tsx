@@ -18,6 +18,9 @@ const categoryIcons: Record<string, string> = {
   boost: 'flash',
 };
 
+/**
+ *
+ */
 export function ItemsGrid({ items, onPurchase }: ItemsGridProps) {
   return (
     <View style={styles.itemsGrid}>
@@ -31,6 +34,7 @@ export function ItemsGrid({ items, onPurchase }: ItemsGridProps) {
           <GlassCard variant="crystal" intensity="medium" style={styles.itemCardInner}>
             <LinearGradient colors={RARITY_COLORS[item.rarity]} style={styles.itemIcon}>
               <Ionicons
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 name={(categoryIcons[item.category] as any) || 'diamond'}
                 size={28}
                 color="#fff"

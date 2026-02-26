@@ -252,6 +252,7 @@ export function createGroupActions(
         max_uses: options.maxUses,
         expires_in: options.expiresIn,
       });
+       
       return response.data.invite as { code: string; expiresAt: string };
     },
   };

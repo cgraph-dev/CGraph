@@ -11,6 +11,9 @@ import { useThemeStore } from '@/stores';
 import { SPECIAL_OFFERS } from './constants';
 import { CountdownTimer } from './countdown-timer';
 
+/**
+ *
+ */
 export function SpecialOffersSection() {
   const { colors } = useThemeStore();
 

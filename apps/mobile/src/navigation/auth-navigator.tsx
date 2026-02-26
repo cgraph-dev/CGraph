@@ -11,6 +11,9 @@ import ForgotPasswordScreen from '../screens/auth/forgot-password-screen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
+/**
+ *
+ */
 export default function AuthNavigator() {
   return (
     <Stack.Navigator

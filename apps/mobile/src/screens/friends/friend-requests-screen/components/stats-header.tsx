@@ -11,6 +11,9 @@ import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import type { StatsHeaderProps } from '../types';
 
+/**
+ *
+ */
 export function StatsHeader({ incomingCount, outgoingCount }: StatsHeaderProps) {
   return (
     <View style={styles.statsContainer}>

@@ -53,6 +53,9 @@ export interface SwipeableNotificationAnimations {
   handlePressOut: () => void;
 }
 
+/**
+ *
+ */
 export function useSwipeableNotification({
   index,
   isRead,

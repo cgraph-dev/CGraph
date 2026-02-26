@@ -72,6 +72,9 @@ interface UseReferralsReturn {
 
 const CACHE_DURATION = 60 * 1000; // 1 minute
 
+/**
+ *
+ */
 export function useReferrals(): UseReferralsReturn {
   // Data state
   const [referralCode, setReferralCode] = useState<ReferralCode | null>(null);

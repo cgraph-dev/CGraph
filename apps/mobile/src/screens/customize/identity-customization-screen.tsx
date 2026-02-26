@@ -25,6 +25,9 @@ interface IdentitySection {
   value?: string;
 }
 
+/**
+ *
+ */
 export default function IdentityCustomizationScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();

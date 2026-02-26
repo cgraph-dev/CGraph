@@ -103,6 +103,9 @@ function ShowcaseSection({ title, colorTheme, children }: ShowcaseSectionProps) 
 // MAIN SCREEN
 // =============================================================================
 
+/**
+ *
+ */
 export function HolographicDemoScreen({ navigation }: Props) {
   const [selectedTheme, setSelectedTheme] = useState<HolographicConfig['colorTheme']>('cyan');
   const [inputValue, setInputValue] = useState('');

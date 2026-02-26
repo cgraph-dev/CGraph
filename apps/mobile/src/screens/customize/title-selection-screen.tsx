@@ -77,6 +77,9 @@ const FALLBACK_TITLES: Title[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function TitleSelectionScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();

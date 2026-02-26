@@ -21,6 +21,9 @@ export interface RecentAchievementCardProps {
   };
 }
 
+/**
+ *
+ */
 export function RecentAchievementCard({ achievement }: RecentAchievementCardProps) {
   return (
     <View style={styles.container}>

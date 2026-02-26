@@ -31,6 +31,7 @@ export function getBackgroundStyle(
     };
   }
 
+   
   const bgEffect = settings.effectPreset as string; // type assertion: effectPreset is already string, explicit for switch narrowing
 
   switch (bgEffect) {

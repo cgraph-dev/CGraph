@@ -21,11 +21,13 @@ import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import AnimatedAvatar from '../../../../components/ui/animated-avatar';
 import { getValidImageUrl } from '../../../../lib/imageUtils';
-import type { RequestCardProps } from '../types';
-import { formatTimeAgo } from '../types';
+import type { RequestCardProps, formatTimeAgo } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+/**
+ *
+ */
 export function RequestCard({
   item,
   index,

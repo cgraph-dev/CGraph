@@ -95,6 +95,7 @@ export function useEventForm({ eventId, initialDate, onClose, onSuccess }: Event
   ) => {
     const { name, value, type } = e.target;
     // type assertion: checkbox event target is HTMLInputElement
+     
     const checked = (e.target as HTMLInputElement).checked;
 
     setFormData((prev) => ({

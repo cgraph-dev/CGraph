@@ -23,6 +23,7 @@ export function AdvancedSettings({ preferences, updatePreference }: SettingsTabP
           <Select
             label="Spacing"
             value={preferences.spacing}
+             
             onChange={(value) => updatePreference('spacing', value as UIPreferences['spacing'])} // safe downcast – select event value
             options={[
               { value: 'compact', label: 'Compact' },
@@ -43,6 +44,7 @@ export function AdvancedSettings({ preferences, updatePreference }: SettingsTabP
             label="Content Width"
             value={preferences.contentWidth}
             onChange={(value) =>
+               
               updatePreference('contentWidth', value as UIPreferences['contentWidth']) // safe downcast – select event value
             }
             options={[

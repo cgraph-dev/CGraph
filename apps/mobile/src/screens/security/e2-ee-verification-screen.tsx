@@ -107,6 +107,9 @@ function VerificationQRCode({ value, size }: VerificationQRCodeProps) {
 // MAIN COMPONENT
 // ============================================================================
 
+/**
+ *
+ */
 export default function E2EEVerificationScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RouteParams, 'E2EEVerification'>>();

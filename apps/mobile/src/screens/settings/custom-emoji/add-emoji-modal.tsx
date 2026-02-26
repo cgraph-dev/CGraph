@@ -20,6 +20,9 @@ interface AddEmojiModalProps {
   categories: EmojiCategory[];
 }
 
+/**
+ *
+ */
 export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModalProps) {
   const [name, setName] = useState('');
   const [shortcode, setShortcode] = useState('');

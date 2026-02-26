@@ -69,6 +69,9 @@ export const offlineQueueCollection = database.get<OfflineQueueItem>('offline_qu
 export const syncMetadataCollection = database.get<SyncMetadata>('sync_metadata');
 
 // ─── Reset (for logout) ────────────────────────────────────────
+/**
+ *
+ */
 export async function resetDatabase(): Promise<void> {
   await database.write(async () => {
     await database.unsafeResetDatabase();

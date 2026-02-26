@@ -43,6 +43,9 @@ function AnimatedContactItem({
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
+/**
+ *
+ */
 export function ContactPicker({
   visible,
   contacts,

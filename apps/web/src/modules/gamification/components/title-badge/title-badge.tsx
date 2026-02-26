@@ -53,6 +53,7 @@ export function TitleBadge({
   // Get animation hook - must be called unconditionally (Rules of Hooks)
   const { getAnimation } = useAnimationConfig({
     animated,
+     
     animationType: titleData?.animation?.type as TitleAnimationType | undefined, // type assertion: optional animation type from data
     glowColor: rarityColor.glow,
   });

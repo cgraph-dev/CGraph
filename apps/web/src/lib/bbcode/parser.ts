@@ -42,6 +42,7 @@ export function parseBBCode(input: string, options: { escapeInput?: boolean } = 
 
     while (prevText !== text && iterations < maxIterations) {
       prevText = text;
+       
       text = text.replace(tag.pattern, tag.replace as (...args: string[]) => string);
       iterations++;
     }

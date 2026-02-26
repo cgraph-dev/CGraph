@@ -73,6 +73,9 @@ function generateSampleGifs(query: string): GifResult[] {
   }));
 }
 
+/**
+ *
+ */
 export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalProps) {
   const { colors } = useThemeStore();
   const [searchQuery, setSearchQuery] = useState('');

@@ -40,6 +40,9 @@ interface SavedMessage {
   note?: string;
 }
 
+/**
+ *
+ */
 export default function SavedMessagesScreen() {
   const { colors } = useThemeStore();
   const navigation = useNavigation<NavigationProp>();

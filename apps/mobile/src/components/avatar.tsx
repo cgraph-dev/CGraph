@@ -67,6 +67,9 @@ function getColorFromName(name: string): string {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length] ?? AVATAR_COLORS[0];
 }
 
+/**
+ *
+ */
 export default function Avatar({
   source,
   name,

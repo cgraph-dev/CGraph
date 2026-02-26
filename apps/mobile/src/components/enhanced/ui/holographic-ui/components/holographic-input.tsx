@@ -18,6 +18,9 @@ interface HolographicInputProps {
   style?: ViewStyle;
 }
 
+/**
+ *
+ */
 export function HolographicInput({
   value,
   onChangeText,

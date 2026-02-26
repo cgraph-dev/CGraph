@@ -62,6 +62,7 @@ const logger = createLogger('customizationStore');
 export const useCustomizationStore = create<CustomizationStore>()(
   persist(
     (set, get) => {
+       
       const _set = set as unknown as ZustandSet<CustomizationStore>; // type assertion: zustand set function type widening
       return {
         ...DEFAULT_STATE,

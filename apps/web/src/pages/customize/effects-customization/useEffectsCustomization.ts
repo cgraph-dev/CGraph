@@ -138,6 +138,7 @@ export function useEffectsCustomization() {
       const animation = ANIMATION_SETS.find((a) => a.id === id);
       const speedValue = animation?.speed || 'normal';
       updateEffects('animationSpeed', speedValue);
+       
       setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
       setPreviewingLockedItem(isUnlocked ? null : id);
     }

@@ -22,8 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import { MatrixAuthBackground } from '../../components/matrix';
 import api from '../../lib/api';
 
@@ -46,6 +45,9 @@ type VerificationState = 'verifying' | 'success' | 'expired' | 'error' | 'alread
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export default function VerifyEmailScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
   const { user, refreshUser } = useAuthStore();
@@ -97,6 +99,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
           await refreshUser?.();
         }
       } catch (error: unknown) {
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -132,6 +135,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.reset({
       index: 0,
+       
       routes: [{ name: 'Main' as never }],
     });
   }, [navigation]);
@@ -139,6 +143,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
   const handleBackToLogin = useCallback(() => {
     navigation.reset({
       index: 0,
+       
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);

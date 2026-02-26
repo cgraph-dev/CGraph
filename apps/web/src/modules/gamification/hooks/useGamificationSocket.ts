@@ -85,6 +85,7 @@ export function useGamificationEvent<T = unknown>(event: string, callback: (data
 
   useEffect(() => {
     const unsubscribe = subscribe(event, (data) => {
+       
       callbackRef.current(data as T); // safe downcast — generic event handler
     });
 

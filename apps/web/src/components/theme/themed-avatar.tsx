@@ -3,7 +3,9 @@
  * @module
  */
 import { motion } from 'framer-motion';
+ 
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
+ 
 import type { UserTheme } from '@/stores/theme';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
@@ -239,6 +241,7 @@ export function ThemedAvatar({
         className="h-full w-full object-cover"
         onError={(e) => {
           // type assertion: image onLoad event target is HTMLImageElement
+           
           const target = e.target as HTMLImageElement;
           target.src = '/default-avatar.png';
         }}

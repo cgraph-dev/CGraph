@@ -52,7 +52,9 @@ export const systemApi = {
 
     // Remove undefined values
     Object.keys(payload).forEach((key) => {
+       
       if (payload[key as keyof typeof payload] === undefined) {
+         
         delete payload[key as keyof typeof payload];
       }
     });

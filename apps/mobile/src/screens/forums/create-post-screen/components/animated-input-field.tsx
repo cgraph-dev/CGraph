@@ -10,6 +10,9 @@ import * as Haptics from 'expo-haptics';
 import { AnimatedInputProps } from '../types';
 import { styles } from '../styles';
 
+/**
+ *
+ */
 export function AnimatedInputField({
   label,
   value,

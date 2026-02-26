@@ -81,6 +81,7 @@ describe('Session Management', () => {
 
   describe('saveSession', () => {
     it('saves a session and persists to storage', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const session = { rootKey: 'rk1', chainKey: 'ck1' } as any;
       await saveSession('recipient-1', session);
 
@@ -90,7 +91,9 @@ describe('Session Management', () => {
     });
 
     it('preserves existing sessions when adding new ones', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await saveSession('r2', { rootKey: 'c', chainKey: 'd' } as any);
 
       const stored = JSON.parse(mockStorage['cgraph_e2ee_sessions']!);
@@ -99,7 +102,9 @@ describe('Session Management', () => {
     });
 
     it('overwrites existing session for same recipientId', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await saveSession('r1', { rootKey: 'x', chainKey: 'y' } as any);
 
       const stored = JSON.parse(mockStorage['cgraph_e2ee_sessions']!);
@@ -113,6 +118,7 @@ describe('Session Management', () => {
     });
 
     it('returns the session when it exists', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const session = { rootKey: 'rk', chainKey: 'ck' } as any;
       await saveSession('user-A', session);
       const loaded = await getSession('user-A');

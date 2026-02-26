@@ -256,6 +256,7 @@ class SocketManager {
     // Set up event handlers only once per channel instance
     // Handle initial presence state (filtered by friends from backend)
     this.presenceChannel.on('presence_state', (rawPayload: unknown) => {
+       
       const payload = rawPayload as { users: Record<string, FriendPresenceData> };
       logger.log(
         'Received friend presence state:',
@@ -280,6 +281,7 @@ class SocketManager {
 
     // Handle friend coming online - filter to only our friends
     this.presenceChannel.on('friend_online', (rawPayload: unknown) => {
+       
       const payload = rawPayload as { user_id: string; status: string; online_at: string };
       // Only process if this is one of our friends
       if (!this.myFriendIds.has(String(payload.user_id))) {
@@ -297,6 +299,7 @@ class SocketManager {
 
     // Handle friend going offline - filter to only our friends
     this.presenceChannel.on('friend_offline', (rawPayload: unknown) => {
+       
       const payload = rawPayload as { user_id: string; last_seen: string };
       // Only process if this is one of our friends
       if (!this.myFriendIds.has(String(payload.user_id))) {
@@ -315,6 +318,7 @@ class SocketManager {
 
     // Handle friend status change - filter to only our friends
     this.presenceChannel.on('friend_status_changed', (rawPayload: unknown) => {
+       
       const payload = rawPayload as {
         user_id: string;
         status: string;
@@ -442,6 +446,7 @@ class SocketManager {
       this.presenceChannel
         .push('get_bulk_status', { user_ids: userIds })
         .receive('ok', (rawResponse: unknown) => {
+           
           const response = rawResponse as { users: Record<string, FriendPresenceData> };
           // Update local cache
           if (response.users) {
@@ -549,6 +554,7 @@ class SocketManager {
 
       // Handle E2EE key revocation events - CRITICAL for Forward Secrecy
       this.userChannel.on('e2ee:key_revoked', (rawPayload: unknown) => {
+         
         const payload = rawPayload as { user_id: string; key_id: string; revoked_at: string };
         logger.log('E2EE key revoked event received:', payload);
         if (this.e2eeKeyRevokedCallback) {
@@ -569,6 +575,7 @@ class SocketManager {
 
       // Initial contact presence snapshot
       this.userChannel.on('contact_presence', (rawPayload: unknown) => {
+         
         const payload = rawPayload as { contacts?: Record<string, FriendPresenceData> };
         const contacts = payload.contacts || {};
 
@@ -584,6 +591,7 @@ class SocketManager {
 
       // Contact presence updates (friend online/offline)
       this.userChannel.on('contact_status_changed', (rawPayload: unknown) => {
+         
         const payload = rawPayload as { user_id: string; online: boolean; status?: string };
         if (!payload?.user_id) return;
 
@@ -602,6 +610,7 @@ class SocketManager {
 
     // Track sequence numbers from incoming events for session resumption
     this.userChannel.on('resume_complete', (payload: unknown) => {
+       
       const data = payload as Record<string, unknown>;
       if (typeof data.new_session_id === 'string') {
         this.sessionId = data.new_session_id;
@@ -612,6 +621,7 @@ class SocketManager {
     this.userChannel
       .join()
       .receive('ok', (response: unknown) => {
+         
         const data = response as Record<string, unknown>;
         // Capture session ID from join response
         if (typeof data._session_id === 'string') {
@@ -685,6 +695,7 @@ class SocketManager {
       const timeout = setTimeout(() => {
         this.updateTypingState(conversationId, userId, false);
       }, this.TYPING_TIMEOUT_MS);
+       
       this.typingTimeouts.set(timeoutKey, timeout as unknown as NodeJS.Timeout);
     } else {
       conversationTyping.delete(userId);
@@ -901,6 +912,7 @@ class SocketManager {
       ].forEach((event) => {
         channel.on(event, (payload: unknown) => {
           // Track sequence number for session resumption
+           
           const data = payload as Record<string, unknown>;
           if (typeof data._seq === 'number') {
             this.lastSequence = data._seq;
@@ -915,6 +927,7 @@ class SocketManager {
         const entityId = topic.includes(':') ? topic.split(':').slice(1).join(':') : topic;
 
         channel.on('typing', (payload: unknown) => {
+           
           const typedPayload = payload as {
             user_id: string;
             username?: string;

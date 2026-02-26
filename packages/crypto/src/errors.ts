@@ -105,7 +105,7 @@ export class CryptoError extends Error {
     // Maintain proper stack trace in V8
     if ('captureStackTrace' in Error) {
       (
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-function-type
         Error as { captureStackTrace?: (target: Error, constructor: Function) => void }
       ).captureStackTrace?.(this, CryptoError);
     }

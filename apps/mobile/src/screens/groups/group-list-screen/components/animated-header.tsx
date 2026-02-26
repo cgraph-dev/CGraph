@@ -20,6 +20,9 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import type { AnimatedHeaderProps } from '../types';
 
+/**
+ *
+ */
 export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
   const pulseAnim = useSharedValue(1);
   const rotateAnim = useSharedValue(0);

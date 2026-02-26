@@ -21,6 +21,9 @@ interface LegalScreenProps {
   sections: LegalSection[];
 }
 
+/**
+ *
+ */
 export default function LegalScreen({
   title,
   lastUpdated,

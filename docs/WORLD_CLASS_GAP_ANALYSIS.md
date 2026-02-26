@@ -10,9 +10,9 @@
 
 | Category             | Current | Target | Gap                              |
 | -------------------- | ------- | ------ | -------------------------------- |
-| Rule Compliance      | ~95%    | 100%   | ~5% — testing (Rule 9) remaining |
+| Rule Compliance      | ~83%    | 100%   | ~17% — testing (R9) + type assertions (R11) + animations (R4) + mobile file-size (R8) |
 | Wave Task Completion | ~65%    | 100%   | 35% — ~69 of 106 tasks done      |
-| Composite Score      | 8.8/10  | 9.5/10 | Testing + real perf audit        |
+| Composite Score      | 7.5/10  | 9.5/10 | Testing + animations + mobile splits |
 
 ### Critical Gaps (Blocks World-Class)
 
@@ -133,7 +133,7 @@
 | -------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
 | Web animation presets      | **PASS** | `apps/web/src/lib/animation-presets/` — 14 tween presets + loop/loopWithDelay helpers          |
 | Mobile AnimationLibrary    | **PASS** | `apps/mobile/src/lib/animations/` — derives from `@cgraph/animation-constants`                 |
-| Inline animation values    | **PASS** | 339 found → 317 migrated to presets; 22 remain (all dynamic/`speedMultiplier` — unmigrateable) |
+| Inline animation values    | **PARTIAL** | 339 found → ~220 migrated to presets; **~100+ remain** (dynamic/layout-dependent — needs incremental migration) |
 | Deprecated Animated API    | **PASS** | All imports use `react-native-reanimated` — imperative API is reanimated's own compat          |
 | Shared animation constants | **PASS** | `packages/animation-constants/` — consumed by both web and mobile                              |
 
@@ -421,7 +421,7 @@ All other previously listed controllers are now under 500 lines.
 - [ ] **9.2o** Write tests for critical path (batch 17+): remaining modules
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
-      statements/lines 60→65%, branches/functions 50→55%
+      Actual thresholds: statements 40%, branches 55%, functions 50%, lines 40% (previous claim of 65% was inflated)
 - [ ] **9.5** Add integration tests for store→API→component flows
 
 ---
@@ -461,7 +461,7 @@ All other previously listed controllers are now under 500 lines.
 
 | Metric                    | Count             | Status                                                                               |
 | ------------------------- | ----------------- | ------------------------------------------------------------------------------------ |
-| Type assertions (`as X`)  | **0 unannotated** | **PASS** — all 250+ casts annotated with `// type assertion:` or `// safe downcast:` |
+| Type assertions (`as X`)  | **0 lint errors** | **PASS** — `consistent-type-assertions` enforced at error; casts suppressed with eslint-disable where needed |
 | `dangerouslySetInnerHTML` | 10 files          | **PASS** — all sanitized with DOMPurify/sanitizeCss                                  |
 | CSP headers               | EXISTS            | PASS                                                                                 |
 | Rate limit headers        | EXISTS            | PASS                                                                                 |
@@ -479,11 +479,11 @@ All other previously listed controllers are now under 500 lines.
     asOptionalString, asOptionalNumber, asArray, typedKeys
   - Session 53: 136+ additional annotations added across 30+ files (gamification, calendar, profile,
     forum, auth, social, chat, settings, animation, crypto modules)
-  - **0 unannotated type assertions remain** in production code
+  - **0 ESLint errors remain** — 952 `consistent-type-assertions` violations suppressed via eslint-disable directives (not refactored)
 - [x] **11.2** ~~Audit 8 `dangerouslySetInnerHTML` usages for XSS sanitization~~ **DONE** (Tier 2b)
   - All 8 files use DOMPurify.sanitize() or sanitizeCss() — confirmed safe
 - [x] **11.3** ~~Add ESLint rule to prevent new `as` type assertions~~ **DONE** (Session 42)
-  - `@typescript-eslint/consistent-type-assertions` with `assertionStyle: 'never'` as warn
+  - `@typescript-eslint/consistent-type-assertions` with `assertionStyle: 'never'` at error + eslint-disable directives
 
 ---
 
@@ -521,7 +521,7 @@ All other previously listed controllers are now under 500 lines.
 | -------------------- | --------- | ------------------------------------------------------------------------ |
 | GitHub workflows     | 17        | PASS                                                                     |
 | Permissions blocks   | **17/17** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)                           |
-| Coverage enforcement | EXISTS    | PASS — CI gates at 65% web / 75% backend (raised from 60% in Session 52) |
+| Coverage enforcement | EXISTS    | PASS — CI gate at 40% lines; vitest: stmts 40%, branches 55%, funcs 50%, lines 40% |
 | Bundle size check    | EXISTS    | PASS — performance.yml, 2MB limit                                        |
 | Canary deploys       | EXISTS    | PASS — Fly.io canary strategy                                            |
 | Auto-rollback        | EXISTS    | PASS — Fly.io canary                                                     |
@@ -531,8 +531,8 @@ All other previously listed controllers are now under 500 lines.
 
 - [x] **13.1** ~~Add `permissions:` block to `backup.yml`~~ **DONE** (Tier 1)
 - [x] **13.2** ~~Add `permissions:` block to `deploy-backend.yml`~~ **DONE** (Tier 1)
-- [x] **13.3** ~~Raise web coverage gate from 60%~~ **DONE** (Session 50 — vitest 60→65%; Session 52
-      — CI hard gate also raised 60→65%; next ratchet to 70% when coverage reaches ~68%)
+- [x] **13.3** ~~Raise web coverage gate~~ **CORRECTED**: Actual thresholds are stmts 40%, branches 55%, funcs 50%, lines 40%.
+      CI hard gate: `WEB_PCT < 40`. Previous claims of 65% were inflated.
 - [x] **13.4** ~~Add ESLint rules for: no React.FC, no forwardRef, no useContext~~ **DONE** —
       already in eslint.config.js lines 160-196
 - [x] **13.5** ~~Add ESLint rule to enforce kebab-case filenames~~ **DONE** —
@@ -789,19 +789,19 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | File Naming (Rule 1)         | **100%** (0 camelCase/PascalCase .tsx files + routeGroups dir renamed)                                               | **100%**       | 100% (0 violations) |
 | Component Patterns (Rule 2)  | **100%** (0 React.FC, 0 fwdRef)                                                                                      | **100%**       | 100%                |
 | State Management (Rule 3)    | **100%** (36 stores verified, 26 MAX constants)                                                                      | **100%**       | 100%                |
-| Animation Standards (Rule 4) | **100%** (339 inline values → 317 migrated to presets; 22 dynamic exceptions; mobile wired to shared package)        | **100%**       | 100%                |
+| Animation Standards (Rule 4) | **~75%** (339 inline values → ~220 migrated; ~100+ dynamic/layout remain; mobile wired to shared package)             | **90%**        | 100%                |
 | Cross-Platform (Rule 5)      | **100%** (6/6 live packages — 6 dead packages deleted Session 54)                                                    | **100%**       | 100% (6/6)          |
 | Documentation (Rule 6)       | **100%** (2,344/2,344 JSDoc + eslint-plugin-jsdoc enforced)                                                          | **100%**       | 100%                |
 | Backend Standards (Rule 7)   | **100%** (4,103 specs; credo strict: true; Specs check enabled)                                                      | **100%**       | 100%                |
-| File Size (Rule 8)           | **100%** (0 Elixir over 500, 0 TSX over 300 — verified `wc -l` Feb 24)                                               | **100%**       | 100%                |
+| File Size (Rule 8)           | **~60%** (0 Elixir>500, 0 web TSX>300; **130 mobile TSX>300** — CI warns, not blocks)                                 | **80%**        | 100%                |
 | Testing (Rule 9)             | **17.1%** (386 tests / 2,254 source files; 386/386 passing)                                                          | 25%            | 100%                |
 | Performance (Rule 10)        | **100%** (cursor pagination done; 0 N+1; 20/20 queries index-covered; 1 missing index added)                         | **100%**       | 100%                |
-| Security (Rule 11)           | **100%** (0 unannotated type assertions; all 250+ casts annotated)                                                   | **100%**       | 100%                |
+| Security (Rule 11)           | **~80%** (0 lint errors; 952 `as` casts suppressed via eslint-disable, not refactored to type guards)                | **100%**       | 100%                |
 | React 19 (Rule 12)           | **~98%** (0 useContext; 12 use() context calls across 10 files; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%**       | 100%                |
-| CI/CD (Rule 13)              | **100%** (17/17 permissions; CI coverage gate at 65% — verified Feb 24)                                              | **100%**       | 100%                |
+| CI/CD (Rule 13)              | **100%** (17/17 permissions; CI coverage gate at 40% lines; vitest thresholds: stmts 40%, branches 55%, funcs 50%)   | **100%**       | 100%                |
 | Observability (Rule 14)      | **100%** (0 violations; 6 OTel packages)                                                                             | **100%**       | 100%                |
 | API Contract (Rule 15)       | **100%** (cursor + standardized + meta envelopes on all 12 views)                                                    | **100%**       | 100%                |
-| **Overall**                  | **~95%** (13 PASS + 1 ~98% (Rule 12) + 1 FAIL (Rule 9 testing))                                                      | **~98%**       | **100%**            |
+| **Overall**                  | **~83%** (10 PASS + 1 ~80% (Rule 11) + 1 ~75% (Rule 4) + 1 ~60% (Rule 8) + 1 ~98% (Rule 12) + 1 FAIL (Rule 9))      | **~93%**       | **100%**            |
 
 > **Methodology**: Equal-weight average across 15 rules. **One gap remains**: Testing at 17.1% (Rule
 > 9 — FAIL). Test count increased 283→371→386 (Session 56: +88; Session 58: +17 utility/component

@@ -80,6 +80,19 @@ jobs:
           fi
           echo "✅ All TSX components under 300 lines"
 
+      - name: Check Mobile TSX components under 300 lines
+        continue-on-error: true  # Ratchet: 130 files over limit — track & reduce
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 300 ]; then
+              echo "::warning file=${f}::${f} has ${lines} lines (limit: 300)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/mobile/src -name '*.tsx' -not -path '*/__tests__/*' -not -path '*/*.test.*' -not -path '*/*.stories.*')
+          echo "📊 ${violations} Mobile TSX file(s) exceed 300 lines"
+
       - name: Check Elixir contexts/controllers under 500 lines
         run: |
           violations=0

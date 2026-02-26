@@ -13,6 +13,9 @@ import SavedMessagesScreen from '../screens/messages/saved-messages-screen';
 
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
+/**
+ *
+ */
 export default function MessagesNavigator() {
   const { colors } = useThemeStore();
   

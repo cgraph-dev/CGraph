@@ -16,6 +16,7 @@ interface QueueFiltersProps {
 const createFilterUpdater =
   <K extends FilterKey>(setFilters: React.Dispatch<React.SetStateAction<FilterState>>, key: K) =>
   (e: React.ChangeEvent<HTMLSelectElement>) => {
+     
     setFilters((prev) => ({ ...prev, [key]: e.target.value as FilterState[K] })); // safe downcast – select event value
   };
 

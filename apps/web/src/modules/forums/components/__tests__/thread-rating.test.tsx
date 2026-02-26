@@ -13,7 +13,9 @@ vi.mock('@/modules/forums/store', () => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     button: ({ children, ...props }: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const clean: Record<string, any> = {};
       for (const [k, v] of Object.entries(props)) {
         if (
@@ -27,15 +29,18 @@ vi.mock('framer-motion', () => ({
       }
       return <button {...clean}>{children}</button>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
   },
 }));
 
 vi.mock('@heroicons/react/24/solid', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   StarIcon: (props: any) => <svg data-testid="star-filled" {...props} />,
 }));
 
 vi.mock('@heroicons/react/24/outline', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   StarIcon: (props: any) => <svg data-testid="star-outline" {...props} />,
 }));
 

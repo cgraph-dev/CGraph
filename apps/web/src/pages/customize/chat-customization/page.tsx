@@ -103,6 +103,7 @@ export default function ChatCustomization() {
         >
           {activeCategory === 'bubbles' && (
             <BubbleStylesSection
+               
               bubbles={filteredItems as BubbleStyle[]} // safe downcast – runtime verified
               selectedBubble={bubbleStyle}
               previewingLockedItem={previewingLockedItem}
@@ -112,6 +113,7 @@ export default function ChatCustomization() {
 
           {activeCategory === 'effects' && (
             <MessageEffectsSection
+               
               effects={filteredItems as MessageEffect[]} // safe downcast – runtime verified
               selectedEffect={messageEffect}
               previewingLockedItem={previewingLockedItem}
@@ -121,6 +123,7 @@ export default function ChatCustomization() {
 
           {activeCategory === 'reactions' && (
             <ReactionStylesSection
+               
               reactions={filteredItems as ReactionStyle[]} // safe downcast – runtime verified
               selectedReaction={reactionStyle}
               previewingLockedItem={previewingLockedItem}

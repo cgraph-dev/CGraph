@@ -51,6 +51,7 @@ export function mapVisualizerTheme(
   if (theme === 'sunset-orange') {
     return 'amber';
   }
+   
   return theme as 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
 }
 

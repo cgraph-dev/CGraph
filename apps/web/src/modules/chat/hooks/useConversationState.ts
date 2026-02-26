@@ -99,6 +99,7 @@ export function useConversationState(conversationId: string | undefined): Conver
   // Get other participant for DM
   const otherParticipant = useMemo(() => {
     return conversation?.participants.find((p) => {
+       
       const participantUserId = getParticipantUserId(p as unknown as Record<string, unknown>); // safe downcast – polymorphic participant record access
       return participantUserId !== user?.id;
     });
@@ -106,6 +107,7 @@ export function useConversationState(conversationId: string | undefined): Conver
 
   // Type-safe extraction of userId and display name
   const otherParticipantUserId = useMemo(
+     
     () => getParticipantUserId(otherParticipant as unknown as Record<string, unknown>), // safe downcast – polymorphic participant record access
     [otherParticipant]
   );
@@ -113,6 +115,7 @@ export function useConversationState(conversationId: string | undefined): Conver
   const conversationName = useMemo(
     () =>
       conversation?.name ||
+       
       getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>), // safe downcast – polymorphic participant record access
     [conversation?.name, otherParticipant]
   );

@@ -24,6 +24,9 @@ type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'NewConversation'>;
 };
 
+/**
+ *
+ */
 export default function NewConversationScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const [search, setSearch] = useState('');

@@ -105,6 +105,9 @@ const MOCK_CALLS: CallRecord[] = [
   },
 ];
 
+/**
+ *
+ */
 export default function CallHistoryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [calls, setCalls] = useState<CallRecord[]>(MOCK_CALLS);
@@ -274,6 +277,7 @@ export default function CallHistoryScreen() {
               source={
                 item.recipientAvatar
                   ? { uri: item.recipientAvatar }
+                   
                   : require('@/assets/default-avatar.png')
               }
               size={52}

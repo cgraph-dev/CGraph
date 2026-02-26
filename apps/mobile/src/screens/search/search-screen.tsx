@@ -48,6 +48,10 @@ import { styles } from './search-screen/styles';
 
 // Import extracted components
 import {
+  type SearchFilters,
+  type SearchUser,
+  type SearchGroup,
+  type SearchForum,
   VoiceSearchButton,
   FilterModal,
   defaultFilters,
@@ -55,12 +59,6 @@ import {
   GroupResultItem,
   ForumResultItem,
   DiscoverySection,
-} from './search-screen/components';
-import type {
-  SearchFilters,
-  SearchUser,
-  SearchGroup,
-  SearchForum,
 } from './search-screen/components';
 import { createLogger } from '../../lib/logger';
 
@@ -84,6 +82,9 @@ const categories: CategoryConfig[] = [
   { id: 'forums', label: 'Forums', icon: 'newspaper', gradient: ['#ec4899', '#f43f5e'] },
 ];
 
+/**
+ *
+ */
 export default function SearchScreen() {
   const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';

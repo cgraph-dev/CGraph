@@ -43,6 +43,7 @@ function transformEvent(data: ApiEventResponse): AdminEvent {
     id: data.id,
     name: data.name,
     // type assertion: API response field maps to known union type
+     
     status: data.status as AdminEvent['status'],
     participants: data.participant_count || 0,
     startDate: data.start_date,

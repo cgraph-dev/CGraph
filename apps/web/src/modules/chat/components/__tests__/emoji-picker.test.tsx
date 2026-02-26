@@ -5,13 +5,20 @@ import { EmojiPicker } from '../emoji-picker';
 // Mock dependencies
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     input: (props: any) => <input {...props} />,
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useMotionValue: (initial: any) => ({ get: () => initial, set: () => {}, on: () => () => {} }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useSpring: (value: any) => value,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useTransform: (value: any) => value,
 }));
 

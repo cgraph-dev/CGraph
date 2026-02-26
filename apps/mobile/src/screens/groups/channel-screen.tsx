@@ -19,8 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useThemeStore } from '@/stores';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatTime } from '../../lib/dateUtils';
 import socketManager from '../../lib/socket';
@@ -31,6 +30,9 @@ type Props = {
   route: RouteProp<GroupsStackParamList, 'Channel'>;
 };
 
+/**
+ *
+ */
 export default function ChannelScreen({ navigation, route }: Props) {
   const { groupId, channelId } = route.params;
   const { colors } = useThemeStore();
@@ -80,6 +82,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     const phoenixChannel = socketManager.joinChannel(`group:${groupId}:channel:${channelId}`);
     if (phoenixChannel) {
       phoenixChannel.on('new_message', (payload: unknown) => {
+         
         const data = payload as { message: Message };
         setMessages((prev) => [...prev, data.message].slice(-500));
       });

@@ -62,6 +62,9 @@ const getRankChange = (current: number, previous?: number) => {
 // COMPONENT
 // =============================================================================
 
+/**
+ *
+ */
 export function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps) {
   // Entry animations
   const entryAnim = useRef(new Animated.Value(0)).current;
@@ -181,9 +184,11 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
     outputRange: ['-6deg', '6deg'],
   });
 
+   
   const rank = type === 'forums' ? (item as LeaderboardForum).rank : (item as TopContributor).rank;
 
   if (type === 'forums') {
+     
     const forum = item as LeaderboardForum;
     const rankChange = getRankChange(forum.rank, forum.previous_rank);
 
@@ -262,6 +267,7 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
             {/* Rank change */}
             <View style={styles.rankChangeContainer}>
               <Ionicons
+                 
                 name={rankChange.icon as 'arrow-up' | 'arrow-down' | 'remove'}
                 size={18}
                 color={rankChange.color}
@@ -274,6 +280,7 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
   }
 
   // Contributor item
+   
   const contributor = item as TopContributor;
 
   return (

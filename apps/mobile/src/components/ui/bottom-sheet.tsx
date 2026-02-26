@@ -74,6 +74,9 @@ const SNAP_POINTS = {
 const DRAG_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
 
+/**
+ *
+ */
 export default function BottomSheet({
   visible,
   onClose,

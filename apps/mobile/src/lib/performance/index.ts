@@ -26,6 +26,7 @@ export type {
 // ============================================================================
 
 const Performance = {
+   
   DeviceProfiler: require('./device-profiler').default,
 };
 
