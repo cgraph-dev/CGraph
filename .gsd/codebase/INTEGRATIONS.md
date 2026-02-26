@@ -508,6 +508,8 @@
 - **DNS records**:
   - `@` / `www` → Vercel (landing)
   - `web` / `app` → Cloudflare Pages (web app)
+    > **Note**: `apps/web/vercel.json` also exists with Vercel deployment config. Terraform DNS is
+    > authoritative (points to `cgraph-web.pages.dev`).
   - Backend → Fly.io
 
 ---

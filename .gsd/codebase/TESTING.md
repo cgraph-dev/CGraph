@@ -29,8 +29,8 @@
 - **Storybook** — component development and visual testing (web + mobile)
 
 > **Note — Vitest Version Fragmentation**: Shared packages use different Vitest versions: `^1.0.0`
-> (crypto, utils, api-client, shared-types), `^1.6.0` (socket), `^3.0.0` (animation-constants). Web
-> uses `^3.1.0`, landing uses `^3.2.4`.
+> (crypto, utils, api-client), `^1.6.0` (socket), `^3.0.0` (animation-constants). `shared-types` has
+> no Vitest (no tests). Web uses `^3.1.0`, landing uses `^3.2.4`.
 
 ---
 
@@ -54,7 +54,7 @@
 apps/web/src/
 ├── test/
 │   ├── setup.ts              # Global Vitest setup (MSW, mocks, cleanup)
-│   ├── __mocks__/            # Module-level stubs (framer-motion, heroicons)
+│   ├── __mocks__/            # Module-level stubs (framer-motion, heroicons-outline, heroicons-solid, heroicons-20-solid)
 │   ├── mocks/                # (empty — MSW handlers in src/mocks/)
 │   ├── fixtures/             # Test data fixtures (currently empty)
 │   └── integration/

@@ -94,8 +94,12 @@ trim_trailing_whitespace = true
 {
   "compilerOptions": {
     "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
     "strict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -109,11 +113,17 @@ trim_trailing_whitespace = true
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
+    "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "incremental": true,
+    "composite": false
+  },
+  "exclude": ["node_modules", "dist", "build", ".turbo"]
 }
 ```
 
@@ -163,7 +173,7 @@ From `eslint.config.js`:
 | Hooks                     | **camelCase** with `use` prefix                  | `useDebounce.ts`, `useAuth.ts`             |
 | Stores                    | **camelCase** with `Store` suffix                | `authStore.impl.ts`, `chatStore.ts`        |
 | Utilities                 | **camelCase**                                    | `formatDate.ts`, `validation.ts`           |
-| Types                     | **kebab-case** + `.types` suffix                 | `authStore.types.ts`, `admin.types.ts`     |
+| Types                     | **camelCase** + `.types` suffix                  | `authStore.types.ts`, `admin.types.ts`     |
 | Tests                     | Same name + `.test`                              | `authStore.test.ts`, `button.test.tsx`     |
 | Barrel exports            | `index.ts`                                       | `stores/index.ts`, `modules/auth/index.ts` |
 | Zod schemas               | grouped in `schemas/` folder                     | `schemas/base.ts`, `schemas/auth.ts`       |
@@ -513,6 +523,8 @@ export const authApi = {
 
 - Backend routes follow REST: `/api/v1/{resource}`
 - Production uses `VITE_API_URL` env var (Cloudflare Pages → Fly.io backend)
+  > **Note**: `apps/web/vercel.json` also exists with Vercel rewrites (`/api/*` → Fly.io). Terraform
+  > DNS points `web.cgraph.org` to CF Pages.
 - Development uses Vite proxy: `/api` → `https://cgraph-backend.fly.dev` (configurable)
 
 ### HTTP Client Architecture
@@ -717,11 +729,11 @@ export { useChatStore } from '../modules/chat/store';
 | E2EE              | Signal Protocol-inspired (custom `@cgraph/crypto`) |
 | Build             | Vite (web/landing), Metro (mobile), Turborepo      |
 | Package Manager   | pnpm 10 with workspaces                            |
-| CI/CD             | GitHub Actions, Fly.io (backend), Vercel (web)     |
+| CI/CD             | GitHub Actions, Fly.io (backend), CF Pages (web)   |
 | Error Tracking    | Sentry (browser + React Native)                    |
 | UI Components     | Radix UI primitives + custom Tailwind components   |
 | Styling           | Tailwind CSS (web), StyleSheet (mobile)            |
-| Node.js           | v22.x                                              |
+| Node.js           | >=20.x (engines), v22 (CI/Docker)                  |
 
 ---
 

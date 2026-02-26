@@ -160,11 +160,11 @@ Active TODOs found in production code:
 | `apps/backend/lib/cgraph/collaboration/document_server.ex:291`           | `TODO(P2): Implement server-side Yjs state compaction` — unbounded state growth            |
 | `apps/web/src/pages/customize/progression-customization/mock-data.ts:10` | `@todo(api) Create achievements API endpoints` — using mock data                           |
 
-### 4.2 eslint-disable Suppressions (140+ in mobile/packages, 400+ total with web)
+### 4.2 eslint-disable Suppressions (135 in mobile/packages, 400+ total with web)
 
 Widespread use of `eslint-disable` comments indicating type safety workarounds:
 
-**Mobile app** (~35+ suppressions):
+**Mobile app** (~112 suppressions):
 
 - `@typescript-eslint/no-explicit-any`: 14+ files (`apps/mobile/src/screens/moderation/`,
   `apps/mobile/src/hooks/useGamification.ts`, `apps/mobile/src/screens/settings/`, etc.)
@@ -183,14 +183,14 @@ Widespread use of `eslint-disable` comments indicating type safety workarounds:
   (6), `packages/socket/src/phoenixClient.ts` (3), `packages/api-client/src/client.ts` (4),
   `packages/crypto/src/tripleRatchet.ts`
 
-### 4.3 Type Assertion Debt — 434 Annotated Casts (Originally 952)
+### 4.3 Type Assertion Debt — 431 Annotated Casts (Originally 952)
 
-434 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
+431 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
 partially refactored). While annotated with reason comments, these represent **structural type
 safety debt**:
 
 - `scripts/fix-type-assertions.mjs` documents the situation
-- Affects 49+ web files and multiple package files
+- Affects 133 web files and multiple package files
 - Original intent was to replace with runtime type guards; only ~40 were actually replaced
 
 ### 4.4 Deprecated Code Still Present
@@ -414,7 +414,7 @@ From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | Animation Standards (Rule 4) | ~75% — ~100+ dynamic inline values remain                    |
 | Mobile File Size (Rule 8)    | ~60% — 103 mobile TSX files over 300 lines                   |
 | Testing (Rule 9)             | **FAIL** — 17.9% web test coverage vs 100% target            |
-| Type Safety (Rule 11)        | ~80% — 434 `as` casts annotated (originally 952)             |
+| Type Safety (Rule 11)        | ~80% — 431 `as` casts annotated (originally 952)             |
 | React 19 (Rule 12)           | ~98% — React Compiler not enabled, 1,112 useMemo/useCallback |
 
 ### 13.3 Wave Task Completion
@@ -448,7 +448,7 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 ### P2 — Medium Priority
 
 11. **Split 103 oversized mobile TSX files** — CI warns but doesn't block
-12. **Refactor 434 type assertion annotations** — Replace with type guards
+12. **Refactor 431 type assertion annotations** — Replace with type guards
 13. **Enable React Compiler** — Allows removal of 1,112 useMemo/useCallback hooks
 14. **Clean up deprecated files** — 10+ deprecated shims still in codebase
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
@@ -482,11 +482,11 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 | P2 Medium priority items     | 10     |
 | P3 Long-term items           | 8      |
 | Active TODO comments in code | 9      |
-| eslint-disable suppressions  | 60+    |
-| Type assertion suppressions  | 952    |
+| eslint-disable suppressions  | 400+   |
+| Type assertion annotations   | 431    |
 | Deprecated files/annotations | 10+    |
 | Missing web test files       | ~1,831 |
-| Oversized mobile TSX files   | 160    |
+| Oversized mobile TSX files   | 103    |
 | Incomplete wave tasks        | ~35    |
 | Security reviews overdue     | 2      |
 | SLOs not validated           | 6      |

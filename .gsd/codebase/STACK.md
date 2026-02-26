@@ -136,7 +136,7 @@ Sources: [`packages/*/package.json`](packages/)
 - **Cachex** (`~> 4.1`) — In-memory cache (Elixir-side)
 - **PgBouncer** — Connection pooling sidecar (deployed alongside backend)
 - **Read Replica** support via `CGraph.ReadRepo` (configured via `READ_REPLICA_DATABASE_URL`)
-- **ULIDs** via `ecto_ulid ^0.3` for binary IDs
+- **ULIDs** via `ecto_ulid ~> 0.3` for binary IDs
 - **Supabase** option for managed PostgreSQL (env vars in `.env.example`)
 
 Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
