@@ -3,42 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MessageReactions from '../message-reactions';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({
-          children,
-          className,
-          onClick,
-          disabled,
-          ..._rest
-        }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          return (
-            <Tag
-              className={className as string}
-              onClick={onClick as React.MouseEventHandler}
-              disabled={disabled as boolean}
-              aria-label={(_rest as Record<string, unknown>)['aria-label'] as string}
-            >
-              {children}
-            </Tag>
-          );
-        },
-    }
-  ),
-  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-}));
-
 vi.mock('@heroicons/react/24/outline', () => ({
   FaceSmileIcon: () => <span data-testid="smile-icon" />,
   PlusIcon: () => <span data-testid="plus-icon" />,

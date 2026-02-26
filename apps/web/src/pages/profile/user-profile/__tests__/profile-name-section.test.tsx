@@ -4,26 +4,6 @@ import { render, screen } from '@testing-library/react';
 import { ProfileNameSection } from '../profile-name-section';
 import type { UserProfileData } from '@/types/profile.types';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          return <Tag className={className as string}>{children}</Tag>;
-        },
-    }
-  ),
-}));
-
 vi.mock('@heroicons/react/24/outline', () => ({
   ShieldCheckIcon: () => <span data-testid="premium-icon" />,
   CheckBadgeIcon: () => <span data-testid="verified-icon" />,

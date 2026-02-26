@@ -7,135 +7,66 @@
 
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
+import { createElement } from 'react';
 import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../mocks/handlers';
 
-// ─── Global Proxy mocks ─────────────────────────────────────────────
-// These catch ANY named export automatically, preventing
-// "No X export is defined on the mock" errors.
-
-// Heroicons — returns stub React components for any icon name
-vi.mock('@heroicons/react/24/outline', () => {
-  return new Proxy(
-    {},
-    {
-      get: (_t: unknown, name: string) => {
-        if (name === '__esModule') return true;
-        if (name === 'default') return {};
-        const Icon = (props: Record<string, unknown>) => {
-          const { createElement } = require('react');
-          return createElement('svg', {
-            'data-testid': `icon-${name}`,
-            ...props,
-          });
-        };
-        Icon.displayName = name;
-        return Icon;
-      },
-    },
-  );
-});
-
-vi.mock('@heroicons/react/24/solid', () => {
-  return new Proxy(
-    {},
-    {
-      get: (_t: unknown, name: string) => {
-        if (name === '__esModule') return true;
-        if (name === 'default') return {};
-        const Icon = (props: Record<string, unknown>) => {
-          const { createElement } = require('react');
-          return createElement('svg', {
-            'data-testid': `icon-${name}`,
-            ...props,
-          });
-        };
-        Icon.displayName = name;
-        return Icon;
-      },
-    },
-  );
-});
-
-vi.mock('@heroicons/react/20/solid', () => {
-  return new Proxy(
-    {},
-    {
-      get: (_t: unknown, name: string) => {
-        if (name === '__esModule') return true;
-        if (name === 'default') return {};
-        const Icon = (props: Record<string, unknown>) => {
-          const { createElement } = require('react');
-          return createElement('svg', {
-            'data-testid': `icon-${name}`,
-            ...props,
-          });
-        };
-        Icon.displayName = name;
-        return Icon;
-      },
-    },
-  );
-});
-
-// framer-motion — stub motion.* components, AnimatePresence, hooks
-vi.mock('framer-motion', () => {
-  const { createElement, forwardRef } = require('react');
-  const motionHandler = {
-    get: (_target: unknown, prop: string) => {
-      if (typeof prop === 'string') {
-        return forwardRef((props: Record<string, unknown>, ref: unknown) => {
-          const {
-            children,
-            initial: _i,
-            animate: _a,
-            exit: _e,
-            transition: _t,
-            variants: _v,
-            whileHover: _wh,
-            whileTap: _wt,
-            whileInView: _wi,
-            layout: _l,
-            layoutId: _lid,
-            onAnimationComplete: _oac,
-            ...rest
-          } = props;
-          return createElement(prop, { ...rest, ref }, children);
-        });
-      }
-      return undefined;
-    },
-  };
-  return {
-    motion: new Proxy({}, motionHandler),
-    AnimatePresence: ({ children }: { children: unknown }) => children,
-    useMotionValue: (initial: number) => ({
-      get: () => initial,
-      set: () => {},
-      onChange: () => () => {},
-    }),
-    useTransform: (val: unknown, _from: unknown, _to: unknown) => val,
-    useSpring: (val: unknown) => val,
-    useScroll: () => ({ scrollYProgress: { get: () => 0, onChange: () => () => {} } }),
-    useAnimation: () => ({ start: async () => {}, stop: () => {}, set: () => {} }),
-    useInView: () => true,
-    useReducedMotion: () => false,
-    LayoutGroup: ({ children }: { children: unknown }) => children,
-    Reorder: new Proxy({}, motionHandler),
-  };
-});
+// ─── Heavy module mocks ──────────────────────────────────────────────
+// framer-motion, @heroicons/react/* are aliased via resolve.alias in
+// vite.config.ts to lightweight stub files in src/test/__mocks__/.
+// This is necessary because vi.mock() in setup files causes vitest to
+// hang in jsdom mode when any test transitively imports the mocked module.
+// See src/test/__mocks__/framer-motion.tsx and heroicons-*.tsx.
 
 // @/lib/animation-presets — stub all named exports
 vi.mock('@/lib/animation-presets', () => {
   const emptyVariants = { initial: {}, animate: {}, exit: {} };
   const noop = () => ({});
+  const s = { type: 'spring', stiffness: 100, damping: 10 };
+  const t = (d: number, ease = 'easeOut') => ({ duration: d, ease });
   return {
-    springs: { gentle: {}, bouncy: {}, stiff: {} },
-    tweens: { fast: {}, normal: {}, slow: {} },
-    loop: { repeat: Infinity, repeatType: 'loop' },
-    loopWithDelay: (d: number) => ({ repeat: Infinity, delay: d }),
-    staggerConfigs: { fast: 0.05, normal: 0.1, slow: 0.2 },
+    springs: {
+      gentle: s,
+      default: s,
+      bouncy: s,
+      snappy: s,
+      superBouncy: s,
+      dramatic: s,
+      wobbly: s,
+      stiff: s,
+      smooth: s,
+      ultraSmooth: s,
+    },
+    tweens: {
+      instant: t(0.1),
+      quickFade: t(0.15),
+      fast: t(0.2),
+      brisk: t(0.25),
+      standard: t(0.3, 'easeInOut'),
+      moderate: t(0.4, 'easeInOut'),
+      smooth: t(0.5),
+      emphatic: t(0.6),
+      dramatic: t(0.8),
+      slow: t(1, 'easeInOut'),
+      verySlow: t(1.5, 'easeInOut'),
+      ambient: t(2, 'linear'),
+      ambientSlow: t(2.5, 'linear'),
+      decorative: t(3, 'linear'),
+      glacial: t(4, 'easeInOut'),
+    },
+    loop: (base: Record<string, unknown> = {}) => ({ ...base, repeat: Infinity }),
+    loopWithDelay: (base: Record<string, unknown>, repeatDelay: number) => ({
+      ...base,
+      repeat: Infinity,
+      repeatDelay,
+    }),
+    staggerConfigs: {
+      fast: { staggerChildren: 0.05, delayChildren: 0.1 },
+      standard: { staggerChildren: 0.1, delayChildren: 0.2 },
+      slow: { staggerChildren: 0.15, delayChildren: 0.3 },
+      grid: { staggerChildren: 0.03, delayChildren: 0.05 },
+    },
     entranceVariants: emptyVariants,
     chatBubbleAnimations: {},
     hoverAnimations: emptyVariants,
@@ -149,7 +80,7 @@ vi.mock('@/lib/animation-presets', () => {
     createSpring: noop,
     getRarityGlow: () => '',
     getTierGlow: () => '',
-    default: { gentle: {}, bouncy: {}, stiff: {} },
+    default: s,
   };
 });
 
@@ -167,6 +98,56 @@ vi.mock('@/lib/animations/animation-engine', () => ({
   withHaptics: (fn: () => void) => fn,
   springPresets: { gentle: {}, bouncy: {}, stiff: {} },
 }));
+
+// ─── Barrel-file UI component mocks ────────────────────────────────
+// Explicit object stubs (not Proxy) to avoid vitest jsdom hangs.
+// Each export used in the codebase gets its own stub component.
+
+const createUIStub = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const comp = (name: string) => (props: Record<string, unknown> & { ref?: any }) => {
+    const { children, ref, ...rest } = props;
+    return createElement('div', { ...rest, ref, 'data-testid': `ui-${name}` }, children);
+  };
+  const toastFn = Object.assign(() => {}, {
+    success: () => {},
+    error: () => {},
+    warning: () => {},
+    info: () => {},
+    dismiss: () => {},
+  });
+  return {
+    __esModule: true,
+    // @/shared/components/ui exports
+    AnimatedAvatar: comp('AnimatedAvatar'),
+    Avatar: comp('Avatar'),
+    Button: comp('Button'),
+    FireText: comp('FireText'),
+    GlassCard: comp('GlassCard'),
+    GlassCardNeon: comp('GlassCardNeon'),
+    GlowText: comp('GlowText'),
+    TiltCard: comp('TiltCard'),
+    toast: toastFn,
+    ToastContainer: comp('ToastContainer'),
+    useAvatarStyle: () => ({}),
+    // @/components/ui exports
+    Skeleton: comp('Skeleton'),
+    CommentSkeleton: comp('CommentSkeleton'),
+    ForumCardSkeleton: comp('ForumCardSkeleton'),
+    PostCardSkeleton: comp('PostCardSkeleton'),
+    // Catch-all default
+    default: comp('UIDefault'),
+  };
+};
+
+vi.mock('@/components/ui', () => createUIStub());
+vi.mock('@/shared/components/ui', () => createUIStub());
+vi.mock('@/components/ui/glass-card', () => createUIStub());
+vi.mock('@/components/ui/animated-avatar', () => createUIStub());
+vi.mock('@/components/ui/tilt-card', () => createUIStub());
+vi.mock('@/components/ui/glow-text', () => createUIStub());
+vi.mock('@/components/ui/animated-border', () => createUIStub());
+vi.mock('@/components/ui/gaming-stats-grid', () => createUIStub());
 
 // Mock logger to prevent circular dependency issues in test environment
 // (logger → error-tracking → react.tsx can fail during module evaluation)

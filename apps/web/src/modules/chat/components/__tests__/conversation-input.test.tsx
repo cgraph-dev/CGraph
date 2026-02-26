@@ -3,39 +3,6 @@ import { render, fireEvent } from '@testing-library/react';
 import { ConversationInput } from '../conversation-input';
 
 // Mock dependencies
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string') {
-        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
-          const Tag = prop as any;
-          return <Tag {...rest}>{children}</Tag>;
-        };
-      }
-      return undefined;
-    },
-  });
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useInView: () => true,
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useSpring: () => ({ get: () => 0 }),
-  };
-});
-
-const iconProxy = new Proxy({}, {
-  get: (_target, prop) => {
-    if (typeof prop === 'string' && prop !== '__esModule') {
-      return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
-    }
-    return undefined;
-  },
-});
-vi.mock('@heroicons/react/24/outline', () => iconProxy);
-vi.mock('@heroicons/react/24/solid', () => iconProxy);
 
 vi.mock('@/components/VoiceMessageRecorder', () => ({
   VoiceMessageRecorder: () => <div data-testid="voice-recorder" />,
@@ -108,7 +75,9 @@ const defaultProps = {
   onVoiceComplete: vi.fn(),
   onFileSelect: vi.fn(),
   onScheduleClick: vi.fn(),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   inputContainerRef: { current: null } as any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fileInputRef: { current: null } as any,
 };
 
@@ -138,6 +107,7 @@ describe('ConversationInput', () => {
 
   it('shows reply preview when replyTo is set', () => {
     const replyMsg = { id: '1', content: 'Reply to this', sender_id: 'u1' };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render(<ConversationInput {...defaultProps} replyTo={replyMsg as any} />);
     expect(document.body).toBeTruthy();
   });

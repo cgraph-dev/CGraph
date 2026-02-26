@@ -2,51 +2,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyProps = Record<string, any>;
-
-vi.mock('framer-motion', () => {
-  const handler = {
-    get: (_target: unknown, prop: string) => {
-      if (typeof prop === 'string') {
-        return ({ children, ...rest }: AnyProps) => {
-          const { initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...domProps } = rest;
-          return <div data-motion={prop} {...domProps}>{children}</div>;
-        };
-      }
-      return undefined;
-    },
-  };
-  return {
-    motion: new Proxy({}, handler),
-    AnimatePresence: ({ children }: AnyProps) => <>{children}</>,
-  };
-});
+// framer-motion, @heroicons/react/* are handled by resolve.alias
+// in vite.config.ts — no vi.mock needed here.
 
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {}, fast: {} },
-  springs: { snappy: {} },
+  springs: { snappy: {}, bouncy: {} },
 }));
-
-vi.mock('@heroicons/react/24/outline', () => {
-  const handler = {
-    get: (_t: unknown, name: string) => {
-      if (name === '__esModule') return true;
-      return () => <span data-testid={`icon-${name}`} />;
-    },
-  };
-  return new Proxy({}, handler);
-});
-
-vi.mock('@heroicons/react/24/solid', () => {
-  const handler = {
-    get: (_t: unknown, name: string) => {
-      if (name === '__esModule') return true;
-      return () => <span data-testid={`solid-${name}`} />;
-    },
-  };
-  return new Proxy({}, handler);
-});
 
 import { CommentActions } from '../comment-actions';
 
@@ -86,8 +48,8 @@ describe('CommentActions', () => {
 
   it('calls onReply when reply button is clicked', () => {
     render(<CommentActions {...defaultProps} />);
-    const replyBtn = screen.getByTestId('icon-ChatBubbleLeftIcon').closest('[data-motion]');
-    if (replyBtn) fireEvent.click(replyBtn);
+    const replyBtn = screen.getByRole('button', { name: /reply/i });
+    fireEvent.click(replyBtn);
     expect(defaultProps.onReply).toHaveBeenCalledOnce();
   });
 });

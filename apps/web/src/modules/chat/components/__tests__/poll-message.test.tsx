@@ -3,27 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { PollMessage } from '../poll-message';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          return <Tag className={className as string}>{children}</Tag>;
-        },
-    }
-  ),
-  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-}));
-
 vi.mock('@heroicons/react/24/outline', () => ({
   ChartBarIcon: () => <span data-testid="chart-icon" />,
   CheckCircleIcon: () => <span data-testid="check-icon" />,

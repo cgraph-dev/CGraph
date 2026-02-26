@@ -2,50 +2,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-            cache.set(prop, function MotionMock({ children, className, ...rest }) {
-              return (
-                <Tag
-                  className={className as string}
-                  data-testid={rest['data-testid'] as string}
-                  viewBox={rest['viewBox'] as string}
-                  fill={rest['fill'] as string}
-                  stroke={rest['stroke'] as string}
-                  d={rest['d'] as string}
-                  strokeLinecap={rest['strokeLinecap'] as string}
-                  strokeLinejoin={rest['strokeLinejoin'] as string}
-                  strokeWidth={rest['strokeWidth'] as string}
-                >
-                  {children}
-                </Tag>
-              );
-            });
-          }
-          return cache.get(prop);
-        },
-      },
-    ),
-    AnimatePresence: ({
-      children,
-    }: React.PropsWithChildren<Record<string, unknown>>) => <>{children}</>,
-  };
-});
-
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {} },
   springs: { bouncy: {} },

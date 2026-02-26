@@ -10,42 +10,28 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 // ── framer-motion mock ───────────────────────────────────────────────
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string') {
-        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
-          const Tag = prop as any;
-          return <Tag {...rest}>{children}</Tag>;
-        };
-      }
-      return undefined;
-    },
-  });
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useInView: () => true,
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useSpring: () => ({ get: () => 0 }),
-  };
-});
 
-vi.mock('@/lib/animation-presets', () => ({ tweens: { standard: {} }, springs: { snappy: {}, bouncy: {} }, loop: () => ({}), loopWithDelay: () => ({}) }));
-
-// Mock sub-components
-const mockDropzone = vi.fn(({ maxFiles, maxSize }: Record<string, unknown>) => (
-  <div data-testid="dropzone">Dropzone maxFiles={String(maxFiles)} maxSize={String(maxSize)}</div>
-));
-const mockErrorList = vi.fn(({ errors }: { errors: string[] }) => (
-  <div data-testid="error-list">{errors?.map((e: string, i: number) => <span key={i}>{e}</span>)}</div>
-));
-const mockUploadProgressList = vi.fn(() => <div data-testid="progress-list" />);
-const mockAttachmentList = vi.fn(({ attachments }: { attachments: unknown[] }) => (
-  <div data-testid="attachment-list">{attachments?.length ?? 0} attachments</div>
-));
+// Mock sub-components (vi.hoisted so they're available when vi.mock is hoisted)
+const { mockDropzone, mockErrorList, mockUploadProgressList, mockAttachmentList } = vi.hoisted(
+  () => ({
+    mockDropzone: vi.fn(({ maxFiles, maxSize }: Record<string, unknown>) => (
+      <div data-testid="dropzone">
+        Dropzone maxFiles={String(maxFiles)} maxSize={String(maxSize)}
+      </div>
+    )),
+    mockErrorList: vi.fn(({ errors }: { errors: string[] }) => (
+      <div data-testid="error-list">
+        {errors?.map((e: string, i: number) => (
+          <span key={i}>{e}</span>
+        ))}
+      </div>
+    )),
+    mockUploadProgressList: vi.fn(() => <div data-testid="progress-list" />),
+    mockAttachmentList: vi.fn(({ attachments }: { attachments: unknown[] }) => (
+      <div data-testid="attachment-list">{attachments?.length ?? 0} attachments</div>
+    )),
+  })
+);
 
 vi.mock('../attachment-uploader/index', () => ({
   useAttachmentUploader: (opts: Record<string, unknown>) => ({

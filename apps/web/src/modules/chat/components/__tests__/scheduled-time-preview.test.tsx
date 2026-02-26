@@ -3,35 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ScheduledTimePreview } from '../scheduled-time-preview';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(prop, function MotionMock({ children, className }) {
-              return <Tag className={className as string}>{children}</Tag>;
-            });
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-  };
-});
-
 vi.mock('date-fns', () => ({
   format: (date: Date, pattern: string) => {
     if (pattern === 'EEEE, MMMM d, yyyy') return 'Sunday, June 1, 2025';

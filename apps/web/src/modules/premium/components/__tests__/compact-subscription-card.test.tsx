@@ -3,41 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CompactSubscriptionCard } from '../compact-subscription-card';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(
-              prop,
-              function MotionMock({
-                children,
-                className,
-              }: React.PropsWithChildren<Record<string, unknown>>) {
-                return <Tag className={className as string}>{children}</Tag>;
-              }
-            );
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-  };
-});
-
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({
     children,

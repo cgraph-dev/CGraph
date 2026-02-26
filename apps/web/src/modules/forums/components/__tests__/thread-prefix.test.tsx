@@ -3,46 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ThreadPrefix from '../thread-prefix';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(
-              prop,
-              function MotionMock({
-                children,
-                className,
-                style,
-              }: React.PropsWithChildren<Record<string, unknown>>) {
-                return (
-                  <Tag className={className as string} style={style as React.CSSProperties}>
-                    {children}
-                  </Tag>
-                );
-              }
-            );
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-  };
-});
-
 const mockPrefix = { id: 'prefix-1', name: 'SOLVED', color: '#22c55e' };
 
 describe('ThreadPrefix', () => {

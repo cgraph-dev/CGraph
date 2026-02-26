@@ -3,26 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FriendshipActions } from '../friendship-actions';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({ children, className }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          return <Tag className={className as string}>{children}</Tag>;
-        },
-    }
-  ),
-}));
-
 vi.mock('@heroicons/react/24/outline', () => ({
   UserPlusIcon: () => <span data-testid="user-plus" />,
   UserMinusIcon: () => <span data-testid="user-minus" />,

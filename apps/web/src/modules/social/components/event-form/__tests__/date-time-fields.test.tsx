@@ -2,17 +2,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-const iconProxy = new Proxy({}, {
-  get: (_target, prop) => {
-    if (typeof prop === 'string' && prop !== '__esModule') {
-      return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
-    }
-    return undefined;
-  },
-});
-vi.mock('@heroicons/react/24/outline', () => iconProxy);
-vi.mock('@heroicons/react/24/solid', () => iconProxy);
-
 vi.mock('./hooks', () => ({
   formatDateTimeLocal: (d: Date) => '2024-01-15T10:00',
   formatDateLocal: (d: Date) => '2024-01-15',
@@ -62,7 +51,8 @@ describe('DateTimeFields', () => {
 
   it('shows start and end date fields', () => {
     render(<DateTimeFields {...defaultProps} />);
-    const inputs = screen.getAllByRole('textbox').length + screen.getAllByDisplayValue(/2024/).length;
+    const inputs =
+      screen.getAllByRole('textbox').length + screen.getAllByDisplayValue(/2024/).length;
     expect(inputs).toBeGreaterThanOrEqual(1);
   });
 

@@ -3,40 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { KeyboardShortcutsModal } from '../keyboard-shortcuts-modal';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            const Tag = (
-              typeof prop === 'string' ? prop : 'div'
-            ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any;
-            cache.set(prop, function MotionMock({ children, className, onClick }) {
-              return (
-                <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>
-                  {children}
-                </Tag>
-              );
-            });
-          }
-          return cache.get(prop);
-        },
-      }
-    ),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/lib/animation-presets', () => ({
   entranceVariants: { fadeUp: {} },
   springs: { gentle: {} },

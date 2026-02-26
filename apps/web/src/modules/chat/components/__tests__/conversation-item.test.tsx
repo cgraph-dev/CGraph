@@ -3,41 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  return {
-    motion: new Proxy(
-      {} as Record<
-        string,
-        (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-      >,
-      {
-        get: (_target, prop) => {
-          if (!cache.has(prop)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-            cache.set(
-              prop,
-              function MotionMock({ children, className, ...rest }) {
-                return (
-                  <Tag className={className as string} data-testid={rest['data-testid'] as string}>
-                    {children}
-                  </Tag>
-                );
-              },
-            );
-          }
-          return cache.get(prop);
-        },
-      },
-    ),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {} },
   loop: () => ({}),
@@ -95,7 +60,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText('Alice')).toBeInTheDocument();
   });
@@ -107,7 +72,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText('Hello!')).toBeInTheDocument();
   });
@@ -119,7 +84,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={['Bob']}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText(/Bob.*typing/i)).toBeInTheDocument();
   });
@@ -131,7 +96,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={['Bob', 'Carol']}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText(/typing/i)).toBeInTheDocument();
   });
@@ -143,7 +108,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText('5')).toBeInTheDocument();
   });
@@ -155,7 +120,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText('99+')).toBeInTheDocument();
   });
@@ -167,7 +132,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByTestId('themed-avatar')).toBeInTheDocument();
   });
@@ -179,7 +144,7 @@ describe('ConversationItem', () => {
         currentUserId="user-1"
         typingUsers={[]}
         onClick={vi.fn()}
-      />,
+      />
     );
     expect(screen.getByText('2:30 PM')).toBeInTheDocument();
   });

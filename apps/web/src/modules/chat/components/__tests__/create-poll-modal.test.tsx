@@ -4,54 +4,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CreatePollModal } from '../create-poll-modal';
 
-vi.mock('framer-motion', () => {
-  // Cache component functions so React reconciliation works across re-renders
-  const cache = new Map<
-    string | symbol,
-    (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-  >();
-  const motionProxy = new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get: (_target, prop) => {
-        if (!cache.has(prop)) {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          cache.set(
-            prop,
-            function MotionMock({
-              children,
-              className,
-              onClick,
-              disabled,
-            }: React.PropsWithChildren<Record<string, unknown>>) {
-              return (
-                <Tag
-                  className={className as string}
-                  onClick={onClick as React.MouseEventHandler}
-                  disabled={disabled as boolean}
-                >
-                  {children}
-                </Tag>
-              );
-            }
-          );
-        }
-        return cache.get(prop);
-      },
-    }
-  );
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/lib/animation-presets', () => ({
   entranceVariants: { fadeUp: {} },
   springs: { gentle: {} },

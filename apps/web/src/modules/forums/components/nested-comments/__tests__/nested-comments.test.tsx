@@ -3,53 +3,184 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string') {
-        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
-          const Tag = prop as any;
-          return <Tag {...rest}>{children}</Tag>;
-        };
-      }
-      return undefined;
-    },
-  });
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useInView: () => true,
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useSpring: () => ({ get: () => 0 }),
-  };
-});
-
 vi.mock('@/stores/theme', () => ({
-  useThemeStore: () => ({ theme: { colorPreset: 'blue' } }),
-  THEME_COLORS: { blue: { primary: '#3b82f6' } },
-}));
-
-vi.mock('@/lib/logger', () => ({
-  createLogger: () => ({ debug: vi.fn(), error: vi.fn(), warn: vi.fn() }),
-  chatLogger: { debug: vi.fn() },
-}));
-
-vi.mock('@/lib/animations/animation-engine', () => ({
-  HapticFeedback: { light: vi.fn(), success: vi.fn() },
-}));
-
-const iconProxy = new Proxy({}, {
-  get: (_target, prop) => {
-    if (typeof prop === 'string' && prop !== '__esModule') {
-      return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
-    }
-    return undefined;
+  useThemeStore: vi.fn((sel?: (s: Record<string, unknown>) => unknown) => {
+    const __ts = {
+      colorPreset: 'emerald',
+      avatarBorder: 'none',
+      avatarBorderColor: 'emerald',
+      effectPreset: 'minimal',
+      animationSpeed: 'normal',
+      particlesEnabled: false,
+      glowEnabled: false,
+      animatedBackground: false,
+      isPremium: false,
+      chatBubble: {
+        ownMessageBg: '#10b981',
+        otherMessageBg: '#1f2937',
+        borderRadius: 12,
+        bubbleShape: 'rounded',
+        showTail: true,
+      },
+      chatBubbleStyle: 'default',
+      chatBubbleColor: 'emerald',
+      profileThemeId: 'default',
+      profileCardLayout: 'default',
+      theme: {
+        colorPreset: 'emerald',
+        avatarBorder: 'none',
+        avatarBorderColor: 'emerald',
+        chatBubbleStyle: 'default',
+        chatBubbleColor: 'emerald',
+        bubbleBorderRadius: 12,
+        bubbleShadowIntensity: 0,
+        bubbleGlassEffect: false,
+        glowEnabled: false,
+        particlesEnabled: false,
+        effectPreset: 'minimal',
+        animationSpeed: 'normal',
+        isPremium: false,
+      },
+      getColors: () => ({
+        primary: '#10b981',
+        secondary: '#34d399',
+        glow: 'rgba(16,185,129,0.5)',
+        name: 'Emerald',
+        gradient: 'from-emerald-500 to-emerald-600',
+      }),
+      setColorPreset: vi.fn(),
+      setEffectPreset: vi.fn(),
+      setAnimationSpeed: vi.fn(),
+      toggleParticles: vi.fn(),
+      toggleGlow: vi.fn(),
+      toggleBlur: vi.fn(),
+      toggleAnimatedBackground: vi.fn(),
+      updateChatBubble: vi.fn(),
+      applyChatBubblePreset: vi.fn(),
+      resetChatBubble: vi.fn(),
+      updateTheme: vi.fn(),
+      setAvatarBorder: vi.fn(),
+      setChatBubbleStyle: vi.fn(),
+      setEffect: vi.fn(),
+      resetTheme: vi.fn(),
+      reset: vi.fn(),
+      applyPreset: vi.fn(),
+      exportTheme: vi.fn(() => '{}'),
+      importTheme: vi.fn(() => true),
+      setProfileTheme: vi.fn(),
+      setProfileCardLayout: vi.fn(),
+      getProfileCardConfig: () => ({
+        layout: 'default',
+        showLevel: true,
+        showXp: true,
+        showKarma: true,
+        showStreak: true,
+        showBadges: true,
+        maxBadges: 6,
+        showTitle: true,
+        showBio: true,
+        showStats: true,
+        showRecentActivity: false,
+        showMutualFriends: false,
+        showForumsInCommon: false,
+        showAchievements: false,
+        showSocialLinks: false,
+      }),
+      syncWithBackend: vi.fn(),
+      saveToBackend: vi.fn(),
+      clearError: vi.fn(),
+      syncWithServer: vi.fn(),
+    };
+    return typeof sel === 'function' ? sel(__ts) : __ts;
+  }),
+  THEME_COLORS: {
+    free: { primary: '#9ca3af', secondary: '#6b7280', accent: '#d1d5db' },
+    premium: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    emerald: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    purple: { primary: '#8b5cf6', secondary: '#7c3aed', accent: '#a78bfa' },
+    blue: { primary: '#3b82f6', secondary: '#2563eb', accent: '#60a5fa' },
   },
-});
-vi.mock('@heroicons/react/24/outline', () => iconProxy);
-vi.mock('@heroicons/react/24/solid', () => iconProxy);
+  COLORS: {
+    emerald: {
+      primary: '#10b981',
+      secondary: '#34d399',
+      glow: 'rgba(16,185,129,0.5)',
+      name: 'Emerald',
+      gradient: 'from-emerald-500 to-emerald-600',
+    },
+    purple: {
+      primary: '#8b5cf6',
+      secondary: '#a78bfa',
+      glow: 'rgba(139,92,246,0.5)',
+      name: 'Purple',
+      gradient: 'from-purple-500 to-purple-600',
+    },
+  },
+  useColorPreset: () => 'emerald',
+  useProfileThemeId: () => 'default',
+  useProfileCardLayout: () => 'default',
+  useEffectPresetValue: () => 'minimal',
+  useAnimationSpeedValue: () => 'normal',
+  useParticlesEnabledValue: () => false,
+  useGlowEnabledValue: () => false,
+  useAnimatedBackgroundValue: () => false,
+  useChatBubbleTheme: () => ({
+    ownMessageBg: '#10b981',
+    otherMessageBg: '#1f2937',
+    borderRadius: 12,
+    bubbleShape: 'rounded',
+    showTail: true,
+  }),
+  useColorTheme: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  useProfileTheme: () => ({
+    preset: 'minimalist-dark',
+    cardConfig: {
+      layout: 'default',
+      showLevel: true,
+      showXp: true,
+      showKarma: true,
+      showStreak: true,
+      showBadges: true,
+      maxBadges: 6,
+      showTitle: true,
+      showBio: true,
+      showStats: true,
+      showRecentActivity: false,
+      showMutualFriends: false,
+      showForumsInCommon: false,
+      showAchievements: false,
+      showSocialLinks: false,
+    },
+  }),
+  useThemeEffects: () => ({
+    effectPreset: 'minimal',
+    animationSpeed: 'normal',
+    particlesEnabled: false,
+    glowEnabled: false,
+  }),
+  useChatBubbleStore: () => ({ ownMessageBg: '#10b981', otherMessageBg: '#1f2937' }),
+  useProfileThemeStore: () => ({ profileThemeId: 'default', profileCardLayout: 'default' }),
+  getPresetCategory: () => 'basic',
+  getColorsForPreset: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  getProfileCardConfigForLayout: () => ({}),
+  getThemePreset: () => ({}),
+  useActiveProfileTheme: () => 'minimalist-dark',
+  useProfileCardConfig: () => ({ layout: 'default' }),
+  useForumThemeStore: () => ({}),
+  useActiveForumTheme: () => null,
+}));
 
 vi.mock('./comment-card', () => ({
   CommentCard: ({ comment }: { comment: { id: string; content: string } }) => (
@@ -64,7 +195,11 @@ vi.mock('./utils', () => ({
 
 import NestedComments from '../nested-comments';
 
-const makeComment = (id: string, content: string, replies: ReturnType<typeof makeComment>[] = []) => ({
+const makeComment = (
+  id: string,
+  content: string,
+  replies: ReturnType<typeof makeComment>[] = []
+) => ({
   id,
   content,
   score: 0,
@@ -111,17 +246,14 @@ describe('NestedComments', () => {
   it('renders a single comment', () => {
     const comments = [makeComment('c1', 'Hello world')];
     render(<NestedComments {...defaultProps} comments={comments} />);
-    expect(screen.getByTestId('nested-comment-c1')).toHaveTextContent('Hello world');
+    expect(screen.getByText('Hello world')).toBeInTheDocument();
   });
 
   it('renders multiple comments', () => {
-    const comments = [
-      makeComment('c1', 'First comment'),
-      makeComment('c2', 'Second comment'),
-    ];
+    const comments = [makeComment('c1', 'First comment'), makeComment('c2', 'Second comment')];
     render(<NestedComments {...defaultProps} comments={comments} />);
-    expect(screen.getByTestId('nested-comment-c1')).toBeInTheDocument();
-    expect(screen.getByTestId('nested-comment-c2')).toBeInTheDocument();
+    expect(screen.getByText('First comment')).toBeInTheDocument();
+    expect(screen.getByText('Second comment')).toBeInTheDocument();
   });
 
   it('does not show empty state when comments exist', () => {

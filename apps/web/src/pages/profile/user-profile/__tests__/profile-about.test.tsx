@@ -3,31 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProfileAbout } from '../profile-about';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({ children, className, ..._rest }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          // Pass through common HTML attributes
-          const passthrough: Record<string, unknown> = { className: className as string };
-          for (const k of ['placeholder', 'value', 'onChange', 'rows', 'maxLength'] as const) {
-            if (k in _rest) passthrough[k] = _rest[k as string];
-          }
-          return <Tag {...passthrough}>{children}</Tag>;
-        },
-    }
-  ),
-}));
-
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
     <div data-testid="glass-card" className={className}>

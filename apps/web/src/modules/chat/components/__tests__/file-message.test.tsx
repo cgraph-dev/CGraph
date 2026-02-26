@@ -4,31 +4,6 @@ import { render, screen } from '@testing-library/react';
 import { FileMessage } from '../file-message';
 import type { Message } from '@/modules/chat/store';
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {} as Record<
-      string,
-      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
-    >,
-    {
-      get:
-        (_target, prop) =>
-        ({ children, className, onClick }: React.PropsWithChildren<Record<string, unknown>>) => {
-          const Tag = (
-            typeof prop === 'string' ? prop : 'div'
-          ) as // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          any;
-          return (
-            <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>
-              {children}
-            </Tag>
-          );
-        },
-    }
-  ),
-  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-}));
-
 vi.mock('@heroicons/react/24/outline', () => ({
   DocumentIcon: () => <span data-testid="icon-doc" />,
   ArrowDownTrayIcon: () => <span data-testid="icon-download" />,

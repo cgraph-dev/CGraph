@@ -2,42 +2,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string') {
-        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
-          const Tag = prop as any;
-          return <Tag {...rest}>{children}</Tag>;
-        };
-      }
-      return undefined;
-    },
-  });
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useInView: () => true,
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useSpring: () => ({ get: () => 0 }),
-  };
-});
-
-const iconProxy = new Proxy({}, {
-  get: (_target, prop) => {
-    if (typeof prop === 'string' && prop !== '__esModule') {
-      return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
-    }
-    return undefined;
-  },
-});
-vi.mock('@heroicons/react/24/outline', () => iconProxy);
-vi.mock('@heroicons/react/24/solid', () => iconProxy);
-
 vi.mock('react-router-dom', () => ({
-  Link: ({ children, to, ...rest }: any) => <a href={to} {...rest}>{children}</a>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Link: ({ children, to, ...rest }: any) => (
+    <a href={to} {...rest}>
+      {children}
+    </a>
+  ),
 }));
 
 vi.mock('@/modules/auth/store', () => ({
@@ -53,7 +24,9 @@ vi.mock('@/data/avatar-borders', () => ({
 }));
 
 vi.mock('@/modules/social/components/avatar/avatar-border-renderer', () => ({
-  AvatarBorderRenderer: ({ alt }: { alt: string }) => <div data-testid="avatar-border-renderer">{alt}</div>,
+  AvatarBorderRenderer: ({ alt }: { alt: string }) => (
+    <div data-testid="avatar-border-renderer">{alt}</div>
+  ),
 }));
 
 vi.mock('@/modules/gamification/components/title-badge', () => ({
@@ -69,7 +42,9 @@ vi.mock('./constants', () => ({
 vi.mock('@/shared/components/ui', () => ({
   AnimatedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div className={className} data-testid="glass-card">{children}</div>
+    <div className={className} data-testid="glass-card">
+      {children}
+    </div>
   ),
 }));
 
@@ -96,9 +71,15 @@ describe('FullProfileCard', () => {
     friendCount: 42,
     postCount: 100,
     level: 10,
+    karma: 1500,
+    xp: 5000,
+    streak: 7,
     avatarBorderId: null,
     equippedTitle: null,
     pronouns: null,
+    badges: [],
+    mutualFriends: [],
+    sharedForums: [],
   };
 
   it('renders user display name', () => {

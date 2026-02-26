@@ -10,24 +10,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 // ── framer-motion mock ───────────────────────────────────────────────
-vi.mock('framer-motion', () => {
-  const cache = new Map<string | symbol, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>();
-  return {
-    motion: new Proxy({} as Record<string, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>, {
-      get: (_target, prop) => {
-        if (!cache.has(prop)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-          cache.set(prop, function MotionMock({ children, className, onClick }) {
-            return <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>{children}</Tag>;
-          });
-        }
-        return cache.get(prop);
-      },
-    }),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
 
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {} },

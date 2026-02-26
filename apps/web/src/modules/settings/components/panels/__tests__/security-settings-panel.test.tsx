@@ -3,20 +3,6 @@ import { render, screen } from '@testing-library/react';
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get: (_, tag) => (props: any) => {
-        const { children, ...rest } = props;
-        const El = tag as any;
-        return <El {...rest}>{children}</El>;
-      },
-    }
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
 const { mockUser } = vi.hoisted(() => ({
   mockUser: {
     id: 'user-1',
@@ -31,6 +17,7 @@ vi.mock('@/modules/auth/store', () => ({
 }));
 
 vi.mock('@/shared/components/ui', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   GlassCard: ({ children, ...rest }: any) => (
     <div data-testid="glass-card" {...rest}>
       {children}

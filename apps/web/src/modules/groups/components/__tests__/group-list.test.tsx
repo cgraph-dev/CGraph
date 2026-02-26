@@ -10,31 +10,185 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 // ── framer-motion mock ───────────────────────────────────────────────
-vi.mock('framer-motion', () => {
-  const motionProxy = new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string') {
-        return ({ children, initial, animate, exit, transition, variants, whileHover, whileTap, whileInView, layout, layoutId, ...rest }: any) => {
-          const Tag = prop as any;
-          return <Tag {...rest}>{children}</Tag>;
-        };
-      }
-      return undefined;
-    },
-  });
-  return {
-    motion: motionProxy,
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useInView: () => true,
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useSpring: () => ({ get: () => 0 }),
-  };
-});
 
-vi.mock('@/lib/animation-presets', () => ({ tweens: { standard: {} }, springs: { snappy: {}, bouncy: {} }, loop: () => ({}), loopWithDelay: () => ({}) }));
-vi.mock('@/stores/theme', () => ({ useThemeStore: () => ({ theme: { colorPreset: 'blue' } }), THEME_COLORS: { blue: { primary: '#3b82f6', accent: '#8b5cf6' } } }));
+vi.mock('@/stores/theme', () => ({
+  useThemeStore: vi.fn((sel?: (s: Record<string, unknown>) => unknown) => {
+    const __ts = {
+      colorPreset: 'emerald',
+      avatarBorder: 'none',
+      avatarBorderColor: 'emerald',
+      effectPreset: 'minimal',
+      animationSpeed: 'normal',
+      particlesEnabled: false,
+      glowEnabled: false,
+      animatedBackground: false,
+      isPremium: false,
+      chatBubble: {
+        ownMessageBg: '#10b981',
+        otherMessageBg: '#1f2937',
+        borderRadius: 12,
+        bubbleShape: 'rounded',
+        showTail: true,
+      },
+      chatBubbleStyle: 'default',
+      chatBubbleColor: 'emerald',
+      profileThemeId: 'default',
+      profileCardLayout: 'default',
+      theme: {
+        colorPreset: 'emerald',
+        avatarBorder: 'none',
+        avatarBorderColor: 'emerald',
+        chatBubbleStyle: 'default',
+        chatBubbleColor: 'emerald',
+        bubbleBorderRadius: 12,
+        bubbleShadowIntensity: 0,
+        bubbleGlassEffect: false,
+        glowEnabled: false,
+        particlesEnabled: false,
+        effectPreset: 'minimal',
+        animationSpeed: 'normal',
+        isPremium: false,
+      },
+      getColors: () => ({
+        primary: '#10b981',
+        secondary: '#34d399',
+        glow: 'rgba(16,185,129,0.5)',
+        name: 'Emerald',
+        gradient: 'from-emerald-500 to-emerald-600',
+      }),
+      setColorPreset: vi.fn(),
+      setEffectPreset: vi.fn(),
+      setAnimationSpeed: vi.fn(),
+      toggleParticles: vi.fn(),
+      toggleGlow: vi.fn(),
+      toggleBlur: vi.fn(),
+      toggleAnimatedBackground: vi.fn(),
+      updateChatBubble: vi.fn(),
+      applyChatBubblePreset: vi.fn(),
+      resetChatBubble: vi.fn(),
+      updateTheme: vi.fn(),
+      setAvatarBorder: vi.fn(),
+      setChatBubbleStyle: vi.fn(),
+      setEffect: vi.fn(),
+      resetTheme: vi.fn(),
+      reset: vi.fn(),
+      applyPreset: vi.fn(),
+      exportTheme: vi.fn(() => '{}'),
+      importTheme: vi.fn(() => true),
+      setProfileTheme: vi.fn(),
+      setProfileCardLayout: vi.fn(),
+      getProfileCardConfig: () => ({
+        layout: 'default',
+        showLevel: true,
+        showXp: true,
+        showKarma: true,
+        showStreak: true,
+        showBadges: true,
+        maxBadges: 6,
+        showTitle: true,
+        showBio: true,
+        showStats: true,
+        showRecentActivity: false,
+        showMutualFriends: false,
+        showForumsInCommon: false,
+        showAchievements: false,
+        showSocialLinks: false,
+      }),
+      syncWithBackend: vi.fn(),
+      saveToBackend: vi.fn(),
+      clearError: vi.fn(),
+      syncWithServer: vi.fn(),
+    };
+    return typeof sel === 'function' ? sel(__ts) : __ts;
+  }),
+  THEME_COLORS: {
+    free: { primary: '#9ca3af', secondary: '#6b7280', accent: '#d1d5db' },
+    premium: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    emerald: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    purple: { primary: '#8b5cf6', secondary: '#7c3aed', accent: '#a78bfa' },
+    blue: { primary: '#3b82f6', secondary: '#2563eb', accent: '#60a5fa' },
+  },
+  COLORS: {
+    emerald: {
+      primary: '#10b981',
+      secondary: '#34d399',
+      glow: 'rgba(16,185,129,0.5)',
+      name: 'Emerald',
+      gradient: 'from-emerald-500 to-emerald-600',
+    },
+    purple: {
+      primary: '#8b5cf6',
+      secondary: '#a78bfa',
+      glow: 'rgba(139,92,246,0.5)',
+      name: 'Purple',
+      gradient: 'from-purple-500 to-purple-600',
+    },
+  },
+  useColorPreset: () => 'emerald',
+  useProfileThemeId: () => 'default',
+  useProfileCardLayout: () => 'default',
+  useEffectPresetValue: () => 'minimal',
+  useAnimationSpeedValue: () => 'normal',
+  useParticlesEnabledValue: () => false,
+  useGlowEnabledValue: () => false,
+  useAnimatedBackgroundValue: () => false,
+  useChatBubbleTheme: () => ({
+    ownMessageBg: '#10b981',
+    otherMessageBg: '#1f2937',
+    borderRadius: 12,
+    bubbleShape: 'rounded',
+    showTail: true,
+  }),
+  useColorTheme: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  useProfileTheme: () => ({
+    preset: 'minimalist-dark',
+    cardConfig: {
+      layout: 'default',
+      showLevel: true,
+      showXp: true,
+      showKarma: true,
+      showStreak: true,
+      showBadges: true,
+      maxBadges: 6,
+      showTitle: true,
+      showBio: true,
+      showStats: true,
+      showRecentActivity: false,
+      showMutualFriends: false,
+      showForumsInCommon: false,
+      showAchievements: false,
+      showSocialLinks: false,
+    },
+  }),
+  useThemeEffects: () => ({
+    effectPreset: 'minimal',
+    animationSpeed: 'normal',
+    particlesEnabled: false,
+    glowEnabled: false,
+  }),
+  useChatBubbleStore: () => ({ ownMessageBg: '#10b981', otherMessageBg: '#1f2937' }),
+  useProfileThemeStore: () => ({ profileThemeId: 'default', profileCardLayout: 'default' }),
+  getPresetCategory: () => 'basic',
+  getColorsForPreset: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  getProfileCardConfigForLayout: () => ({}),
+  getThemePreset: () => ({}),
+  useActiveProfileTheme: () => 'minimalist-dark',
+  useProfileCardConfig: () => ({ layout: 'default' }),
+  useForumThemeStore: () => ({}),
+  useActiveForumTheme: () => null,
+}));
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', () => ({ useNavigate: () => mockNavigate }));
@@ -48,8 +202,24 @@ vi.mock('lucide-react', () => ({
 }));
 
 const mockGroups = [
-  { id: 'g-1', name: 'Alpha Group', description: 'First group', isPublic: true, memberCount: 10, onlineMemberCount: 3, iconUrl: null },
-  { id: 'g-2', name: 'Beta Group', description: 'Second group', isPublic: false, memberCount: 20, onlineMemberCount: 0, iconUrl: null },
+  {
+    id: 'g-1',
+    name: 'Alpha Group',
+    description: 'First group',
+    isPublic: true,
+    memberCount: 10,
+    onlineMemberCount: 3,
+    iconUrl: null,
+  },
+  {
+    id: 'g-2',
+    name: 'Beta Group',
+    description: 'Second group',
+    isPublic: false,
+    memberCount: 20,
+    onlineMemberCount: 0,
+    iconUrl: null,
+  },
 ];
 
 vi.mock('../../hooks/useGroups', () => ({
@@ -59,12 +229,16 @@ vi.mock('../../hooks/useGroups', () => ({
 vi.mock('./group-icon', () => ({ GroupIcon: () => <div data-testid="group-icon" /> }));
 vi.mock('./group-card', () => ({
   GroupCard: ({ group, onClick }: { group: { name: string }; onClick: () => void }) => (
-    <div data-testid="group-card" onClick={onClick}>{group.name}</div>
+    <div data-testid="group-card" onClick={onClick}>
+      {group.name}
+    </div>
   ),
 }));
 vi.mock('./group-list-item', () => ({
   GroupListItem: ({ group, onClick }: { group: { name: string }; onClick: () => void }) => (
-    <div data-testid="group-list-item" onClick={onClick}>{group.name}</div>
+    <div data-testid="group-list-item" onClick={onClick}>
+      {group.name}
+    </div>
   ),
 }));
 vi.mock('./create-group-modal', () => ({

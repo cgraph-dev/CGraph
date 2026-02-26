@@ -20,6 +20,28 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // In test mode, redirect heavy packages to lightweight stubs.
+      // vi.mock() in setup files causes vitest to hang in jsdom when test
+      // files (directly or transitively) import the mocked module.
+      // Vite resolve.alias intercepts at the resolver level — before Vite
+      // even tries to compile the real package, preventing the hang.
+      ...(process.env.VITEST
+        ? {
+            'framer-motion': path.resolve(__dirname, './src/test/__mocks__/framer-motion.tsx'),
+            '@heroicons/react/24/outline': path.resolve(
+              __dirname,
+              './src/test/__mocks__/heroicons-outline.tsx'
+            ),
+            '@heroicons/react/24/solid': path.resolve(
+              __dirname,
+              './src/test/__mocks__/heroicons-solid.tsx'
+            ),
+            '@heroicons/react/20/solid': path.resolve(
+              __dirname,
+              './src/test/__mocks__/heroicons-20-solid.tsx'
+            ),
+          }
+        : {}),
     },
   },
   test: {
@@ -28,6 +50,9 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist'],
+    // Per-test timeout — prevents stalled tests from blocking CI
+    testTimeout: 10000,
+    hookTimeout: 10000,
     // Coverage configuration
     coverage: {
       enabled: true,

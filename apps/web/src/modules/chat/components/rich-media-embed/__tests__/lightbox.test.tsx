@@ -4,29 +4,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Lightbox from '../lightbox';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<string | symbol, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>();
-  return {
-    motion: new Proxy({} as Record<string, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>, {
-      get: (_target, prop) => {
-        if (!cache.has(prop)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-          cache.set(prop, function MotionMock({ children, className, onClick }) {
-            return <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>{children}</Tag>;
-          });
-        }
-        return cache.get(prop);
-      },
-    }),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-    useAnimation: () => ({ start: vi.fn() }),
-    useMotionValue: () => ({ get: () => 0, set: vi.fn() }),
-    useTransform: () => ({ get: () => 0 }),
-    useInView: () => true,
-  };
-});
-
 vi.mock('@heroicons/react/24/outline', () => ({
   XMarkIcon: () => <span data-testid="x-icon" />,
 }));
@@ -43,7 +20,9 @@ describe('Lightbox', () => {
   });
 
   it('renders nothing when lightboxMedia is null', () => {
-    const { container } = render(<Lightbox lightboxMedia={null} setLightboxMedia={defaultSetLightboxMedia} />);
+    const { container } = render(
+      <Lightbox lightboxMedia={null} setLightboxMedia={defaultSetLightboxMedia} />
+    );
     expect(container.querySelector('img')).not.toBeInTheDocument();
     expect(container.querySelector('video')).not.toBeInTheDocument();
   });

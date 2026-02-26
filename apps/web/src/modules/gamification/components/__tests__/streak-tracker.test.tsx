@@ -7,16 +7,186 @@ import type { StreakDay, StreakMilestone } from '../streak-tracker/types';
 // ── Mocks ──────────────────────────────────────────────────────────────
 
 vi.mock('@/stores/theme', () => ({
-  useThemeStore: vi.fn(() => ({
-    theme: { colorPreset: 'emerald' },
-  })),
+  useThemeStore: vi.fn((sel?: (s: Record<string, unknown>) => unknown) => {
+    const __ts = {
+      colorPreset: 'emerald',
+      avatarBorder: 'none',
+      avatarBorderColor: 'emerald',
+      effectPreset: 'minimal',
+      animationSpeed: 'normal',
+      particlesEnabled: false,
+      glowEnabled: false,
+      animatedBackground: false,
+      isPremium: false,
+      chatBubble: {
+        ownMessageBg: '#10b981',
+        otherMessageBg: '#1f2937',
+        borderRadius: 12,
+        bubbleShape: 'rounded',
+        showTail: true,
+      },
+      chatBubbleStyle: 'default',
+      chatBubbleColor: 'emerald',
+      profileThemeId: 'default',
+      profileCardLayout: 'default',
+      theme: {
+        colorPreset: 'emerald',
+        avatarBorder: 'none',
+        avatarBorderColor: 'emerald',
+        chatBubbleStyle: 'default',
+        chatBubbleColor: 'emerald',
+        bubbleBorderRadius: 12,
+        bubbleShadowIntensity: 0,
+        bubbleGlassEffect: false,
+        glowEnabled: false,
+        particlesEnabled: false,
+        effectPreset: 'minimal',
+        animationSpeed: 'normal',
+        isPremium: false,
+      },
+      getColors: () => ({
+        primary: '#10b981',
+        secondary: '#34d399',
+        glow: 'rgba(16,185,129,0.5)',
+        name: 'Emerald',
+        gradient: 'from-emerald-500 to-emerald-600',
+      }),
+      setColorPreset: vi.fn(),
+      setEffectPreset: vi.fn(),
+      setAnimationSpeed: vi.fn(),
+      toggleParticles: vi.fn(),
+      toggleGlow: vi.fn(),
+      toggleBlur: vi.fn(),
+      toggleAnimatedBackground: vi.fn(),
+      updateChatBubble: vi.fn(),
+      applyChatBubblePreset: vi.fn(),
+      resetChatBubble: vi.fn(),
+      updateTheme: vi.fn(),
+      setAvatarBorder: vi.fn(),
+      setChatBubbleStyle: vi.fn(),
+      setEffect: vi.fn(),
+      resetTheme: vi.fn(),
+      reset: vi.fn(),
+      applyPreset: vi.fn(),
+      exportTheme: vi.fn(() => '{}'),
+      importTheme: vi.fn(() => true),
+      setProfileTheme: vi.fn(),
+      setProfileCardLayout: vi.fn(),
+      getProfileCardConfig: () => ({
+        layout: 'default',
+        showLevel: true,
+        showXp: true,
+        showKarma: true,
+        showStreak: true,
+        showBadges: true,
+        maxBadges: 6,
+        showTitle: true,
+        showBio: true,
+        showStats: true,
+        showRecentActivity: false,
+        showMutualFriends: false,
+        showForumsInCommon: false,
+        showAchievements: false,
+        showSocialLinks: false,
+      }),
+      syncWithBackend: vi.fn(),
+      saveToBackend: vi.fn(),
+      clearError: vi.fn(),
+      syncWithServer: vi.fn(),
+    };
+    return typeof sel === 'function' ? sel(__ts) : __ts;
+  }),
   THEME_COLORS: {
-    emerald: { primary: '#10B981' },
+    free: { primary: '#9ca3af', secondary: '#6b7280', accent: '#d1d5db' },
+    premium: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    emerald: { primary: '#10b981', secondary: '#059669', accent: '#34d399' },
+    purple: { primary: '#8b5cf6', secondary: '#7c3aed', accent: '#a78bfa' },
+    blue: { primary: '#3b82f6', secondary: '#2563eb', accent: '#60a5fa' },
   },
+  COLORS: {
+    emerald: {
+      primary: '#10b981',
+      secondary: '#34d399',
+      glow: 'rgba(16,185,129,0.5)',
+      name: 'Emerald',
+      gradient: 'from-emerald-500 to-emerald-600',
+    },
+    purple: {
+      primary: '#8b5cf6',
+      secondary: '#a78bfa',
+      glow: 'rgba(139,92,246,0.5)',
+      name: 'Purple',
+      gradient: 'from-purple-500 to-purple-600',
+    },
+  },
+  useColorPreset: () => 'emerald',
+  useProfileThemeId: () => 'default',
+  useProfileCardLayout: () => 'default',
+  useEffectPresetValue: () => 'minimal',
+  useAnimationSpeedValue: () => 'normal',
+  useParticlesEnabledValue: () => false,
+  useGlowEnabledValue: () => false,
+  useAnimatedBackgroundValue: () => false,
+  useChatBubbleTheme: () => ({
+    ownMessageBg: '#10b981',
+    otherMessageBg: '#1f2937',
+    borderRadius: 12,
+    bubbleShape: 'rounded',
+    showTail: true,
+  }),
+  useColorTheme: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  useProfileTheme: () => ({
+    preset: 'minimalist-dark',
+    cardConfig: {
+      layout: 'default',
+      showLevel: true,
+      showXp: true,
+      showKarma: true,
+      showStreak: true,
+      showBadges: true,
+      maxBadges: 6,
+      showTitle: true,
+      showBio: true,
+      showStats: true,
+      showRecentActivity: false,
+      showMutualFriends: false,
+      showForumsInCommon: false,
+      showAchievements: false,
+      showSocialLinks: false,
+    },
+  }),
+  useThemeEffects: () => ({
+    effectPreset: 'minimal',
+    animationSpeed: 'normal',
+    particlesEnabled: false,
+    glowEnabled: false,
+  }),
+  useChatBubbleStore: () => ({ ownMessageBg: '#10b981', otherMessageBg: '#1f2937' }),
+  useProfileThemeStore: () => ({ profileThemeId: 'default', profileCardLayout: 'default' }),
+  getPresetCategory: () => 'basic',
+  getColorsForPreset: () => ({
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16,185,129,0.5)',
+    name: 'Emerald',
+    gradient: 'from-emerald-500 to-emerald-600',
+  }),
+  getProfileCardConfigForLayout: () => ({}),
+  getThemePreset: () => ({}),
+  useActiveProfileTheme: () => 'minimalist-dark',
+  useProfileCardConfig: () => ({ layout: 'default' }),
+  useForumThemeStore: () => ({}),
+  useActiveForumTheme: () => null,
 }));
 
 vi.mock('@/shared/components/ui', () => ({
-  GlassCard: ({ children, className }: any) => (
+  GlassCard: ({ children, className }: { children?: React.ReactNode; className?: string }) => (
     <div data-testid="glass-card" className={className}>
       {children}
     </div>
@@ -30,7 +200,7 @@ vi.mock('@/lib/animations/AnimationEngine', () => ({
 vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
 
 vi.mock('../streak-tracker/FireAnimation', () => ({
-  FireAnimation: ({ currentStreak }: any) => (
+  FireAnimation: ({ currentStreak }: { currentStreak?: number }) => (
     <div data-testid="fire-animation">{currentStreak}</div>
   ),
 }));
@@ -44,7 +214,7 @@ vi.mock('../streak-tracker/MilestoneProgress', () => ({
 }));
 
 vi.mock('../streak-tracker/ClaimableMilestones', () => ({
-  ClaimableMilestones: ({ onClaim }: any) => (
+  ClaimableMilestones: ({ onClaim }: { onClaim: (n: number) => void }) => (
     <div data-testid="claimable-milestones">
       <button data-testid="claim-milestone" onClick={() => onClaim(7)}>
         Claim 7
@@ -54,12 +224,18 @@ vi.mock('../streak-tracker/ClaimableMilestones', () => ({
 }));
 
 vi.mock('../streak-tracker/MilestonesList', () => ({
-  MilestonesList: ({ isVisible }: any) =>
+  MilestonesList: ({ isVisible }: { isVisible?: boolean }) =>
     isVisible ? <div data-testid="milestones-list" /> : null,
 }));
 
 vi.mock('../streak-tracker/StreakVariants', () => ({
-  StreakWidgetVariant: ({ currentStreak, onClaimDaily }: any) => (
+  StreakWidgetVariant: ({
+    currentStreak,
+    onClaimDaily,
+  }: {
+    currentStreak?: number;
+    onClaimDaily?: () => void;
+  }) => (
     <div data-testid="widget-variant">
       <span>{currentStreak}</span>
       <button data-testid="widget-claim" onClick={onClaimDaily}>
@@ -67,7 +243,7 @@ vi.mock('../streak-tracker/StreakVariants', () => ({
       </button>
     </div>
   ),
-  StreakCompactVariant: ({ currentStreak }: any) => (
+  StreakCompactVariant: ({ currentStreak }: { currentStreak?: number }) => (
     <div data-testid="compact-variant">{currentStreak}</div>
   ),
 }));

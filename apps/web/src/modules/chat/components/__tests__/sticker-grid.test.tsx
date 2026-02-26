@@ -4,25 +4,6 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('framer-motion', () => {
-  const cache = new Map<string | symbol, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>();
-  return {
-    motion: new Proxy({} as Record<string, (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement>, {
-      get: (_target, prop) => {
-        if (!cache.has(prop)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any;
-          cache.set(prop, function MotionMock({ children, className, onClick }) {
-            return <Tag className={className as string} onClick={onClick as React.MouseEventHandler}>{children}</Tag>;
-          });
-        }
-        return cache.get(prop);
-      },
-    }),
-    AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  };
-});
-
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {} },
   springs: { snappy: {}, bouncy: {} },
@@ -84,7 +65,12 @@ describe('StickerGrid', () => {
   it('renders a grid of stickers', () => {
     const stickers = [makeSticker('s1', 'Cat'), makeSticker('s2', 'Dog')];
     render(
-      <StickerGrid stickers={stickers} ownedPackIds={new Set(['pack-1'])} searchQuery="" onSelect={onSelect} />
+      <StickerGrid
+        stickers={stickers}
+        ownedPackIds={new Set(['pack-1'])}
+        searchQuery=""
+        onSelect={onSelect}
+      />
     );
     const emojiElements = screen.getAllByText('😀');
     expect(emojiElements).toHaveLength(2);
@@ -99,7 +85,12 @@ describe('StickerGrid', () => {
 
   it('renders search-specific empty state when no results match query', () => {
     render(
-      <StickerGrid stickers={[]} ownedPackIds={new Set()} searchQuery="unicorn" onSelect={onSelect} />
+      <StickerGrid
+        stickers={[]}
+        ownedPackIds={new Set()}
+        searchQuery="unicorn"
+        onSelect={onSelect}
+      />
     );
     expect(screen.getByText('No stickers found for "unicorn"')).toBeInTheDocument();
   });
@@ -114,7 +105,12 @@ describe('StickerGrid', () => {
   it('marks stickers from unowned packs as locked', () => {
     const stickers = [makeSticker('s1', 'Cat', 'pack-unowned')];
     render(
-      <StickerGrid stickers={stickers} ownedPackIds={new Set(['pack-1'])} searchQuery="" onSelect={onSelect} />
+      <StickerGrid
+        stickers={stickers}
+        ownedPackIds={new Set(['pack-1'])}
+        searchQuery=""
+        onSelect={onSelect}
+      />
     );
     expect(screen.getByTestId('lock-icon')).toBeInTheDocument();
   });
@@ -122,19 +118,25 @@ describe('StickerGrid', () => {
   it('marks stickers from owned packs as unlocked', () => {
     const stickers = [makeSticker('s1', 'Cat', 'pack-1')];
     render(
-      <StickerGrid stickers={stickers} ownedPackIds={new Set(['pack-1'])} searchQuery="" onSelect={onSelect} />
+      <StickerGrid
+        stickers={stickers}
+        ownedPackIds={new Set(['pack-1'])}
+        searchQuery=""
+        onSelect={onSelect}
+      />
     );
     expect(screen.queryByTestId('lock-icon')).not.toBeInTheDocument();
   });
 
   it('renders the correct number of sticker items', () => {
-    const stickers = [
-      makeSticker('s1', 'A'),
-      makeSticker('s2', 'B'),
-      makeSticker('s3', 'C'),
-    ];
+    const stickers = [makeSticker('s1', 'A'), makeSticker('s2', 'B'), makeSticker('s3', 'C')];
     render(
-      <StickerGrid stickers={stickers} ownedPackIds={new Set(['pack-1'])} searchQuery="" onSelect={onSelect} />
+      <StickerGrid
+        stickers={stickers}
+        ownedPackIds={new Set(['pack-1'])}
+        searchQuery=""
+        onSelect={onSelect}
+      />
     );
     const emojiElements = screen.getAllByText('😀');
     expect(emojiElements).toHaveLength(3);
