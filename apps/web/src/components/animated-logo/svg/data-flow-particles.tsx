@@ -7,6 +7,7 @@
  * @module components/animated-logo/svg/DataFlowParticles
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SvgFilterIds, ColorDefinition } from '../types';
 import { tweens, loopWithDelay } from '@/lib/animation-presets';
@@ -42,7 +43,7 @@ export function DataFlowParticles({ ids, colors: c, showParticles }: DataFlowPar
             initial={{ cx: 102, cy: 20, opacity: 0 }}
             animate={{ cx: [102, 102, 102], cy: [20, 48, 76], opacity: [1, 1, 0] }}
             transition={{
-              duration: 1.5,
+              duration: durations.ambient.ms / 1000,
               delay: 0.3,
               repeat: Infinity,
               repeatDelay: 0.5,
@@ -61,7 +62,7 @@ export function DataFlowParticles({ ids, colors: c, showParticles }: DataFlowPar
               scale: [0.5, 1, 1.2, 1, 0.5],
             }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               delay: 0.8,
               repeat: Infinity,
               repeatDelay: 0.3,
@@ -75,7 +76,7 @@ export function DataFlowParticles({ ids, colors: c, showParticles }: DataFlowPar
             initial={{ cx: 24, cy: 28, opacity: 0 }}
             animate={{ cx: [24, 30, 38], cy: [28, 30, 34], opacity: [0, 1, 0] }}
             transition={{
-              duration: 1,
+              duration: durations.verySlow.ms / 1000,
               delay: 1.2,
               repeat: Infinity,
               repeatDelay: 1,
@@ -89,7 +90,7 @@ export function DataFlowParticles({ ids, colors: c, showParticles }: DataFlowPar
             initial={{ cx: 96, cy: 28, opacity: 0 }}
             animate={{ cx: [96, 90, 82], cy: [28, 30, 34], opacity: [0, 1, 0] }}
             transition={{
-              duration: 1,
+              duration: durations.verySlow.ms / 1000,
               delay: 1.5,
               repeat: Infinity,
               repeatDelay: 1,

@@ -8,6 +8,7 @@
  * - Glassmorphism container
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useMemo } from 'react';
 import {
   View,
@@ -48,12 +49,12 @@ const SIZE_CONFIG = {
 };
 
 const ANIMATION_CONFIG = {
-  dots: { duration: 600, delay: 150 },
-  wave: { duration: 800, delay: 120 },
-  pulse: { duration: 1000, delay: 0 },
-  bars: { duration: 500, delay: 100 },
-  bounce: { duration: 600, delay: 150 },
-  fade: { duration: 800, delay: 200 },
+  dots: { duration: durations.dramatic.ms, delay: 150 },
+  wave: { duration: durations.extended.ms, delay: 120 },
+  pulse: { duration: durations.verySlow.ms, delay: 0 },
+  bars: { duration: durations.slower.ms, delay: 100 },
+  bounce: { duration: durations.dramatic.ms, delay: 150 },
+  fade: { duration: durations.extended.ms, delay: 200 },
 };
 
 /**
@@ -403,13 +404,13 @@ export function TypingDotsCompact({
         Animated.sequence([
           Animated.timing(anim, {
             toValue: 1,
-            duration: 300,
+            duration: durations.slow.ms,
             delay: index * 100,
             useNativeDriver: true,
           }),
           Animated.timing(anim, {
             toValue: 0,
-            duration: 300,
+            duration: durations.slow.ms,
             useNativeDriver: true,
           }),
         ])

@@ -3,6 +3,7 @@
  * 30+ animated border styles, particles, shapes, and status indicators
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation } from 'react-native-reanimated';
@@ -85,7 +86,7 @@ export default function AnimatedAvatar({
     // Rotation animation for spin, rainbow, cosmic effects
     if (['spin', 'rainbow', 'cosmic', 'celestial'].includes(borderAnimation)) {
       rotationAnim.value = withRepeat(
-        withTiming(1, { duration: 3000 }),
+        withTiming(1, { duration: durations.cinematic.ms }),
         -1
       );
     }
@@ -94,8 +95,8 @@ export default function AnimatedAvatar({
     if (['pulse', 'supernova'].includes(borderAnimation)) {
       pulseAnim.value = withRepeat(
         withSequence(
-          withTiming(1.1, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
+          withTiming(1.1, { duration: durations.verySlow.ms }),
+          withTiming(1, { duration: durations.verySlow.ms })
         ),
         -1
       );

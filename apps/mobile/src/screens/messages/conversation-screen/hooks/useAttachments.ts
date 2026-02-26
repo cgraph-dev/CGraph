@@ -6,6 +6,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useSharedValue, withSpring, withTiming, runOnJS, type SharedValue } from 'react-native-reanimated';
@@ -82,7 +83,7 @@ export function useAttachments(): UseAttachmentsReturn {
       setPendingAttachments([]);
       setAttachmentCaption('');
     };
-    attachmentPreviewAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+    attachmentPreviewAnim.value = withTiming(0, { duration: durations.normal.ms }, (finished) => {
       if (finished) runOnJS(onFinish)();
     });
   }, [attachmentPreviewAnim]);
@@ -103,7 +104,7 @@ export function useAttachments(): UseAttachmentsReturn {
     const onFinish = () => {
       setShowAttachMenu(false);
     };
-    attachMenuAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+    attachMenuAnim.value = withTiming(0, { duration: durations.normal.ms }, (finished) => {
       if (finished) runOnJS(onFinish)();
     });
   }, [attachMenuAnim]);

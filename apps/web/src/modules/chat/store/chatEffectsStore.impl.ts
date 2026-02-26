@@ -2,6 +2,7 @@
  * Chat visual effects store implementation.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { create } from 'zustand';
 import { createLogger } from '@/lib/logger';
 const logger = createLogger('chatEffectsStore');
@@ -36,7 +37,7 @@ import {
 // ==================== INITIAL STATE ====================
 
 const chatEffectsInitialState = {
-  activeMessageEffect: { effect: 'fade-in' as const, intensity: 'low' as const, duration: 400 },
+  activeMessageEffect: { effect: 'fade-in' as const, intensity: 'low' as const, duration: durations.smooth.ms },
   // safe downcast – structural boundary
    
   activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle }, // type assertion: preset conforms to extended config type
@@ -46,7 +47,7 @@ const chatEffectsInitialState = {
   activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & { // type assertion: preset conforms to extended config type
     style: TypingIndicator;
   },
-  activeReactionConfig: { animation: 'pop' as const, scale: 1.2, duration: 300, sound: true },
+  activeReactionConfig: { animation: 'pop' as const, scale: 1.2, duration: durations.slow.ms, sound: true },
   soundEffects: SOUND_EFFECT_LIBRARY,
   masterVolume: 0.7,
   soundsEnabled: true,

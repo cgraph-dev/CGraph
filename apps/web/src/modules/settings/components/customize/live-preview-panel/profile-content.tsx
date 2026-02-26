@@ -2,6 +2,7 @@
  * ProfileContent - Avatar, name, title, status, badges, and XP bar
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { AnimatedAvatar } from '../animated-avatar';
 import type {
@@ -125,7 +126,7 @@ export function ProfileContent({
               whileHover={{ scale: 1.15, rotate: 5 }}
               transition={{
                 ...springs.bouncy,
-                duration: 2,
+                duration: durations.loop.ms / 1000,
                 repeat: settings.glowEnabled ? Infinity : 0,
                 delay: i * 0.3,
               }}

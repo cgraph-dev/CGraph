@@ -2,6 +2,7 @@
  * Online status badge indicator.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
 import {
@@ -50,7 +51,7 @@ export function OnlineStatusBadge({ status, lastActive, className = '' }: Online
           boxShadow:
             status === 'online'
               ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
-              : { duration: 0.2 },
+              : { duration: durations.normal.ms / 1000 },
         }}
       />
       <span

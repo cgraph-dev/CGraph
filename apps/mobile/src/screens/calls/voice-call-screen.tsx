@@ -10,6 +10,7 @@
  * - Call duration timer
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
@@ -85,7 +86,7 @@ export default function VoiceCallScreen() {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500,
+        duration: durations.slower.ms,
         useNativeDriver: true,
       }),
       Animated.spring(slideAnim, {
@@ -114,12 +115,12 @@ export default function VoiceCallScreen() {
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.1,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
         ])
@@ -130,7 +131,7 @@ export default function VoiceCallScreen() {
       const ring = Animated.loop(
         Animated.timing(ringAnim, {
           toValue: 1,
-          duration: 2000,
+          duration: durations.loop.ms,
           easing: Easing.out(Easing.ease),
           useNativeDriver: true,
         })
@@ -157,12 +158,12 @@ export default function VoiceCallScreen() {
         Animated.sequence([
           Animated.timing(avatarGlowAnim, {
             toValue: 1,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: false,
           }),
           Animated.timing(avatarGlowAnim, {
             toValue: 0.5,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: false,
           }),
         ])

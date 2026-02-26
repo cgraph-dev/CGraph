@@ -2,6 +2,7 @@
  * QuestCard - Individual quest display with actions
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withSpring } from 'react-native-reanimated';
@@ -33,8 +34,8 @@ export function QuestCard({ quest, onClaim }: QuestCardProps) {
     if (canClaim) {
       scaleAnim.value = withRepeat(
         withSequence(
-          withTiming(1.02, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
+          withTiming(1.02, { duration: durations.verySlow.ms }),
+          withTiming(1, { duration: durations.verySlow.ms })
         ),
         -1
       );

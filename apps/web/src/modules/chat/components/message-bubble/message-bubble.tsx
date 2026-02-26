@@ -204,10 +204,7 @@ export const MessageBubble = memo(
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
                 {message.isEdited && <span>(edited)</span>}
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                { }
-                {!!(message as unknown as Record<string, unknown>) // type assertion: checking optional property existence
-                  .expiresAt /* safe downcast – optional expiry field */ && (
+                {'expiresAt' in message && !!message.expiresAt && (
                   <span
                     className="flex items-center gap-0.5 text-amber-400/70"
                     title="Disappearing message"

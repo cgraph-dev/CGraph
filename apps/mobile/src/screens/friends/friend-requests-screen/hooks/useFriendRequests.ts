@@ -4,6 +4,7 @@
  * Manages friend requests state and API interactions.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
@@ -28,7 +29,7 @@ export function useFriendRequests() {
 
   useEffect(() => {
     // Header entrance animation
-    headerOpacity.value = withTiming(1, { duration: 500 });
+    headerOpacity.value = withTiming(1, { duration: durations.slower.ms });
     statsScale.value = withSpring(1, { stiffness: 100, damping: 10 });
   }, [headerOpacity, statsScale]);
 

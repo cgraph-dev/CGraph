@@ -2,6 +2,7 @@
  * StickerMessage - Renders a sticker in a chat message
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { STICKER_RARITY_COLORS } from '@/data/stickers';
@@ -56,7 +57,7 @@ export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
           }}
           transition={{
             repeat: Infinity,
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             ease: 'easeInOut',
           }}
         />

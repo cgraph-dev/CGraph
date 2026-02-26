@@ -2,6 +2,7 @@
  * MessageWithEffect - Message component with animation effects
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo, useRef } from 'react';
 import { motion, type TargetAndTransition } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
@@ -82,7 +83,7 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
     },
     pulse: {
       initial: { scale: 1 },
-      animate: { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1 } },
+      animate: { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 } },
       exit: { opacity: 0 },
     },
     glow: {
@@ -115,7 +116,7 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
           '0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0ff, 0 0 30px #0ff',
           '0 0 5px #fff, 0 0 10px #fff, 0 0 20px #f0f, 0 0 30px #f0f',
         ],
-        transition: { repeat: Infinity, duration: 2, repeatType: 'reverse' },
+        transition: { repeat: Infinity, duration: durations.loop.ms / 1000, repeatType: 'reverse' },
       },
       exit: { textShadow: 'none' },
     },
@@ -128,7 +129,7 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
         ],
         backgroundClip: 'text',
         color: 'transparent',
-        transition: { repeat: Infinity, duration: 3, repeatType: 'reverse' },
+        transition: { repeat: Infinity, duration: durations.cinematic.ms / 1000, repeatType: 'reverse' },
       },
       exit: { background: 'none' },
     },
@@ -156,13 +157,13 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
       initial: { filter: 'hue-rotate(0deg)' },
       animate: {
         filter: ['hue-rotate(0deg)', 'hue-rotate(360deg)'],
-        transition: { repeat: Infinity, duration: 2 },
+        transition: { repeat: Infinity, duration: durations.loop.ms / 1000 },
       },
       exit: { filter: 'hue-rotate(0deg)' },
     },
     wave: {
       initial: { y: 0 },
-      animate: { y: [0, -5, 0, 5, 0], transition: { repeat: Infinity, duration: 1 } },
+      animate: { y: [0, -5, 0, 5, 0], transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 } },
       exit: { y: 0 },
     },
     'elastic-in': {

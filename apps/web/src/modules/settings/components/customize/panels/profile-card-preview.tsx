@@ -2,6 +2,7 @@
  * Profile card preview component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { AnimatedAvatar } from '../animated-avatar';
@@ -96,7 +97,7 @@ export const ProfileCardPreviewLarge = memo(function ProfileCardPreviewLarge() {
                 opacity: [0, 1, 0],
               }}
               transition={{
-                duration: 2 + Math.random() * 2,
+                duration: durations.loop.ms / 1000 + Math.random() * 2,
                 repeat: Infinity,
                 delay: Math.random() * 2,
               }}

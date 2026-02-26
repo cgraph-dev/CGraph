@@ -2,6 +2,7 @@
  * Holographic-themed button component with animated gradient effects and haptic feedback.
  * @module components/enhanced/ui/holographic-ui/HolographicButton
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { ReactNode, useRef, useEffect } from 'react';
 import {
   View,
@@ -50,12 +51,12 @@ export function HolographicButton({
       Animated.sequence([
         Animated.timing(glowAnim, {
           toValue: 1,
-          duration: 1500,
+          duration: durations.ambient.ms,
           useNativeDriver: false,
         }),
         Animated.timing(glowAnim, {
           toValue: 0,
-          duration: 1500,
+          duration: durations.ambient.ms,
           useNativeDriver: false,
         }),
       ])

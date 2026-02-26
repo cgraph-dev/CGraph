@@ -9,6 +9,7 @@
  * @since v0.7.33
  */
 
+import { durations } from '@cgraph/animation-constants';
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 
@@ -125,7 +126,7 @@ export class AnimationEngine {
     timeline
       .to(element, {
         x: 0,
-        duration: 0.4,
+        duration: durations.smooth.ms / 1000,
         ease: 'power2.out',
         delay: index * 0.05, // Stagger based on index
       })
@@ -134,7 +135,7 @@ export class AnimationEngine {
         {
           opacity: 1,
           scale: 1,
-          duration: 0.3,
+          duration: durations.slow.ms / 1000,
           ease: 'back.out(1.4)',
         },
         '-=0.3'
@@ -152,14 +153,14 @@ export class AnimationEngine {
     timeline
       .to(element, {
         scale: 1.3,
-        duration: 0.15,
+        duration: durations.fast.ms / 1000,
         ease: 'power2.out',
       })
       .to(
         element,
         {
           y: -8,
-          duration: 0.1,
+          duration: durations.instant.ms / 1000,
           ease: 'power2.out',
         },
         '-=0.15'
@@ -187,12 +188,12 @@ export class AnimationEngine {
     timeline
       .to(element, {
         [rotation]: 90,
-        duration: 0.3,
+        duration: durations.slow.ms / 1000,
         ease: 'power2.in',
       })
       .to(element, {
         [rotation]: 0,
-        duration: 0.3,
+        duration: durations.slow.ms / 1000,
         ease: 'power2.out',
       });
 

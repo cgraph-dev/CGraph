@@ -6,6 +6,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback } from 'react';
 import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
 import * as Crypto from 'expo-crypto';
@@ -70,7 +71,7 @@ export function useTextMessageSending({
   // Animated send button press effect
   const animateSendButton = useCallback(() => {
     sendButtonAnim.value = withSequence(
-      withTiming(0.85, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withTiming(0.85, { duration: durations.instant.ms, easing: Easing.out(Easing.quad) }),
       withSpring(1, { stiffness: 200, damping: 10 })
     );
   }, [sendButtonAnim]);

@@ -3,7 +3,7 @@
  * @module stores/__tests__/marketplaceStore
  */
 
-import type { MarketplaceListing, useMarketplaceStore } from '../marketplaceStore';
+import { useMarketplaceStore, type MarketplaceListing } from '../marketplaceStore';
 
 // ── Mocks ──────────────────────────────────────────────────────────────
 

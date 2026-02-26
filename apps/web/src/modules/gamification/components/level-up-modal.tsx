@@ -2,6 +2,7 @@
  * Level up celebration modal component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, TrophyIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
@@ -64,7 +65,7 @@ export default function LevelUpModal({
             initial={{ scale: 0.5, opacity: 0, rotateY: -180 }}
             animate={{ scale: 1, opacity: 1, rotateY: 0 }}
             exit={{ scale: 0.5, opacity: 0, rotateY: 180 }}
-            transition={{ ...springs.default, duration: 0.8 }}
+            transition={{ ...springs.default, duration: durations.extended.ms / 1000 }}
             onClick={(e) => e.stopPropagation()}
           >
             <GlassCard

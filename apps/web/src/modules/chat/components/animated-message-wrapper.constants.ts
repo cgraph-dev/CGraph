@@ -2,6 +2,7 @@
  * Animated message wrapper constants.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { springs, staggerConfigs } from '@/lib/animation-presets';
 
 export const messageVariants = {
@@ -28,8 +29,8 @@ export const messageVariants = {
     transition: {
       duration: 0.25,
       ease: 'easeIn' as const,
-      height: { delay: 0.15, duration: 0.2 },
-      marginBottom: { delay: 0.15, duration: 0.2 },
+      height: { delay: 0.15, duration: durations.normal.ms / 1000 },
+      marginBottom: { delay: 0.15, duration: durations.normal.ms / 1000 },
     },
   }),
   hover: {

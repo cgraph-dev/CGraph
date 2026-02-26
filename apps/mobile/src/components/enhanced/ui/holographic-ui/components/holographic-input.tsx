@@ -2,6 +2,7 @@
  * Holographic-themed text input component with animated focus effects and glowing borders.
  * @module components/enhanced/ui/holographic-ui/HolographicInput
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate } from 'react-native-reanimated';
@@ -36,8 +37,8 @@ export function HolographicInput({
   const glowIntensity = useSharedValue(0);
 
   useEffect(() => {
-    focusLineWidth.value = withTiming(isFocused ? 1 : 0, { duration: 300 });
-    glowIntensity.value = withTiming(isFocused ? 1 : 0, { duration: 300 });
+    focusLineWidth.value = withTiming(isFocused ? 1 : 0, { duration: durations.slow.ms });
+    glowIntensity.value = withTiming(isFocused ? 1 : 0, { duration: durations.slow.ms });
 
     if (isFocused) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

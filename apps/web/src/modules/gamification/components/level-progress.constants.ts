@@ -2,6 +2,7 @@
  * Level progress bar constant definitions.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import type { Transition } from 'framer-motion';
 
 // ── XP Calculation ──────────────────────────────────────────────────
@@ -38,23 +39,23 @@ export const glowPulseExpanded = {
   scale: [1, 1.3, 1],
 };
 
-export const glowTransitionCompact: Transition = { duration: 2, repeat: Infinity };
-export const glowTransitionExpanded: Transition = { duration: 3, repeat: Infinity };
+export const glowTransitionCompact: Transition = { duration: durations.loop.ms / 1000, repeat: Infinity };
+export const glowTransitionExpanded: Transition = { duration: durations.cinematic.ms / 1000, repeat: Infinity };
 
 export const shimmerTransition: Transition = {
-  duration: 3,
+  duration: durations.cinematic.ms / 1000,
   repeat: Infinity,
   ease: 'linear' as const,
 };
 
-export const progressBarTransitionCompact: Transition = { duration: 1, ease: 'easeOut' as const };
+export const progressBarTransitionCompact: Transition = { duration: durations.verySlow.ms / 1000, ease: 'easeOut' as const };
 export const progressBarTransitionExpanded: Transition = {
-  duration: 1.5,
+  duration: durations.ambient.ms / 1000,
   ease: 'easeOut' as const,
 };
 
 export const barShimmerTransition: Transition = {
-  duration: 2,
+  duration: durations.loop.ms / 1000,
   repeat: Infinity,
   ease: 'linear' as const,
 };

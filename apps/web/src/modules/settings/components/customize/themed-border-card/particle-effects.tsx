@@ -4,6 +4,7 @@
  * Animated particles for special border types
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 
 interface ParticleEffectsProps {
@@ -33,7 +34,7 @@ export function ParticleEffects({ colors }: ParticleEffectsProps) {
             scale: [0, 1.5, 0],
           }}
           transition={{
-            duration: 1.5,
+            duration: durations.ambient.ms / 1000,
             repeat: Infinity,
             delay: i * 0.2,
           }}

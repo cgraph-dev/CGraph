@@ -2,6 +2,7 @@
  * Simple border effects: none, static, glow, pulse, rotate.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
@@ -78,7 +79,7 @@ export function renderGlowBorder({
           `0 0 15px ${colors.glow}, 0 0 30px ${colors.glow}`,
         ],
       }}
-      transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+      transition={{ duration: durations.loop.ms / 1000 * speedMultiplier, repeat: Infinity }}
     />
   );
 }
@@ -105,13 +106,13 @@ export function renderPulseBorder({
         className="absolute inset-0 rounded-full"
         style={{ ...gpuStyles, border: `${borderWidth}px solid ${colors.primary}` }}
         animate={{ scale: [1, 1.3, 1.3], opacity: [0.8, 0, 0] }}
-        transition={{ duration: 1.5 * speedMultiplier, repeat: Infinity }}
+        transition={{ duration: durations.ambient.ms / 1000 * speedMultiplier, repeat: Infinity }}
       />
       <motion.div
         className="absolute inset-0 rounded-full"
         style={{ ...gpuStyles, border: `${borderWidth}px solid ${colors.secondary}` }}
         animate={{ scale: [1, 1.5, 1.5], opacity: [0.6, 0, 0] }}
-        transition={{ duration: 1.5 * speedMultiplier, repeat: Infinity, delay: 0.3 }}
+        transition={{ duration: durations.ambient.ms / 1000 * speedMultiplier, repeat: Infinity, delay: 0.3 }}
       />
     </>
   );
@@ -138,7 +139,7 @@ export function renderRotateBorder({
         padding: borderWidth,
       }}
       animate={{ rotate: 360 }}
-      transition={{ duration: 3 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
+      transition={{ duration: durations.cinematic.ms / 1000 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
     >
       <div className="h-full w-full rounded-full bg-gray-900" />
     </motion.div>

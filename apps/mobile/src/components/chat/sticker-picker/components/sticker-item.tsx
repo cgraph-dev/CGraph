@@ -2,6 +2,7 @@
  * StickerItem Component - Animated sticker with all 15 animation types
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation, Easing as ReanimatedEasing } from 'react-native-reanimated';
@@ -62,8 +63,8 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'pulse':
         scaleAnim.value = withRepeat(
           withSequence(
-            withTiming(1.1, { duration: 500 }),
-            withTiming(1, { duration: 500 })
+            withTiming(1.1, { duration: durations.slower.ms }),
+            withTiming(1, { duration: durations.slower.ms })
           ),
           -1
         );
@@ -72,11 +73,11 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'shake':
         translateXAnim.value = withRepeat(
           withSequence(
-            withTiming(-5, { duration: 100 }),
-            withTiming(5, { duration: 100 }),
-            withTiming(-5, { duration: 100 }),
-            withTiming(5, { duration: 100 }),
-            withTiming(0, { duration: 100 })
+            withTiming(-5, { duration: durations.instant.ms }),
+            withTiming(5, { duration: durations.instant.ms }),
+            withTiming(-5, { duration: durations.instant.ms }),
+            withTiming(5, { duration: durations.instant.ms }),
+            withTiming(0, { duration: durations.instant.ms })
           ),
           -1
         );
@@ -96,8 +97,8 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'float':
         translateYAnim.value = withRepeat(
           withSequence(
-            withTiming(-10, { duration: 1000, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-            withTiming(0, { duration: 1000, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+            withTiming(-10, { duration: durations.verySlow.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+            withTiming(0, { duration: durations.verySlow.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
           ),
           -1
         );
@@ -106,8 +107,8 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'pop':
         scaleAnim.value = withSequence(
           withTiming(0, { duration: 0 }),
-          withTiming(1.2, { duration: 150, easing: ReanimatedEasing.out(ReanimatedEasing.back(2)) }),
-          withTiming(1, { duration: 150 })
+          withTiming(1.2, { duration: durations.fast.ms, easing: ReanimatedEasing.out(ReanimatedEasing.back(2)) }),
+          withTiming(1, { duration: durations.fast.ms })
         );
         break;
 
@@ -115,7 +116,7 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
         rotateAnim.value = withRepeat(
           withSequence(
             withTiming(0.35, { duration: 250 }),
-            withTiming(-0.35, { duration: 500 }),
+            withTiming(-0.35, { duration: durations.slower.ms }),
             withTiming(0, { duration: 250 })
           ),
           -1
@@ -125,8 +126,8 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'zoom':
         scaleAnim.value = withRepeat(
           withSequence(
-            withTiming(1.1, { duration: 500 }),
-            withTiming(1, { duration: 500 })
+            withTiming(1.1, { duration: durations.slower.ms }),
+            withTiming(1, { duration: durations.slower.ms })
           ),
           -1
         );
@@ -134,7 +135,7 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
 
       case 'flip':
         rotateYAnim.value = withRepeat(
-          withTiming(1, { duration: 1000, easing: ReanimatedEasing.linear }),
+          withTiming(1, { duration: durations.verySlow.ms, easing: ReanimatedEasing.linear }),
           -1
         );
         break;
@@ -163,9 +164,9 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'heartbeat':
         scaleAnim.value = withRepeat(
           withSequence(
-            withTiming(1.3, { duration: 150 }),
-            withTiming(1, { duration: 150 }),
-            withTiming(1.3, { duration: 150 }),
+            withTiming(1.3, { duration: durations.fast.ms }),
+            withTiming(1, { duration: durations.fast.ms }),
+            withTiming(1.3, { duration: durations.fast.ms }),
             withTiming(1, { duration: 1050 })
           ),
           -1
@@ -197,7 +198,7 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
 
       case 'spin':
         rotateAnim.value = withRepeat(
-          withTiming(1, { duration: 1000, easing: ReanimatedEasing.linear }),
+          withTiming(1, { duration: durations.verySlow.ms, easing: ReanimatedEasing.linear }),
           -1
         );
         break;

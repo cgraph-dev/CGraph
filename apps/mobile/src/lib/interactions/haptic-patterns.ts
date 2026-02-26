@@ -9,6 +9,7 @@
  * - Accessibility integration
  */
 
+import { durations } from '@cgraph/animation-constants';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
@@ -79,13 +80,13 @@ const PATTERNS: Record<HapticPattern, PatternStep[]> = {
 
   doubleTap: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 
   longPress: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 50 },
+    { type: 'wait', duration: durations.stagger.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
   ],
 
@@ -119,69 +120,69 @@ const PATTERNS: Record<HapticPattern, PatternStep[]> = {
 
   refresh: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 
   notification: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 150 },
+    { type: 'wait', duration: durations.fast.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 150 },
+    { type: 'wait', duration: durations.fast.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 
   levelUp: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 50 },
+    { type: 'wait', duration: durations.stagger.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 50 },
+    { type: 'wait', duration: durations.stagger.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
   ],
 
   achievement: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 200 },
+    { type: 'wait', duration: durations.normal.ms },
     { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
   ],
 
   countdown: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 1000 },
+    { type: 'wait', duration: durations.verySlow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 1000 },
+    { type: 'wait', duration: durations.verySlow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 500 },
+    { type: 'wait', duration: durations.slower.ms },
     { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
   ],
 
   heartbeat: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 600 },
+    { type: 'wait', duration: durations.dramatic.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 
   loading: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 200 },
+    { type: 'wait', duration: durations.normal.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 200 },
+    { type: 'wait', duration: durations.normal.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 
   confirm: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-    { type: 'wait', duration: 150 },
+    { type: 'wait', duration: durations.fast.ms },
     { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
   ],
 
@@ -212,21 +213,21 @@ const PATTERNS: Record<HapticPattern, PatternStep[]> = {
   morse: [
     // SOS pattern: ... --- ...
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 300 },
+    { type: 'wait', duration: durations.slow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 300 },
+    { type: 'wait', duration: durations.slow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 300 },
+    { type: 'wait', duration: durations.slow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-    { type: 'wait', duration: 300 },
+    { type: 'wait', duration: durations.slow.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-    { type: 'wait', duration: 100 },
+    { type: 'wait', duration: durations.instant.ms },
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
   ],
 };

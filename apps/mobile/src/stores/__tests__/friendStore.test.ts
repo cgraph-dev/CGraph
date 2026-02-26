@@ -3,7 +3,7 @@
  * @module stores/__tests__/friendStore
  */
 
-import type { Friend, FriendRequest, useFriendStore } from '../friendStore';
+import { useFriendStore, type Friend, type FriendRequest } from '../friendStore';
 
 // ── Mocks ──────────────────────────────────────────────────────────────
 

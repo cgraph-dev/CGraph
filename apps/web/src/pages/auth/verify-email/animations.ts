@@ -9,7 +9,7 @@ export const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, staggerChildren: 0.1 },
+    transition: { duration: durations.slower.ms / 1000, staggerChildren: 0.1 },
   },
 };
 

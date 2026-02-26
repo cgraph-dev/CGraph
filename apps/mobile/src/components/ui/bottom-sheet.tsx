@@ -17,6 +17,7 @@
  * @since v0.9.0
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import {
   View,
@@ -116,7 +117,7 @@ export default function BottomSheet({
         }),
         Animated.timing(backdropOpacity, {
           toValue: 1,
-          duration: 300,
+          duration: durations.slow.ms,
           useNativeDriver: true,
         }),
       ]).start();
@@ -129,7 +130,7 @@ export default function BottomSheet({
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
         }),
       ]).start();

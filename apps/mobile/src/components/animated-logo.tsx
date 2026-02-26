@@ -2,6 +2,7 @@
  * Animated SVG logo component with gradient effects and entrance animations.
  * @module components/AnimatedLogo
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import Svg, {
@@ -207,10 +208,10 @@ export function AnimatedLogo({
     // Initial entrance animation
     scale.value = withSequence(
       withTiming(0.8, { duration: 0 }),
-      withTiming(1, { duration: 500, easing: Easing.out(Easing.back(1.5)) })
+      withTiming(1, { duration: durations.slower.ms, easing: Easing.out(Easing.back(1.5)) })
     );
 
-    textOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
+    textOpacity.value = withTiming(1, { duration: durations.dramatic.ms, easing: Easing.out(Easing.quad) });
 
     if (isAnimated) {
       // Continuous rotation for loading/splash
@@ -223,8 +224,8 @@ export function AnimatedLogo({
       // Pulse animation
       pulseOpacity.value = withRepeat(
         withSequence(
-          withTiming(0.8, { duration: 1000, easing: Easing.inOut(Easing.quad) }),
-          withTiming(0.3, { duration: 1000, easing: Easing.inOut(Easing.quad) })
+          withTiming(0.8, { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.quad) }),
+          withTiming(0.3, { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.quad) })
         ),
         -1,
         true
@@ -233,8 +234,8 @@ export function AnimatedLogo({
       // Glow scale animation
       glowScale.value = withRepeat(
         withSequence(
-          withTiming(1.2, { duration: 1500, easing: Easing.inOut(Easing.quad) }),
-          withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.quad) })
+          withTiming(1.2, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.quad) }),
+          withTiming(1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.quad) })
         ),
         -1,
         true
@@ -340,7 +341,7 @@ export function SplashScreen() {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(1, { duration: 1500, easing: Easing.out(Easing.quad) });
+    progress.value = withTiming(1, { duration: durations.ambient.ms, easing: Easing.out(Easing.quad) });
   }, [progress]);
 
   const progressStyle = useAnimatedStyle(() => ({
@@ -376,16 +377,16 @@ function ParticleEffect({ index }: { index: number }) {
     setTimeout(() => {
       translateY.value = withRepeat(
         withSequence(
-          withTiming(-20, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
-          withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.quad) })
+          withTiming(-20, { duration: durations.loop.ms, easing: Easing.inOut(Easing.quad) }),
+          withTiming(0, { duration: durations.loop.ms, easing: Easing.inOut(Easing.quad) })
         ),
         -1,
         true
       );
       opacity.value = withRepeat(
         withSequence(
-          withTiming(0.6, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
-          withTiming(0.1, { duration: 2000, easing: Easing.inOut(Easing.quad) })
+          withTiming(0.6, { duration: durations.loop.ms, easing: Easing.inOut(Easing.quad) }),
+          withTiming(0.1, { duration: durations.loop.ms, easing: Easing.inOut(Easing.quad) })
         ),
         -1,
         true

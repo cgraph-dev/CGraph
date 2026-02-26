@@ -2,6 +2,7 @@
  * Profile showcase display components.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';
@@ -94,7 +95,7 @@ export function EquippedBadgesShowcase({
                   initial={{ x: '-100%' }}
                   animate={{ x: '200%' }}
                   transition={{
-                    duration: 2,
+                    duration: durations.loop.ms / 1000,
                     repeat: Infinity,
                     repeatDelay: 3,
                     ease: 'linear',

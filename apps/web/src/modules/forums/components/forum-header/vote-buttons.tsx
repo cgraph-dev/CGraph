@@ -4,6 +4,7 @@
  * Forum upvote/downvote controls with animated feedback.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
@@ -18,7 +19,7 @@ import { tweens, springs } from '@/lib/animation-presets';
 const floatingIndicator = {
   initial: { opacity: 1, y: 0, scale: 0.8 },
   animate: { opacity: 0, y: -24, scale: 1 },
-  transition: { duration: 0.6, ease: 'easeOut' as const },
+  transition: { duration: durations.dramatic.ms / 1000, ease: 'easeOut' as const },
 };
 
 export const VoteButtons = memo(function VoteButtons({

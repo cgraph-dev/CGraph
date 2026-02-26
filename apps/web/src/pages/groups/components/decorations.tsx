@@ -3,6 +3,7 @@
  * @module pages/groups
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 
 /**
@@ -45,7 +46,7 @@ export function AmbientParticles() {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 3,
+            duration: durations.epic.ms / 1000 + Math.random() * 3,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

@@ -2,6 +2,7 @@
  * Holographic-styled avatar component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme, STATUS_COLORS } from './constants';
@@ -77,7 +78,7 @@ export function HolographicAvatar({
             opacity: [0.8, 0],
           }}
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
             ease: 'easeOut',
           }}
@@ -97,7 +98,7 @@ export function HolographicAvatar({
             scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
           }}
         />

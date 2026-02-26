@@ -2,6 +2,7 @@
  * PostTypeSelector - Animated post type selection with morphing indicator
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
@@ -47,7 +48,7 @@ export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelecto
 
     // Bounce animation
     scaleAnims[index].value = withSequence(
-      withTiming(0.9, { duration: 100 }),
+      withTiming(0.9, { duration: durations.instant.ms }),
       withSpring(1, { damping: 4, stiffness: 100 })
     );
 

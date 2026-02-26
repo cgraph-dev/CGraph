@@ -2,6 +2,7 @@
  * User list item component displaying avatar, name, status, and interactive actions.
  * @module components/UserListItem
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -56,13 +57,13 @@ export default function UserListItem({
     Animated.parallel([
       Animated.timing(opacityValue, {
         toValue: 1,
-        duration: 300,
+        duration: durations.slow.ms,
         delay: animationDelay,
         useNativeDriver: true,
       }),
       Animated.timing(translateYValue, {
         toValue: 0,
-        duration: 300,
+        duration: durations.slow.ms,
         delay: animationDelay,
         useNativeDriver: true,
       }),

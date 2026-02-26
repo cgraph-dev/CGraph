@@ -7,6 +7,7 @@
  * @module screens/messages/ConversationScreen/components
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo } from 'react';
 import { Pressable, Text, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -93,7 +94,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
 
     // Emoji vertical bounce
     emojiY.value = withSequence(
-      withTiming(-8, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withTiming(-8, { duration: durations.instant.ms, easing: Easing.out(Easing.quad) }),
       withSpring(0, SPRING_PRESETS.snappy),
     );
 

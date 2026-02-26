@@ -3,6 +3,7 @@
  * Displays a single friend in the list with actions
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
@@ -80,7 +81,7 @@ export function FriendListItem({
                   }
                 : {}
             }
-            transition={friend.status === 'online' ? { duration: 2, repeat: Infinity } : {}}
+            transition={friend.status === 'online' ? { duration: durations.loop.ms / 1000, repeat: Infinity } : {}}
           />
         </div>
       </UserProfileCard>

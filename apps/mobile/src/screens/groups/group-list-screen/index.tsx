@@ -12,6 +12,7 @@
  * - components/EmptyGroupState: Empty state display
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
@@ -35,7 +36,7 @@ export default function GroupListScreen({ navigation }: GroupListScreenProps) {
 
   useEffect(() => {
     // Animate header entrance
-    headerOpacity.value = withTiming(1, { duration: 400 });
+    headerOpacity.value = withTiming(1, { duration: durations.smooth.ms });
     headerSlide.value = withSpring(0, { damping: 8, stiffness: 50 });
 
     navigation.setOptions({

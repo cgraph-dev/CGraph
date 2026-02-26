@@ -2,61 +2,33 @@
  * Conversation screen for viewing and sending messages in a thread.
  * @module screens/messages/conversation-screen
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   View,
   FlatList,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
   RefreshControl,
-  Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 import { useAuthStore, useThemeStore } from '@/stores';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
-import { AttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
 
-// Import modular components
 import {
   EmptyConversation,
-  MessageActionsMenu,
-  ReactionPickerModal,
-  AttachmentPreviewModal,
-  ImageViewerModal,
-  VideoPlayerModal,
   PinnedMessagesBar,
   ChatInputArea,
   MessageBubble,
 } from './conversation-screen/components';
-import type { GifPickerModal, GifResult } from './conversation-screen/components/gif-picker-modal';
+import { ConversationModals } from './conversation-screen/components/conversation-modals';
 import { styles } from './conversation-screen/styles';
+import { useConversationData } from './conversation-screen/hooks';
+import { useConversationSetup } from './conversation-screen/hooks/use-conversation-setup';
 import {
-  useMediaViewer,
-  useMessageActions,
-  useReactions,
-  useAttachments,
-  usePinAndDelete,
-  useMessageReactions,
-  useAttachmentUpload,
-  useVoiceAndWave,
-  useConversationSocket,
-  useConversationHeader,
-  usePresence,
-  useConversationData,
-  useTextMessageSending,
-  usePinnedMessages,
-  useSocketEventHandlers,
-  useMessageActionWrappers,
-} from './conversation-screen/hooks';
-import {
-  formatSimpleTime,
-  getMessageStatusInfo,
   isValidMessage,
   isOwnMessage as checkIsOwnMessage,
   getSenderInfo,
@@ -78,11 +50,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const isDark = colorScheme === 'dark';
   const { user } = useAuthStore();
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
-
-  // Track deleted message IDs to prevent re-adding them (must be before useConversationData)
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
 
-  // Conversation data hook - fetches conversation details and messages
+  // Core data hook
   const {
     conversation: _conversation,
     messages,
@@ -94,468 +64,67 @@ export default function ConversationScreen({ navigation, route }: Props) {
     fetchMessages,
     fetchConversation,
     onRefresh,
-    markMessageAsRead: _markMessageAsRead,
-  } = useConversationData({
+  } = useConversationData({ conversationId, userId: user?.id, deletedMessageIdsRef });
+
+  // Consolidated hook for all actions / sub-hooks
+  const setup = useConversationSetup({
     conversationId,
-    userId: user?.id,
-    deletedMessageIdsRef,
-  });
-
-  const [isSending, setIsSending] = useState(false);
-  const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [showGifPicker, setShowGifPicker] = useState(false);
-
-  // Presence and typing hook - manages online/typing state
-  const {
-    isOtherUserOnline,
-    isOtherUserTyping,
-    otherParticipantLastSeen,
-    setOtherParticipantLastSeen,
-    handleTextChange: presenceHandleTextChange,
-    stopTypingIndicator,
-  } = usePresence({
-    conversationId,
-    otherParticipantId,
-  });
-
-  // Media viewer hook (images, videos, files)
-  const {
-    selectedImage,
-    setSelectedImage,
-    imageGallery,
-    currentImageIndex,
-    setCurrentImageIndex,
-    showImageViewer,
-    imageGalleryRef,
-    imageViewerAnim,
-    imageScaleAnim,
-    handleImagePress,
-    closeImageViewer,
-    showVideoPlayer,
-    selectedVideoUrl,
-    selectedVideoDuration,
-    handleVideoPress,
-    closeVideoPlayer,
-    handleFilePress,
-  } = useMediaViewer();
-
-  // Message action menu state (from useMessageActions hook)
-  const {
-    selectedMessage,
-    showMessageActions,
-    replyingTo,
-    backdropAnim,
-    menuScaleAnim,
-    messageActionsAnim,
-    actionItemAnims,
-    handleMessageLongPress,
-    closeMessageActions,
-    setReplyingTo,
-    handleCopyMessage: _handleCopyMessage,
-    clearReply,
-  } = useMessageActions();
-
-  // Reaction picker state (from useReactions hook)
-  const {
-    showReactionPicker,
-    reactionPickerMessage,
-    selectedEmojiCategory,
-    openReactionPicker: openReactionPickerBase,
-    closeReactionPicker,
-    setSelectedEmojiCategory,
-    hasReacted,
-  } = useReactions();
-
-  // Attachment state (from useAttachments hook)
-  const {
-    pendingAttachments,
-    showAttachmentPreview,
-    attachmentCaption,
-    attachmentPreviewAnim,
-    showAttachMenu,
-    attachMenuAnim,
-    setPendingAttachments,
-    setAttachmentCaption,
-    openAttachmentPreview,
-    closeAttachmentPreview,
-    openAttachMenu: _openAttachMenu,
-    closeAttachMenu,
-    toggleAttachMenu,
-    handleImagePicker,
-    handleCameraCapture: _handleCameraCapture,
-    handleDocumentPicker: _handleDocumentPicker,
-    clearAttachments: _clearAttachments,
-    removeAttachment,
-  } = useAttachments();
-
-  // Message reactions hook (add/remove reactions via API)
-  const {
-    handleAddReaction,
-    handleRemoveReaction,
-    handleQuickReaction: handleQuickReactionBase,
-    handleReactionTap,
-    addReactionToMessage,
-    removeReactionFromMessage,
-  } = useMessageReactions({ user, setMessages });
-
-  // Pin/delete handlers from hook - callbacks defined after setMessages is available
-  const onMessagePinnedCallback = useCallback(
-    (messageId: string, isPinned: boolean, pinnedAt?: string, pinnedById?: string) => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === messageId
-            ? { ...m, is_pinned: isPinned, pinned_at: pinnedAt, pinned_by_id: pinnedById }
-            : m
-        )
-      );
-    },
-    []
-  );
-
-  const onMessageDeletedCallback = useCallback((messageId: string) => {
-    deletedMessageIdsRef.current.add(messageId);
-    setMessages((prev) => prev.filter((m) => m.id !== messageId));
-  }, []);
-
-  // usePinAndDelete hook for pin/unpin and delete operations
-  const { handleTogglePin: handleTogglePinBase, handleUnsend: handleUnsendBase } = usePinAndDelete({
-    conversationId,
-    userId: user?.id,
-    onMessagePinned: onMessagePinnedCallback,
-    onMessageDeleted: onMessageDeletedCallback,
-    onActionComplete: closeMessageActions,
-  });
-
-  // Track newly added messages for entrance animations
-  const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
-
-  // Track if component is mounted (for async operations)
-  const isMountedRef = useRef(true);
-
-  // Track if we should scroll to bottom on next content size change
-  const _shouldScrollToBottomRef = useRef(true);
-  const _contentHeightRef = useRef(0);
-
-  const flatListRef = useRef<FlatList>(null);
-  const inputRef = useRef<TextInput>(null);
-
-  // Callback for scrolling to bottom (used by upload hook)
-  const scrollToBottom = useCallback(() => {
-    setTimeout(() => {
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }, 100);
-  }, []);
-
-  // Handle starting a call (audio or video)
-  const handleStartCall = useCallback((type: 'audio' | 'video') => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      `${type === 'video' ? 'Video' : 'Voice'} Call`,
-      `${type === 'video' ? 'Video' : 'Voice'} calls are coming soon! Stay tuned for real-time encrypted calls.`,
-      [{ text: 'Got it', style: 'default' }]
-    );
-  }, []);
-
-  // Conversation header hook - manages navigation header with status
-  const { updateHeader } = useConversationHeader({
-    navigation,
-    colors,
-    isOtherUserOnline,
-    isOtherUserTyping,
-    otherParticipantLastSeen,
-    otherParticipantId,
-    otherUser,
-    onStartCall: handleStartCall,
-  });
-
-  // Attachment upload hook
-  const {
-    uploadAndSendFile: _uploadAndSendFile,
-    sendPendingAttachments: sendPendingAttachmentsBase,
-    addMoreAttachments,
-  } = useAttachmentUpload({
-    conversationId,
-    setIsSending,
-    setMessages,
-    closeAttachmentPreview,
-    attachmentPreviewAnim,
-    handleImagePicker,
-    onScrollToBottom: scrollToBottom,
-  });
-
-  // Wrapper for sendPendingAttachments to use current state
-  const sendPendingAttachments = useCallback(async () => {
-    await sendPendingAttachmentsBase(pendingAttachments, attachmentCaption);
-  }, [sendPendingAttachmentsBase, pendingAttachments, attachmentCaption]);
-
-  // Voice message and wave greeting hook
-  const { waveAnim, handleVoiceComplete, handleSendWave } = useVoiceAndWave({
-    conversationId,
-    setIsSending,
-    setIsVoiceMode,
-    setMessages,
-    onScrollToBottom: scrollToBottom,
-  });
-
-  // Text message sending hook
-  const {
-    inputText,
-    setInputText,
-    sendButtonAnim: _sendButtonAnim,
-    sendMessage,
-  } = useTextMessageSending({
-    conversationId,
-    isSending,
-    setIsSending,
+    user,
     isE2EEInitialized,
     otherParticipantId,
     encryptMessage,
-    replyingTo,
-    setReplyingTo,
-    stopTypingIndicator,
-    setMessages,
-    setNewMessageIds,
-    onScrollToBottom: scrollToBottom,
-  });
-
-  // GIF selection handler — sends as a gif-type message
-  const handleGifSelect = useCallback(
-    async (gif: GifResult) => {
-      if (isSending) return;
-      setIsSending(true);
-      try {
-        const response = await (
-          await import('../../lib/api')
-        ).default.post(`/api/v1/conversations/${conversationId}/messages`, {
-          content: gif.url,
-          content_type: 'gif',
-          metadata: {
-            gif_id: gif.id,
-            title: gif.title,
-            preview_url: gif.previewUrl,
-            width: gif.width,
-            height: gif.height,
-          },
-        });
-        if (response.data?.data) {
-          const newMsg = response.data.data;
-          setMessages((prev: Message[]) => [...prev, newMsg].slice(-500));
-          scrollToBottom();
-        }
-      } catch (error) {
-        logger.error('Failed to send GIF:', error);
-      } finally {
-        setIsSending(false);
-      }
-    },
-    [conversationId, isSending, setMessages, scrollToBottom]
-  );
-
-  // Socket event handlers hook - centralizes all socket callbacks
-  const {
-    handleSocketNewMessage,
-    handleSocketMessageUpdated,
-    handleSocketMessageDeleted,
-    handleSocketMessagePinned,
-    handleSocketMessageUnpinned,
-    handleSocketMessageRead,
-    handleSocketReactionAdded,
-    handleSocketReactionRemoved,
-  } = useSocketEventHandlers({
-    userId: user?.id,
-    setMessages,
-    scrollToBottom,
-    addReactionToMessage,
-    removeReactionFromMessage,
-  });
-
-  // Integrate conversation socket hook for real-time events
-  const { sendTyping: _socketSendTyping } = useConversationSocket({
-    conversationId,
-    userId: user?.id,
-    onNewMessage: handleSocketNewMessage,
-    onMessageUpdated: handleSocketMessageUpdated,
-    onMessageDeleted: handleSocketMessageDeleted,
-    onMessagePinned: handleSocketMessagePinned,
-    onMessageUnpinned: handleSocketMessageUnpinned,
-    onMessageRead: handleSocketMessageRead,
-    onReactionAdded: handleSocketReactionAdded,
-    onReactionRemoved: handleSocketReactionRemoved,
-  });
-
-  // Pinned messages hook - manages pinned message state and navigation
-  const {
-    pinnedMessages,
-    currentPinnedIndex,
-    currentPinnedMessage,
-    setCurrentPinnedIndex,
-    scrollToMessage,
-    navigatePinnedMessages,
-  } = usePinnedMessages({
     messages,
-    flatListRef,
+    setMessages,
+    deletedMessageIdsRef,
+    navigation,
+    colors,
   });
 
-  // Message action wrappers hook - binds selected message to action handlers
-  const {
-    handleReply,
-    cancelReply,
-    handleQuickReaction,
-    openReactionPicker,
-    handleTogglePin,
-    handleUnsend,
-    getReactionState,
-  } = useMessageActionWrappers({
-    selectedMessage,
-    inputRef,
-    setReplyingTo,
-    closeMessageActions,
-    clearReply,
-    hasReacted,
-    handleQuickReactionBase: handleQuickReactionBase,
-    openReactionPickerBase: openReactionPickerBase,
-    handleTogglePinBase,
-    handleUnsendBase,
-  });
+  // Fetch messages on mount
+  useEffect(() => { fetchMessages(); }, [conversationId, fetchMessages]);
 
-  // Wrap presence handleTextChange to also update local inputText
-  const handleTextChange = useCallback(
-    (text: string) => {
-      presenceHandleTextChange(text, setInputText);
-    },
-    [presenceHandleTextChange]
-  );
+  // Fetch conversation when user available
+  useEffect(() => { if (user?.id) fetchConversation(); }, [conversationId, user?.id, fetchConversation]);
 
-  // Track component mount state for async operations
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  // Fetch messages on mount and when conversation changes
-  useEffect(() => {
-    fetchMessages();
-  }, [conversationId, fetchMessages]);
-
-  // Fetch conversation when user is available - separate effect to handle auth loading
-  useEffect(() => {
-    if (user?.id) {
-      fetchConversation();
-    }
-  }, [conversationId, user?.id, fetchConversation]);
-
-  // Update header when online or typing status changes, or conversation loads
+  // Update header when conversation/presence changes
   useEffect(() => {
     if (_conversation) {
       const conv = _conversation;
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId =
-           
-          p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
-        return String(participantUserId) !== String(user?.id);
+        const pid = p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
+        return String(pid) !== String(user?.id);
       });
-
-      // Extract display name with comprehensive fallbacks for nested/flat structures
-      // API returns camelCase: user.displayName, user.avatarUrl
       const displayName =
-        conv.name ||
-        otherParticipant?.nickname ||
-         
+        conv.name || otherParticipant?.nickname ||
         (otherParticipant?.user as Record<string, unknown>)?.displayName ||
         otherParticipant?.user?.display_name ||
-         
         (otherParticipant as Record<string, unknown>)?.displayName ||
         otherParticipant?.display_name ||
-         
         (otherParticipant?.user as Record<string, unknown>)?.username ||
         otherParticipant?.user?.username ||
-         
-        (otherParticipant as Record<string, unknown>)?.username ||
-        'Conversation';
-
-      updateHeader(displayName);
-
-      // Set last seen from participant's user data (if hook callback wasn't used)
+        (otherParticipant as Record<string, unknown>)?.username || 'Conversation';
+      setup.header.updateHeader(displayName);
       if (otherParticipant) {
-         
         const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
-         
-        setOtherParticipantLastSeen(lastSeen as string | null);
+        setup.presence.setOtherParticipantLastSeen(lastSeen as string | null);
       }
     }
   }, [
-    isOtherUserOnline,
-    isOtherUserTyping,
-    otherParticipantLastSeen,
-    _conversation,
-    updateHeader,
-    user?.id,
-    setOtherParticipantLastSeen,
+    setup.presence.isOtherUserOnline, setup.presence.isOtherUserTyping,
+    setup.presence.otherParticipantLastSeen, _conversation,
+    setup.header, user?.id, setup.presence,
   ]);
 
-  // Get message status icon and color - delegates to utility
-  const getMessageStatus = useCallback(
-    (message: Message, isOwn: boolean) => {
-      if (!isOwn) return null;
-      const status =
-        message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-      return getMessageStatusInfo(status, colors);
-    },
-    [colors]
-  );
-
-  // Format time - delegates to utility
-  const formatTime = useCallback(
-    (dateString: string | undefined | null): string => formatSimpleTime(dateString),
-    []
-  );
-
-  // Handle assets selected from AttachmentPicker
-  // IMPORTANT: This must be defined BEFORE any early returns to comply with Rules of Hooks
-  const handleAttachmentPickerSelect = useCallback(
-    (
-      assets: Array<{
-        uri: string;
-        type: 'image' | 'video' | 'file';
-        name?: string;
-        mimeType?: string;
-        duration?: number;
-      }>
-    ) => {
-      if (assets.length === 0) return;
-
-      const newAttachments = assets.map((asset) => ({
-        uri: asset.uri,
-        type: asset.type,
-        name: asset.name,
-        mimeType: asset.mimeType,
-        duration: asset.duration,
-      }));
-
-      setPendingAttachments((prev) => [...prev, ...newAttachments]);
-      openAttachmentPreview();
-    },
-    [openAttachmentPreview]
-  );
-
-  // Render a single message using the extracted MessageBubble component
+  // Render a single message
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
-      // Skip invalid messages (no ID, no sender, no content)
       if (!isValidMessage(item)) {
-        if (__DEV__) {
-          logger.debug('Skipping invalid message:', item.id);
-        }
+        if (__DEV__) logger.debug('Skipping invalid message:', item.id);
         return null;
       }
-
-      // Check ownership and get sender info using utilities
       const isOwn = checkIsOwnMessage(item, user?.id);
       const { displayName, avatarUrl } = getSenderInfo(item);
-      const isNewMessage = newMessageIds.has(item.id);
-
+      const isNewMessage = setup.newMessageIds.has(item.id);
       return (
         <MessageBubble
           item={item}
@@ -564,28 +133,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
           senderAvatarUrl={avatarUrl}
           isNewMessage={isNewMessage}
           colors={colors}
-          formatTime={formatTime}
-          getMessageStatus={getMessageStatus}
-          onLongPress={handleMessageLongPress}
-          onImagePress={handleImagePress}
-          onVideoPress={handleVideoPress}
-          onFilePress={handleFilePress}
-          onReactionTap={handleReactionTap}
+          formatTime={setup.formatTime}
+          getMessageStatus={setup.getMessageStatus}
+          onLongPress={setup.messageActions.handleMessageLongPress}
+          onImagePress={setup.mediaViewer.handleImagePress}
+          onVideoPress={setup.mediaViewer.handleVideoPress}
+          onFilePress={setup.mediaViewer.handleFilePress}
+          onReactionTap={setup.messageReactions.handleReactionTap}
         />
       );
     },
-    [
-      user?.id,
-      colors,
-      formatTime,
-      getMessageStatus,
-      handleMessageLongPress,
-      handleImagePress,
-      handleVideoPress,
-      handleFilePress,
-      handleReactionTap,
-      newMessageIds,
-    ]
+    [user?.id, colors, setup],
   );
 
   if (isLoading) {
@@ -596,136 +154,103 @@ export default function ConversationScreen({ navigation, route }: Props) {
     );
   }
 
-  // Render wrapper for EmptyConversation component
-  const renderEmptyConversation = () => (
-    <EmptyConversation
-      otherUser={otherUser}
-      colors={colors}
-      waveAnim={waveAnim}
-      onSendWave={handleSendWave}
-      onSetInputText={setInputText}
-    />
-  );
-
-  // Render MessageActionsMenu with all props
-  const renderMessageActionsMenu = () => (
-    <MessageActionsMenu
-      visible={showMessageActions}
-      selectedMessage={selectedMessage}
-      isOwnMessage={String(user?.id) === String(selectedMessage?.sender_id)}
-      isDark={isDark}
-      colors={colors}
-      messageActionsAnim={messageActionsAnim}
-      backdropAnim={backdropAnim}
-      menuScaleAnim={menuScaleAnim}
-      actionItemAnims={actionItemAnims}
-      onClose={closeMessageActions}
-      onReply={handleReply}
-      onTogglePin={handleTogglePin}
-      onUnsend={handleUnsend}
-      onQuickReaction={handleQuickReaction}
-      onOpenReactionPicker={openReactionPicker}
-      getReactionState={getReactionState}
-    />
-  );
-
-  // Render ReactionPickerModal with all props
-  const renderReactionPickerModal = () => (
-    <ReactionPickerModal
-      visible={showReactionPicker}
-      message={reactionPickerMessage}
-      selectedCategory={selectedEmojiCategory}
-      isDark={isDark}
-      colors={colors}
-      onClose={closeReactionPicker}
-      onSelectCategory={setSelectedEmojiCategory}
-      onAddReaction={handleAddReaction}
-      onRemoveReaction={handleRemoveReaction}
-    />
-  );
-
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* Attachment Picker */}
-      <AttachmentPicker
-        visible={showAttachMenu}
-        onClose={closeAttachMenu}
-        onSelectAssets={handleAttachmentPickerSelect}
-        maxSelection={10}
-      />
-      {renderMessageActionsMenu()}
-      {renderReactionPickerModal()}
-
-      {/* Attachment Preview Modal */}
-      <AttachmentPreviewModal
-        visible={showAttachmentPreview}
-        attachments={pendingAttachments}
-        caption={attachmentCaption}
-        animValue={attachmentPreviewAnim}
+      <ConversationModals
+        showAttachMenu={setup.attachments.showAttachMenu}
+        closeAttachMenu={setup.attachments.closeAttachMenu}
+        onSelectAssets={setup.handleAttachmentPickerSelect}
+        showMessageActions={setup.messageActions.showMessageActions}
+        selectedMessage={setup.messageActions.selectedMessage}
+        isOwnMessage={String(user?.id) === String(setup.messageActions.selectedMessage?.sender_id)}
+        isDark={isDark}
         colors={colors}
-        onClose={closeAttachmentPreview}
-        onAddMore={addMoreAttachments}
-        onRemove={removeAttachment}
-        onCaptionChange={setAttachmentCaption}
-        onSend={sendPendingAttachments}
+        messageActionsAnim={setup.messageActions.messageActionsAnim}
+        backdropAnim={setup.messageActions.backdropAnim}
+        menuScaleAnim={setup.messageActions.menuScaleAnim}
+        actionItemAnims={setup.messageActions.actionItemAnims}
+        closeMessageActions={setup.messageActions.closeMessageActions}
+        onReply={setup.actionWrappers.handleReply}
+        onTogglePin={setup.actionWrappers.handleTogglePin}
+        onUnsend={setup.actionWrappers.handleUnsend}
+        onQuickReaction={setup.actionWrappers.handleQuickReaction}
+        onOpenReactionPicker={setup.actionWrappers.openReactionPicker}
+        getReactionState={setup.actionWrappers.getReactionState}
+        showReactionPicker={setup.reactions.showReactionPicker}
+        reactionPickerMessage={setup.reactions.reactionPickerMessage}
+        selectedEmojiCategory={setup.reactions.selectedEmojiCategory}
+        closeReactionPicker={setup.reactions.closeReactionPicker}
+        setSelectedEmojiCategory={setup.reactions.setSelectedEmojiCategory}
+        handleAddReaction={setup.messageReactions.handleAddReaction}
+        handleRemoveReaction={setup.messageReactions.handleRemoveReaction}
+        conversationId={conversationId}
+        showAttachmentPreview={setup.attachments.showAttachmentPreview}
+        pendingAttachments={setup.attachments.pendingAttachments}
+        attachmentCaption={setup.attachments.attachmentCaption}
+        attachmentPreviewAnim={setup.attachments.attachmentPreviewAnim}
+        closeAttachmentPreview={setup.attachments.closeAttachmentPreview}
+        addMoreAttachments={setup.attachmentUpload.addMoreAttachments}
+        removeAttachment={setup.attachments.removeAttachment}
+        setAttachmentCaption={setup.attachments.setAttachmentCaption}
+        sendPendingAttachments={setup.sendPendingAttachments}
+        showImageViewer={setup.mediaViewer.showImageViewer}
+        selectedImage={setup.mediaViewer.selectedImage}
+        imageGallery={setup.mediaViewer.imageGallery}
+        currentImageIndex={setup.mediaViewer.currentImageIndex}
+        imageGalleryRef={setup.mediaViewer.imageGalleryRef}
+        imageViewerAnim={setup.mediaViewer.imageViewerAnim}
+        imageScaleAnim={setup.mediaViewer.imageScaleAnim}
+        closeImageViewer={setup.mediaViewer.closeImageViewer}
+        setCurrentImageIndex={setup.mediaViewer.setCurrentImageIndex}
+        setSelectedImage={setup.mediaViewer.setSelectedImage}
+        showVideoPlayer={setup.mediaViewer.showVideoPlayer}
+        selectedVideoUrl={setup.mediaViewer.selectedVideoUrl}
+        selectedVideoDuration={setup.mediaViewer.selectedVideoDuration}
+        closeVideoPlayer={setup.mediaViewer.closeVideoPlayer}
+        showGifPicker={setup.showGifPicker}
+        setShowGifPicker={setup.setShowGifPicker}
+        handleGifSelect={setup.handleGifSelect}
       />
 
-      {/* Full-screen Image Viewer Modal */}
-      <ImageViewerModal
-        visible={showImageViewer}
-        selectedImage={selectedImage}
-        imageGallery={imageGallery}
-        currentIndex={currentImageIndex}
-        galleryRef={imageGalleryRef}
-        animValue={imageViewerAnim}
-        scaleAnim={imageScaleAnim}
-        onClose={closeImageViewer}
-        onIndexChange={setCurrentImageIndex}
-        onImageSelect={setSelectedImage}
-      />
-
-      {/* Full-screen Video Player Modal */}
-      <VideoPlayerModal
-        visible={showVideoPlayer}
-        videoUrl={selectedVideoUrl}
-        duration={selectedVideoDuration}
-        onClose={closeVideoPlayer}
-      />
-
-      {/* Enhanced Pinned Messages Bar */}
-      {currentPinnedMessage && (
+      {setup.pinned.currentPinnedMessage && (
         <PinnedMessagesBar
-          pinnedMessages={pinnedMessages}
-          currentPinnedMessage={currentPinnedMessage}
-          currentPinnedIndex={currentPinnedIndex}
+          pinnedMessages={setup.pinned.pinnedMessages}
+          currentPinnedMessage={setup.pinned.currentPinnedMessage}
+          currentPinnedIndex={setup.pinned.currentPinnedIndex}
           colors={colors}
-          onScrollToMessage={scrollToMessage}
-          onSetCurrentIndex={setCurrentPinnedIndex}
-          onNavigate={navigatePinnedMessages}
+          onScrollToMessage={setup.pinned.scrollToMessage}
+          onSetCurrentIndex={setup.pinned.setCurrentPinnedIndex}
+          onNavigate={setup.pinned.navigatePinnedMessages}
         />
       )}
 
       <FlatList
-        ref={flatListRef}
+        ref={setup.flatListRef}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.messagesList, messages.length === 0 && styles.emptyList]}
         inverted={true}
-        ListEmptyComponent={renderEmptyConversation}
-        // Performance tuning for large message lists (10M+ user scale)
+        ListEmptyComponent={
+          <EmptyConversation
+            otherUser={otherUser}
+            colors={colors}
+            waveAnim={setup.voiceAndWave.waveAnim}
+            onSendWave={setup.voiceAndWave.handleSendWave}
+            onSetInputText={setup.textSending.setInputText}
+          />
+        }
         windowSize={11}
         maxToRenderPerBatch={15}
         initialNumToRender={20}
         updateCellsBatchingPeriod={50}
         removeClippedSubviews={true}
         onScrollToIndexFailed={(info) => {
-          // Handle scroll to index failure by scrolling to approximate offset
-          flatListRef.current?.scrollToOffset({
+          setup.flatListRef.current?.scrollToOffset({
             offset: info.averageItemLength * info.index,
             animated: true,
           });
@@ -740,31 +265,23 @@ export default function ConversationScreen({ navigation, route }: Props) {
         }
       />
 
-      {/* Chat Input Area with Voice Recording */}
       <ChatInputArea
-        inputText={inputText}
-        replyingTo={replyingTo}
-        isVoiceMode={isVoiceMode}
-        isSending={isSending}
-        showAttachMenu={showAttachMenu}
-        attachMenuAnim={attachMenuAnim}
-        inputRef={inputRef}
+        inputText={setup.textSending.inputText}
+        replyingTo={setup.messageActions.replyingTo}
+        isVoiceMode={setup.isVoiceMode}
+        isSending={setup.isSending}
+        showAttachMenu={setup.attachments.showAttachMenu}
+        attachMenuAnim={setup.attachments.attachMenuAnim}
+        inputRef={setup.inputRef}
         colors={colors}
-        onTextChange={handleTextChange}
-        onSendMessage={sendMessage}
-        onToggleAttachMenu={toggleAttachMenu}
-        onStartVoice={() => setIsVoiceMode(true)}
-        onCancelVoice={() => setIsVoiceMode(false)}
-        onVoiceComplete={handleVoiceComplete}
-        onCancelReply={cancelReply}
-        onGifPress={() => setShowGifPicker(true)}
-      />
-
-      {/* GIF Picker Modal */}
-      <GifPickerModal
-        visible={showGifPicker}
-        onClose={() => setShowGifPicker(false)}
-        onSelect={handleGifSelect}
+        onTextChange={setup.handleTextChange}
+        onSendMessage={setup.textSending.sendMessage}
+        onToggleAttachMenu={setup.attachments.toggleAttachMenu}
+        onStartVoice={() => setup.setIsVoiceMode(true)}
+        onCancelVoice={() => setup.setIsVoiceMode(false)}
+        onVoiceComplete={setup.voiceAndWave.handleVoiceComplete}
+        onCancelReply={setup.actionWrappers.cancelReply}
+        onGifPress={() => setup.setShowGifPicker(true)}
       />
     </KeyboardAvoidingView>
   );

@@ -2,6 +2,7 @@
  * Theme-aware chat bubble component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
  
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
@@ -232,7 +233,7 @@ export function ThemedChatBubble({
                     opacity: [0.3, 0.7, 0.3],
                   }}
                   transition={{
-                    duration: 1.5,
+                    duration: durations.ambient.ms / 1000,
                     repeat: Infinity,
                     delay: i * 0.2,
                   }}

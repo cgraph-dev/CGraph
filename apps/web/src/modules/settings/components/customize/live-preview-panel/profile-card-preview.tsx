@@ -2,6 +2,7 @@
  * ProfileCardPreview - Profile card preview with live customization
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
@@ -119,7 +120,7 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
               }
             : undefined
         }
-        transition={{ duration: 3 * speedMultiplier, repeat: Infinity }}
+        transition={{ duration: durations.cinematic.ms / 1000 * speedMultiplier, repeat: Infinity }}
       >
         <ParticleField
           show={showParticles}

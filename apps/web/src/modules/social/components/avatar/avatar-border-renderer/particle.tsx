@@ -2,6 +2,7 @@
  * Particle - Individual particle effect component
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { ParticleProps } from './types';
@@ -154,7 +155,7 @@ export const Particle = memo(function Particle({
           opacity: [1, 0.5, 1],
           scale: [1, 1.2, 1],
           transition: {
-            duration: 0.8 + Math.random() * 0.4,
+            duration: durations.extended.ms / 1000 + Math.random() * 0.4,
             repeat: Infinity,
             delay: index * 0.1,
           },
@@ -165,7 +166,7 @@ export const Particle = memo(function Particle({
           x: [0, Math.sin(index) * 5],
           opacity: [1, 0],
           transition: {
-            duration: 2 + Math.random(),
+            duration: durations.loop.ms / 1000 + Math.random(),
             repeat: Infinity,
             delay: index * 0.2,
           },
@@ -175,7 +176,7 @@ export const Particle = memo(function Particle({
           y: [0, -20],
           opacity: [0.8, 0],
           scale: [0.5, 1.2],
-          transition: { duration: 2, repeat: Infinity, delay: index * 0.3 },
+          transition: { duration: durations.loop.ms / 1000, repeat: Infinity, delay: index * 0.3 },
         };
       case 'sakura':
         return {
@@ -183,13 +184,13 @@ export const Particle = memo(function Particle({
           x: [0, Math.sin(index * 2) * 15],
           rotate: [0, 360],
           opacity: [1, 0],
-          transition: { duration: 3, repeat: Infinity, delay: index * 0.4 },
+          transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, delay: index * 0.4 },
         };
       case 'electric':
         return {
           opacity: [0, 1, 0],
           scaleY: [0.5, 1.5, 0.5],
-          transition: { duration: 0.2, repeat: Infinity, delay: index * 0.05 },
+          transition: { duration: durations.normal.ms / 1000, repeat: Infinity, delay: index * 0.05 },
         };
       default:
         return ANIMATION_KEYFRAMES.orbit(index, total);

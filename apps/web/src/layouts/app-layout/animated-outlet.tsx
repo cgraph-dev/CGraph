@@ -7,6 +7,7 @@
  * @module layouts/app-layout/AnimatedOutlet
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useLocation, useOutlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tweens } from '@/lib/animation-presets';
@@ -18,8 +19,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  enter: { duration: 0.15, ease: tweens.quickFade.ease },
-  exit: { duration: 0.1, ease: 'easeIn' as const },
+  enter: { duration: durations.fast.ms / 1000, ease: tweens.quickFade.ease },
+  exit: { duration: durations.instant.ms / 1000, ease: 'easeIn' as const },
 };
 
 /**

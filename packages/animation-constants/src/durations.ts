@@ -27,8 +27,18 @@ export const durations = {
   slower:   { ms: 500 },
   /** 600 ms — dramatic reveals */
   dramatic: { ms: 600 },
+  /** 800 ms — extended reveals, badge sparkle */
+  extended: { ms: 800 },
   /** 1000 ms — very slow, ambient motion */
   verySlow: { ms: 1000 },
+  /** 1500 ms — long ambient effects, heartbeat */
+  ambient:  { ms: 1500 },
+  /** 2000 ms — looping particle effects, shimmer */
+  loop:     { ms: 2000 },
+  /** 3000 ms — slow rotations, shimmer cycles */
+  cinematic: { ms: 3000 },
+  /** 5000 ms — very long ambient loops (rainbow, galaxy) */
+  epic:     { ms: 5000 },
   /** 50 ms — per-item stagger step */
   stagger:  { ms: 50 },
 } as const satisfies Record<string, DurationPreset>;

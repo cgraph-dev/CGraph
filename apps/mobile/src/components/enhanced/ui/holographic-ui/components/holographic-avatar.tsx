@@ -2,6 +2,7 @@
  * Holographic-themed avatar component with animated glow effects and status indicators.
  * @module components/enhanced/ui/holographic-ui/HolographicAvatar
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
@@ -56,12 +57,12 @@ export function HolographicAvatar({
   // Ring animation
   useEffect(() => {
     ringScale.value = withRepeat(
-      withTiming(1.2, { duration: 2000, easing: Easing.out(Easing.ease) }),
+      withTiming(1.2, { duration: durations.loop.ms, easing: Easing.out(Easing.ease) }),
       -1,
       false
     );
     ringOpacity.value = withRepeat(
-      withTiming(0, { duration: 2000, easing: Easing.out(Easing.ease) }),
+      withTiming(0, { duration: durations.loop.ms, easing: Easing.out(Easing.ease) }),
       -1,
       false
     );
@@ -72,8 +73,8 @@ export function HolographicAvatar({
     if (!status) return;
     statusPulse.value = withRepeat(
       withSequence(
-        withTiming(1.2, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
+        withTiming(1.2, { duration: durations.verySlow.ms }),
+        withTiming(1, { duration: durations.verySlow.ms })
       ),
       -1
     );

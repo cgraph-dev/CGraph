@@ -5,6 +5,7 @@
  * background animations, and utility helper functions.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { type Transition } from 'framer-motion';
 
 import { springs, staggerConfigs } from './presets';
@@ -55,7 +56,7 @@ export const createPulseAnimation = (color: string, intensity: 'subtle' | 'stron
         `0 0 ${values.min}px ${color}${values.opacity[2]}`,
       ],
     },
-    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   };
 };
 
@@ -68,14 +69,14 @@ export const createFireAnimation = (colors: string[]) => ({
     ],
     y: [0, -2, 0],
   },
-  transition: { duration: 0.5, repeat: Infinity, ease: 'easeInOut' as const },
+  transition: { duration: durations.slower.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
 });
 
 export const createElectricAnimation = (color: string) => ({
   animate: {
     boxShadow: [`0 0 5px ${color}`, `0 0 20px ${color}, 0 0 40px ${color}80`, `0 0 5px ${color}`],
   },
-  transition: { duration: 0.1, repeat: Infinity, repeatDelay: 0.5 },
+  transition: { duration: durations.instant.ms / 1000, repeat: Infinity, repeatDelay: 0.5 },
 });
 
 // =============================================================================
@@ -131,7 +132,7 @@ export const particleAnimations = {
 export const backgroundAnimations = {
   gradientShift: {
     animate: { backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] },
-    transition: { duration: 5, repeat: Infinity, ease: 'linear' as const },
+    transition: { duration: durations.epic.ms / 1000, repeat: Infinity, ease: 'linear' as const },
   },
   aurora: (colors: string[]) => ({
     animate: {
@@ -150,7 +151,7 @@ export const backgroundAnimations = {
       opacity: [0.5, 0.8, 0.5],
       scale: [1, 1.02, 1],
     },
-    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   }),
 };
 

@@ -64,8 +64,7 @@ export async function retry<T>(
     try {
       return await fn();
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      lastError = error as Error;
+      lastError = error instanceof Error ? error : new Error(String(error));
       if (attempt < maxRetries - 1) {
         await sleep(baseDelay * Math.pow(2, attempt));
       }
@@ -153,10 +152,8 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   if (typeof a !== typeof b) return false;
 
   if (typeof a === 'object') {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const aKeys = Object.keys(a as object);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const bKeys = Object.keys(b as object);
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
 
     if (aKeys.length !== bKeys.length) return false;
 

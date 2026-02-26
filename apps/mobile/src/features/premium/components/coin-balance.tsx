@@ -4,6 +4,7 @@
  * Displays user's coin balance with animated effects.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -38,7 +39,7 @@ export default function CoinBalance({
     if (balance !== prevBalance.current) {
       // Animate on balance change
       scale.value = withSequence(
-        withTiming(1.2, { duration: 150 }),
+        withTiming(1.2, { duration: durations.fast.ms }),
         withSpring(1)
       );
       

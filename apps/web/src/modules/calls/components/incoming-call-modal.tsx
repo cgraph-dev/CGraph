@@ -8,6 +8,7 @@
  * @since 2026-01-26
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PhoneIcon, VideoCameraIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
@@ -95,7 +96,7 @@ export function IncomingCallModal({ call, onAccept, onDecline }: IncomingCallMod
               ],
             }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               repeat: Infinity,
               ease: 'easeInOut',
             }}

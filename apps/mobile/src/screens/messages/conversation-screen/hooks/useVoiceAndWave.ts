@@ -6,6 +6,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -119,8 +120,8 @@ export function useVoiceAndWave({
 
     // Trigger wave animation
     waveAnim.value = withSequence(
-      withTiming(1, { duration: 200 }),
-      withTiming(0, { duration: 200 })
+      withTiming(1, { duration: durations.normal.ms }),
+      withTiming(0, { duration: durations.normal.ms })
     );
 
     // Send the wave message directly

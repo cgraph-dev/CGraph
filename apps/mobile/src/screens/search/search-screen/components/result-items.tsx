@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import AnimatedAvatar from '../../../../components/ui/animated-avatar';
-import { AnimatedResultItem } from './search-components';
+import { AnimatedResultItem } from './animated-result-item';
 import type { ThemeColors } from '@/stores';
 
 // ============================================================================

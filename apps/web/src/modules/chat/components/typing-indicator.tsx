@@ -5,6 +5,7 @@
  * Shows when other users are typing in a conversation.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
@@ -50,7 +51,7 @@ function TypingIndicatorComponent({
                   opacity: [0.5, 1, 0.5],
                 }}
                 transition={{
-                  duration: 1,
+                  duration: durations.verySlow.ms / 1000,
                   repeat: Infinity,
                   delay: i * 0.2,
                   ease: 'easeInOut',

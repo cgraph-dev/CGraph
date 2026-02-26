@@ -2,6 +2,7 @@
  * Hook managing coin shop state, purchases, and animations.
  * @module screens/premium/coin-shop-screen/hooks/useCoinShop
  */
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withTiming, withDelay, withSpring, type SharedValue } from 'react-native-reanimated';
@@ -52,8 +53,8 @@ export function useCoinShop() {
   }, []);
 
   useEffect(() => {
-    headerAnim.value = withTiming(1, { duration: 500 });
-    balanceScaleAnim.value = withDelay(200, withSpring(1, { damping: 6 }));
+    headerAnim.value = withTiming(1, { duration: durations.slower.ms });
+    balanceScaleAnim.value = withDelay(durations.normal.ms, withSpring(1, { damping: 6 }));
   }, []);
 
   const filteredItems = useMemo(() => {

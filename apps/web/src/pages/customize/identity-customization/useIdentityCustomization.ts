@@ -5,6 +5,7 @@
  * IdentityCustomization page.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useGamificationStore } from '@/modules/gamification/store';
@@ -113,7 +114,7 @@ export function useIdentityCustomization() {
       setPreviewingLockedItem(itemId);
       if (type === 'border') applyBorderToStore(itemId);
       else if (type === 'title') applyTitleToStore(itemId);
-      toast('👁️ Previewing item - Purchase premium to save', { icon: '✨', duration: 3000 });
+      toast('👁️ Previewing item - Purchase premium to save', { icon: '✨', duration: durations.cinematic.ms });
     },
     [applyBorderToStore, applyTitleToStore]
   );
@@ -169,7 +170,7 @@ export function useIdentityCustomization() {
 
   const handleSelectLayout = (layoutId: string, layout: ProfileLayout) => {
     if (!layout.unlocked) {
-      toast('👁️ Previewing layout - Premium required to use', { icon: '✨', duration: 3000 });
+      toast('👁️ Previewing layout - Premium required to use', { icon: '✨', duration: durations.cinematic.ms });
       return;
     }
     updateIdentity('profileLayout', layoutId);

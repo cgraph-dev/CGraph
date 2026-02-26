@@ -15,7 +15,7 @@
 export const shimmerAnimation = {
   backgroundPosition: ['200% 0', '-200% 0'],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
   },
@@ -24,7 +24,7 @@ export const shimmerAnimation = {
 export const glowAnimation = (glowColor: string) => ({
   boxShadow: [`0 0 5px ${glowColor}`, `0 0 15px ${glowColor}`, `0 0 5px ${glowColor}`],
   transition: {
-    duration: 2,
+    duration: durations.loop.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -33,7 +33,7 @@ export const glowAnimation = (glowColor: string) => ({
 export const pulseAnimation = {
   scale: [1, 1.05, 1],
   transition: {
-    duration: 2,
+    duration: durations.loop.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -42,7 +42,7 @@ export const pulseAnimation = {
 export const rainbowAnimation = {
   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
   transition: {
-    duration: 5,
+    duration: durations.epic.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
   },
@@ -51,7 +51,7 @@ export const rainbowAnimation = {
 export const waveAnimation = {
   y: [0, -2, 0, 2, 0],
   transition: {
-    duration: 1.5,
+    duration: durations.ambient.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -61,7 +61,7 @@ export const sparkleAnimation = {
   opacity: [1, 0.6, 1],
   scale: [1, 1.1, 1],
   transition: {
-    duration: 0.8,
+    duration: durations.extended.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -70,7 +70,7 @@ export const sparkleAnimation = {
 export const bounceAnimation = {
   y: [0, -4, 0],
   transition: {
-    duration: 0.6,
+    duration: durations.dramatic.ms / 1000,
     repeat: Infinity,
     ease: 'easeOut' as const,
   },
@@ -79,7 +79,7 @@ export const bounceAnimation = {
 export const floatAnimation = {
   y: [0, -3, 0, 3, 0],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -111,7 +111,7 @@ export const matrixAnimation = {
   ],
   opacity: [1, 0.85, 1],
   transition: {
-    duration: 1.5,
+    duration: durations.ambient.ms / 1000,
     repeat: Infinity,
     ease: 'steps(3)' as const,
   },
@@ -128,7 +128,7 @@ export const plasmaAnimation = {
     '0 0 10px rgba(139, 92, 246, 0.5)',
   ],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
   },
@@ -155,7 +155,7 @@ export const etherealAnimation = {
   filter: ['blur(0px)', 'blur(0.5px)', 'blur(0px)'],
   y: [0, -2, 0],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -189,7 +189,7 @@ export const auroraAnimation = {
     '0 0 10px rgba(34, 211, 238, 0.4)',
   ],
   transition: {
-    duration: 5,
+    duration: durations.epic.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
   },
@@ -223,7 +223,7 @@ export const lightningAnimation = {
   ],
   opacity: [1, 1, 0.9, 1, 1],
   transition: {
-    duration: 0.8,
+    duration: durations.extended.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
     times: [0, 0.1, 0.2, 0.3, 1],
@@ -239,7 +239,7 @@ export const natureAnimation = {
   ],
   scale: [1, 1.03, 1],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -256,7 +256,7 @@ export const glitchAnimation = {
     '0 0 0 transparent',
   ],
   transition: {
-    duration: 0.5,
+    duration: durations.slower.ms / 1000,
     repeat: Infinity,
     repeatDelay: 2,
     ease: 'linear' as const,
@@ -275,7 +275,7 @@ export const neonFlickerAnimation = {
     '0 0 10px rgba(236, 72, 153, 0.8)',
   ],
   transition: {
-    duration: 2,
+    duration: durations.loop.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
     times: [0, 0.1, 0.2, 0.5, 0.8, 1],
@@ -291,7 +291,7 @@ export const infernoAnimation = {
   ],
   y: [0, -1, 0],
   transition: {
-    duration: 1.5,
+    duration: durations.ambient.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -306,7 +306,7 @@ export const blizzardAnimation = {
   ],
   scale: [1, 1.01, 0.99, 1],
   transition: {
-    duration: 2,
+    duration: durations.loop.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -322,7 +322,7 @@ export const stormAnimation = {
   ],
   opacity: [1, 1, 0.95, 1],
   transition: {
-    duration: 1.5,
+    duration: durations.ambient.ms / 1000,
     repeat: Infinity,
     ease: 'linear' as const,
     times: [0, 0.15, 0.2, 1],
@@ -354,7 +354,7 @@ export const shadowAnimation = {
   y: [0, 1, 0],
   opacity: [0.9, 1, 0.9],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },

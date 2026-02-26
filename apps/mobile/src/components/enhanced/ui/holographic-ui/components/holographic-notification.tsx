@@ -2,6 +2,7 @@
  * Holographic-themed notification banner with animated entrance, type-based styling, and auto-dismiss.
  * @module components/enhanced/ui/holographic-ui/HolographicNotification
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { StyleSheet, ViewStyle, Platform, TouchableOpacity } from 'react-native';
 import Animated, {
@@ -82,11 +83,11 @@ export function HolographicNotification({
       );
 
       translateY.value = withSpring(0, { stiffness: 100, damping: 10 });
-      opacity.value = withTiming(1, { duration: 200 });
+      opacity.value = withTiming(1, { duration: durations.normal.ms });
 
       // Glow pulse animation
       glowPulse.value = withRepeat(
-        withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
+        withSequence(withTiming(1, { duration: durations.verySlow.ms }), withTiming(0, { duration: durations.verySlow.ms })),
         -1
       );
 
@@ -106,8 +107,8 @@ export function HolographicNotification({
   }, [visible, autoHide, duration]);
 
   const handleDismiss = () => {
-    translateY.value = withTiming(-100, { duration: 200 });
-    opacity.value = withTiming(0, { duration: 200 }, (finished) => {
+    translateY.value = withTiming(-100, { duration: durations.normal.ms });
+    opacity.value = withTiming(0, { duration: durations.normal.ms }, (finished) => {
       if (finished && onDismiss) {
         runOnJS(onDismiss)();
       }

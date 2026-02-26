@@ -4,6 +4,7 @@
  * Helper functions and constants for password validation.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { PasswordStrength, RequirementConfig } from './types';
 
 /**
@@ -63,7 +64,7 @@ export const containerVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: durations.slower.ms / 1000,
       staggerChildren: 0.1,
     },
   },

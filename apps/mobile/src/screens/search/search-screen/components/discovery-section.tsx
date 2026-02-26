@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
-import { TrendingItem } from './search-components';
+import { TrendingItem } from './trending-item';
 import type { ThemeColors } from '@/stores';
 
 // Trending topics mock data

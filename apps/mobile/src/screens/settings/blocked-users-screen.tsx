@@ -10,6 +10,7 @@
  * @since v0.9.2
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
@@ -90,7 +91,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
       setBlockedUsers(response.data);
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 300,
+        duration: durations.slow.ms,
         useNativeDriver: true,
       }).start();
     } catch {
@@ -132,7 +133,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
   const handleCloseModal = useCallback(() => {
     Animated.timing(modalScaleAnim, {
       toValue: 0,
-      duration: 200,
+      duration: durations.normal.ms,
       useNativeDriver: true,
     }).start(() => {
       setShowConfirmModal(false);

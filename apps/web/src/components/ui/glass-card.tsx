@@ -8,6 +8,7 @@
  * @since v0.7.33
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -187,7 +188,7 @@ export default function GlassCard({
                   : { y: 0, opacity: 0.3 }
               }
               transition={{
-                duration: 2 + Math.random() * 2,
+                duration: durations.loop.ms / 1000 + Math.random() * 2,
                 repeat: isHovered ? Infinity : 0,
                 delay: Math.random() * 2,
               }}

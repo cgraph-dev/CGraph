@@ -2,6 +2,7 @@
  * AnimatedSubmitButton - Animated submit button with glow and shimmer effects
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
@@ -26,8 +27,8 @@ export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitB
       // Subtle pulse when enabled
       glowAnim.value = withRepeat(
         withSequence(
-          withTiming(1, { duration: 1500 }),
-          withTiming(0.5, { duration: 1500 })
+          withTiming(1, { duration: durations.ambient.ms }),
+          withTiming(0.5, { duration: durations.ambient.ms })
         ),
         -1
       );

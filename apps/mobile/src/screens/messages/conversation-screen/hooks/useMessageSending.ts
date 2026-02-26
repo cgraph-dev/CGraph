@@ -7,6 +7,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
@@ -103,7 +104,7 @@ export function useMessageSending({
   // Animated send button press effect
   const animateSendButton = useCallback(() => {
     sendButtonAnim.value = withSequence(
-      withTiming(0.85, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withTiming(0.85, { duration: durations.instant.ms, easing: Easing.out(Easing.quad) }),
       withSpring(1, { stiffness: 200, damping: 10 })
     );
   }, [sendButtonAnim]);
@@ -281,8 +282,8 @@ export function useMessageSending({
     const emoji = WAVE_EMOJIS[Math.floor(Math.random() * WAVE_EMOJIS.length)];
 
     waveAnim.value = withSequence(
-      withTiming(1, { duration: 200 }),
-      withTiming(0, { duration: 200 })
+      withTiming(1, { duration: durations.normal.ms }),
+      withTiming(0, { duration: durations.normal.ms })
     );
 
     try {

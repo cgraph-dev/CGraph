@@ -2,6 +2,7 @@
  * Auth page text animation effects.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion } from './constants';
@@ -51,7 +52,7 @@ export const GlitchText = memo(function GlitchText({ text, className = '' }: Gli
           opacity: [0, 0.9, 0.7, 0.9, 0],
         }}
         transition={{
-          duration: 0.4,
+          duration: durations.smooth.ms / 1000,
           repeat: Infinity,
           repeatDelay: 2.5,
           ease: 'easeInOut',
@@ -68,7 +69,7 @@ export const GlitchText = memo(function GlitchText({ text, className = '' }: Gli
           opacity: [0, 0.9, 0.7, 0.9, 0],
         }}
         transition={{
-          duration: 0.4,
+          duration: durations.smooth.ms / 1000,
           repeat: Infinity,
           repeatDelay: 2.5,
           delay: 0.05,
@@ -86,7 +87,7 @@ export const GlitchText = memo(function GlitchText({ text, className = '' }: Gli
           skewX: [0, 0, -5, 5, 0],
         }}
         transition={{
-          duration: 0.3,
+          duration: durations.slow.ms / 1000,
           repeat: Infinity,
           repeatDelay: 4,
           delay: 1,

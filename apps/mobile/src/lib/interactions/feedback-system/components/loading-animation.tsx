@@ -2,6 +2,7 @@
  * LoadingAnimation - Animated loading indicators
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -26,7 +27,7 @@ function LoadingDot({ index, size, color }: { index: number; size: number; color
     scale.value = withDelay(
       index * 150,
       withRepeat(
-        withSequence(withTiming(1.5, { duration: 300 }), withTiming(1, { duration: 300 })),
+        withSequence(withTiming(1.5, { duration: durations.slow.ms }), withTiming(1, { duration: durations.slow.ms })),
         -1,
         false
       )
@@ -64,7 +65,7 @@ function LoadingBar({
     scaleY.value = withDelay(
       index * 100,
       withRepeat(
-        withSequence(withTiming(1, { duration: 300 }), withTiming(0.4, { duration: 300 })),
+        withSequence(withTiming(1, { duration: durations.slow.ms }), withTiming(0.4, { duration: durations.slow.ms })),
         -1,
         false
       )
@@ -88,12 +89,12 @@ function PulsingCircle({ size, color }: { size: number; color: string }) {
 
   useEffect(() => {
     scale.value = withRepeat(
-      withTiming(1.5, { duration: 1000, easing: Easing.out(Easing.ease) }),
+      withTiming(1.5, { duration: durations.verySlow.ms, easing: Easing.out(Easing.ease) }),
       -1,
       false
     );
     opacity.value = withRepeat(
-      withTiming(0, { duration: 1000, easing: Easing.out(Easing.ease) }),
+      withTiming(0, { duration: durations.verySlow.ms, easing: Easing.out(Easing.ease) }),
       -1,
       false
     );
@@ -148,17 +149,17 @@ export function LoadingAnimation({
 
   useEffect(() => {
     if (visible) {
-      opacity.value = withTiming(1, { duration: 200 });
+      opacity.value = withTiming(1, { duration: durations.normal.ms });
 
       if (variant === 'spinner') {
         rotation.value = withRepeat(
-          withTiming(360, { duration: 1000, easing: Easing.linear }),
+          withTiming(360, { duration: durations.verySlow.ms, easing: Easing.linear }),
           -1,
           false
         );
       }
     } else {
-      opacity.value = withTiming(0, { duration: 200 });
+      opacity.value = withTiming(0, { duration: durations.normal.ms });
       cancelAnimation(rotation);
     }
 

@@ -2,6 +2,7 @@
  * AnimatedInputField - Animated text input with focus effects
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle, interpolate, interpolateColor } from 'react-native-reanimated';
@@ -31,14 +32,14 @@ export function AnimatedInputField({
   const handleFocus = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     focusAnim.value = withSpring(1, { damping: 8, stiffness: 100 });
-    labelAnim.value = withTiming(1, { duration: 200 });
-    glowAnim.value = withTiming(1, { duration: 300 });
+    labelAnim.value = withTiming(1, { duration: durations.normal.ms });
+    glowAnim.value = withTiming(1, { duration: durations.slow.ms });
   };
 
   const handleBlur = () => {
     focusAnim.value = withSpring(0, { damping: 8, stiffness: 100 });
-    labelAnim.value = withTiming(value ? 1 : 0, { duration: 200 });
-    glowAnim.value = withTiming(0, { duration: 300 });
+    labelAnim.value = withTiming(value ? 1 : 0, { duration: durations.normal.ms });
+    glowAnim.value = withTiming(0, { duration: durations.slow.ms });
   };
 
   const labelAnimStyle = useAnimatedStyle(() => ({

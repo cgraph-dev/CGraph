@@ -2,6 +2,7 @@
  * ConnectingState component - shown while call is connecting
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { CALL_STATES, pulseAnimation } from './constants';
@@ -50,7 +51,7 @@ export function ConnectingState({ recipient, callStatus }: ConnectingStateProps)
             initial={{ scale: 0.5, opacity: 0.8 }}
             animate={{ scale: 2, opacity: 0 }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               repeat: Infinity,
               delay: i * 0.6,
             }}

@@ -9,6 +9,7 @@
  * - Milestone celebrations
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
 import { 
   View, 
@@ -60,12 +61,12 @@ export function StreakDisplay({
       Animated.sequence([
         Animated.timing(fireAnim, {
           toValue: 1.2,
-          duration: 500,
+          duration: durations.slower.ms,
           useNativeDriver: true,
         }),
         Animated.timing(fireAnim, {
           toValue: 1,
-          duration: 500,
+          duration: durations.slower.ms,
           useNativeDriver: true,
         }),
       ])
@@ -77,12 +78,12 @@ export function StreakDisplay({
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.05,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
         ])

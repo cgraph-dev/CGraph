@@ -4,6 +4,7 @@
  * Displays a premium badge next to usernames for subscribed users.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -47,7 +48,7 @@ export default function PremiumBadge({ tier, size = 'md', animated = true }: Pre
   React.useEffect(() => {
     if (animated && tier === 'enterprise') {
       rotation.value = withRepeat(
-        withTiming(360, { duration: 3000, easing: Easing.linear }),
+        withTiming(360, { duration: durations.cinematic.ms, easing: Easing.linear }),
         -1,
         false
       );

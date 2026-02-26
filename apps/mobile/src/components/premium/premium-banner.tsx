@@ -8,6 +8,7 @@
  * - Dismissible option
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -53,7 +54,7 @@ export function PremiumBanner({
     Animated.loop(
       Animated.timing(shimmerAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: durations.loop.ms,
         useNativeDriver: true,
       })
     ).start();
@@ -64,12 +65,12 @@ export function PremiumBanner({
         Animated.sequence([
           Animated.timing(floatAnim, {
             toValue: -5,
-            duration: 1500,
+            duration: durations.ambient.ms,
             useNativeDriver: true,
           }),
           Animated.timing(floatAnim, {
             toValue: 0,
-            duration: 1500,
+            duration: durations.ambient.ms,
             useNativeDriver: true,
           }),
         ])

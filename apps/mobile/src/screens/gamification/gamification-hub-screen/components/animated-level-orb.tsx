@@ -9,6 +9,7 @@
  * - Progress ring display
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -73,8 +74,8 @@ function LevelParticle({ data, index }: { data: ParticleData; index: number }) {
         delay,
         withRepeat(
           withSequence(
-            withTiming(0.8, { duration: 500 }),
-            withTiming(0, { duration: 1500 })
+            withTiming(0.8, { duration: durations.slower.ms }),
+            withTiming(0, { duration: durations.ambient.ms })
           ),
           -1,
           false
@@ -83,7 +84,7 @@ function LevelParticle({ data, index }: { data: ParticleData; index: number }) {
       scale.value = withDelay(
         delay,
         withRepeat(
-          withTiming(1, { duration: 1000 }),
+          withTiming(1, { duration: durations.verySlow.ms }),
           -1,
           true
         )
@@ -144,8 +145,8 @@ export function AnimatedLevelOrb({ level, progress }: AnimatedLevelOrbProps) {
     // Pulse animation
     pulseAnim.value = withRepeat(
       withSequence(
-        withTiming(1.08, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+        withTiming(1.08, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
@@ -154,8 +155,8 @@ export function AnimatedLevelOrb({ level, progress }: AnimatedLevelOrbProps) {
     // Glow animation
     glowAnim.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 1500 }),
-        withTiming(0.5, { duration: 1500 })
+        withTiming(1, { duration: durations.ambient.ms }),
+        withTiming(0.5, { duration: durations.ambient.ms })
       ),
       -1,
       false

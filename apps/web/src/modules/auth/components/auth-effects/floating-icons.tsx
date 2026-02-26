@@ -2,6 +2,7 @@
  * Auth page floating icons animation.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion, DEFAULT_COLOR, SECURITY_ICONS } from './constants';
@@ -49,7 +50,7 @@ export const FloatingIcons = memo(function FloatingIcons({
             rotate: [0, 5, 0],
           }}
           transition={{
-            duration: 5 + i,
+            duration: durations.epic.ms / 1000 + i,
             repeat: Infinity,
             ease: 'easeInOut',
             delay: i * 0.5,

@@ -10,6 +10,7 @@
  * - Customizable threshold and resistance
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useCallback, useState, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle, StyleProp, ScrollView, ScrollViewProps } from 'react-native';
 import Animated, {
@@ -119,8 +120,8 @@ export function PullToRefresh({
   const handleRefreshComplete = useCallback(() => {
     setIsRefreshing(false);
     pullDistance.value = withSpring(0, springCfg);
-    refreshProgress.value = withTiming(0, { duration: 200 });
-    indicatorOpacity.value = withTiming(0, { duration: 200 });
+    refreshProgress.value = withTiming(0, { duration: durations.normal.ms });
+    indicatorOpacity.value = withTiming(0, { duration: durations.normal.ms });
   }, [springCfg]);
 
   // Handle refresh trigger
@@ -176,8 +177,8 @@ export function PullToRefresh({
       } else {
         // Snap back
         pullDistance.value = withSpring(0, springCfg);
-        refreshProgress.value = withTiming(0, { duration: 200 });
-        indicatorOpacity.value = withTiming(0, { duration: 200 });
+        refreshProgress.value = withTiming(0, { duration: durations.normal.ms });
+        indicatorOpacity.value = withTiming(0, { duration: durations.normal.ms });
       }
     },
   });
@@ -274,7 +275,7 @@ function SpinnerIndicator({ progress, isRefreshing, color, size }: IndicatorProp
   React.useEffect(() => {
     if (isRefreshing) {
       rotation.value = withRepeat(
-        withTiming(360, { duration: 1000, easing: Easing.linear }),
+        withTiming(360, { duration: durations.verySlow.ms, easing: Easing.linear }),
         -1,
         false
       );
@@ -343,7 +344,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
   React.useEffect(() => {
     if (isRefreshing) {
       scale.value = withRepeat(
-        withTiming(1.5, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.5, { duration: durations.smooth.ms, easing: Easing.inOut(Easing.ease) }),
         -1,
         true
       );
@@ -395,7 +396,7 @@ function ArrowsIndicator({ progress, isRefreshing, color, size }: IndicatorProps
   React.useEffect(() => {
     if (isRefreshing) {
       rotation.value = withRepeat(
-        withTiming(360, { duration: 800, easing: Easing.linear }),
+        withTiming(360, { duration: durations.extended.ms, easing: Easing.linear }),
         -1,
         false
       );

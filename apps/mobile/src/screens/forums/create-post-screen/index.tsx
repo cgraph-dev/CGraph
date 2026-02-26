@@ -17,6 +17,7 @@
  * @since v0.9.0
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle } from 'react-native-reanimated';
@@ -76,7 +77,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
       headerTintColor: '#FFF',
     });
 
-    fadeAnim.value = withTiming(1, { duration: 400 });
+    fadeAnim.value = withTiming(1, { duration: durations.smooth.ms });
     slideAnim.value = withSpring(0, { damping: 8, stiffness: 50 });
   }, []);
 

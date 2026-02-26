@@ -2,6 +2,7 @@
  * useSwipeableNotification - Animation and gesture logic for notification items
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useEffect } from 'react';
 import { Dimensions, PanResponder, PanResponderInstance } from 'react-native';
 import {
@@ -83,14 +84,14 @@ export function useSwipeableNotification({
   useEffect(() => {
     const delay = index * 60;
 
-    entryAnim.value = withDelay(delay, withTiming(1, { duration: 500, easing: Easing.out(Easing.back(1.5)) }));
-    opacity.value = withDelay(delay, withTiming(1, { duration: 400 }));
+    entryAnim.value = withDelay(delay, withTiming(1, { duration: durations.slower.ms, easing: Easing.out(Easing.back(1.5)) }));
+    opacity.value = withDelay(delay, withTiming(1, { duration: durations.smooth.ms }));
 
     if (!isRead) {
       pulseAnim.value = withRepeat(
         withSequence(
-          withTiming(1.2, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-          withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+          withTiming(1.2, { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.ease) })
         ),
         -1,
         false
@@ -127,7 +128,7 @@ export function useSwipeableNotification({
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dx < -SWIPE_THRESHOLD) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        swipeX.value = withTiming(-SCREEN_WIDTH, { duration: 200 }, (finished) => {
+        swipeX.value = withTiming(-SCREEN_WIDTH, { duration: durations.normal.ms }, (finished) => {
           if (finished) runOnJS(onDelete)();
         });
       } else if (gestureState.dx > SWIPE_THRESHOLD && !isRead) {
@@ -138,21 +139,21 @@ export function useSwipeableNotification({
         swipeX.value = withSpring(0, { stiffness: 100, damping: 10 });
       }
 
-      deleteOpacity.value = withTiming(0, { duration: 200 });
-      readOpacity.value = withTiming(0, { duration: 200 });
-      actionScale.value = withTiming(0.5, { duration: 200 });
+      deleteOpacity.value = withTiming(0, { duration: durations.normal.ms });
+      readOpacity.value = withTiming(0, { duration: durations.normal.ms });
+      actionScale.value = withTiming(0.5, { duration: durations.normal.ms });
     },
   });
 
   // Press handlers
   const handlePressIn = () => {
     pressScale.value = withSpring(0.98);
-    glowOpacity.value = withTiming(0.3, { duration: 150 });
+    glowOpacity.value = withTiming(0.3, { duration: durations.fast.ms });
   };
 
   const handlePressOut = () => {
     pressScale.value = withSpring(1);
-    glowOpacity.value = withTiming(0, { duration: 150 });
+    glowOpacity.value = withTiming(0, { duration: durations.fast.ms });
   };
 
   // Computed interpolations

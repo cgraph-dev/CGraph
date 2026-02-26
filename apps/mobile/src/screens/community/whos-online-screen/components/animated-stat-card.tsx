@@ -1,3 +1,4 @@
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
@@ -53,7 +54,7 @@ export function AnimatedStatCard({ label, value, icon, color, index }: AnimatedS
     // Count up animation
     countAnim.value = withDelay(
       delay + 200,
-      withTiming(value, { duration: 1500, easing: Easing.out(Easing.cubic) })
+      withTiming(value, { duration: durations.ambient.ms, easing: Easing.out(Easing.cubic) })
     );
 
     // Icon bounce

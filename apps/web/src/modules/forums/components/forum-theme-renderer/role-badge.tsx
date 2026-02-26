@@ -3,6 +3,7 @@
  * @module modules/forums/components/forum-theme-renderer
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -50,12 +51,12 @@ export const RoleBadge = memo(function RoleBadge({ role, size = 'md', className 
       case 'pulse':
         return {
           animate: { scale: [1, 1.05, 1], opacity: [1, 0.9, 1] },
-          transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+          transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
         };
       case 'shimmer':
         return {
           animate: { backgroundPosition: ['200% 0', '-200% 0'] },
-          transition: { duration: 3, repeat: Infinity, ease: 'linear' },
+          transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'linear' },
         };
       case 'rainbow':
         return {

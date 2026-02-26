@@ -9,6 +9,7 @@
  * - Haptic feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -82,14 +83,14 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
     Animated.parallel([
       Animated.timing(entryAnim, {
         toValue: 1,
-        duration: 500,
+        duration: durations.slower.ms,
         delay,
         easing: Easing.out(Easing.back(1.5)),
         useNativeDriver: true,
       }),
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         delay,
         useNativeDriver: true,
       }),
@@ -130,7 +131,7 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
           }),
           Animated.timing(glowOpacity, {
             toValue: 0.5,
-            duration: 150,
+            duration: durations.fast.ms,
             useNativeDriver: true,
           }),
         ]).start();
@@ -159,7 +160,7 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
           }),
           Animated.timing(glowOpacity, {
             toValue: 0,
-            duration: 300,
+            duration: durations.slow.ms,
             useNativeDriver: true,
           }),
         ]).start();

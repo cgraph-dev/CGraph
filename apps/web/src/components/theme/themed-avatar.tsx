@@ -2,6 +2,7 @@
  * Theme-aware avatar component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
  
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
@@ -197,7 +198,7 @@ export function ThemedAvatar({
       transition={
         hasAnimation
           ? {
-              duration: 2 * speedMultiplier,
+              duration: durations.loop.ms / 1000 * speedMultiplier,
               repeat: Infinity,
               ease: 'easeInOut',
             }

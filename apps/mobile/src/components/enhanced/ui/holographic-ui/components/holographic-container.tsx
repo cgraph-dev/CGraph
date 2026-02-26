@@ -2,6 +2,7 @@
  * Holographic-themed container component with animated borders, scanlines, and corner decorations.
  * @module components/enhanced/ui/holographic-ui/HolographicContainer
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { ReactNode, useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, ViewStyle, Platform, Pressable } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
@@ -48,8 +49,8 @@ export function HolographicContainer({
   useEffect(() => {
     glowPulse.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.sin) })
+        withTiming(1, { duration: durations.loop.ms, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: durations.loop.ms, easing: Easing.inOut(Easing.sin) })
       ),
       -1
     );

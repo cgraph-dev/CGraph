@@ -2,6 +2,7 @@
  * Screen displaying currently online community members.
  * @module screens/community/whos-online-screen
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
@@ -132,7 +133,7 @@ export default function WhosOnlineScreen() {
       }),
       Animated.timing(headerOpacity, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         useNativeDriver: true,
       }),
     ]).start();

@@ -3,6 +3,7 @@
  * @module components/ui/animated-avatar
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -81,7 +82,7 @@ export default function AnimatedAvatar({
                 y: [0, -20 - Math.random() * 20],
               }}
               transition={{
-                duration: 2,
+                duration: durations.loop.ms / 1000,
                 repeat: Infinity,
                 delay: particle.delay,
                 ease: 'easeOut',
@@ -177,7 +178,7 @@ export default function AnimatedAvatar({
               scale: springs.superBouncy,
               boxShadow: statusType === 'online'
                 ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
-                : { duration: 0.2 },
+                : { duration: durations.normal.ms / 1000 },
             }}
           />
         </AnimatePresence>

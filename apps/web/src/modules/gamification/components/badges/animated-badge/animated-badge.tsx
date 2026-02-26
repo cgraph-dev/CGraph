@@ -13,6 +13,7 @@
  * - Mythic: Reality-bending void distortion
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { AnimatedBadgeProps } from './types';
@@ -86,7 +87,7 @@ export function AnimatedBadge({
             : undefined
         }
         transition={{
-          duration: 2,
+          duration: durations.loop.ms / 1000,
           repeat: Infinity,
           ease: 'easeInOut',
         }}

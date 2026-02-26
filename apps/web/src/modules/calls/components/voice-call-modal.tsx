@@ -2,6 +2,7 @@
  * Voice call modal dialog component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -147,7 +148,7 @@ export function VoiceCallModal({
                   scale: callState.status === 'ringing' ? [1, 1.1, 1] : 1,
                 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.loop.ms / 1000,
                   repeat: callState.status === 'ringing' ? Infinity : 0,
                 }}
                 className="h-32 w-32 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600"
@@ -174,7 +175,7 @@ export function VoiceCallModal({
                     opacity: [0.5, 0, 0.5],
                   }}
                   transition={{
-                    duration: 2,
+                    duration: durations.loop.ms / 1000,
                     repeat: Infinity,
                   }}
                 />

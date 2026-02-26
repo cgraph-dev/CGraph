@@ -2,6 +2,7 @@
  * SuccessAnimation - Animated success feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -44,14 +45,14 @@ export function SuccessAnimation({
       ringScale.value = 0;
 
       // Animate
-      opacity.value = withTiming(1, { duration: 200 });
+      opacity.value = withTiming(1, { duration: durations.normal.ms });
       scale.value = withSpring(1, SPRING_PRESETS.bouncy);
       ringScale.value = withSpring(1, { ...SPRING_PRESETS.bouncy, damping: 8 });
 
       // Checkmark animation
       checkProgress.value = withDelay(
         200,
-        withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }, () => {
+        withTiming(1, { duration: durations.smooth.ms, easing: Easing.out(Easing.cubic) }, () => {
           if (onComplete) {
             runOnJS(onComplete)();
           }
@@ -61,8 +62,8 @@ export function SuccessAnimation({
       // Haptic
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
-      opacity.value = withTiming(0, { duration: 200 });
-      scale.value = withTiming(0, { duration: 200 });
+      opacity.value = withTiming(0, { duration: durations.normal.ms });
+      scale.value = withTiming(0, { duration: durations.normal.ms });
     }
   }, [visible, onComplete, scale, opacity, checkProgress, ringScale]);
 

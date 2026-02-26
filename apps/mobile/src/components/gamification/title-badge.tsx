@@ -3,6 +3,7 @@
  * 7 rarity levels with 8 unique animation types
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -60,12 +61,12 @@ export default function TitleBadge({
         Animated.sequence([
           Animated.timing(shimmerAnim, {
             toValue: 1,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
           Animated.timing(shimmerAnim, {
             toValue: 0,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
         ])
@@ -78,12 +79,12 @@ export default function TitleBadge({
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.05,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             useNativeDriver: true,
           }),
         ])
@@ -116,12 +117,12 @@ export default function TitleBadge({
         Animated.sequence([
           Animated.timing(floatAnim, {
             toValue: -6,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
           Animated.timing(floatAnim, {
             toValue: 0,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
         ])
@@ -134,12 +135,12 @@ export default function TitleBadge({
         Animated.sequence([
           Animated.timing(sparkleAnim, {
             toValue: 1,
-            duration: 800,
+            duration: durations.extended.ms,
             useNativeDriver: true,
           }),
           Animated.timing(sparkleAnim, {
             toValue: 0,
-            duration: 800,
+            duration: durations.extended.ms,
             useNativeDriver: true,
           }),
         ])

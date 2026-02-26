@@ -12,6 +12,7 @@
  * </BlurViewCross>
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useMemo } from 'react';
 import { View, StyleSheet, ViewStyle, StyleProp, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -116,7 +117,7 @@ function ShimmerOverlay({ borderRadius = 0 }: ShimmerOverlayProps) {
 
   React.useEffect(() => {
     translateX.value = withRepeat(
-      withSequence(withTiming(300, { duration: 2000 }), withTiming(-300, { duration: 0 })),
+      withSequence(withTiming(300, { duration: durations.loop.ms }), withTiming(-300, { duration: 0 })),
       -1,
       false
     );

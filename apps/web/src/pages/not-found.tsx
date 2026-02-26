@@ -1,4 +1,5 @@
 /** NotFound — 404 page with animated illustration and navigation links. */
+import { durations } from '@cgraph/animation-constants';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +30,7 @@ export default function NotFound() {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 3,
+            duration: durations.epic.ms / 1000 + Math.random() * 3,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

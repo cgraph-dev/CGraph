@@ -14,7 +14,7 @@ import Modal from '../modal';
 
 // Mock ThemeContext
 jest.mock('@/stores', () => ({
-  useTheme: () => ({
+  useThemeStore: () => ({
     colorScheme: 'light',
     themePreference: 'system',
     setThemePreference: jest.fn(),

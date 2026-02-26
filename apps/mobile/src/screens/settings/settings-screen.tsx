@@ -2,6 +2,7 @@
  * Main settings screen with navigation to all settings sub-screens.
  * @module screens/settings/settings-screen
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -56,7 +57,7 @@ export default function SettingsScreen({ navigation }: Props) {
       }),
       Animated.timing(profileOpacity, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         useNativeDriver: true,
       }),
     ]).start();
@@ -66,7 +67,7 @@ export default function SettingsScreen({ navigation }: Props) {
       Animated.parallel([
         Animated.timing(sectionsOpacity, {
           toValue: 1,
-          duration: 400,
+          duration: durations.smooth.ms,
           useNativeDriver: true,
         }),
         Animated.spring(sectionsTranslateY, {

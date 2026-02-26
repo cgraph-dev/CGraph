@@ -3,6 +3,7 @@
  * Swipe to reply, long-press for context menu, haptic feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useState } from 'react';
 import {
   View,
@@ -143,7 +144,7 @@ export default function SwipeableMessage({
           }),
           Animated.timing(replyIconOpacity, {
             toValue: 0,
-            duration: 200,
+            duration: durations.normal.ms,
             useNativeDriver: true,
           }),
         ]).start();

@@ -9,6 +9,7 @@
  * - Gradient pedestals with stats
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -119,13 +120,13 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
       Animated.sequence([
         Animated.timing(crownBounce, {
           toValue: 1.2,
-          duration: 1000,
+          duration: durations.verySlow.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(crownBounce, {
           toValue: 1,
-          duration: 1000,
+          duration: durations.verySlow.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
@@ -147,33 +148,33 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
         Animated.parallel([
           Animated.timing(particle.y, {
             toValue: -50 - Math.random() * 20,
-            duration: 2000,
+            duration: durations.loop.ms,
             delay,
             easing: Easing.out(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(particle.x, {
             toValue: Math.cos(angle) * radius,
-            duration: 2000,
+            duration: durations.loop.ms,
             delay,
             useNativeDriver: true,
           }),
           Animated.sequence([
             Animated.timing(particle.opacity, {
               toValue: 0.8,
-              duration: 500,
+              duration: durations.slower.ms,
               delay,
               useNativeDriver: true,
             }),
             Animated.timing(particle.opacity, {
               toValue: 0,
-              duration: 1500,
+              duration: durations.ambient.ms,
               useNativeDriver: true,
             }),
           ]),
           Animated.timing(particle.scale, {
             toValue: 1,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             delay,
             useNativeDriver: true,
           }),

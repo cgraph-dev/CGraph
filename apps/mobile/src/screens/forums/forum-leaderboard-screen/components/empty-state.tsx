@@ -7,6 +7,7 @@
  * - Trophy icon with gradient background
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
@@ -32,8 +33,8 @@ export function EmptyState() {
     // Float animation - moves up and down
     floatAnim.value = withRepeat(
       withSequence(
-        withTiming(-10, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        withTiming(-10, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) })
       ),
       -1
     );
@@ -41,8 +42,8 @@ export function EmptyState() {
     // Pulse animation - scales up and down
     pulseAnim.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
+        withTiming(1.1, { duration: durations.verySlow.ms }),
+        withTiming(1, { duration: durations.verySlow.ms })
       ),
       -1
     );

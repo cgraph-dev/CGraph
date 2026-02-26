@@ -11,6 +11,7 @@
  * - Haptic feedback on item change
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import {
   StyleSheet,
@@ -448,8 +449,8 @@ function PaginationDot({ index, position }: PaginationDotProps) {
     const isActive = Math.abs(position.value - index) < 0.5;
 
     return {
-      width: withTiming(isActive ? 24 : 8, { duration: 200 }),
-      backgroundColor: withTiming(isActive ? '#10b981' : '#4b5563', { duration: 200 }),
+      width: withTiming(isActive ? 24 : 8, { duration: durations.normal.ms }),
+      backgroundColor: withTiming(isActive ? '#10b981' : '#4b5563', { duration: durations.normal.ms }),
     };
   });
 

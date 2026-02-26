@@ -13,6 +13,7 @@
  * - components/LoadingState: Loading indicator
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, StatusBar } from 'react-native';
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
@@ -72,7 +73,7 @@ export default function NotificationsInboxScreen() {
       setIsLoading(false);
 
       // Animate header in
-      headerOpacity.value = withTiming(1, { duration: 400 });
+      headerOpacity.value = withTiming(1, { duration: durations.smooth.ms });
       headerTranslateY.value = withSpring(0, { stiffness: 80, damping: 10 });
     };
 

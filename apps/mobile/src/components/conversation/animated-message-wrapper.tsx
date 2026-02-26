@@ -8,6 +8,7 @@
  * @since v0.7.29
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo, useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -60,7 +61,7 @@ export const AnimatedMessageWrapper = memo(function AnimatedMessageWrapper({
   useEffect(() => {
     if (isNew) {
       slideAnim.value = withSpring(0, { stiffness: 100, damping: 12 });
-      fadeAnim.value = withTiming(1, { duration: 200 });
+      fadeAnim.value = withTiming(1, { duration: durations.normal.ms });
       scaleAnim.value = withSpring(1, { stiffness: 120, damping: 8 });
     }
   }, [isNew, slideAnim, fadeAnim, scaleAnim]);

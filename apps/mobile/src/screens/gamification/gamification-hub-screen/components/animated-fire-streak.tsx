@@ -7,6 +7,7 @@
  * - Haptic feedback on interactions
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Animated, {
@@ -55,8 +56,8 @@ function FlameEmoji({ index }: { index: number }) {
       delay,
       withRepeat(
         withSequence(
-          withTiming(1, { duration: 400 }),
-          withTiming(0.7, { duration: 400 })
+          withTiming(1, { duration: durations.smooth.ms }),
+          withTiming(0.7, { duration: durations.smooth.ms })
         ),
         -1,
         false
@@ -66,8 +67,8 @@ function FlameEmoji({ index }: { index: number }) {
       delay,
       withRepeat(
         withSequence(
-          withTiming(-5 - index * 2, { duration: 400 }),
-          withTiming(0, { duration: 400 })
+          withTiming(-5 - index * 2, { duration: durations.smooth.ms }),
+          withTiming(0, { duration: durations.smooth.ms })
         ),
         -1,
         false
@@ -105,8 +106,8 @@ export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireSt
     if (canClaim) {
       claimPulse.value = withRepeat(
         withSequence(
-          withTiming(1.1, { duration: 800 }),
-          withTiming(1, { duration: 800 })
+          withTiming(1.1, { duration: durations.extended.ms }),
+          withTiming(1, { duration: durations.extended.ms })
         ),
         -1,
         false
@@ -114,7 +115,7 @@ export function AnimatedFireStreak({ streak, canClaim, onClaim }: AnimatedFireSt
 
       // Shimmer animation
       shimmerAnim.value = withRepeat(
-        withTiming(1, { duration: 2000 }),
+        withTiming(1, { duration: durations.loop.ms }),
         -1,
         false
       );

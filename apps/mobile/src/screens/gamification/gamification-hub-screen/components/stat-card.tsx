@@ -8,6 +8,7 @@
  * - Glow effect on interaction
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Animated, {
@@ -45,20 +46,20 @@ export function StatCard({ icon, label, value, color, onPress, index = 0 }: Stat
   useEffect(() => {
     // Entrance animation
     scaleAnim.value = withDelay(index * 100, withSpring(1, { stiffness: 80, damping: 8 }));
-    opacityAnim.value = withDelay(index * 100, withTiming(1, { duration: 400 }));
+    opacityAnim.value = withDelay(index * 100, withTiming(1, { duration: durations.smooth.ms }));
   }, [index]);
 
   const handlePressIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     scaleAnim.value = withSpring(0.95);
-    iconRotate.value = withTiming(1, { duration: 200 });
-    glowAnim.value = withTiming(1, { duration: 200 });
+    iconRotate.value = withTiming(1, { duration: durations.normal.ms });
+    glowAnim.value = withTiming(1, { duration: durations.normal.ms });
   };
 
   const handlePressOut = () => {
     scaleAnim.value = withSpring(1);
-    iconRotate.value = withTiming(0, { duration: 200 });
-    glowAnim.value = withTiming(0, { duration: 200 });
+    iconRotate.value = withTiming(0, { duration: durations.normal.ms });
+    glowAnim.value = withTiming(0, { duration: durations.normal.ms });
   };
 
   const wrapperStyle = useAnimatedStyle(() => ({

@@ -2,6 +2,7 @@
  * ChatEffectsProvider - Context provider for chat effects settings
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, createContext, use, useMemo } from 'react';
 import { useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
@@ -34,7 +35,7 @@ export const ChatEffectsProvider = memo(function ChatEffectsProvider({
     (): ChatEffectsContextValue => ({
       effect: effectOverride ?? settings.effect ?? 'none',
       config: configOverride ??
-        settings.config ?? { effect: 'none', intensity: 'medium', duration: 1000 },
+        settings.config ?? { effect: 'none', intensity: 'medium', duration: durations.verySlow.ms },
       enabled: settings.enabled ?? false,
     }),
     [effectOverride, configOverride, settings]

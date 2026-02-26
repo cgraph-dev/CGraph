@@ -3,6 +3,7 @@
  * @module modules/gamification/components/events/event-banner/banner
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { getEventEmoji } from './utils';
@@ -200,7 +201,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
             rotate: [0, 5, -5, 0],
           }}
           transition={{
-            duration: 3,
+            duration: durations.cinematic.ms / 1000,
             repeat: Infinity,
             ease: 'easeInOut',
           }}
@@ -261,7 +262,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         initial={{ x: '-100%' }}
         animate={{ x: '100%' }}
         transition={{
-          duration: 2,
+          duration: durations.loop.ms / 1000,
           repeat: Infinity,
           repeatDelay: 3,
           ease: 'easeInOut',

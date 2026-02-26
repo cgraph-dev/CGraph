@@ -2,6 +2,7 @@
  * Holographic-themed text component with animated shimmer and glow effects.
  * @module components/enhanced/ui/holographic-ui/HolographicText
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { ReactNode, useEffect } from 'react';
 import { TextStyle } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';
@@ -35,8 +36,8 @@ export function HolographicText({
 
     glowAnim.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.sin) })
+        withTiming(1, { duration: durations.loop.ms, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: durations.loop.ms, easing: Easing.inOut(Easing.sin) })
       ),
       -1
     );

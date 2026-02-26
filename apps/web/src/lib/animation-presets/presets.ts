@@ -67,46 +67,46 @@ export const springs = {
 
 export const tweens = {
   /** 0.1s — near-instant snap */
-  instant: { duration: 0.1, ease: 'easeOut' },
+  instant: { duration: sharedDurations.instant.ms / 1000, ease: 'easeOut' },
   /** 0.15s — quick feedback (toggle, button) */
-  quickFade: { duration: 0.15, ease: 'easeOut' },
+  quickFade: { duration: sharedDurations.fast.ms / 1000, ease: 'easeOut' },
   /** 0.2s — fast UI response */
-  fast: { duration: 0.2, ease: 'easeOut' },
+  fast: { duration: sharedDurations.normal.ms / 1000, ease: 'easeOut' },
   /** 0.25s — brisk transition */
   brisk: { duration: 0.25, ease: 'easeOut' },
   /** 0.3s — standard UI transition */
-  standard: { duration: 0.3, ease: 'easeInOut' },
+  standard: { duration: sharedDurations.slow.ms / 1000, ease: 'easeInOut' },
   /** 0.4s — deliberate panel/modal transition */
-  moderate: { duration: 0.4, ease: 'easeInOut' },
+  moderate: { duration: sharedDurations.smooth.ms / 1000, ease: 'easeInOut' },
   /** 0.5s — smooth, attention-getting */
-  smooth: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+  smooth: { duration: sharedDurations.slower.ms / 1000, ease: [0.4, 0, 0.2, 1] },
   /** 0.6s — emphatic reveal */
-  emphatic: { duration: 0.6, ease: 'easeOut' },
+  emphatic: { duration: sharedDurations.dramatic.ms / 1000, ease: 'easeOut' },
   /** 0.8s — dramatic entrance */
-  dramatic: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+  dramatic: { duration: sharedDurations.extended.ms / 1000, ease: [0.16, 1, 0.3, 1] },
   /** 1s — slow reveal, loading loops */
-  slow: { duration: 1, ease: 'easeInOut' },
+  slow: { duration: sharedDurations.verySlow.ms / 1000, ease: 'easeInOut' },
   /** 1.5s — extended ambient motion */
-  verySlow: { duration: 1.5, ease: 'easeInOut' },
+  verySlow: { duration: sharedDurations.ambient.ms / 1000, ease: 'easeInOut' },
   /** 2s — ambient glow/pulse loop */
-  ambient: { duration: 2, ease: 'linear' },
+  ambient: { duration: sharedDurations.loop.ms / 1000, ease: 'linear' },
   /** 2.5s — slow ambient cycle */
   ambientSlow: { duration: 2.5, ease: 'linear' },
   /** 3s — background decoration loop */
-  decorative: { duration: 3, ease: 'linear' },
+  decorative: { duration: sharedDurations.cinematic.ms / 1000, ease: 'linear' },
   /** 4s — very slow ambient background */
   glacial: { duration: 4, ease: 'easeInOut' },
 } satisfies Record<string, Transition>;
 
 /**
  * Create a looping transition from a tween preset.
- * Usage: `transition={loop(tweens.ambient)}` instead of `transition={{ duration: 2, repeat: Infinity }}`
+ * Usage: `transition={loop(tweens.ambient)}` instead of `transition={{ duration: sharedDurations.loop.ms / 1000, repeat: Infinity }}`
  */
 export const loop = (base: Transition): Transition => ({ ...base, repeat: Infinity });
 
 /**
  * Create a looping transition with a pause between cycles.
- * Usage: `transition={loopWithDelay(tweens.slow, 1)}` instead of `transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}`
+ * Usage: `transition={loopWithDelay(tweens.slow, 1)}` instead of `transition={{ duration: sharedDurations.verySlow.ms / 1000, repeat: Infinity, repeatDelay: 1 }}`
  */
 export const loopWithDelay = (base: Transition, repeatDelay: number): Transition => ({
   ...base,
@@ -172,7 +172,7 @@ export const entranceVariants: Record<string, Variants> = {
       opacity: 1,
       filter: 'blur(0px)',
       transition: {
-        duration: 0.5,
+        duration: sharedDurations.slower.ms / 1000,
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },

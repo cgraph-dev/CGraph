@@ -4,6 +4,7 @@
  * Uses Reanimated v4 per ADR-018.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
@@ -108,14 +109,14 @@ export default function LevelUpModal({
 
     // Badge entrance: spring scale + 360° rotation + fade
     badgeScale.value = withSpring(1, SPRING_PRESETS.bouncy);
-    badgeRotate.value = withTiming(360, { duration: 800, easing: Easing.out(Easing.cubic) });
-    contentOpacity.value = withTiming(1, { duration: 500 });
+    badgeRotate.value = withTiming(360, { duration: durations.extended.ms, easing: Easing.out(Easing.cubic) });
+    contentOpacity.value = withTiming(1, { duration: durations.slower.ms });
 
     // Looping glow pulse
     glowOpacity.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 1000 }),
-        withTiming(0.3, { duration: 1000 }),
+        withTiming(1, { duration: durations.verySlow.ms }),
+        withTiming(0.3, { duration: durations.verySlow.ms }),
       ),
       -1, // infinite
       true,

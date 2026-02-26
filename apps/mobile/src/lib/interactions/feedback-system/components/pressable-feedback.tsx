@@ -2,6 +2,7 @@
  * PressableFeedback - Press state animations
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useCallback } from 'react';
 import { StyleSheet, GestureResponderEvent, Pressable } from 'react-native';
 import Animated, {
@@ -50,10 +51,10 @@ export function PressableFeedback({
         scale.value = withSpring(scaleAmount, springConfig);
       }
       if (pressStyles.includes('opacity')) {
-        opacity.value = withTiming(opacityAmount, { duration: 100 });
+        opacity.value = withTiming(opacityAmount, { duration: durations.instant.ms });
       }
       if (pressStyles.includes('glow')) {
-        glowOpacity.value = withTiming(0.5, { duration: 150 });
+        glowOpacity.value = withTiming(0.5, { duration: durations.fast.ms });
       }
       if (pressStyles.includes('shadow')) {
         shadowRadius.value = withSpring(12, springConfig);
@@ -82,8 +83,8 @@ export function PressableFeedback({
   const handlePressOut = useCallback(
     (e: GestureResponderEvent) => {
       scale.value = withSpring(1, springConfig);
-      opacity.value = withTiming(1, { duration: 100 });
-      glowOpacity.value = withTiming(0, { duration: 200 });
+      opacity.value = withTiming(1, { duration: durations.instant.ms });
+      glowOpacity.value = withTiming(0, { duration: durations.normal.ms });
       shadowRadius.value = withSpring(4, springConfig);
       translateY.value = withSpring(0, springConfig);
 

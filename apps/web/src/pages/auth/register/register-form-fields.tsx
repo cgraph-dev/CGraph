@@ -6,6 +6,7 @@
  * @module pages/auth/register/RegisterFormFields
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { PasswordToggleButton } from './password-toggle-button';
 
@@ -19,7 +20,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' as const },
+    transition: { duration: durations.slower.ms / 1000, ease: 'easeOut' as const },
   },
 };
 

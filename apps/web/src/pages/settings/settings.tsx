@@ -2,6 +2,7 @@
  * Main settings page layout.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { useParams, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -118,7 +119,7 @@ export default function Settings() {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 3,
+            duration: durations.epic.ms / 1000 + Math.random() * 3,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

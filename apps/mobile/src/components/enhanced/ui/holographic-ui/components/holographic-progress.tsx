@@ -2,6 +2,7 @@
  * Holographic-themed progress bar component with animated fill and gradient effects.
  * @module components/enhanced/ui/holographic-ui/HolographicProgress
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, interpolate } from 'react-native-reanimated';
@@ -36,14 +37,14 @@ export function HolographicProgress({
   const clampedProgress = Math.max(0, Math.min(1, progress));
 
   useEffect(() => {
-    progressAnim.value = withTiming(clampedProgress, { duration: 500 });
+    progressAnim.value = withTiming(clampedProgress, { duration: durations.slower.ms });
   }, [clampedProgress]);
 
   useEffect(() => {
     // Shine animation loop
     shineAnim.value = 0;
     shineAnim.value = withRepeat(
-      withTiming(1, { duration: 2000 }),
+      withTiming(1, { duration: durations.loop.ms }),
       -1,
       false
     );

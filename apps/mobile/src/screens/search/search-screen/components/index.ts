@@ -4,16 +4,13 @@
  * @module screens/search/SearchScreen/components
  */
 
-export {
-  SkeletonLoader,
-  TrendingItem,
-  VoiceSearchButton,
-  AnimatedResultItem,
-  FilterModal,
-  defaultFilters,
-} from './search-components';
-
-export type { SearchFilters } from './search-components';
+export { SkeletonLoader } from './skeleton-loader';
+export { TrendingItem } from './trending-item';
+export { VoiceSearchButton } from './voice-search-button';
+export { AnimatedResultItem } from './animated-result-item';
+export { FilterModal } from './filter-modal';
+export { defaultFilters } from './search-types';
+export type { SearchFilters } from './search-types';
 
 // Result item components
 export { UserResultItem, GroupResultItem, ForumResultItem } from './result-items';

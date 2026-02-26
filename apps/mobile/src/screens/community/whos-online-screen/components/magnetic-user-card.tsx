@@ -1,3 +1,4 @@
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -53,14 +54,14 @@ export function MagneticUserCard({ user, index, onPress, scrollY }: MagneticUser
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 500,
+        duration: durations.slower.ms,
         delay,
         easing: Easing.out(Easing.back(1.5)),
         useNativeDriver: true,
       }),
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         delay,
         useNativeDriver: true,
       }),
@@ -78,13 +79,13 @@ export function MagneticUserCard({ user, index, onPress, scrollY }: MagneticUser
       Animated.sequence([
         Animated.timing(statusPulse, {
           toValue: 1.4,
-          duration: 1000,
+          duration: durations.verySlow.ms,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: true,
         }),
         Animated.timing(statusPulse, {
           toValue: 1,
-          duration: 1000,
+          duration: durations.verySlow.ms,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: true,
         }),
@@ -119,7 +120,7 @@ export function MagneticUserCard({ user, index, onPress, scrollY }: MagneticUser
           }),
           Animated.timing(glowAnim, {
             toValue: 1,
-            duration: 150,
+            duration: durations.fast.ms,
             useNativeDriver: true,
           }),
         ]).start();
@@ -142,7 +143,7 @@ export function MagneticUserCard({ user, index, onPress, scrollY }: MagneticUser
           }),
           Animated.timing(glowAnim, {
             toValue: 0,
-            duration: 300,
+            duration: durations.slow.ms,
             useNativeDriver: true,
           }),
         ]).start();

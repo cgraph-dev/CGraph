@@ -6,6 +6,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { FlatList, Linking, Alert } from 'react-native';
 import { useSharedValue, withTiming, withSpring, runOnJS, type SharedValue } from 'react-native-reanimated';
@@ -72,14 +73,14 @@ export function useMediaViewer() {
    * Close image viewer with animation.
    */
   const closeImageViewer = useCallback(() => {
-    imageViewerAnim.value = withTiming(0, { duration: 200 });
+    imageViewerAnim.value = withTiming(0, { duration: durations.normal.ms });
     const afterClose = () => {
       setShowImageViewer(false);
       setSelectedImage(null);
       setImageGallery([]);
       setCurrentImageIndex(0);
     };
-    imageScaleAnim.value = withTiming(0.8, { duration: 200 }, (finished) => {
+    imageScaleAnim.value = withTiming(0.8, { duration: durations.normal.ms }, (finished) => {
       if (finished) runOnJS(afterClose)();
     });
   }, [imageViewerAnim, imageScaleAnim]);

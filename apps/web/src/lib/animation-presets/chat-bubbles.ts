@@ -4,6 +4,7 @@
  * Chat bubble animation configurations for different bubble styles.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { type Transition, type TargetAndTransition } from 'framer-motion';
 
 import { springs } from './presets';
@@ -63,7 +64,7 @@ export const chatBubbleAnimations: Record<
   modern: (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, y: 15, filter: 'blur(4px)' },
     animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
-    transition: { delay, duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+    transition: { delay, duration: durations.slower.ms / 1000, ease: [0.4, 0, 0.2, 1] },
   }),
   retro: (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, rotateX: -90 },
@@ -105,7 +106,7 @@ export const chatBubbleAnimations: Record<
   'bubble-flat': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
-    transition: { delay, duration: 0.2 },
+    transition: { delay, duration: durations.normal.ms / 1000 },
   }),
   'bubble-compact': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.9, y: 5 },
@@ -125,7 +126,7 @@ export const chatBubbleAnimations: Record<
   'bubble-minimal': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0 },
     animate: { opacity: 1 },
-    transition: { delay, duration: 0.3 },
+    transition: { delay, duration: durations.slow.ms / 1000 },
   }),
   'bubble-cloud': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.5, y: 15 },
@@ -135,6 +136,6 @@ export const chatBubbleAnimations: Record<
   'bubble-modern': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, y: 15, filter: 'blur(4px)' },
     animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
-    transition: { delay, duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+    transition: { delay, duration: durations.slower.ms / 1000, ease: [0.4, 0, 0.2, 1] },
   }),
 };

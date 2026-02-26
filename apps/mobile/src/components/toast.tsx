@@ -2,6 +2,7 @@
  * Animated toast notification component with type-based styling and auto-dismiss behavior.
  * @module components/Toast
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
@@ -56,8 +57,8 @@ export default function Toast({
 
   useEffect(() => {
     if (visible) {
-      translateY.value = withTiming(0, { duration: 300 });
-      opacity.value = withTiming(1, { duration: 300 });
+      translateY.value = withTiming(0, { duration: durations.slow.ms });
+      opacity.value = withTiming(1, { duration: durations.slow.ms });
 
       const timer = setTimeout(() => {
         onClose();
@@ -65,8 +66,8 @@ export default function Toast({
 
       return () => clearTimeout(timer);
     } else {
-      translateY.value = withTiming(-100, { duration: 200 });
-      opacity.value = withTiming(0, { duration: 200 });
+      translateY.value = withTiming(-100, { duration: durations.normal.ms });
+      opacity.value = withTiming(0, { duration: durations.normal.ms });
       return undefined;
     }
   }, [visible, duration, onClose, translateY, opacity]);

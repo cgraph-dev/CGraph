@@ -5,6 +5,7 @@
  * Creates eye-catching headers and titles.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { ReactNode, CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 
@@ -100,7 +101,7 @@ export default function GlowText({
             ],
           }}
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
             ease: 'easeInOut',
           }}
@@ -138,7 +139,7 @@ export default function GlowText({
             backgroundPosition: ['200% 0%', '-200% 0%'],
           }}
           transition={{
-            duration: 3,
+            duration: durations.cinematic.ms / 1000,
             repeat: Infinity,
             ease: 'linear',
           }}
@@ -227,7 +228,7 @@ export function RainbowText({
         backgroundPosition: ['0% 50%', '100% 50%'],
       }}
       transition={{
-        duration: 3,
+        duration: durations.cinematic.ms / 1000,
         repeat: Infinity,
         ease: 'linear',
       }}

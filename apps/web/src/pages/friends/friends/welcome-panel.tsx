@@ -3,6 +3,7 @@
  * Displays when viewing friends list
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
@@ -44,7 +45,7 @@ export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePane
               scale: [1, 1.5, 1],
             }}
             transition={{
-              duration: 5 + Math.random() * 3,
+              duration: durations.epic.ms / 1000 + Math.random() * 3,
               repeat: Infinity,
               delay: Math.random() * 5,
             }}

@@ -17,47 +17,33 @@ export type CubicBezier = readonly [number, number, number, number];
 
 export const cubicBeziers = {
   /** Standard CSS ease */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  ease:        [0.25, 0.1,  0.25, 1.0]  as CubicBezier,
+  ease:        [0.25, 0.1,  0.25, 1.0],
   /** Deceleration — elements entering the screen */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  easeOut:     [0.0,  0.0,  0.2,  1.0]  as CubicBezier,
+  easeOut:     [0.0,  0.0,  0.2,  1.0],
   /** Acceleration — elements leaving the screen */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  easeIn:      [0.4,  0.0,  1.0,  1.0]  as CubicBezier,
+  easeIn:      [0.4,  0.0,  1.0,  1.0],
   /** Symmetric ease — layout shifts */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  easeInOut:   [0.4,  0.0,  0.2,  1.0]  as CubicBezier,
+  easeInOut:   [0.4,  0.0,  0.2,  1.0],
   /** Spring-like overshoot feel via bezier */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  spring:      [0.175, 0.885, 0.32, 1.275] as CubicBezier,
+  spring:      [0.175, 0.885, 0.32, 1.275],
   /** Bouncy settle via bezier */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  bounce:      [0.68, -0.55, 0.265, 1.55]  as CubicBezier,
+  bounce:      [0.68, -0.55, 0.265, 1.55],
   /** Material Design standard curve */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  material:    [0.4, 0.0, 0.2, 1.0]     as CubicBezier,
+  material:    [0.4, 0.0, 0.2, 1.0],
   /** Material Design deceleration */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  materialOut: [0.0, 0.0, 0.2, 1.0]     as CubicBezier,
+  materialOut: [0.0, 0.0, 0.2, 1.0],
   /** Material Design acceleration */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  materialIn:  [0.4, 0.0, 1.0, 1.0]     as CubicBezier,
+  materialIn:  [0.4, 0.0, 1.0, 1.0],
   /** Smooth cubic */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  smooth:      [0.25, 0.46, 0.45, 0.94] as CubicBezier,
+  smooth:      [0.25, 0.46, 0.45, 0.94],
   /** Quad ease-out */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  quadOut:     [0.25, 0.46, 0.45, 0.94] as CubicBezier,
+  quadOut:     [0.25, 0.46, 0.45, 0.94],
   /** Expo ease-out */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  expoOut:     [0.19, 1.0, 0.22, 1.0]   as CubicBezier,
+  expoOut:     [0.19, 1.0, 0.22, 1.0],
   /** Circ ease-out */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  circOut:     [0.075, 0.82, 0.165, 1.0] as CubicBezier,
+  circOut:     [0.075, 0.82, 0.165, 1.0],
   /** Back ease-out (slight overshoot) */
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  backOut:     [0.175, 0.885, 0.32, 1.275] as CubicBezier,
+  backOut:     [0.175, 0.885, 0.32, 1.275],
 } as const satisfies Record<string, CubicBezier>;
 
 /**

@@ -3,6 +3,7 @@
  * Provides spring physics, gesture animations, and haptic feedback patterns
  */
 
+import { durations } from '@cgraph/animation-constants';
 import * as Haptics from 'expo-haptics';
 
 // ==================== HAPTIC FEEDBACK PATTERNS ====================
@@ -182,19 +183,19 @@ export const SpringPresets = {
 
 export const TimingPresets = {
   // Quick fade (200ms)
-  quick: { duration: 200 },
+  quick: { duration: durations.normal.ms },
 
   // Default (300ms)
-  default: { duration: 300 },
+  default: { duration: durations.slow.ms },
 
   // Smooth (400ms)
-  smooth: { duration: 400 },
+  smooth: { duration: durations.smooth.ms },
 
   // Slow (600ms)
-  slow: { duration: 600 },
+  slow: { duration: durations.dramatic.ms },
 
   // Very slow (1000ms)
-  verySlow: { duration: 1000 },
+  verySlow: { duration: durations.verySlow.ms },
 };
 
 // ==================== EASING FUNCTIONS ====================

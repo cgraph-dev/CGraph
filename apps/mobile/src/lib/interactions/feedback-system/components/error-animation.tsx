@@ -2,6 +2,7 @@
  * ErrorAnimation - Animated error feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -42,7 +43,7 @@ export function ErrorAnimation({
       rotation.value = 0;
 
       // Animate
-      opacity.value = withTiming(1, { duration: 200 });
+      opacity.value = withTiming(1, { duration: durations.normal.ms });
       scale.value = withSpring(1, SPRING_PRESETS.bouncy);
 
       // Shake animation
@@ -50,11 +51,11 @@ export function ErrorAnimation({
         rotation.value = withDelay(
           200,
           withSequence(
-            withTiming(10, { duration: 50 }),
-            withTiming(-10, { duration: 50 }),
-            withTiming(10, { duration: 50 }),
-            withTiming(-10, { duration: 50 }),
-            withTiming(0, { duration: 50 }, () => {
+            withTiming(10, { duration: durations.stagger.ms }),
+            withTiming(-10, { duration: durations.stagger.ms }),
+            withTiming(10, { duration: durations.stagger.ms }),
+            withTiming(-10, { duration: durations.stagger.ms }),
+            withTiming(0, { duration: durations.stagger.ms }, () => {
               if (onComplete) {
                 runOnJS(onComplete)();
               }
@@ -73,8 +74,8 @@ export function ErrorAnimation({
       // Haptic
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } else {
-      opacity.value = withTiming(0, { duration: 200 });
-      scale.value = withTiming(0, { duration: 200 });
+      opacity.value = withTiming(0, { duration: durations.normal.ms });
+      scale.value = withTiming(0, { duration: durations.normal.ms });
     }
   }, [visible, shake, onComplete, scale, opacity, rotation]);
 

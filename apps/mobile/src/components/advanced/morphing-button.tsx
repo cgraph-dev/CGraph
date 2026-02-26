@@ -10,6 +10,7 @@
  * - Haptic feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { StyleSheet, ViewStyle, StyleProp, TextStyle, Pressable } from 'react-native';
 import Animated, {
@@ -184,7 +185,7 @@ export function MorphingButton({
     // Start loading animation
     if (state === 'loading') {
       loadingRotation.value = withRepeat(
-        withTiming(360, { duration: 1000, easing: Easing.linear }),
+        withTiming(360, { duration: durations.verySlow.ms, easing: Easing.linear }),
         -1,
         false
       );
@@ -204,11 +205,11 @@ export function MorphingButton({
       }
     } else if (state === 'error') {
       rotation.value = withSequence(
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(0, { duration: 50 })
+        withTiming(-5, { duration: durations.stagger.ms }),
+        withTiming(5, { duration: durations.stagger.ms }),
+        withTiming(-5, { duration: durations.stagger.ms }),
+        withTiming(5, { duration: durations.stagger.ms }),
+        withTiming(0, { duration: durations.stagger.ms })
       );
 
       if (autoResetAfterError) {

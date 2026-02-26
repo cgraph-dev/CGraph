@@ -2,6 +2,7 @@
  * Sidebar Component - Responsive navigation sidebar with badges
  * @module layouts/app-layout
  */
+import { durations } from '@cgraph/animation-constants';
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from '@/components/navigation/animated-logo';
@@ -70,7 +71,7 @@ export default function Sidebar({
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 3,
+            duration: durations.epic.ms / 1000 + Math.random() * 3,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

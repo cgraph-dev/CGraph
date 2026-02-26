@@ -2,6 +2,7 @@
  * Pulsing dot indicator component for online status.
  * @module screens/community/whos-online-screen/components/pulsing-dot
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, {
@@ -27,8 +28,8 @@ export function PulsingDot() {
     // Pulse animation
     pulseAnim.value = withRepeat(
       withSequence(
-        withTiming(1.5, { duration: 800, easing: Easing.inOut(Easing.sin) }),
-        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.sin) })
+        withTiming(1.5, { duration: durations.extended.ms, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1, { duration: durations.extended.ms, easing: Easing.inOut(Easing.sin) })
       ),
       -1,
       false
@@ -44,8 +45,8 @@ export function PulsingDot() {
     // Glow animation
     glowAnim.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 1000 }),
-        withTiming(0.3, { duration: 1000 })
+        withTiming(1, { duration: durations.verySlow.ms }),
+        withTiming(0.3, { duration: durations.verySlow.ms })
       ),
       -1,
       false

@@ -2,6 +2,7 @@
  * RarityEffects component - renders animation effects based on rarity
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import type { AchievementRarity } from '@/modules/gamification/store';
 import type { RarityColorConfig, SizeConfig } from './types';
@@ -129,7 +130,7 @@ export function RarityEffects({ rarity, colors, config }: RarityEffectsProps) {
               opacity: [0.5, 0.8, 0.5],
             }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
@@ -214,7 +215,7 @@ export function RarityEffects({ rarity, colors, config }: RarityEffectsProps) {
               ],
             }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               repeat: Infinity,
               ease: 'easeInOut',
             }}

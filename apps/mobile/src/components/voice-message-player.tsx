@@ -2,6 +2,7 @@
  * Voice message playback component with waveform visualization, progress scrubbing, and playback controls.
  * @module components/VoiceMessagePlayer
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
@@ -132,7 +133,7 @@ export function VoiceMessagePlayer({
             }),
             Animated.timing(anim, {
               toValue: 1,
-              duration: 150,
+              duration: durations.fast.ms,
               useNativeDriver: true,
             }),
           ])
@@ -150,7 +151,7 @@ export function VoiceMessagePlayer({
       barAnimations.forEach((anim) => {
         Animated.timing(anim, {
           toValue: 1,
-          duration: 100,
+          duration: durations.instant.ms,
           useNativeDriver: true,
         }).start();
       });
@@ -161,7 +162,7 @@ export function VoiceMessagePlayer({
   useEffect(() => {
     Animated.timing(progressAnim, {
       toValue: progress,
-      duration: 100,
+      duration: durations.instant.ms,
       useNativeDriver: false,
     }).start();
   }, [progress, progressAnim]);

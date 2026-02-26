@@ -2,6 +2,7 @@
  * TypingIndicator - animated typing dots
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 
 interface TypingIndicatorProps {
@@ -31,7 +32,7 @@ export function TypingIndicator({ isVisible }: TypingIndicatorProps) {
             className="h-2 w-2 rounded-full bg-primary-400"
             animate={{ y: [0, -8, 0] }}
             transition={{
-              duration: 0.6,
+              duration: durations.dramatic.ms / 1000,
               repeat: Infinity,
               delay: i * 0.1,
             }}

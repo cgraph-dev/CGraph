@@ -4,6 +4,7 @@
  * Swipeable friend request card with animations.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -63,14 +64,14 @@ export function RequestCard({
     Animated.parallel([
       Animated.timing(entryAnim, {
         toValue: 1,
-        duration: 600,
+        duration: durations.dramatic.ms,
         delay,
         easing: Easing.out(Easing.back(1.7)),
         useNativeDriver: true,
       }),
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         delay,
         useNativeDriver: true,
       }),
@@ -81,13 +82,13 @@ export function RequestCard({
       Animated.sequence([
         Animated.timing(avatarGlow, {
           toValue: 1,
-          duration: 1500,
+          duration: durations.ambient.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(avatarGlow, {
           toValue: 0,
-          duration: 1500,
+          duration: durations.ambient.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
@@ -157,9 +158,9 @@ export function RequestCard({
 
         // Reset backgrounds
         Animated.parallel([
-          Animated.timing(acceptBgOpacity, { toValue: 0, duration: 200, useNativeDriver: true }),
-          Animated.timing(declineBgOpacity, { toValue: 0, duration: 200, useNativeDriver: true }),
-          Animated.timing(actionIconScale, { toValue: 0.5, duration: 200, useNativeDriver: true }),
+          Animated.timing(acceptBgOpacity, { toValue: 0, duration: durations.normal.ms, useNativeDriver: true }),
+          Animated.timing(declineBgOpacity, { toValue: 0, duration: durations.normal.ms, useNativeDriver: true }),
+          Animated.timing(actionIconScale, { toValue: 0.5, duration: durations.normal.ms, useNativeDriver: true }),
         ]).start();
       },
     })
@@ -168,18 +169,18 @@ export function RequestCard({
   const handleAcceptPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Animated.sequence([
-      Animated.timing(acceptScale, { toValue: 0.85, duration: 100, useNativeDriver: true }),
-      Animated.timing(acceptScale, { toValue: 1.1, duration: 100, useNativeDriver: true }),
-      Animated.timing(acceptScale, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(acceptScale, { toValue: 0.85, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(acceptScale, { toValue: 1.1, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(acceptScale, { toValue: 1, duration: durations.instant.ms, useNativeDriver: true }),
     ]).start(() => onAccept(item.id));
   };
 
   const handleDeclinePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Animated.sequence([
-      Animated.timing(declineScale, { toValue: 0.85, duration: 100, useNativeDriver: true }),
-      Animated.timing(declineScale, { toValue: 1.1, duration: 100, useNativeDriver: true }),
-      Animated.timing(declineScale, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(declineScale, { toValue: 0.85, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(declineScale, { toValue: 1.1, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(declineScale, { toValue: 1, duration: durations.instant.ms, useNativeDriver: true }),
     ]).start(() => onDecline(item.id));
   };
 

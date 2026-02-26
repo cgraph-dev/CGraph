@@ -9,6 +9,7 @@
  * - Animated hover effects
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -171,7 +172,7 @@ export function AuthButton({
           }}
           transition={{
             repeat: Infinity,
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             ease: 'linear',
           }}
           className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"

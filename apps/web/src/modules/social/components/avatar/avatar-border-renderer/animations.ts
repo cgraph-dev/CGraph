@@ -2,6 +2,7 @@
  * Animation keyframes and constants for avatar borders
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { BorderTheme, ParticleType } from '@/types/avatar-borders';
 import type { BorderColors } from './types';
 
@@ -10,12 +11,12 @@ import type { BorderColors } from './types';
 export const ANIMATION_KEYFRAMES = {
   rotate: {
     rotate: [0, 360],
-    transition: { duration: 3, repeat: Infinity, ease: 'linear' as const },
+    transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'linear' as const },
   },
   pulse: {
     scale: [1, 1.05, 1],
     opacity: [0.8, 1, 0.8],
-    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   },
   glow: {
     boxShadow: [
@@ -23,33 +24,33 @@ export const ANIMATION_KEYFRAMES = {
       '0 0 25px var(--glow-color)',
       '0 0 10px var(--glow-color)',
     ],
-    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   },
   shimmer: {
     backgroundPosition: ['200% 0', '-200% 0'],
-    transition: { duration: 3, repeat: Infinity, ease: 'linear' as const },
+    transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'linear' as const },
   },
   wave: {
     y: [0, -3, 0, 3, 0],
-    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   },
   spark: {
     opacity: [0.5, 1, 0.5],
     scale: [0.9, 1.1, 0.9],
-    transition: { duration: 0.5, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.slower.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   },
   float: {
     y: [0, -5, 0],
-    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
   },
   bounce: {
     scale: [1, 1.08, 1],
-    transition: { duration: 0.6, repeat: Infinity, ease: 'easeOut' as const },
+    transition: { duration: durations.dramatic.ms / 1000, repeat: Infinity, ease: 'easeOut' as const },
   },
   ripple: {
     scale: [1, 1.2],
     opacity: [0.6, 0],
-    transition: { duration: 1.5, repeat: Infinity, ease: 'easeOut' as const },
+    transition: { duration: durations.ambient.ms / 1000, repeat: Infinity, ease: 'easeOut' as const },
   },
   orbit: (index: number, total: number) => ({
     rotate: [0, 360],

@@ -2,6 +2,7 @@
  * Animated 3D coin component with rotation and glow effects.
  * @module screens/premium/coin-shop-screen/components/animated3-d-coin
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -48,8 +49,8 @@ export function Animated3DCoin({ size = 70, delay = 0 }: Animated3DCoinProps) {
       delay,
       withRepeat(
         withSequence(
-          withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-          withTiming(0.9, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+          withTiming(1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.9, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) })
         ),
         -1,
         false
@@ -59,8 +60,8 @@ export function Animated3DCoin({ size = 70, delay = 0 }: Animated3DCoinProps) {
     // Glow pulsing animation
     glowAnim.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 2000 }),
-        withTiming(0, { duration: 2000 })
+        withTiming(1, { duration: durations.loop.ms }),
+        withTiming(0, { duration: durations.loop.ms })
       ),
       -1,
       false

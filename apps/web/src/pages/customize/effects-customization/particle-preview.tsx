@@ -7,6 +7,7 @@
  * @module pages/customize/effects-customization
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
@@ -76,7 +77,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           />
         ))}
@@ -100,7 +101,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           />
         ))}
@@ -125,7 +126,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           />
         ))}
@@ -154,7 +155,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           >
             ✨
@@ -188,7 +189,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           />
         ))}
@@ -222,7 +223,7 @@ export const ParticlePreview = memo(function ParticlePreview({
             transition={
               shouldAnimate
                 ? { duration: p.duration, repeat: Infinity, delay: p.delay }
-                : { duration: 0.3 }
+                : { duration: durations.slow.ms / 1000 }
             }
           />
         ))}

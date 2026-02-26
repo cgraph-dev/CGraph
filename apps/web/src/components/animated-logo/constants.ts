@@ -3,6 +3,7 @@
  * Extracted from AnimatedLogo.tsx for modularity
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { Variants } from 'framer-motion';
 import type { ColorDefinition, SizeDimensions } from './types';
 import { springs } from '@/lib/animation-presets';
@@ -54,8 +55,8 @@ export const TRACE_DRAW_VARIANTS: Variants = {
     pathLength: 1,
     opacity: 1,
     transition: {
-      pathLength: { duration: 0.6, delay, ease: 'easeOut' },
-      opacity: { duration: 0.1, delay },
+      pathLength: { duration: durations.dramatic.ms / 1000, delay, ease: 'easeOut' },
+      opacity: { duration: durations.instant.ms / 1000, delay },
     },
   }),
 };
@@ -81,7 +82,7 @@ export const PULSE_VARIANTS: Variants = {
     scale: [1, 1.2, 1],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 1.5,
+      duration: durations.ambient.ms / 1000,
       repeat: Infinity,
       ease: 'easeInOut',
     },

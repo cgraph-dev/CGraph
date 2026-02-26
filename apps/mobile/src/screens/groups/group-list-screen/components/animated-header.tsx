@@ -4,6 +4,7 @@
  * Header with animated create button.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, {
@@ -31,8 +32,8 @@ export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
     // Continuous pulse animation
     pulseAnim.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
+        withTiming(1.1, { duration: durations.verySlow.ms }),
+        withTiming(1, { duration: durations.verySlow.ms })
       ),
       -1,
       false
@@ -43,8 +44,8 @@ export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     rotateAnim.value = withSequence(
-      withTiming(1, { duration: 200, easing: Easing.out(Easing.back(2)) }),
-      withTiming(0, { duration: 200 })
+      withTiming(1, { duration: durations.normal.ms, easing: Easing.out(Easing.back(2)) }),
+      withTiming(0, { duration: durations.normal.ms })
     );
 
     onCreatePress();

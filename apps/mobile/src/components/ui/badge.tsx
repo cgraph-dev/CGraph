@@ -2,6 +2,7 @@
  * Badge component with multiple variants, sizes, animated entrance, and gradient styling options.
  * @module components/ui/Badge
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming, Easing as ReanimatedEasing } from 'react-native-reanimated';
@@ -74,8 +75,8 @@ export default function Badge({
     if (pulse) {
       pulseAnim.value = withRepeat(
         withSequence(
-          withTiming(1.15, { duration: 800, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-          withTiming(1, { duration: 800, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+          withTiming(1.15, { duration: durations.extended.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+          withTiming(1, { duration: durations.extended.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
         ),
         -1
       );
@@ -85,8 +86,8 @@ export default function Badge({
     if (glow) {
       glowAnim.value = withRepeat(
         withSequence(
-          withTiming(0.8, { duration: 1500, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-          withTiming(0.3, { duration: 1500, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+          withTiming(0.8, { duration: durations.ambient.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+          withTiming(0.3, { duration: durations.ambient.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
         ),
         -1
       );

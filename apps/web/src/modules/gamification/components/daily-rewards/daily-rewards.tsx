@@ -10,6 +10,7 @@
  * - Monthly special bonuses
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -111,7 +112,7 @@ export function DailyRewards({
               <motion.div
                 animate={canClaim ? { rotate: [0, -10, 10, -10, 0] } : {}}
                 transition={{
-                  duration: 0.5,
+                  duration: durations.slower.ms / 1000,
                   repeat: Infinity,
                   repeatDelay: ANIMATION_DURATIONS.shakeRepeat,
                 }}

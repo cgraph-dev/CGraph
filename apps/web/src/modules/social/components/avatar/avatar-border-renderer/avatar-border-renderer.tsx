@@ -8,6 +8,7 @@
  * - Custom color overrides
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -137,7 +138,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
             scale: [1, 1.1, 1],
           }}
           transition={{
-            duration: 2 / finalAnimationSpeed,
+            duration: durations.loop.ms / 1000 / finalAnimationSpeed,
             repeat: Infinity,
             ease: 'easeInOut',
           }}
@@ -163,7 +164,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
             }}
             animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
             transition={{
-              duration: 3 / finalAnimationSpeed,
+              duration: durations.cinematic.ms / 1000 / finalAnimationSpeed,
               repeat: Infinity,
               ease: 'linear',
             }}
@@ -182,7 +183,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
               }}
               animate={{ rotate: 360 }}
               transition={{
-                duration: 3 / finalAnimationSpeed,
+                duration: durations.cinematic.ms / 1000 / finalAnimationSpeed,
                 repeat: Infinity,
                 ease: 'linear',
               }}
@@ -239,7 +240,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
                 opacity: [0.6, 0],
               }}
               transition={{
-                duration: 2 / finalAnimationSpeed,
+                duration: durations.loop.ms / 1000 / finalAnimationSpeed,
                 repeat: Infinity,
                 delay: i * 0.6,
                 ease: 'easeOut',

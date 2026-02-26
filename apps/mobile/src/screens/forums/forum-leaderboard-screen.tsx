@@ -17,6 +17,7 @@
  * @since v0.9.0
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
@@ -123,7 +124,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
       },
     });
 
-    headerOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.ease) });
+    headerOpacity.value = withTiming(1, { duration: durations.smooth.ms, easing: Easing.out(Easing.ease) });
     headerSlide.value = withSpring(0, { damping: 12, stiffness: 100 });
 
     fetchLeaderboardData();

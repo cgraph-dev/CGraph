@@ -2,6 +2,7 @@
  * Skeleton - Loading skeleton with shimmer effect
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Dimensions } from 'react-native';
 import Animated, {
@@ -36,7 +37,7 @@ export function Skeleton({
   useEffect(() => {
     if (animated) {
       shimmerPosition.value = withRepeat(
-        withTiming(2, { duration: 1500, easing: Easing.linear }),
+        withTiming(2, { duration: durations.ambient.ms, easing: Easing.linear }),
         -1,
         false
       );

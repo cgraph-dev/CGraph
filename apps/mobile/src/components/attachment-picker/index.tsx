@@ -9,6 +9,7 @@
  * - Multi-select with visual feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import {
   View,
@@ -180,7 +181,7 @@ const AttachmentPicker = memo(
           }),
           Animated.timing(backdropAnim, {
             toValue: 0,
-            duration: 200,
+            duration: durations.normal.ms,
             useNativeDriver: true,
           }),
         ]).start();

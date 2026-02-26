@@ -2,6 +2,7 @@
  * Message particle animation effects.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 
 interface MessageParticlesProps {
@@ -33,7 +34,7 @@ export function MessageParticles({ isOwnMessage }: MessageParticlesProps) {
             y: -30 - Math.random() * 40,
           }}
           transition={{
-            duration: 0.8 + Math.random() * 0.4,
+            duration: durations.extended.ms / 1000 + Math.random() * 0.4,
             delay: i * 0.05,
             ease: 'easeOut',
           }}

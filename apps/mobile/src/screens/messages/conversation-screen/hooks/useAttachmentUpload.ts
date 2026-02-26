@@ -7,6 +7,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useCallback, useRef } from 'react';
 import { Platform, Alert } from 'react-native';
 import { withTiming, runOnJS, type SharedValue } from 'react-native-reanimated';
@@ -292,7 +293,7 @@ export function useAttachmentUpload({
       closeAttachmentPreview();
       await handleImagePicker();
     };
-    attachmentPreviewAnim.value = withTiming(0, { duration: 150 }, (finished) => {
+    attachmentPreviewAnim.value = withTiming(0, { duration: durations.fast.ms }, (finished) => {
       if (finished) runOnJS(afterAnim)();
     });
   }, [attachmentPreviewAnim, closeAttachmentPreview, handleImagePicker]);

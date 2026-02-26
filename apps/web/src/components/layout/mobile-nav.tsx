@@ -10,6 +10,7 @@
  * - Haptic feedback
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -141,7 +142,7 @@ export function MobileNav({
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                        transition={{ scale: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' } }}
                         className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
@@ -235,7 +236,7 @@ export function MobileNav({
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                      transition={{ scale: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' } }}
                       className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                     >
                       {item.badge > 99 ? '99+' : item.badge}

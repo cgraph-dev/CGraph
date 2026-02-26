@@ -2,6 +2,7 @@
  * Message reaction display and picker.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaceSmileIcon, PlusIcon } from '@heroicons/react/24/outline';
@@ -142,7 +143,7 @@ export default function MessageReactions({
                   scale: [0.9, 1.1, 0.9],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.loop.ms / 1000,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}

@@ -5,6 +5,7 @@
  * Shows level, XP, achievements, rank with visual effects.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, animate } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
@@ -69,7 +70,7 @@ function XPProgressBar({ current, max, level }: { current: number; max: number; 
               ],
             }}
             transition={{
-              duration: 2,
+              duration: durations.loop.ms / 1000,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
@@ -102,7 +103,7 @@ function XPProgressBar({ current, max, level }: { current: number; max: number; 
             x: ['-100%', '200%'],
           }}
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
             ease: 'linear',
           }}
@@ -114,7 +115,7 @@ function XPProgressBar({ current, max, level }: { current: number; max: number; 
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{
-            duration: 1,
+            duration: durations.verySlow.ms / 1000,
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
@@ -125,7 +126,7 @@ function XPProgressBar({ current, max, level }: { current: number; max: number; 
               x: ['-100%', '200%'],
             }}
             transition={{
-              duration: 1.5,
+              duration: durations.ambient.ms / 1000,
               repeat: Infinity,
               repeatDelay: 1,
               ease: 'easeInOut',
@@ -139,7 +140,7 @@ function XPProgressBar({ current, max, level }: { current: number; max: number; 
           initial={{ left: 0 }}
           animate={{ left: `calc(${percentage}% - 4px)` }}
           transition={{
-            duration: 1,
+            duration: durations.verySlow.ms / 1000,
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
         />
@@ -189,7 +190,7 @@ function StatCard({
               : undefined
           }
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
             ease: 'easeInOut',
           }}

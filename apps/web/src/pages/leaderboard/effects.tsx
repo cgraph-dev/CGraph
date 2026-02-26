@@ -3,6 +3,7 @@
  * @module pages/leaderboard
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 
 /**
@@ -65,7 +66,7 @@ export function FloatingParticles() {
             scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 5,
+            duration: durations.epic.ms / 1000 + Math.random() * 5,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

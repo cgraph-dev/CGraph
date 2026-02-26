@@ -26,7 +26,7 @@ jest.mock('../../lib/socket', () => ({
 }));
 
 import api from '../../lib/api';
-import type { Conversation, Message, useChatStore } from '../chatStore';
+import { useChatStore, type Conversation, type Message } from '../chatStore';
 
 const mockApi = api as jest.Mocked<typeof api>;
 

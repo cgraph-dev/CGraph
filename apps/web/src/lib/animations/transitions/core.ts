@@ -51,7 +51,15 @@ export const durations = {
   normal: 0.25,
   smooth: 0.35,
   slow: 0.5,
+  slower: 0.6,
+  dramatic: 0.75,
   cinematic: 0.75,
+  extended: 0.8,
+  verySlow: 1.0,
+  ambient: 1.5,
+  loop: 2.0,
+  epic: 5.0,
+  stagger: 0.05,
 } as const;
 
 // ==================== STAGGER CONFIGURATIONS ====================

@@ -2,6 +2,7 @@
  * Profile loading and error state components.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components';
@@ -36,7 +37,7 @@ export function AmbientParticles({ count = 10 }: AmbientParticlesProps) {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 3,
+            duration: durations.epic.ms / 1000 + Math.random() * 3,
             repeat: Infinity,
             delay: Math.random() * 5,
             ease: 'easeInOut',

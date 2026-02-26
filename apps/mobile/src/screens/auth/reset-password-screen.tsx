@@ -10,6 +10,7 @@
  * @since v0.9.2
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
@@ -115,7 +116,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 400,
+      duration: durations.smooth.ms,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim, state]);
@@ -148,10 +149,10 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
 
   const shake = useCallback(() => {
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 10, duration: durations.stagger.ms, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: durations.stagger.ms, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 10, duration: durations.stagger.ms, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: durations.stagger.ms, useNativeDriver: true }),
     ]).start();
   }, [shakeAnim]);
 

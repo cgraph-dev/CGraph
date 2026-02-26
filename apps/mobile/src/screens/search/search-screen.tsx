@@ -23,6 +23,7 @@
  * @since v0.8.1
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
@@ -176,7 +177,7 @@ export default function SearchScreen() {
     Animated.parallel([
       Animated.timing(headerOpacity, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         useNativeDriver: true,
       }),
       Animated.spring(headerTranslateY, {
@@ -191,7 +192,7 @@ export default function SearchScreen() {
     // Search glow effect when focused
     Animated.timing(searchGlow, {
       toValue: isFocused ? 1 : 0,
-      duration: 300,
+      duration: durations.slow.ms,
       useNativeDriver: false,
     }).start();
   }, [isFocused]);

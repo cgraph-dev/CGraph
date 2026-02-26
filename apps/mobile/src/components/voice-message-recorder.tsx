@@ -2,6 +2,7 @@
  * Voice message recording component with waveform visualization, timer, and audio level metering.
  * @module components/VoiceMessageRecorder
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
@@ -128,8 +129,8 @@ export function VoiceMessageRecorder({
     if (state === 'recording') {
       pulseAnim.value = withRepeat(
         withSequence(
-          withTiming(1.2, { duration: 500 }),
-          withTiming(1, { duration: 500 })
+          withTiming(1.2, { duration: durations.slower.ms }),
+          withTiming(1, { duration: durations.slower.ms })
         ),
         -1,
         false

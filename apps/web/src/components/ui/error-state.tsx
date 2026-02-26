@@ -2,6 +2,7 @@
  * Error state display component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { tweens, staggerConfigs } from '@/lib/animation-presets';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -24,7 +25,7 @@ const errorIconVariants = {
     opacity: 1,
     scale: 1,
     x: [0, -5, 5, -3, 3, 0],
-    transition: { x: { duration: 0.4, delay: 0.3 }, scale: { duration: 0.3 } },
+    transition: { x: { duration: durations.smooth.ms / 1000, delay: 0.3 }, scale: { duration: durations.slow.ms / 1000 } },
   },
 };
 

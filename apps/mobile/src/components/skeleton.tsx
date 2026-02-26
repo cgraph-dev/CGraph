@@ -2,6 +2,7 @@
  * Skeleton loading placeholder component with shimmer animation for content loading states.
  * @module components/Skeleton
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate } from 'react-native-reanimated';
@@ -24,8 +25,8 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
   useEffect(() => {
     animatedValue.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 1000 }),
-        withTiming(0, { duration: 1000 })
+        withTiming(1, { duration: durations.verySlow.ms }),
+        withTiming(0, { duration: durations.verySlow.ms })
       ),
       -1
     );

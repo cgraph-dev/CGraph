@@ -2,6 +2,7 @@
  * Animated badge component displaying online user record counts.
  * @module screens/community/whos-online-screen/components/animated-record-badge
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -38,13 +39,13 @@ export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRec
 
   useEffect(() => {
     // Entry animation
-    entryAnim.value = withDelay(300, withSpring(1, { damping: 6, stiffness: 50 }));
+    entryAnim.value = withDelay(durations.slow.ms, withSpring(1, { damping: 6, stiffness: 50 }));
 
     // Trophy bounce
     trophyBounce.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.sin) })
+        withTiming(1.1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.sin) })
       ),
       -1,
       false
@@ -52,7 +53,7 @@ export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRec
 
     // Shimmer animation
     shimmerAnim.value = withRepeat(
-      withTiming(1, { duration: 2000, easing: Easing.linear }),
+      withTiming(1, { duration: durations.loop.ms, easing: Easing.linear }),
       -1,
       false
     );

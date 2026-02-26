@@ -2,6 +2,7 @@
  * Online status colored indicator dot.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
 import {
@@ -72,11 +73,11 @@ export function OnlineStatusIndicator({
             exit={{ scale: 0 }}
             transition={{
               scale: springs.bouncy,
-              backgroundColor: { duration: 0.4, ease: 'easeInOut' },
+              backgroundColor: { duration: durations.smooth.ms / 1000, ease: 'easeInOut' },
               boxShadow:
                 status === 'online'
                   ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
-                  : { duration: 0.2 },
+                  : { duration: durations.normal.ms / 1000 },
             }}
           />
         </AnimatePresence>

@@ -2,6 +2,7 @@
  * Border particle animation definitions.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import type { ParticleType } from '@/types/avatar-borders';
 import type { ParticleColors } from './types';
 import { random } from './utils';
@@ -35,21 +36,21 @@ export function getAnimationForType(
         y: [0, -15, 0],
         opacity: [1, 0.5, 1],
         scale: [1, 1.2, 1],
-        transition: { duration: 0.8 / speed, repeat: Infinity, delay: delay * 0.3 },
+        transition: { duration: durations.extended.ms / 1000 / speed, repeat: Infinity, delay: delay * 0.3 },
       };
     case 'snowflake':
       return {
         y: [0, 20],
         x: [0, Math.sin(index) * 5],
         opacity: [1, 0],
-        transition: { duration: 3 / speed, repeat: Infinity, delay: delay * 0.5 },
+        transition: { duration: durations.cinematic.ms / 1000 / speed, repeat: Infinity, delay: delay * 0.5 },
       };
     case 'bubble':
       return {
         y: [0, -20],
         opacity: [0.8, 0],
         scale: [0.5, 1.2],
-        transition: { duration: 2 / speed, repeat: Infinity, delay: delay * 0.3 },
+        transition: { duration: durations.loop.ms / 1000 / speed, repeat: Infinity, delay: delay * 0.3 },
       };
     case 'sakura':
       return {
@@ -57,13 +58,13 @@ export function getAnimationForType(
         x: [0, Math.sin(index * 2) * 15],
         rotate: [0, 360],
         opacity: [1, 0],
-        transition: { duration: 3 / speed, repeat: Infinity, delay: delay * 0.4 },
+        transition: { duration: durations.cinematic.ms / 1000 / speed, repeat: Infinity, delay: delay * 0.4 },
       };
     case 'electric':
       return {
         opacity: [0, 1, 0],
         scaleY: [0.5, 1.5, 0.5],
-        transition: { duration: 0.2 / speed, repeat: Infinity, delay: index * 0.05 },
+        transition: { duration: durations.normal.ms / 1000 / speed, repeat: Infinity, delay: index * 0.05 },
       };
     case 'star':
       return {
@@ -82,13 +83,13 @@ export function getAnimationForType(
     case 'pixel':
       return {
         opacity: [0.5, 1, 0.5],
-        transition: { duration: 0.3 / speed, repeat: Infinity, delay: index * 0.02 },
+        transition: { duration: durations.slow.ms / 1000 / speed, repeat: Infinity, delay: index * 0.02 },
       };
     case 'glitch':
       return {
         x: [0, random(-10, 10), 0],
         opacity: [0, 1, 0],
-        transition: { duration: 0.1 / speed, repeat: Infinity, delay: random(0, 0.5) },
+        transition: { duration: durations.instant.ms / 1000 / speed, repeat: Infinity, delay: random(0, 0.5) },
       };
     default:
       return {

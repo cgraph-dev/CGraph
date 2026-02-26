@@ -2,6 +2,7 @@
  * Animated wave effect component for visual flair on the online screen.
  * @module screens/community/whos-online-screen/components/wave-effect
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import Animated, {
@@ -32,7 +33,7 @@ export function WaveEffect({ scrollY }: WaveEffectProps) {
 
   useEffect(() => {
     wave1.value = withRepeat(
-      withTiming(1, { duration: 3000, easing: Easing.linear }),
+      withTiming(1, { duration: durations.cinematic.ms, easing: Easing.linear }),
       -1,
       false
     );

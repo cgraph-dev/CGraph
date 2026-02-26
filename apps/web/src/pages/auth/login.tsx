@@ -2,6 +2,7 @@
  * User login page.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +36,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' as const },
+    transition: { duration: durations.slower.ms / 1000, ease: 'easeOut' as const },
   },
 };
 
@@ -44,7 +45,7 @@ const headerVariants = {
   hidden: { y: 15 },
   visible: {
     y: 0,
-    transition: { duration: 0.4, ease: 'easeOut' as const },
+    transition: { duration: durations.smooth.ms / 1000, ease: 'easeOut' as const },
   },
 };
 

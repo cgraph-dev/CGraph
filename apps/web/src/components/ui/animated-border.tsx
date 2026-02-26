@@ -5,6 +5,7 @@
  * Creates eye-catching containers with gaming-style borders.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { type ReactNode, type CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 
@@ -104,7 +105,7 @@ export default function AnimatedBorder({
             opacity: [0.5, 0.2, 0.5],
           }}
           transition={{
-            duration: 2,
+            duration: durations.loop.ms / 1000,
             repeat: Infinity,
             ease: 'easeInOut',
           }}

@@ -2,6 +2,7 @@
  * Error state display component with animated icon, message, and retry action button.
  * @module components/ui/ErrorState
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -149,12 +150,12 @@ export default function ErrorState({
       Animated.parallel([
         Animated.timing(fadeIn, {
           toValue: 1,
-          duration: 400,
+          duration: durations.smooth.ms,
           useNativeDriver: true,
         }),
         Animated.timing(slideUp, {
           toValue: 0,
-          duration: 400,
+          duration: durations.smooth.ms,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
@@ -165,13 +166,13 @@ export default function ErrorState({
         Animated.sequence([
           Animated.timing(iconBounce, {
             toValue: -8,
-            duration: 600,
+            duration: durations.dramatic.ms,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(iconBounce, {
             toValue: 0,
-            duration: 600,
+            duration: durations.dramatic.ms,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
@@ -184,17 +185,17 @@ export default function ErrorState({
           Animated.sequence([
             Animated.timing(iconShake, {
               toValue: 3,
-              duration: 100,
+              duration: durations.instant.ms,
               useNativeDriver: true,
             }),
             Animated.timing(iconShake, {
               toValue: -3,
-              duration: 100,
+              duration: durations.instant.ms,
               useNativeDriver: true,
             }),
             Animated.timing(iconShake, {
               toValue: 0,
-              duration: 100,
+              duration: durations.instant.ms,
               useNativeDriver: true,
             }),
             Animated.delay(3000),
@@ -214,12 +215,12 @@ export default function ErrorState({
     Animated.sequence([
       Animated.timing(buttonScale, {
         toValue: 0.95,
-        duration: 100,
+        duration: durations.instant.ms,
         useNativeDriver: true,
       }),
       Animated.timing(buttonScale, {
         toValue: 1,
-        duration: 100,
+        duration: durations.instant.ms,
         useNativeDriver: true,
       }),
     ]).start();

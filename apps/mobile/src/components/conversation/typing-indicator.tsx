@@ -11,6 +11,7 @@
  * @updated v0.8.3 - Added 4 typing indicator variants (dots, wave, pulse, bars)
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo, useEffect, useRef } from 'react';
 import {
   View,
@@ -274,7 +275,7 @@ export const TypingIndicator = memo(function TypingIndicator({
       // Fade in
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 200,
+        duration: durations.normal.ms,
         useNativeDriver: true,
       }).start();
 
@@ -294,13 +295,13 @@ export const TypingIndicator = memo(function TypingIndicator({
                 Animated.parallel([
                   Animated.timing(dot, {
                     toValue: -6,
-                    duration: 300,
+                    duration: durations.slow.ms,
                     useNativeDriver: true,
                   }),
                   enableGlow
                     ? Animated.timing(glow, {
                         toValue: 0.8,
-                        duration: 300,
+                        duration: durations.slow.ms,
                         useNativeDriver: true,
                       })
                     : Animated.timing(glow, {
@@ -312,13 +313,13 @@ export const TypingIndicator = memo(function TypingIndicator({
                 Animated.parallel([
                   Animated.timing(dot, {
                     toValue: 0,
-                    duration: 300,
+                    duration: durations.slow.ms,
                     useNativeDriver: true,
                   }),
                   enableGlow
                     ? Animated.timing(glow, {
                         toValue: 0.3,
-                        duration: 300,
+                        duration: durations.slow.ms,
                         useNativeDriver: true,
                       })
                     : Animated.timing(glow, {
@@ -347,12 +348,12 @@ export const TypingIndicator = memo(function TypingIndicator({
                 Animated.delay(delay),
                 Animated.timing(wave, {
                   toValue: 1,
-                  duration: 200,
+                  duration: durations.normal.ms,
                   useNativeDriver: true,
                 }),
                 Animated.timing(wave, {
                   toValue: 0.3,
-                  duration: 200,
+                  duration: durations.normal.ms,
                   useNativeDriver: true,
                 }),
               ])
@@ -375,24 +376,24 @@ export const TypingIndicator = memo(function TypingIndicator({
               Animated.parallel([
                 Animated.timing(pulseScale, {
                   toValue: 1.3,
-                  duration: 500,
+                  duration: durations.slower.ms,
                   useNativeDriver: true,
                 }),
                 Animated.timing(pulseOpacity, {
                   toValue: 0.3,
-                  duration: 500,
+                  duration: durations.slower.ms,
                   useNativeDriver: true,
                 }),
               ]),
               Animated.parallel([
                 Animated.timing(pulseScale, {
                   toValue: 1,
-                  duration: 500,
+                  duration: durations.slower.ms,
                   useNativeDriver: true,
                 }),
                 Animated.timing(pulseOpacity, {
                   toValue: 0.6,
-                  duration: 500,
+                  duration: durations.slower.ms,
                   useNativeDriver: true,
                 }),
               ]),
@@ -409,12 +410,12 @@ export const TypingIndicator = memo(function TypingIndicator({
                 Animated.delay(delay),
                 Animated.timing(bar, {
                   toValue: 16,
-                  duration: 300,
+                  duration: durations.slow.ms,
                   useNativeDriver: false, // height can't use native driver
                 }),
                 Animated.timing(bar, {
                   toValue: 8,
-                  duration: 300,
+                  duration: durations.slow.ms,
                   useNativeDriver: false,
                 }),
               ])
@@ -442,7 +443,7 @@ export const TypingIndicator = memo(function TypingIndicator({
       // Fade out
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 150,
+        duration: durations.fast.ms,
         useNativeDriver: true,
       }).start();
     }

@@ -4,6 +4,7 @@
  * Competitive ranking of forums by upvotes.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForumStore, Forum } from '@/modules/forums/store';
@@ -109,7 +110,7 @@ export default function ForumLeaderboard() {
                   scale: [1, 1.1, 1],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.loop.ms / 1000,
                   repeat: Infinity,
                   repeatDelay: 3,
                 }}

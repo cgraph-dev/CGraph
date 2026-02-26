@@ -9,6 +9,7 @@
  * - Pull to refresh
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
@@ -121,7 +122,7 @@ export default function CallHistoryScreen() {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         useNativeDriver: true,
       }),
       Animated.spring(slideAnim, {
@@ -248,7 +249,7 @@ export default function CallHistoryScreen() {
 
     Animated.timing(itemAnim, {
       toValue: 1,
-      duration: 300,
+      duration: durations.slow.ms,
       delay: getStaggerDelay(index, 50),
       useNativeDriver: true,
     }).start();

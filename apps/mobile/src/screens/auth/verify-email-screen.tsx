@@ -8,6 +8,7 @@
  * @since v0.9.2
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
@@ -66,7 +67,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 400,
+          duration: durations.smooth.ms,
           useNativeDriver: true,
         }),
         Animated.spring(scaleAnim, {

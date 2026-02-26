@@ -22,7 +22,7 @@ export const BOUNCE_ANIMATION = {
   rotateZ: [0, -10, 10, -5, 0],
   y: [0, -15, 0],
   transition: {
-    duration: 0.6,
+    duration: durations.dramatic.ms / 1000,
     times: [0, 0.2, 0.5, 0.7, 1],
     ease: 'easeInOut' as const,
   },
@@ -41,7 +41,7 @@ export const GLOW_ANIMATION = {
 };
 
 export const GLOW_TRANSITION = {
-  duration: 1.5,
+  duration: durations.ambient.ms / 1000,
   repeat: Infinity,
   ease: 'easeInOut' as const,
 } as const;
@@ -54,7 +54,7 @@ export const SHIMMER_GRADIENT =
   'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)';
 
 export const SHIMMER_TRANSITION = {
-  duration: 2,
+  duration: durations.loop.ms / 1000,
   repeat: Infinity,
   ease: 'linear' as const,
 } as const;
@@ -79,7 +79,7 @@ export const SUPER_BOUNCE_ANIMATION = {
   rotateZ: [0, -20, 20, -10, 10, -3, 0],
   y: [0, -25, 0],
   transition: {
-    duration: 0.8,
+    duration: durations.extended.ms / 1000,
     times: [0, 0.15, 0.35, 0.5, 0.65, 0.8, 1],
     ease: 'easeInOut' as const,
   },

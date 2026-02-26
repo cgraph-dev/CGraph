@@ -4,6 +4,7 @@
  * Visual theme preview card with selection and delete actions.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, TrashIcon, CheckIcon } from '@heroicons/react/24/outline';
@@ -84,7 +85,7 @@ export function ThemeCard({ theme, isActive, onSelect, onDelete, isPremium }: Th
                         }
                   }
                   transition={{
-                    duration: 3 + Math.random() * 2,
+                    duration: durations.cinematic.ms / 1000 + Math.random() * 2,
                     repeat: Infinity,
                     delay: Math.random() * 2,
                     ease: 'linear',

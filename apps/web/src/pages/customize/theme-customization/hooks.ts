@@ -3,6 +3,7 @@
  * @module pages/customize/theme-customization
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore, getThemePreset } from '@/modules/settings/store/customization';
@@ -117,7 +118,7 @@ export function useThemeCustomization() {
         applyThemeToStore(themeId, category);
         toast('👁️ Previewing theme - Purchase premium to save', {
           icon: '✨',
-          duration: 3000,
+          duration: durations.cinematic.ms,
         });
         return;
       }
@@ -191,7 +192,7 @@ export function useThemeCustomization() {
         store.setProfileTheme(theme.id);
         toast('👁️ Previewing theme - Unlock to save', {
           icon: '✨',
-          duration: 3000,
+          duration: durations.cinematic.ms,
         });
         return;
       }

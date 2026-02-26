@@ -3,6 +3,7 @@
  * 5 premium variants with blur effects, gradients, and animations
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -50,12 +51,12 @@ export default function GlassCard({
         Animated.sequence([
           Animated.timing(shimmerAnim, {
             toValue: 1,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
           Animated.timing(shimmerAnim, {
             toValue: 0,
-            duration: 2000,
+            duration: durations.loop.ms,
             useNativeDriver: true,
           }),
         ])
@@ -66,12 +67,12 @@ export default function GlassCard({
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.02,
-            duration: 1500,
+            duration: durations.ambient.ms,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1500,
+            duration: durations.ambient.ms,
             useNativeDriver: true,
           }),
         ])

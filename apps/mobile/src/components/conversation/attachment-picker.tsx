@@ -8,6 +8,7 @@
  * @since v0.7.29
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo, useCallback, useRef, useEffect } from 'react';
 import {
   View,
@@ -117,7 +118,7 @@ export const AttachmentPicker = memo(function AttachmentPicker({
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
         }),
       ]).start();
@@ -125,12 +126,12 @@ export const AttachmentPicker = memo(function AttachmentPicker({
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 300,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
       ]).start();

@@ -4,6 +4,7 @@
  * Displays the titles selection list with animations.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { EyeIcon } from '@heroicons/react/24/outline';
@@ -40,7 +41,7 @@ function AnimatedTitleText({
       case 'fade':
         return {
           animate: { opacity: [0.5, 1, 0.5] },
-          transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+          transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
         };
       case 'glow':
         return {
@@ -51,7 +52,7 @@ function AnimatedTitleText({
               '0 0 4px currentColor',
             ],
           },
-          transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+          transition: { duration: durations.ambient.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
         };
       case 'pulse':
         return {
@@ -63,7 +64,7 @@ function AnimatedTitleText({
           animate: {
             backgroundPosition: ['200% center', '-200% center'],
           },
-          transition: { duration: 3, repeat: Infinity, ease: 'linear' },
+          transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'linear' },
           style: {
             backgroundImage: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), ${gradient}`,
             backgroundSize: '200% 100%',
@@ -95,17 +96,17 @@ function AnimatedTitleText({
               'none',
             ],
           },
-          transition: { duration: 0.5, repeat: Infinity, repeatDelay: 2 },
+          transition: { duration: durations.slower.ms / 1000, repeat: Infinity, repeatDelay: 2 },
         };
       case 'wave':
         return {
           animate: { y: [0, -4, 0, 4, 0] },
-          transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+          transition: { duration: durations.ambient.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
         };
       case 'bounce':
         return {
           animate: { y: [0, -8, 0] },
-          transition: { duration: 0.6, repeat: Infinity, ease: 'easeOut' },
+          transition: { duration: durations.dramatic.ms / 1000, repeat: Infinity, ease: 'easeOut' },
         };
       case 'neon-flicker':
         return {
@@ -117,7 +118,7 @@ function AnimatedTitleText({
               '0 0 7px currentColor, 0 0 10px currentColor, 0 0 21px currentColor',
             ],
           },
-          transition: { duration: 2, repeat: Infinity, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1] },
+          transition: { duration: durations.loop.ms / 1000, repeat: Infinity, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1] },
         };
       case 'none':
       default:

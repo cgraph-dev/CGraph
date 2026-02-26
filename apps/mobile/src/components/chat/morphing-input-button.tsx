@@ -8,6 +8,7 @@
  * @since v0.8.2
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo, useEffect, useRef } from 'react';
 import {
   TouchableOpacity,
@@ -85,7 +86,7 @@ export const MorphingInputButton = memo(function MorphingInputButton({
         Animated.sequence([
           Animated.timing(scaleAnim, {
             toValue: 0,
-            duration: 100,
+            duration: durations.instant.ms,
             useNativeDriver: true,
             easing: Easing.out(Easing.quad),
           }),
@@ -99,20 +100,20 @@ export const MorphingInputButton = memo(function MorphingInputButton({
         // Rotate from -180 to 0
         Animated.timing(rotateAnim, {
           toValue: 0,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
           easing: Easing.out(Easing.cubic),
         }),
         // Fade in send icon
         Animated.timing(opacitySendAnim, {
           toValue: 1,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
         // Fade out mic icon
         Animated.timing(opacityMicAnim, {
           toValue: 0,
-          duration: 100,
+          duration: durations.instant.ms,
           useNativeDriver: true,
         }),
       ]).start();
@@ -123,7 +124,7 @@ export const MorphingInputButton = memo(function MorphingInputButton({
         Animated.sequence([
           Animated.timing(scaleAnim, {
             toValue: 0,
-            duration: 100,
+            duration: durations.instant.ms,
             useNativeDriver: true,
             easing: Easing.out(Easing.quad),
           }),
@@ -137,20 +138,20 @@ export const MorphingInputButton = memo(function MorphingInputButton({
         // Rotate from 0 to -180
         Animated.timing(rotateAnim, {
           toValue: 1,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
           easing: Easing.out(Easing.cubic),
         }),
         // Fade out send icon
         Animated.timing(opacitySendAnim, {
           toValue: 0,
-          duration: 100,
+          duration: durations.instant.ms,
           useNativeDriver: true,
         }),
         // Fade in mic icon
         Animated.timing(opacityMicAnim, {
           toValue: 1,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
       ]).start();
@@ -163,7 +164,7 @@ export const MorphingInputButton = memo(function MorphingInputButton({
       Animated.loop(
         Animated.timing(rotateAnim, {
           toValue: -1, // Reverse rotation
-          duration: 500,
+          duration: durations.slower.ms,
           useNativeDriver: true,
           easing: Easing.linear,
         })

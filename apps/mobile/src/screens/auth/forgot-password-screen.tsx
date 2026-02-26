@@ -2,6 +2,7 @@
  * Forgot password screen for initiating password reset flow.
  * @module screens/auth/forgot-password-screen
  */
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -60,13 +61,13 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       return Animated.parallel([
         Animated.timing(anim, {
           toValue: 1,
-          duration: 400,
+          duration: durations.smooth.ms,
           delay: index * 100,
           useNativeDriver: true,
         }),
         Animated.timing(translateYAnims[index], {
           toValue: 0,
-          duration: 400,
+          duration: durations.smooth.ms,
           delay: index * 100,
           useNativeDriver: true,
         }),
@@ -79,12 +80,12 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       Animated.sequence([
         Animated.timing(glowOpacity, {
           toValue: 0.6,
-          duration: 2000,
+          duration: durations.loop.ms,
           useNativeDriver: true,
         }),
         Animated.timing(glowOpacity, {
           toValue: 0.3,
-          duration: 2000,
+          duration: durations.loop.ms,
           useNativeDriver: true,
         }),
       ])

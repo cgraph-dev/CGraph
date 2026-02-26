@@ -9,7 +9,7 @@ import { useOfflineQueue } from '../useOfflineQueue';
 import * as OfflineQueue from '../../lib/offline/offline-queue';
 
 // Mock the OfflineQueue module
-jest.mock('../../lib/offline/OfflineQueue', () => ({
+jest.mock('../../lib/offline/offline-queue', () => ({
   enqueue: jest.fn(),
   dequeue: jest.fn(),
   getQueue: jest.fn(),

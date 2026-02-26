@@ -10,6 +10,7 @@
  * @updated v0.8.2 - Added particle explosion effect for web parity
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { memo, useCallback, useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSequence, withSpring, withTiming, interpolate, runOnJS, Easing as ReanimatedEasing, type SharedValue } from 'react-native-reanimated';
@@ -141,7 +142,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
 
     // Emoji "jump" animation
     bounceAnim.value = withSequence(
-      withTiming(-8, { duration: 100, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+      withTiming(-8, { duration: durations.instant.ms, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
       withSpring(0, { stiffness: 300, damping: 8 })
     );
 
@@ -151,7 +152,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
       particleAnim.value = 0;
       
       particleAnim.value = withTiming(1, {
-        duration: 400,
+        duration: durations.smooth.ms,
         easing: ReanimatedEasing.out(ReanimatedEasing.cubic),
       }, (finished) => {
         if (finished) {
@@ -162,8 +163,8 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
 
     // Glow pulse effect
     glowAnim.value = withSequence(
-      withTiming(1, { duration: 150, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
-      withTiming(0, { duration: 300, easing: ReanimatedEasing.in(ReanimatedEasing.quad) })
+      withTiming(1, { duration: durations.fast.ms, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+      withTiming(0, { duration: durations.slow.ms, easing: ReanimatedEasing.in(ReanimatedEasing.quad) })
     );
 
     onPress();

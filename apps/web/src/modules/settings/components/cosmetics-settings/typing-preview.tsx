@@ -4,6 +4,7 @@
  * Animated preview for typing indicator styles.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { tweens, loop } from '@/lib/animation-presets';
 
@@ -38,7 +39,7 @@ export function TypingPreview({ type }: TypingPreviewProps) {
               opacity: [0.4, 1, 0.4],
             }}
             transition={{
-              duration: 0.6,
+              duration: durations.dramatic.ms / 1000,
               repeat: Infinity,
               delay: i * 0.15,
             }}
@@ -68,7 +69,7 @@ export function TypingPreview({ type }: TypingPreviewProps) {
           key={i}
           className="h-2 w-2 rounded-full bg-gray-400"
           animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+          transition={{ duration: durations.extended.ms / 1000, repeat: Infinity, delay: i * 0.2 }}
         />
       ))}
     </div>

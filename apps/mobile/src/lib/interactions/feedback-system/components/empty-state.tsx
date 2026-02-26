@@ -2,6 +2,7 @@
  * EmptyState - Animated empty state component
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -35,14 +36,14 @@ export function EmptyState({
 
   useEffect(() => {
     if (animated) {
-      opacity.value = withTiming(1, { duration: 500 });
+      opacity.value = withTiming(1, { duration: durations.slower.ms });
       translateY.value = withSpring(0, SPRING_PRESETS.gentle);
 
       // Floating icon animation
       iconFloat.value = withRepeat(
         withSequence(
-          withTiming(-8, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-          withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+          withTiming(-8, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) })
         ),
         -1,
         true

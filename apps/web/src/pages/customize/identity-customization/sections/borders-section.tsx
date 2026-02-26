@@ -4,6 +4,7 @@
  * Displays the borders selection grid with theme filtering and animations.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Border, Rarity } from '../types';
@@ -152,7 +153,7 @@ export function BordersSection({
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{
                   delay: Math.min(index * 0.02, 0.3),
-                  layout: { duration: 0.3 },
+                  layout: { duration: durations.slow.ms / 1000 },
                 }}
               >
                 <ThemedBorderCard

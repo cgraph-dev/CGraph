@@ -2,6 +2,7 @@
  * Premium hero-style banner component.
  * @module
  */
+import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon, XMarkIcon, StarIcon } from '@heroicons/react/24/outline';
@@ -56,7 +57,7 @@ export function HeroBanner({
         animate={{
           backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
         }}
-        transition={loop({ duration: 5, ease: 'linear' })}
+        transition={loop({ duration: durations.epic.ms / 1000, ease: 'linear' })}
         className="absolute inset-0 opacity-50"
         style={{
           background:
@@ -77,7 +78,7 @@ export function HeroBanner({
           }}
           transition={{
             repeat: Infinity,
-            duration: 3 + Math.random() * 2,
+            duration: durations.cinematic.ms / 1000 + Math.random() * 2,
             delay: Math.random() * 2,
           }}
           className="absolute h-2 w-2 rounded-full bg-white/30"

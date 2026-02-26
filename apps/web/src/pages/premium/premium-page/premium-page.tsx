@@ -5,6 +5,7 @@
  * Production-ready with three subscription tiers and Stripe integration ready.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -95,7 +96,7 @@ export default function PremiumPage() {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 5 + Math.random() * 5,
+            duration: durations.epic.ms / 1000 + Math.random() * 5,
             repeat: Infinity,
             delay: Math.random() * 5,
           }}

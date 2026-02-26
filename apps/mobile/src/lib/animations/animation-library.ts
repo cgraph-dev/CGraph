@@ -523,11 +523,11 @@ export const EXIT_ANIMATIONS: Record<string, AnimationPreset> = {
 export const LOOP_ANIMATIONS = {
   pulse: {
     keyframes: [{ scale: 1 }, { scale: 1.05 }, { scale: 1 }],
-    duration: 2000,
+    duration: durations.loop.ms,
   },
   pulseBig: {
     keyframes: [{ scale: 1 }, { scale: 1.1 }, { scale: 1 }],
-    duration: 1500,
+    duration: durations.ambient.ms,
   },
   shake: {
     keyframes: [
@@ -538,7 +538,7 @@ export const LOOP_ANIMATIONS = {
       { translateX: 10 },
       { translateX: 0 },
     ],
-    duration: 500,
+    duration: durations.slower.ms,
   },
   wobble: {
     keyframes: [
@@ -550,7 +550,7 @@ export const LOOP_ANIMATIONS = {
       { translateX: -5, rotate: '-1deg' },
       { translateX: 0, rotate: '0deg' },
     ],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   bounce: {
     keyframes: [
@@ -560,7 +560,7 @@ export const LOOP_ANIMATIONS = {
       { translateY: -15 },
       { translateY: 0 },
     ],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   swing: {
     keyframes: [
@@ -571,7 +571,7 @@ export const LOOP_ANIMATIONS = {
       { rotate: '-5deg' },
       { rotate: '0deg' },
     ],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   heartbeat: {
     keyframes: [{ scale: 1 }, { scale: 1.3 }, { scale: 1 }, { scale: 1.3 }, { scale: 1 }],
@@ -579,7 +579,7 @@ export const LOOP_ANIMATIONS = {
   },
   flash: {
     keyframes: [{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   rubberBand: {
     keyframes: [
@@ -591,7 +591,7 @@ export const LOOP_ANIMATIONS = {
       { scaleX: 1.05, scaleY: 0.95 },
       { scaleX: 1, scaleY: 1 },
     ],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   jello: {
     keyframes: [
@@ -603,23 +603,23 @@ export const LOOP_ANIMATIONS = {
       { skewX: '-0.78125deg', skewY: '-0.78125deg' },
       { skewX: '0deg', skewY: '0deg' },
     ],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   glow: {
     keyframes: [{ opacity: 0.5 }, { opacity: 1 }, { opacity: 0.5 }],
-    duration: 2000,
+    duration: durations.loop.ms,
   },
   float: {
     keyframes: [{ translateY: 0 }, { translateY: -10 }, { translateY: 0 }],
-    duration: 3000,
+    duration: durations.cinematic.ms,
   },
   spin: {
     keyframes: [{ rotate: '0deg' }, { rotate: '360deg' }],
-    duration: 1000,
+    duration: durations.verySlow.ms,
   },
   spinSlow: {
     keyframes: [{ rotate: '0deg' }, { rotate: '360deg' }],
-    duration: 3000,
+    duration: durations.cinematic.ms,
   },
 };
 

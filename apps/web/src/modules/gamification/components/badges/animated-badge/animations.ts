@@ -20,7 +20,7 @@ export const pulseGlowAnimation = (glowColor: string) => ({
     `0 0 8px ${glowColor}, 0 0 16px ${glowColor}`,
   ],
   transition: {
-    duration: 2,
+    duration: durations.loop.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -41,7 +41,7 @@ export const auroraAnimation = {
   backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
   opacity: [0.5, 0.8, 0.5],
   transition: {
-    duration: 5,
+    duration: durations.epic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },
@@ -52,7 +52,7 @@ export const voidDistortionAnimation = {
   scale: [1, 1.02, 0.98, 1],
   rotate: [0, 2, -2, 0],
   transition: {
-    duration: 3,
+    duration: durations.cinematic.ms / 1000,
     repeat: Infinity,
     ease: 'easeInOut' as const,
   },

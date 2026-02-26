@@ -3,6 +3,7 @@
  * @module pages/groups
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
@@ -90,7 +91,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
                 opacity: [0.2, 0.5, 0.2],
               }}
               transition={{
-                duration: 3,
+                duration: durations.cinematic.ms / 1000,
                 repeat: Infinity,
                 delay: i * 0.2,
               }}

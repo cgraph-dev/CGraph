@@ -4,6 +4,7 @@
  * Group card with 3D perspective, magnetic effects, and animations.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -65,14 +66,14 @@ export function MorphingGroupCard({
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 500,
+        duration: durations.slower.ms,
         delay,
         easing: Easing.out(Easing.back(1.5)),
         useNativeDriver: true,
       }),
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
+        duration: durations.smooth.ms,
         delay,
         useNativeDriver: true,
       }),
@@ -85,7 +86,7 @@ export function MorphingGroupCard({
       }),
       Animated.timing(rotateYAnim, {
         toValue: 0,
-        duration: 600,
+        duration: durations.dramatic.ms,
         delay,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
@@ -98,13 +99,13 @@ export function MorphingGroupCard({
         Animated.sequence([
           Animated.timing(iconMorphScale, {
             toValue: 1.1,
-            duration: 1500,
+            duration: durations.ambient.ms,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: true,
           }),
           Animated.timing(iconMorphScale, {
             toValue: 1,
-            duration: 1500,
+            duration: durations.ambient.ms,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: true,
           }),
@@ -115,13 +116,13 @@ export function MorphingGroupCard({
         Animated.sequence([
           Animated.timing(iconMorphRotate, {
             toValue: 5,
-            duration: 2000,
+            duration: durations.loop.ms,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: true,
           }),
           Animated.timing(iconMorphRotate, {
             toValue: -5,
-            duration: 2000,
+            duration: durations.loop.ms,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: true,
           }),
@@ -174,12 +175,12 @@ export function MorphingGroupCard({
           }),
           Animated.timing(glowOpacity, {
             toValue: 1,
-            duration: 150,
+            duration: durations.fast.ms,
             useNativeDriver: true,
           }),
           Animated.timing(arrowTranslate, {
             toValue: 5,
-            duration: 200,
+            duration: durations.normal.ms,
             useNativeDriver: true,
           }),
         ]).start();
@@ -208,7 +209,7 @@ export function MorphingGroupCard({
           }),
           Animated.timing(glowOpacity, {
             toValue: 0,
-            duration: 300,
+            duration: durations.slow.ms,
             useNativeDriver: true,
           }),
           Animated.spring(arrowTranslate, {
@@ -230,12 +231,12 @@ export function MorphingGroupCard({
       Animated.parallel([
         Animated.timing(scaleAnim, {
           toValue: 0.95,
-          duration: 100,
+          duration: durations.instant.ms,
           useNativeDriver: true,
         }),
         Animated.timing(iconRotate, {
           toValue: 15,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
       ]),

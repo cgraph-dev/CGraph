@@ -7,6 +7,7 @@
  * @module shared/components/AnimatedEmptyState
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
@@ -45,7 +46,7 @@ const shakeVariant: Variants = {
   visible: {
     opacity: 1,
     x: [0, -8, 8, -6, 6, -3, 3, 0],
-    transition: { duration: 0.6, ease: 'easeOut' as const },
+    transition: { duration: durations.dramatic.ms / 1000, ease: 'easeOut' as const },
   },
 };
 

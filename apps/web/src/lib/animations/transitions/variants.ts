@@ -6,7 +6,7 @@
  * notifications, loading states, skeletons, and badges.
  */
 
-import { Variants } from 'framer-motion';
+import { type Variants } from 'framer-motion';
 
 import { durations, springs } from './core';
 
@@ -231,7 +231,7 @@ export const loadingVariants: Variants = {
     scale: [1, 1.1, 1],
     opacity: [0.5, 1, 0.5],
     transition: {
-      duration: 1.5,
+      duration: durations.ambient,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -239,7 +239,7 @@ export const loadingVariants: Variants = {
   spin: {
     rotate: 360,
     transition: {
-      duration: 1,
+      duration: durations.verySlow,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -247,7 +247,7 @@ export const loadingVariants: Variants = {
   bounce: {
     y: [0, -10, 0],
     transition: {
-      duration: 0.6,
+      duration: durations.dramatic,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -260,7 +260,7 @@ export const skeletonVariants: Variants = {
   pulse: {
     opacity: [0.3, 0.6, 0.3],
     transition: {
-      duration: 1.5,
+      duration: durations.ambient,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -268,7 +268,7 @@ export const skeletonVariants: Variants = {
   shimmer: {
     backgroundPosition: ['200% 0', '-200% 0'],
     transition: {
-      duration: 2,
+      duration: durations.loop,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -343,14 +343,14 @@ export const presenceVariants: Variants = {
     scale: [1, 1.3, 1],
     opacity: 1,
     transition: {
-      scale: { duration: 0.4, times: [0, 0.5, 1] },
+      scale: { duration: durations.smooth, times: [0, 0.5, 1] },
       opacity: { duration: durations.normal },
     },
   },
   away: {
     opacity: [0.5, 0.8, 0.5],
     transition: {
-      duration: 2,
+      duration: durations.loop,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -424,11 +424,11 @@ export const voteFeedbackVariants: Variants = {
   upvote: {
     scale: [1, 1.4, 1],
     y: [0, -6, 0],
-    transition: { duration: 0.4, times: [0, 0.3, 1] },
+    transition: { duration: durations.smooth, times: [0, 0.3, 1] },
   },
   downvote: {
     scale: [1, 1.4, 1],
     y: [0, 6, 0],
-    transition: { duration: 0.4, times: [0, 0.3, 1] },
+    transition: { duration: durations.smooth, times: [0, 0.3, 1] },
   },
 };

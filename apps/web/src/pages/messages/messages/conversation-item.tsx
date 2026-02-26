@@ -4,6 +4,7 @@
  * Single conversation item in the sidebar list.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,7 +144,7 @@ export function ConversationItem({
                 exit={{ scale: 0, rotate: 180 }}
                 transition={{
                   scale: {
-                    duration: 2,
+                    duration: durations.loop.ms / 1000,
                     repeat: Infinity,
                     ease: 'easeInOut',
                   },

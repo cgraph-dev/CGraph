@@ -9,6 +9,7 @@
  * - Virtual list for performance
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import {
   View,
@@ -183,7 +184,7 @@ export default function EmojiPicker({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 200,
+          duration: durations.normal.ms,
           useNativeDriver: true,
         }),
         Animated.spring(slideAnim, {
@@ -197,12 +198,12 @@ export default function EmojiPicker({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
           toValue: anchor === 'bottom' ? 300 : -300,
-          duration: 150,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }),
       ]).start();

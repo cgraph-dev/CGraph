@@ -6,6 +6,7 @@
  * @module screens/messages/ConversationScreen/hooks
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback } from 'react';
 import { useSharedValue, withTiming, withSpring, withDelay, runOnJS, Easing, type SharedValue } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
@@ -71,7 +72,7 @@ export function useMessageActions(): UseMessageActionsReturn {
       actionItemAnims.forEach((anim) => (anim.value = 0));
 
       // Staggered entrance animation
-      backdropAnim.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.cubic) });
+      backdropAnim.value = withTiming(1, { duration: durations.normal.ms, easing: Easing.out(Easing.cubic) });
       menuScaleAnim.value = withSpring(1, { stiffness: 180, damping: 10 });
       messageActionsAnim.value = withSpring(1, { stiffness: 120, damping: 9 });
       actionItemAnims.forEach((anim, index) => {
@@ -88,13 +89,13 @@ export function useMessageActions(): UseMessageActionsReturn {
    * Close message actions menu with animation.
    */
   const closeMessageActions = useCallback(() => {
-    backdropAnim.value = withTiming(0, { duration: 200 });
-    menuScaleAnim.value = withTiming(0.9, { duration: 200 });
+    backdropAnim.value = withTiming(0, { duration: durations.normal.ms });
+    menuScaleAnim.value = withTiming(0.9, { duration: durations.normal.ms });
     const afterClose = () => {
       setShowMessageActions(false);
       setSelectedMessage(null);
     };
-    messageActionsAnim.value = withTiming(0, { duration: 200 }, (finished) => {
+    messageActionsAnim.value = withTiming(0, { duration: durations.normal.ms }, (finished) => {
       if (finished) runOnJS(afterClose)();
     });
   }, [backdropAnim, menuScaleAnim, messageActionsAnim]);

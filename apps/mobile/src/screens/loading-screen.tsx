@@ -16,6 +16,7 @@
  * @since v0.8.1
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -96,13 +97,13 @@ function FloatingParticle({ delay, startX, size, duration, color }: ParticleProp
         Animated.sequence([
           Animated.timing(opacity, {
             toValue: 0.8,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             delay,
             useNativeDriver: true,
           }),
           Animated.timing(opacity, {
             toValue: 0,
-            duration: 1000,
+            duration: durations.verySlow.ms,
             delay: duration - 2000,
             useNativeDriver: true,
           }),
@@ -174,7 +175,7 @@ export default function LoadingScreen() {
       }),
       Animated.timing(logoOpacity, {
         toValue: 1,
-        duration: 600,
+        duration: durations.dramatic.ms,
         useNativeDriver: true,
       }),
     ]).start();
@@ -184,13 +185,13 @@ export default function LoadingScreen() {
       Animated.sequence([
         Animated.timing(logoScale, {
           toValue: 1.05,
-          duration: 1500,
+          duration: durations.ambient.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(logoScale, {
           toValue: 1,
-          duration: 1500,
+          duration: durations.ambient.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
@@ -212,12 +213,12 @@ export default function LoadingScreen() {
       Animated.sequence([
         Animated.timing(glowOpacity, {
           toValue: 0.8,
-          duration: 2000,
+          duration: durations.loop.ms,
           useNativeDriver: true,
         }),
         Animated.timing(glowOpacity, {
           toValue: 0.3,
-          duration: 2000,
+          duration: durations.loop.ms,
           useNativeDriver: true,
         }),
       ])
@@ -227,7 +228,7 @@ export default function LoadingScreen() {
     Animated.parallel([
       Animated.timing(textOpacity, {
         toValue: 1,
-        duration: 600,
+        duration: durations.dramatic.ms,
         delay: 300,
         useNativeDriver: true,
       }),
@@ -244,7 +245,7 @@ export default function LoadingScreen() {
       Animated.sequence([
         Animated.timing(progressWidth, {
           toValue: 1,
-          duration: 2000,
+          duration: durations.loop.ms,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: false,
         }),
@@ -260,7 +261,7 @@ export default function LoadingScreen() {
     Animated.loop(
       Animated.timing(shimmerTranslate, {
         toValue: SCREEN_WIDTH,
-        duration: 1500,
+        duration: durations.ambient.ms,
         easing: Easing.linear,
         useNativeDriver: true,
       })

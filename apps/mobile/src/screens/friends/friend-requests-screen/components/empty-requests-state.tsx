@@ -4,6 +4,7 @@
  * Animated empty state for friend requests.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
@@ -29,8 +30,8 @@ export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
     // Pulse animation
     pulseAnim.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        withTiming(1.1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: durations.ambient.ms, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
@@ -39,8 +40,8 @@ export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
     // Float animation
     floatAnim.value = withRepeat(
       withSequence(
-        withTiming(-10, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+        withTiming(-10, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: durations.loop.ms, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false

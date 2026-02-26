@@ -3,6 +3,7 @@
  * @module pages/friends
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlusIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
@@ -76,7 +77,7 @@ export function FriendSuggestions() {
               key={suggestion.id}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: durations.normal.ms / 1000 } }}
               className="relative flex w-40 shrink-0 flex-col items-center rounded-xl bg-dark-800 p-4 ring-1 ring-gray-700/50"
             >
               {/* Dismiss button */}

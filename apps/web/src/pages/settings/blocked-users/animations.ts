@@ -13,5 +13,5 @@ export const containerVariants = {
 export const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: 20, transition: { duration: 0.2 } },
+  exit: { opacity: 0, x: 20, transition: { duration: durations.normal.ms / 1000 } },
 };

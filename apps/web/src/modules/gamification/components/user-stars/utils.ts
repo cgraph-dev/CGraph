@@ -4,6 +4,7 @@
  * Helper functions for tier calculations and progress tracking.
  */
 
+import { durations } from '@cgraph/animation-constants';
 import type { UserStarsTier } from './types';
 import { USER_TIERS } from './constants';
 import { springs } from '@/lib/animation-presets';
@@ -89,7 +90,7 @@ export const pulseVariants = {
     scale: [1, 1.1, 1],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 2,
+      duration: durations.loop.ms / 1000,
       repeat: Infinity,
       repeatType: 'reverse' as const,
     },
