@@ -79,8 +79,8 @@ CGraph.Supervisor
 ├── CGraph.ReadRepo               (read replica, falls back to primary)
 ├── Phoenix.PubSub                (PG2 adapter, auto-clusters via Erlang distribution)
 ├── DNSCluster                    (Fly.io multi-region clustering)
-├── Redix                         (Redis connection pool, optional)
-├── CGraph.Redis                  (Redis GenServer wrapper)
+├── Redix                         (Redis connection pool, conditional — started only when `redis_enabled?`)
+├── CGraph.Redis                  (Redis GenServer wrapper, conditional — started only when `redis_enabled?`)
 ├── CGraph.RateLimiter.Distributed (sliding window, Redis or ETS fallback)
 ├── OpenTelemetry                 (distributed tracing setup)
 ├── CGraph.CacheSupervisor        (3-tier cache: L1 ETS, L2 Cachex, L3 Redis)
@@ -213,7 +213,7 @@ GET    /api/v1/users/:id/profile
 - JSON request/response format
 - Controller + JSON view pairs (e.g., `message_controller.ex` + `message_json.ex`)
 - `FallbackController` for standardized error responses
-- `ChangestJSON` for Ecto changeset error rendering
+- `ChangesetJSON` for Ecto changeset error rendering
 - Cursor-based pagination for large collections
 - API versioning via `ApiVersion` plug
 

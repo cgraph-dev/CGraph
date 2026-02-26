@@ -110,6 +110,7 @@ apps/backend/
 │   │   │   ├── ai_channel.ex           # Streaming AI responses
 │   │   │   ├── document_channel.ex     # Collaborative editing (Yjs)
 │   │   │   ├── backpressure.ex         # Message flood prevention
+│   │   │   ├── socket_security.ex      # Top-level socket security module
 │   │   │   └── socket_security/        # Channel-level authorization
 │   │   ├── plugs/
 │   │   │   ├── auth_pipeline.ex        # Guardian JWT pipeline
@@ -251,6 +252,8 @@ apps/backend/
 │   │   │   ├── notifications.ex       # CRUD
 │   │   │   ├── delivery.ex           # Delivery logic
 │   │   │   ├── push_service/         # Push notification service
+│   │   │   ├── push_service.ex       # Push notification top-level module
+│   │   │   ├── push_tokens.ex        # Device push token management
 │   │   │   └── queries.ex            # Query helpers
 │   │   │
 │   │   ├── encryption/                # Encryption context
@@ -341,9 +344,12 @@ apps/backend/
 │   │   │   └── user_manager.ex       # OAuth user creation/linking
 │   │   │
 │   │   ├── subscriptions/             # Premium tiers
+│   │   │   ├── subscriptions.ex      # Subscriptions context facade
 │   │   │   ├── tier_limits/          # Feature gating per tier
+│   │   │   ├── tier_limits.ex        # Tier limits module
 │   │   │   ├── tier_feature.ex       # Feature schema
-│   │   │   └── tier_limit.ex         # Limit schema
+│   │   │   ├── tier_limit.ex         # Limit schema
+│   │   │   └── user_tier_override.ex # Per-user tier overrides
 │   │   │
 │   │   ├── presence/                  # Online presence tracking
 │   │   │   ├── tracker.ex            # Presence tracker

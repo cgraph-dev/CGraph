@@ -183,14 +183,14 @@ Widespread use of `eslint-disable` comments indicating type safety workarounds:
   (6), `packages/socket/src/phoenixClient.ts` (3), `packages/api-client/src/client.ts` (4),
   `packages/crypto/src/tripleRatchet.ts`
 
-### 4.3 Type Assertion Debt — 431 Annotated Casts (Originally 952)
+### 4.3 Type Assertion Debt — 434 Annotated Casts (Originally 952)
 
-431 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
+434 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
 partially refactored). While annotated with reason comments, these represent **structural type
 safety debt**:
 
 - `scripts/fix-type-assertions.mjs` documents the situation
-- Affects 133 web files and multiple package files
+- Affects 134 web files and multiple package files
 - Original intent was to replace with runtime type guards; only ~40 were actually replaced
 
 ### 4.4 Deprecated Code Still Present
@@ -227,9 +227,9 @@ contains 7 deprecated type definitions awaiting replacement with portable types 
 The `compact_updates` function is a no-op. This means CRDT document state grows unboundedly in
 memory, which will cause issues with long-lived documents (`docs/V1_ACTION_PLAN.md` Session 37 §P1).
 
-### 5.3 useMemo/useCallback Debt — 1,112 Instances
+### 5.3 useMemo/useCallback Debt — 1,116 Instances
 
-1,112 `useMemo`/`useCallback` hooks across ~269 files cannot be removed until React Compiler
+1,116 `useMemo`/`useCallback` hooks across ~271 files cannot be removed until React Compiler
 (`babel-plugin-react-compiler`) is enabled. These are technically unnecessary with React 19 but
 required without the compiler (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
 
@@ -414,8 +414,8 @@ From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | Animation Standards (Rule 4) | ~75% — ~100+ dynamic inline values remain                    |
 | Mobile File Size (Rule 8)    | ~60% — 103 mobile TSX files over 300 lines                   |
 | Testing (Rule 9)             | **FAIL** — 17.9% web test coverage vs 100% target            |
-| Type Safety (Rule 11)        | ~80% — 431 `as` casts annotated (originally 952)             |
-| React 19 (Rule 12)           | ~98% — React Compiler not enabled, 1,112 useMemo/useCallback |
+| Type Safety (Rule 11)        | ~80% — 434 `as` casts annotated (originally 952)             |
+| React 19 (Rule 12)           | ~98% — React Compiler not enabled, 1,116 useMemo/useCallback |
 
 ### 13.3 Wave Task Completion
 
@@ -448,8 +448,8 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 ### P2 — Medium Priority
 
 11. **Split 103 oversized mobile TSX files** — CI warns but doesn't block
-12. **Refactor 431 type assertion annotations** — Replace with type guards
-13. **Enable React Compiler** — Allows removal of 1,112 useMemo/useCallback hooks
+12. **Refactor 434 type assertion annotations** — Replace with type guards
+13. **Enable React Compiler** — Allows removal of 1,116 useMemo/useCallback hooks
 14. **Clean up deprecated files** — 10+ deprecated shims still in codebase
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
 16. **Automate key rotation** — Currently manual process
@@ -483,7 +483,7 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 | P3 Long-term items           | 8      |
 | Active TODO comments in code | 9      |
 | eslint-disable suppressions  | 400+   |
-| Type assertion annotations   | 431    |
+| Type assertion annotations   | 434    |
 | Deprecated files/annotations | 10+    |
 | Missing web test files       | ~1,831 |
 | Oversized mobile TSX files   | 103    |

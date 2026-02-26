@@ -100,7 +100,7 @@ Source: [`apps/landing/package.json`](apps/landing/package.json)
 - **Tasks**: `build`, `dev`, `lint`, `lint:fix`, `test`, `typecheck`, `clean`, `size`
 - **Global env dependencies**: `**/.env.*local`
 - **Build env vars**: `VITE_API_URL`, `VITE_SOCKET_URL`, `VITE_SENTRY_DSN`, `VITE_*`
-- **Build outputs**: `dist/**`, `.next/**`, `build/**`
+- **Build outputs**: `dist/**`, `.next/**`, `!.next/cache/**`, `build/**`
 
 ---
 
