@@ -13,6 +13,15 @@ import {
   AUDIO_REGEX,
 } from './constants';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing media embeds.
+ *
+ * @param content - The content to render.
+ * @param onLoad - The on load.
+ */
 export function useMediaEmbeds(content: string, onLoad?: () => void) {
   const [embeds, setEmbeds] = useState<LinkMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -13,6 +13,12 @@ interface AmbientParticlesProps {
   count?: number;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Ambient Particles component.
+ */
 export function AmbientParticles({ count = 10 }: AmbientParticlesProps) {
   return (
     <>
@@ -41,6 +47,12 @@ export function AmbientParticles({ count = 10 }: AmbientParticlesProps) {
   );
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Profile Loading State — loading placeholder.
+ */
 export function ProfileLoadingState() {
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
@@ -65,6 +77,12 @@ interface ProfileErrorStateProps {
   error: string | null;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Profile Error State — fallback UI for error states.
+ */
 export function ProfileErrorState({ error }: ProfileErrorStateProps) {
   const navigate = useNavigate();
 
@@ -93,6 +111,12 @@ interface ProfileInvalidUserProps {
   onGoBack: () => void;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Profile Invalid User component.
+ */
 export function ProfileInvalidUser({ onGoBack }: ProfileInvalidUserProps) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-dark-900 p-8">

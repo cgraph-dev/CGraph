@@ -5,6 +5,12 @@
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import type { BubbleStylesSectionProps } from './types';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Bubble Styles Section section component.
+ */
 export function BubbleStylesSection({
   bubbles,
   selectedBubble,

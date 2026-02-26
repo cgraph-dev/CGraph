@@ -11,6 +11,12 @@ interface CompleteStepProps {
   onDone: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Complete Step component.
+ */
 export function CompleteStep({ onDone }: CompleteStepProps) {
   return (
     <motion.div

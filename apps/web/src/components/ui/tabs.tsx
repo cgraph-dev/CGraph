@@ -21,6 +21,12 @@ export interface TabsProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Tabs component.
+ */
 export function Tabs({ 
   children, 
   value: controlledValue, 
@@ -50,6 +56,12 @@ export interface TabsListProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Tabs List component.
+ */
 export function TabsList({ children, className = '' }: TabsListProps) {
   return (
     <div 
@@ -72,6 +84,12 @@ export interface TabsTriggerProps {
   disabled?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Tabs Trigger component.
+ */
 export function TabsTrigger({ children, value, className = '', disabled = false }: TabsTriggerProps) {
   const ctx = use(TabsContext);
   if (!ctx) throw new Error('TabsTrigger must be used within Tabs');
@@ -107,6 +125,12 @@ export interface TabsContentProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Tabs Content component.
+ */
 export function TabsContent({ children, value, className = '' }: TabsContentProps) {
   const ctx = use(TabsContext);
   if (!ctx) throw new Error('TabsContent must be used within Tabs');

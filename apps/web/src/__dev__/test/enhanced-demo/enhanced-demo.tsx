@@ -36,6 +36,9 @@ import type {
   MatrixTheme,
 } from './types';
 
+/**
+ * Enhanced Demo component.
+ */
 export default function EnhancedDemo() {
   const [activeSection, setActiveSection] = useState<DemoSection>('holographic');
   const [showBackground, setShowBackground] = useState(true);

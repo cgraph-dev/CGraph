@@ -10,6 +10,12 @@ interface StickerSearchBarProps {
   onSearchChange: (value: string) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Search Bar component.
+ */
 export function StickerSearchBar({ searchQuery, onSearchChange }: StickerSearchBarProps) {
   return (
     <div className="border-b border-white/5 px-4 py-2">

@@ -18,6 +18,9 @@ import { BlockedUserCard } from './blocked-user-card';
 import { EmptyState } from './empty-state';
 import { ConfirmUnblockModal } from './confirm-unblock-modal';
 
+/**
+ * Blocked Users component.
+ */
 export default function BlockedUsers() {
   const {
     searchQuery,

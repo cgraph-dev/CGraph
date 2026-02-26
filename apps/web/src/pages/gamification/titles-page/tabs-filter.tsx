@@ -7,6 +7,12 @@
 import type { TabsFilterProps } from './types';
 import { TABS } from './constants';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Tabs Filter component.
+ */
 export function TabsFilter({ selectedTab, onTabSelect }: TabsFilterProps) {
   return (
     <div className="mb-6 flex gap-2 overflow-x-auto pb-2">

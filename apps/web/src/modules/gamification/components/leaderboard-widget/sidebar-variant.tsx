@@ -20,6 +20,12 @@ interface SidebarVariantProps {
   className?: string;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Sidebar Variant component.
+ */
 export function SidebarVariant({
   entries,
   primaryColor,

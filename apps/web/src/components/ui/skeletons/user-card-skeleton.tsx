@@ -58,6 +58,12 @@ function SingleUserCardSkeleton({ variant = 'compact' }: { variant?: 'compact' |
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * User Card Skeleton display component.
+ */
 export function UserCardSkeleton({
   count = 5,
   variant = 'compact',

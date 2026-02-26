@@ -19,6 +19,16 @@ type SetState = (
 ) => void;
 type GetState = () => CalendarState;
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Creates a new category actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createCategoryActions(set: SetState, get: GetState) {
   return {
     fetchCategories: async () => {

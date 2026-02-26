@@ -10,6 +10,12 @@ interface ScheduledTimePreviewProps {
   scheduledAt: Date;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Scheduled Time Preview component.
+ */
 export function ScheduledTimePreview({ scheduledAt }: ScheduledTimePreviewProps) {
   return (
     <motion.div

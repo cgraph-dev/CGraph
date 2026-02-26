@@ -13,6 +13,12 @@ interface ProfileAboutProps {
   onBioChange: (value: string) => void;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Profile About component.
+ */
 export function ProfileAbout({
   bio,
   isOwnProfile,

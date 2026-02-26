@@ -11,6 +11,14 @@ import type { OnlineUser, OnlineStats, ActivityBreakdown } from './types';
 
 const logger = createLogger('WhosOnline');
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Hook for managing online data.
+ *
+ * @param autoRefresh - The auto refresh.
+ */
 export function useOnlineData(autoRefresh: boolean) {
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const [stats, setStats] = useState<OnlineStats | null>(null);

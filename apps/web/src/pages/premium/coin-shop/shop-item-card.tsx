@@ -18,6 +18,12 @@ interface ShopItemCardProps {
   onPurchase: (item: ShopItem) => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Shop Item Card display component.
+ */
 export function ShopItemCard({
   item,
   index,

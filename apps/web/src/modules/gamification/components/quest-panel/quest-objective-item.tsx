@@ -11,6 +11,12 @@ interface QuestObjectiveItemProps {
   index: number;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Quest Objective Item component.
+ */
 export function QuestObjectiveItem({ objective, index }: QuestObjectiveItemProps) {
   // Progress calculated for potential future use (e.g., progress bar on objective)
   const _progress = Math.min((objective.currentValue / objective.targetValue) * 100, 100);

@@ -7,6 +7,12 @@
 import { MemberItem } from './member-item';
 import type { MembersSidebarProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Members Sidebar component.
+ */
 export function MembersSidebar({ onlineMembers, offlineMembers }: MembersSidebarProps) {
   return (
     <div className="w-60 overflow-y-auto border-l border-dark-700 bg-dark-800">

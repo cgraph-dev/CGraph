@@ -18,6 +18,12 @@ interface OverallStatusBannerProps {
   totalDuration: number;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Overall Status Banner component.
+ */
 export function OverallStatusBanner({ status, totalDuration }: OverallStatusBannerProps) {
   if (status === 'idle') return null;
 

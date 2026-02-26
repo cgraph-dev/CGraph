@@ -21,6 +21,16 @@ type Set = (
 ) => void;
 type Get = () => AuthState;
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new login action.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createLoginAction(set: Set, _get: Get) {
   return async (email: string, password: string) => {
     set({ isLoading: true, error: null }, false, 'login/start');
@@ -91,6 +101,16 @@ export function createLoginAction(set: Set, _get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new get wallet challenge action.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createGetWalletChallengeAction(set: Set, _get: Get) {
   return async (walletAddress: string): Promise<WalletChallenge> => {
     try {
@@ -109,6 +129,16 @@ export function createGetWalletChallengeAction(set: Set, _get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new login with wallet action.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createLoginWithWalletAction(set: Set, _get: Get) {
   return async (walletAddress: string, signature: string) => {
     set({ isLoading: true, error: null });
@@ -135,6 +165,16 @@ export function createLoginWithWalletAction(set: Set, _get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new register action.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createRegisterAction(set: Set, _get: Get) {
   return async (email: string, username: string, password: string) => {
     set({ isLoading: true, error: null });
@@ -165,6 +205,16 @@ export function createRegisterAction(set: Set, _get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new logout action.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createLogoutAction(set: Set, get: Get) {
   return async () => {
     // Attempt server-side logout to invalidate tokens
@@ -189,6 +239,16 @@ export function createLogoutAction(set: Set, get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new refresh session action.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createRefreshSessionAction(set: Set, get: Get) {
   return async () => {
     const { refreshToken } = get();
@@ -224,6 +284,16 @@ export function createRefreshSessionAction(set: Set, get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new update user action.
+ *
+ * @param _set - The _set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createUpdateUserAction(_set: Set, get: Get) {
   return (data: Partial<User>) => {
     const { user } = get();
@@ -234,6 +304,16 @@ export function createUpdateUserAction(_set: Set, get: Get) {
   };
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates a new check auth action.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createCheckAuthAction(set: Set, get: Get) {
   return async () => {
     const { token } = get();

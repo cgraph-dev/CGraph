@@ -6,6 +6,12 @@
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Empty Comments State — fallback UI for empty data states.
+ */
 export function EmptyCommentsState() {
   return (
     <GlassCard variant="frosted" className="p-8 text-center">

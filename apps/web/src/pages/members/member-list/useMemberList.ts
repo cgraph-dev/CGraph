@@ -11,6 +11,12 @@ import type { Member, UserGroup, SortField, SortOrder } from './types';
 const logger = createLogger('MemberList');
 const PER_PAGE = 25;
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Hook for managing member list.
+ */
 export function useMemberList() {
   // State
   const [members, setMembers] = useState<Member[]>([]);

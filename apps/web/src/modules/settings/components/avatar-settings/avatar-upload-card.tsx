@@ -16,6 +16,12 @@ interface AvatarUploadCardProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Avatar Upload Card display component.
+ */
 export function AvatarUploadCard({ upload, onChange, onUpload, onCancel }: AvatarUploadCardProps) {
   return (
     <GlassCard className="p-6" variant="crystal" glow>

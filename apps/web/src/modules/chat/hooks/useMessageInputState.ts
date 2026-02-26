@@ -43,6 +43,13 @@ interface UseMessageInputStateReturn {
   resetInputState: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing message input state.
+ * @returns The result.
+ */
 export function useMessageInputState(): UseMessageInputStateReturn {
   // Input state
   const [messageInput, setMessageInput] = useState('');

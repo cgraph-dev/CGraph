@@ -14,6 +14,12 @@ interface UseMessageInputOptions {
   replyTo?: ReplyInfo | null;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing message input.
+ */
 export function useMessageInput({ onSend, onTyping, replyTo }: UseMessageInputOptions) {
   const [message, setMessage] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);

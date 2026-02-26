@@ -11,6 +11,12 @@ interface CoinBalanceCardProps {
   balance: number;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Coin Balance Card display component.
+ */
 export function CoinBalanceCard({ balance }: CoinBalanceCardProps) {
   return (
     <GlassCard variant="holographic" glow glowColor="rgba(245, 158, 11, 0.3)" className="p-4">

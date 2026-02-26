@@ -9,6 +9,12 @@ import { TrophyIcon } from '@heroicons/react/24/outline';
 import type { HeaderProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Leaderboard Header component.
+ */
 export function LeaderboardHeader({ className = '' }: HeaderProps) {
   return (
     <motion.div

@@ -7,6 +7,9 @@ interface PreviewCardProps {
   theme: ProfileThemeConfig;
 }
 
+/**
+ * Preview Card display component.
+ */
 export default function PreviewCard({ theme }: PreviewCardProps) {
   return (
     <>

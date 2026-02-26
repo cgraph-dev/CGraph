@@ -10,6 +10,12 @@ interface AuthErrorAlertProps {
   error: string | { message?: string } | null;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Error Alert — fallback UI for error states.
+ */
 export function AuthErrorAlert({ error }: AuthErrorAlertProps) {
   if (!error) return null;
 

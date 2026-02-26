@@ -28,6 +28,9 @@ interface LevelProgressProps {
   className?: string;
 }
 
+/**
+ * Level Progress component.
+ */
 export default function LevelProgress({
   variant = 'compact',
   showStreak = true,

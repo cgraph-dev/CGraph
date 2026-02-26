@@ -28,6 +28,12 @@ const logger = createLogger('QuickReply');
  * - Quote selected text
  */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Quick Reply component.
+ */
 export function QuickReply({
   threadId,
   onSubmit,

@@ -19,6 +19,9 @@ interface TagInputProps {
   className?: string;
 }
 
+/**
+ * Tag Input component.
+ */
 export default function TagInput({
   tags,
   onChange,

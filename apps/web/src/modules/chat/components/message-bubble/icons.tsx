@@ -4,6 +4,12 @@
  * SVG icon components for message actions.
  */
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Reply Icon component.
+ */
 export function ReplyIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,6 +23,12 @@ export function ReplyIcon() {
   );
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Edit Icon component.
+ */
 export function EditIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,6 +42,12 @@ export function EditIcon() {
   );
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Pin Icon component.
+ */
 export function PinIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,6 +61,12 @@ export function PinIcon() {
   );
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Forward Icon component.
+ */
 export function ForwardIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,6 +80,12 @@ export function ForwardIcon() {
   );
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Delete Icon component.
+ */
 export function DeleteIcon() {
   return (
     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,6 +99,12 @@ export function DeleteIcon() {
   );
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * File Icon component.
+ */
 export function FileIcon() {
   return (
     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

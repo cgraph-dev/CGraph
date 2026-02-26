@@ -36,7 +36,7 @@ interface SearchResultsProps {
 }
 
 /**
- *
+ * Search Results component.
  */
 export function SearchResults({
   isOpen,

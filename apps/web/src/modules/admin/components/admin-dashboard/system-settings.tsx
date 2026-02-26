@@ -7,6 +7,12 @@ import { motion } from 'framer-motion';
 
 import { ToggleSwitch, SettingsSection, SettingRow } from './shared-components';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * System Settings component.
+ */
 export function SystemSettings() {
   return (
     <motion.div

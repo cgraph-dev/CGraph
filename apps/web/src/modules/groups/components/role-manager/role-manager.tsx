@@ -22,6 +22,12 @@ import { RoleEditor } from './role-editor';
 import type { RoleManagerProps } from './types';
 import { api } from '@/lib/api';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Role Manager component.
+ */
 export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
   const { groups } = useGroupStore();
 

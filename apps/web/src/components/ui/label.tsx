@@ -11,6 +11,12 @@ export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Label component.
+ */
 export function Label({ children, required = false, className = '', ...props }: LabelProps) {
   return (
     <label

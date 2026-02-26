@@ -30,6 +30,9 @@ interface AchievementNotificationProps {
   onViewDetails?: (achievement: Achievement) => void;
 }
 
+/**
+ * Achievement Notification component.
+ */
 export default function AchievementNotification({
   notifications,
   onDismiss,

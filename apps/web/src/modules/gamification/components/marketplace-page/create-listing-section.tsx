@@ -6,6 +6,12 @@ import { useState } from 'react';
 import { useMarketplaceStore, type ItemType } from '@/modules/gamification/store';
 import { ITEM_TYPE_LABELS, type CreateListingFormData } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Create Listing Section component.
+ */
 export function CreateListingSection() {
   const { createListing, isCreating, getPriceRecommendation } = useMarketplaceStore();
 

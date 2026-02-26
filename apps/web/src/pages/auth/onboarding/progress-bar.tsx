@@ -10,6 +10,12 @@ interface ProgressBarProps {
   currentStep: number;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Progress Bar component.
+ */
 export function ProgressBar({ currentStep }: ProgressBarProps) {
   return (
     <div className="mb-8">

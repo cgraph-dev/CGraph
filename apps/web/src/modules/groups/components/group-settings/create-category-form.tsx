@@ -16,6 +16,12 @@ interface CreateCategoryFormProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Create Category Form component.
+ */
 export function CreateCategoryForm({
   show,
   name,

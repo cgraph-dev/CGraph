@@ -11,6 +11,12 @@ interface AvatarPreviewCardProps {
   displayName?: string;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Avatar Preview Card display component.
+ */
 export function AvatarPreviewCard({ avatarUrl, displayName }: AvatarPreviewCardProps) {
   return (
     <GlassCard className="p-8" variant="frosted">

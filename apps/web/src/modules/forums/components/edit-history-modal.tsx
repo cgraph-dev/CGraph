@@ -19,6 +19,9 @@ interface EditHistoryModalProps {
   onClose: () => void;
 }
 
+/**
+ * Edit History Modal dialog component.
+ */
 export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistoryModalProps) {
   const { fetchEditHistory } = useForumStore();
   const [history, setHistory] = useState<PostEditHistory[]>([]);

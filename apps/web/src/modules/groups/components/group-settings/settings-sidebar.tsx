@@ -14,6 +14,12 @@ interface SettingsSidebarProps {
   onTabChange: (tab: TabId) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Settings Sidebar component.
+ */
 export function SettingsSidebar({ group, activeTab, onTabChange }: SettingsSidebarProps) {
   return (
     <div className="w-56 border-r border-gray-700/50 bg-dark-800/50 p-4">

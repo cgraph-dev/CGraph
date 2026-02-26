@@ -13,6 +13,12 @@ interface BulkActionsBarProps {
   onBulkReject: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Bulk Actions Bar component.
+ */
 export function BulkActionsBar({
   selectedCount,
   onClearSelection,

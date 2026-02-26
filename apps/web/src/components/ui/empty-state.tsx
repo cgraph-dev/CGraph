@@ -40,6 +40,9 @@ interface EmptyStateProps {
   className?: string;
 }
 
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export default function EmptyState({
   title = 'Nothing here yet',
   message = 'No items to display.',
@@ -78,6 +81,12 @@ export default function EmptyState({
 }
 
 // Common empty state variants
+/**
+ * unknown for the ui module.
+ */
+/**
+ * No Posts Empty — fallback UI for empty data states.
+ */
 export function NoPostsEmpty({ onCreatePost }: { onCreatePost?: () => void }) {
   return (
     <EmptyState
@@ -89,6 +98,12 @@ export function NoPostsEmpty({ onCreatePost }: { onCreatePost?: () => void }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * No Comments Empty — fallback UI for empty data states.
+ */
 export function NoCommentsEmpty() {
   return (
     <EmptyState
@@ -99,6 +114,12 @@ export function NoCommentsEmpty() {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * No Members Empty — fallback UI for empty data states.
+ */
 export function NoMembersEmpty() {
   return (
     <EmptyState
@@ -109,6 +130,12 @@ export function NoMembersEmpty() {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * No Messages Empty — fallback UI for empty data states.
+ */
 export function NoMessagesEmpty({ onStartChat }: { onStartChat?: () => void }) {
   return (
     <EmptyState
@@ -120,6 +147,12 @@ export function NoMessagesEmpty({ onStartChat }: { onStartChat?: () => void }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * No Friends Empty — fallback UI for empty data states.
+ */
 export function NoFriendsEmpty({ onAddFriend }: { onAddFriend?: () => void }) {
   return (
     <EmptyState
@@ -131,6 +164,12 @@ export function NoFriendsEmpty({ onAddFriend }: { onAddFriend?: () => void }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Search No Results component.
+ */
 export function SearchNoResults({ query }: { query?: string }) {
   return (
     <EmptyState

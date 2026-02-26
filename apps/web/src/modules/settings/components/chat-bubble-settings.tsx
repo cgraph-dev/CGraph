@@ -26,6 +26,8 @@ import { CHAT_BUBBLE_PRESETS_UI, CHAT_BUBBLE_TABS } from './chat-bubble-settings
 import { tweens } from '@/lib/animation-presets';
 
 /**
+ * unknown.
+ * unknown for the settings module.
  * Chat Bubble Customization Settings
  *
  * Comprehensive UI for customizing chat bubble appearance and behavior.
@@ -33,7 +35,7 @@ import { tweens } from '@/lib/animation-presets';
  */
 
 /**
- *
+ * Chat Bubble Settings component.
  */
 export default function ChatBubbleSettings() {
   const themeStore = useChatBubbleStore();

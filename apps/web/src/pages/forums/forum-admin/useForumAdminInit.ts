@@ -38,6 +38,14 @@ interface InitDeps {
   setMembers: Dispatch<SetStateAction<MemberData[]>>;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum admin init.
+ *
+ * @param deps - The deps.
+ */
 export function useForumAdminInit(deps: InitDeps) {
   const {
     forum,

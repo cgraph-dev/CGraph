@@ -134,6 +134,12 @@ function AnimatedTitleText({
   );
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Titles Section section component.
+ */
 export function TitlesSection({
   titles,
   selectedTitle,

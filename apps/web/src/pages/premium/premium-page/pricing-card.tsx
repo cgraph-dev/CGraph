@@ -23,6 +23,12 @@ interface PricingCardProps {
   onSubscribe: (tierId: string) => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Pricing Card display component.
+ */
 export function PricingCard({
   tier,
   index,

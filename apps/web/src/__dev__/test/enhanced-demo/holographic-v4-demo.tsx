@@ -20,6 +20,12 @@ import {
 } from '@/components/enhanced/ui/holographic-ui-v4/index';
 import type { HolographicV4DemoProps } from './types';
 
+/**
+ * unknown.
+ */
+/**
+ * Holographic V4 Demo component.
+ */
 export function HolographicV4Demo({
   preset,
   setPreset,

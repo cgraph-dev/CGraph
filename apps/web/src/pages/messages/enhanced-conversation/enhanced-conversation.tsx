@@ -15,6 +15,9 @@ import { TypingIndicator } from './typing-indicator';
 import { LoadingSpinner } from './loading-spinner';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Enhanced Conversation component.
+ */
 export default function EnhancedConversation() {
   const {
     conversation,

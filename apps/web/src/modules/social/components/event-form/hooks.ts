@@ -10,6 +10,12 @@ import type { EventFormProps } from './types';
 const logger = createLogger('EventForm');
 
 // Format datetime for input
+/**
+ * Formats date time local.
+ *
+ * @param isoString - The iso string.
+ * @returns The processed result.
+ */
 function formatDateTimeLocal(isoString: string): string {
   if (!isoString) return '';
   const date = new Date(isoString);
@@ -17,6 +23,12 @@ function formatDateTimeLocal(isoString: string): string {
 }
 
 // Format date for input
+/**
+ * Formats date local.
+ *
+ * @param isoString - The iso string.
+ * @returns The processed result.
+ */
 function formatDateLocal(isoString: string): string {
   if (!isoString) return '';
   const date = new Date(isoString);
@@ -25,6 +37,12 @@ function formatDateLocal(isoString: string): string {
 
 export { formatDateTimeLocal, formatDateLocal };
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Hook for managing event form.
+ */
 export function useEventForm({ eventId, initialDate, onClose, onSuccess }: EventFormProps) {
   const { events, categories, isLoading, createEvent, updateEvent, fetchEvent } =
     useCalendarStore();

@@ -24,6 +24,12 @@ import type { ForumLeaderboardCardProps } from './types';
 import { getRankBadge } from './constants';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Leaderboard Card display component.
+ */
 export function ForumLeaderboardCard({
   forum,
   rank,

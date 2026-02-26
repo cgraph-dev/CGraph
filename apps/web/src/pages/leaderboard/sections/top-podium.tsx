@@ -13,6 +13,12 @@ import { formatValue, getRankConfig } from '../utils';
 import type { PodiumProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Top Podium component.
+ */
 export function TopPodium({ entries }: PodiumProps) {
   const navigate = useNavigate();
 

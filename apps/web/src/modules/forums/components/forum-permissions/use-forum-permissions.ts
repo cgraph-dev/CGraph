@@ -39,6 +39,12 @@ interface UseForumPermissionsReturn {
   cyclePerm: (groupId: string, permKey: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum permissions.
+ */
 export function useForumPermissions({
   targetType,
   targetId,

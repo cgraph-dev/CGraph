@@ -127,6 +127,12 @@ function fireCelebration() {
 // Component
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Full Screen Chat Effect component.
+ */
 export function FullScreenChatEffect({
   effect,
   onComplete,

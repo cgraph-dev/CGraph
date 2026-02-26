@@ -2,6 +2,12 @@
 
 import type { ToolbarButtonProps } from './quick-reply-types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Toolbar Button component.
+ */
 export function ToolbarButton({ title, onClick, children }: ToolbarButtonProps) {
   return (
     <button

@@ -1,6 +1,12 @@
 /** JobsStatusCard — displays background job queue metrics (pending, failed, completed). */
 import type { SystemMetrics } from '@/types/admin.types';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Jobs Status Card display component.
+ */
 export function JobsStatusCard({ jobs }: { jobs?: SystemMetrics['jobs'] }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">

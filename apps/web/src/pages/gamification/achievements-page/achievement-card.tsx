@@ -6,6 +6,12 @@ import type { AchievementCardProps } from './types';
 import { CATEGORIES, RARITY_COLORS } from './constants';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement Card display component.
+ */
 export function AchievementCard({ achievement, onClick }: AchievementCardProps) {
   const colors = RARITY_COLORS[achievement.rarity] || RARITY_COLORS.common;
   const progressPercent =

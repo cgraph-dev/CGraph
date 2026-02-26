@@ -14,6 +14,12 @@ interface ConfirmUnblockModalProps {
   onDismiss: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Confirm Unblock Modal dialog component.
+ */
 export function ConfirmUnblockModal({
   show,
   user,

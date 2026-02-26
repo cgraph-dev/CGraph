@@ -27,7 +27,7 @@ import {
 export type SectionId = 'borders' | 'titles' | 'badges' | 'layouts';
 
 /**
- *
+ * Hook for managing identity customization.
  */
 export function useIdentityCustomization() {
   const { user } = useAuthStore();

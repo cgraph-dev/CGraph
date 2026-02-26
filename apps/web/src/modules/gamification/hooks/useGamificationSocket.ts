@@ -44,6 +44,15 @@ import { useGamificationSocketStore } from './gamificationSocketStore';
 
 // ==================== HOOKS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing gamification socket.
+ *
+ * @param token - Authentication token.
+ * @param userId - The user id.
+ */
 export function useGamificationSocket(token: string | null, userId: string | null) {
   const { connect, disconnect, state } = useGamificationSocketStore();
 
@@ -60,6 +69,15 @@ export function useGamificationSocket(token: string | null, userId: string | nul
   return state;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing gamification event.
+ *
+ * @param event - The event object.
+ * @param callback - Callback function.
+ */
 export function useGamificationEvent<T = unknown>(event: string, callback: (data: T) => void) {
   const subscribe = useGamificationSocketStore((state) => state.subscribe);
   const callbackRef = useRef(callback);
@@ -74,38 +92,102 @@ export function useGamificationEvent<T = unknown>(event: string, callback: (data
   }, [event, subscribe]);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing x p updates.
+ *
+ * @param callback - Callback function.
+ */
 export function useXPUpdates(callback: (data: XPGainEvent) => void) {
   useGamificationEvent('xp_gained', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing level up.
+ *
+ * @param callback - Callback function.
+ */
 export function useLevelUp(
   callback: (data: { oldLevel: number; newLevel: number; rewards: unknown[] }) => void
 ) {
   useGamificationEvent('level_up', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing achievement unlock.
+ *
+ * @param callback - Callback function.
+ */
 export function useAchievementUnlock(callback: (data: AchievementUnlockEvent) => void) {
   useGamificationEvent('achievement_unlocked', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing cosmetic unlock.
+ *
+ * @param callback - Callback function.
+ */
 export function useCosmeticUnlock(callback: (data: CosmeticUnlockEvent) => void) {
   useGamificationEvent('cosmetic_unlocked', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing prestige update.
+ *
+ * @param callback - Callback function.
+ */
 export function usePrestigeUpdate(callback: (data: PrestigeUpdateEvent) => void) {
   useGamificationEvent('prestige_updated', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing event progress.
+ *
+ * @param callback - Callback function.
+ */
 export function useEventProgress(callback: (data: EventProgressEvent) => void) {
   useGamificationEvent('event_progress', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing event milestone.
+ *
+ * @param callback - Callback function.
+ */
 export function useEventMilestone(
   callback: (data: { eventId: string; milestone: number; reward: unknown }) => void
 ) {
   useGamificationEvent('event_milestone', callback);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing event announcements.
+ *
+ * @param callbacks - The callbacks.
+ */
 export function useEventAnnouncements(callbacks: {
   onStart?: (data: { eventId: string; name: string }) => void;
   onEndingSoon?: (data: { eventId: string; hoursRemaining: number }) => void;
@@ -116,6 +198,14 @@ export function useEventAnnouncements(callbacks: {
   useGamificationEvent('event_ended', callbacks.onEnd || (() => {}));
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing marketplace notifications.
+ *
+ * @param callback - Callback function.
+ */
 export function useMarketplaceNotifications(
   callback: (data: MarketplaceNotificationEvent) => void
 ) {
@@ -132,6 +222,12 @@ export function useMarketplaceNotifications(
 
 // ==================== NOTIFICATION TOAST HOOK ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing gamification toasts.
+ */
 export function useGamificationToasts() {
   const showToast = useCallback(
     (type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event', data: unknown) => {

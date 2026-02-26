@@ -8,6 +8,12 @@ import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/sol
 import { GlassCard } from '@/shared/components/ui';
 import type { DailyRewardsSectionProps } from './types';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Daily Rewards Section section component.
+ */
 export function DailyRewardsSection({ rewards, currentStreak, onClaim }: DailyRewardsSectionProps) {
   return (
     <div className="space-y-6">

@@ -33,7 +33,7 @@ import type {
 import { BUBBLE_STYLES, MESSAGE_EFFECTS, REACTION_STYLES } from './constants';
 
 /**
- *
+ * Hook for managing chat customization.
  */
 export function useChatCustomization() {
   const { user } = useAuthStore();

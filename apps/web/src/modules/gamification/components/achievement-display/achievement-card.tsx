@@ -23,6 +23,12 @@ interface AchievementCardProps {
   onClick: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement Card display component.
+ */
 export function AchievementCard({
   achievement,
   index,

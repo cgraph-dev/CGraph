@@ -18,6 +18,12 @@ interface OrderDetailsStepProps {
   onContinue: () => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Order Details Step component.
+ */
 export function OrderDetailsStep({
   item,
   promoCode,

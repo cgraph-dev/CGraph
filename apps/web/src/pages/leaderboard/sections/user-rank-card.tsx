@@ -11,6 +11,12 @@ import { formatValue, getRankChange } from '../utils';
 import type { UserRankCardProps } from './types';
 import { tweens, loopWithDelay } from '@/lib/animation-presets';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * User Rank Card display component.
+ */
 export function UserRankCard({ userRank, currentCategory }: UserRankCardProps) {
   return (
     <motion.div

@@ -10,6 +10,12 @@ interface ReplyIndicatorProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Reply Indicator component.
+ */
 export function ReplyIndicator({ replyToId, onCancel }: ReplyIndicatorProps) {
   return (
     <AnimatePresence>

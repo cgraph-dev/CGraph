@@ -24,6 +24,12 @@ import type {
 } from './types';
 
 // Role Section Component
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Role Section section component.
+ */
 export function RoleSection({ role, members, onMemberClick }: RoleSectionProps) {
   return (
     <div className="mb-4">
@@ -44,6 +50,12 @@ export function RoleSection({ role, members, onMemberClick }: RoleSectionProps) 
 }
 
 // Member Item Component
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Member Item component.
+ */
 export function MemberItem({ member, roleColor, onClick }: MemberItemProps) {
   const validStatuses: StatusType[] = ['online', 'idle', 'dnd', 'offline'];
   const status: StatusType = validStatuses.includes(member.user.status as StatusType)
@@ -93,6 +105,12 @@ export function MemberItem({ member, roleColor, onClick }: MemberItemProps) {
 }
 
 // Member Context Menu
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Member Context Menu component.
+ */
 export function MemberContextMenu({ member, position, isOwner, onClose }: MemberContextMenuProps) {
   const displayName = member.nickname || member.user.displayName || member.user.username;
 

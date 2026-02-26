@@ -14,6 +14,12 @@ interface BlockedUserCardProps {
   onUnblockClick: (user: BlockedUser) => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Blocked User Card display component.
+ */
 export function BlockedUserCard({ block, unblockingId, onUnblockClick }: BlockedUserCardProps) {
   return (
     <motion.div

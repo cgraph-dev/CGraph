@@ -9,6 +9,12 @@ interface PrefixBadgeProps {
   prefix: ThreadPrefix;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Prefix Badge component.
+ */
 export function PrefixBadge({ prefix }: PrefixBadgeProps) {
   return (
     <span

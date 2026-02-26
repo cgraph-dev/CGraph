@@ -10,6 +10,12 @@ interface EmptyStateProps {
   itemType: ItemType;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ itemType }: EmptyStateProps) {
   return (
     <div className="py-12 text-center text-gray-500 dark:text-gray-400">

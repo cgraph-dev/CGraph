@@ -14,6 +14,12 @@ import type { AdminUser } from '@/types/admin.types';
 // Users Tab - User management with search, ban/unban functionality
 // ============================================================================
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Users Tab component.
+ */
 export function UsersTab() {
   const {
     searchTerm,

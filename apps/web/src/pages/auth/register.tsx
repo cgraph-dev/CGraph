@@ -48,6 +48,9 @@ const headerVariants = {
   },
 };
 
+/**
+ * Register component.
+ */
 export default function Register() {
   const navigate = useNavigate();
   const reduced = prefersReducedMotion();

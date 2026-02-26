@@ -5,6 +5,12 @@ import clsx from 'clsx';
 type ColorKey = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'indigo';
 type ChangeType = 'positive' | 'negative' | 'neutral';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Metric Card display component.
+ */
 export function MetricCard({
   title,
   value,

@@ -14,6 +14,12 @@ interface ReorderModalProps {
   onSave: (parentId: string, childIds: string[]) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Reorder Modal dialog component.
+ */
 export function ReorderModal({
   parent,
   onClose,

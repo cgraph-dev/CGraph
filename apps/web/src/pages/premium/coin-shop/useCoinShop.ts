@@ -11,6 +11,12 @@ import type { CoinBundle, ShopItem, DailyBonus } from './types';
 
 const logger = createLogger('CoinShop');
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Hook for managing coin shop.
+ */
 export function useCoinShop() {
   const [coinBalance, setCoinBalance] = useState(0);
   const [purchasingBundle, setPurchasingBundle] = useState<string | null>(null);

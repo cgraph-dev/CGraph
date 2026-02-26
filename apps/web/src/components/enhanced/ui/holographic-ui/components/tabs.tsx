@@ -8,6 +8,12 @@ import { cn } from '@/lib/utils';
 import type { HoloTabsProps } from '../types';
 import { getTheme } from '../presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Tabs component.
+ */
 export function HoloTabs({
   tabs,
   activeTab,

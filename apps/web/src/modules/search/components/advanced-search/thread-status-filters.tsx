@@ -17,7 +17,7 @@ interface ThreadStatusFiltersProps {
 }
 
 /**
- *
+ * Thread Status Filters component.
  */
 export function ThreadStatusFilters({ filters, updateFilter }: ThreadStatusFiltersProps) {
   return (

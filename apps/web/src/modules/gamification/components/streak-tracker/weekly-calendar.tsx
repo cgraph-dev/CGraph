@@ -13,6 +13,12 @@ function getDayName(dateStr: string): string {
   return date.toLocaleDateString('en-US', { weekday: 'short' });
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Weekly Calendar component.
+ */
 export function WeeklyCalendar({ weeklyProgress, todayClaimed }: WeeklyCalendarProps) {
   return (
     <div className="mt-4 flex items-center justify-between gap-2">

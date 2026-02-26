@@ -24,6 +24,14 @@ export interface CallModalHandlers {
   closeVideoCallModal: () => void;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Hook for managing call modals.
+ *
+ * @param conversationId - The conversation id.
+ */
 export function useCallModals(
   conversationId: string | undefined
 ): CallModalState & CallModalHandlers {

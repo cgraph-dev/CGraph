@@ -45,6 +45,12 @@ interface SubscriptionSettings {
   includeReplies: boolean;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Subscription Button component.
+ */
 export function SubscriptionButton({
   type,
   isSubscribed,

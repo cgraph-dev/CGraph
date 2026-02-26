@@ -10,6 +10,12 @@ interface StepHeaderProps {
   currentStep: number;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Step Header component.
+ */
 export function StepHeader({ currentStep }: StepHeaderProps) {
   const step = ONBOARDING_STEPS[currentStep - 1];
 

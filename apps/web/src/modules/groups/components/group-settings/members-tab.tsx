@@ -16,6 +16,12 @@ import {
 } from './members-tab/index';
 import type { GroupMember, GroupRole, MemberAction } from './members-tab/index';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Members Tab component.
+ */
 export function MembersTab({ groupId }: MembersTabProps) {
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);

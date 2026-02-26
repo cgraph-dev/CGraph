@@ -28,6 +28,9 @@ declare global {
   }
 }
 
+/**
+ * Advanced Voice Visualizer component.
+ */
 export default function AdvancedVoiceVisualizer({
   audioUrl,
   audioStream,

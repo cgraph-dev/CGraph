@@ -11,6 +11,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getSearchResultIcon } from './utils';
 import type { DiscoverTabProps } from './types';
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Discover Tab component.
+ */
 export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTabProps) {
   const navigate = useNavigate();
 

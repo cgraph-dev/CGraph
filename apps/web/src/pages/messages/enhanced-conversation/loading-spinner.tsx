@@ -5,6 +5,12 @@
 import { motion } from 'framer-motion';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Loading Spinner — loading placeholder.
+ */
 export function LoadingSpinner() {
   return (
     <div className="flex flex-1 items-center justify-center bg-dark-900">

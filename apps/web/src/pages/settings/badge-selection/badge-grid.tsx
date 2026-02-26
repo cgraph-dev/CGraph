@@ -7,6 +7,12 @@ import { CATEGORY_ICONS, CATEGORY_LABELS } from './constants';
 import { BadgeCard } from './badge-card';
 import type { BadgeGridProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Badge Grid component.
+ */
 export function BadgeGrid({
   badgesByCategory,
   equippedBadges,

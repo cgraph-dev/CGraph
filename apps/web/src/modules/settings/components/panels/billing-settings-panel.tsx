@@ -11,6 +11,12 @@ import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Billing Settings Panel component.
+ */
 export function BillingSettingsPanel() {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);

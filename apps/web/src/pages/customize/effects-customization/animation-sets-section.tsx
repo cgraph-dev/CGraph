@@ -20,6 +20,12 @@ interface AnimationSetsSectionProps {
   onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Animation Sets Section section component.
+ */
 export function AnimationSetsSection({
   animations,
   selectedAnimation,

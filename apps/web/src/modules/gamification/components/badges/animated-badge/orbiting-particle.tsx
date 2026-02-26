@@ -5,6 +5,12 @@
 import { motion } from 'framer-motion';
 import type { ParticleProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Orbiting Particle component.
+ */
 export function OrbitingParticle({
   index,
   total,

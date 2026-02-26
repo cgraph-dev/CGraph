@@ -12,6 +12,9 @@ interface DropdownProps {
   className?: string;
 }
 
+/**
+ * Dropdown component.
+ */
 export default function Dropdown({
   trigger,
   children,
@@ -102,6 +105,12 @@ function getDropdownItemClass(disabled: boolean | undefined, danger: boolean | u
   return 'text-gray-200 hover:bg-dark-700';
 }
 
+/**
+ * unknown for the navigation module.
+ */
+/**
+ * Dropdown Item component.
+ */
 export function DropdownItem({ children, onClick, icon, danger, disabled }: DropdownItemProps) {
   return (
     <button
@@ -115,6 +124,12 @@ export function DropdownItem({ children, onClick, icon, danger, disabled }: Drop
   );
 }
 
+/**
+ * unknown for the navigation module.
+ */
+/**
+ * Dropdown Divider component.
+ */
 export function DropdownDivider() {
   return <div className="my-1 border-t border-dark-600" />;
 }

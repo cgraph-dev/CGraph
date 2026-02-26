@@ -36,7 +36,7 @@ const ACTIONS = [
 ];
 
 /**
- *
+ * Automod Settings component.
  */
 export function AutomodSettings({ groupId }: { groupId: string }) {
   const [rules, setRules] = useState<AutomodRule[]>([]);

@@ -106,6 +106,16 @@ export const api = createHttpClient({
   },
 });
 
+/**
+ * unknown for the api.ts module.
+ */
+/**
+ * Parses with.
+ *
+ * @param promise - The promise.
+ * @param schema - The schema.
+ * @returns The processed result.
+ */
 export function parseWith<T>(
   promise: Promise<AxiosResponse<unknown>>,
   schema: ZodSchema<T>
@@ -113,6 +123,15 @@ export function parseWith<T>(
   return withZod(promise, schema);
 }
 
+/**
+ * unknown for the api.ts module.
+ */
+/**
+ * Retrieves error message.
+ *
+ * @param error - The error instance.
+ * @returns The error message.
+ */
 export function getErrorMessage(error: unknown): string {
   const info = extractApiError(error);
   return info.message;

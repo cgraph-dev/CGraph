@@ -26,7 +26,7 @@ interface SavedMessage {
 }
 
 /**
- *
+ * Saved Messages component.
  */
 export function SavedMessages() {
   const [messages, setMessages] = useState<SavedMessage[]>([]);

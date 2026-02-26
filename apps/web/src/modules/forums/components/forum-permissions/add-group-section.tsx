@@ -18,6 +18,12 @@ interface AddGroupSectionProps {
   onAdd: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Add Group Section section component.
+ */
 export function AddGroupSection({
   showAdd,
   selectedGroupId,

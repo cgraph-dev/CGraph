@@ -15,6 +15,9 @@ import { ChatTab } from './chat-tab';
 import { EffectsTab } from './effects-tab';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Theme Customization component.
+ */
 export default function ThemeCustomization() {
   const [activeTab, setActiveTab] = useState<TabType>('theme');
   const theme = useThemeStore((state) => state.theme);

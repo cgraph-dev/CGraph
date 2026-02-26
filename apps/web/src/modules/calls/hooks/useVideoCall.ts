@@ -14,6 +14,12 @@ export interface UseVideoCallOptions {
   onClose: () => void;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Hook for managing video call.
+ */
 export function useVideoCall({
   isOpen,
   conversationId,

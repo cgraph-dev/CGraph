@@ -18,6 +18,12 @@ const GLASS_EFFECTS = [
   { value: 'matrix' as const, label: 'Matrix' },
 ];
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Effects Settings component.
+ */
 export function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">

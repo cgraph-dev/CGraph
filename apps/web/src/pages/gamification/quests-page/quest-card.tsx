@@ -18,6 +18,9 @@ import { getTimeLeft } from './utils';
 import ObjectiveItem from './objective-item';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * Quest Card display component.
+ */
 export default function QuestCard({
   quest,
   onAccept,

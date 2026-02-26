@@ -15,6 +15,12 @@ interface StarTooltipProps {
   postsToNext: number | null;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Star Tooltip component.
+ */
 export function StarTooltip({ tier, postCount, progress, postsToNext }: StarTooltipProps) {
   return (
     <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform opacity-0 transition-opacity duration-200 group-hover:opacity-100">

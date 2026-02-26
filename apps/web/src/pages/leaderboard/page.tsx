@@ -27,6 +27,9 @@ import {
   Pagination,
 } from './sections';
 
+/**
+ * Leaderboard Page — route-level page component.
+ */
 export default function LeaderboardPage() {
   const { user } = useAuthStore();
   const [category, setCategory] = useState<LeaderboardCategory>('xp');

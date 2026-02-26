@@ -23,6 +23,12 @@ const variantStyles: Record<AlertVariant, string> = {
   destructive: 'bg-error/10 border-error/30 text-error',
 };
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Alert component.
+ */
 export function Alert({ children, variant = 'default', className = '' }: AlertProps) {
   return (
     <div
@@ -43,6 +49,12 @@ export interface AlertDescriptionProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Alert Description component.
+ */
 export function AlertDescription({ children, className = '' }: AlertDescriptionProps) {
   return (
     <div className={`text-sm ${className}`}>
@@ -56,6 +68,12 @@ export interface AlertTitleProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Alert Title component.
+ */
 export function AlertTitle({ children, className = '' }: AlertTitleProps) {
   return (
     <h4 className={`font-medium mb-1 ${className}`}>

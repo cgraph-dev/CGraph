@@ -39,7 +39,7 @@ const ACTIVITY_LABELS: Record<string, string> = {
 };
 
 /**
- *
+ * Friend Activity Feed component.
  */
 export function FriendActivityFeed() {
   const [activities, setActivities] = useState<FriendActivity[]>([]);

@@ -11,6 +11,9 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   maxRows?: number;
 }
 
+/**
+ * Text Area component.
+ */
 function TextArea({
   label,
   error,

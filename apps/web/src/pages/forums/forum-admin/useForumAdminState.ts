@@ -19,6 +19,12 @@ import type {
   ForumAnalytics,
 } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum admin state.
+ */
 export function useForumAdminState() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();

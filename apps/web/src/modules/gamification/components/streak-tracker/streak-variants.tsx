@@ -22,6 +22,12 @@ interface WidgetVariantProps {
   className?: string;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Streak Widget Variant component.
+ */
 export function StreakWidgetVariant({
   currentStreak,
   streakMultiplier,
@@ -76,6 +82,12 @@ interface CompactVariantProps extends Pick<StreakTrackerProps, 'weeklyProgress'>
   className?: string;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Streak Compact Variant component.
+ */
 export function StreakCompactVariant({
   currentStreak,
   longestStreak,

@@ -28,6 +28,12 @@ import { AddGroupSection } from './add-group-section';
 import { PermissionOverwriteCard } from './permission-overwrite-card';
 import { EmptyPermissions } from './empty-permissions';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Permissions Panel component.
+ */
 export function ForumPermissionsPanel({
   targetType,
   targetId,

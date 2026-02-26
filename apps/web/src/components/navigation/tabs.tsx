@@ -19,6 +19,9 @@ interface TabsProps {
   className?: string;
 }
 
+/**
+ * Tabs component.
+ */
 export default function Tabs({
   tabs,
   activeTab,
@@ -89,6 +92,12 @@ interface TabPanelProps {
   tabId: string;
 }
 
+/**
+ * unknown for the navigation module.
+ */
+/**
+ * Tab Panel component.
+ */
 export function TabPanel({ children, activeTab, tabId }: TabPanelProps) {
   if (activeTab !== tabId) return null;
   return <div className="animate-fadeIn">{children}</div>;

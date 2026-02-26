@@ -81,6 +81,16 @@ interface ReportPayload {
 
 // ── Hook ─────────────────────────────────────────────────────
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Hook for managing report form.
+ *
+ * @param targetType - The target type.
+ * @param targetId - The target id.
+ * @param onClose - The on close.
+ */
 export function useReportForm(targetType: TargetType, targetId: string, onClose: () => void) {
   const [step, setStep] = useState<ReportStep>('category');
   const [selectedCategory, setSelectedCategory] = useState<ReportCategory | null>(null);

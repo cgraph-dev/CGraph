@@ -21,6 +21,12 @@ interface BillingSettingsProps {
   className?: string;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Billing Settings component.
+ */
 export function BillingSettings({ className = '' }: BillingSettingsProps) {
   const [status, setStatus] = useState<BillingStatus | null>(null);
   const [loading, setLoading] = useState(true);

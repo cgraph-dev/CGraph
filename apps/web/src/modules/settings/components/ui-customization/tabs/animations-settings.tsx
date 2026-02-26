@@ -7,6 +7,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { SettingsTabProps, UIPreferences } from './types';
 import { Select, Toggle } from './controls';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Animations Settings component.
+ */
 export function AnimationsSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">

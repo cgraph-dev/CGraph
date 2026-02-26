@@ -12,6 +12,12 @@ import type { PreviewTitle } from './types';
 
 const logger = createLogger('TitleSelection');
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing title selection.
+ */
 export function useTitleSelection() {
   const user = useAuthStore((state) => state.user);
   const { titles, equippedTitleId, equipTitle } = useGamificationStore();

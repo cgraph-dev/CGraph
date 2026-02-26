@@ -19,6 +19,13 @@ import type {
 /** Confetti palette used across confetti particles */
 const CONFETTI_COLORS = ['#ef4444', '#22c55e', '#3b82f6', '#eab308', '#ec4899'] as const;
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Snow Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateSnowParticles(): SnowParticle[] {
   return Array.from({ length: 8 }, (_, i) => ({
     id: i,
@@ -29,6 +36,13 @@ export function generateSnowParticles(): SnowParticle[] {
   }));
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Stars Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateStarsParticles(): StarsParticle[] {
   return Array.from({ length: 12 }, (_, i) => ({
     id: i,
@@ -39,6 +53,13 @@ export function generateStarsParticles(): StarsParticle[] {
   }));
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Bubbles Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateBubblesParticles(): BubblesParticle[] {
   return Array.from({ length: 6 }, (_, i) => ({
     id: i,
@@ -49,6 +70,13 @@ export function generateBubblesParticles(): BubblesParticle[] {
   }));
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Sparkles Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateSparklesParticles(): SparklesParticle[] {
   return Array.from({ length: 10 }, (_, i) => ({
     id: i,
@@ -60,6 +88,13 @@ export function generateSparklesParticles(): SparklesParticle[] {
   }));
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Confetti Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateConfettiParticles(): ConfettiParticle[] {
   return Array.from({ length: 10 }, (_, i) => ({
     id: i,
@@ -70,6 +105,13 @@ export function generateConfettiParticles(): ConfettiParticle[] {
   }));
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * generate Fireflies Particles for the customize module.
+ * @returns The newly created instance.
+ */
 export function generateFirefliesParticles(): FirefliesParticle[] {
   return Array.from({ length: 8 }, (_, i) => ({
     id: i,

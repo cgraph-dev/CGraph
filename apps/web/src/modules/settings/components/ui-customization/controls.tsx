@@ -17,6 +17,12 @@ interface ColorPickerProps {
   onChange: (value: string) => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Color Picker component.
+ */
 export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
   return (
     <div className="flex items-center justify-between">
@@ -53,6 +59,12 @@ interface SliderControlProps {
   suffix?: string;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Slider Control component.
+ */
 export function SliderControl({
   label,
   value,
@@ -100,6 +112,12 @@ interface SelectProps {
   options: SelectOption[];
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Select component.
+ */
 export function Select({ label, value, onChange, options }: SelectProps) {
   return (
     <div>
@@ -130,6 +148,12 @@ interface ToggleProps {
   onChange: (value: boolean) => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Toggle component.
+ */
 export function Toggle({ label, description, value, onChange }: ToggleProps) {
   return (
     <div className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-dark-700/30">

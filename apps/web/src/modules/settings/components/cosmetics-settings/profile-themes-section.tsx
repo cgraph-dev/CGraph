@@ -15,6 +15,12 @@ import { THEME_PRESETS_ARRAY } from './constants';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Profile Themes Section section component.
+ */
 export function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: SectionProps) {
   void _viewMode; // Reserved for future view mode toggle
   const profileThemeId = useThemeStore((s) => s.profileThemeId);

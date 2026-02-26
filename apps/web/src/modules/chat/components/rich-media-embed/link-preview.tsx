@@ -13,6 +13,9 @@ interface LinkPreviewProps {
   embed: LinkMetadata;
 }
 
+/**
+ * Link Preview component.
+ */
 export default function LinkPreview({ embed }: LinkPreviewProps) {
   return (
     <motion.a

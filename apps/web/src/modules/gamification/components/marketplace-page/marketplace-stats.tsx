@@ -4,6 +4,12 @@
  */
 import { useMarketplaceStore } from '@/modules/gamification/store';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Marketplace Stats component.
+ */
 export function MarketplaceStats() {
   const stats = useMarketplaceStore((state) => state.stats);
 

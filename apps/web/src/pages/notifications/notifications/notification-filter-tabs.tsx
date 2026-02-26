@@ -10,6 +10,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { NotificationFilterTabsProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Notification Filter Tabs component.
+ */
 export function NotificationFilterTabs({
   filter,
   onFilterChange,

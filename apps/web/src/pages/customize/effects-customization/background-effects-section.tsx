@@ -20,6 +20,12 @@ interface BackgroundEffectsSectionProps {
   onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Background Effects Section section component.
+ */
 export function BackgroundEffectsSection({
   backgrounds,
   selectedBackground,

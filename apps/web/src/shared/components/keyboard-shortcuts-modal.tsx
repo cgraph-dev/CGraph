@@ -67,6 +67,12 @@ function KeyBadge({ children }: { children: string }) {
   );
 }
 
+/**
+ * unknown for the keyboard-shortcuts-modal.tsx module.
+ */
+/**
+ * Keyboard Shortcuts Modal dialog component.
+ */
 export function KeyboardShortcutsModal() {
   const [isOpen, setIsOpen] = useState(false);
 

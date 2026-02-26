@@ -28,6 +28,12 @@ import {
 } from './hooks';
 import { ThreadLoadingSkeleton, PostVoteSidebar, PostContent, CommentsSection } from './components';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Thread View component.
+ */
 export function ThreadView({
   post,
   comments,

@@ -15,6 +15,12 @@ interface ExportImportCardProps {
   onImport: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Export Import Card display component.
+ */
 export function ExportImportCard({
   importText,
   onImportTextChange,

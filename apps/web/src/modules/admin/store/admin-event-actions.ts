@@ -15,6 +15,16 @@ type Set = (
 ) => void;
 type Get = () => AdminStore;
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Creates a new event actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createEventActions(set: Set, get: Get) {
   return {
     fetchEvents: async () => {

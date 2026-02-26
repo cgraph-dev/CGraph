@@ -8,6 +8,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { SettingsTabProps, UIPreferences } from './types';
 import { SliderControl, Select, Toggle } from './controls';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Advanced Settings component.
+ */
 export function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">

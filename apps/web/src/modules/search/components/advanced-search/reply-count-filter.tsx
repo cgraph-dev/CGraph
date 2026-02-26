@@ -15,6 +15,12 @@ interface ReplyCountFilterProps {
   ) => void;
 }
 
+/**
+ * unknown for the search module.
+ */
+/**
+ * Reply Count Filter component.
+ */
 export function ReplyCountFilter({ filters, updateFilter }: ReplyCountFilterProps) {
   return (
     <div>

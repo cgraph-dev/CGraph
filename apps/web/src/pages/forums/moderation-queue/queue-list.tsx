@@ -20,6 +20,12 @@ interface QueueListProps {
   onReject: (id: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Queue List component.
+ */
 export function QueueList({
   items,
   selectedItems,

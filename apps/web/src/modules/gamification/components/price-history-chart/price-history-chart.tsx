@@ -28,6 +28,12 @@ import { ChartHeader } from './chart-header';
 import { ChartSVG } from './chart-svg';
 import { ChartTooltip } from './chart-tooltip';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Price History Chart component.
+ */
 export function PriceHistoryChart({
   data,
   height = 300,

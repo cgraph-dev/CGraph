@@ -38,6 +38,13 @@ export interface ScheduleMessageHandlers {
   closeScheduleModal: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing schedule message.
+ * @returns The result.
+ */
 export function useScheduleMessage(): ScheduleMessageState & ScheduleMessageHandlers {
   const scheduleMessage = useChatStore((state) => state.scheduleMessage);
   const rescheduleMessage = useChatStore((state) => state.rescheduleMessage);

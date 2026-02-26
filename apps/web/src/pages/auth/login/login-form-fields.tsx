@@ -20,6 +20,12 @@ interface LoginFormFieldsProps {
   reduced: boolean;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Login Form Fields component.
+ */
 export function LoginFormFields({
   email,
   setEmail,

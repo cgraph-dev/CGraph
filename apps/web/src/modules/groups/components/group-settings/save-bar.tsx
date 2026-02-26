@@ -12,6 +12,12 @@ interface SaveBarProps {
   onReset: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Save Bar component.
+ */
 export function SaveBar({ hasChanges, isSaving, onSave, onReset }: SaveBarProps) {
   return (
     <AnimatePresence>

@@ -40,6 +40,12 @@ function getOverwriteColor(o: PermissionOverwrite, roles: RoleOption[]): string 
   return '#718096';
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Overwrite Card display component.
+ */
 export function OverwriteCard({
   overwrite,
   roles,

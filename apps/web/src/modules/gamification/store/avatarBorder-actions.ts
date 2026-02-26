@@ -23,6 +23,16 @@ type GetState = () => AvatarBorderState;
 
 // ==================== initialize ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new initialize.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createInitialize(set: SetState, _get: GetState) {
   return async () => {
     set({ isLoading: true, error: null });
@@ -79,6 +89,16 @@ export function createInitialize(set: SetState, _get: GetState) {
 
 // ==================== equipBorder ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new equip border.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createEquipBorder(set: SetState, get: GetState) {
   return async (borderId: string) => {
     const { isBorderUnlocked, allBorders } = get();
@@ -116,6 +136,16 @@ export function createEquipBorder(set: SetState, get: GetState) {
 
 // ==================== purchaseBorder ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new purchase border.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createPurchaseBorder(set: SetState, get: GetState) {
   return async (borderId: string): Promise<boolean> => {
     const { allBorders, unlockedBorders, isBorderUnlocked } = get();
@@ -166,6 +196,16 @@ export function createPurchaseBorder(set: SetState, get: GetState) {
 
 // ==================== updatePreferences ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new update preferences.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createUpdatePreferences(set: SetState, get: GetState) {
   return async (updates: Partial<BorderPreference>) => {
     set({ isSaving: true, error: null });
@@ -194,6 +234,16 @@ export function createUpdatePreferences(set: SetState, get: GetState) {
 
 // ==================== handleAchievementUnlock ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new handle achievement unlock.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createHandleAchievementUnlock(set: SetState, get: GetState) {
   return (achievementId: string) => {
     const { allBorders, unlockedBorders, isBorderUnlocked } = get();
@@ -226,6 +276,16 @@ export function createHandleAchievementUnlock(set: SetState, get: GetState) {
 
 // ==================== handleEventReward ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new handle event reward.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createHandleEventReward(set: SetState, get: GetState) {
   return (eventId: string, borderId: string) => {
     const { allBorders, unlockedBorders, isBorderUnlocked } = get();

@@ -11,6 +11,9 @@ import { OnlineUserList } from './online-user-list';
 import { ActivityBreakdownView } from './activity-breakdown-view';
 import { OnlineLegend } from './online-legend';
 
+/**
+ * Whos Online component.
+ */
 export default function WhosOnline() {
   const [viewMode, setViewMode] = useState<'list' | 'activity'>('list');
   const [showGuests, setShowGuests] = useState(true);

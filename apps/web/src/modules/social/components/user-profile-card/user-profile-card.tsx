@@ -17,6 +17,9 @@ import { HOVER_DELAY_MS, DEFAULT_PLACEHOLDER_USER } from './constants';
 import type { UserProfileCardProps, MutualFriend, CardPosition, ProfileCardUser } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * User Profile Card display component.
+ */
 export default function UserProfileCard({
   userId,
   user,

@@ -12,6 +12,12 @@ export interface SeparatorProps {
   decorative?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Separator component.
+ */
 export function Separator({ 
   orientation = 'horizontal', 
   className = '',

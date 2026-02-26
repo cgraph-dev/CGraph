@@ -22,7 +22,7 @@ interface MessageMediaContentProps {
 }
 
 /**
- *
+ * Message Media Content component.
  */
 export function MessageMediaContent({
   message,

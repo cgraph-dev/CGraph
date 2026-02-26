@@ -11,6 +11,12 @@ interface ViewModeToggleProps {
   onViewModeChange: (mode: CommentViewMode) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * View Mode Toggle component.
+ */
 export function ViewModeToggle({ viewMode, onViewModeChange }: ViewModeToggleProps) {
   return (
     <div className="flex rounded-lg border border-dark-600 bg-dark-700/50 p-0.5">

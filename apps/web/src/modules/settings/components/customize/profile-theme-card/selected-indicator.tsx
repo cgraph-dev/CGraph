@@ -10,6 +10,9 @@ interface SelectedIndicatorProps {
   theme: ProfileThemeConfig;
 }
 
+/**
+ * Selected Indicator component.
+ */
 export default function SelectedIndicator({ theme }: SelectedIndicatorProps) {
   return (
     <>

@@ -8,6 +8,12 @@
 // GRID ICON
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Grid Icon component.
+ */
 export function GridIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -23,6 +29,12 @@ export function GridIcon() {
 // LIST ICON
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * List Icon component.
+ */
 export function ListIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">

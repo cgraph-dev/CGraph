@@ -25,6 +25,12 @@ import type { EnhancedMessageBubbleProps } from './types';
 
 const logger = createLogger('EnhancedMessageBubble');
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Enhanced Message Bubble component.
+ */
 export function EnhancedMessageBubble({
   message,
   isOwn,

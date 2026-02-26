@@ -17,6 +17,12 @@ interface ChartSVGProps {
   onMouseLeave: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Chart S V G component.
+ */
 export function ChartSVG({
   dimensions,
   metrics,

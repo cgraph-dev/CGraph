@@ -12,6 +12,12 @@ interface LastSeenBadgeProps {
   className?: string;
 }
 
+/**
+ * unknown for the last-seen-badge.tsx module.
+ */
+/**
+ * Last Seen Badge component.
+ */
 export function LastSeenBadge({ lastSeenAt, status, isOnline, className = '' }: LastSeenBadgeProps) {
   if (isOnline || status === 'online') {
     return <span className={`text-xs text-green-400 ${className}`}>Online</span>;

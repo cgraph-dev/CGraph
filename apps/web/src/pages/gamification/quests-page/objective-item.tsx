@@ -13,6 +13,9 @@ interface ObjectiveItemProps {
   objective: QuestObjective;
 }
 
+/**
+ * Objective Item component.
+ */
 export default function ObjectiveItem({ objective }: ObjectiveItemProps) {
   const progress = Math.min((objective.currentValue / objective.targetValue) * 100, 100);
 

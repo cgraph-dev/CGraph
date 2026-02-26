@@ -16,6 +16,15 @@ import {
   DEFAULT_KEYBOARD_SETTINGS,
 } from './settingsStore.types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Maps settings from api.
+ *
+ * @param data - Input data.
+ * @returns The result.
+ */
 export function mapSettingsFromApi(data: ApiSettings): UserSettings {
   return {
     notifications: {
@@ -82,6 +91,15 @@ export function mapSettingsFromApi(data: ApiSettings): UserSettings {
   };
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Maps settings to api.
+ *
+ * @param settings - The settings.
+ * @returns The result.
+ */
 export function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 

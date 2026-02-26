@@ -23,6 +23,12 @@ interface EquippedBadgesShowcaseProps {
   editMode: boolean;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Equipped Badges Showcase component.
+ */
 export function EquippedBadgesShowcase({
   equippedBadges,
   achievements,
@@ -138,6 +144,12 @@ interface AchievementsShowcaseProps {
   onToggleShowAll: () => void;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Achievements Showcase component.
+ */
 export function AchievementsShowcase({
   achievements,
   totalUnlocked,

@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import type { LoadingStateProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Loading State — loading placeholder.
+ */
 export function LoadingState({ currentCategory }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-24">

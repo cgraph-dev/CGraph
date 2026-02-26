@@ -28,7 +28,7 @@ type SetState = (
 type GetState = () => CalendarState;
 
 /**
- *
+ * Creates a new event actions.
  */
 export function createEventActions(set: SetState, get: GetState) {
   return {
@@ -164,7 +164,7 @@ export function createEventActions(set: SetState, get: GetState) {
 
 // type assertion: mapping untyped API response fields to CalendarEvent interface
 /**
- *
+ * map Event From Api.
  */
 export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
   const author: Record<string, unknown> = isRecord(data.author) ? data.author : {};

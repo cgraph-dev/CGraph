@@ -25,7 +25,7 @@ interface SidebarProps {
 }
 
 /**
- *
+ * Sidebar component.
  */
 export default function Sidebar({
   user,

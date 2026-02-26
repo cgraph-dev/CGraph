@@ -15,6 +15,12 @@ import { BUBBLE_STYLE_OPTIONS } from './constants';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Bubbles Tab component.
+ */
 export function BubblesTab({
   selectedStyle,
   selectedColor,

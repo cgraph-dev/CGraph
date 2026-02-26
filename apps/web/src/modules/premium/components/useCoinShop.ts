@@ -13,6 +13,12 @@ export interface UseCoinShopOptions {
   onPurchase?: (pkg: CoinPackage) => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Hook for managing coin shop.
+ */
 export function useCoinShop({ packages, maxPackages, onPurchase }: UseCoinShopOptions) {
   const { coinBalance } = usePremiumStore();
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);

@@ -14,6 +14,12 @@ import { ITEM_TYPE_LABELS } from './types';
 import { ListingCard } from './listing-card';
 import { ListingDetailModal } from './listing-detail-modal';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Browse Section section component.
+ */
 export function BrowseSection() {
   const {
     listings,

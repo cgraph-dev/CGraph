@@ -16,6 +16,12 @@ interface ThemeSwitcherProps {
   className?: string;
 }
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Theme Switcher component.
+ */
 export function ThemeSwitcher({
   currentThemeId,
   onThemeChange,

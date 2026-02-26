@@ -26,6 +26,9 @@ const sizeConfig = {
   lg: { track: 'w-14 h-7', thumb: 'w-6 h-6', translate: 28, text: 'text-base' },
 };
 
+/**
+ * Animated Toggle component.
+ */
 export default function AnimatedToggle({
   label,
   description,

@@ -13,6 +13,12 @@ import {
 } from '@heroicons/react/24/outline';
 import type { ReferralLinkCardProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Referral Link Card display component.
+ */
 export function ReferralLinkCard({
   referralCode,
   isLoading,

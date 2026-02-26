@@ -11,6 +11,12 @@ import { useCallback } from 'react';
 import { billingService } from '@/services/billing';
 import type { PlanId } from '@/lib/stripe';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Hook for managing billing.
+ */
 export function useBilling() {
   const redirectToCheckout = useCallback(async (planId: PlanId, yearly = false) => {
     await billingService.redirectToCheckout(planId, yearly);

@@ -11,6 +11,12 @@ interface EmptyStateProps {
   onNewChat: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ searchQuery, onNewChat }: EmptyStateProps) {
   return (
     <div className="flex h-full flex-col items-center justify-center p-8">

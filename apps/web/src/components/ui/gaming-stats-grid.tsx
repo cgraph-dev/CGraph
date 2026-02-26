@@ -219,6 +219,9 @@ function StatCard({
   );
 }
 
+/**
+ * Gaming Stats Grid component.
+ */
 export default function GamingStatsGrid({
   stats,
   level = 42,

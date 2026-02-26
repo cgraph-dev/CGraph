@@ -8,6 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SORT_OPTIONS, TIME_RANGE_OPTIONS, CONTENT_TYPE_OPTIONS } from './constants';
 import type { FiltersPanelProps, SearchFilters } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Filters Panel component.
+ */
 export function FiltersPanel({
   isOpen,
   filters,

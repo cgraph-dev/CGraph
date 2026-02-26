@@ -30,6 +30,12 @@ import { FloatingBanner } from './floating-banner';
 import { HeroBanner } from './hero-banner';
 import { CardBanner } from './card-banner';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Premium Banner component.
+ */
 export function PremiumBanner({
   variant = 'card',
   title = DEFAULT_TITLE,

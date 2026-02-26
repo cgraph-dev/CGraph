@@ -5,6 +5,12 @@
 
 import { GlassCard } from '@/shared/components/ui';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Thread Loading Skeleton — loading placeholder.
+ */
 export function ThreadLoadingSkeleton() {
   return (
     <div className="space-y-4">

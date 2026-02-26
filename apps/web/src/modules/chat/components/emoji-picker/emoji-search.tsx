@@ -10,6 +10,12 @@ interface EmojiSearchProps {
   onSearchChange: (query: string) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Emoji Search component.
+ */
 export function EmojiSearch({ searchQuery, onSearchChange }: EmojiSearchProps) {
   return (
     <div className="border-b border-white/10 p-3">

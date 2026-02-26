@@ -9,6 +9,12 @@ import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Notification Settings Panel component.
+ */
 export function NotificationSettingsPanel() {
   const { settings, updateNotificationSettings, isSaving, fetchSettings } = useSettingsStore();
   const [isLoaded, setIsLoaded] = useState(false);

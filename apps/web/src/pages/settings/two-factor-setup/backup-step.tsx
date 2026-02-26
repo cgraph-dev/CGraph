@@ -14,6 +14,12 @@ interface BackupStepProps {
   onComplete: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Backup Step component.
+ */
 export function BackupStep({
   backupCodes,
   isLoading,

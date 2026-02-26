@@ -11,6 +11,12 @@ import { getTheme } from '../presets';
 import { HoloContainer } from './container';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Notification component.
+ */
 export function HoloNotification({
   message,
   description,

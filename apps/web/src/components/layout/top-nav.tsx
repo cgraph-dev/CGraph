@@ -37,6 +37,12 @@ interface BreadcrumbItem {
   path?: string;
 }
 
+/**
+ * unknown for the layout module.
+ */
+/**
+ * Top Nav component.
+ */
 export function TopNav({
   variant = 'default',
   showSearch = true,

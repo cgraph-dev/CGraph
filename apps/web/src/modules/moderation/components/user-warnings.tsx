@@ -63,6 +63,12 @@ interface UserWarningsProps {
   userId: string;
 }
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * User Warnings component.
+ */
 export function UserWarnings({ userId }: UserWarningsProps) {
   const { currentUserWarnings, currentUserStats, fetchUserWarnings, revokeWarning } =
     useModerationStore();

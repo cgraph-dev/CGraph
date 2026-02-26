@@ -14,6 +14,12 @@ import {
 } from '@/components/enhanced/ui/holographic-ui';
 import type { HolographicDemoProps } from './types';
 
+/**
+ * unknown.
+ */
+/**
+ * Holographic Demo component.
+ */
 export function HolographicDemo({
   theme,
   setTheme,

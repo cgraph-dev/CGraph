@@ -6,6 +6,12 @@ import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders legendary border.
+ */
 export function renderLegendaryBorder({
   colors,
   borderWidth,
@@ -57,6 +63,12 @@ export function renderLegendaryBorder({
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders mythic border.
+ */
 export function renderMythicBorder({
   colors,
   borderWidth,

@@ -14,6 +14,12 @@ interface RegisterFormState {
   error: string | null;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Hook for managing register form.
+ */
 export function useRegisterForm() {
   const navigate = useNavigate();
   const { register, error, clearError } = useAuthStore();

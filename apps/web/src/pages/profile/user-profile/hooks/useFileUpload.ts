@@ -42,6 +42,12 @@ interface UseFileUploadReturn {
   triggerBannerUpload: () => void;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Hook for managing file upload.
+ */
 export function useFileUpload({
   profile,
   isOwnProfile,

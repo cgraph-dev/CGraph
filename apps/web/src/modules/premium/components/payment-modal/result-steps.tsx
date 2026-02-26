@@ -10,6 +10,12 @@ import { calculateSavings } from './utils';
 import type { PaymentItem } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Processing Step component.
+ */
 export function ProcessingStep() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12 text-center">
@@ -33,6 +39,12 @@ interface SuccessStepProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Success Step component.
+ */
 export function SuccessStep({
   item,
   transactionId,
@@ -100,6 +112,12 @@ interface ErrorStepProps {
   onRetry: () => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Error Step — fallback UI for error states.
+ */
 export function ErrorStep({ errorMessage, onClose, onRetry }: ErrorStepProps) {
   return (
     <motion.div

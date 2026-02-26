@@ -12,6 +12,12 @@ interface WelcomeStepProps {
   onDisplayNameChange: (name: string) => void;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Welcome Step component.
+ */
 export function WelcomeStep({
   avatarPreview,
   displayName,

@@ -11,6 +11,12 @@ import { useNotificationStore } from '@/modules/social/store';
 import { useThemeEnhanced } from '@/contexts/theme-context-enhanced';
 import { socketManager } from '@/lib/socket';
 
+/**
+ * unknown.
+ */
+/**
+ * Hook for managing app layout.
+ */
 export function useAppLayout() {
   const location = useLocation();
   const { user, logout } = useAuthStore();

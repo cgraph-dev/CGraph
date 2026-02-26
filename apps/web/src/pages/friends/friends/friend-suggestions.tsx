@@ -19,6 +19,12 @@ interface Suggestion {
   score: number;
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friend Suggestions component.
+ */
 export function FriendSuggestions() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);

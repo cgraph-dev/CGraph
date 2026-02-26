@@ -12,6 +12,9 @@
 // HAPTIC FEEDBACK SIMULATION
 // =============================================================================
 
+/**
+ * Haptic Feedback class.
+ */
 export class HapticFeedback {
   private static isSupported = 'vibrate' in navigator;
 

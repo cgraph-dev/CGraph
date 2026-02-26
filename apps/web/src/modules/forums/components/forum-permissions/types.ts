@@ -74,6 +74,17 @@ export const BOARD_PERMISSIONS: readonly PermissionDef[] = [
  * Helpers
  * ============================================================ */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * extract Permissions for the forums module.
+ *
+ * @param raw - The raw.
+ * @param unknown - The unknown.
+ * @param permDefs - The perm defs.
+ * @returns The resolved value.
+ */
 export function extractPermissions(
   raw: Record<string, unknown>,
   permDefs: readonly PermissionDef[],

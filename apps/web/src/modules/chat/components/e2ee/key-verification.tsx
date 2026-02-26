@@ -50,6 +50,12 @@ function getQRData(userId: string, safetyNumber: string): string {
   });
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Key Verification component.
+ */
 export function KeyVerification({ userId, username, onVerified, onClose }: KeyVerificationProps) {
   const [state, setState] = useState<VerificationState>({
     safetyNumber: null,

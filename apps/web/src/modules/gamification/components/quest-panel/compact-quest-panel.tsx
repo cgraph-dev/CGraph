@@ -16,6 +16,12 @@ interface CompactQuestPanelProps {
   totalQuests: number;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Compact Quest Panel component.
+ */
 export function CompactQuestPanel({
   className,
   displayedQuests,

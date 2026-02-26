@@ -13,6 +13,12 @@ export interface DialogProps {
   children: ReactNode;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog dialog component.
+ */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -52,6 +58,12 @@ export interface DialogContentProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog Content dialog component.
+ */
 export function DialogContent({ children, className = '' }: DialogContentProps) {
   return (
     <div 
@@ -73,6 +85,12 @@ export interface DialogHeaderProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog Header component.
+ */
 export function DialogHeader({ children, className = '' }: DialogHeaderProps) {
   return (
     <div className={`mb-4 ${className}`}>
@@ -86,6 +104,12 @@ export interface DialogTitleProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog Title dialog component.
+ */
 export function DialogTitle({ children, className = '' }: DialogTitleProps) {
   return (
     <h2 className={`text-lg font-semibold text-textPrimary ${className}`}>
@@ -99,6 +123,12 @@ export interface DialogDescriptionProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog Description dialog component.
+ */
 export function DialogDescription({ children, className = '' }: DialogDescriptionProps) {
   return (
     <p className={`text-sm text-textMuted mt-1 ${className}`}>
@@ -112,6 +142,12 @@ export interface DialogFooterProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Dialog Footer component.
+ */
 export function DialogFooter({ children, className = '' }: DialogFooterProps) {
   return (
     <div className={`mt-6 flex justify-end gap-3 ${className}`}>

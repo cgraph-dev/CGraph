@@ -7,6 +7,12 @@
 import type { RarityStatsProps } from './types';
 import { RARITY_ORDER, RARITY_STYLES } from './constants';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Rarity Stats component.
+ */
 export function RarityStats({ stats, selectedRarity, onRaritySelect }: RarityStatsProps) {
   return (
     <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">

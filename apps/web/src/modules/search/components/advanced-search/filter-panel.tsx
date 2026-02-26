@@ -19,6 +19,12 @@ interface FilterPanelProps {
   forums: Forum[];
 }
 
+/**
+ * unknown for the search module.
+ */
+/**
+ * Filter Panel component.
+ */
 export function FilterPanel({
   filters,
   updateFilter,

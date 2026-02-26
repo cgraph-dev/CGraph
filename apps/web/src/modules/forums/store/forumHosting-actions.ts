@@ -24,6 +24,15 @@ import type {
 // Thread Actions
 // =============================================================================
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Creates a new thread actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createThreadActions(set: StoreApi<ForumHostingState>['setState']) {
   return {
     fetchRecentThreads: async (forumId: string, limit: number = 20) => {
@@ -146,6 +155,15 @@ export function createThreadActions(set: StoreApi<ForumHostingState>['setState']
 // Post Actions
 // =============================================================================
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Creates a new post actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createPostActions(set: StoreApi<ForumHostingState>['setState']) {
   return {
     fetchPosts: async (threadId: string, opts?: PostListOptions) => {
@@ -240,6 +258,15 @@ export function createPostActions(set: StoreApi<ForumHostingState>['setState']) 
 // Member Actions
 // =============================================================================
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Creates a new member actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createMemberActions(set: StoreApi<ForumHostingState>['setState']) {
   return {
     fetchMembers: async (forumId: string, opts: MemberListOptions = {}) => {

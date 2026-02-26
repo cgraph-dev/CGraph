@@ -3,6 +3,15 @@
  * @module quests-page/utils
  */
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Retrieves time left.
+ *
+ * @param expiresAt - The expires at.
+ * @returns The time left.
+ */
 export function getTimeLeft(expiresAt: string): string {
   const now = new Date();
   const expires = new Date(expiresAt);

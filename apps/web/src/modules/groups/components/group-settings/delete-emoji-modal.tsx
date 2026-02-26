@@ -12,6 +12,12 @@ interface DeleteEmojiModalProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Delete Emoji Modal dialog component.
+ */
 export function DeleteEmojiModal({ deleteConfirmId, onConfirm, onCancel }: DeleteEmojiModalProps) {
   return (
     <AnimatePresence>

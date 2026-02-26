@@ -14,6 +14,9 @@ import {
   AmbientParticles,
 } from './components';
 
+/**
+ * Groups component.
+ */
 export default function Groups() {
   const { groupId, channelId } = useParams();
   const { groups, isLoadingGroups, fetchGroups, fetchGroup, setActiveGroup, setActiveChannel } =

@@ -33,6 +33,12 @@ export interface SubscriptionCardProps {
   className?: string;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Subscription Card display component.
+ */
 export function SubscriptionCard({
   plan,
   isCurrentPlan = false,

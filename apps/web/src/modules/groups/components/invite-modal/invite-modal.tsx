@@ -16,6 +16,12 @@ interface InviteModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Invite Modal dialog component.
+ */
 export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
   const { theme } = useThemeStore();
   const colors = THEME_COLORS[theme.colorPreset];

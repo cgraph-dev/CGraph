@@ -35,6 +35,12 @@ export interface SearchResultsGridProps {
   toggleFavorite: (emoji: CustomEmoji) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Search Results Grid component.
+ */
 export function SearchResultsGrid({
   isSearching,
   searchResults,
@@ -82,6 +88,12 @@ export interface RecentEmojisGridProps {
   handleSelect: (emoji: CustomEmoji | string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Recent Emojis Grid component.
+ */
 export function RecentEmojisGrid({ recent, handleSelect }: RecentEmojisGridProps) {
   return (
     <div className="p-3">
@@ -112,6 +124,12 @@ export interface FavoritesGridProps {
   toggleFavorite: (emoji: CustomEmoji) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Favorites Grid component.
+ */
 export function FavoritesGrid({ favorites, handleSelect, toggleFavorite }: FavoritesGridProps) {
   return (
     <div className="p-3">
@@ -150,6 +168,12 @@ export interface CustomEmojisGridProps {
   toggleFavorite: (emoji: CustomEmoji) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Custom Emojis Grid component.
+ */
 export function CustomEmojisGrid({
   emojis,
   favorites,
@@ -190,6 +214,12 @@ export interface UnicodeEmojisGridProps {
   handleSelect: (emoji: CustomEmoji | string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Unicode Emojis Grid component.
+ */
 export function UnicodeEmojisGrid({ handleSelect }: UnicodeEmojisGridProps) {
   return (
     <div className="space-y-4 p-3">

@@ -36,6 +36,9 @@ const MAX_SKIP = 1000; // Maximum skipped messages to store
 // DOUBLE RATCHET ENGINE
 // =============================================================================
 
+/**
+ * Double Ratchet Engine class.
+ */
 export class DoubleRatchetEngine {
   private state: RatchetState;
   private config: RatchetConfig;

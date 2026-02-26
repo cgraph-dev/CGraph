@@ -13,6 +13,12 @@ interface RejectModalProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Reject Modal dialog component.
+ */
 export function RejectModal({
   isOpen,
   reason,

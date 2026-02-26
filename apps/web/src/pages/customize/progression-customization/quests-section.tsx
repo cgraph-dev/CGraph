@@ -8,6 +8,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { QuestsSectionProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Quests Section section component.
+ */
 export function QuestsSection({ quests }: QuestsSectionProps) {
   const getQuestColor = (type: string) => {
     switch (type) {

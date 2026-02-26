@@ -6,6 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RARITY_COLORS } from './constants';
 import type { BadgePreviewModalProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Badge Preview Modal dialog component.
+ */
 export function BadgePreviewModal({ badge, onClose }: BadgePreviewModalProps) {
   const getRarityColor = (rarity: string) => RARITY_COLORS[rarity] || RARITY_COLORS.common;
 

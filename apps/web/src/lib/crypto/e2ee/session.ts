@@ -107,6 +107,16 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   }
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * Persists session.
+ *
+ * @param recipientId - The recipient id.
+ * @param session - The session.
+ * @returns The result.
+ */
 export async function saveSession(recipientId: string, session: Session): Promise<void> {
   // Try encrypted storage first
   try {
@@ -134,6 +144,15 @@ export async function saveSession(recipientId: string, session: Session): Promis
   localStorage.setItem(SESSIONS, JSON.stringify(obj));
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * Retrieves session.
+ *
+ * @param recipientId - The recipient id.
+ * @returns The session.
+ */
 export async function getSession(recipientId: string): Promise<Session | null> {
   const sessions = await loadSessions();
   return sessions.get(recipientId) || null;

@@ -39,6 +39,12 @@ function SingleMessageSkeleton({ isOwn = false }: { isOwn?: boolean }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Message Skeleton — loading placeholder.
+ */
 export function MessageSkeleton({
   count = 6,
   alternating = true,

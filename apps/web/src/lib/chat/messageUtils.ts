@@ -60,6 +60,15 @@ export interface MessageGroup {
   messages: Message[];
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * group Messages By Date for the chat module.
+ *
+ * @param messages - The messages.
+ * @returns The result.
+ */
 export function groupMessagesByDate(messages: Message[]): MessageGroup[] {
   const groupedMessages: MessageGroup[] = [];
   let currentGroup: MessageGroup | null = null;

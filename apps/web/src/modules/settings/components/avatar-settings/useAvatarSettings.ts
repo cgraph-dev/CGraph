@@ -14,6 +14,13 @@ import type { AvatarSettingsFormData, FileUploadState, UseAvatarSettingsReturn }
 
 const logger = createLogger('AvatarSettings');
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing avatar settings.
+ * @returns The result.
+ */
 export function useAvatarSettings(): UseAvatarSettingsReturn {
   const { user, updateUser } = useAuthStore();
   const { exportStyle, importStyle } = useAvatarStyle();

@@ -10,6 +10,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { NotificationHeaderProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Notification Header component.
+ */
 export function NotificationHeader({ unreadCount, onMarkAllRead }: NotificationHeaderProps) {
   return (
     <motion.div

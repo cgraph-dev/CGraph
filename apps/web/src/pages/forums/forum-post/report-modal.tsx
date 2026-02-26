@@ -15,6 +15,12 @@ interface ReportModalProps {
   isReporting: boolean;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Report Modal dialog component.
+ */
 export function ReportModal({
   isOpen,
   onClose,

@@ -13,6 +13,12 @@ import { PostCard } from './post-card';
 import type { PostsListProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Posts List component.
+ */
 export function PostsList({
   posts,
   isLoading,

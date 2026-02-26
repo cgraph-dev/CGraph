@@ -13,6 +13,12 @@ import {
 } from './constants';
 import type { BadgeFiltersProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Badge Filters component.
+ */
 export function BadgeFilters({
   searchQuery,
   onSearchChange,

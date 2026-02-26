@@ -14,6 +14,12 @@ interface UseForumOrderingOptions {
   onOrderChange: (items: ForumItem[]) => Promise<void>;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Hook for managing forum ordering.
+ */
 export function useForumOrdering({ initialItems, onOrderChange }: UseForumOrderingOptions) {
   const { showToast } = useToast();
   const [items, setItems] = useState<ForumItem[]>(initialItems);

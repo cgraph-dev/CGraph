@@ -5,6 +5,12 @@
 import GlassCard from './glass-card';
 import type { GlassCardProps } from './glass-card.types';
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Glass Card Neon display component.
+ */
 export function GlassCardNeon({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
   return (
     <GlassCard variant="neon" glow borderGradient shimmer className={className} {...props}>
@@ -13,6 +19,12 @@ export function GlassCardNeon({ children, className, ...props }: Omit<GlassCardP
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Glass Card Holographic display component.
+ */
 export function GlassCardHolographic({
   children,
   className,
@@ -25,6 +37,12 @@ export function GlassCardHolographic({
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Glass Card Crystal display component.
+ */
 export function GlassCardCrystal({
   children,
   className,

@@ -15,6 +15,12 @@ import { getRankBadge, formatKarma, getUserInitial } from './utils';
 import type { UserLeaderboardCardProps } from './types';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the community module.
+ */
+/**
+ * User Leaderboard Card display component.
+ */
 export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboardCardProps) {
   const isTopThree = user.rank <= 3;
 

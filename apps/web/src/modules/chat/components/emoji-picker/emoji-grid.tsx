@@ -11,6 +11,12 @@ interface EmojiGridProps {
   searchQuery?: string;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Emoji Grid component.
+ */
 export function EmojiGrid({ emojis, onEmojiClick, searchQuery }: EmojiGridProps) {
   if (emojis.length === 0 && searchQuery) {
     return <div className="py-8 text-center text-sm text-gray-500">No emojis found</div>;

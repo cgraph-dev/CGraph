@@ -19,6 +19,12 @@ interface CommentHeaderProps {
   onToggleCollapse: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Header component.
+ */
 export function CommentHeader({
   comment,
   isOwnComment,

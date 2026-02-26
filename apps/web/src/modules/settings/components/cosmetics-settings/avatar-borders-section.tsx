@@ -17,6 +17,12 @@ import { GridIcon, ListIcon } from './icons';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Avatar Borders Section component.
+ */
 export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMode }: SectionProps) {
   const {
     allBorders,

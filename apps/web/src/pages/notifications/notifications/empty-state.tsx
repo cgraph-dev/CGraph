@@ -10,6 +10,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { EmptyStateProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ filter }: EmptyStateProps) {
   return (
     <motion.div

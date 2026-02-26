@@ -14,6 +14,9 @@ import { tweens, loop } from '@/lib/animation-presets';
 // CORNER BRACKETS DECORATION
 // =============================================================================
 
+/**
+ * Corner Brackets component.
+ */
 function CornerBrackets({ color }: { color: string }) {
   const corners = [
     'top-0 left-0',
@@ -39,6 +42,12 @@ function CornerBrackets({ color }: { color: string }) {
 // HOLO CONTAINER
 // =============================================================================
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Container wrapper component.
+ */
 export function HoloContainer({
   children,
   preset = 'cyan',

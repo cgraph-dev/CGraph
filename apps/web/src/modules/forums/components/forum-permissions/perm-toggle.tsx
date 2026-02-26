@@ -34,6 +34,13 @@ const TOGGLE_CONFIG = {
   },
 } as const;
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Perm Toggle component.
+ * @returns The rendered JSX element.
+ */
 export function PermToggle({ value, onClick }: PermToggleProps): React.ReactElement {
   const config = TOGGLE_CONFIG[value];
   const Icon = config.icon;

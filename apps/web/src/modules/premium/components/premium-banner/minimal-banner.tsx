@@ -9,6 +9,13 @@ import type { BannerVariantProps } from './types';
 
 type MinimalBannerProps = Pick<BannerVariantProps, 'className' | 'onUpgrade'>;
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Minimal Banner component.
+ * @returns The rendered JSX element.
+ */
 export function MinimalBanner({ className, onUpgrade }: MinimalBannerProps): React.ReactElement {
   return (
   <motion.div

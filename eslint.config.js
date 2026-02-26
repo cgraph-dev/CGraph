@@ -235,7 +235,7 @@ export default [
     },
     rules: {
       'jsdoc/require-jsdoc': [
-        'warn',
+        'error',
         {
           publicOnly: true,
           require: {
@@ -247,7 +247,7 @@ export default [
           checkConstructors: false,
         },
       ],
-      'jsdoc/require-description': ['warn', { contexts: ['FunctionDeclaration'] }],
+      'jsdoc/require-description': ['error', { contexts: ['FunctionDeclaration'] }],
       'jsdoc/check-tag-names': ['error', { definedTags: ['refactored'] }],
       'jsdoc/check-types': 'error',
     },

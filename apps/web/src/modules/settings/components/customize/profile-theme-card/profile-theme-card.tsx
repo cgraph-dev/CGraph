@@ -16,6 +16,9 @@ import ThemeEffects from './theme-effects';
 import LockOverlay from './lock-overlay';
 import SelectedIndicator from './selected-indicator';
 
+/**
+ * Profile Theme Card display component.
+ */
 export default function ProfileThemeCard({
   theme,
   isSelected,

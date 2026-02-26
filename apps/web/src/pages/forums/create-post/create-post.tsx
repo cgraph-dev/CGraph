@@ -17,6 +17,9 @@ import { useCreatePost } from './hooks';
 import PostTypeTabs from './post-type-tabs';
 import PollForm from './poll-form';
 
+/**
+ * Create Post component.
+ */
 export default function CreatePost() {
   const {
     forumSlug,

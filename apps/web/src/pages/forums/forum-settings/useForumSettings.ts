@@ -7,6 +7,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForumStore } from '@/modules/forums/store';
 import { useAuthStore } from '@/modules/auth/store';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum settings.
+ */
 export function useForumSettings() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();

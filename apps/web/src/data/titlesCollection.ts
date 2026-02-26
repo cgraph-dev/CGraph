@@ -474,14 +474,39 @@ export const TITLE_CATEGORIES: TitleCategory[] = [
 ];
 
 // Helper functions
+/**
+ * unknown.
+ */
+/**
+ * Retrieves title by id.
+ *
+ * @param id - Unique identifier.
+ * @returns The title by id.
+ */
 export function getTitleById(id: string): TitleDefinition | undefined {
   return ALL_TITLES.find((t) => t.id === id);
 }
 
+/**
+ * unknown.
+ */
+/**
+ * Retrieves titles by rarity.
+ *
+ * @param rarity - The rarity.
+ * @returns The titles by rarity.
+ */
 export function getTitlesByRarity(rarity: TitleRarity): TitleDefinition[] {
   return ALL_TITLES.filter((t) => t.rarity === rarity);
 }
 
+/**
+ * unknown.
+ */
+/**
+ * Retrieves unlocked titles.
+ * @returns The unlocked titles.
+ */
 export function getUnlockedTitles(): TitleDefinition[] {
   return ALL_TITLES.filter((t) => t.unlocked);
 }

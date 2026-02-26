@@ -18,6 +18,12 @@ interface UseVoiceRecorderOptions {
   onCancel?: () => void;
 }
 
+/**
+ * unknown for the media module.
+ */
+/**
+ * Hook for managing voice recorder.
+ */
 export function useVoiceRecorder({
   maxDuration = 300,
   onComplete,

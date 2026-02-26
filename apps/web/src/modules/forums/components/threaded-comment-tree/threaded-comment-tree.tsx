@@ -19,6 +19,12 @@ import { ThreadedComment } from './threaded-comment';
 import { buildCommentTree } from './utils';
 import type { ThreadedCommentTreeProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Threaded Comment Tree component.
+ */
 export function ThreadedCommentTree({
   comments,
   currentUserId,

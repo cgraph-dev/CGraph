@@ -25,6 +25,12 @@ import { StreakWidgetVariant, StreakCompactVariant } from './streak-variants';
 import { DEFAULT_MILESTONES } from './constants';
 import type { StreakTrackerProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Streak Tracker component.
+ */
 export function StreakTracker({
   currentStreak,
   longestStreak,

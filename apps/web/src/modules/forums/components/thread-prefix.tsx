@@ -12,6 +12,9 @@ interface ThreadPrefixProps {
   className?: string;
 }
 
+/**
+ * Thread Prefix component.
+ */
 export default function ThreadPrefix({ prefix, size = 'md', className = '' }: ThreadPrefixProps) {
   if (!prefix) return null;
 

@@ -22,6 +22,12 @@ import { useAuthStore } from '@/modules/auth/store';
 const DISMISS_KEY = 'cgraph:push-prompt-dismissed';
 const PROMPT_DELAY_MS = 15_000; // Show after 15s (Discord-style delayed prompt)
 
+/**
+ * unknown for the push-notification-prompt.tsx module.
+ */
+/**
+ * Push Notification Prompt component.
+ */
 export function PushNotificationPrompt() {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);

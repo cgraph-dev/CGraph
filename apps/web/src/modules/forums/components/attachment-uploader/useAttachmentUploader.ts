@@ -32,6 +32,12 @@ interface UseAttachmentUploaderOptions {
   onDelete?: (attachmentId: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing attachment uploader.
+ */
 export function useAttachmentUploader({
   postId,
   attachmentsCount,

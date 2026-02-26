@@ -34,6 +34,9 @@ interface LevelUpModalProps {
   onClose: () => void;
 }
 
+/**
+ * Level Up Modal dialog component.
+ */
 export default function LevelUpModal({
   isOpen,
   oldLevel,

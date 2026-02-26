@@ -16,6 +16,9 @@ import type { SpringConfig } from '../animation-engine.types';
 // SPRING PHYSICS (React Native Reanimated Style)
 // =============================================================================
 
+/**
+ * Spring Physics class.
+ */
 export class SpringPhysics {
   /**
    * Convert spring config to GSAP ease

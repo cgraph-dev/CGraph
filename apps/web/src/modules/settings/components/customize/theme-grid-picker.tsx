@@ -44,6 +44,9 @@ const columnClasses = {
   8: 'grid-cols-8',
 };
 
+/**
+ * Theme Grid Picker component.
+ */
 export default function ThemeGridPicker<T extends string>({
   options,
   selected,

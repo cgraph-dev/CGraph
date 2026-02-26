@@ -32,6 +32,12 @@ interface DisplayOptionsProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Display Options component.
+ */
 export function DisplayOptions({
   fontScale,
   messageSpacing,

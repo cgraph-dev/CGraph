@@ -15,6 +15,9 @@ interface VideoEmbedProps {
   onExpand: () => void;
 }
 
+/**
+ * Video Embed component.
+ */
 export default function VideoEmbed({ embed, onExpand }: VideoEmbedProps) {
   const [showPlayer, setShowPlayer] = useState(false);
 

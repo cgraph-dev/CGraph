@@ -273,7 +273,7 @@ const CURSOR_COLORS = [
 ];
 
 /**
- *
+ * Retrieves user color.
  */
 export function getUserColor(userId: string): string {
   let hash = 0;

@@ -6,6 +6,12 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import type { TabProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Colors Tab component.
+ */
 export function ColorsTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">

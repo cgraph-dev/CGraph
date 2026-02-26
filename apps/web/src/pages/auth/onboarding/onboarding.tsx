@@ -19,6 +19,9 @@ import { pageVariants } from './animations';
 import type { NotificationKey } from './types';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Onboarding component.
+ */
 export default function Onboarding() {
   const {
     currentStep,

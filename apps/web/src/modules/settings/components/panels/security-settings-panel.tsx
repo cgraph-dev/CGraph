@@ -7,6 +7,12 @@ import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Security Settings Panel component.
+ */
 export function SecuritySettingsPanel() {
   const { user } = useAuthStore();
 

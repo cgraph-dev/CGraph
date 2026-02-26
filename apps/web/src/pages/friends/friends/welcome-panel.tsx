@@ -13,6 +13,12 @@ interface WelcomePanelProps {
   pendingRequestsCount: number;
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Welcome Panel component.
+ */
 export function WelcomePanel({ friendsCount, pendingRequestsCount }: WelcomePanelProps) {
   return (
     <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

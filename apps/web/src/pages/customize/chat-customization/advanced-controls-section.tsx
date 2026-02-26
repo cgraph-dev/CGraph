@@ -11,6 +11,12 @@ import { springs } from '@/lib/animation-presets';
 import type { AdvancedControlsSectionProps } from './types';
 import { ENTRANCE_ANIMATIONS } from './constants';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Advanced Controls Section section component.
+ */
 export function AdvancedControlsSection({
   bubbleBorderRadius,
   onBorderRadiusChange,

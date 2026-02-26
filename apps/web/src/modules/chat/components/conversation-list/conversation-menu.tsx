@@ -13,6 +13,12 @@ import {
 } from '@heroicons/react/24/outline';
 import type { ConversationMenuProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Conversation Menu component.
+ */
 export function ConversationMenu({ conversation, onAction }: ConversationMenuProps) {
   const [showDropdown, setShowDropdown] = useState(false);
 

@@ -26,6 +26,12 @@ interface MemberListItemProps {
   onUnmute: (memberId: string) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Member List Item component.
+ */
 export function MemberListItem({
   member,
   index,

@@ -21,6 +21,9 @@ import { AppearanceStep } from './appearance-step';
 import { SettingsStep } from './settings-step';
 import { ConfirmStep } from './confirm-step';
 
+/**
+ * Create Forum component.
+ */
 export default function CreateForum() {
   const {
     step,

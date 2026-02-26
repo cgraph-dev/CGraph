@@ -32,6 +32,12 @@ export interface CommandPaletteProps {
   className?: string;
 }
 
+/**
+ * unknown for the layout module.
+ */
+/**
+ * Command Palette component.
+ */
 export function CommandPalette({
   isOpen,
   onClose,

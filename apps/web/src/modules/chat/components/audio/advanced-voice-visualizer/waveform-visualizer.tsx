@@ -8,6 +8,12 @@ import { useRef, useEffect } from 'react';
 import { THEMES } from './themes';
 import type { VisualizerProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Waveform Visualizer component.
+ */
 export function WaveformVisualizer({ analyser, theme, width, height }: VisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);

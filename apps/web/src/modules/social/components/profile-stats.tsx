@@ -24,6 +24,12 @@ interface ProfileStatsGridProps {
   profile: UserProfileData;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Profile Stats Grid component.
+ */
 export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
   return (
     <GlassCard variant="frosted" className="p-6">
@@ -93,6 +99,12 @@ interface ProfileSidebarProps {
   profile: UserProfileData;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Profile Sidebar component.
+ */
 export function ProfileSidebar({ profile }: ProfileSidebarProps) {
   return (
     <div className="space-y-6">

@@ -18,6 +18,12 @@ import { entranceVariants } from '@/lib/animation-presets';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/modules/auth/store';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Delete Account component.
+ */
 export function DeleteAccount() {
   const { t } = useTranslation('settings');
   const { logout } = useAuthStore();

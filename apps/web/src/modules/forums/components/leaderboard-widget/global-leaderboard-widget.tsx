@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * GlobalLeaderboardWidget - Global leaderboard showing top users across all forums
  */
 import { useState, useEffect } from 'react';
@@ -13,7 +14,7 @@ import { UserRow } from './user-row';
 const logger = createLogger('LeaderboardWidget');
 
 /**
- *
+ * Global Leaderboard Widget component.
  */
 export function GlobalLeaderboardWidget({
   limit = 5,

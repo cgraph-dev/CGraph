@@ -10,6 +10,9 @@ import { SIZE_MAP, COLOR_PALETTES, SPLASH_TIMINGS } from './constants';
 import { CircuitBoardLogo } from './circuit-board-logo';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Animated Logo component.
+ */
 export default function AnimatedLogo({
   size = 'md',
   showText = true,

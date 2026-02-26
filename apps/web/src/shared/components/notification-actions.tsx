@@ -20,7 +20,7 @@ interface NotificationActionsProps {
 }
 
 /**
- *
+ * Notification Actions component.
  */
 export function NotificationActions({
   type,

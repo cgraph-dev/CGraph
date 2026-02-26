@@ -8,6 +8,12 @@ import { PhotoIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { OverviewTabProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Overview Tab component.
+ */
 export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
   return (
     <motion.div

@@ -14,6 +14,12 @@ interface StickerGridProps {
   onSelect: (sticker: Sticker) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Grid component.
+ */
 export function StickerGrid({ stickers, ownedPackIds, searchQuery, onSelect }: StickerGridProps) {
   if (stickers.length === 0) {
     return (

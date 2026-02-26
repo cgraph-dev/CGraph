@@ -8,6 +8,12 @@ interface TypingIndicatorProps {
   isVisible: boolean;
 }
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Typing Indicator component.
+ */
 export function TypingIndicator({ isVisible }: TypingIndicatorProps) {
   if (!isVisible) return null;
 

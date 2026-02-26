@@ -42,6 +42,9 @@ function applyOptimisticVote(
   });
 }
 
+/**
+ * Nested Comments component.
+ */
 export default function NestedComments({
   comments,
   isAuthorOfPost,

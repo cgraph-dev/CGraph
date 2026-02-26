@@ -22,6 +22,13 @@ interface HoloContextValue {
 
 const HoloContext = createContext<HoloContextValue | null>(null);
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Hook for managing holo.
+ * @returns The result.
+ */
 export function useHolo(): HoloContextValue {
   const context = use(HoloContext);
   if (!context) {
@@ -35,6 +42,12 @@ interface HoloProviderProps {
   config?: Partial<HoloConfig>;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Provider — context provider wrapper.
+ */
 export function HoloProvider({ children, config: userConfig }: HoloProviderProps) {
   const [config, setConfig] = useState<HoloConfig>(() => ({
     ...DEFAULT_CONFIG,

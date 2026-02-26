@@ -12,6 +12,12 @@ interface PasswordStrengthMeterProps {
   strength: PasswordStrength;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Password Strength Meter component.
+ */
 export function PasswordStrengthMeter({ strength }: PasswordStrengthMeterProps) {
   return (
     <motion.div

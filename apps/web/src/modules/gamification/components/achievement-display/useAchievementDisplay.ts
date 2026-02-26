@@ -13,6 +13,17 @@ import type {
   SortOption,
 } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing achievement display.
+ *
+ * @param achievements - The achievements.
+ * @param unlockedIds - The unlocked ids.
+ * @param showLocked - The show locked.
+ * @param maxDisplay - The max display.
+ */
 export function useAchievementDisplay(
   achievements: Achievement[],
   unlockedIds: string[],

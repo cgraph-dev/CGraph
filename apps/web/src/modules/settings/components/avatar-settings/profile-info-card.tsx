@@ -22,6 +22,12 @@ interface ProfileInfoCardProps {
   onSave: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Profile Info Card display component.
+ */
 export function ProfileInfoCard({ formData, onChange, onSave }: ProfileInfoCardProps) {
   return (
     <GlassCard className="p-6" variant="holographic" glow>

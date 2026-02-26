@@ -8,6 +8,12 @@ interface EmptyStateProps {
   hasSearchQuery: boolean;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ hasSearchQuery }: EmptyStateProps) {
   return (
     <motion.div

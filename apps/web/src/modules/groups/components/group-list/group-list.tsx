@@ -12,6 +12,12 @@ import { GroupListItem } from './group-list-item';
 import { CreateGroupModal } from './create-group-modal';
 import type { GroupListProps, GroupListVariant } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Group List component.
+ */
 export function GroupList({
   variant = 'grid',
   showSearch = true,

@@ -40,6 +40,12 @@ import { ConversationItem } from './conversation-item';
 import { EmptyState } from './empty-state';
 import { NewChatModal } from './new-chat-modal';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Conversation List component.
+ */
 export function ConversationList({ className = '' }: ConversationListProps) {
   const { user } = useAuthStore();
   const { typingUsers } = useChatStore();

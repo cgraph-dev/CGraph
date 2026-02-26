@@ -29,6 +29,12 @@ interface AnnouncementBannerProps {
   className?: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Announcement Banner component.
+ */
 export function AnnouncementBanner({
   forumId,
   showGlobal = true,

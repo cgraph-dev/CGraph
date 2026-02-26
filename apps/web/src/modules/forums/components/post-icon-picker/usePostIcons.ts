@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * Hook to fetch post icons for a forum or board
  * @module modules/forums/components/post-icon-picker
  */
@@ -11,7 +12,7 @@ import { getDefaultIcons } from './constants';
 import type { PostIcon } from './types';
 
 /**
- *
+ * Hook for managing post icons.
  */
 export function usePostIcons(forumId?: string, boardId?: string) {
   const [icons, setIcons] = useState<PostIcon[]>([]);

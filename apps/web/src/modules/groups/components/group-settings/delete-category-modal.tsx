@@ -12,6 +12,12 @@ interface DeleteCategoryModalProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Delete Category Modal dialog component.
+ */
 export function DeleteCategoryModal({
   deleteConfirmId,
   onConfirm,

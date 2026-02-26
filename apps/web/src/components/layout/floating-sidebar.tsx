@@ -29,7 +29,7 @@ interface FloatingSidebarProps extends Omit<SidebarProps, 'variant'> {
 }
 
 /**
- *
+ * Floating Sidebar component.
  */
 export function FloatingSidebar({
   defaultCollapsed = false,

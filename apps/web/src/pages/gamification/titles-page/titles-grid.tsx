@@ -10,6 +10,12 @@ import GlassCard from '@/components/ui/glass-card';
 import { TitleCard } from './title-card';
 import type { TitlesGridProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Titles Grid component.
+ */
 export function TitlesGrid({
   titles,
   isLoading,

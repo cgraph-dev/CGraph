@@ -11,6 +11,12 @@ interface UserIdBadgeProps {
   user: User | null;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * User Id Badge component.
+ */
 export function UserIdBadge({ user }: UserIdBadgeProps) {
   return (
     <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="mb-8 p-4">

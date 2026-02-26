@@ -6,6 +6,12 @@ import { useThemeStore } from '@/stores/theme';
 import { AVATAR_BORDERS, AVATAR_SIZE_LABELS } from './constants';
 import type { AvatarSizeOption } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Avatar Tab component.
+ */
 export function AvatarTab() {
   const { theme, setAvatarBorder, updateTheme } = useThemeStore();
 

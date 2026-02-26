@@ -19,6 +19,16 @@ type Get = () => ModerationState;
 
 const logger = createLogger('ModerationStore:Bulk');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new bulk actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createBulkActions(set: Set, get: Get) {
   return {
     toggleBulkSelection: (type: 'threads' | 'posts' | 'comments', id: string) => {

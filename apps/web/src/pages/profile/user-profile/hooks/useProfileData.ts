@@ -29,6 +29,12 @@ interface UseProfileDataReturn {
   setShowAllAchievements: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Hook for managing profile data.
+ */
 export function useProfileData({
   userId,
   isOwnProfile,

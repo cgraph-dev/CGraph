@@ -23,6 +23,12 @@ type BarBannerProps = Pick<
   | 'onDismiss'
 >;
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Bar Banner component.
+ */
 export function BarBanner({
   title,
   description,

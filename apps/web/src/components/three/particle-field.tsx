@@ -7,6 +7,12 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { THEMES, type ThemeName } from './matrix-theme';
 
+/**
+ * unknown for the three module.
+ */
+/**
+ * Particle Field component.
+ */
 export function ParticleField({
   theme = 'matrix-green',
   count = 1000,

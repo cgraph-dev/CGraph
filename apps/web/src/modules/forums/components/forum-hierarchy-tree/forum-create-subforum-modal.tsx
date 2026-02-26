@@ -20,6 +20,12 @@ interface CreateSubforumModalProps {
   onCreate: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Create Subforum Modal dialog component.
+ */
 export function CreateSubforumModal({
   tree,
   selectedParent,

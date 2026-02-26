@@ -27,6 +27,9 @@ import { tweens } from '@/lib/animation-presets';
 
 const logger = createLogger('PremiumPage');
 
+/**
+ * Premium Page — route-level page component.
+ */
 export default function PremiumPage() {
   const navigate = useNavigate();
   useAuthStore(); // Ensure user is authenticated

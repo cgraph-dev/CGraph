@@ -23,6 +23,12 @@ export interface CompactBadgeShowcaseProps {
   className?: string;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Compact Badge Showcase component.
+ */
 export function CompactBadgeShowcase({
   badges,
   maxVisible = 3,

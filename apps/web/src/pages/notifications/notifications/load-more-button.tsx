@@ -9,6 +9,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { LoadMoreButtonProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Load More Button component.
+ */
 export function LoadMoreButton({ hasMore, isLoading, onLoadMore }: LoadMoreButtonProps) {
   return (
     <AnimatePresence>

@@ -18,6 +18,12 @@ export interface SocialLoginDividerProps {
   className?: string;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Social Login Divider component.
+ */
 export function SocialLoginDivider({
   text = 'or continue with',
   variant = 'default',

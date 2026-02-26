@@ -9,6 +9,12 @@ import { NavLink } from 'react-router-dom';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { GroupIconProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Group Icon component.
+ */
 export function GroupIcon({ group, onClick }: GroupIconProps) {
   return (
     <NavLink

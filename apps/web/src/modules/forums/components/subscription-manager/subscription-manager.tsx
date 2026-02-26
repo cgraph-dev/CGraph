@@ -25,6 +25,13 @@ import { useSubscriptions } from './useSubscriptions';
 import { SubscriptionItem } from './subscription-item';
 import type { SubscriptionType, NotificationMode, SubscriptionManagerProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Subscription Manager component.
+ * @returns The rendered JSX element.
+ */
 export function SubscriptionManager({ className }: SubscriptionManagerProps): React.ReactElement {
   const {
     subscriptions,

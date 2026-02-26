@@ -18,6 +18,12 @@ interface BadgesListProps {
   badges: Badge[];
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Badges List component.
+ */
 export function BadgesList({ badges }: BadgesListProps) {
   if (badges.length === 0) return null;
 

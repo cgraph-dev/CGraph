@@ -23,6 +23,9 @@ const logger = createLogger('SpatialAudio:SourceManager');
 // AUDIO SOURCE MANAGEMENT
 // =============================================================================
 
+/**
+ * Audio Source Manager — resource management class.
+ */
 export class AudioSourceManager {
   private sources: Map<string, AudioSource> = new Map();
   private analyserNodes: Map<string, AnalyserNode> = new Map();
@@ -38,6 +41,14 @@ export class AudioSourceManager {
   // ADD / REMOVE SOURCES
   // ===========================================================================
 
+  /**
+   * add Audio Source for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @param stream - The stream.
+   * @param position - The position.
+   * @param options - Configuration options.
+   */
   async addAudioSource(
     id: string,
     stream: MediaStream,
@@ -92,6 +103,12 @@ export class AudioSourceManager {
     return audioSource;
   }
 
+  /**
+   * Removes audio source.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   removeAudioSource(id: string): void {
     const source = this.sources.get(id);
     if (source) {
@@ -109,6 +126,13 @@ export class AudioSourceManager {
   // POSITION / VOLUME / MUTE
   // ===========================================================================
 
+  /**
+   * Updates source position.
+   *
+   * @param id - Unique identifier.
+   * @param position - The position.
+   * @param applyZoneEffects - The apply zone effects.
+   */
   updateSourcePosition(
     id: string,
     position: Position3D,
@@ -133,6 +157,13 @@ export class AudioSourceManager {
     }
   }
 
+  /**
+   * Updates source volume.
+   *
+   * @param id - Unique identifier.
+   * @param volume - The volume.
+   * @returns The result.
+   */
   setSourceVolume(id: string, volume: number): void {
     const source = this.sources.get(id);
     const ctx = this.getAudioContext();
@@ -142,6 +173,13 @@ export class AudioSourceManager {
     }
   }
 
+  /**
+   * Updates source muted.
+   *
+   * @param id - Unique identifier.
+   * @param muted - The muted.
+   * @returns The result.
+   */
   setSourceMuted(id: string, muted: boolean): void {
     const source = this.sources.get(id);
     const ctx = this.getAudioContext();
@@ -155,6 +193,13 @@ export class AudioSourceManager {
   // PANNER CONFIGURATION
   // ===========================================================================
 
+  /**
+   * Initializes panner node.
+   *
+   * @param panner - The panner.
+   * @param position - The position.
+   * @returns The result.
+   */
   configurePannerNode(panner: PannerNode, position: Position3D): void {
     panner.panningModel = this.config.hrtfEnabled ? 'HRTF' : 'equalpower';
     panner.distanceModel = this.config.distanceModel;
@@ -178,6 +223,12 @@ export class AudioSourceManager {
   // MASTER ANALYSIS
   // ===========================================================================
 
+  /**
+   * Retrieves master analysis.
+   *
+   * @param masterAnalyser - The master analyser.
+   * @returns The master analysis.
+   */
   getMasterAnalysis(masterAnalyser: AnalyserNode | null): AudioAnalysisResult | null {
     if (!masterAnalyser) return null;
 
@@ -216,10 +267,20 @@ export class AudioSourceManager {
   // ACCESSORS
   // ===========================================================================
 
+  /**
+   * Retrieves sources.
+   * @returns The sources.
+   */
   getSources(): Map<string, AudioSource> {
     return new Map(this.sources);
   }
 
+  /**
+   * Updates config.
+   *
+   * @param config - Configuration object.
+   * @returns The result.
+   */
   updateConfig(config: SpatialAudioConfig): void {
     this.config = config;
     // Update existing panner nodes with new config
@@ -230,6 +291,10 @@ export class AudioSourceManager {
     }
   }
 
+  /**
+   * Removes all sources.
+   * @returns The result.
+   */
   removeAllSources(): void {
     for (const [id] of this.sources) {
       this.removeAudioSource(id);

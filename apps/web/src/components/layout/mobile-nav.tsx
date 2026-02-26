@@ -46,6 +46,12 @@ interface NavItem {
   badge?: number;
 }
 
+/**
+ * unknown for the layout module.
+ */
+/**
+ * Mobile Nav component.
+ */
 export function MobileNav({
   variant = 'default',
   showLabels = true,

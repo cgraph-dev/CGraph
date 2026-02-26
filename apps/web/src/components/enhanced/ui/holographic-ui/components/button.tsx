@@ -18,6 +18,12 @@ const sizeStyles: Record<string, string> = {
   xl: 'px-8 py-4 text-lg gap-3',
 };
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Button component.
+ */
 export function HoloButton({
   children,
   onClick,

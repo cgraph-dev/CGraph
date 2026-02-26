@@ -21,6 +21,9 @@ import { VerifyStep } from './verify-step';
 import { BackupStep } from './backup-step';
 import { CompleteStep } from './complete-step';
 
+/**
+ * Two Factor Setup component.
+ */
 export default function TwoFactorSetup() {
   const navigate = useNavigate();
   const {

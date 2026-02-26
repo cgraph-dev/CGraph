@@ -7,6 +7,12 @@ import { GlobeAltIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 import type { LeaderboardTableHeaderProps } from './types';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Leaderboard Table Header component.
+ */
 export function LeaderboardTableHeader({ totalCount, lastUpdated }: LeaderboardTableHeaderProps) {
   return (
     <div className="flex flex-col items-center justify-between border-b border-dark-700/50 bg-dark-900/50 p-4 sm:flex-row">

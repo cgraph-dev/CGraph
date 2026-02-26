@@ -29,6 +29,9 @@ interface SeasonalEventBannerProps {
   className?: string;
 }
 
+/**
+ * Seasonal Event Banner component.
+ */
 export default function SeasonalEventBanner({
   showDismiss = true,
   onDismiss,

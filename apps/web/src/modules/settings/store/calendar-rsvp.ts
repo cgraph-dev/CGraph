@@ -18,6 +18,16 @@ type SetState = (
 ) => void;
 type GetState = () => CalendarState;
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Creates a new rsvp actions.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
 export function createRsvpActions(set: SetState, _get: GetState) {
   return {
     fetchRsvps: async (eventId: string) => {

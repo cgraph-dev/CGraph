@@ -15,6 +15,12 @@ interface ScanStepProps {
   onContinue: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Scan Step component.
+ */
 export function ScanStep({
   isLoading,
   setupData,

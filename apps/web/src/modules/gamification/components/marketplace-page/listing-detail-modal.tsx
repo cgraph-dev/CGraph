@@ -8,6 +8,12 @@ import { useMarketplaceStore } from '@/modules/gamification/store';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { ITEM_TYPE_LABELS, RARITY_COLORS, type ListingDetailModalProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Listing Detail Modal dialog component.
+ */
 export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
   const { purchaseListing, isPurchasing } = useMarketplaceStore();
   const [showConfirm, setShowConfirm] = useState(false);

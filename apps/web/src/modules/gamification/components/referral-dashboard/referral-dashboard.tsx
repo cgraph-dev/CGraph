@@ -29,6 +29,9 @@ import type {
 
 const logger = createLogger('ReferralDashboard');
 
+/**
+ * Referral Dashboard component.
+ */
 export default function ReferralDashboard() {
   const {
     referrals,

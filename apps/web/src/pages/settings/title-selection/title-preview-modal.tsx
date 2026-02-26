@@ -7,6 +7,12 @@ import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleRarity } from '@/data/titles';
 import type { TitlePreviewModalProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Title Preview Modal dialog component.
+ */
 export function TitlePreviewModal({
   previewTitle,
   displayName,

@@ -9,6 +9,12 @@ import { SortableChannel } from './sortable-channel';
 import type { CategorySectionProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Category Section section component.
+ */
 export function CategorySection({
   category,
   isExpanded,

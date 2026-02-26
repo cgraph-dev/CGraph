@@ -8,6 +8,9 @@ import { PageContainer } from '@/components/layout';
 import { useRSSFeeds, RECOMMENDED_APPS } from './hooks';
 import FeedCard from './feed-card';
 
+/**
+ * R S S Feeds Page — route-level page component.
+ */
 export default function RSSFeedsPage() {
   const { feeds, copiedId, copyUrl, openUrl } = useRSSFeeds();
 

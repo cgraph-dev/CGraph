@@ -6,6 +6,12 @@ import { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui';
 import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/advanced-voice-visualizer';
 
+/**
+ * unknown.
+ */
+/**
+ * Voice Demo component.
+ */
 export function VoiceDemo() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [variant, setVariant] = useState<'waveform' | 'spectrum' | 'circular' | 'particles'>(

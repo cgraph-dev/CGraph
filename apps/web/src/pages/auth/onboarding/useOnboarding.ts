@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * useOnboarding hook - state and logic for onboarding flow
  */
 
@@ -13,7 +14,7 @@ import type { ProfileData, ProfileUpdatePayload } from './types';
 const logger = createLogger('Onboarding');
 
 /**
- *
+ * Hook for managing onboarding.
  */
 export function useOnboarding() {
   const navigate = useNavigate();

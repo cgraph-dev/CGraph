@@ -7,6 +7,9 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * Not Found component.
+ */
 export default function NotFound() {
   const { t } = useTranslation('common');
   return (

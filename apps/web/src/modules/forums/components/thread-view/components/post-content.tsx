@@ -54,6 +54,12 @@ interface PostContentProps {
   onSubmitComment: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Post Content component.
+ */
 export function PostContent({
   post,
   primaryColor,

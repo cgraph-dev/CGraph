@@ -22,6 +22,12 @@ interface OnlineStatusIndicatorProps {
   className?: string;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Online Status Indicator component.
+ */
 export function OnlineStatusIndicator({
   status,
   size = 'md',

@@ -15,6 +15,12 @@ interface SearchFilterBarProps {
   onRarityChange: (value: Rarity | 'all') => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Search Filter Bar component.
+ */
 export function SearchFilterBar({
   activeSection,
   searchQuery,

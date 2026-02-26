@@ -16,6 +16,12 @@ import { StatusBadge, LoadingState, EmptyState } from '@/modules/admin/component
 // Reports Tab - Moderation reports management
 // ============================================================================
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Reports Tab component.
+ */
 export function ReportsTab() {
   const [statusFilter, setStatusFilter] = useState<string>('pending');
   const queryClient = useQueryClient();

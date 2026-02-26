@@ -26,7 +26,7 @@ interface Appeal {
 type FilterStatus = 'all' | 'pending' | 'approved' | 'denied';
 
 /**
- *
+ * Appeals Queue component.
  */
 export function AppealsQueue({ groupId }: { groupId: string }) {
   const [appeals, setAppeals] = useState<Appeal[]>([]);

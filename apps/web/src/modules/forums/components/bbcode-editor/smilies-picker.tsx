@@ -8,6 +8,12 @@ import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { SMILIES } from './constants';
 import type { SmiliesPickerProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Smilies Picker component.
+ */
 export function SmiliesPicker({ isOpen, onToggle, onClose, onSelectSmiley }: SmiliesPickerProps) {
   return (
     <div className="relative">

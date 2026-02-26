@@ -10,6 +10,12 @@ import { FaceSmileIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline
 import type { ChannelMessageItemProps } from './types';
 import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel Message Item component.
+ */
 export function ChannelMessageItem({ message, showHeader, onReply }: ChannelMessageItemProps) {
   const [showActions, setShowActions] = useState(false);
 

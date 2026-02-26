@@ -16,6 +16,12 @@ interface RoleAssignmentModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Role Assignment Modal dialog component.
+ */
 export function RoleAssignmentModal({
   memberId,
   members,

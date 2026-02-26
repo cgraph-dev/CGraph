@@ -13,6 +13,14 @@ import { UIPreferences, defaultPreferences } from './types';
 const logger = createLogger('UIPreferencesStore');
 
 // Apply preferences to DOM
+/**
+ * unknown for the settings module.
+ */
+/**
+ * apply Preferences To D O M for the settings module.
+ *
+ * @param prefs - The prefs.
+ */
 export function applyPreferencesToDOM(prefs: UIPreferences) {
   const root = document.documentElement;
 

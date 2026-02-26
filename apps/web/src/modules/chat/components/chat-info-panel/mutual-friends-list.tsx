@@ -12,6 +12,12 @@ interface MutualFriendsListProps {
   onFriendClick: (friendId: string) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Mutual Friends List component.
+ */
 export function MutualFriendsList({ friends, onFriendClick }: MutualFriendsListProps) {
   if (friends.length === 0) return null;
 

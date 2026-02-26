@@ -265,6 +265,9 @@ function ErrorView() {
   );
 }
 
+/**
+ * Status Display component.
+ */
 export default function StatusDisplay({
   state,
   isResending,

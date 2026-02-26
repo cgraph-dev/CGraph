@@ -44,6 +44,12 @@ const gradients = [
   'from-cyan-500 to-blue-600',
 ];
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Avatar Stack component.
+ */
 export function AvatarStack({
   users,
   max = 3,

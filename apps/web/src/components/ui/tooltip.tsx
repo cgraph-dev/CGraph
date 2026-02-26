@@ -12,6 +12,9 @@ interface TooltipProps {
   delay?: number;
 }
 
+/**
+ * Tooltip component.
+ */
 export default function Tooltip({
   children,
   content,

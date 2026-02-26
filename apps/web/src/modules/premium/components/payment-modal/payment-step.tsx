@@ -22,6 +22,12 @@ interface PaymentStepProps {
   onSubmit: () => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Payment Step component.
+ */
 export function PaymentStep({
   paymentMethod,
   cardData,

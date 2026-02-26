@@ -24,6 +24,9 @@ interface ThreadRatingProps {
   className?: string;
 }
 
+/**
+ * Thread Rating component.
+ */
 export default function ThreadRating({
   threadId,
   rating = 0,

@@ -16,6 +16,9 @@ import {
   NOTIFICATION_TRIGGERS,
 } from '@/pages/settings/emailNotificationSettings.constants';
 
+/**
+ * Email Notification Settings component.
+ */
 export default function EmailNotificationSettings() {
   const { loading, saving, preferences, savePreferences, togglePreference, setDigestFrequency } =
     useEmailNotificationPreferences();

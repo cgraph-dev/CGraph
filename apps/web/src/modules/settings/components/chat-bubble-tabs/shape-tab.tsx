@@ -6,6 +6,12 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import type { TabProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Shape Tab component.
+ */
 export function ShapeTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">

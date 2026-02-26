@@ -23,6 +23,12 @@ interface FriendshipActionsProps {
   onMessage: () => void;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Friendship Actions component.
+ */
 export function FriendshipActions({
   friendshipStatus,
   isActioning,

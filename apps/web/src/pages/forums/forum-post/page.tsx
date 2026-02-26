@@ -26,6 +26,9 @@ import { CommentList } from './comment-list';
 import { ReportModal } from './report-modal';
 import { PostSkeleton, BackButton } from './loading';
 
+/**
+ * Forum Post component.
+ */
 export default function ForumPost() {
   const { forumSlug, postId } = useParams<{ forumSlug: string; postId: string }>();
   const { user } = useAuthStore();

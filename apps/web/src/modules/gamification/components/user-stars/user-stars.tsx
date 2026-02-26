@@ -25,6 +25,12 @@ import { CrownIcon } from './crown-icon';
 import { StarTooltip } from './star-tooltip';
 import type { UserStarsProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * User Stars component.
+ */
 export function UserStars({
   postCount,
   showLabel = false,

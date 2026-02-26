@@ -17,6 +17,12 @@ interface InputToolbarProps {
   onSend: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Input Toolbar component.
+ */
 export function InputToolbar({
   attachmentMode: _attachmentMode,
   isRecording,

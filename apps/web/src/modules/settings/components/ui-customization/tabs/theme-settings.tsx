@@ -40,6 +40,12 @@ const GRADIENTS = [
   },
 ];
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Theme Settings component.
+ */
 export function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">

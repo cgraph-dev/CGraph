@@ -27,6 +27,13 @@ export const TIER_GRADIENTS: Record<SubscriptionTier, string> = {
   enterprise: 'from-rose-500 to-red-600',
 };
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Crown component.
+ * @returns The rendered JSX element.
+ */
 export function Crown({ className }: { className?: string }): React.ReactElement {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>

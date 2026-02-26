@@ -24,6 +24,9 @@ interface RangeSliderControlProps {
   description?: string;
 }
 
+/**
+ * Range Slider Control component.
+ */
 export default function RangeSliderControl({
   label,
   value,

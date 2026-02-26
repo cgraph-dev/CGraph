@@ -17,6 +17,9 @@ import {
 } from './animations';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * Animated Avatar component.
+ */
 export default function AnimatedAvatar({
   src,
   alt,

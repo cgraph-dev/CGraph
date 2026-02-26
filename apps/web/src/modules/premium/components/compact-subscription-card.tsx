@@ -15,6 +15,12 @@ import {
 } from '@/modules/premium/components/subscription-card.constants';
 import type { SubscriptionCardProps } from '@/modules/premium/components/subscription-card';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Compact Subscription Card display component.
+ */
 export function CompactSubscriptionCard({
   plan,
   isCurrentPlan = false,

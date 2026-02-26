@@ -9,6 +9,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { BORDER_STYLES } from './constants';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Border Style Card display component.
+ */
 export function BorderStyleCard() {
   const { style, updateStyle } = useAvatarStyle();
 

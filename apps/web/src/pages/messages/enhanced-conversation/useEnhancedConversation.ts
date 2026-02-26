@@ -14,6 +14,12 @@ import type { Sticker } from '@/data/stickers';
 
 const logger = createLogger('EnhancedConversation');
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Hook for managing enhanced conversation.
+ */
 export function useEnhancedConversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();

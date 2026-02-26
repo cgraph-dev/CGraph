@@ -9,6 +9,12 @@ import { TrophyIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { LeaderboardProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Referral Leaderboard component.
+ */
 export function ReferralLeaderboard({ leaderboard, period, onPeriodChange }: LeaderboardProps) {
   return (
     <div className="bg-card border-border overflow-hidden rounded-lg border">

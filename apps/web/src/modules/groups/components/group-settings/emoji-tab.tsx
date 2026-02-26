@@ -24,6 +24,12 @@ interface EmojiTabProps {
 const MAX_EMOJI_SIZE = 256 * 1024; // 256KB
 const ALLOWED_TYPES = ['image/png', 'image/gif', 'image/webp', 'image/jpeg'];
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Emoji Tab component.
+ */
 export function EmojiTab({ groupId }: EmojiTabProps) {
   const [emojis, setEmojis] = useState<GroupEmoji[]>([]);
   const [loading, setLoading] = useState(true);

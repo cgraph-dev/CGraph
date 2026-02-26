@@ -18,6 +18,12 @@ interface HoloCardProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Card display component.
+ */
 export function HoloCard({
   children,
   header,

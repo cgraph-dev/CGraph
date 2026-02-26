@@ -15,6 +15,12 @@ import { LoadingState } from '@/modules/admin/components';
 // Audit Log Tab - View system audit logs
 // ============================================================================
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Audit Tab component.
+ */
 export function AuditTab() {
   const [page] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');

@@ -4,6 +4,12 @@
  */
 import type { StatBadgeProps } from '@/modules/forums/components/forum-statistics/forum-statistics.types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Stat Badge component.
+ */
 export function StatBadge({ icon, label, value }: StatBadgeProps) {
   return (
     <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">

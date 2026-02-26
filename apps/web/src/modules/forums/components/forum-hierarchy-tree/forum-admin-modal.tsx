@@ -12,6 +12,13 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Modal dialog component.
+ * @returns The rendered JSX element.
+ */
 export function Modal({ onClose, title, children }: ModalProps): React.ReactElement {
   return (
     <motion.div

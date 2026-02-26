@@ -26,6 +26,12 @@ interface MoreMenuProps {
   onReport?: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * More Menu component.
+ */
 export function MoreMenu({
   isOpen,
   onClose,

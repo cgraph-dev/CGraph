@@ -17,6 +17,12 @@ interface EditorFooterProps {
   };
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Editor Footer component.
+ */
 export function EditorFooter({
   showCharCount,
   charCount,

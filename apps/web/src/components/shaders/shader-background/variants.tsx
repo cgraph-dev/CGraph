@@ -4,6 +4,12 @@
 
 import ShaderBackground from './shader-background';
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Matrix Shader Background component.
+ */
 export function MatrixShaderBackground({ className }: { className?: string }) {
   return (
     <ShaderBackground
@@ -17,6 +23,12 @@ export function MatrixShaderBackground({ className }: { className?: string }) {
   );
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Cyber Shader Background component.
+ */
 export function CyberShaderBackground({ className }: { className?: string }) {
   return (
     <ShaderBackground
@@ -31,6 +43,12 @@ export function CyberShaderBackground({ className }: { className?: string }) {
   );
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Neural Shader Background component.
+ */
 export function NeuralShaderBackground({ className }: { className?: string }) {
   return (
     <ShaderBackground

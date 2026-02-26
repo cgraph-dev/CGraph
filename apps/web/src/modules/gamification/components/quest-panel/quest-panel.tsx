@@ -12,6 +12,9 @@ import { formatTimeRemaining } from './utils';
 import { CompactQuestPanel } from './compact-quest-panel';
 import { FullQuestPanel } from './full-quest-panel';
 
+/**
+ * Quest Panel component.
+ */
 export default function QuestPanel({
   variant = 'full',
   maxQuests = 5,

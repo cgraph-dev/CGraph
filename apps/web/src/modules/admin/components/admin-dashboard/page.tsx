@@ -50,6 +50,12 @@ function NavItemButton({
 
 // ==================== MAIN COMPONENT ====================
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Admin Dashboard administration component.
+ */
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
 

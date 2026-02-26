@@ -70,6 +70,9 @@ const DEFAULT_CATEGORIES: ExportCategory[] = [
   },
 ];
 
+/**
+ * Data Export component.
+ */
 export default function DataExport() {
   const [status, setStatus] = useState<ExportStatus>('idle');
   const [progress, setProgress] = useState(0);

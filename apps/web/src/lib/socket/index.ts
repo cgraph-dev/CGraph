@@ -56,6 +56,12 @@ export const socketManager: SocketManager = new Proxy({} as SocketManager, {
   },
 });
 
+/**
+ * unknown for the socket module.
+ */
+/**
+ * Hook for managing socket.
+ */
 export function useSocket() {
   return getSocketManager();
 }

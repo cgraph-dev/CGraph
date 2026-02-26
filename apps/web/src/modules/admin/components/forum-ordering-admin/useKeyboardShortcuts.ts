@@ -11,6 +11,12 @@ interface UseKeyboardShortcutsOptions {
   onSave: () => void;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Hook for managing keyboard shortcuts.
+ */
 export function useKeyboardShortcuts({ onUndo, onRedo, onSave }: UseKeyboardShortcutsOptions) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

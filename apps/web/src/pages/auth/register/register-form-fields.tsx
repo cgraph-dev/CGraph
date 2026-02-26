@@ -31,6 +31,12 @@ interface RegisterFormFieldsProps {
   isLoading: boolean;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Register Form Fields component.
+ */
 export function RegisterFormFields(props: RegisterFormFieldsProps) {
   const reduced = prefersReducedMotion();
 

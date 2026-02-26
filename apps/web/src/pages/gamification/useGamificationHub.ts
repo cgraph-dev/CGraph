@@ -8,6 +8,12 @@
 import { useEffect } from 'react';
 import { useGamificationStore } from '@/modules/gamification/store';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing gamification hub.
+ */
 export function useGamificationHub() {
   const {
     totalXP,

@@ -10,6 +10,12 @@ import { cn } from '@/lib/utils';
 import { TitleBadge } from './title-badge';
 import type { ProfileTitleDisplayProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Profile Title Display component.
+ */
 export function ProfileTitleDisplay({
   titleId,
   onChangeTitle,

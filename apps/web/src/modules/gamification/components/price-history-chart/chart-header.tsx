@@ -11,6 +11,12 @@ interface ChartHeaderProps {
   onTimeRangeChange?: (range: TimeRangeKey) => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Chart Header component.
+ */
 export function ChartHeader({ metrics, currency, timeRange, onTimeRangeChange }: ChartHeaderProps) {
   return (
     <div className="mb-4 flex items-center justify-between">

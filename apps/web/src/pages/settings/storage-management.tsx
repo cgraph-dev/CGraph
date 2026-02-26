@@ -43,7 +43,7 @@ const CATEGORIES = [
 type AutoDownloadOption = 'always' | 'wifi' | 'never';
 
 /**
- *
+ * Storage Management component.
  */
 export function StorageManagement() {
   const [storage, setStorage] = useState<StorageBreakdown>({

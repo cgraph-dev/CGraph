@@ -78,6 +78,16 @@ export function classifyByRules<T>(
   rules: Array<ClassifyRule<T>>,
   defaultCategory?: string
 ): Record<string, T[]>;
+/**
+ * unknown for the store-helpers module.
+ */
+/**
+ * classify By Rules for the store-helpers module.
+ *
+ * @param items - Array of items.
+ * @param rules - The rules.
+ * @param defaultCategory - The default category.
+ */
 export function classifyByRules<T>(
   items: T | T[],
   rules: Array<ClassifyRule<T>>,

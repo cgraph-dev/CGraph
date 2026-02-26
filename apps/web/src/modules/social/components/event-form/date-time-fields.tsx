@@ -13,6 +13,9 @@ interface DateTimeFieldsProps {
   handleDateChange: (field: 'startDate' | 'endDate', value: string) => void;
 }
 
+/**
+ * Date Time Fields component.
+ */
 export default function DateTimeFields({
   formData,
   errors,

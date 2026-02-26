@@ -17,6 +17,12 @@ interface CommentCardProps {
   onVote: (commentId: string, value: 1 | -1, currentVote: 1 | -1 | null) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Card display component.
+ */
 export function CommentCard({ comment, index, onVote }: CommentCardProps) {
   return (
     <motion.div

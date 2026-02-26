@@ -41,6 +41,12 @@ const logger = createLogger('ForumStatistics');
  * - Active users
  */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Statistics component.
+ */
 export function ForumStatistics({
   forumId,
   showOnlineList = true,

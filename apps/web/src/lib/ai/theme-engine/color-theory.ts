@@ -5,6 +5,9 @@
  * @since v0.7.33
  */
 
+/**
+ * Color Theory class.
+ */
 export class ColorTheory {
   /**
    * Convert HEX to RGB

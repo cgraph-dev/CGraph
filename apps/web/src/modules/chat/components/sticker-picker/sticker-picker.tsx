@@ -17,6 +17,12 @@ import { PackInfoBanner } from './pack-info-banner';
 import { useStickerPicker } from './useStickerPicker';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Picker component.
+ */
 export function StickerPicker({
   onSelect,
   onClose,

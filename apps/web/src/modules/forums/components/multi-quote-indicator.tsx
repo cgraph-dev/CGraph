@@ -13,6 +13,9 @@ interface MultiQuoteIndicatorProps {
   onQuoteClick: () => void;
 }
 
+/**
+ * Multi Quote Indicator component.
+ */
 export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicatorProps) {
   const { multiQuoteBuffer, removeFromMultiQuote, clearMultiQuote } = useForumStore();
 

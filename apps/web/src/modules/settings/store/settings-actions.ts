@@ -18,6 +18,16 @@ type Set = (
 ) => void;
 type Get = () => SettingsState;
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Creates a new settings actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createSettingsActions(
   set: Set,
   get: Get

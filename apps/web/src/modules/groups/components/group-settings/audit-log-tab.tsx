@@ -101,6 +101,12 @@ function renderChanges(changes: Record<string, unknown> | null) {
   );
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Audit Log Tab component.
+ */
 export function AuditLogTab({ groupId }: AuditLogTabProps) {
   const [entries, setEntries] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);

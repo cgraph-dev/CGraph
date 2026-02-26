@@ -28,6 +28,12 @@ export interface GroupJoinCelebrationProps {
   onComplete?: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Group Join Celebration component.
+ */
 export function GroupJoinCelebration({
   groupName,
   show,

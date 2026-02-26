@@ -145,6 +145,9 @@ export function createCharacterAtlas(
 // OBJECT POOL - Eliminate garbage collection pressure
 // =============================================================================
 
+/**
+ * Object Pool class.
+ */
 export class ObjectPool<T> {
   private pool: T[] = [];
   private factory: () => T;
@@ -160,6 +163,10 @@ export class ObjectPool<T> {
     }
   }
 
+  /**
+   * acquire for the animations module.
+   * @returns The result.
+   */
   acquire(): T {
     if (this.pool.length > 0) {
       return this.pool.pop()!;
@@ -167,11 +174,21 @@ export class ObjectPool<T> {
     return this.factory();
   }
 
+  /**
+   * release for the animations module.
+   *
+   * @param obj - The obj.
+   * @returns The result.
+   */
   release(obj: T): void {
     this.reset(obj);
     this.pool.push(obj);
   }
 
+  /**
+   * Resets to initial state.
+   * @returns The result.
+   */
   clear(): void {
     this.pool.length = 0;
   }

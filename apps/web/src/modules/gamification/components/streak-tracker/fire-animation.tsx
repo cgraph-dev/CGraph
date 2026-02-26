@@ -14,6 +14,12 @@ interface FireAnimationProps {
   size?: 'small' | 'medium' | 'large';
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Fire Animation component.
+ */
 export function FireAnimation({ currentStreak, size = 'large' }: FireAnimationProps) {
   const sizeClasses = {
     small: 'h-10 w-10',

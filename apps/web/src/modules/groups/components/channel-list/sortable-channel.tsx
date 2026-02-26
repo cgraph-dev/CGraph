@@ -14,6 +14,12 @@ interface SortableChannelProps {
   isActive: boolean;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Sortable Channel component.
+ */
 export function SortableChannel({ channel, isActive }: SortableChannelProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: channel.id,

@@ -4,6 +4,12 @@
  */
 import clsx from 'clsx';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Status Badge component.
+ */
 export function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     active: 'bg-green-100 text-green-700',

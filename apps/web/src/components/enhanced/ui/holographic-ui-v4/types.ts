@@ -130,10 +130,29 @@ export const HOLO_PRESETS: Record<HoloPreset, HoloTheme> = {
   },
 };
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Retrieves intensity multiplier.
+ *
+ * @param intensity - The intensity.
+ * @returns The intensity multiplier.
+ */
 export function getIntensityMultiplier(intensity: HoloConfig['intensity']): number {
   return { subtle: 0.5, medium: 1, intense: 1.5 }[intensity];
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Retrieves theme.
+ *
+ * @param preset - The preset.
+ * @param customTheme - The custom theme.
+ * @returns The theme.
+ */
 export function getTheme(
   preset: HoloPreset | 'custom',
   customTheme?: Partial<HoloTheme>

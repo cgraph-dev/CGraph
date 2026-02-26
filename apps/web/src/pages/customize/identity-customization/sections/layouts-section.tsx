@@ -164,6 +164,12 @@ function LayoutPreview({ preview }: { preview: string }) {
   }
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Layouts Section — page layout wrapper.
+ */
 export function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionProps) {
   return (
     <div className="grid grid-cols-2 gap-6">

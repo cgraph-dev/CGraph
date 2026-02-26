@@ -7,6 +7,12 @@ import { motion } from 'framer-motion';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { VideoTileProps, CallUser } from './types';
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Video Tile component.
+ */
 export function VideoTile({
   stream,
   user,

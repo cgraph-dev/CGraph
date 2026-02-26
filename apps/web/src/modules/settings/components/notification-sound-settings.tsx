@@ -34,6 +34,12 @@ const SOUNDS = [
   { id: 'none', name: 'None (Silent)' },
 ];
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Notification Sound Settings component.
+ */
 export function NotificationSoundSettings() {
   const [selectedSounds, setSelectedSounds] = useState<Record<string, string>>({
     message: 'default',

@@ -23,6 +23,9 @@ export { GlassCardNeon, GlassCardHolographic, GlassCardCrystal } from './glass-c
 // COMPONENT
 // =============================================================================
 
+/**
+ * Glass Card display component.
+ */
 export default function GlassCard({
   children,
   variant = 'default',

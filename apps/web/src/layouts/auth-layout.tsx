@@ -97,6 +97,9 @@ const BackgroundLayers = memo(function BackgroundLayers() {
   );
 });
 
+/**
+ * Auth Layout — page layout wrapper.
+ */
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const reduced = prefersReducedMotion();
 

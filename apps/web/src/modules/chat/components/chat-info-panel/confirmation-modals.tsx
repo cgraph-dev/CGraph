@@ -12,6 +12,12 @@ interface BlockConfirmModalProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Block Confirm Modal dialog component.
+ */
 export function BlockConfirmModal({
   isOpen,
   userName,
@@ -75,6 +81,12 @@ interface ReportModalProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Report Modal dialog component.
+ */
 export function ReportModal({
   isOpen,
   userName,

@@ -21,6 +21,12 @@ interface AuthorForumFilterProps {
   forums: Forum[];
 }
 
+/**
+ * unknown for the search module.
+ */
+/**
+ * Author Forum Filter component.
+ */
 export function AuthorForumFilter({ filters, updateFilter, forums }: AuthorForumFilterProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

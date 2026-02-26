@@ -9,6 +9,12 @@ interface EmptyStateProps {
   onClearFilters: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ onClearFilters }: EmptyStateProps) {
   return (
     <motion.div className="py-12 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

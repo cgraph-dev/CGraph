@@ -21,6 +21,14 @@ interface ActionDeps {
   setModerators: Dispatch<SetStateAction<ForumModerator[]>>;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum admin actions.
+ *
+ * @param deps - The deps.
+ */
 export function useForumAdminActions(deps: ActionDeps) {
   const {
     categories,

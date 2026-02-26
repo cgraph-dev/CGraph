@@ -11,6 +11,12 @@ interface StatsOverviewProps {
   currentStreak: number;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Stats Overview component.
+ */
 export function StatsOverview({ level, xp, currentStreak }: StatsOverviewProps) {
   return (
     <div className="grid grid-cols-3 gap-4">

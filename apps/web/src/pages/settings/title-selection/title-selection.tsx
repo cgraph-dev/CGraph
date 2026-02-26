@@ -14,6 +14,9 @@ import { getRarityColor, RARITY_LIST } from './constants';
 import { TitleCard } from './title-card';
 import { TitlePreviewModal } from './title-preview-modal';
 
+/**
+ * Title Selection component.
+ */
 export default function TitleSelection() {
   const {
     displayName,

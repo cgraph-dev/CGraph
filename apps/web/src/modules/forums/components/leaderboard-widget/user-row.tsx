@@ -9,6 +9,12 @@ import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 import type { UserRowProps } from './types';
 import { formatKarma, getRankIcon, deriveUserDisplayInfo } from './utils';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * User Row component.
+ */
 export function UserRow({
   rank,
   userId,

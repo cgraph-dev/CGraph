@@ -96,6 +96,12 @@ interface AdminContentProps {
   onModQueueAction: (itemId: string, action: 'approve' | 'reject') => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Admin Content administration component.
+ */
 export function AdminContent({
   activeTab,
   error,

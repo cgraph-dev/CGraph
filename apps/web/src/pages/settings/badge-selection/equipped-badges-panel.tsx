@@ -5,6 +5,12 @@
 import { motion } from 'framer-motion';
 import type { EquippedBadgesPanelProps } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Equipped Badges Panel component.
+ */
 export function EquippedBadgesPanel({
   equippedBadges,
   badges,

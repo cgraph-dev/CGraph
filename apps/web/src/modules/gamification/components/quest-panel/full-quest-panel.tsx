@@ -34,6 +34,12 @@ interface FullQuestPanelProps {
   onRefresh: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Full Quest Panel component.
+ */
 export function FullQuestPanel({
   className,
   displayedQuests,

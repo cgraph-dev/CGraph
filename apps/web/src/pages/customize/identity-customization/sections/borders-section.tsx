@@ -25,6 +25,12 @@ export interface BordersSectionProps {
   onEquip: (borderId: string, border: Border) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Borders Section section component.
+ */
 export function BordersSection({
   borders,
   selectedBorder,

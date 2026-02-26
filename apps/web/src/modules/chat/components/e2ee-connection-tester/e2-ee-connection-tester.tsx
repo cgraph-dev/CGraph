@@ -18,6 +18,9 @@ import { TestResultItem } from './test-result-item';
 import { OverallStatusBanner } from './overall-status-banner';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * E2 E E Connection Tester component.
+ */
 export default function E2EEConnectionTester({
   conversationId,
   recipientId,

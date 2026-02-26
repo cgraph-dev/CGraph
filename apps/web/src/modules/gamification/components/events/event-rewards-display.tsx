@@ -18,6 +18,9 @@ import { BattlePassTierCard } from '@/modules/gamification/components/events/bat
  * - Visual reward previews
  */
 
+/**
+ * Event Rewards Display component.
+ */
 export default function EventRewardsDisplay() {
   const { event, progress, nextMilestone, availableRewards } = useCurrentEventProgress();
   // Reserved for future features

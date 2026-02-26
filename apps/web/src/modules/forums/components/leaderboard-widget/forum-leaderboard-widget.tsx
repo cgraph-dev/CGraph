@@ -13,6 +13,12 @@ import { UserRow } from './user-row';
 
 const logger = createLogger('LeaderboardWidget');
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Leaderboard Widget component.
+ */
 export function ForumLeaderboardWidget({
   forumId,
   forumSlug,

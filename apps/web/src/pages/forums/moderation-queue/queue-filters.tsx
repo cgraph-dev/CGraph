@@ -19,6 +19,12 @@ const createFilterUpdater =
     setFilters((prev) => ({ ...prev, [key]: e.target.value as FilterState[K] })); // safe downcast – select event value
   };
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Queue Filters component.
+ */
 export function QueueFilters({ filters, setFilters }: QueueFiltersProps) {
   return (
     <GlassCard className="p-4">

@@ -4,6 +4,12 @@
  * Instructional card explaining the referral process.
  */
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * How It Works component.
+ */
 export function HowItWorks() {
   return (
     <div className="bg-card border-border rounded-lg border p-4">

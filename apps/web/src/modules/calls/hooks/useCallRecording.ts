@@ -20,6 +20,12 @@ interface UseCallRecordingReturn {
   downloadRecording: () => void;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Hook for managing call recording.
+ */
 export function useCallRecording({
   localStream,
   remoteStreams,

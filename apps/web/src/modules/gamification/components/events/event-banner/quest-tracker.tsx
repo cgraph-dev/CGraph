@@ -7,6 +7,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { QuestTrackerProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Quest Tracker component.
+ */
 export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
   const [filter, setFilter] = useState<'all' | 'daily' | 'weekly' | 'event'>('all');
 

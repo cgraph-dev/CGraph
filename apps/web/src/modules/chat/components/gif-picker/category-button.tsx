@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { CategoryButtonProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Category Button component.
+ */
 export function CategoryButton({ category, isActive, onClick }: CategoryButtonProps) {
   return (
     <motion.button

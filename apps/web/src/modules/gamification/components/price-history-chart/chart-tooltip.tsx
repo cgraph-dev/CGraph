@@ -11,6 +11,12 @@ interface ChartTooltipProps {
   currency: 'coins' | 'gems';
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Chart Tooltip component.
+ */
 export function ChartTooltip({ hoveredPoint, dimensions, currency }: ChartTooltipProps) {
   return (
     <AnimatePresence>

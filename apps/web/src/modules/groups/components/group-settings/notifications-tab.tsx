@@ -22,6 +22,12 @@ interface NotificationsTabProps {
   groupId: string;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Notifications Tab component.
+ */
 export function NotificationsTab({ groupId }: NotificationsTabProps) {
   const { groups } = useGroupStore();
   const activeGroup = groups.find((g) => g.id === groupId);

@@ -11,6 +11,12 @@ import type { GifResult } from './types';
 
 const logger = createLogger('useGifStorage');
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing gif storage.
+ */
 export function useGifStorage() {
   const [favorites, setFavorites] = useState<GifResult[]>([]);
   const [recentlyUsed, setRecentlyUsed] = useState<GifResult[]>([]);

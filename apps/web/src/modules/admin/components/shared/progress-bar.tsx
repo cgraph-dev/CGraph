@@ -4,6 +4,12 @@
  */
 import clsx from 'clsx';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Progress Bar component.
+ */
 export function ProgressBar({
   label,
   value,

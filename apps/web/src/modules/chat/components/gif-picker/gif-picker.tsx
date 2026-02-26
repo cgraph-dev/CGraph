@@ -27,6 +27,12 @@ import { tweens, loop } from '@/lib/animation-presets';
 
 const logger = createLogger('GifPicker');
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Gif Picker component.
+ */
 export function GifPicker({ onSelect, onClose, isOpen, className }: GifPickerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('trending');

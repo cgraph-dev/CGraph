@@ -24,6 +24,12 @@ interface CategoriesPanelProps {
   onRemoveCategory: (categoryId: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Categories Panel component.
+ */
 export function CategoriesPanel({
   categories,
   newCategoryName,

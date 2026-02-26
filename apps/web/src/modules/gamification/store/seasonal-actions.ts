@@ -15,6 +15,16 @@ const logger = createLogger('SeasonalEventStore');
 type SetFn = StoreApi<SeasonalEventState>['setState'];
 type GetFn = StoreApi<SeasonalEventState>['getState'];
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new seasonal actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createSeasonalActions(set: SetFn, get: GetFn) {
   return {
     fetchEvents: async (includeEnded = false) => {

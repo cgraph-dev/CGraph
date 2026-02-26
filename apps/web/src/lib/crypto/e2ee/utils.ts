@@ -18,6 +18,15 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * base64 To Array Buffer for the crypto module.
+ *
+ * @param base64 - The base64.
+ * @returns The result.
+ */
 export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
@@ -27,6 +36,15 @@ export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   return bytes.buffer;
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * array Buffer To Hex for the crypto module.
+ *
+ * @param buffer - The buffer.
+ * @returns The result.
+ */
 export function arrayBufferToHex(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   return Array.from(bytes)

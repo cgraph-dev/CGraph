@@ -40,10 +40,23 @@ export class RouteErrorBoundary extends Component<Props, State> {
     };
   }
 
+  /**
+   * Retrieves derived state from error.
+   *
+   * @param error - The error instance.
+   * @returns The derived state from error.
+   */
   static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
   }
 
+  /**
+   * component Did Catch for the feedback module.
+   *
+   * @param error - The error instance.
+   * @param errorInfo - The error info.
+   * @returns The result.
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Add breadcrumb for context
     addBreadcrumb('navigation', `Route error in ${this.props.routeName || 'unknown route'}`, {
@@ -77,6 +90,10 @@ export class RouteErrorBoundary extends Component<Props, State> {
     this.setState({ hasError: false, error: null, errorId: null });
   };
 
+  /**
+   * Renders the component.
+   * @returns The result.
+   */
   render(): ReactNode {
     if (this.state.hasError) {
       return (

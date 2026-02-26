@@ -10,6 +10,9 @@ import { defaultFilters } from './constants';
 import { SearchBar } from './search-bar';
 import { FilterPanel } from './filter-panel';
 
+/**
+ * Advanced Search component.
+ */
 export default function AdvancedSearch({
   onSearch,
   isLoading = false,

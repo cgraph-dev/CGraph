@@ -28,7 +28,7 @@ interface ThreadPanelProps {
 }
 
 /**
- *
+ * Thread Panel component.
  */
 export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: ThreadPanelProps) {
   const { user: _user } = useAuthStore();

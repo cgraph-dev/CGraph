@@ -6,6 +6,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Grid Background component.
+ * @returns The rendered JSX element.
+ */
 export function GridBackground(): React.ReactElement | null {
   return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -23,6 +30,13 @@ export function GridBackground(): React.ReactElement | null {
 );
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Gradient Background component.
+ * @returns The rendered JSX element.
+ */
 export function GradientBackground(): React.ReactElement | null {
   return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -41,6 +55,13 @@ export function GradientBackground(): React.ReactElement | null {
 );
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Particles Background component.
+ * @returns The rendered JSX element.
+ */
 export function ParticlesBackground(): React.ReactElement | null {
   return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -71,6 +92,13 @@ export function ParticlesBackground(): React.ReactElement | null {
 
 export type BackgroundEffect = 'gradient' | 'particles' | 'grid' | 'none';
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Background component.
+ * @returns The rendered JSX element.
+ */
 export function AuthBackground({ effect }: { effect: BackgroundEffect }): React.ReactElement | null {
   switch (effect) {
     case 'gradient':

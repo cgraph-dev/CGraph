@@ -8,6 +8,12 @@ import { GlassCardNeon } from '@/shared/components/ui';
 import type { ConversationHeaderProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Conversation Header component.
+ */
 export function ConversationHeader({
   conversationName,
   isTyping,

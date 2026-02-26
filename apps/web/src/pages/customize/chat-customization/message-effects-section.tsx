@@ -23,6 +23,12 @@ function getEffectAnimation(animation: string) {
   }
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Message Effects Section section component.
+ */
 export function MessageEffectsSection({
   effects,
   selectedEffect,

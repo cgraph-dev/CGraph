@@ -17,6 +17,12 @@ import { ForumHeaderHero } from './forum-header-hero';
 import { copyCurrentUrl } from './utils';
 import type { ForumHeaderProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Header component.
+ */
 export function ForumHeader({
   forum,
   onVote,

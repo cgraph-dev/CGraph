@@ -22,6 +22,12 @@ const pageTransition = {
   exit: { duration: 0.1, ease: 'easeIn' as const },
 };
 
+/**
+ * unknown.
+ */
+/**
+ * Animated Outlet component.
+ */
 export function AnimatedOutlet() {
   const location = useLocation();
   const outlet = useOutlet();

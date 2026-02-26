@@ -24,6 +24,15 @@ const RARITY_COLORS: Record<TitleRarity, string> = {
   unique: 'text-cyan-400 border-cyan-600',
 };
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Retrieves rarity color.
+ *
+ * @param rarity - The rarity.
+ * @returns The rarity color.
+ */
 export function getRarityColor(rarity: TitleRarity): string {
   return RARITY_COLORS[rarity] ?? 'text-gray-400';
 }

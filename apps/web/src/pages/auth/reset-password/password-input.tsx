@@ -15,6 +15,12 @@ interface PasswordInputProps {
   isValid?: boolean;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Password Input component.
+ */
 export function PasswordInput({
   label,
   value,

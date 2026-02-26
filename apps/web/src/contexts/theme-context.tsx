@@ -21,6 +21,12 @@ function getSystemTheme(): 'dark' | 'light' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+/**
+ * unknown.
+ */
+/**
+ * Theme Provider — context provider wrapper.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'dark';
@@ -75,6 +81,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * unknown.
+ */
+/**
+ * Hook for managing theme.
+ */
 export function useTheme() {
   const context = use(ThemeContext);
   if (context === undefined) {

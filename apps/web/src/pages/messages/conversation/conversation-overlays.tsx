@@ -53,6 +53,12 @@ interface ConversationOverlaysProps {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Conversation Overlays component.
+ */
 export function ConversationOverlays(props: ConversationOverlaysProps) {
   return (
     <>

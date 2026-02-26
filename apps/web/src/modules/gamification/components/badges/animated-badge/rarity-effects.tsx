@@ -20,6 +20,12 @@ interface RarityEffectsProps {
   config: SizeConfig;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Rarity Effects component.
+ */
 export function RarityEffects({ rarity, colors, config }: RarityEffectsProps) {
   switch (rarity) {
     case 'common':

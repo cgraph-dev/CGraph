@@ -12,6 +12,12 @@ interface ReadReceiptsProps {
   readBy: ReadByEntry[];
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Read Receipts component.
+ */
 export function ReadReceipts({ readBy }: ReadReceiptsProps) {
   return (
     <motion.div

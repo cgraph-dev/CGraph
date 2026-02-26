@@ -6,6 +6,15 @@ import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders static border.
+ *
+ * @param colors - The colors.
+ * @param borderWidth - The border width.
+ */
 export function renderStaticBorder(
   colors: BorderEffectParams['colors'],
   borderWidth: number
@@ -18,6 +27,15 @@ export function renderStaticBorder(
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders reduced motion fallback.
+ *
+ * @param colors - The colors.
+ * @param borderWidth - The border width.
+ */
 export function renderReducedMotionFallback(
   colors: BorderEffectParams['colors'],
   borderWidth: number
@@ -33,6 +51,12 @@ export function renderReducedMotionFallback(
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders glow border.
+ */
 export function renderGlowBorder({
   colors,
   borderWidth,
@@ -59,6 +83,12 @@ export function renderGlowBorder({
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders pulse border.
+ */
 export function renderPulseBorder({
   colors,
   borderWidth,
@@ -87,6 +117,12 @@ export function renderPulseBorder({
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders rotate border.
+ */
 export function renderRotateBorder({
   colors,
   borderWidth,

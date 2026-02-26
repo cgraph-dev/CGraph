@@ -15,6 +15,12 @@ interface AchievementModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement Modal dialog component.
+ */
 export function AchievementModal({
   achievement,
   isUnlocked,

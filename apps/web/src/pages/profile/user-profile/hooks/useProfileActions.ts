@@ -24,6 +24,12 @@ interface UseProfileActionsParams {
   setFriendshipStatus: (status: FriendshipStatus) => void;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Hook for managing profile actions.
+ */
 export function useProfileActions({
   profile,
   setProfile,

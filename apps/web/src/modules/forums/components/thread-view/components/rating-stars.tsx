@@ -17,6 +17,12 @@ interface RatingStarsProps {
   onRate: (rating: number) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Rating Stars component.
+ */
 export function RatingStars({
   rating,
   myRating,

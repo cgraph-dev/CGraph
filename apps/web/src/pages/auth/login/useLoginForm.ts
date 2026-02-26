@@ -11,6 +11,12 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Login');
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Hook for managing login form.
+ */
 export function useLoginForm() {
   const navigate = useNavigate();
   const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } =

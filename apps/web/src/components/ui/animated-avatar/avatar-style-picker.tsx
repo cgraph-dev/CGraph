@@ -14,6 +14,12 @@ import { tweens, loop, springs } from '@/lib/animation-presets';
 
 const CATEGORIES = AVATAR_CATEGORIES;
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Avatar Style Picker component.
+ */
 export function AvatarStylePicker() {
   const { style, ownedStyles, updateStyle, resetStyle } = useAvatarStyle();
   const [activeCategory, setActiveCategory] = useState<BorderCategory>('free');

@@ -22,6 +22,12 @@ export interface CoinPackageCardProps {
   onPurchase: (pkg: CoinPackage) => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Coin Package Card display component.
+ */
 export function CoinPackageCard({
   pkg,
   index,

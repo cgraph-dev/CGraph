@@ -32,6 +32,12 @@ export type { AnimatedMessageWrapperProps } from './animated-message-wrapper.typ
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Animated Message Wrapper wrapper component.
+ */
 export function AnimatedMessageWrapper({
   children,
   isOwnMessage,

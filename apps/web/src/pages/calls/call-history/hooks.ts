@@ -104,6 +104,12 @@ const FALLBACK_CALLS: CallRecord[] = [
   },
 ];
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Hook for managing call history.
+ */
 export function useCallHistory() {
   const [filter, setFilter] = useState<CallFilter>('all');
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());

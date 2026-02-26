@@ -24,6 +24,9 @@ import { tweens, loop } from '@/lib/animation-presets';
 
 const logger = createLogger('QuestsPage');
 
+/**
+ * Quests Page — route-level page component.
+ */
 export default function QuestsPage() {
   const { activeQuests, completedQuests, fetchQuests, completeQuest } = useGamificationStore();
   const [selectedTab, setSelectedTab] = useState<QuestTab>('active');

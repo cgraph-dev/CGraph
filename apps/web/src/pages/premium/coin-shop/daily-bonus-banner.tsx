@@ -13,6 +13,12 @@ interface DailyBonusBannerProps {
   onClaim: () => void;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Daily Bonus Banner component.
+ */
 export function DailyBonusBanner({ dailyBonus, onClaim }: DailyBonusBannerProps) {
   if (!dailyBonus.available) {
     return null;

@@ -22,6 +22,12 @@ interface ThemeProviderEnhancedProps {
   initialTheme?: string;
 }
 
+/**
+ * unknown.
+ */
+/**
+ * Theme Provider Enhanced — context provider wrapper.
+ */
 export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderEnhancedProps) {
   const [theme, setThemeState] = useState<Theme>(() => themeEngine.getCurrentTheme());
   const [preferences, setPreferences] = useState<ThemePreferences>(() =>

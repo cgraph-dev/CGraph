@@ -16,6 +16,12 @@ import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constant
 import type { NotificationItemProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Notification Item component.
+ */
 export function NotificationItem({
   notification,
   onClick,

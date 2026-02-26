@@ -86,6 +86,9 @@ function Scene({
 // MAIN COMPONENT
 // =============================================================================
 
+/**
+ * Matrix3 D Environment component.
+ */
 export default function Matrix3DEnvironment({
   intensity = 'medium',
   theme = 'matrix-green',
@@ -116,6 +119,12 @@ export default function Matrix3DEnvironment({
 // SPECIALIZED VARIANTS
 // =============================================================================
 
+/**
+ * unknown for the three module.
+ */
+/**
+ * Matrix3 D Low Profile component.
+ */
 export function Matrix3DLowProfile({ className }: { className?: string }) {
   return (
     <Matrix3DEnvironment
@@ -127,6 +136,12 @@ export function Matrix3DLowProfile({ className }: { className?: string }) {
   );
 }
 
+/**
+ * unknown for the three module.
+ */
+/**
+ * Matrix3 D Cyber Blue component.
+ */
 export function Matrix3DCyberBlue({ className }: { className?: string }) {
   return (
     <Matrix3DEnvironment

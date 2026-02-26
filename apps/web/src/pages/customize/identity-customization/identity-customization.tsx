@@ -38,6 +38,9 @@ const SECTION_TABS: { id: SectionId; label: string; count: number }[] = [
   { id: 'layouts', label: 'Profile Layouts', count: PROFILE_LAYOUTS.length },
 ];
 
+/**
+ * Identity Customization component.
+ */
 export default function IdentityCustomization() {
   const {
     activeSection,

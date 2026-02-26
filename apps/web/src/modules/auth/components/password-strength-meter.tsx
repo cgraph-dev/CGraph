@@ -42,6 +42,12 @@ const STRENGTH_LEVELS = [
   { label: 'Very Strong', color: 'bg-emerald-500', textColor: 'text-emerald-400', min: 5 },
 ];
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Password Strength Meter component.
+ */
 export function PasswordStrengthMeter({
   password,
   variant = 'detailed',

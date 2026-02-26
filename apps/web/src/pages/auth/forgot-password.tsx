@@ -6,6 +6,9 @@ import { api, getErrorMessage } from '@/lib/api';
 import { LogoIcon } from '@/components/logo';
 import { SubmitButton } from '@/components/ui/submit-button';
 
+/**
+ * Forgot Password component.
+ */
 export default function ForgotPassword() {
   const { t } = useTranslation('auth');
   const [email, setEmail] = useState('');

@@ -9,6 +9,12 @@ import { GlobeAltIcon, LockClosedIcon, UserGroupIcon } from '@heroicons/react/24
 import { GlassCard } from '@/shared/components/ui';
 import type { GroupCardProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Group Card display component.
+ */
 export function GroupCard({ group, onClick }: GroupCardProps) {
   return (
     <motion.div

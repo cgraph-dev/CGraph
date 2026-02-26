@@ -35,6 +35,9 @@ import {
   useChatEffect,
 } from '@/modules/chat/components/chat-effects/full-screen-chat-effect';
 
+/**
+ * Conversation component.
+ */
 export default function Conversation() {
   // Apply adaptive theme on mount
   useEffect(() => {

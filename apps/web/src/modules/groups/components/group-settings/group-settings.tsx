@@ -29,6 +29,12 @@ import { DangerTab } from './danger-tab';
 import { ConfirmModal } from './confirm-modal';
 import { SaveBar } from './save-bar';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Group Settings component.
+ */
 export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps) {
   const {
     activeGroup,

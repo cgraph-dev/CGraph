@@ -99,6 +99,12 @@ type FilterPriority = 'all' | 'low' | 'normal' | 'high' | 'critical';
 
 // ── Main Component ───────────────────────────────────────────────────
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Moderation Queue component.
+ */
 export function ModerationQueue() {
   const {
     queue,

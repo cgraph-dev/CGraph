@@ -19,6 +19,12 @@ interface TestResultItemProps {
   index: number;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Test Result Item component.
+ */
 export function TestResultItem({ test, index }: TestResultItemProps) {
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {

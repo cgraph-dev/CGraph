@@ -18,6 +18,12 @@ interface HoloBadgeProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Badge component.
+ */
 export function HoloBadge({
   children,
   variant = 'default',

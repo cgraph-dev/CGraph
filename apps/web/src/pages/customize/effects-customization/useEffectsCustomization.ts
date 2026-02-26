@@ -59,6 +59,12 @@ function filterByQuery<T extends { name: string; description: string }>(
   );
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Hook for managing effects customization.
+ */
 export function useEffectsCustomization() {
   const { user } = useAuthStore();
   const store = useCustomizationStore();

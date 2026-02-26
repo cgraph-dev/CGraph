@@ -13,6 +13,12 @@ import { RANK_COLORS } from './constants';
 import { getRankChange, formatScore, getScoreLabel } from './utils';
 import type { LeaderboardEntryProps, LeaderboardEntry } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Leaderboard Entry Row component.
+ */
 export function LeaderboardEntryRow({
   entry,
   index,

@@ -23,6 +23,9 @@ import type { ChannelMessage } from './types';
 
 const logger = createLogger('GroupChannel');
 
+/**
+ * Group Channel component.
+ */
 export default function GroupChannel() {
   const { groupId, channelId } = useParams<{ groupId: string; channelId: string }>();
   // useAuthStore available for future permission checks

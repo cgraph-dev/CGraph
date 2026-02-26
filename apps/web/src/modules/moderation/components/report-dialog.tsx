@@ -17,6 +17,12 @@ import {
   type ReportDialogProps,
 } from '@/modules/moderation/hooks/useReportForm';
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Report Dialog dialog component.
+ */
 export function ReportDialog({
   isOpen,
   onClose,

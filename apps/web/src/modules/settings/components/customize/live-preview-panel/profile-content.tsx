@@ -31,7 +31,7 @@ interface ProfileContentProps {
 }
 
 /**
- *
+ * Profile Content component.
  */
 export function ProfileContent({
   settings,

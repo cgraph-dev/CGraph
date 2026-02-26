@@ -5,6 +5,12 @@
 import { motion } from 'framer-motion';
 import type { CallControlProps } from './types';
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Call Control component.
+ */
 export function CallControl({ icon, label, onClick, active, danger, disabled }: CallControlProps) {
   return (
     <motion.button

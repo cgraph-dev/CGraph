@@ -102,43 +102,98 @@ export class MatrixEngine {
 
   // -- Public API (thin delegates) ------------------------------------------
 
+  /**
+   * Initializes the module.
+   *
+   * @param canvas - The canvas.
+   * @returns The result.
+   */
   public init(canvas: HTMLCanvasElement): void {
     initEngine(this._ec, canvas);
   }
+  /**
+   * start for the animations module.
+   * @returns The result.
+   */
   public start(): void {
     startEngine(this._ec);
   }
+  /**
+   * stop for the animations module.
+   * @returns The result.
+   */
   public stop(): void {
     stopEngine(this._ec);
   }
+  /**
+   * pause for the animations module.
+   * @returns The result.
+   */
   public pause(): void {
     pauseEngine(this._ec);
   }
+  /**
+   * resume for the animations module.
+   * @returns The result.
+   */
   public resume(): void {
     resumeEngine(this._ec);
   }
+  /**
+   * Toggles the state.
+   * @returns The result.
+   */
   public toggle(): void {
     toggleEngine(this._ec);
   }
+  /**
+   * destroy for the animations module.
+   * @returns The result.
+   */
   public destroy(): void {
     destroyEngine(this._ec);
   }
 
+  /**
+   * Updates config.
+   *
+   * @param updates - The updates.
+   * @returns The result.
+   */
   public updateConfig(updates: DeepPartial<MatrixConfig>): void {
     updateEngineConfig(this._ec, updates);
   }
 
+  /**
+   * Updates theme.
+   *
+   * @param theme - The theme.
+   * @returns The result.
+   */
   public setTheme(theme: MatrixTheme | ThemePreset): void {
     setEngineTheme(this._ec, theme);
   }
 
+  /**
+   * Retrieves state.
+   * @returns The state.
+   */
   public getState(): MatrixEngineState {
     return { ...this._ec.state };
   }
+  /**
+   * Retrieves config.
+   * @returns The config.
+   */
   public getConfig(): MatrixConfig {
     return { ...this._ec.config };
   }
 
+  /**
+   * Updates event handlers.
+   *
+   * @param handlers - The handlers.
+   */
   public setEventHandlers(handlers: {
     onStart?: () => void;
     onStop?: () => void;

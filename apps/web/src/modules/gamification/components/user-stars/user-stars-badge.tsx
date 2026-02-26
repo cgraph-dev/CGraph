@@ -8,6 +8,12 @@ import { getTierForPostCount } from './utils';
 import { UserStars } from './user-stars';
 import type { UserStarsBadgeProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * User Stars Badge component.
+ */
 export function UserStarsBadge({ postCount, size = 'sm' }: UserStarsBadgeProps) {
   const tier = getTierForPostCount(postCount);
 

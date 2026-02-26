@@ -18,6 +18,12 @@ interface UserRowProps {
   isUnbanning: boolean;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * User Row component.
+ */
 export function UserRow({ user, onBan, onUnban, isBanning, isUnbanning }: UserRowProps) {
   const [showBanModal, setShowBanModal] = useState(false);
 

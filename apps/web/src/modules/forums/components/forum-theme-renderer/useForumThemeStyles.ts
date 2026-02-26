@@ -6,6 +6,12 @@
 import { useActiveForumTheme } from '@/stores/theme';
 import { RADIUS_MAP, SHADOW_MAP, DEFAULT_THEME_COLORS } from './constants';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum theme styles.
+ */
 export function useForumThemeStyles() {
   const theme = useActiveForumTheme();
 

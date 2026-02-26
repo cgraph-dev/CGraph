@@ -64,17 +64,40 @@ export const useSyncError = () => useCustomizationStore((s) => s.error);
 // =============================================================================
 
 // Helper to get theme colors for a preset
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Retrieves theme colors.
+ *
+ * @param preset - The preset.
+ * @returns The theme colors.
+ */
 export function getThemeColors(preset: ThemePreset): typeof THEME_COLORS.emerald {
   return THEME_COLORS[preset];
 }
 
 // Convenience hooks that combine a selector with getThemeColors
 // Usage: const colors = useChatThemeColors();
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing chat theme colors.
+ * @returns The result.
+ */
 export function useChatThemeColors(): typeof THEME_COLORS.emerald {
   const color = useChatBubbleColor();
   return THEME_COLORS[color];
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing avatar theme colors.
+ * @returns The result.
+ */
 export function useAvatarThemeColors(): typeof THEME_COLORS.emerald {
   const color = useAvatarBorderColor();
   return THEME_COLORS[color];

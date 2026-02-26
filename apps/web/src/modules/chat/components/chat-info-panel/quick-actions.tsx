@@ -22,6 +22,12 @@ interface QuickActionsProps {
   onReportClick: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Quick Actions component.
+ */
 export function QuickActions({
   isMuted,
   isBlocking,

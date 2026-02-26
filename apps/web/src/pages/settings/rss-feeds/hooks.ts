@@ -19,6 +19,12 @@ export const RECOMMENDED_APPS: RecommendedApp[] = [
   { name: 'Thunderbird', url: 'https://www.thunderbird.net', platforms: ['Desktop'] },
 ];
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing r s s feeds.
+ */
 export function useRSSFeeds() {
   const { communityId, forumId } = useParams<{
     communityId?: string;

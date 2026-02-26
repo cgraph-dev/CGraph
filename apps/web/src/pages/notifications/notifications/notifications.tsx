@@ -17,6 +17,9 @@ import { LoadMoreButton } from './load-more-button';
 import type { NotificationFilter } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * Notifications component.
+ */
 export default function Notifications() {
   const navigate = useNavigate();
   const {

@@ -12,6 +12,12 @@ export interface MilestoneCardProps {
   isClaiming?: boolean;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Milestone Card display component.
+ */
 export function MilestoneCard({
   milestone,
   currentPoints,

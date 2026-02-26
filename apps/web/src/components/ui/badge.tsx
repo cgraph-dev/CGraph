@@ -73,42 +73,102 @@ export default function Badge({
 }
 
 // Predefined badge variants for common use cases
+/**
+ * unknown for the ui module.
+ */
+/**
+ * New Badge component.
+ */
 export function NewBadge({ className = '' }: { className?: string }) {
   return <Badge variant="success" size="sm" className={className}>New</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Hot Badge component.
+ */
 export function HotBadge({ className = '' }: { className?: string }) {
   return <Badge variant="danger" size="sm" className={className}>🔥 Hot</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Nsfw Badge component.
+ */
 export function NsfwBadge({ className = '' }: { className?: string }) {
   return <Badge variant="danger" size="sm" className={className}>NSFW</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Pinned Badge component.
+ */
 export function PinnedBadge({ className = '' }: { className?: string }) {
   return <Badge variant="success" size="sm" className={className}>📌 Pinned</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Private Badge component.
+ */
 export function PrivateBadge({ className = '' }: { className?: string }) {
   return <Badge variant="warning" size="sm" className={className}>🔒 Private</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Public Badge component.
+ */
 export function PublicBadge({ className = '' }: { className?: string }) {
   return <Badge variant="info" size="sm" className={className}>🌐 Public</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Owner Badge component.
+ */
 export function OwnerBadge({ className = '' }: { className?: string }) {
   return <Badge variant="primary" size="sm" className={className}>👑 Owner</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Moderator Badge component.
+ */
 export function ModeratorBadge({ className = '' }: { className?: string }) {
   return <Badge variant="success" size="sm" className={className}>🛡️ Mod</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Member Badge component.
+ */
 export function MemberBadge({ className = '' }: { className?: string }) {
   return <Badge variant="default" size="sm" className={className}>Member</Badge>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Count Badge component.
+ */
 export function CountBadge({ count, className = '' }: { count: number; className?: string }) {
   const displayCount = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toString();
   return <Badge variant="default" size="sm" className={className}>{displayCount}</Badge>;

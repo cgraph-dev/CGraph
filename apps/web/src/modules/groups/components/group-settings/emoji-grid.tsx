@@ -32,6 +32,12 @@ interface EmojiGridProps {
   onUploadClick: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Emoji Grid component.
+ */
 export function EmojiGrid({
   emojis,
   loading,

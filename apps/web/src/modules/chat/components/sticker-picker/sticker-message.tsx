@@ -10,6 +10,12 @@ import type { StickerMessageProps } from './types';
 import { ANIMATION_CONFIGS, STICKER_SIZE_CLASSES } from './constants';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Message component.
+ */
 export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
   const [isAnimating, setIsAnimating] = useState(true);
   const rarityColors = STICKER_RARITY_COLORS[sticker.rarity];

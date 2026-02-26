@@ -19,6 +19,9 @@ import { BlockConfirmModal, ReportModal } from './confirmation-modals';
 import { DisappearingMessagesToggle } from '../disappearing-messages-toggle';
 import type { ChatInfoPanelProps } from './types';
 
+/**
+ * Chat Info Panel component.
+ */
 export default function ChatInfoPanel({
   userId,
   conversationId,

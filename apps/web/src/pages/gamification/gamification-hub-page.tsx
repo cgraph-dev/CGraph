@@ -31,6 +31,9 @@ import { QuickLink } from '@/pages/gamification/components/quick-link';
 import { RecentAchievements } from '@/pages/gamification/components/recent-achievements';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * Gamification Hub Page — route-level page component.
+ */
 export default function GamificationHubPage() {
   const {
     totalXP,

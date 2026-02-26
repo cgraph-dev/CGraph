@@ -13,6 +13,12 @@ interface QueueHeaderProps {
   onRefresh: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Queue Header component.
+ */
 export function QueueHeader({ queueCounts, isLoading, onRefresh }: QueueHeaderProps) {
   return (
     <div className="flex items-center justify-between">

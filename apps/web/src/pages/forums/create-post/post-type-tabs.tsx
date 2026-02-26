@@ -10,6 +10,9 @@ interface PostTypeTabsProps {
   setPostType: (type: PostType) => void;
 }
 
+/**
+ * Post Type Tabs component.
+ */
 export default function PostTypeTabs({ postType, setPostType }: PostTypeTabsProps) {
   return (
     <div className="mb-6 flex gap-2 border-b border-dark-700 pb-4">

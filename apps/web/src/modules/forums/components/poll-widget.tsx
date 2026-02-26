@@ -28,6 +28,9 @@ interface PollWidgetProps {
   className?: string;
 }
 
+/**
+ * Poll Widget component.
+ */
 export default function PollWidget({ poll, isCreator = false, className = '' }: PollWidgetProps) {
   const { votePoll, closePoll } = useForumStore();
   const { user } = useAuthStore();

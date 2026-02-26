@@ -37,6 +37,9 @@ interface ErrorStateProps {
   className?: string;
 }
 
+/**
+ * Error State — fallback UI for error states.
+ */
 export default function ErrorState({
   title = 'Something went wrong',
   message = 'An error occurred while loading content. Please try again.',
@@ -77,6 +80,12 @@ export default function ErrorState({
 }
 
 // Common error variants
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Network Error — fallback UI for error states.
+ */
 export function NetworkError({ onRetry }: { onRetry?: () => void }) {
   return (
     <ErrorState
@@ -87,6 +96,12 @@ export function NetworkError({ onRetry }: { onRetry?: () => void }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Not Found Error — fallback UI for error states.
+ */
 export function NotFoundError({ type = 'Content' }: { type?: string }) {
   return (
     <ErrorState
@@ -96,6 +111,12 @@ export function NotFoundError({ type = 'Content' }: { type?: string }) {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Permission Error — fallback UI for error states.
+ */
 export function PermissionError() {
   return (
     <ErrorState
@@ -105,6 +126,12 @@ export function PermissionError() {
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Rate Limit Error — fallback UI for error states.
+ */
 export function RateLimitError({ onRetry }: { onRetry?: () => void }) {
   return (
     <ErrorState

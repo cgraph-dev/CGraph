@@ -14,6 +14,12 @@ interface PostsPanelProps {
   onRemoveFlair: (flairId: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Posts Panel component.
+ */
 export function PostsPanel({ flairs, onAddFlair, onUpdateFlair, onRemoveFlair }: PostsPanelProps) {
   return (
     <motion.div

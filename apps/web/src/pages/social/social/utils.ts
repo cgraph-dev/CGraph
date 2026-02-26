@@ -6,6 +6,15 @@
 // NOTIFICATION HELPERS
 // =============================================================================
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Retrieves notification icon.
+ *
+ * @param type - The type.
+ * @returns The notification icon.
+ */
 export function getNotificationIcon(type: string): string {
   switch (type) {
     case 'friend_request':
@@ -27,6 +36,15 @@ export function getNotificationIcon(type: string): string {
 // SEARCH HELPERS
 // =============================================================================
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Retrieves search result icon.
+ *
+ * @param type - The type.
+ * @returns The search result icon.
+ */
 export function getSearchResultIcon(type: string): string {
   switch (type) {
     case 'user':
@@ -44,6 +62,15 @@ export function getSearchResultIcon(type: string): string {
 // TIME FORMATTING
 // =============================================================================
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Formats time ago.
+ *
+ * @param date - The date.
+ * @returns The processed result.
+ */
 export function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
   if (seconds < 60) return 'Just now';

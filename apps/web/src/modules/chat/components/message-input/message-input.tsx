@@ -29,6 +29,12 @@ import { InputToolbar } from './input-toolbar';
 import { MentionAutocomplete } from './mention-autocomplete';
 import type { MessageInputProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Message Input component.
+ */
 export function MessageInput({
   conversationId: _conversationId,
   channelId: _channelId,

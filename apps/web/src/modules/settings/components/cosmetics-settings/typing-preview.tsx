@@ -19,6 +19,12 @@ interface TypingPreviewProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Typing Preview component.
+ */
 export function TypingPreview({ type }: TypingPreviewProps) {
   if (type === 'dots' || type === 'wave') {
     return (

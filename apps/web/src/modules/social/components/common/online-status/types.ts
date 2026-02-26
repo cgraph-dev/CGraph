@@ -36,6 +36,15 @@ export const sizeConfig = {
   lg: { dot: 'w-4 h-4', ring: 'w-6 h-6', text: 'text-base' },
 } as const;
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Formats last active.
+ *
+ * @param dateStr - The date str.
+ * @returns The processed result.
+ */
 export function formatLastActive(dateStr: string | null): string | null {
   if (!dateStr) return null;
 
@@ -53,6 +62,15 @@ export function formatLastActive(dateStr: string | null): string | null {
   return date.toLocaleDateString();
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Formats last active long.
+ *
+ * @param dateStr - The date str.
+ * @returns The processed result.
+ */
 export function formatLastActiveLong(dateStr: string | null): string | null {
   if (!dateStr) return null;
 

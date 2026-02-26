@@ -24,6 +24,13 @@ const STORE_NAME = 'sessions';
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * open Database for the crypto module.
+ * @returns The result.
+ */
 export async function openDatabase(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise;
 
@@ -49,6 +56,15 @@ export async function openDatabase(): Promise<IDBDatabase> {
 // CRUD HELPERS
 // =============================================================================
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * Persists session to storage.
+ *
+ * @param session - The session.
+ * @returns The result.
+ */
 export async function saveSessionToStorage(session: RatchetSession): Promise<void> {
   const db = await openDatabase();
 
@@ -80,6 +96,15 @@ export async function saveSessionToStorage(session: RatchetSession): Promise<voi
   });
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * Removes session from storage.
+ *
+ * @param recipientId - The recipient id.
+ * @returns The result.
+ */
 export async function deleteSessionFromStorage(recipientId: string): Promise<void> {
   const db = await openDatabase();
 
@@ -93,6 +118,13 @@ export async function deleteSessionFromStorage(recipientId: string): Promise<voi
   });
 }
 
+/**
+ * unknown for the crypto module.
+ */
+/**
+ * Retrieves all sessions.
+ * @returns The all sessions.
+ */
 export async function getAllSessions(): Promise<SerializedSession[]> {
   const db = await openDatabase();
 

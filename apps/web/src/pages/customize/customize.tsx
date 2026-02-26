@@ -22,6 +22,8 @@ const ProgressionCustomization = lazy(() => import('./progression-customization'
 import { LivePreviewPanel } from '@/modules/settings/components/customize';
 
 /**
+ * unknown.
+ * unknown for the customize module.
  * Customize Hub - Main Page
  *
  * Revolutionary customization interface with 5 comprehensive categories:
@@ -35,7 +37,7 @@ import { LivePreviewPanel } from '@/modules/settings/components/customize';
  */
 
 /**
- *
+ * Customize component.
  */
 export default function Customize() {
   const { category: urlCategory } = useParams<{ category?: string }>();

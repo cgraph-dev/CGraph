@@ -27,6 +27,12 @@ function getReactionAnimation(animation: string) {
   }
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Reaction Styles Section section component.
+ */
 export function ReactionStylesSection({
   reactions,
   selectedReaction,

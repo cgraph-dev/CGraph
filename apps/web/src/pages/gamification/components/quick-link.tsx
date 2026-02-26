@@ -17,6 +17,12 @@ export interface QuickLinkProps {
   delay?: number;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Quick Link component.
+ */
 export function QuickLink({ to, icon, title, description, gradient, delay = 0 }: QuickLinkProps) {
   const navigate = useNavigate();
 

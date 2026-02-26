@@ -14,6 +14,15 @@ const logger = createLogger('ShaderBackground');
 // UTILITIES
 // =============================================================================
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Parses color.
+ *
+ * @param hex - The hex.
+ * @returns The processed result.
+ */
 export function parseColor(hex: string): [number, number, number] {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -38,6 +47,13 @@ export interface WebGLRefs {
   mouseRef: React.RefObject<{ x: number; y: number }>;
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing web g l refs.
+ * @returns The result.
+ */
 export function useWebGLRefs(): WebGLRefs {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const glRef = useRef<WebGLRenderingContext | null>(null);
@@ -49,6 +65,16 @@ export function useWebGLRefs(): WebGLRefs {
   return { canvasRef, glRef, programRef, animationFrameRef, startTimeRef, mouseRef };
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing parsed colors.
+ *
+ * @param color1 - The color1.
+ * @param color2 - The color2.
+ * @param color3 - The color3.
+ */
 export function useParsedColors(color1: string, color2: string, color3: string) {
   return useMemo(
     () => ({
@@ -60,6 +86,15 @@ export function useParsedColors(color1: string, color2: string, color3: string) 
   );
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing web g l init.
+ *
+ * @param refs - The refs.
+ * @param variant - The variant.
+ */
 export function useWebGLInit(refs: WebGLRefs, variant: ShaderVariant) {
   const { canvasRef, glRef, programRef, animationFrameRef } = refs;
 
@@ -131,6 +166,14 @@ export function useWebGLInit(refs: WebGLRefs, variant: ShaderVariant) {
   }, [variant, canvasRef, glRef, programRef, animationFrameRef]);
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing canvas resize.
+ *
+ * @param refs - The refs.
+ */
 export function useCanvasResize(refs: WebGLRefs) {
   const { canvasRef, glRef } = refs;
 
@@ -155,6 +198,15 @@ export function useCanvasResize(refs: WebGLRefs) {
   }, [canvasRef, glRef]);
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing mouse tracking.
+ *
+ * @param refs - The refs.
+ * @param interactive - The interactive.
+ */
 export function useMouseTracking(refs: WebGLRefs, interactive: boolean) {
   const { mouseRef } = refs;
 
@@ -173,6 +225,23 @@ export function useMouseTracking(refs: WebGLRefs, interactive: boolean) {
   }, [interactive, mouseRef]);
 }
 
+/**
+ * unknown for the shaders module.
+ */
+/**
+ * Hook for managing render loop.
+ *
+ * @param refs - The refs.
+ * @param colors - The colors.
+ * @param number - The number.
+ * @param number - The number.
+ * @param number - The number.
+ * @param number - The number.
+ * @param number - The number.
+ * @param number - The number.
+ * @param speed - The speed.
+ * @param intensity - The intensity.
+ */
 export function useRenderLoop(
   refs: WebGLRefs,
   colors: {

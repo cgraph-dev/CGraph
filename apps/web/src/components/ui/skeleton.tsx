@@ -61,6 +61,12 @@ export default function Skeleton({
 }
 
 // Post card skeleton
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Post Card Skeleton display component.
+ */
 export function PostCardSkeleton() {
   return (
     <div className="bg-dark-800 border border-dark-700 rounded-lg p-4 animate-pulse">
@@ -103,6 +109,12 @@ export function PostCardSkeleton() {
 }
 
 // Forum card skeleton
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Forum Card Skeleton display component.
+ */
 export function ForumCardSkeleton() {
   return (
     <div className="bg-dark-800 border border-dark-700 rounded-lg p-4 animate-pulse">
@@ -119,6 +131,12 @@ export function ForumCardSkeleton() {
 }
 
 // Comment skeleton
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Comment Skeleton — loading placeholder.
+ */
 export function CommentSkeleton({ depth = 0 }: { depth?: number }) {
   return (
     <div className="animate-pulse" style={{ marginLeft: depth * 24 }}>
@@ -144,6 +162,12 @@ export function CommentSkeleton({ depth = 0 }: { depth?: number }) {
 }
 
 // Message bubble skeleton — mimics chat message layout
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Message Skeleton — loading placeholder.
+ */
 export function MessageSkeleton({ compact = false }: { compact?: boolean }) {
   return (
     <div className="flex gap-3 px-4 py-2 animate-pulse">
@@ -165,6 +189,12 @@ export function MessageSkeleton({ compact = false }: { compact?: boolean }) {
 }
 
 // Multiple message skeletons for chat loading state
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Message List Skeleton component.
+ */
 export function MessageListSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="flex flex-col gap-1">
@@ -176,6 +206,12 @@ export function MessageListSkeleton({ count = 6 }: { count?: number }) {
 }
 
 // User card skeleton — for friend lists, member lists, search results
+/**
+ * unknown for the ui module.
+ */
+/**
+ * User Card Skeleton display component.
+ */
 export function UserCardSkeleton() {
   return (
     <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 animate-pulse">
@@ -190,6 +226,12 @@ export function UserCardSkeleton() {
 }
 
 // User card list skeleton
+/**
+ * unknown for the ui module.
+ */
+/**
+ * User Card List Skeleton display component.
+ */
 export function UserCardListSkeleton({ count = 5 }: { count?: number }) {
   return (
     <div className="space-y-1">
@@ -201,6 +243,12 @@ export function UserCardListSkeleton({ count = 5 }: { count?: number }) {
 }
 
 // Conversation list item skeleton
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Conversation Item Skeleton — loading placeholder.
+ */
 export function ConversationItemSkeleton() {
   return (
     <div className="flex items-center gap-3 rounded-lg px-3 py-3 animate-pulse">

@@ -19,6 +19,12 @@ export interface PopoverProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Popover component.
+ */
 export function Popover({ children, open: controlledOpen, onOpenChange }: PopoverProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   
@@ -40,6 +46,12 @@ export interface PopoverTriggerProps {
   asChild?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Popover Trigger component.
+ */
 export function PopoverTrigger({ children, asChild }: PopoverTriggerProps) {
   const ctx = use(PopoverContext);
   
@@ -64,6 +76,12 @@ export interface PopoverContentProps {
   sideOffset?: number;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Popover Content component.
+ */
 export function PopoverContent({ 
   children, 
   className = '',

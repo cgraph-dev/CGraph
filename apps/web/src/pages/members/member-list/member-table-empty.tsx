@@ -4,6 +4,12 @@
 
 import { UserIcon } from '@heroicons/react/24/outline';
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Member Table Empty component.
+ */
 export function MemberTableEmpty() {
   return (
     <tr>

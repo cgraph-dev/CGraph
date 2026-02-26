@@ -14,6 +14,12 @@ import { getConversationName, getConversationAvatar, getConversationAvatarBorder
 import type { ConversationItemProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Conversation Item component.
+ */
 export function ConversationItem({
   conversation,
   isActive,

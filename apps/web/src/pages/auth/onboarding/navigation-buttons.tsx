@@ -11,6 +11,12 @@ interface NavigationButtonsProps {
   onSkip: () => void;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Navigation Buttons component.
+ */
 export function NavigationButtons({
   currentStep,
   totalSteps,

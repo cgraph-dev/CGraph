@@ -12,6 +12,12 @@ interface AttachmentMenuProps {
   onFileSelect: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Attachment Menu component.
+ */
 export function AttachmentMenu({ attachmentMode, onToggle, onFileSelect }: AttachmentMenuProps) {
   return (
     <div className="relative">

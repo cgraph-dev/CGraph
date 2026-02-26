@@ -19,6 +19,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
 import type { FriendsTabProps } from './types';
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Friends Tab component.
+ */
 export function FriendsTab({
   friends,
   pendingRequests,

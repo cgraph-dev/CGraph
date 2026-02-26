@@ -46,6 +46,15 @@ const defaultConfig: AIServiceConfig = {
 
 let _config = { ...defaultConfig };
 
+/**
+ * unknown for the ai module.
+ */
+/**
+ * Initializes a i service.
+ *
+ * @param config - Configuration object.
+ * @returns The result.
+ */
 export function configureAIService(config: Partial<AIServiceConfig>): void {
   _config = { ..._config, ...config };
 }

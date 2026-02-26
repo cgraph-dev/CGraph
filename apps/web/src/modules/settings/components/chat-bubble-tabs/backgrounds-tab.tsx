@@ -29,6 +29,12 @@ function getBackgroundPreviewStyle(bg: ChatBackground): React.CSSProperties {
   return { backgroundColor: bg.colors[0] };
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Backgrounds Tab component.
+ */
 export function BackgroundsTab({
   backgrounds,
   selectedBackground,

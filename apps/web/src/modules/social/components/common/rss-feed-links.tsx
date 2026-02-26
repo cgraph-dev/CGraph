@@ -32,6 +32,12 @@ interface RSSFeedLinksProps {
   className?: string;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * R S S Feed Links component.
+ */
 export function RSSFeedLinks({
   feeds,
   showDescriptions = true,
@@ -147,6 +153,12 @@ interface RSSAutoDiscoveryProps {
   feeds: { title: string; url: string }[];
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * R S S Auto Discovery component.
+ */
 export function RSSAutoDiscovery({ feeds }: RSSAutoDiscoveryProps) {
   React.useEffect(() => {
     // Remove any existing RSS links
@@ -186,6 +198,12 @@ interface ForumRSSButtonProps {
   className?: string;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Forum R S S Button component.
+ */
 export function ForumRSSButton({
   forumId,
   forumName,

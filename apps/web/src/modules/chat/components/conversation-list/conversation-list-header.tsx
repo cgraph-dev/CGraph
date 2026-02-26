@@ -17,6 +17,12 @@ interface ConversationListHeaderProps {
   onNewChat: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Conversation List Header component.
+ */
 export function ConversationListHeader({
   searchQuery,
   onSearchChange,

@@ -18,6 +18,12 @@ interface HoloTooltipProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Tooltip component.
+ */
 export function HoloTooltip({
   children,
   content,

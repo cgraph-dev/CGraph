@@ -23,6 +23,9 @@ interface AttachmentUploaderProps {
   className?: string;
 }
 
+/**
+ * Attachment Uploader component.
+ */
 export default function AttachmentUploader({
   postId,
   attachments = [],

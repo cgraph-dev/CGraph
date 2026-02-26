@@ -14,6 +14,12 @@ interface BadgeTooltipProps {
   isVisible: boolean;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Badge Tooltip component.
+ */
 export function BadgeTooltip({ achievement, colors, isVisible }: BadgeTooltipProps) {
   return (
     <AnimatePresence>

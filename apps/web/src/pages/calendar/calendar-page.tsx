@@ -13,6 +13,9 @@ import { CalendarEvent } from '@/modules/settings/store';
  * Main calendar page with event viewing and creation
  */
 
+/**
+ * Calendar Page — route-level page component.
+ */
 export default function CalendarPage() {
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | undefined>();

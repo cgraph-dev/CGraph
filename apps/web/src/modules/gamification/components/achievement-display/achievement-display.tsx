@@ -21,6 +21,12 @@ import { AchievementListItem } from './achievement-list-item';
 import { AchievementModal } from './achievement-modal';
 import type { AchievementDisplayProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement Display component.
+ */
 export function AchievementDisplay({
   achievements,
   unlockedIds = [],

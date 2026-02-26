@@ -9,6 +9,12 @@ import type { HoloDividerProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Divider component.
+ */
 export function HoloDivider({
   preset = 'cyan',
   orientation = 'horizontal',

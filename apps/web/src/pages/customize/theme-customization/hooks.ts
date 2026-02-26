@@ -17,6 +17,12 @@ import {
 import type { ThemeCategory, Theme } from './types';
 import { MOCK_THEMES } from './constants';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Hook for managing theme customization.
+ */
 export function useThemeCustomization() {
   const { user } = useAuthStore();
   const store = useCustomizationStore();

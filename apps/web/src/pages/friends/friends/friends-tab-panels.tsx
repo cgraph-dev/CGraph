@@ -21,6 +21,12 @@ interface PendingTabProps {
   declineRequest: (id: string) => void;
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Pending Tab component.
+ */
 export function PendingTab({
   pendingRequests,
   sentRequests,
@@ -114,6 +120,12 @@ interface FriendsListTabProps {
   setDropdownOpen: (id: string | null) => void;
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friends List Tab component.
+ */
 export function FriendsListTab({
   filteredFriends,
   searchQuery,
@@ -163,6 +175,12 @@ export function FriendsListTab({
 /*  Blocked Tab (placeholder)                                          */
 /* ------------------------------------------------------------------ */
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Blocked Tab component.
+ */
 export function BlockedTab() {
   return (
     <div className="px-4 py-12 text-center">

@@ -28,6 +28,12 @@ interface AccessibilityProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Accessibility component.
+ */
 export function Accessibility({
   reduceMotion,
   highContrast,

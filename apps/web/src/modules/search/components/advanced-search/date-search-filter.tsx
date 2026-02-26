@@ -22,6 +22,12 @@ interface DateSearchFilterProps {
   updateFilter: FilterUpdateFn;
 }
 
+/**
+ * unknown for the search module.
+ */
+/**
+ * Date Search Filter component.
+ */
 export function DateSearchFilter({ filters, updateFilter }: DateSearchFilterProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

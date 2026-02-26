@@ -3,6 +3,12 @@
  * @module modules/forums/components/post-editor/icons
  */
 import React from 'react';
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Underline Icon component.
+ */
 export function UnderlineIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

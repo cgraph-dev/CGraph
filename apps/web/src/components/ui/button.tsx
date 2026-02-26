@@ -116,6 +116,12 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   isLoading?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Icon Button component.
+ */
 export function IconButton({
   icon,
   variant = 'ghost',

@@ -17,6 +17,9 @@ import { ConnectingState } from './connecting-state';
 import { CallControls } from './call-controls';
 import type { CallStatus } from './types';
 
+/**
+ * Call Screen component.
+ */
 export default function CallScreen() {
   const {
     callState,

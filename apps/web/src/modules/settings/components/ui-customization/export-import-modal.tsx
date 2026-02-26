@@ -15,6 +15,12 @@ interface ExportImportModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Export Import Modal dialog component.
+ */
 export function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalProps) {
   const [importText, setImportText] = useState('');
   const [copied, setCopied] = useState(false);

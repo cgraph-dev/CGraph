@@ -22,6 +22,12 @@ interface ThemedChatBubbleProps {
   className?: string;
 }
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Themed Chat Bubble component.
+ */
 export function ThemedChatBubble({
   message,
   timestamp,

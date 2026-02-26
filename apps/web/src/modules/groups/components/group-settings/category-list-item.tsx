@@ -36,6 +36,12 @@ interface CategoryListItemProps {
   onMoveDown: (index: number) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Category List Item component.
+ */
 export function CategoryListItem({
   category,
   index,

@@ -23,6 +23,16 @@ export interface UseProfileDataReturn {
   refreshProfile: () => Promise<void>;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Hook for managing profile data.
+ *
+ * @param userId - The user id.
+ * @param isOwnProfile - The is own profile.
+ * @param ownStats - The own stats.
+ */
 export function useProfileData(
   userId: string | undefined,
   isOwnProfile: boolean,

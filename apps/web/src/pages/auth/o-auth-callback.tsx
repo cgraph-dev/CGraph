@@ -15,6 +15,12 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('OAuthCallback');
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * O Auth Callback Page — route-level page component.
+ */
 export function OAuthCallbackPage() {
   const [searchParams] = useSearchParams();
   const { provider } = useParams<{ provider: string }>();

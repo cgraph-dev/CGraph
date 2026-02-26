@@ -26,6 +26,9 @@ interface EventFormFieldsProps {
   categories: Category[];
 }
 
+/**
+ * Event Form Fields component.
+ */
 export default function EventFormFields({
   formData,
   handleChange,

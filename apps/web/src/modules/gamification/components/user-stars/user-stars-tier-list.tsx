@@ -7,6 +7,12 @@
 import { USER_TIERS } from './constants';
 import { UserStars } from './user-stars';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * User Stars Tier List component.
+ */
 export function UserStarsTierList() {
   return (
     <div className="space-y-2">

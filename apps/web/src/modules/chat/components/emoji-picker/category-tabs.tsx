@@ -13,6 +13,12 @@ interface CategoryTabsProps {
   onCategoryChange: (category: EmojiCategory) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Category Tabs component.
+ */
 export function CategoryTabs({ activeCategory, onCategoryChange }: CategoryTabsProps) {
   const categories = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[]; // type assertion: Object.keys returns string[], narrowing to known keys
 

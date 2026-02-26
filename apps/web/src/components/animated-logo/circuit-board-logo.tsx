@@ -24,6 +24,12 @@ import { CentralHub } from './svg/central-hub';
 import { DataFlowParticles } from './svg/data-flow-particles';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the animated-logo module.
+ */
+/**
+ * Circuit Board Logo component.
+ */
 export function CircuitBoardLogo({
   logoSize,
   isAnimated = false,

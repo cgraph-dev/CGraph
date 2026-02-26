@@ -9,6 +9,12 @@ import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Language Settings Panel component.
+ */
 export function LanguageSettingsPanel() {
   const { settings, updateLocaleSettings, isSaving } = useSettingsStore();
   const [language, setLanguage] = useState(settings.locale.language);

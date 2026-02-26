@@ -10,6 +10,12 @@ interface AttachmentsPreviewProps {
   onRemove: (index: number) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Attachments Preview component.
+ */
 export function AttachmentsPreview({ attachments, onRemove }: AttachmentsPreviewProps) {
   return (
     <AnimatePresence>

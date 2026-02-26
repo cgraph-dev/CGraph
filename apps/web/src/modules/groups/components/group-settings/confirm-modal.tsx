@@ -6,6 +6,12 @@
 import { motion } from 'framer-motion';
 import type { ConfirmModalProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Confirm Modal dialog component.
+ */
 export function ConfirmModal({
   title,
   message,

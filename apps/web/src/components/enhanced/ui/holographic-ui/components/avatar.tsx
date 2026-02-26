@@ -9,6 +9,12 @@ import type { HoloAvatarProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Avatar component.
+ */
 export function HoloAvatar({
   src,
   name,

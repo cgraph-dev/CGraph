@@ -10,6 +10,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { ContentAreaProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Content Area component.
+ */
 export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProps) {
   // Has channel selected
   if (channelId) {

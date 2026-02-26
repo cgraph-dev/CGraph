@@ -11,6 +11,13 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { FilterType, UseConversationListReturn } from './types';
 import { getConversationName } from './utils';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing conversation list.
+ * @returns The result.
+ */
 export function useConversationList(): UseConversationListReturn {
   const navigate = useNavigate();
   const { user } = useAuthStore();

@@ -16,6 +16,12 @@ function generateFallbackSafetyNumber(): string {
   return num;
 }
 
+/**
+ * unknown for the security module.
+ */
+/**
+ * Hook for managing e2 e e verification.
+ */
 export function useE2EEVerification() {
   const { userId } = useParams<{ userId: string }>();
   const queryClient = useQueryClient();

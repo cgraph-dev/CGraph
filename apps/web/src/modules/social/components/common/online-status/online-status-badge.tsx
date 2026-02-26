@@ -17,6 +17,12 @@ interface OnlineStatusBadgeProps {
   className?: string;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Online Status Badge component.
+ */
 export function OnlineStatusBadge({ status, lastActive, className = '' }: OnlineStatusBadgeProps) {
   const config = statusConfig[status];
 

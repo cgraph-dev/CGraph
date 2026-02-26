@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * AI Theme Demo Section
  */
 
@@ -8,7 +9,7 @@ import { themeEngine as aiThemeEngine } from '@/lib/ai/theme-engine';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 /**
- *
+ * Theme Demo component.
  */
 export function ThemeDemo() {
   const [generatedTheme, setGeneratedTheme] = useState<ReturnType<

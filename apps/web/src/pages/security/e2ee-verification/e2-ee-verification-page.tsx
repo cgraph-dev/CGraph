@@ -78,6 +78,9 @@ function QRCodePlaceholder() {
   );
 }
 
+/**
+ * E2 E E Verification Page — route-level page component.
+ */
 export default function E2EEVerificationPage() {
   const {
     safetyData,

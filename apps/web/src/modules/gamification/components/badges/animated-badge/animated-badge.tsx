@@ -19,6 +19,12 @@ import type { AnimatedBadgeProps } from './types';
 import { RARITY_COLORS, SIZE_CONFIG } from './constants';
 import { RarityEffects } from './rarity-effects';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Animated Badge component.
+ */
 export function AnimatedBadge({
   achievement,
   size = 'md',

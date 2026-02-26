@@ -6,6 +6,9 @@
 import { useRef, useEffect, useState } from 'react';
 import { MatrixBackground } from '@/lib/animations/matrix';
 
+/**
+ * Matrix Test component.
+ */
 export default function MatrixTest() {
   const [showMatrix, setShowMatrix] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);

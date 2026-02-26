@@ -18,6 +18,9 @@ import {
 import { PageContainer } from '@/components/layout';
 import { useKeyVerification } from './hooks';
 
+/**
+ * Key Verification Page — route-level page component.
+ */
 export default function KeyVerificationPage() {
   const {
     username,

@@ -19,6 +19,16 @@ type Get = () => ModerationState;
 
 const logger = createLogger('ModerationStore:Posts');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new post actions.
+ *
+ * @param _set - The _set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createPostActions(_set: Set, get: Get) {
   return {
     movePost: async (postId: string, targetThreadId: string) => {

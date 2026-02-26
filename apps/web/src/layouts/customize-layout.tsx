@@ -14,6 +14,9 @@ import { motion } from 'framer-motion';
  * - Right: Live preview panel
  */
 
+/**
+ * Customize Layout — page layout wrapper.
+ */
 export default function CustomizeLayout() {
   return (
     <motion.div

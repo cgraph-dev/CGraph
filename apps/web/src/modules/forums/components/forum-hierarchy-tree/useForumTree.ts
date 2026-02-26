@@ -10,6 +10,16 @@ import type { ForumNode } from './types';
 
 const logger = createLogger('ForumHierarchyTree');
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum tree.
+ *
+ * @param rootForumId - The root forum id.
+ * @param maxDepth - The max depth.
+ * @param showHidden - The show hidden.
+ */
 export function useForumTree(rootForumId?: string, maxDepth = 10, showHidden = false) {
   const [tree, setTree] = useState<ForumNode[]>([]);
   const [loading, setLoading] = useState(true);

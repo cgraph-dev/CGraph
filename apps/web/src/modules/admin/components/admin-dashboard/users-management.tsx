@@ -9,6 +9,12 @@ import { motion } from 'framer-motion';
 import { userManagementApi } from '../../api/userManagementApi';
 import type { AdminUser } from '../../api/types';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Users Management component.
+ */
 export function UsersManagement() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);

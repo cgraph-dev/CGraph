@@ -84,6 +84,12 @@ function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
   );
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Events Management component.
+ */
 export function EventsManagement() {
   const [events, setEvents] = useState<AdminEvent[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);

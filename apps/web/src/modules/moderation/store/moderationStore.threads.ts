@@ -24,6 +24,16 @@ type Get = () => ModerationState;
 
 const logger = createLogger('ModerationStore:Threads');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new thread actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createThreadActions(set: Set, get: Get) {
   return {
     // ========================================

@@ -8,6 +8,12 @@ import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleCardProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Title Card display component.
+ */
 export function TitleCard({
   title,
   isEquipped,

@@ -8,6 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { InviteModal } from '../invite-modal';
 import type { InvitesTabProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Invites Tab component.
+ */
 export function InvitesTab({ groupId, groupName }: InvitesTabProps) {
   const [showModal, setShowModal] = useState(false);
 

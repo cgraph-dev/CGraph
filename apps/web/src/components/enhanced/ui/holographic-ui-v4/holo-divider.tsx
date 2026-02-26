@@ -15,6 +15,12 @@ interface HoloDividerProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Divider component.
+ */
 export function HoloDivider({
   preset = 'cyan',
   orientation = 'horizontal',

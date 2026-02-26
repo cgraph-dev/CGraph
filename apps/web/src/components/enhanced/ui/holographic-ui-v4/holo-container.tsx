@@ -30,6 +30,12 @@ interface HoloContainerProps extends Omit<MotionProps, 'children'> {
   onClick?: () => void;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Container wrapper component.
+ */
 export function HoloContainer({
   children,
   preset = 'cyan',

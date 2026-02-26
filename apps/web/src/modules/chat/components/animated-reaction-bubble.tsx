@@ -61,6 +61,12 @@ export interface AnimatedReactionBubbleProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Animated Reaction Bubble component.
+ */
 export function AnimatedReactionBubble({
   reaction,
   isOwnMessage,

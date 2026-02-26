@@ -9,6 +9,12 @@ import type { HoloBadgeProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Badge component.
+ */
 export function HoloBadge({
   children,
   variant = 'default',

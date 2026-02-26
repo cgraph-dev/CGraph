@@ -11,6 +11,12 @@ import { PROFILE_FIELD_VISIBILITY_OPTIONS } from './privacy-field-config';
 import { PrivacyToggle } from './privacy-toggle';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Privacy Settings Panel component.
+ */
 export function PrivacySettingsPanel() {
   const { settings, updatePrivacySettings, isSaving } = useSettingsStore();
   const [fieldVisExpanded, setFieldVisExpanded] = useState(false);

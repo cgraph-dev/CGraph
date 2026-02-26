@@ -153,6 +153,8 @@ export function DashboardChart({
 }
 
 /**
+ * Chart Placeholder component.
+ *
  * @deprecated Use DashboardChart instead
  */
 export function ChartPlaceholder({ title }: { title: string }) {

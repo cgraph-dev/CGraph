@@ -14,6 +14,12 @@ interface ParticleFieldProps {
   speedMultiplier: number;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Particle Field component.
+ */
 export function ParticleField({
   show,
   particleData,

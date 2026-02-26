@@ -11,6 +11,12 @@ import { moderationApi } from '../../api/moderationApi';
 import type { AdminStats, ModerationItem } from './types';
 import { StatCard, QuickActionButton, ModerationQueueItem } from './shared-components';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Dashboard Overview component.
+ */
 export function DashboardOverview() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [moderationQueue, setModerationQueue] = useState<ModerationItem[]>([]);

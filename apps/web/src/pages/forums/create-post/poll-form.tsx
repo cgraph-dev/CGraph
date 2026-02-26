@@ -15,6 +15,9 @@ interface PollFormProps {
   setPollPublic: (value: boolean) => void;
 }
 
+/**
+ * Poll Form component.
+ */
 export default function PollForm({
   pollQuestion,
   setPollQuestion,

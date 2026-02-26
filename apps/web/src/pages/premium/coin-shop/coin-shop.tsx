@@ -17,6 +17,9 @@ import { ShopItemCard } from './shop-item-card';
 import { CategoryFilter } from './category-filter';
 import { AmbientParticles } from './ambient-particles';
 
+/**
+ * Coin Shop component.
+ */
 export default function CoinShop() {
   const navigate = useNavigate();
   useAuthStore(); // Ensure user is authenticated

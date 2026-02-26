@@ -5,6 +5,12 @@
 import { useForumAdminState } from './useForumAdminState';
 import { useForumAdminActions } from './useForumAdminActions';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum admin.
+ */
 export function useForumAdmin() {
   const state = useForumAdminState();
 

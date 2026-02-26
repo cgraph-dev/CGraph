@@ -12,6 +12,12 @@ import type { CallUser, CallType, CallParticipant } from './types';
 
 const logger = createLogger('CallScreen');
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Hook for managing call screen.
+ */
 export function useCallScreen() {
   const { recipientId, callType: callTypeParam } = useParams<{
     recipientId: string;

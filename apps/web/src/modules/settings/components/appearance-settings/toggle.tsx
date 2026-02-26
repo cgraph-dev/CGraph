@@ -13,6 +13,12 @@ import type { ToggleProps } from './types';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Toggle component.
+ */
 export function Toggle({ enabled, onChange, label, description, icon, disabled }: ToggleProps) {
   return (
     <div

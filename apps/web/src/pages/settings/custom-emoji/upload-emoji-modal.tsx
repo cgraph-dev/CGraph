@@ -11,6 +11,9 @@ interface UploadEmojiModalProps {
   onClose: () => void;
 }
 
+/**
+ * Upload Emoji Modal dialog component.
+ */
 export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);

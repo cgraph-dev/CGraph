@@ -16,6 +16,12 @@ export interface ReactionParticleProps {
   isSuper?: boolean;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Reaction Particle component.
+ */
 export function ReactionParticle({ emoji, index, isSuper }: ReactionParticleProps) {
   const count = isSuper ? SUPER_PARTICLE_COUNT : PARTICLE_COUNT;
   const baseDistance = isSuper ? SUPER_PARTICLE_DISTANCE : 40;

@@ -10,6 +10,12 @@ import { forumLogger as logger } from '@/lib/logger';
 import { DEFAULT_FORM_DATA, NAME_MIN_LENGTH, NAME_MAX_LENGTH } from './constants';
 import type { ForumFormData } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing create forum.
+ */
 export function useCreateForum() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();

@@ -13,6 +13,12 @@ interface AvatarSectionProps {
   user: User | null;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Avatar Section component.
+ */
 export function AvatarSection({ user }: AvatarSectionProps) {
   return (
     <GlassCard variant="crystal" glow className="mb-8 p-6">

@@ -46,6 +46,12 @@ interface EditorToolbarProps {
   setIsPreviewMode: (mode: boolean) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Editor Toolbar component.
+ */
 export function EditorToolbar({
   insertTag,
   insertAtCursor,

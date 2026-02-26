@@ -23,6 +23,12 @@ export interface UploadProgressRingProps {
   children?: React.ReactNode;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Upload Progress Ring component.
+ */
 export function UploadProgressRing({
   progress,
   size = 48,

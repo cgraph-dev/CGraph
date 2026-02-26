@@ -22,6 +22,12 @@ interface HoloInputProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Input component.
+ */
 export function HoloInput({
   value,
   onChange,

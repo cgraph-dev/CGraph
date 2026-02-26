@@ -25,6 +25,12 @@ const STATS_CONFIG = [
   },
 ] as const;
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Stats Grid component.
+ */
 export function StatsGrid({ karma, streak }: StatsGridProps) {
   const values = { karma, streak };
 

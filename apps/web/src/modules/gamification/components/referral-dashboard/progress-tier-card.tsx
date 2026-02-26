@@ -6,6 +6,12 @@
 
 import type { ProgressTierProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Progress Tier Card display component.
+ */
 export function ProgressTierCard({ nextTier, verifiedReferrals }: ProgressTierProps) {
   if (!nextTier) return null;
 

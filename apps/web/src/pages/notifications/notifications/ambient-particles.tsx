@@ -10,6 +10,12 @@ interface AmbientParticlesProps {
   count?: number;
 }
 
+/**
+ * unknown for the notifications module.
+ */
+/**
+ * Ambient Particles component.
+ */
 export function AmbientParticles({ count = 8 }: AmbientParticlesProps) {
   return (
     <>

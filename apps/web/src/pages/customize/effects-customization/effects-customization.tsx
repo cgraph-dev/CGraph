@@ -18,6 +18,9 @@ import { useEffectsCustomization } from './useEffectsCustomization';
 import { SaveButton } from './save-button';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Effects Customization component.
+ */
 export default function EffectsCustomization() {
   const {
     activeCategory,

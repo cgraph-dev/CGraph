@@ -23,6 +23,12 @@ export class AudioZoneManager {
   private convolverNodes: Map<string, ConvolverNode> = new Map();
   private audioContext: AudioContext | null = null;
 
+  /**
+   * Updates audio context.
+   *
+   * @param ctx - The ctx.
+   * @returns The result.
+   */
   setAudioContext(ctx: AudioContext): void {
     this.audioContext = ctx;
   }
@@ -31,6 +37,12 @@ export class AudioZoneManager {
   // ZONE CRUD
   // ===========================================================================
 
+  /**
+   * add Audio Zone for the audio module.
+   *
+   * @param zone - The zone.
+   * @returns The result.
+   */
   addAudioZone(zone: AudioZone): void {
     this.zones.set(zone.id, zone);
 
@@ -43,12 +55,25 @@ export class AudioZoneManager {
     logger.debug(`Added zone: ${zone.name}`);
   }
 
+  /**
+   * Removes audio zone.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   removeAudioZone(id: string): void {
     this.convolverNodes.get(id)?.disconnect();
     this.convolverNodes.delete(id);
     this.zones.delete(id);
   }
 
+  /**
+   * Updates audio zone.
+   *
+   * @param id - Unique identifier.
+   * @param updates - The updates.
+   * @returns The result.
+   */
   updateAudioZone(id: string, updates: Partial<AudioZone>): void {
     const zone = this.zones.get(id);
     if (!zone) return;
@@ -68,10 +93,18 @@ export class AudioZoneManager {
     }
   }
 
+  /**
+   * Retrieves active zones.
+   * @returns The active zones.
+   */
   getActiveZones(): AudioZone[] {
     return Array.from(this.zones.values());
   }
 
+  /**
+   * Retrieves zones.
+   * @returns The zones.
+   */
   getZones(): Map<string, AudioZone> {
     return new Map(this.zones);
   }
@@ -80,6 +113,12 @@ export class AudioZoneManager {
   // ZONE TRANSITIONS & EFFECTS
   // ===========================================================================
 
+  /**
+   * Validates zone transitions.
+   *
+   * @param position - The position.
+   * @returns The result.
+   */
   checkZoneTransitions(position: Position3D): AudioZone[] {
     const activeZones: AudioZone[] = [];
     for (const [, zone] of this.zones) {
@@ -91,6 +130,12 @@ export class AudioZoneManager {
     return activeZones;
   }
 
+  /**
+   * apply Zone Effects for the audio module.
+   *
+   * @param source - The source.
+   * @returns The result.
+   */
   applyZoneEffects(source: AudioSource): void {
     // Find which zones the source is in
     for (const [, zone] of this.zones) {
@@ -158,6 +203,10 @@ export class AudioZoneManager {
   // CLEANUP
   // ===========================================================================
 
+  /**
+   * destroy for the audio module.
+   * @returns The result.
+   */
   destroy(): void {
     for (const [id] of this.zones) {
       this.removeAudioZone(id);

@@ -59,6 +59,13 @@ export interface MessageActionsHandlers {
 
 export interface UseMessageActionsReturn extends MessageActionsState, MessageActionsHandlers {}
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing message actions.
+ * @returns The result.
+ */
 export function useMessageActions(): UseMessageActionsReturn {
   const [activeMessageMenu, setActiveMessageMenu] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);

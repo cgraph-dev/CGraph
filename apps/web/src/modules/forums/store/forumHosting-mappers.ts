@@ -39,6 +39,16 @@ function record(val: unknown): Record<string, unknown> {
 // API Response Mappers
 // =============================================================================
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Maps board from api.
+ *
+ * @param data - Input data.
+ * @param unknown - The unknown.
+ * @returns The result.
+ */
 export function mapBoardFromApi(data: Record<string, unknown>): Board {
   return {
     id: str(data.id),
@@ -62,6 +72,16 @@ export function mapBoardFromApi(data: Record<string, unknown>): Board {
   };
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Maps author from api.
+ *
+ * @param data - Input data.
+ * @param unknown - The unknown.
+ * @returns The result.
+ */
 export function mapAuthorFromApi(data: Record<string, unknown>): ThreadAuthor {
   return {
     id: str(data.id),
@@ -71,6 +91,16 @@ export function mapAuthorFromApi(data: Record<string, unknown>): ThreadAuthor {
   };
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Maps thread from api.
+ *
+ * @param data - Input data.
+ * @param unknown - The unknown.
+ * @returns The result.
+ */
 export function mapThreadFromApi(data: Record<string, unknown>): Thread {
   const insertedAt = str(data.inserted_at);
   const lastPostAt = strOrNull(data.last_post_at);
@@ -106,6 +136,16 @@ export function mapThreadFromApi(data: Record<string, unknown>): Thread {
   };
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Maps post from api.
+ *
+ * @param data - Input data.
+ * @param unknown - The unknown.
+ * @returns The result.
+ */
 export function mapPostFromApi(data: Record<string, unknown>): ThreadPost {
   return {
     id: str(data.id),
@@ -129,6 +169,16 @@ export function mapPostFromApi(data: Record<string, unknown>): ThreadPost {
   };
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Maps member from api.
+ *
+ * @param data - Input data.
+ * @param unknown - The unknown.
+ * @returns The result.
+ */
 export function mapMemberFromApi(data: Record<string, unknown>): ForumMember {
   return {
     id: str(data.id),

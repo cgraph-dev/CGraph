@@ -46,6 +46,15 @@ export interface ForumHierarchyAdminState {
   ) => Promise<void>;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * flatten Tree for the forums module.
+ *
+ * @param nodes - The nodes.
+ * @param depth - The depth.
+ */
 export function flattenTree(
   nodes: ForumNode[],
   depth = 0
@@ -56,6 +65,15 @@ export function flattenTree(
   ]);
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum hierarchy admin.
+ *
+ * @param onRefresh - The on refresh.
+ * @returns The result.
+ */
 export function useForumHierarchyAdmin(onRefresh: () => void): ForumHierarchyAdminState {
   const [selectedParent, setSelectedParent] = useState<ForumNode | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);

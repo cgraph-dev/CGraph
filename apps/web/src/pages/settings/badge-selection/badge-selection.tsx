@@ -20,6 +20,9 @@ import type { Badge } from './types';
 
 const logger = createLogger('BadgeSelection');
 
+/**
+ * Badge Selection component.
+ */
 export default function BadgeSelection() {
   const user = useAuthStore((state) => state.user);
   const { achievements, equippedBadges, equipBadge, unequipBadge } = useGamificationStore();

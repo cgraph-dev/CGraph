@@ -8,6 +8,12 @@ import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';
 import type { PackTabProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Pack Tab component.
+ */
 export function PackTab({ pack, isActive, isOwned, onClick }: PackTabProps) {
   const rarityColors = STICKER_RARITY_COLORS[pack.rarity];
 

@@ -18,6 +18,12 @@ interface ProfileAvatarProps {
   onAvatarClick: () => void;
 }
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * Profile Avatar component.
+ */
 export function ProfileAvatar({
   profile,
   isOwnProfile,

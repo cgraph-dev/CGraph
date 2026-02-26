@@ -8,6 +8,12 @@
 import type { MemberItemProps } from './types';
 import { getAvatarInitial, getDisplayName } from './utils';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Member Item component.
+ */
 export function MemberItem({ member, isOffline = false }: MemberItemProps) {
   const roleColor = member.roles?.[0]?.color;
   const displayName = getDisplayName(member.user.username, member.user.displayName);

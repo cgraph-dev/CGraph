@@ -12,6 +12,12 @@ interface ShareMenuProps {
   postTitle: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Share Menu component.
+ */
 export function ShareMenu({ isOpen, onClose, postTitle }: ShareMenuProps) {
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);

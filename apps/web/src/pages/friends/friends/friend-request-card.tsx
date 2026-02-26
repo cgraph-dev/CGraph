@@ -11,6 +11,12 @@ import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { FriendRequestCardProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friend Request Card display component.
+ */
 export function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequestCardProps) {
   // Defensive null check for user data
   const user = request.user || { username: 'Unknown', displayName: null, avatarUrl: null };

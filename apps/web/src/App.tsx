@@ -64,6 +64,9 @@ function ScrollToTop() {
   return null;
 }
 
+/**
+ * App component.
+ */
 export default function App() {
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
   const justJoinedGroupName = useGroupStore((s) => s.justJoinedGroupName);

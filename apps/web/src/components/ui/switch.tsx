@@ -15,6 +15,12 @@ export interface SwitchProps {
   id?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Switch component.
+ */
 export function Switch({
   checked = false,
   onCheckedChange,

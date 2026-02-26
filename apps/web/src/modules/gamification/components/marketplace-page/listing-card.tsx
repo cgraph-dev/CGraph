@@ -3,6 +3,12 @@ import { motion } from 'framer-motion';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { ITEM_TYPE_LABELS, RARITY_COLORS, type ListingCardProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Listing Card display component.
+ */
 export function ListingCard({ listing, onClick }: ListingCardProps) {
   return (
     <motion.div

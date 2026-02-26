@@ -16,6 +16,12 @@ interface CommentFormProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Form component.
+ */
 export function CommentForm({
   isOpen,
   content,

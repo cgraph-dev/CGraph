@@ -57,6 +57,12 @@ interface CardHeaderProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Card Header display component.
+ */
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return <div className={`mb-3 border-b border-dark-700 pb-3 ${className}`}>{children}</div>;
 }
@@ -68,6 +74,12 @@ interface CardTitleProps {
   as?: 'h1' | 'h2' | 'h3' | 'h4';
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Card Title display component.
+ */
 export function CardTitle({ children, className = '', as: Tag = 'h3' }: CardTitleProps) {
   return <Tag className={`font-semibold text-white ${className}`}>{children}</Tag>;
 }
@@ -78,6 +90,12 @@ interface CardContentProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Card Content display component.
+ */
 export function CardContent({ children, className = '' }: CardContentProps) {
   return <div className={`text-gray-300 ${className}`}>{children}</div>;
 }
@@ -88,6 +106,12 @@ interface CardFooterProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Card Footer display component.
+ */
 export function CardFooter({ children, className = '' }: CardFooterProps) {
   return <div className={`mt-3 border-t border-dark-700 pt-3 ${className}`}>{children}</div>;
 }
@@ -98,6 +122,12 @@ interface CardDescriptionProps {
   className?: string;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Card Description display component.
+ */
 export function CardDescription({ children, className = '' }: CardDescriptionProps) {
   return <p className={`text-sm text-gray-400 ${className}`}>{children}</p>;
 }

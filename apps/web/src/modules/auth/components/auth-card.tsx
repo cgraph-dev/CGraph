@@ -227,6 +227,13 @@ function DefaultVariant({
 
 /* ── Main component ───────────────────────────────────────────── */
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Card display component.
+ * @returns The rendered JSX element.
+ */
 export function AuthCard(props: AuthCardProps): React.ReactElement {
   const { variant = 'default' } = props;
 

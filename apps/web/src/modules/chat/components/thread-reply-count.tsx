@@ -11,6 +11,12 @@ interface ThreadReplyCountProps {
   onClick: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Thread Reply Count component.
+ */
 export function ThreadReplyCount({ replyCount, lastReplyAt, onClick }: ThreadReplyCountProps) {
   if (replyCount <= 0) return null;
 

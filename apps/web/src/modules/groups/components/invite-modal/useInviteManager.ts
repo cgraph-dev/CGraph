@@ -43,6 +43,14 @@ export const MAX_USES_OPTIONS = [
   { value: 100, label: '100 uses' },
 ];
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Hook for managing invite manager.
+ *
+ * @param groupId - The group id.
+ */
 export function useInviteManager(groupId?: string) {
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create');
   const [inviteLink, setInviteLink] = useState('');

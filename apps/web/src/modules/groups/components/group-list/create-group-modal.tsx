@@ -22,6 +22,12 @@ interface CreateGroupState {
   error: string | null;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Create Group Modal dialog component.
+ */
 export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModalProps) {
   const { createGroup } = useGroupStore();
   const [isPublic, setIsPublic] = useState(true);

@@ -24,6 +24,12 @@ interface HoloTabsProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Tabs component.
+ */
 export function HoloTabs({
   tabs,
   activeTab,

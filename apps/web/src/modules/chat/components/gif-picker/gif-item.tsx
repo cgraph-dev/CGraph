@@ -11,6 +11,12 @@ import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { cn } from '@/lib/utils';
 import type { GifItemProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Gif Item component.
+ */
 export function GifItem({ gif, onSelect, isFavorite, onToggleFavorite }: GifItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);

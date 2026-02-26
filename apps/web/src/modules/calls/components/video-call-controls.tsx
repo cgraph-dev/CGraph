@@ -15,6 +15,12 @@ interface VideoCallControlsProps {
   onToggleScreenShare?: () => void;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Video Call Controls component.
+ */
 export function VideoCallControls({
   isMuted,
   isVideoEnabled,

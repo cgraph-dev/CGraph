@@ -29,6 +29,13 @@ interface UseMultiQuoteReturn {
   isLoading: boolean;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing multi quote.
+ * @returns The result.
+ */
 export function useMultiQuote(): UseMultiQuoteReturn {
   const multiQuoteBuffer = useForumStore((s) => s.multiQuoteBuffer);
   const clearMultiQuote = useForumStore((s) => s.clearMultiQuote);

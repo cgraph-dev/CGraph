@@ -76,6 +76,9 @@ const logger = createLogger('AIMessageEngine');
 // AI MESSAGE ENGINE (Facade)
 // =============================================================================
 
+/**
+ * A I Message Engine class.
+ */
 export class AIMessageEngine {
   private _config: AIConfig;
 

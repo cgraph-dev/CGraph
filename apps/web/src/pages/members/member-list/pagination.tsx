@@ -8,6 +8,12 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Pagination component.
+ */
 export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 

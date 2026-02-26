@@ -28,6 +28,15 @@ import {
 
 export type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders border effect.
+ *
+ * @param params - The params.
+ * @returns The result.
+ */
 export function renderBorderEffect(params: BorderEffectParams): ReactNode {
   const { borderType, colors, borderWidth, prefersReducedMotion } = params;
 

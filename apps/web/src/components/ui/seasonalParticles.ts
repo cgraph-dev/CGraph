@@ -42,7 +42,7 @@ export const INTENSITY_COUNTS = {
 
 // ── Particle Factory ───────────────────────────────────────
 /**
- *
+ * Creates a new particle.
  */
 export function createParticle(theme: SeasonalTheme, w: number, h: number): SeasonalParticle {
   const base: SeasonalParticle = {
@@ -150,6 +150,7 @@ export function createParticle(theme: SeasonalTheme, w: number, h: number): Seas
 
 // ── Shape Drawers ──────────────────────────────────────────
 /**
+ * unknown.
  *
  */
 export function drawHeart(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
@@ -165,6 +166,7 @@ export function drawHeart(ctx: CanvasRenderingContext2D, x: number, y: number, s
 }
 
 /**
+ * unknown.
  *
  */
 export function drawPetal(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
@@ -174,7 +176,7 @@ export function drawPetal(ctx: CanvasRenderingContext2D, x: number, y: number, s
 }
 
 /**
- *
+ * draw Star.
  */
 export function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   const spikes = 5;

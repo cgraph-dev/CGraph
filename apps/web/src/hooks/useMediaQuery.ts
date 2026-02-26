@@ -53,18 +53,46 @@ export function useIsMobile(): boolean {
   return useMediaQuery('(max-width: 639px)');
 }
 
+/**
+ * unknown for the useMediaQuery.ts module.
+ */
+/**
+ * Hook for managing is tablet.
+ * @returns The result.
+ */
 export function useIsTablet(): boolean {
   return useMediaQuery('(min-width: 640px) and (max-width: 1023px)');
 }
 
+/**
+ * unknown for the useMediaQuery.ts module.
+ */
+/**
+ * Hook for managing is desktop.
+ * @returns The result.
+ */
 export function useIsDesktop(): boolean {
   return useMediaQuery('(min-width: 1024px)');
 }
 
+/**
+ * unknown for the useMediaQuery.ts module.
+ */
+/**
+ * Hook for managing prefers dark mode.
+ * @returns The result.
+ */
 export function usePrefersDarkMode(): boolean {
   return useMediaQuery('(prefers-color-scheme: dark)');
 }
 
+/**
+ * unknown for the useMediaQuery.ts module.
+ */
+/**
+ * Hook for managing prefers reduced motion.
+ * @returns The result.
+ */
 export function usePrefersReducedMotion(): boolean {
   return useMediaQuery('(prefers-reduced-motion: reduce)');
 }

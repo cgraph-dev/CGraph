@@ -5,6 +5,12 @@
 import { motion } from 'framer-motion';
 import type { ParticleProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Particle component.
+ */
 export function Particle({ type, color, delay, duration }: ParticleProps) {
   const getParticleShape = () => {
     switch (type) {

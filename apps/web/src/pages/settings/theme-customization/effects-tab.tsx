@@ -6,6 +6,12 @@ import { useThemeStore } from '@/stores/theme';
 import { EFFECT_PRESETS } from './constants';
 import type { AnimationSpeedOption } from './types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Effects Tab component.
+ */
 export function EffectsTab() {
   const {
     theme,

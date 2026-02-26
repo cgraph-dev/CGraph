@@ -30,6 +30,12 @@ export interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   iconPosition?: 'left' | 'right';
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Button component.
+ */
 export function AuthButton({
   children,
   variant = 'primary',

@@ -18,6 +18,9 @@ import {
   useRenderLoop,
 } from './hooks';
 
+/**
+ * Shader Background component.
+ */
 export default function ShaderBackground({
   variant = 'fluid',
   color1 = '#00ff41',

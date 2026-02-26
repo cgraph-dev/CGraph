@@ -25,6 +25,12 @@ type CardBannerProps = Pick<
   | 'onDismiss'
 >;
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Card Banner display component.
+ */
 export function CardBanner({
   title,
   description,

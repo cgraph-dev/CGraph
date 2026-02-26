@@ -6,6 +6,12 @@ import { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui';
 import Matrix3DEnvironment from '@/components/three/matrix3-d-environment';
 
+/**
+ * unknown.
+ */
+/**
+ * Matrix3 D Demo component.
+ */
 export function Matrix3DDemo() {
   const [theme, setTheme] = useState<'matrix-green' | 'cyber-blue' | 'purple-haze' | 'amber-glow'>(
     'matrix-green'

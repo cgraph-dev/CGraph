@@ -12,6 +12,12 @@ function formatSafetyNumber(n: string): string {
   return n.match(/.{1,5}/g)?.join(' ') || n;
 }
 
+/**
+ * unknown for the security module.
+ */
+/**
+ * Hook for managing key verification.
+ */
 export function useKeyVerification() {
   const { userId } = useParams<{ userId: string }>();
   const username = useParams<{ username?: string }>().username || 'User';

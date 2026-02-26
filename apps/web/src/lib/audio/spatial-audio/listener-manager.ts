@@ -13,6 +13,9 @@ import type { Position3D, Orientation3D } from '../spatialAudio.types';
 // LISTENER MANAGER
 // =============================================================================
 
+/**
+ * Listener Manager — resource management class.
+ */
 export class ListenerManager {
   private listenerPosition: Position3D = { x: 0, y: 0, z: 0 };
   private listenerOrientation: Orientation3D = { yaw: 0, pitch: 0, roll: 0 };
@@ -23,6 +26,10 @@ export class ListenerManager {
   // HRTF
   // ===========================================================================
 
+  /**
+   * Initializes ialize h r t f.
+   * @returns The result.
+   */
   async initializeHRTF(): Promise<void> {
     const ctx = this.getAudioContext();
     if (ctx) {
@@ -47,11 +54,23 @@ export class ListenerManager {
   // LISTENER POSITION / ORIENTATION
   // ===========================================================================
 
+  /**
+   * Updates listener position.
+   *
+   * @param position - The position.
+   * @returns The result.
+   */
   setListenerPosition(position: Position3D): void {
     this.listenerPosition = position;
     this.updateListener();
   }
 
+  /**
+   * Updates listener orientation.
+   *
+   * @param orientation - The orientation.
+   * @returns The result.
+   */
   setListenerOrientation(orientation: Orientation3D): void {
     this.listenerOrientation = orientation;
     this.updateListener();

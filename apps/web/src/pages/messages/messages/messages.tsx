@@ -21,6 +21,9 @@ import type { OnlineStatusMap } from './types';
 
 const logger = createLogger('Messages');
 
+/**
+ * Messages component.
+ */
 export default function Messages() {
   const { conversationId } = useParams();
   const [searchParams] = useSearchParams();

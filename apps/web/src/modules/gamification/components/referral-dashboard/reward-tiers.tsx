@@ -7,6 +7,12 @@
 import { GiftIcon } from '@heroicons/react/24/outline';
 import type { RewardTiersProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Reward Tiers component.
+ */
 export function RewardTiers({ tiers, onClaimReward }: RewardTiersProps) {
   return (
     <div className="bg-card border-border overflow-hidden rounded-lg border">

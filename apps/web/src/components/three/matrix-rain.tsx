@@ -14,6 +14,12 @@ interface MatrixColumn {
   brightness: number;
 }
 
+/**
+ * unknown for the three module.
+ */
+/**
+ * Matrix Rain component.
+ */
 export function MatrixRain({
   theme = 'matrix-green',
   intensity = 'medium',

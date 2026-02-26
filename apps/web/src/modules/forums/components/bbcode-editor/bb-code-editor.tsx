@@ -20,6 +20,9 @@ import { EditorToolbar } from './editor-toolbar';
 import { EditorFooter } from './editor-footer';
 import type { BBCodeEditorProps } from './types';
 
+/**
+ * B B Code Editor component.
+ */
 export default function BBCodeEditor({
   value,
   onChange,

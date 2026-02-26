@@ -30,6 +30,12 @@ export interface AuthFormInputProps extends React.InputHTMLAttributes<HTMLInputE
   showValidation?: boolean;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Form Input component.
+ */
 export function AuthFormInput({
   label,
   error,

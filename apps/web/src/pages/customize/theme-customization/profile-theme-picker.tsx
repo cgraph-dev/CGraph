@@ -25,6 +25,12 @@ interface ProfileThemePickerProps {
   onApplyTheme: (theme: ProfileThemeConfig) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Profile Theme Picker component.
+ */
 export function ProfileThemePicker({
   useNewProfileThemes,
   onToggleNewThemes,

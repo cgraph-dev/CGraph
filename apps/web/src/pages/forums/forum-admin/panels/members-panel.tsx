@@ -17,6 +17,12 @@ interface MembersPanelProps {
   onUpdateMemberRole: (memberId: string, role: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Members Panel component.
+ */
 export function MembersPanel({
   members,
   memberSearch,

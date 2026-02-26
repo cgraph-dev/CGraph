@@ -14,6 +14,9 @@ import { AnimatedOutlet } from './animated-outlet';
 void pageTransitions;
 void buttonVariantsSubtle;
 
+/**
+ * App Layout — page layout wrapper.
+ */
 export default function AppLayout() {
   const {
     location,

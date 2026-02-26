@@ -33,6 +33,9 @@ function getBorderClass(hasError: boolean, isOpen: boolean): string {
   return 'border-dark-600';
 }
 
+/**
+ * Select component.
+ */
 export default function Select({
   options,
   value,
@@ -154,6 +157,9 @@ export default function Select({
 // --- Composable Select sub-components (Radix-style API) ---
 // Used by SubscriptionButton, SubscriptionItem, SubscriptionManager
 
+/**
+ * Composable Select component.
+ */
 function ComposableSelect({
   children,
   value: _value,
@@ -168,6 +174,12 @@ function ComposableSelect({
 
 export { ComposableSelect as Select };
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Select Trigger component.
+ */
 export function SelectTrigger({
   children,
   className = '',
@@ -188,16 +200,34 @@ export function SelectTrigger({
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Select Value component.
+ */
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   return <span>{placeholder || ''}</span>;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Select Content component.
+ */
 export function SelectContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-dark-600 bg-dark-800 p-1 shadow-xl">{children}</div>
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Select Item component.
+ */
 export function SelectItem({
   children,
   value: _value,

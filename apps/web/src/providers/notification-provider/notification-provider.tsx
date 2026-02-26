@@ -31,6 +31,12 @@ import type {
 
 export const NotificationContext = createContext<NotificationContextType | null>(null);
 
+/**
+ * unknown.
+ */
+/**
+ * Notification Provider — context provider wrapper.
+ */
 export function NotificationProvider({
   children,
   maxNotifications = DEFAULT_MAX_NOTIFICATIONS,

@@ -26,6 +26,13 @@ interface UseE2EEErrorReturn {
   clearPendingMessage: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing e2 e e error.
+ * @returns The result.
+ */
 export function useE2EEError(): UseE2EEErrorReturn {
   const [showE2EEError, setShowE2EEError] = useState(false);
   const [e2eeErrorMessage, setE2EEErrorMessage] = useState('');

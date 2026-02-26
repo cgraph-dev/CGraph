@@ -63,6 +63,12 @@ function LeaderboardPodium({ entry, position }: { entry: LeaderboardEntry; posit
   );
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Event Leaderboard component.
+ */
 export function EventLeaderboard({
   entries,
   currentUserId,

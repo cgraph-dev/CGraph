@@ -21,6 +21,9 @@ import { ShapeCard } from './shape-card';
 import { ExportImportCard } from './export-import-card';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * Avatar Settings component.
+ */
 export default function AvatarSettings() {
   const { user } = useAuthStore();
   const {

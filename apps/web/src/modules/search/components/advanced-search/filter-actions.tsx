@@ -17,7 +17,7 @@ interface FilterActionsProps {
 }
 
 /**
- *
+ * Filter Actions component.
  */
 export function FilterActions({
   filters,

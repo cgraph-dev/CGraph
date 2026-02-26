@@ -256,6 +256,12 @@ interface ModerationCheckboxProps {
   className?: string;
 }
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Moderation Checkbox component.
+ */
 export function ModerationCheckbox({ type, id, className = '' }: ModerationCheckboxProps) {
   const { bulkSelection, toggleBulkSelection } = useModerationStore();
 

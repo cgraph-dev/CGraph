@@ -6,6 +6,19 @@ import type { ParticleType } from '@/types/avatar-borders';
 import type { ParticleColors } from './types';
 import { random } from './utils';
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Retrieves animation for type.
+ *
+ * @param type - The type.
+ * @param index - The index position.
+ * @param total - The total.
+ * @param _colors - The _colors.
+ * @param speed - The speed.
+ * @returns The animation for type.
+ */
 export function getAnimationForType(
   type: ParticleType,
   index: number,

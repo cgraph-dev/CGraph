@@ -25,6 +25,12 @@ interface CreateChannelFormProps {
   onCreate: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Create Channel Form component.
+ */
 export function CreateChannelForm({
   show,
   newName,

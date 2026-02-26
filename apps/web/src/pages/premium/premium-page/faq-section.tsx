@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { FAQ_ITEMS } from './constants';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * F A Q Section section component.
+ */
 export function FAQSection() {
   return (
     <motion.div

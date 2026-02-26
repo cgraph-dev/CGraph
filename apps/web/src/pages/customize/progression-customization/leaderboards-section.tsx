@@ -6,6 +6,12 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import type { LeaderboardsSectionProps } from './types';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Leaderboards Section section component.
+ */
 export function LeaderboardsSection({
   entries,
   leaderboardType,

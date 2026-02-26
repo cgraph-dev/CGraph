@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Best Answer Badge component.
+ */
 export function BestAnswerBadge() {
   return (
     <motion.div

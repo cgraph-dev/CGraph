@@ -48,6 +48,12 @@ interface SubscriptionItemProps {
   onDelete: (id: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Subscription Item component.
+ */
 export function SubscriptionItem({
   subscription,
   onUpdate,

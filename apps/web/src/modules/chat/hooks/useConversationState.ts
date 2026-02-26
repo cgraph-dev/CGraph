@@ -51,6 +51,15 @@ export interface SendMessageOptions {
   metadata?: Record<string, unknown>;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing conversation state.
+ *
+ * @param conversationId - The conversation id.
+ * @returns The result.
+ */
 export function useConversationState(conversationId: string | undefined): ConversationState {
   const { user } = useAuthStore();
   const { friends, fetchFriends } = useFriendStore();

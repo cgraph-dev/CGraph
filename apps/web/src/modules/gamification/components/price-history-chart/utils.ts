@@ -4,6 +4,15 @@
 import type { PricePoint, ChartMetrics, ChartPaths, ChartDimensions, VolumeBar } from './types';
 import { CHART_PADDING } from './constants';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Computes metrics.
+ *
+ * @param data - Input data.
+ * @returns The computed value.
+ */
 export function calculateMetrics(data: PricePoint[]): ChartMetrics | null {
   if (data.length === 0) return null;
 
@@ -25,6 +34,18 @@ export function calculateMetrics(data: PricePoint[]): ChartMetrics | null {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Computes paths.
+ *
+ * @param data - Input data.
+ * @param dimensions - The dimensions.
+ * @param metrics - The metrics.
+ * @param showVolume - The show volume.
+ * @returns The computed value.
+ */
 export function calculatePaths(
   data: PricePoint[],
   dimensions: ChartDimensions,

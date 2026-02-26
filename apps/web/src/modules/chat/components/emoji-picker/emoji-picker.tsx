@@ -26,6 +26,12 @@ import { CategoryTabs } from './category-tabs';
 import { EmojiGrid } from './emoji-grid';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Emoji Picker component.
+ */
 export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: EmojiPickerProps) {
   const [activeCategory, setActiveCategory] = useState<EmojiCategory>('Frequently Used');
   const [searchQuery, setSearchQuery] = useState('');

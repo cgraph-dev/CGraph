@@ -69,6 +69,12 @@ function ToggleSetting({
   );
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Settings Step component.
+ */
 export function SettingsStep({ formData, onUpdateField }: SettingsStepProps) {
   return (
     <div className="space-y-6">

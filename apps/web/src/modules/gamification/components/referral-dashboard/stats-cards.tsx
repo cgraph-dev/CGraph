@@ -14,6 +14,12 @@ import {
 } from '@heroicons/react/24/outline';
 import type { StatsCardsProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Stats Cards display component.
+ */
 export function StatsCards({ stats }: StatsCardsProps) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

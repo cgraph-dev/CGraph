@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * CategoryFilter component - filter buttons for shop categories
  */
 
@@ -11,7 +12,7 @@ interface CategoryFilterProps {
 }
 
 /**
- *
+ * Category Filter component.
  */
 export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
   return (

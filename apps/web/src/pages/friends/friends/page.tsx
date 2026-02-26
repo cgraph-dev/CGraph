@@ -12,6 +12,9 @@ import { FriendSuggestions } from './friend-suggestions';
 import { useFriendsPage } from './useFriendsPage';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * Friends component.
+ */
 export default function Friends() {
   const {
     activeTab,

@@ -18,6 +18,12 @@ import { formatDistanceToNow } from 'date-fns';
 import type { QueueItemCardProps } from './types';
 import { ITEM_TYPE_ICONS, PRIORITY_COLORS, REASON_LABELS } from './constants';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Queue Item Card display component.
+ */
 export function QueueItemCard({
   item,
   isSelected,

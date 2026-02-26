@@ -10,6 +10,12 @@ import type { SliderProps } from './types';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Slider component.
+ */
 export function Slider({
   value,
   min,

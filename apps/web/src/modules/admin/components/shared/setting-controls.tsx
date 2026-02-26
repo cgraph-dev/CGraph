@@ -4,6 +4,12 @@
  */
 import clsx from 'clsx';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Setting Toggle component.
+ */
 export function SettingToggle({
   label,
   description,
@@ -39,6 +45,12 @@ export function SettingToggle({
   );
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Setting Number component.
+ */
 export function SettingNumber({
   label,
   description,

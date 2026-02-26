@@ -38,6 +38,12 @@ import { useProfileData } from './hooks/useProfileData';
 import { useProfileActions } from './hooks/useProfileActions';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the profile module.
+ */
+/**
+ * User Profile component.
+ */
 export function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();

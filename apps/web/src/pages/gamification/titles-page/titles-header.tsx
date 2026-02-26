@@ -10,6 +10,12 @@ import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { TITLES } from '@/data/titles';
 import type { TitlesHeaderProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Titles Header component.
+ */
 export function TitlesHeader({ stats, equippedTitleId }: TitlesHeaderProps) {
   const equippedTitle = equippedTitleId ? TITLES.find((t) => t.id === equippedTitleId) : null;
 

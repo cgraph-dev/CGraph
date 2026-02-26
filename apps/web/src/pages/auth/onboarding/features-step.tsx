@@ -6,6 +6,12 @@ import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from './animations';
 import { FEATURES } from './constants';
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Features Step component.
+ */
 export function FeaturesStep() {
   return (
     <motion.div

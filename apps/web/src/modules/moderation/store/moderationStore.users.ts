@@ -25,6 +25,15 @@ type Set = (
 
 const logger = createLogger('ModerationStore:Users');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new user actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createUserActions(set: Set) {
   return {
     fetchUserModerationStats: async (userId: string) => {

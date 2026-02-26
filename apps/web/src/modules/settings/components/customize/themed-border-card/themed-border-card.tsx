@@ -15,6 +15,9 @@ import { CornerBrackets } from './corner-brackets';
 import { ParticleEffects } from './particle-effects';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * Themed Border Card display component.
+ */
 export default function ThemedBorderCard({
   border,
   isSelected,

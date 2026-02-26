@@ -10,6 +10,12 @@ import type { HoloTooltipProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Tooltip component.
+ */
 export function HoloTooltip({
   children,
   content,

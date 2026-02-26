@@ -10,6 +10,9 @@ interface LockOverlayProps {
   theme: ProfileThemeConfig;
 }
 
+/**
+ * Lock Overlay component.
+ */
 export default function LockOverlay({ theme }: LockOverlayProps) {
   if (theme.unlocked) return null;
 

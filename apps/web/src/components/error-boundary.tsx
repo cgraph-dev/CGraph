@@ -14,20 +14,38 @@ interface State {
   error: Error | null;
 }
 
+/**
+ * Error Boundary — fallback UI for error states.
+ */
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
+  /**
+   * Retrieves derived state from error.
+   *
+   * @param error - The error instance.
+   * @returns The derived state from error.
+   */
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
+  /**
+   * component Did Catch for the error-boundary.tsx module.
+   *
+   * @param error - The error instance.
+   * @param errorInfo - The error info.
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('[ErrorBoundary] Uncaught error:', error, errorInfo);
   }
 
+  /**
+   * Renders the component.
+   */
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {

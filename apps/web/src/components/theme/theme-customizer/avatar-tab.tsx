@@ -15,6 +15,12 @@ import { AVATAR_BORDER_OPTIONS } from './constants';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Avatar Tab component.
+ */
 export function AvatarTab({
   selectedBorder,
   selectedColor,

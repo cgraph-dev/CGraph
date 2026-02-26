@@ -9,6 +9,12 @@ import {
   ReactionPicker,
 } from '@/modules/chat/components/animated-reaction-bubble';
 
+/**
+ * unknown.
+ */
+/**
+ * Reactions Demo component.
+ */
 export function ReactionsDemo() {
   const [reactions, setReactions] = useState([
     { emoji: '👍', count: 12, hasReacted: false },

@@ -42,6 +42,12 @@ interface CommentCardProps {
   renderComment: (comment: Comment, depth: number) => React.ReactElement;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Card display component.
+ */
 export function CommentCard({
   comment,
   depth,

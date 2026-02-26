@@ -16,6 +16,9 @@ interface LightboxProps {
   setLightboxMedia: (media: LightboxMedia | null) => void;
 }
 
+/**
+ * Lightbox component.
+ */
 export default function Lightbox({ lightboxMedia, setLightboxMedia }: LightboxProps) {
   return (
     <AnimatePresence>

@@ -7,6 +7,12 @@ interface LoadingStateProps {
   className?: string;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Loading State — loading placeholder.
+ */
 export function LoadingState({ className = '' }: LoadingStateProps) {
   return (
     <div className={`space-y-2 ${className}`}>

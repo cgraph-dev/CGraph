@@ -48,6 +48,12 @@ interface ChannelListItemProps {
 
 export type { ChannelItem };
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel List Item component.
+ */
 export function ChannelListItem({
   channel,
   index,

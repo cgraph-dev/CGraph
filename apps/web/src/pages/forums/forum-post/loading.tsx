@@ -9,6 +9,12 @@ interface PostSkeletonProps {
   forumSlug?: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Post Skeleton — loading placeholder.
+ */
 export function PostSkeleton({ forumSlug: _forumSlug }: PostSkeletonProps) {
   return (
     <div className="flex-1 overflow-y-auto bg-dark-900 p-4">
@@ -56,6 +62,12 @@ interface BackButtonProps {
   forumSlug: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Back Button component.
+ */
 export function BackButton({ forumSlug }: BackButtonProps) {
   return (
     <div className="sticky top-0 z-10 border-b border-dark-700 bg-dark-800 px-4 py-3">

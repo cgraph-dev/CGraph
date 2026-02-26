@@ -48,6 +48,9 @@ const headerVariants = {
   },
 };
 
+/**
+ * Login component.
+ */
 export default function Login() {
   const navigate = useNavigate();
   const reduced = prefersReducedMotion();

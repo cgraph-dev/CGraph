@@ -18,6 +18,9 @@ import { ForumLeaderboardCard } from './forum-leaderboard-card';
 import { LeaderboardSidebar } from './leaderboard-sidebar';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * Forum Leaderboard component.
+ */
 export default function ForumLeaderboard() {
   const { isAuthenticated } = useAuthStore();
   const {

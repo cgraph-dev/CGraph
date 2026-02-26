@@ -10,6 +10,12 @@ import { cn } from '@/lib/utils';
 import type { StickerItemProps } from './types';
 import { ANIMATION_CONFIGS, RARITY_ICONS } from './constants';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Item component.
+ */
 export function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const rarityColors = STICKER_RARITY_COLORS[sticker.rarity];

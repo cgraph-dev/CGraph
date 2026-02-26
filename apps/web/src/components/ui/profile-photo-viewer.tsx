@@ -33,6 +33,12 @@ interface ProfilePhotoViewerContextValue {
 const ProfilePhotoViewerContext =
   createContext<ProfilePhotoViewerContextValue | null>(null);
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Hook for managing profile photo viewer.
+ */
 export function useProfilePhotoViewer() {
   const ctx = use(ProfilePhotoViewerContext);
   if (!ctx) {
@@ -44,6 +50,12 @@ export function useProfilePhotoViewer() {
 }
 
 // ── Provider ───────────────────────────────────────────────
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Profile Photo Viewer Provider — context provider wrapper.
+ */
 export function ProfilePhotoViewerProvider({
   children,
 }: {
@@ -151,6 +163,12 @@ interface ClickableAvatarProps {
   children?: ReactNode;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Clickable Avatar component.
+ */
 export function ClickableAvatar({
   id,
   src,

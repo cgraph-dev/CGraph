@@ -18,6 +18,12 @@ import { MOCK_USERS } from './constants';
 
 const logger = createLogger('NewChatModal');
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * New Chat Modal dialog component.
+ */
 export function NewChatModal({ onClose }: NewChatModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);

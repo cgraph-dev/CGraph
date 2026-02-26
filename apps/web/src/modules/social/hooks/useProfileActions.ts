@@ -23,6 +23,15 @@ interface UseProfileActionsReturn {
   handleRemoveFriend: () => Promise<void>;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Hook for managing profile actions.
+ *
+ * @param profile - The profile.
+ * @param setFriendshipStatus - The set friendship status.
+ */
 export function useProfileActions(
   profile: UserProfileData | null,
   setFriendshipStatus: React.Dispatch<React.SetStateAction<FriendshipStatus>>

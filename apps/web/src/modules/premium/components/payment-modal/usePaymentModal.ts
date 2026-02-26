@@ -19,6 +19,15 @@ const initialCardData: CardFormData = {
   saveCard: true,
 };
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Hook for managing payment modal.
+ *
+ * @param item - The item.
+ * @param onSuccess - The on success.
+ */
 export function usePaymentModal(
   item: PaymentItem,
   onSuccess?: (transactionId: string) => void,

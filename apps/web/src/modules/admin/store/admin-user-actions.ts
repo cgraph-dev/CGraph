@@ -16,6 +16,16 @@ type Set = (
 ) => void;
 type Get = () => AdminStore;
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Creates a new user actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createUserActions(set: Set, get: Get) {
   return {
     fetchUsers: async (_page = 1, _limit = 50) => {

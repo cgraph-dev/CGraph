@@ -23,6 +23,9 @@ import { tweens } from '@/lib/animation-presets';
 
 // ==================== MAIN COMPONENT ====================
 
+/**
+ * Chat Customization component.
+ */
 export default function ChatCustomization() {
   const {
     bubbleStyle,

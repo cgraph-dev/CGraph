@@ -15,6 +15,12 @@ import { AchievementCard } from './achievement-card';
 import { EmptyState } from './empty-state';
 import type { BadgeCollectionProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Badge Collection component.
+ */
 export function BadgeCollection({
   achievements,
   onAchievementClick,

@@ -14,6 +14,12 @@ interface TitleBadgeTooltipProps {
   rarityColor: (typeof RARITY_COLORS)[keyof typeof RARITY_COLORS];
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Title Badge Tooltip component.
+ */
 export function TitleBadgeTooltip({ title, rarityColor }: TitleBadgeTooltipProps) {
   return (
     <motion.div

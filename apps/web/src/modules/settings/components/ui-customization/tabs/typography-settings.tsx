@@ -7,6 +7,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { SettingsTabProps, UIPreferences } from './types';
 import { Select } from './controls';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Typography Settings component.
+ */
 export function TypographySettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">

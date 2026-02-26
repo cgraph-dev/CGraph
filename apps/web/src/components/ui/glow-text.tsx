@@ -48,7 +48,7 @@ const glowBlur = {
 };
 
 /**
- *
+ * Glow Text component.
  */
 export default function GlowText({
   children,

@@ -38,6 +38,9 @@ const logger = createLogger('SpatialAudio');
 // SPATIAL AUDIO ENGINE
 // =============================================================================
 
+/**
+ * Spatial Audio Engine class.
+ */
 export class SpatialAudioEngine {
   private audioContext: AudioContext | null = null;
   private config: SpatialAudioConfig;
@@ -70,6 +73,10 @@ export class SpatialAudioEngine {
   // INITIALIZATION
   // ===========================================================================
 
+  /**
+   * Initializes ialize.
+   * @returns The result.
+   */
   async initialize(): Promise<void> {
     if (this.audioContext) return;
 
@@ -119,10 +126,22 @@ export class SpatialAudioEngine {
   // LISTENER MANAGEMENT (delegated to ListenerManager)
   // ===========================================================================
 
+  /**
+   * Updates listener position.
+   *
+   * @param position - The position.
+   * @returns The result.
+   */
   setListenerPosition(position: Position3D): void {
     this.listenerManager.setListenerPosition(position);
   }
 
+  /**
+   * Updates listener orientation.
+   *
+   * @param orientation - The orientation.
+   * @returns The result.
+   */
   setListenerOrientation(orientation: Orientation3D): void {
     this.listenerManager.setListenerOrientation(orientation);
   }
@@ -131,6 +150,14 @@ export class SpatialAudioEngine {
   // AUDIO SOURCE MANAGEMENT (delegated to AudioSourceManager)
   // ===========================================================================
 
+  /**
+   * add Audio Source for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @param stream - The stream.
+   * @param position - The position.
+   * @param options - Configuration options.
+   */
   async addAudioSource(
     id: string,
     stream: MediaStream,
@@ -143,20 +170,47 @@ export class SpatialAudioEngine {
     return this.sourceManager.addAudioSource(id, stream, position, options);
   }
 
+  /**
+   * Removes audio source.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   removeAudioSource(id: string): void {
     this.sourceManager.removeAudioSource(id);
   }
 
+  /**
+   * Updates source position.
+   *
+   * @param id - Unique identifier.
+   * @param position - The position.
+   * @returns The result.
+   */
   updateSourcePosition(id: string, position: Position3D): void {
     this.sourceManager.updateSourcePosition(id, position, (source) => {
       this.zoneManager.applyZoneEffects(source);
     });
   }
 
+  /**
+   * Updates source volume.
+   *
+   * @param id - Unique identifier.
+   * @param volume - The volume.
+   * @returns The result.
+   */
   setSourceVolume(id: string, volume: number): void {
     this.sourceManager.setSourceVolume(id, volume);
   }
 
+  /**
+   * Updates source muted.
+   *
+   * @param id - Unique identifier.
+   * @param muted - The muted.
+   * @returns The result.
+   */
   setSourceMuted(id: string, muted: boolean): void {
     this.sourceManager.setSourceMuted(id, muted);
   }
@@ -165,10 +219,22 @@ export class SpatialAudioEngine {
   // AUDIO ZONES (delegated to AudioZoneManager)
   // ===========================================================================
 
+  /**
+   * add Zone for the audio module.
+   *
+   * @param zone - The zone.
+   * @returns The result.
+   */
   addZone(zone: AudioZone): void {
     this.zoneManager.addAudioZone(zone);
   }
 
+  /**
+   * Removes zone.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   removeZone(id: string): void {
     this.zoneManager.removeAudioZone(id);
   }
@@ -177,10 +243,22 @@ export class SpatialAudioEngine {
   // VOICE ACTIVITY DETECTION (delegated to VADProcessor)
   // ===========================================================================
 
+  /**
+   * analyze Source for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   analyzeSource(id: string): AudioAnalysisResult | null {
     return this.vadProcessor.analyzeSource(id);
   }
 
+  /**
+   * Retrieves voice activity state.
+   *
+   * @param id - Unique identifier.
+   * @returns The voice activity state.
+   */
   getVoiceActivityState(id: string): VoiceActivityState | null {
     return this.vadProcessor.getVoiceActivityState(id);
   }
@@ -189,6 +267,12 @@ export class SpatialAudioEngine {
   // NOISE CANCELLATION
   // ===========================================================================
 
+  /**
+   * enable Noise Cancellation for the audio module.
+   *
+   * @param stream - The stream.
+   * @returns The result.
+   */
   async enableNoiseCancellation(stream: MediaStream): Promise<MediaStream> {
     if (!this.config.enableNoiseCancellation) return stream;
 
@@ -211,6 +295,12 @@ export class SpatialAudioEngine {
   // MASTER CONTROLS
   // ===========================================================================
 
+  /**
+   * Updates master volume.
+   *
+   * @param volume - The volume.
+   * @returns The result.
+   */
   setMasterVolume(volume: number): void {
     if (this.masterGain && this.audioContext) {
       const safeVolume = Math.max(0, Math.min(1, volume));
@@ -218,6 +308,10 @@ export class SpatialAudioEngine {
     }
   }
 
+  /**
+   * Retrieves master analysis.
+   * @returns The master analysis.
+   */
   getMasterAnalysis(): AudioAnalysisResult | null {
     return this.sourceManager.getMasterAnalysis(this.masterAnalyser);
   }
@@ -226,6 +320,10 @@ export class SpatialAudioEngine {
   // CLEANUP
   // ===========================================================================
 
+  /**
+   * destroy for the audio module.
+   * @returns The result.
+   */
   destroy(): void {
     this.vadProcessor.destroy();
     this.zoneManager.destroy();
@@ -244,18 +342,36 @@ export class SpatialAudioEngine {
   // UTILITY METHODS
   // ===========================================================================
 
+  /**
+   * Retrieves sources.
+   * @returns The sources.
+   */
   getSources(): Map<string, AudioSource> {
     return this.sourceManager.getSources();
   }
 
+  /**
+   * Retrieves zones.
+   * @returns The zones.
+   */
   getZones(): Map<string, AudioZone> {
     return this.zoneManager.getZones();
   }
 
+  /**
+   * Retrieves config.
+   * @returns The config.
+   */
   getConfig(): SpatialAudioConfig {
     return { ...this.config };
   }
 
+  /**
+   * Updates config.
+   *
+   * @param config - Configuration object.
+   * @returns The result.
+   */
   updateConfig(config: Partial<SpatialAudioConfig>): void {
     this.config = { ...this.config, ...config };
     this.vadProcessor.setVADEnabled(this.config.enableVAD);

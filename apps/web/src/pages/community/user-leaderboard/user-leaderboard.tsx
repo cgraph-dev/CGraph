@@ -14,6 +14,9 @@ import { Pagination } from './pagination';
 import { transformApiUser } from './utils';
 import type { LeaderboardUser, LeaderboardMeta, LeaderboardApiUser } from './types';
 
+/**
+ * User Leaderboard component.
+ */
 export default function UserLeaderboard() {
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [meta, setMeta] = useState<LeaderboardMeta | null>(null);

@@ -20,6 +20,9 @@ const directionConfig = {
   missed: { icon: PhoneMissed, color: 'text-red-400', label: 'Missed' },
 } as const;
 
+/**
+ * Call Item component.
+ */
 export default function CallItem({ call, onDelete }: CallItemProps) {
   const navigate = useNavigate();
   const dir = directionConfig[call.direction];

@@ -143,6 +143,12 @@ interface AnimatedErrorStateProps {
 
 // ── AnimatedEmptyState ─────────────────────────────────────────────────
 
+/**
+ * unknown for the animated-empty-state.tsx module.
+ */
+/**
+ * Animated Empty State — fallback UI for empty data states.
+ */
 export function AnimatedEmptyState({
   title,
   description,
@@ -196,6 +202,12 @@ export function AnimatedEmptyState({
 
 // ── AnimatedErrorState ─────────────────────────────────────────────────
 
+/**
+ * unknown for the animated-empty-state.tsx module.
+ */
+/**
+ * Animated Error State — fallback UI for error states.
+ */
 export function AnimatedErrorState({
   title = 'Something went wrong',
   description = 'An unexpected error occurred. Please try again.',

@@ -29,10 +29,23 @@ export class VADProcessor {
   // ANALYSER NODE MANAGEMENT
   // ===========================================================================
 
+  /**
+   * register Analyser for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @param analyser - The analyser.
+   * @returns The result.
+   */
   registerAnalyser(id: string, analyser: AnalyserNode): void {
     this.analyserNodes.set(id, analyser);
   }
 
+  /**
+   * unregister Analyser for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   unregisterAnalyser(id: string): void {
     this.analyserNodes.delete(id);
     this.vadState.delete(id);
@@ -42,24 +55,52 @@ export class VADProcessor {
   // VAD STATE
   // ===========================================================================
 
+  /**
+   * Updates audio context.
+   *
+   * @param ctx - The ctx.
+   * @returns The result.
+   */
   setAudioContext(ctx: AudioContext): void {
     this.audioContext = ctx;
   }
 
+  /**
+   * Updates v a d enabled.
+   *
+   * @param enabled - The enabled.
+   * @returns The result.
+   */
   setVADEnabled(enabled: boolean): void {
     this.vadEnabled = enabled;
   }
 
+  /**
+   * Checks whether user speaking.
+   *
+   * @param id - Unique identifier.
+   * @returns True if the condition is met.
+   */
   isUserSpeaking(id: string): boolean {
     const state = this.vadState.get(id);
     return state?.isSpeaking ?? false;
   }
 
+  /**
+   * Retrieves speaking confidence.
+   *
+   * @param id - Unique identifier.
+   * @returns The speaking confidence.
+   */
   getSpeakingConfidence(id: string): number {
     const state = this.vadState.get(id);
     return state?.confidence ?? 0;
   }
 
+  /**
+   * Retrieves v a d stats.
+   * @returns The v a d stats.
+   */
   getVADStats(): { totalSources: number; activeSpeakers: number } {
     let activeSpeakers = 0;
     for (const [, state] of this.vadState) {
@@ -68,6 +109,12 @@ export class VADProcessor {
     return { totalSources: this.vadState.size, activeSpeakers };
   }
 
+  /**
+   * Retrieves voice activity state.
+   *
+   * @param id - Unique identifier.
+   * @returns The voice activity state.
+   */
   getVoiceActivityState(id: string): VoiceActivityState | null {
     return this.vadState.get(id) || null;
   }
@@ -76,6 +123,10 @@ export class VADProcessor {
   // ANALYSIS LOOP
   // ===========================================================================
 
+  /**
+   * start V A D for the audio module.
+   * @returns The result.
+   */
   startVAD(): void {
     if (this.animationFrameId) return;
 
@@ -87,6 +138,10 @@ export class VADProcessor {
     analyze();
   }
 
+  /**
+   * stop V A D for the audio module.
+   * @returns The result.
+   */
   stopVAD(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
@@ -94,6 +149,10 @@ export class VADProcessor {
     }
   }
 
+  /**
+   * process V A D for the audio module.
+   * @returns The result.
+   */
   processVAD(): void {
     for (const [id] of this.analyserNodes) {
       const analysis = this.analyzeSource(id);
@@ -107,6 +166,12 @@ export class VADProcessor {
   // SOURCE ANALYSIS
   // ===========================================================================
 
+  /**
+   * analyze Source for the audio module.
+   *
+   * @param id - Unique identifier.
+   * @returns The result.
+   */
   analyzeSource(id: string): AudioAnalysisResult | null {
     const analyser = this.analyserNodes.get(id);
     if (!analyser) return null;
@@ -175,6 +240,10 @@ export class VADProcessor {
   // CLEANUP
   // ===========================================================================
 
+  /**
+   * destroy for the audio module.
+   * @returns The result.
+   */
   destroy(): void {
     this.stopVAD();
     this.vadState.clear();

@@ -9,6 +9,12 @@ import type { HoloProgressProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Progress component.
+ */
 export function HoloProgress({
   value,
   max = 100,

@@ -64,6 +64,12 @@ const CATEGORIES: { value: EmojiCategory; label: string }[] = [
 
 export { CATEGORIES };
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing custom emoji.
+ */
 export function useCustomEmoji() {
   const queryClient = useQueryClient();
   const [category, setCategory] = useState<EmojiCategory>('all');

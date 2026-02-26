@@ -13,6 +13,12 @@ import { NOTIFICATION_ICONS, NOTIFICATION_COLORS, DEFAULT_NOTIFICATION_COLOR } f
 import type { ToastItemProps, LevelUpNotification, QuestNotification } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown.
+ */
+/**
+ * Toast Item component.
+ */
 export function ToastItem({ notification, index: _index, onDismiss }: ToastItemProps) {
   const [progress, setProgress] = useState(100);
   const colors = NOTIFICATION_COLORS[notification.type] ?? DEFAULT_NOTIFICATION_COLOR;

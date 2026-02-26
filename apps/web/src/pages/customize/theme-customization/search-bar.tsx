@@ -10,6 +10,12 @@ interface SearchBarProps {
   onChange: (value: string) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Search Bar component.
+ */
 export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
     <div className="relative">

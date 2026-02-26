@@ -9,6 +9,12 @@ import { useState, useEffect, useCallback } from 'react';
 const STORAGE_KEY = 'forumSearchHistory';
 const MAX_HISTORY_ITEMS = 10;
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing search history.
+ */
 export function useSearchHistory() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 

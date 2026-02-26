@@ -17,6 +17,12 @@ interface BannerUploadCardProps {
   onCancel: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Banner Upload Card display component.
+ */
 export function BannerUploadCard({
   upload,
   currentBannerUrl,

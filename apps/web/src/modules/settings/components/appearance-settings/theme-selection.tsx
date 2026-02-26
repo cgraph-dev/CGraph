@@ -42,6 +42,12 @@ interface ThemeSelectionProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Theme Selection component.
+ */
 export function ThemeSelection({
   theme,
   availableThemes,

@@ -125,6 +125,12 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
   );
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Toast Container wrapper component.
+ */
 export function ToastContainer() {
   const { toasts, removeToast } = useToastStore();
 

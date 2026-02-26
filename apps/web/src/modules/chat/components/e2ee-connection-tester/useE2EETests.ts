@@ -9,6 +9,15 @@ import type { TestResult, OverallStatus } from './types';
 import { INITIAL_TESTS, SUCCESS_MESSAGES } from './constants';
 import { createTestRunner } from './cryptoTests';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing e2 e e tests.
+ *
+ * @param conversationId - The conversation id.
+ * @param recipientId - The recipient id.
+ */
 export function useE2EETests(conversationId: string, recipientId: string) {
   const [isRunning, setIsRunning] = useState(false);
   const [tests, setTests] = useState<TestResult[]>(INITIAL_TESTS);

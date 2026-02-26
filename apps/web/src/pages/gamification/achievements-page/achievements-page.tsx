@@ -35,6 +35,9 @@ import { AchievementDetailModal } from './achievement-detail-modal';
 import { useAchievementStats } from './useAchievementStats';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * Achievements Page — route-level page component.
+ */
 export default function AchievementsPage() {
   const { achievements, fetchAchievements, isLoadingAchievements } = useGamificationStore();
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');

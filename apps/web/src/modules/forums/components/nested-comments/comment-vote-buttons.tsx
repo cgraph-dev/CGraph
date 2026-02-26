@@ -21,6 +21,12 @@ const floatingIndicator = {
   transition: { duration: 0.6, ease: 'easeOut' as const },
 };
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Vote Buttons component.
+ */
 export function CommentVoteButtons({ comment, onVote }: CommentVoteButtonsProps) {
   const [voteAnim, setVoteAnim] = useState<'+1' | '-1' | null>(null);
 

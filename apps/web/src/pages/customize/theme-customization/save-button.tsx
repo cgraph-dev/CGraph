@@ -9,6 +9,12 @@ interface SaveButtonProps {
   error: string | null;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Save Button component.
+ */
 export function SaveButton({ onSave, isSaving, error }: SaveButtonProps) {
   return (
     <>

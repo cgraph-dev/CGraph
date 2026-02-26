@@ -36,6 +36,12 @@ interface MessageRowProps {
   onCancelEdit: () => void;
 }
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Message Row component.
+ */
 export function MessageRow({
   message,
   groupMessages,

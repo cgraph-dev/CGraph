@@ -26,6 +26,12 @@ import { getVoteScoreClass } from './constants';
 import type { PostCardProps } from './types';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Post Card display component.
+ */
 export function PostCard({ post, onVote }: PostCardProps) {
   return (
     <motion.div

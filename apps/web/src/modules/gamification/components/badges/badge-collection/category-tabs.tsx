@@ -14,6 +14,12 @@ interface CategoryTabsProps {
   onCategoryChange: (category: AchievementCategory | 'all') => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Category Tabs component.
+ */
 export function CategoryTabs({
   selectedCategory,
   categoryCounts,

@@ -18,6 +18,12 @@ import type { RewardCardSize } from '@/modules/gamification/components/events/ev
 
 // ==================== REWARD ICON ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Reward Icon component.
+ */
 export function RewardIcon({ reward }: { reward: EventReward }) {
   const iconClass = 'h-5 w-5';
 
@@ -49,6 +55,12 @@ export interface RewardCardProps {
   showLabel?: boolean;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Reward Card display component.
+ */
 export function RewardCard({ reward, size = 'md', showLabel = true }: RewardCardProps) {
   const rarityColor = reward.rarity
     ? RARITY_COLORS[reward.rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.common

@@ -19,6 +19,12 @@ interface FilterBarProps {
   onToggleFilters: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Filter Bar component.
+ */
 export function FilterBar({
   searchQuery,
   selectedCategory,

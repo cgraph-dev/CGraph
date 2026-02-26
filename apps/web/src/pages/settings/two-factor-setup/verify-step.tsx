@@ -16,6 +16,12 @@ interface VerifyStepProps {
   onBack: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Verify Step component.
+ */
 export function VerifyStep({
   verificationCode,
   isLoading,

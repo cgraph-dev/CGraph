@@ -19,6 +19,9 @@ import { HapticFeedback } from './haptic-feedback';
 // GESTURE HANDLER
 // =============================================================================
 
+/**
+ * Gesture Handler — event/request handler.
+ */
 export class GestureHandler {
   private element: HTMLElement;
   private config: Required<GestureConfig>;
@@ -104,6 +107,10 @@ export class GestureHandler {
     document.removeEventListener('touchend', this.handleEnd);
   };
 
+  /**
+   * destroy for the animations module.
+   * @returns The result.
+   */
   destroy(): void {
     this.element.removeEventListener('mousedown', this.handleStart);
     this.element.removeEventListener('touchstart', this.handleStart);

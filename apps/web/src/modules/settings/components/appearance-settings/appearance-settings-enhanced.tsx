@@ -23,6 +23,12 @@ import { LivePreview } from './live-preview';
 // MAIN COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Appearance Settings Enhanced component.
+ */
 export function AppearanceSettingsEnhanced() {
   const {
     theme,

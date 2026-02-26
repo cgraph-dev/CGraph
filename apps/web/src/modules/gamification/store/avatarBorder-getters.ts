@@ -13,6 +13,15 @@ import type { AvatarBorderState } from './avatarBorder-types';
 
 type GetState = () => AvatarBorderState;
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get equipped border.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetEquippedBorder(get: GetState) {
   return () => {
     const { allBorders, preferences } = get();
@@ -20,6 +29,15 @@ export function createGetEquippedBorder(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get display border.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetDisplayBorder(get: GetState) {
   return () => {
     const { allBorders, previewBorderId, preferences } = get();
@@ -28,6 +46,15 @@ export function createGetDisplayBorder(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new is border unlocked.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createIsBorderUnlocked(get: GetState) {
   return (borderId: string) => {
     const { unlockedBorders, allBorders } = get();
@@ -39,6 +66,15 @@ export function createIsBorderUnlocked(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get filtered borders.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetFilteredBorders(get: GetState) {
   return () => {
     const { allBorders, filters, isBorderUnlocked } = get();
@@ -63,6 +99,15 @@ export function createGetFilteredBorders(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get borders by theme.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetBordersByTheme(get: GetState) {
   return (theme: BorderTheme) => {
     const { allBorders } = get();
@@ -70,6 +115,15 @@ export function createGetBordersByTheme(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get free borders.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetFreeBorders(get: GetState) {
   return () => {
     const { allBorders } = get();
@@ -77,6 +131,15 @@ export function createGetFreeBorders(get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new get theme unlock counts.
+ *
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGetThemeUnlockCounts(get: GetState) {
   return () => {
     const { allBorders, isBorderUnlocked } = get();

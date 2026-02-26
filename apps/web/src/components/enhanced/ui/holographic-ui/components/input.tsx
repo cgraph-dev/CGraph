@@ -10,6 +10,12 @@ import type { HoloInputProps } from '../types';
 import { getTheme } from '../presets';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Input component.
+ */
 export function HoloInput({
   value,
   onChange,

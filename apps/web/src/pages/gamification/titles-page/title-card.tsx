@@ -11,6 +11,12 @@ import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleCardProps } from './types';
 import { RARITY_STYLES } from './constants';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Title Card display component.
+ */
 export function TitleCard({
   title,
   isOwned,

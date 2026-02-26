@@ -9,6 +9,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumHeaderProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Header component.
+ */
 export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: ForumHeaderProps) {
   const isAdminOrMod = forum.ownerId === userId || forum.moderators?.some((m) => m.id === userId);
 

@@ -21,6 +21,12 @@ interface HoloNotificationProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Notification component.
+ */
 export function HoloNotification({
   message,
   description,

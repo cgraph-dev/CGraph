@@ -54,6 +54,9 @@ function EmojiCard({ emoji, onDelete }: { emoji: CustomEmoji; onDelete: (id: str
   );
 }
 
+/**
+ * Custom Emoji Page — route-level page component.
+ */
 export default function CustomEmojiPage() {
   const {
     emojis,

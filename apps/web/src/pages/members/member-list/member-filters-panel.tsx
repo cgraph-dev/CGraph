@@ -24,6 +24,12 @@ interface MemberFiltersPanelProps {
   onPageReset: () => void;
 }
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Member Filters Panel component.
+ */
 export function MemberFiltersPanel({
   searchQuery,
   onSearchChange,

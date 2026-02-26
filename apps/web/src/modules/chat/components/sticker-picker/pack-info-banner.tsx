@@ -15,6 +15,12 @@ interface PackInfoBannerProps {
   onPurchase: (pack: { id: string; coinPrice: number }) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Pack Info Banner component.
+ */
 export function PackInfoBanner({ pack, userCoins, isPurchasing, onPurchase }: PackInfoBannerProps) {
   return (
     <motion.div

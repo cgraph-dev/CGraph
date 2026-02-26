@@ -18,6 +18,12 @@ interface HoloAvatarProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Avatar component.
+ */
 export function HoloAvatar({
   src,
   name,

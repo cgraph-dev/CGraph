@@ -47,6 +47,9 @@ function AmbientParticles() {
   );
 }
 
+/**
+ * Forums component.
+ */
 export default function Forums() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();

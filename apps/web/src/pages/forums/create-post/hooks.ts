@@ -12,6 +12,12 @@ import type { PostType } from './types';
 
 const logger = createLogger('CreatePost');
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing create post.
+ */
 export function useCreatePost() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();

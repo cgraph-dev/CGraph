@@ -53,6 +53,12 @@ const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', number> = 
   fast: 0.5,
 };
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Themed Avatar component.
+ */
 export function ThemedAvatar({
   src,
   alt = 'Avatar',

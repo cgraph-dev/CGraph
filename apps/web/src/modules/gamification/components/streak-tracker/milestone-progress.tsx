@@ -9,6 +9,12 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import type { MilestoneProgressProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Milestone Progress component.
+ */
 export function MilestoneProgress({ currentStreak, milestones }: MilestoneProgressProps) {
   const nextMilestone = milestones.find((m) => m.days > currentStreak && !m.claimed);
   const progressToNext = nextMilestone ? (currentStreak / nextMilestone.days) * 100 : 100;

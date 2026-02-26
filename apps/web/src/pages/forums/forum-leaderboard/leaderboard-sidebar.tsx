@@ -17,6 +17,12 @@ interface LeaderboardSidebarProps {
   topForums: Forum[];
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Leaderboard Sidebar component.
+ */
 export function LeaderboardSidebar({ topForums }: LeaderboardSidebarProps) {
   return (
     <div className="hidden w-80 overflow-y-auto border-l border-dark-600 lg:block">

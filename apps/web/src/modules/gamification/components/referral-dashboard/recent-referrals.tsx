@@ -9,6 +9,12 @@ import { UsersIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { RecentReferralsProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Recent Referrals component.
+ */
 export function RecentReferrals({ referrals }: RecentReferralsProps) {
   return (
     <div className="bg-card border-border overflow-hidden rounded-lg border">

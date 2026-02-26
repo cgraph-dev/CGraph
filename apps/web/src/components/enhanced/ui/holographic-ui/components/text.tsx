@@ -18,6 +18,12 @@ const variantStyles: Record<string, string> = {
   label: 'text-xs uppercase tracking-widest font-medium',
 };
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Text component.
+ */
 export function HoloText({
   children,
   variant = 'body',

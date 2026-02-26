@@ -14,6 +14,12 @@ import { EFFECT_OPTIONS } from './constants';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Effects Tab component.
+ */
 export function EffectsTab({
   selectedEffect,
   animationSpeed,

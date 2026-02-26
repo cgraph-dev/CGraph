@@ -19,6 +19,15 @@ type Set = (
 
 const logger = createLogger('ModerationStore:Log');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new log actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createLogActions(set: Set) {
   return {
     fetchModerationLog: async (

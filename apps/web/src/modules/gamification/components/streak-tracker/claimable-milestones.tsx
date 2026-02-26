@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import { TrophyIcon } from '@heroicons/react/24/outline';
 import type { ClaimableMilestonesProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Claimable Milestones component.
+ */
 export function ClaimableMilestones({
   milestones,
   currentStreak,

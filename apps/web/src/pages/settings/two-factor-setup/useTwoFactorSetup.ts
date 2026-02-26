@@ -8,6 +8,13 @@ import { api } from '@/lib/api';
 import type { TwoFactorSetupData, SetupStep, UseTwoFactorSetupReturn } from './types';
 import { STEPS } from './constants';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing two factor setup.
+ * @returns The result.
+ */
 export function useTwoFactorSetup(): UseTwoFactorSetupReturn {
   const [step, setStep] = useState<SetupStep>('intro');
   const [setupData, setSetupData] = useState<TwoFactorSetupData | null>(null);

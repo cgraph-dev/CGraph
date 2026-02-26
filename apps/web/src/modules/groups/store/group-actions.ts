@@ -11,6 +11,16 @@ import type { Group, GroupState, Channel, ChannelMessage, Member } from './group
 type SetState = StoreApi<GroupState>['setState'];
 type GetState = StoreApi<GroupState>['getState'];
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Creates a new group actions.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createGroupActions(
   set: SetState,
   get: GetState

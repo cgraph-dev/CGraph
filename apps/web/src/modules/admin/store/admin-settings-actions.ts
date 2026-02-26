@@ -14,6 +14,15 @@ type Set = (
   replace?: false
 ) => void;
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Creates a new settings actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createSettingsActions(set: Set) {
   return {
     fetchSettings: async () => {

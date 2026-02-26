@@ -20,6 +20,12 @@ interface AchievementDetailModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement Detail Modal dialog component.
+ */
 export function AchievementDetailModal({ achievement, onClose }: AchievementDetailModalProps) {
   if (!achievement) return null;
 

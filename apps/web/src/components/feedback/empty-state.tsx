@@ -85,6 +85,12 @@ export function EmptyState({ icon, title, description, action, className = '' }:
 
 // Pre-configured empty states for common scenarios
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Messages — fallback UI for empty data states.
+ */
 export function EmptyMessages({ onStartConversation }: { onStartConversation?: () => void }) {
   return (
     <EmptyState
@@ -109,6 +115,12 @@ export function EmptyMessages({ onStartConversation }: { onStartConversation?: (
   );
 }
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Conversations — fallback UI for empty data states.
+ */
 export function EmptyConversations({ onNewConversation }: { onNewConversation?: () => void }) {
   return (
     <EmptyState
@@ -131,6 +143,12 @@ export function EmptyConversations({ onNewConversation }: { onNewConversation?: 
   );
 }
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Groups — fallback UI for empty data states.
+ */
 export function EmptyGroups({ onCreateGroup }: { onCreateGroup?: () => void }) {
   return (
     <EmptyState
@@ -151,6 +169,12 @@ export function EmptyGroups({ onCreateGroup }: { onCreateGroup?: () => void }) {
   );
 }
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Forums — fallback UI for empty data states.
+ */
 export function EmptyForums({ onCreateForum }: { onCreateForum?: () => void }) {
   return (
     <EmptyState
@@ -171,6 +195,12 @@ export function EmptyForums({ onCreateForum }: { onCreateForum?: () => void }) {
   );
 }
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Search Results — fallback UI for empty data states.
+ */
 export function EmptySearchResults({ query }: { query: string }) {
   return (
     <EmptyState
@@ -190,6 +220,12 @@ export function EmptySearchResults({ query }: { query: string }) {
   );
 }
 
+/**
+ * unknown for the feedback module.
+ */
+/**
+ * Empty Notifications — fallback UI for empty data states.
+ */
 export function EmptyNotifications() {
   return (
     <EmptyState

@@ -8,6 +8,12 @@ import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import { FONT_SIZES } from './constants';
 import type { SizePickerProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Size Picker component.
+ */
 export function SizePicker({ isOpen, onToggle, onClose, onSelectSize }: SizePickerProps) {
   return (
     <div className="relative">

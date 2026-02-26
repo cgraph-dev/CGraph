@@ -24,6 +24,12 @@ interface VideoCallModalProps {
   isGroupCall?: boolean;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Video Call Modal dialog component.
+ */
 export function VideoCallModal({
   isOpen,
   onClose,

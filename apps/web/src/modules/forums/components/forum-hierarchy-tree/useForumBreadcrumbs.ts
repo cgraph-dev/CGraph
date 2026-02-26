@@ -10,6 +10,14 @@ import type { Breadcrumb } from './types';
 
 const logger = createLogger('ForumHierarchyTree');
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing forum breadcrumbs.
+ *
+ * @param forumId - The forum id.
+ */
 export function useForumBreadcrumbs(forumId: string | undefined) {
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
   const [loading, setLoading] = useState(false);

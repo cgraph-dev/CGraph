@@ -25,6 +25,12 @@ export interface UseStickerPickerOptions {
   ownedPacks?: string[];
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing sticker picker.
+ */
 export function useStickerPicker({
   isOpen,
   onSelect,

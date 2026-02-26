@@ -17,6 +17,12 @@ import { ChannelPermissionsPanel } from './channel-permissions-panel';
 import { ChannelCategoriesPanel } from './channel-categories-panel';
 import type { ChannelsTabProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channels Tab component.
+ */
 export function ChannelsTab({ groupId }: ChannelsTabProps) {
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [loading, setLoading] = useState(true);

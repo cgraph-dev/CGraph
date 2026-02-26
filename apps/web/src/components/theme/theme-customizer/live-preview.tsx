@@ -20,6 +20,12 @@ interface LivePreviewProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Live Preview component.
+ */
 export function LivePreview({ isVisible }: LivePreviewProps) {
   if (!isVisible) return null;
 

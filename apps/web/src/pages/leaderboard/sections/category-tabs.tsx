@@ -10,6 +10,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { CATEGORIES } from '../constants';
 import type { CategoryTabsProps } from './types';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Category Tabs component.
+ */
 export function CategoryTabs({ category, onCategoryChange }: CategoryTabsProps) {
   return (
     <motion.div

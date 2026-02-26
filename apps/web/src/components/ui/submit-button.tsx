@@ -12,6 +12,12 @@ interface SubmitButtonProps {
   disabled?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Submit Button component.
+ */
 export function SubmitButton({ children, pendingText, className, disabled }: SubmitButtonProps) {
   const { pending } = useFormStatus();
   return (

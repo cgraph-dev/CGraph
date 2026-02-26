@@ -19,6 +19,12 @@ interface CallControlsProps {
   onEndCall: () => void;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Call Controls component.
+ */
 export function CallControls({
   showControls,
   callType,

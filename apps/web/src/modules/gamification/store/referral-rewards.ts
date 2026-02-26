@@ -13,6 +13,15 @@ const logger = createLogger('ReferralStore');
 // LEADERBOARD
 // ========================================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new leaderboard actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createLeaderboardActions(
   set: (
     partial: Partial<ReferralState> | ((state: ReferralState) => Partial<ReferralState>)
@@ -49,6 +58,15 @@ export function createLeaderboardActions(
 // REWARDS
 // ========================================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new reward actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createRewardActions(
   set: (
     partial: Partial<ReferralState> | ((state: ReferralState) => Partial<ReferralState>)
@@ -108,6 +126,15 @@ export function createRewardActions(
 // VALIDATION
 // ========================================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new validation actions.
+ *
+ * @param _set - The _set.
+ * @returns The newly created instance.
+ */
 export function createValidationActions(
   _set: (
     partial: Partial<ReferralState> | ((state: ReferralState) => Partial<ReferralState>)

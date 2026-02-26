@@ -10,6 +10,12 @@ import { GlassCard } from '@/shared/components/ui';
 import { getNotificationIcon, formatTimeAgo } from './utils';
 import type { NotificationsTabProps } from './types';
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Notifications Tab component.
+ */
 export function NotificationsTab({
   notifications,
   onMarkAsRead,

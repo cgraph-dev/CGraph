@@ -18,6 +18,15 @@ export interface GroupedMessages {
   later: Message[];
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing scheduled messages.
+ *
+ * @param conversationId - The conversation id.
+ * @param isOpen - The is open.
+ */
 export function useScheduledMessages(conversationId: string, isOpen: boolean) {
   const {
     scheduledMessages,

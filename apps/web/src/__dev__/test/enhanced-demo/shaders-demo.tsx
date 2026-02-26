@@ -5,6 +5,12 @@
 import { useState } from 'react';
 import ShaderBackground from '@/components/shaders/shader-background';
 
+/**
+ * unknown.
+ */
+/**
+ * Shaders Demo component.
+ */
 export function ShadersDemo() {
   const [variant, setVariant] = useState<'fluid' | 'particles' | 'waves' | 'neural' | 'matrix'>(
     'fluid'

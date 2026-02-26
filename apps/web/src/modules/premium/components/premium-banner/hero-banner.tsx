@@ -25,6 +25,12 @@ type HeroBannerProps = Pick<
   | 'onDismiss'
 >;
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Hero Banner component.
+ */
 export function HeroBanner({
   title,
   description,

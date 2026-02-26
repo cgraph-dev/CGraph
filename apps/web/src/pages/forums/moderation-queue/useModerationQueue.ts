@@ -8,6 +8,13 @@ import { useModerationStore } from '@/modules/moderation/store';
 import type { FilterState, UseModerationQueueReturn } from './types';
 import { DEFAULT_FILTER_STATE } from './constants';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Hook for managing moderation queue.
+ * @returns The result.
+ */
 export function useModerationQueue(): UseModerationQueueReturn {
   const {
     queue,

@@ -9,6 +9,12 @@ export interface BattlePassTierCardProps {
   hasPremium: boolean;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Battle Pass Tier Card display component.
+ */
 export function BattlePassTierCard({ tier, currentTier, hasPremium }: BattlePassTierCardProps) {
   const isUnlocked = currentTier >= tier.tier;
   const isCurrent = currentTier === tier.tier;

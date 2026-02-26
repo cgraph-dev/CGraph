@@ -11,6 +11,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { TIME_PERIODS } from '../constants';
 import type { FiltersRowProps } from './types';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Filters Row component.
+ */
 export function FiltersRow({
   timePeriod,
   onTimePeriodChange,

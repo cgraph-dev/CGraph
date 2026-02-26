@@ -6,6 +6,12 @@
 import { Link } from 'react-router-dom';
 import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Access Restricted component.
+ */
 export function AccessRestricted() {
   return (
     <div className="flex h-full flex-col items-center justify-center p-8">

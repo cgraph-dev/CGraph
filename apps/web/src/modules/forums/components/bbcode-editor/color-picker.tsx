@@ -8,6 +8,12 @@ import { SwatchIcon } from '@heroicons/react/24/outline';
 import { COLORS } from './constants';
 import type { ColorPickerProps } from './types';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Color Picker component.
+ */
 export function ColorPicker({ isOpen, onToggle, onClose, onSelectColor }: ColorPickerProps) {
   return (
     <div className="relative">

@@ -36,6 +36,12 @@ export interface QuickAction {
   badge?: number;
 }
 
+/**
+ * unknown for the layout module.
+ */
+/**
+ * Sidebar component.
+ */
 export function Sidebar({
   variant = 'default',
   defaultCollapsed = false,

@@ -8,6 +8,12 @@ import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
 import type { ToggleProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Toggle component.
+ */
 export function Toggle({ value, onChange }: ToggleProps) {
   return (
     <motion.button

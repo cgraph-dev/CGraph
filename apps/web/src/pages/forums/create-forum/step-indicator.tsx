@@ -8,6 +8,12 @@ interface StepIndicatorProps {
   currentStep: number;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Step Indicator component.
+ */
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
     <div className="border-b border-dark-700 bg-dark-800">

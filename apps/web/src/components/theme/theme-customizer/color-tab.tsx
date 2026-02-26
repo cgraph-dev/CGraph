@@ -15,7 +15,7 @@ import type { ColorTabProps } from './types';
 // =============================================================================
 
 /**
- *
+ * Color Tab component.
  */
 export function ColorTab({ selectedColor, onSelectColor }: ColorTabProps) {
   // type assertion: Object.entries loses key type, re-assert ThemeColorPreset tuple

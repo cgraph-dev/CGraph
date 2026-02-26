@@ -30,6 +30,9 @@ interface AnimatedBorderProps {
   pulse?: boolean;
 }
 
+/**
+ * Animated Border component.
+ */
 export default function AnimatedBorder({
   children,
   className = '',

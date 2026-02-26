@@ -11,6 +11,12 @@ import { RISK_COLORS } from './constants';
 
 type TabId = 'flagged' | 'disputes' | 'reports' | 'banned';
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Marketplace Moderation component.
+ */
 export function MarketplaceModeration() {
   const [activeTab, setActiveTab] = useState<TabId>('flagged');
   const [listings, setListings] = useState<FlaggedListing[]>([]);

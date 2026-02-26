@@ -26,6 +26,12 @@ export interface PollData {
   anonymous: boolean;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Create Poll Modal dialog component.
+ */
 export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalProps) {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);

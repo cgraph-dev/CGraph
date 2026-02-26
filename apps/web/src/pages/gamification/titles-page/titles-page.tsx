@@ -10,6 +10,12 @@ import { TabsFilter } from './tabs-filter';
 import { TitlesGrid } from './titles-grid';
 import { useTitlesData } from './hooks';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Titles Page — route-level page component.
+ */
 export function TitlesPage() {
   const {
     selectedTab,

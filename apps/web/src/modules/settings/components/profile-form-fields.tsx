@@ -15,6 +15,12 @@ interface ProfileFormFieldsProps {
   saveError: string | null;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Profile Form Fields component.
+ */
 export function ProfileFormFields({
   user,
   email,

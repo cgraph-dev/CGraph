@@ -23,6 +23,12 @@ interface ParticleEffectsSectionProps {
   onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Particle Effects Section section component.
+ */
 export function ParticleEffectsSection({
   particles,
   selectedParticle,

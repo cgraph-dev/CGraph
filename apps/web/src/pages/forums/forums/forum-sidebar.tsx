@@ -13,6 +13,12 @@ import { LeaderboardSidebar } from '@/modules/forums/components/leaderboard-widg
 import type { ForumSidebarProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Sidebar component.
+ */
 export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSidebarProps) {
   return (
     <div className="relative z-10 hidden w-80 overflow-y-auto border-l border-primary-500/20 bg-dark-900/50 p-4 backdrop-blur-xl lg:block">

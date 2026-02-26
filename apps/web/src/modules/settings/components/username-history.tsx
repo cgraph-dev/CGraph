@@ -22,6 +22,12 @@ const formatDate = (date: Date) => {
   });
 };
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Username History Section section component.
+ */
 export function UsernameHistorySection({
   showHistory,
   onToggle,

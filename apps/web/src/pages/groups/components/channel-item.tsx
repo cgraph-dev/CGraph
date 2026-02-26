@@ -16,6 +16,12 @@ import {
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ChannelItemProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel Item component.
+ */
 export function ChannelItem({ channel, groupId, isActive }: ChannelItemProps) {
   const getIcon = () => {
     switch (channel.type) {

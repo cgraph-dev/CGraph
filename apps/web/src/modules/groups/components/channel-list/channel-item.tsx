@@ -10,6 +10,12 @@ import { channelTypeIcons, channelTypeColors } from './constants';
 import type { ChannelItemProps } from './types';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel Item component.
+ */
 export function ChannelItem({ channel, isActive }: ChannelItemProps) {
   const { groupId } = useParams();
 

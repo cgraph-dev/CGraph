@@ -21,6 +21,9 @@ const thumbOffsets = {
   lg: { off: 2, on: 30 },
 };
 
+/**
+ * Switch component.
+ */
 export default function Switch({
   checked,
   onChange,

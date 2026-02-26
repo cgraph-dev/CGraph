@@ -5,6 +5,12 @@
 import { useEffect } from 'react';
 import { useMarketplaceStore } from '@/modules/gamification/store';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * History Section section component.
+ */
 export function HistorySection() {
   const { transactionHistory, userTotals, fetchHistory } = useMarketplaceStore();
 

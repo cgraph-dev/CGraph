@@ -15,6 +15,12 @@ import { TypingPreview } from './typing-preview';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Chat Effects Section section component.
+ */
 export function ChatEffectsSection() {
   const {
     messageEffects,

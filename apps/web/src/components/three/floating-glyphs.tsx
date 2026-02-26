@@ -7,6 +7,12 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { THEMES, MATRIX_CHARS, type ThemeName } from './matrix-theme';
 
+/**
+ * unknown for the three module.
+ */
+/**
+ * Floating Glyphs component.
+ */
 export function FloatingGlyphs({ theme = 'matrix-green' }: { theme: ThemeName }) {
   const groupRef = useRef<THREE.Group>(null);
   const { viewport } = useThree();

@@ -8,6 +8,12 @@ import { PaperAirplaneIcon, PaperClipIcon, FaceSmileIcon } from '@heroicons/reac
 import type { MessageInputProps } from './types';
 import { getDisplayName } from './utils';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Message Input component.
+ */
 export function MessageInput({
   channelName,
   messageInput,

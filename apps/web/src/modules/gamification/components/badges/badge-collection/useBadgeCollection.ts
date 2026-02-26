@@ -6,6 +6,14 @@ import { useState, useMemo, useCallback } from 'react';
 import { RARITY_ORDER, INITIAL_FILTER_STATE } from './constants';
 import type { Achievement, FilterState, CategoryCount, CollectionStats } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing badge collection.
+ *
+ * @param achievements - The achievements.
+ */
 export function useBadgeCollection(achievements: Achievement[]) {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTER_STATE);
 

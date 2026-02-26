@@ -43,6 +43,12 @@ const ACTION_LABELS: Record<MemberAction, string> = {
   mute: 'Mute',
 };
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Confirm Action Modal dialog component.
+ */
 export function ConfirmActionModal({
   action,
   memberId,

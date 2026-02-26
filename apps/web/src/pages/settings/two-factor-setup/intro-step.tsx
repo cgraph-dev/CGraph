@@ -10,6 +10,12 @@ interface IntroStepProps {
   onContinue: () => void;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Intro Step component.
+ */
 export function IntroStep({ onContinue }: IntroStepProps) {
   return (
     <motion.div

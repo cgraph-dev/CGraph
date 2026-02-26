@@ -13,6 +13,14 @@ import type { TabId, OverviewFormData } from './types';
 
 const logger = createLogger('GroupSettings');
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Hook for managing group settings.
+ *
+ * @param groupId - The group id.
+ */
 export function useGroupSettings(groupId: string) {
   const navigate = useNavigate();
   const { groups, leaveGroup, updateGroup, deleteGroup } = useGroupStore();

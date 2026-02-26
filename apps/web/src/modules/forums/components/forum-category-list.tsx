@@ -87,7 +87,7 @@ interface _ForumPreview {
 void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
 /**
- *
+ * Forum Category List component.
  */
 export function ForumCategoryList({
   categories,

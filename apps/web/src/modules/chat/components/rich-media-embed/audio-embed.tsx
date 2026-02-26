@@ -10,6 +10,9 @@ interface AudioEmbedProps {
   embed: LinkMetadata;
 }
 
+/**
+ * Audio Embed component.
+ */
 export default function AudioEmbed({ embed }: AudioEmbedProps) {
   return (
     <div className="max-w-md">

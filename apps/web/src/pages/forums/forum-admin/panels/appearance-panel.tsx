@@ -24,6 +24,12 @@ export interface AppearancePanelProps {
   memberCount: number;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Appearance Panel component.
+ */
 export function AppearancePanel({
   appearance,
   setAppearance,

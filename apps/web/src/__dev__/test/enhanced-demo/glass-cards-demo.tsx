@@ -9,6 +9,12 @@ import {
   GlassCardCrystal,
 } from '@/shared/components/ui';
 
+/**
+ * unknown.
+ */
+/**
+ * Glass Cards Demo display component.
+ */
 export function GlassCardsDemo() {
   return (
     <div className="space-y-8">

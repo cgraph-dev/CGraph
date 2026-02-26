@@ -18,6 +18,12 @@ import {
 } from '@heroicons/react/24/outline';
 import type { FriendListItemProps } from './types';
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friend List Item component.
+ */
 export function FriendListItem({
   friend,
   statusColor,

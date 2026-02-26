@@ -14,6 +14,9 @@ import { motion } from 'framer-motion';
  * - Main: Content area for selected tab
  */
 
+/**
+ * Social Layout — page layout wrapper.
+ */
 export default function SocialLayout() {
   return (
     <motion.div

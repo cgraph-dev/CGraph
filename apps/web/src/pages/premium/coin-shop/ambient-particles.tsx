@@ -6,6 +6,12 @@ import { motion } from 'framer-motion';
 
 const PARTICLE_COUNT = 15;
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Ambient Particles component.
+ */
 export function AmbientParticles() {
   return (
     <>

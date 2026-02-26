@@ -10,6 +10,12 @@ import type { ChannelListProps } from './types';
 import { ChannelItem } from './channel-item';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel List component.
+ */
 export function ChannelList({
   activeGroup,
   channelId,

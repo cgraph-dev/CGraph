@@ -20,6 +20,12 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { CommentItemProps } from './types';
 import { MAX_COMMENT_INDENT, COMMENT_INDENT_PER_LEVEL } from './constants';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Comment Item component.
+ */
 export function CommentItem({
   comment,
   onVote,

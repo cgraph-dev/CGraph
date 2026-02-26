@@ -11,6 +11,12 @@ interface ReplyPreviewProps {
   onCancel?: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Reply Preview component.
+ */
 export function ReplyPreview({ replyTo, onCancel }: ReplyPreviewProps) {
   return (
     <AnimatePresence>

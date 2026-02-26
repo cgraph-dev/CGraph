@@ -36,6 +36,9 @@ import { tweens } from '@/lib/animation-presets';
 
 type TabId = 'theme' | 'effects' | 'animations' | 'typography' | 'advanced';
 
+/**
+ * U I Customization Settings component.
+ */
 export default function UICustomizationSettings() {
   const { preferences, updatePreference, resetToDefaults, exportPreferences, importPreferences } =
     useUIPreferences();

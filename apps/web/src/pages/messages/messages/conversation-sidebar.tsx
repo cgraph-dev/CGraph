@@ -17,6 +17,12 @@ import { EmptyConversationList, LoadingSpinner } from './empty-states';
 import type { ConversationSidebarProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Conversation Sidebar component.
+ */
 export function ConversationSidebar({
   conversations,
   activeConversationId,

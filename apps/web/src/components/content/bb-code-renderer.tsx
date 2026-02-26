@@ -140,6 +140,12 @@ function isValidCssColor(color: string): boolean {
   return safeColors.has(color.toLowerCase());
 }
 
+/**
+ * unknown for the content module.
+ */
+/**
+ * Inline B B Code Renderer component.
+ */
 export function InlineBBCodeRenderer({
   content,
   className = '',

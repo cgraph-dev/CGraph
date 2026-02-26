@@ -26,6 +26,12 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Announcement Item component.
+ */
 export function AnnouncementItem({
   announcement,
   isExpanded,

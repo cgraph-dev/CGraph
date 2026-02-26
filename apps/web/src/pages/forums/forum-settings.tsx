@@ -13,6 +13,9 @@ import {
 } from '@/pages/forums/forum-settings/settings-sections';
 import { SubmitButton } from '@/components/ui/submit-button';
 
+/**
+ * Forum Settings component.
+ */
 export default function ForumSettings() {
   const {
     forumSlug,

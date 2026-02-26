@@ -11,6 +11,12 @@ interface CrownIconProps {
   style?: React.CSSProperties;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Crown Icon component.
+ */
 export function CrownIcon({ className, style }: CrownIconProps) {
   return (
     <svg

@@ -26,6 +26,12 @@ export interface PageContainerProps {
   className?: string;
 }
 
+/**
+ * unknown for the layout module.
+ */
+/**
+ * Page Container — route-level page component.
+ */
 export function PageContainer({
   children,
   title,

@@ -1,4 +1,5 @@
 /**
+ * unknown.
  * useSubscriptions Hook
  *
  * Manages subscription data fetching, updates, and deletion.
@@ -14,7 +15,7 @@ import type { NotificationMode, Subscription, SubscriptionCounts } from './types
 const logger = createLogger('SubscriptionManager');
 
 /**
- *
+ * Hook for managing subscriptions.
  */
 export function useSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);

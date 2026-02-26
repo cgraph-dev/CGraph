@@ -13,6 +13,12 @@ interface OnlineStatusDropdownProps {
   className?: string;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Online Status Dropdown component.
+ */
 export function OnlineStatusDropdown({
   currentStatus,
   onChange,

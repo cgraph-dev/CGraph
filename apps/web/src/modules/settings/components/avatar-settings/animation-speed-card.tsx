@@ -8,6 +8,12 @@ import { GlassCard, useAvatarStyle } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ANIMATION_SPEEDS } from './constants';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Animation Speed Card display component.
+ */
 export function AnimationSpeedCard() {
   const { style, updateStyle } = useAvatarStyle();
 

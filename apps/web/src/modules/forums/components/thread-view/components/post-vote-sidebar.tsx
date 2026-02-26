@@ -25,6 +25,12 @@ const floatingIndicator = {
   transition: { duration: 0.6, ease: 'easeOut' as const },
 };
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Post Vote Sidebar component.
+ */
 export function PostVoteSidebar({ score, myVote, onVote }: PostVoteSidebarProps) {
   const [voteAnim, setVoteAnim] = useState<'+1' | '-1' | null>(null);
 

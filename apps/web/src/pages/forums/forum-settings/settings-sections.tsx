@@ -18,6 +18,12 @@ interface GeneralSectionProps {
   setDescription: (v: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * General Section section component.
+ */
 export function GeneralSection({
   name,
   setName,
@@ -60,6 +66,12 @@ interface PrivacySectionProps {
   setIsPublic: (v: boolean) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Privacy Section section component.
+ */
 export function PrivacySection({ isPublic, setIsPublic }: PrivacySectionProps) {
   return (
     <section className="rounded-xl bg-dark-800 p-6">
@@ -113,6 +125,12 @@ interface ContentSectionProps {
   setIsNsfw: (v: boolean) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Content Section section component.
+ */
 export function ContentSection({ isNsfw, setIsNsfw }: ContentSectionProps) {
   return (
     <section className="rounded-xl bg-dark-800 p-6">
@@ -144,6 +162,12 @@ interface DangerZoneProps {
   onDelete: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Danger Zone component.
+ */
 export function DangerZone({
   forumName,
   showDeleteConfirm,

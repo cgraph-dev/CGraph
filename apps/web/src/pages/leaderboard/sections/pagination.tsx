@@ -8,6 +8,12 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 import type { PaginationProps } from './types';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Pagination component.
+ */
 export function Pagination({ page, totalPages, onPageChange, currentCategory }: PaginationProps) {
   if (totalPages <= 1) return null;
 

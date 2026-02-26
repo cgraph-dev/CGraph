@@ -10,6 +10,12 @@ interface SaveButtonProps {
   onClick: () => void;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Save Button component.
+ */
 export function SaveButton({ isSaving, onClick }: SaveButtonProps) {
   return (
     <div className="flex justify-end border-t border-white/10 pt-4">

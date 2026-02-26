@@ -25,6 +25,12 @@ interface VoiceCallModalProps {
   incomingRoomId?: string;
 }
 
+/**
+ * unknown for the calls module.
+ */
+/**
+ * Voice Call Modal dialog component.
+ */
 export function VoiceCallModal({
   isOpen,
   onClose,

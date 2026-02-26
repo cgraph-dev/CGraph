@@ -16,6 +16,12 @@ import { tweens, loop } from '@/lib/animation-presets';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Theme Card display component.
+ */
 export function ThemeCard({ theme, isActive, onSelect, onDelete, isPremium }: ThemeCardProps) {
   const reduceMotion = useReducedMotion();
 

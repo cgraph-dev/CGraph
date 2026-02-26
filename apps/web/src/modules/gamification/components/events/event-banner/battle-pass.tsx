@@ -9,6 +9,12 @@ import { normalizeTiers } from './utils';
 import type { BattlePassProgressProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Battle Pass Progress component.
+ */
 export function BattlePassProgress({
   tiers: rawTiers,
   currentTier,

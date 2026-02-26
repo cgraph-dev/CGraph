@@ -7,6 +7,12 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import type { StickerButtonProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Sticker Button component.
+ */
 export function StickerButton({ onClick, isActive, className }: StickerButtonProps) {
   return (
     <motion.button

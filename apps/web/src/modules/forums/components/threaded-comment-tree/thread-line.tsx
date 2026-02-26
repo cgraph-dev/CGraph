@@ -9,6 +9,12 @@ interface ThreadLineProps {
   isLast: boolean;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Thread Line component.
+ */
 export function ThreadLine({ depth, isLast }: ThreadLineProps) {
   if (depth <= 0) return null;
 

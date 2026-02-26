@@ -12,6 +12,9 @@ interface ImageEmbedProps {
   onExpand: () => void;
 }
 
+/**
+ * Image Embed component.
+ */
 export default function ImageEmbed({ embed, onExpand }: ImageEmbedProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 

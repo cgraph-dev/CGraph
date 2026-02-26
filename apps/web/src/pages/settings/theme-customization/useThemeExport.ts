@@ -4,6 +4,12 @@
  */
 import { useThemeStore } from '@/stores/theme';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Hook for managing theme export.
+ */
 export function useThemeExport() {
   const exportTheme = useThemeStore((state) => state.exportTheme);
   const importTheme = useThemeStore((state) => state.importTheme);

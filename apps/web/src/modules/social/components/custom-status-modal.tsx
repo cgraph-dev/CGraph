@@ -49,6 +49,12 @@ const EXPIRY_OPTIONS = [
   { label: 'Today', value: 'today' },
 ];
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Custom Status Modal dialog component.
+ */
 export function CustomStatusModal({
   isOpen,
   onClose,

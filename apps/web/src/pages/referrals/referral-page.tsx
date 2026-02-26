@@ -10,6 +10,9 @@ import ReferralDashboard from '@/modules/gamification/components/referral-dashbo
  * Main referral program page
  */
 
+/**
+ * Referral Page — route-level page component.
+ */
 export default function ReferralPage() {
   return <ReferralDashboard />;
 }

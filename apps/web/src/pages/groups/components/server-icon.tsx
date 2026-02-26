@@ -9,6 +9,12 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ServerIconProps } from './types';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Server Icon component.
+ */
 export function ServerIcon({ group, isActive }: ServerIconProps) {
   return (
     <NavLink

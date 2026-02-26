@@ -6,6 +6,12 @@ import { useEffect } from 'react';
 import { useMarketplaceStore } from '@/modules/gamification/store';
 import { ITEM_TYPE_LABELS } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * My Listings Section component.
+ */
 export function MyListingsSection() {
   const { myListings, fetchMyListings, cancelListing, updateListing } = useMarketplaceStore();
   void updateListing; // Reserved for future edit functionality

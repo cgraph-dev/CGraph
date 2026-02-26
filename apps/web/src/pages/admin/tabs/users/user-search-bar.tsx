@@ -11,6 +11,12 @@ interface UserSearchBarProps {
   onStatusChange: (value: string) => void;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * User Search Bar component.
+ */
 export function UserSearchBar({
   searchTerm,
   onSearchChange,

@@ -11,6 +11,12 @@ interface DeleteChannelModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Delete Channel Modal dialog component.
+ */
 export function DeleteChannelModal({
   deleteConfirmId,
   onDelete,

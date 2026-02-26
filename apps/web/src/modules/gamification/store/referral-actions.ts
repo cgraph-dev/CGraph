@@ -27,7 +27,7 @@ const logger = createLogger('ReferralStore');
 // ========================================
 
 /**
- *
+ * map Referral From Api.
  */
 export function mapReferralFromApi(data: Record<string, unknown>): Referral {
   const referrerReward: Record<string, unknown> | undefined = isRecord(data.referrer_reward)

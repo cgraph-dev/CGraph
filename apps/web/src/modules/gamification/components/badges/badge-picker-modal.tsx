@@ -24,6 +24,12 @@ export interface BadgePickerModalProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Badge Picker Modal dialog component.
+ */
 export function BadgePickerModal({
   isOpen,
   unequippedBadges,

@@ -13,6 +13,13 @@ export interface CategoryConfig {
   count: number;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Retrieves category configs.
+ * @returns The category configs.
+ */
 export function getCategoryConfigs(): CategoryConfig[] {
   return [
     {

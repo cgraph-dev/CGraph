@@ -14,6 +14,12 @@ interface ProfileSectionProps {
   user: UserInfo;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Profile Section section component.
+ */
 export function ProfileSection({ user }: ProfileSectionProps) {
   // Calculate XP progress
   const levelXpRequired = 1000 * (user.level || 1);

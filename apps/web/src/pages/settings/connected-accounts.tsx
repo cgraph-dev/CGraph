@@ -25,7 +25,7 @@ const PROVIDERS = [
 ];
 
 /**
- *
+ * Connected Accounts component.
  */
 export function ConnectedAccounts() {
   const [accounts, setAccounts] = useState<ConnectedAccount[]>([]);

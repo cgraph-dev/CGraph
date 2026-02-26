@@ -12,6 +12,12 @@ import { AnimatedAvatar } from '@/shared/components/ui';
 import { formatValue, getRankChange, getRankConfig } from '../utils';
 import type { RankingsListProps } from './types';
 
+/**
+ * unknown for the leaderboard module.
+ */
+/**
+ * Rankings List component.
+ */
 export function RankingsList({ entries, currentUserId, currentCategory, page }: RankingsListProps) {
   const navigate = useNavigate();
   const displayEntries = page === 1 ? entries.slice(3) : entries;

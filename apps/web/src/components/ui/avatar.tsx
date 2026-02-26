@@ -125,6 +125,12 @@ interface AvatarGroupProps {
   size?: AvatarSize;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Avatar Group component.
+ */
 export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps) {
   const childArray = Array.isArray(children) ? children : [children];
   const visibleAvatars = childArray.slice(0, max);

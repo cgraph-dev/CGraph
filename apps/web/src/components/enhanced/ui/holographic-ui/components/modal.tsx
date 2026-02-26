@@ -12,6 +12,12 @@ import { HoloContainer } from './container';
 import { HoloText } from './text';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Modal dialog component.
+ */
 export function HoloModal({
   isOpen,
   onClose,

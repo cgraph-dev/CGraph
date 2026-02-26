@@ -9,6 +9,12 @@ import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/2
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friends Header component.
+ */
 export function FriendsHeader({
   showAddFriend,
   setShowAddFriend,
@@ -43,6 +49,12 @@ export function FriendsHeader({
   );
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Add Friend Form component.
+ */
 export function AddFriendForm({
   isVisible,
   addFriendInput,
@@ -111,6 +123,12 @@ export function AddFriendForm({
   );
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friends Tab Bar component.
+ */
 export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarProps) {
   return (
     <motion.div
@@ -171,6 +189,12 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
   );
 }
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Friends Search Bar component.
+ */
 export function FriendsSearchBar({
   searchQuery,
   setSearchQuery,

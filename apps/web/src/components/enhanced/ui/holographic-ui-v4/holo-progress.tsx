@@ -19,6 +19,12 @@ interface HoloProgressProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Progress component.
+ */
 export function HoloProgress({
   value,
   max = 100,

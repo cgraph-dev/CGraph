@@ -172,6 +172,12 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
 }
 
+/**
+ * unknown for the ui module.
+ */
+/**
+ * Confirm Dialog dialog component.
+ */
 export function ConfirmDialog({
   isOpen,
   onClose,

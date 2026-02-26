@@ -8,6 +8,12 @@ import { GlassCard, useAvatarStyle } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SHAPES } from './constants';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Shape Card display component.
+ */
 export function ShapeCard() {
   const { style, updateStyle } = useAvatarStyle();
 

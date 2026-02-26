@@ -32,6 +32,9 @@ const REPORT_REASONS = [
   { value: 'other', label: 'Other (specify below)' },
 ];
 
+/**
+ * Report Modal dialog component.
+ */
 export default function ReportModal({
   isOpen,
   onClose,

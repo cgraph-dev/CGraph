@@ -16,6 +16,12 @@ interface AchievementListItemProps {
   onClick: () => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Achievement List Item component.
+ */
 export function AchievementListItem({
   achievement,
   index,

@@ -51,6 +51,12 @@ const LEVELS: { value: NotificationLevel; label: string; desc: string; icon: typ
   { value: 'none', label: 'Muted', desc: 'No notifications', icon: BellSlashIcon },
 ];
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Subscribe Button component.
+ */
 export function SubscribeButton({
   targetType,
   targetId,

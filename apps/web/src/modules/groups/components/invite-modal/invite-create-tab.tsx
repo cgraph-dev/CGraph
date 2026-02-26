@@ -24,6 +24,12 @@ interface InviteCreateTabProps {
   onCopyLink: (link: string) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Invite Create Tab component.
+ */
 export function InviteCreateTab({
   expiration,
   setExpiration,

@@ -151,6 +151,12 @@ function BadgeSlot({ badge, size, isEditable, onUnequip, index: _index }: BadgeS
 
 // ── Main component ────────────────────────────────────────────────────
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Badge Showcase component.
+ */
 export function BadgeShowcase({
   equippedBadges,
   availableBadges = [],

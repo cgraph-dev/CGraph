@@ -5,6 +5,12 @@
 import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import type { ActivityBreakdownViewProps } from './types';
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Activity Breakdown View component.
+ */
 export function ActivityBreakdownView({
   activityBreakdown,
   isLoading,

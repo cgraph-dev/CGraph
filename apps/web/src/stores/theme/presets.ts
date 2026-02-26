@@ -319,6 +319,15 @@ const CATEGORY_RULES = [
   { test: (k: string) => k.includes('nature') || k.includes('forest'), category: 'Nature' },
 ];
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Retrieves preset category.
+ *
+ * @param presetId - The preset id.
+ * @returns The preset category.
+ */
 export function getPresetCategory(presetId: string): string {
   return classifyByRules(presetId, CATEGORY_RULES, 'General');
 }
@@ -427,10 +436,28 @@ export const DEFAULT_THEME_STATE = {
 // HELPER FUNCTIONS
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Retrieves colors for preset.
+ *
+ * @param preset - The preset.
+ * @returns The colors for preset.
+ */
 export function getColorsForPreset(preset: ColorPreset): ColorDefinition {
   return COLORS[preset];
 }
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Retrieves profile card config for layout.
+ *
+ * @param layout - The layout.
+ * @returns The profile card config for layout.
+ */
 export function getProfileCardConfigForLayout(
   layout: keyof typeof PROFILE_CARD_CONFIGS
 ): ProfileCardConfig {
@@ -438,6 +465,15 @@ export function getProfileCardConfigForLayout(
   return config ?? PROFILE_CARD_CONFIGS.minimal!;
 }
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Retrieves theme preset.
+ *
+ * @param themeId - The theme id.
+ * @returns The theme preset.
+ */
 export function getThemePreset(themeId: string): ThemePresetConfig | undefined {
   return THEME_PRESETS[themeId];
 }

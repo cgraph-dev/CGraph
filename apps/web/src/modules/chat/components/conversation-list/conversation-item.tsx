@@ -20,6 +20,12 @@ import {
 } from './utils';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Conversation Item component.
+ */
 export function ConversationItem({
   conversation,
   currentUserId,

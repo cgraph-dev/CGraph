@@ -20,6 +20,12 @@ interface UseChatInfoPanelParams {
   onClose: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing chat info panel.
+ */
 export function useChatInfoPanel({
   userId,
   conversationId,

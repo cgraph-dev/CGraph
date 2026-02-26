@@ -8,6 +8,12 @@ import { GlassCard } from '@/shared/components/ui';
 import type { AchievementsSectionProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Achievements Section section component.
+ */
 export function AchievementsSection({ achievements }: AchievementsSectionProps) {
   const getRarityColor = (rarity: string) => {
     switch (rarity) {

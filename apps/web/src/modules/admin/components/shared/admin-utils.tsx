@@ -12,6 +12,12 @@ export function formatUptime(seconds: number): string {
   return `${minutes}m`;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Chat Bubble Icon component.
+ */
 export function ChatBubbleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">

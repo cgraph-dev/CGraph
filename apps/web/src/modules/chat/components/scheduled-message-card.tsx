@@ -13,6 +13,12 @@ interface ScheduledMessageCardProps {
   isCanceling: boolean;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Scheduled Message Card display component.
+ */
 export function ScheduledMessageCard({
   message,
   onCancel,

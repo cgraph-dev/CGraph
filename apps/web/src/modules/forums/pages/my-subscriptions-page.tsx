@@ -35,6 +35,12 @@ interface Subscription {
 
 type FilterType = 'all' | 'forums' | 'boards' | 'threads';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * My Subscriptions Page — route-level page component.
+ */
 export function MySubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);

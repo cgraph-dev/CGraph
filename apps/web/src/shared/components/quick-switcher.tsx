@@ -51,6 +51,12 @@ interface QuickSwitcherProps {
   items?: QuickSwitcherItem[];
 }
 
+/**
+ * unknown for the quick-switcher.tsx module.
+ */
+/**
+ * Quick Switcher component.
+ */
 export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProps) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);

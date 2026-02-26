@@ -6,6 +6,12 @@ import type { LeaderboardSidebarProps } from './types';
 import { ForumLeaderboardWidget } from './forum-leaderboard-widget';
 import { GlobalLeaderboardWidget } from './global-leaderboard-widget';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Leaderboard Sidebar component.
+ */
 export function LeaderboardSidebar({ forumId, forumSlug }: LeaderboardSidebarProps) {
   return (
     <div className="space-y-4">

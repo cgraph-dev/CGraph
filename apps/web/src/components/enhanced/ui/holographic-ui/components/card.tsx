@@ -8,6 +8,12 @@ import type { HoloCardProps } from '../types';
 import { getTheme } from '../presets';
 import { HoloContainer } from './container';
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Card display component.
+ */
 export function HoloCard({
   children,
   header,

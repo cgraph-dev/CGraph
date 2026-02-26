@@ -18,6 +18,12 @@ export interface UseScheduleMessageModalOptions {
   onSchedule: (scheduledAt: Date) => Promise<void>;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing schedule message modal.
+ */
 export function useScheduleMessageModal({
   isOpen,
   onClose,

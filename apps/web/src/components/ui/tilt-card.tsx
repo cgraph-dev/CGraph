@@ -34,6 +34,9 @@ interface TiltCardProps {
   disabled?: boolean;
 }
 
+/**
+ * Tilt Card display component.
+ */
 export default function TiltCard({
   children,
   className = '',

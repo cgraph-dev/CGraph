@@ -15,6 +15,12 @@ interface PermissionRowProps {
   onToggle: (bit: number) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Permission Row component.
+ */
 export function PermissionRow({ bit, label, description, state, onToggle }: PermissionRowProps) {
   return (
     <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-dark-700/50">

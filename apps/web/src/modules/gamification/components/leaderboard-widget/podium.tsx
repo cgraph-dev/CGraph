@@ -12,6 +12,12 @@ import { formatScore } from './utils';
 import type { PodiumProps, LeaderboardEntry } from './types';
 import { tweens, loop } from '@/lib/animation-presets';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Podium component.
+ */
 export function Podium({ entries, onUserClick }: PodiumProps) {
   const top3 = entries.slice(0, 3);
   if (top3.length < 3) return null;

@@ -24,6 +24,12 @@ interface PollMessageProps {
   onVote: (optionId: string) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Poll Message component.
+ */
 export function PollMessage({
   question,
   options,

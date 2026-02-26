@@ -12,6 +12,12 @@ interface RecentAchievementsProps {
   recentAchievements: Achievement[];
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Recent Achievements component.
+ */
 export function RecentAchievements({ recentAchievements }: RecentAchievementsProps) {
   return (
     <motion.div

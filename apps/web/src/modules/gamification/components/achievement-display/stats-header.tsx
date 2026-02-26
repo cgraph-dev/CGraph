@@ -13,6 +13,12 @@ interface StatsHeaderProps {
 
 const RARITY_ORDER: AchievementRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Stats Header component.
+ */
 export function StatsHeader({ stats }: StatsHeaderProps) {
   return (
     <GlassCard variant="frosted" className="mb-4 p-4">

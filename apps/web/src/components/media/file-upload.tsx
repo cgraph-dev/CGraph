@@ -11,6 +11,9 @@ interface FileUploadProps {
   children?: React.ReactNode;
 }
 
+/**
+ * File Upload component.
+ */
 export default function FileUpload({
   onUpload,
   accept = 'image/*',

@@ -48,10 +48,23 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
+  /**
+   * Retrieves derived state from error.
+   *
+   * @param error - The error instance.
+   * @returns The derived state from error.
+   */
   static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
   }
 
+  /**
+   * component Did Catch for the feedback module.
+   *
+   * @param error - The error instance.
+   * @param errorInfo - The error info.
+   * @returns The result.
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
 
@@ -103,6 +116,10 @@ export class ErrorBoundary extends Component<Props, State> {
     window.open(supportUrl, '_blank');
   };
 
+  /**
+   * Renders the component.
+   * @returns The result.
+   */
   render(): ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {

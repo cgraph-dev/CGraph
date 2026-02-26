@@ -6,6 +6,12 @@ import { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui';
 import { AnimatedMessageWrapper } from '@/modules/chat/components/animated-message-wrapper';
 
+/**
+ * unknown.
+ */
+/**
+ * Messages Demo component.
+ */
 export function MessagesDemo() {
   const [messages] = useState([
     { id: '1', text: 'Hey! Check out these new animations 🚀', isOwn: false },

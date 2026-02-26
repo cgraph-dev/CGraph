@@ -12,6 +12,14 @@ import type {
 import { CANVAS_THRESHOLD, CHART_PADDING } from './constants';
 import { calculateMetrics, calculatePaths } from './utils';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing chart dimensions.
+ *
+ * @param height - The height.
+ */
 export function useChartDimensions(height: number) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<ChartDimensions>({ width: 0, height });
@@ -37,6 +45,14 @@ export function useChartDimensions(height: number) {
   return { containerRef, dimensions };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing canvas mode.
+ *
+ * @param dataLength - The data length.
+ */
 export function useCanvasMode(dataLength: number) {
   const [useCanvas, setUseCanvas] = useState(false);
 
@@ -50,10 +66,30 @@ export function useCanvasMode(dataLength: number) {
   return useCanvas;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing chart metrics.
+ *
+ * @param data - Input data.
+ * @returns The result.
+ */
 export function useChartMetrics(data: PricePoint[]): ChartMetrics | null {
   return useMemo(() => calculateMetrics(data), [data]);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing chart paths.
+ *
+ * @param data - Input data.
+ * @param dimensions - The dimensions.
+ * @param metrics - The metrics.
+ * @param showVolume - The show volume.
+ */
 export function useChartPaths(
   data: PricePoint[],
   dimensions: ChartDimensions,
@@ -68,6 +104,17 @@ export function useChartPaths(
   }, [data, dimensions, metrics, showVolume]);
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing chart interaction.
+ *
+ * @param data - Input data.
+ * @param dimensions - The dimensions.
+ * @param metrics - The metrics.
+ * @param containerRef - The container ref.
+ */
 export function useChartInteraction(
   data: PricePoint[],
   dimensions: ChartDimensions,

@@ -22,6 +22,12 @@ import { LeaderboardEntryRow } from './leaderboard-entry-row';
 import { SidebarVariant } from './sidebar-variant';
 import type { LeaderboardWidgetProps, TimePeriod } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Leaderboard Widget component.
+ */
 export function LeaderboardWidget({
   entries,
   leaderboardType = 'xp',

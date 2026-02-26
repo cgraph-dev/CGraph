@@ -7,6 +7,16 @@ import { format, isToday, isYesterday } from 'date-fns';
 import type { Conversation } from '@/modules/chat/store';
 import { getAvatarBorderId } from '@/lib/utils';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Retrieves conversation name.
+ *
+ * @param conversation - The conversation.
+ * @param currentUserId - The current user id.
+ * @returns The conversation name.
+ */
 export function getConversationName(conversation: Conversation, currentUserId?: string): string {
   if (conversation.isGroup) {
     return conversation.name || 'Group Chat';
@@ -15,6 +25,16 @@ export function getConversationName(conversation: Conversation, currentUserId?: 
   return otherParticipant?.user?.displayName || otherParticipant?.user?.username || 'Unknown';
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Retrieves conversation avatar.
+ *
+ * @param conversation - The conversation.
+ * @param currentUserId - The current user id.
+ * @returns The conversation avatar.
+ */
 export function getConversationAvatar(
   conversation: Conversation,
   currentUserId?: string
@@ -26,6 +46,16 @@ export function getConversationAvatar(
   return otherParticipant?.user?.avatarUrl || null;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Retrieves conversation avatar border id.
+ *
+ * @param conversation - The conversation.
+ * @param currentUserId - The current user id.
+ * @returns The conversation avatar border id.
+ */
 export function getConversationAvatarBorderId(
   conversation: Conversation,
   currentUserId?: string
@@ -38,6 +68,16 @@ export function getConversationAvatarBorderId(
   return getAvatarBorderId(user);
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Retrieves conversation online status.
+ *
+ * @param conversation - The conversation.
+ * @param currentUserId - The current user id.
+ * @returns The conversation online status.
+ */
 export function getConversationOnlineStatus(
   conversation: Conversation,
   currentUserId?: string
@@ -47,6 +87,15 @@ export function getConversationOnlineStatus(
   return otherParticipant?.user?.status === 'online';
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Formats message time.
+ *
+ * @param dateString - The date string.
+ * @returns The processed result.
+ */
 export function formatMessageTime(dateString: string): string {
   const date = new Date(dateString);
   if (isToday(date)) {

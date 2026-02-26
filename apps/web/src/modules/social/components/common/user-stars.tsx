@@ -48,6 +48,12 @@ const sizeConfig: Record<string, string> = {
   lg: 'w-6 h-6',
 };
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * User Stars component.
+ */
 export function UserStars({
   count,
   maxStars = 5,
@@ -125,6 +131,12 @@ const reputationTiers: ReputationTier[] = [
   { minRep: 0, maxStars: 0, color: 'silver', label: 'New' },
 ];
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Reputation Stars component.
+ */
 export function ReputationStars({
   reputation,
   maxReputation: _maxReputation = 1500,
@@ -194,6 +206,12 @@ const postTiers: PostTier[] = [
   { minPosts: 0, stars: 0, color: 'silver' },
 ];
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Post Count Stars component.
+ */
 export function PostCountStars({ postCount, size = 'sm', className = '' }: PostCountStarsProps) {
   const tier = postTiers.find((t) => postCount >= t.minPosts) ?? postTiers[postTiers.length - 1];
   const currentTier = tier!; // Safe since we have fallback
@@ -243,6 +261,12 @@ const badgeSizes: Record<string, string> = {
   lg: 'px-3 py-1.5 text-base',
 };
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Rank Badge component.
+ */
 export function RankBadge({
   rank,
   stars = 0,

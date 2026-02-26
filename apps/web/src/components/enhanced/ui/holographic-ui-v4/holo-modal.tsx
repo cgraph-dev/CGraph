@@ -23,6 +23,12 @@ interface HoloModalProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Modal dialog component.
+ */
 export function HoloModal({
   isOpen,
   onClose,

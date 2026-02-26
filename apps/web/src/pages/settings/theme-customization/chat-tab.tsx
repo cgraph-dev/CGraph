@@ -5,6 +5,12 @@
 import { useThemeStore } from '@/stores/theme';
 import { BUBBLE_STYLES } from './constants';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Chat Tab component.
+ */
 export function ChatTab() {
   const { theme, setChatBubbleStyle, updateTheme } = useThemeStore();
 

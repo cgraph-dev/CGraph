@@ -9,6 +9,12 @@ import { extractErrorMessage } from '@/lib/apiUtils';
 import { socketManager } from '@/lib/socket';
 import type { FriendsTab, TabDefinition } from './types';
 
+/**
+ * unknown for the friends module.
+ */
+/**
+ * Hook for managing friends page.
+ */
 export function useFriendsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FriendsTab>('all');

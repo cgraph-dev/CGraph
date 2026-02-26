@@ -4,6 +4,12 @@
  * Animated loading placeholder for leaderboard list.
  */
 
+/**
+ * unknown for the community module.
+ */
+/**
+ * Loading Skeleton — loading placeholder.
+ */
 export function LoadingSkeleton() {
   return (
     <div className="space-y-3">

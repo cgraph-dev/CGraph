@@ -19,6 +19,15 @@ type Set = (
 
 const logger = createLogger('ModerationStore:Queue');
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Creates a new queue actions.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createQueueActions(set: Set) {
   return {
     fetchModerationQueue: async (

@@ -23,6 +23,12 @@ interface ModeratorsPanelProps {
   onRemoveModerator: (modId: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Moderators Panel component.
+ */
 export function ModeratorsPanel({
   moderators,
   newModUsername,

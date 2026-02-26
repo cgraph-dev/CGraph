@@ -44,6 +44,14 @@ export interface MessageActionHandlers {
   setShowScheduledList: (show: boolean) => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing conversation actions.
+ *
+ * @param conversationId - The conversation id.
+ */
 export function useConversationActions(
   conversationId: string | undefined
 ): MessageActionState & MessageActionHandlers {

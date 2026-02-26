@@ -11,6 +11,12 @@ interface CollectionHeaderProps {
   stats: CollectionStats;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Collection Header component.
+ */
 export function CollectionHeader({ stats }: CollectionHeaderProps) {
   return (
     <div className="flex items-center justify-between">

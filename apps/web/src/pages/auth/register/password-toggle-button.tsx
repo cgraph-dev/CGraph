@@ -16,6 +16,12 @@ interface PasswordToggleButtonProps {
   onToggle: () => void;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Password Toggle Button component.
+ */
 export function PasswordToggleButton({ show, onToggle }: PasswordToggleButtonProps) {
   const reduced = prefersReducedMotion();
 

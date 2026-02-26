@@ -6,6 +6,12 @@
 
 import type { MessageEditFormProps } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Message Edit Form component.
+ */
 export function MessageEditForm({
   editContent,
   onEditContentChange,

@@ -6,6 +6,12 @@
 
 import type { PaginationProps } from './types';
 
+/**
+ * unknown for the community module.
+ */
+/**
+ * Pagination component.
+ */
 export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 

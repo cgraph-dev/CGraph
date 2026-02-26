@@ -12,6 +12,12 @@ export interface ReactionPickerProps {
   onClose: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Reaction Picker component.
+ */
 export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
   return (
     <motion.div

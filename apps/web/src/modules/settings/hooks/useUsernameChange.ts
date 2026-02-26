@@ -38,7 +38,7 @@ interface UseUsernameChangeOptions {
 }
 
 /**
- *
+ * Hook for managing username change.
  */
 export function useUsernameChange({
   currentUsername,

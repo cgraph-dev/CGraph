@@ -20,6 +20,13 @@ const LOGO_TEXT_SIZES: Record<LogoSize, string> = {
   lg: 'text-3xl',
 };
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Logo component.
+ * @returns The rendered JSX element.
+ */
 export function AuthLogo({ size }: { size: LogoSize }): React.ReactElement {
   return (
   <a href="https://www.cgraph.org" className="group inline-flex items-center gap-3">

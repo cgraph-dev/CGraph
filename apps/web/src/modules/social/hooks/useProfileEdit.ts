@@ -31,6 +31,16 @@ export interface UseProfileEditReturn {
   isSaving: boolean;
 }
 
+/**
+ * unknown for the social module.
+ */
+/**
+ * Hook for managing profile edit.
+ *
+ * @param profile - The profile.
+ * @param setProfile - The set profile.
+ * @param isOwnProfile - The is own profile.
+ */
 export function useProfileEdit(
   profile: UserProfileData | null,
   setProfile: React.Dispatch<React.SetStateAction<UserProfileData | null>>,

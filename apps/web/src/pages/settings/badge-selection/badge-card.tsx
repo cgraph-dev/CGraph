@@ -8,6 +8,12 @@ import { RARITY_TEXT_COLORS } from './constants';
 import type { BadgeCardProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Badge Card display component.
+ */
 export function BadgeCard({
   badge,
   isEquipped,

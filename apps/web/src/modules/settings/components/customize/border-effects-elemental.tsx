@@ -6,6 +6,12 @@ import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders fire border.
+ */
 export function renderFireBorder({
   colors,
   borderWidth,
@@ -42,6 +48,12 @@ export function renderFireBorder({
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders ice border.
+ */
 export function renderIceBorder({
   colors,
   borderWidth,
@@ -76,6 +88,12 @@ export function renderIceBorder({
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Renders electric border.
+ */
 export function renderElectricBorder({
   colors,
   borderWidth,

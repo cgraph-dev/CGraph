@@ -44,6 +44,13 @@ const DEFAULT_UI_PREFERENCES: UIPreferences = {
   messageEntranceAnimation: 'slide',
 };
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Hook for managing conversation u i.
+ * @returns The result.
+ */
 export function useConversationUI(): UseConversationUIReturn {
   // UI preferences state
   const [uiPreferences, setUiPreferences] = useState<UIPreferences>(DEFAULT_UI_PREFERENCES);

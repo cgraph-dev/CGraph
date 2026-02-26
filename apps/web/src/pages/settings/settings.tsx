@@ -95,6 +95,9 @@ const settingsSections = [
   },
 ];
 
+/**
+ * Settings component.
+ */
 export default function Settings() {
   const { section = 'account' } = useParams();
 

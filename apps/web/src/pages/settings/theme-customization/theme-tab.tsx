@@ -6,6 +6,12 @@ import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { ThemeColorPreset } from './types';
 import { THEME_PRESETS } from './constants';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Theme Tab component.
+ */
 export function ThemeTab() {
   const { theme, setColorPreset, applyPreset } = useThemeStore();
 

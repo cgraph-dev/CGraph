@@ -47,7 +47,7 @@ interface MessageListProps {
   onSaveEdit: () => void;
   onCancelEdit: () => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
-  /** Scroll container ref for virtualizer. If omitted, a wrapper div is created. */
+  /** unknown.  Scroll container ref for virtualizer. If omitted, a wrapper div is created. */
   scrollContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
@@ -61,7 +61,7 @@ type VirtualRow =
 // ============================================================================
 
 /**
- *
+ * Message List component.
  */
 export function MessageList({
   messages,

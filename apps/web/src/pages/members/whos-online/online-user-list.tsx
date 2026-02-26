@@ -26,6 +26,12 @@ function DeviceIcon({ device }: { device: OnlineUser['device'] }) {
   }
 }
 
+/**
+ * unknown for the members module.
+ */
+/**
+ * Online User List component.
+ */
 export function OnlineUserList({
   users,
   isLoading,

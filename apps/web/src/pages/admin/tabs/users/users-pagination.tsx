@@ -9,6 +9,12 @@ interface UsersPaginationProps {
   onPageChange: (page: number) => void;
 }
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Users Pagination component.
+ */
 export function UsersPagination({ page, perPage, totalCount, onPageChange }: UsersPaginationProps) {
   return (
     <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4 dark:border-gray-700">

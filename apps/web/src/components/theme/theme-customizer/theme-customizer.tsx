@@ -39,6 +39,12 @@ import { LivePreview } from './live-preview';
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Theme Customizer component.
+ */
 export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProps) {
   const [activeTab, setActiveTab] = useState<TabId>('colors');
   const [showPreview, setShowPreview] = useState(true);

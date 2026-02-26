@@ -17,6 +17,9 @@ const COLOR_MAP: Record<string, string> = {
   emerald: 'bg-emerald-500/20 text-emerald-400',
 };
 
+/**
+ * Feed Card display component.
+ */
 export default function FeedCard({
   feed,
   isCopied,

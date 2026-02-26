@@ -8,6 +8,12 @@ import { Link } from 'react-router-dom';
 import type { TopForumCardProps } from './types';
 import { getRankColor } from './constants';
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Top Forum Card display component.
+ */
 export function TopForumCard({ forum, rank }: TopForumCardProps) {
   return (
     <Link

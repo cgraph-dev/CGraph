@@ -11,6 +11,12 @@ import type { ServerListProps } from './types';
 import { ServerIcon } from './server-icon';
 import { tweens, springs } from '@/lib/animation-presets';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Server List component.
+ */
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
   return (
     <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 py-3 backdrop-blur-xl">

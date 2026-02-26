@@ -18,6 +18,12 @@ export interface ScrollToBottomButtonProps {
   onClick: () => void;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Scroll To Bottom Button component.
+ */
 export function ScrollToBottomButton({
   visible,
   newCount = 0,

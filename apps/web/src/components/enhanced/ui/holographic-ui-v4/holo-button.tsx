@@ -23,6 +23,12 @@ interface HoloButtonProps {
   className?: string;
 }
 
+/**
+ * unknown for the enhanced module.
+ */
+/**
+ * Holo Button component.
+ */
 export function HoloButton({
   children,
   onClick,

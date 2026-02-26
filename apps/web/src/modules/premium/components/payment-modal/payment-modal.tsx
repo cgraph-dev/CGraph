@@ -13,6 +13,12 @@ import { OrderDetailsStep } from './order-details-step';
 import { PaymentStep } from './payment-step';
 import { ProcessingStep, SuccessStep, ErrorStep } from './result-steps';
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Payment Modal dialog component.
+ */
 export function PaymentModal({
   isOpen,
   onClose,

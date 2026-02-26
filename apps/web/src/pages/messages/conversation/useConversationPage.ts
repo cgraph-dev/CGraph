@@ -37,6 +37,12 @@ import { useCallModals } from '@/modules/calls/hooks';
 import { groupMessagesByDate } from '@/lib/chat/messageUtils';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Hook for managing conversation page.
+ */
 export function useConversationPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();

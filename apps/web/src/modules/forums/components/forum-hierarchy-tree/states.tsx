@@ -9,6 +9,12 @@ interface LoadingStateProps {
   className?: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Loading State — loading placeholder.
+ */
 export function LoadingState({ className = '' }: LoadingStateProps) {
   return (
     <div className={`p-4 ${className}`}>
@@ -25,6 +31,12 @@ interface ErrorStateProps {
   className?: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Error State — fallback UI for error states.
+ */
 export function ErrorState({ error, className = '' }: ErrorStateProps) {
   return (
     <div className={`p-4 ${className}`}>
@@ -37,6 +49,12 @@ interface EmptyStateProps {
   className?: string;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ className = '' }: EmptyStateProps) {
   return (
     <div className={`p-4 ${className}`}>

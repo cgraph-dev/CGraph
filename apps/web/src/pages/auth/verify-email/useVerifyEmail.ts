@@ -13,6 +13,12 @@ import { useAuthStore } from '@/modules/auth/store';
 
 export type VerificationState = 'verifying' | 'success' | 'expired' | 'error' | 'already-verified';
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Hook for managing verify email.
+ */
 export function useVerifyEmail() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');

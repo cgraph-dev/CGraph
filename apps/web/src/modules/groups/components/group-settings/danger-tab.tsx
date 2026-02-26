@@ -8,6 +8,12 @@ import { ArrowRightOnRectangleIcon, TrashIcon } from '@heroicons/react/24/outlin
 import { GlassCard } from '@/shared/components/ui';
 import type { DangerTabProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Danger Tab component.
+ */
 export function DangerTab({ isOwner, onLeave, onDelete }: DangerTabProps) {
   return (
     <motion.div

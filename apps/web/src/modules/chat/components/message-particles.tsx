@@ -8,6 +8,12 @@ interface MessageParticlesProps {
   isOwnMessage: boolean;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Message Particles component.
+ */
 export function MessageParticles({ isOwnMessage }: MessageParticlesProps) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">

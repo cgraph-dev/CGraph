@@ -21,6 +21,12 @@ interface PremiumThemeGateProps {
   onUpgradeClick?: () => void;
 }
 
+/**
+ * unknown for the theme module.
+ */
+/**
+ * Premium Theme Gate component.
+ */
 export function PremiumThemeGate({
   children,
   requiredTier,

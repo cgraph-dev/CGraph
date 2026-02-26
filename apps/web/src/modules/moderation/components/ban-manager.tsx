@@ -61,6 +61,12 @@ const BanRow = memo(function BanRow({ ban, onLift }: BanRowProps) {
 
 // ── Main Component ───────────────────────────────────────────────────
 
+/**
+ * unknown for the moderation module.
+ */
+/**
+ * Ban Manager component.
+ */
 export function BanManager() {
   const { bans, isLoadingBans, fetchBans, liftBan } = useModerationStore();
 

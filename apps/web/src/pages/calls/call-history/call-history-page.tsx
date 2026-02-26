@@ -15,6 +15,9 @@ const FILTER_OPTIONS: { value: CallFilter; label: string }[] = [
   { value: 'missed', label: 'Missed' },
 ];
 
+/**
+ * Call History Page — route-level page component.
+ */
 export default function CallHistoryPage() {
   const { sections, filter, setFilter, deleteCall, isLoading, isEmpty } = useCallHistory();
 

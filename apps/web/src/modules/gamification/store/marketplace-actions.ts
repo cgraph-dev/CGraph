@@ -24,6 +24,16 @@ type GetState = StoreApi<MarketplaceState>['getState'];
 
 // ==================== FETCH ACTIONS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new fetch listings.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createFetchListings(set: SetState, get: GetState) {
   return async (reset = false) => {
     const state = get();
@@ -65,6 +75,15 @@ export function createFetchListings(set: SetState, get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new fetch listing.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createFetchListing(set: SetState) {
   return async (listingId: string) => {
     set({ isLoading: true });
@@ -85,6 +104,15 @@ export function createFetchListing(set: SetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new fetch my listings.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createFetchMyListings(set: SetState) {
   return async (status: ListingStatus = 'active') => {
     try {
@@ -100,6 +128,15 @@ export function createFetchMyListings(set: SetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new fetch history.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createFetchHistory(set: SetState) {
   return async (type?: 'buys' | 'sells') => {
     try {
@@ -120,6 +157,16 @@ export function createFetchHistory(set: SetState) {
 
 // ==================== MUTATION ACTIONS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new create listing.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createCreateListing(set: SetState, get: GetState) {
   return async (params: {
     itemType: ItemType;
@@ -158,6 +205,15 @@ export function createCreateListing(set: SetState, get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new update listing.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createUpdateListing(set: SetState) {
   return async (listingId: string, price: number): Promise<{ success: boolean }> => {
     try {
@@ -177,6 +233,15 @@ export function createUpdateListing(set: SetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new cancel listing.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createCancelListing(set: SetState) {
   return async (listingId: string): Promise<{ success: boolean }> => {
     try {
@@ -196,6 +261,15 @@ export function createCancelListing(set: SetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new purchase listing.
+ *
+ * @param set - The set.
+ * @returns The newly created instance.
+ */
 export function createPurchaseListing(set: SetState) {
   return async (
     listingId: string
@@ -228,6 +302,16 @@ export function createPurchaseListing(set: SetState) {
 
 // ==================== FILTER ACTIONS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new set filters.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createSetFilters(set: SetState, get: GetState) {
   return (newFilters: Partial<MarketplaceState['filters']>) => {
     set((state) => ({
@@ -238,6 +322,16 @@ export function createSetFilters(set: SetState, get: GetState) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new clear filters.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createClearFilters(set: SetState, get: GetState) {
   return () => {
     set({ filters: DEFAULT_FILTERS });
@@ -247,6 +341,15 @@ export function createClearFilters(set: SetState, get: GetState) {
 
 // ==================== HELPERS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Retrieves price recommendation.
+ *
+ * @param rarity - The rarity.
+ * @returns The price recommendation.
+ */
 export function getPriceRecommendation(rarity: string): PriceRecommendation {
   return PRICE_RECOMMENDATIONS[rarity.toLowerCase()] ?? PRICE_RECOMMENDATIONS['common']!;
 }

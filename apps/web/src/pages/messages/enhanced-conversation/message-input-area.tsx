@@ -13,6 +13,12 @@ interface MessageInputAreaWithRefProps extends MessageInputAreaProps {
   inputContainerRef: React.RefObject<HTMLDivElement>;
 }
 
+/**
+ * unknown for the messages module.
+ */
+/**
+ * Message Input Area component.
+ */
 export function MessageInputArea({
   messageInput,
   isSending,

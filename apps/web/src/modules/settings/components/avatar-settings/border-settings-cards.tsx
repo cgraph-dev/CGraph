@@ -5,6 +5,12 @@
 
 import { GlassCard, useAvatarStyle } from '@/shared/components/ui';
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Border Width Card display component.
+ */
 export function BorderWidthCard() {
   const { style, updateStyle } = useAvatarStyle();
 
@@ -26,6 +32,12 @@ export function BorderWidthCard() {
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Border Color Card display component.
+ */
 export function BorderColorCard() {
   const { style, updateStyle } = useAvatarStyle();
 
@@ -48,6 +60,12 @@ export function BorderColorCard() {
   );
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Glow Intensity Card display component.
+ */
 export function GlowIntensityCard() {
   const { style, updateStyle } = useAvatarStyle();
 

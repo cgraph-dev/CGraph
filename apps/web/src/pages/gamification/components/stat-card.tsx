@@ -14,6 +14,12 @@ export interface StatCardProps {
   delay?: number;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Stat Card display component.
+ */
 export function StatCard({ icon, label, value, subtext, gradient, delay = 0 }: StatCardProps) {
   return (
     <motion.div

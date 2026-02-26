@@ -20,6 +20,12 @@ export interface CoinShopWidgetProps {
   className?: string;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Coin Shop Widget component.
+ */
 export function CoinShopWidget({
   variant = 'default',
   packages = DEFAULT_PACKAGES,

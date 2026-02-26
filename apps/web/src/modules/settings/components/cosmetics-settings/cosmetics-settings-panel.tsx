@@ -38,6 +38,12 @@ const TABS: { id: SettingsTab; label: string }[] = [
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Cosmetics Settings Panel component.
+ */
 export function CosmeticsSettingsPanel() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('borders');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');

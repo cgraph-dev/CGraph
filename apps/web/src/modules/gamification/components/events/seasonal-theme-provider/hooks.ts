@@ -7,6 +7,12 @@ import type { SeasonalThemeContextValue } from './types';
 
 export const SeasonalThemeContext = createContext<SeasonalThemeContextValue | null>(null);
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing seasonal theme.
+ */
 export function useSeasonalTheme() {
   const context = use(SeasonalThemeContext);
   if (!context) {

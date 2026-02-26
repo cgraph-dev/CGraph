@@ -5,6 +5,12 @@
 
 import { motion } from 'framer-motion';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Loading Overlay — loading placeholder.
+ */
 export function LoadingOverlay() {
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-dark-900/80 backdrop-blur-sm">
@@ -16,6 +22,12 @@ export function LoadingOverlay() {
   );
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Ambient Particles component.
+ */
 export function AmbientParticles() {
   return (
     <>

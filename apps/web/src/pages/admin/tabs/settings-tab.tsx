@@ -11,6 +11,12 @@ import { LoadingState, SettingToggle, SettingNumber } from '@/modules/admin/comp
 // Settings Tab - System configuration management
 // ============================================================================
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Settings Tab component.
+ */
 export function SettingsTab() {
   const { data: config, isLoading } = useQuery({
     queryKey: ['admin', 'config'],

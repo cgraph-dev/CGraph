@@ -21,6 +21,16 @@ type StoreGet = () => GamificationState;
 
 // ── Badge Management ───────────────────────────────────────────────────
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new equip badge.
+ *
+ * @param _set - The _set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createEquipBadge(_set: StoreSet, get: StoreGet) {
   return async (badgeId: string): Promise<void> => {
     const { equippedBadges, achievements } = get();
@@ -45,6 +55,16 @@ export function createEquipBadge(_set: StoreSet, get: StoreGet) {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Creates a new unequip badge.
+ *
+ * @param set - The set.
+ * @param get - The get.
+ * @returns The newly created instance.
+ */
 export function createUnequipBadge(set: StoreSet, get: StoreGet) {
   return async (badgeId: string): Promise<void> => {
     const { equippedBadges } = get();

@@ -14,6 +14,12 @@ interface FilterControlsProps {
   onFilterUpdate: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Filter Controls component.
+ */
 export function FilterControls({
   filters,
   showSearch,

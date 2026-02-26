@@ -8,6 +8,12 @@ import { adminApi } from '@/modules/admin/api';
 
 const PER_PAGE = 20;
 
+/**
+ * unknown for the admin module.
+ */
+/**
+ * Hook for managing users tab.
+ */
 export function useUsersTab() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');

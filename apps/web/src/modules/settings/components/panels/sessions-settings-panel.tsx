@@ -65,6 +65,12 @@ function getDeviceIcon(device: string) {
   return GlobeAltIcon;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Sessions Settings Panel component.
+ */
 export function SessionsSettingsPanel() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);

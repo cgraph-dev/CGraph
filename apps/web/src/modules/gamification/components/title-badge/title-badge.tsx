@@ -22,6 +22,12 @@ import { sparkleAnimation } from './animations';
 import { useAnimationConfig } from './hooks/useAnimationConfig';
 import { TitleBadgeTooltip } from './title-badge-tooltip';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Title Badge component.
+ */
 export function TitleBadge({
   title,
   size = 'sm',

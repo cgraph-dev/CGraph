@@ -24,6 +24,12 @@ const MOCK_USERS = [
   { id: '5', username: 'emma', displayName: 'Emma' },
 ];
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Mention Autocomplete component.
+ */
 export function MentionAutocomplete({
   query,
   onSelect,

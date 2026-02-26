@@ -15,6 +15,9 @@ import { calculatePasswordStrength } from './utils';
 import { ValidatingView, ExpiredView, SuccessView } from './state-views';
 import { ResetPasswordForm } from './reset-password-form';
 
+/**
+ * Reset Password component.
+ */
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

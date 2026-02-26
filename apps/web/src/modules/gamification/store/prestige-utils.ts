@@ -13,6 +13,15 @@ export const BONUS_RATES = {
   dropRate: 0.01, // 1% per prestige level
 };
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Computes bonuses.
+ *
+ * @param level - The level.
+ * @returns The computed value.
+ */
 export function calculateBonuses(level: number): PrestigeBonuses {
   return {
     xp: level * BONUS_RATES.xp,
@@ -22,6 +31,15 @@ export function calculateBonuses(level: number): PrestigeBonuses {
   };
 }
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Computes xp required.
+ *
+ * @param level - The level.
+ * @returns The computed value.
+ */
 export function calculateXpRequired(level: number): number {
   if (level < 0) return 0;
   if (level === 0) return 100000;
@@ -30,6 +48,15 @@ export function calculateXpRequired(level: number): number {
 
 // ==================== HELPERS ====================
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Retrieves default rewards for level.
+ *
+ * @param level - The level.
+ * @returns The default rewards for level.
+ */
 export function getDefaultRewardsForLevel(level: number): PrestigeReward[] {
   const rewards: PrestigeReward[] = [
     { type: 'title', name: `Prestige ${level}` },

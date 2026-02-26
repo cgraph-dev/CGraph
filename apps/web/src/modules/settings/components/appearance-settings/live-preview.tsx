@@ -26,6 +26,12 @@ interface LivePreviewProps {
 // COMPONENT
 // =============================================================================
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Live Preview component.
+ */
 export function LivePreview({ theme, fontScale, messageSpacing }: LivePreviewProps) {
   return (
     <section>

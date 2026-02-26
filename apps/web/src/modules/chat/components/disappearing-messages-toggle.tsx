@@ -19,6 +19,12 @@ const TTL_OPTIONS = [
   { label: '30 days', value: 2592000 },
 ] as const;
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Disappearing Messages Toggle component.
+ */
 export function DisappearingMessagesToggle({
   conversationId: _conversationId,
   currentTTL,

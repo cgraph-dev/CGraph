@@ -19,6 +19,12 @@ interface InviteManageTabProps {
   formatExpiration: (expiresAt: string | null) => string;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Invite Manage Tab component.
+ */
 export function InviteManageTab({
   invites,
   onCopyLink,

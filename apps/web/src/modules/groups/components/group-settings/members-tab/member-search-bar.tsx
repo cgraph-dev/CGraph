@@ -12,6 +12,12 @@ interface MemberSearchBarProps {
   onRoleFilterChange: (value: string) => void;
 }
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Member Search Bar component.
+ */
 export function MemberSearchBar({
   search,
   onSearchChange,

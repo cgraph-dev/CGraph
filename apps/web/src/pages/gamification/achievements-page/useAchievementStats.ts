@@ -6,6 +6,14 @@ import { useMemo } from 'react';
 import type { Achievement, AchievementRarity } from './types';
 import { RARITY_ORDER } from './constants';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Hook for managing achievement stats.
+ *
+ * @param achievements - The achievements.
+ */
 export function useAchievementStats(achievements: Achievement[]) {
   return useMemo(() => {
     const unlocked = achievements.filter((a) => a.unlocked).length;

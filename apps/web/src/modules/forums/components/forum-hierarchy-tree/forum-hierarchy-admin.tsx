@@ -29,6 +29,12 @@ interface ForumHierarchyAdminProps {
   onRefresh: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Forum Hierarchy Admin administration component.
+ */
 export function ForumHierarchyAdmin({ tree, onRefresh }: ForumHierarchyAdminProps) {
   const {
     selectedParent,

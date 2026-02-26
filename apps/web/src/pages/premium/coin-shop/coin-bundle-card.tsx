@@ -16,6 +16,12 @@ interface CoinBundleCardProps {
   disabled: boolean;
 }
 
+/**
+ * unknown for the premium module.
+ */
+/**
+ * Coin Bundle Card display component.
+ */
 export function CoinBundleCard({
   bundle,
   index,

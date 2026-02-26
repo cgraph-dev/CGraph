@@ -10,6 +10,12 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { formatKarma, getUserInitial } from './utils';
 import type { Top3SpotlightProps } from './types';
 
+/**
+ * unknown for the community module.
+ */
+/**
+ * Top3 Spotlight component.
+ */
 export function Top3Spotlight({ users }: Top3SpotlightProps) {
   if (users.length < 3) return null;
 

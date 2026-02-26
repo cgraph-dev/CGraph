@@ -10,6 +10,12 @@ interface EmptyStateProps {
   type: 'favorites' | 'recent' | 'search';
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Empty State — fallback UI for empty data states.
+ */
 export function EmptyState({ type }: EmptyStateProps) {
   if (type === 'favorites') {
     return (

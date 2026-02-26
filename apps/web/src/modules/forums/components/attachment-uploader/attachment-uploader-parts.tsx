@@ -18,6 +18,15 @@ import { tweens } from '@/lib/animation-presets';
 
 /* ─── helpers ─── */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Formats file size.
+ *
+ * @param bytes - The bytes.
+ * @returns The processed result.
+ */
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -41,6 +50,12 @@ interface DropzoneProps {
   onOpenPicker: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Dropzone component.
+ */
 export function Dropzone({
   isDragging,
   maxFiles,
@@ -93,6 +108,12 @@ export function Dropzone({
 
 /* ─── ErrorList ─── */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Error List component.
+ */
 export function ErrorList({ errors }: { errors: string[] }) {
   return (
     <AnimatePresence>
@@ -117,6 +138,12 @@ export function ErrorList({ errors }: { errors: string[] }) {
 
 /* ─── UploadProgressList ─── */
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Upload Progress List component.
+ */
 export function UploadProgressList({ progress }: { progress: Record<string, number> }) {
   return (
     <AnimatePresence>
@@ -160,6 +187,12 @@ interface AttachmentListProps {
   onDelete: (id: string) => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Attachment List component.
+ */
 export function AttachmentList({ attachments, onDelete }: AttachmentListProps) {
   if (attachments.length === 0) return null;
 

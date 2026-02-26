@@ -14,6 +14,12 @@ export interface AuthCardHeaderProps {
   animated?: boolean;
 }
 
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Auth Card Header display component.
+ */
 export function AuthCardHeader({
   title,
   subtitle,

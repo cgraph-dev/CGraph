@@ -21,6 +21,12 @@ interface ThemeDescriptionProps {
   activeCategory: ThemeCategory;
 }
 
+/**
+ * unknown for the customize module.
+ */
+/**
+ * Theme Description component.
+ */
 export function ThemeDescription({ activeCategory }: ThemeDescriptionProps) {
   return (
     <GlassCard variant="frosted" className="p-4">

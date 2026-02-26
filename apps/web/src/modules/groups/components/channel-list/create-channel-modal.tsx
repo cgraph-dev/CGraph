@@ -12,6 +12,12 @@ import { channelTypeIcons, channelTypes } from './constants';
 import type { CreateChannelModalProps } from './types';
 import { api } from '@/lib/api';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Create Channel Modal dialog component.
+ */
 export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChannelModalProps) {
   const [name, setName] = useState('');
   const [type, setType] = useState<Channel['type']>('text');

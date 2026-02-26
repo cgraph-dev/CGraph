@@ -61,6 +61,12 @@ interface PresenceStatusSelectorProps {
   compact?: boolean;
 }
 
+/**
+ * unknown for the presence-status-selector.tsx module.
+ */
+/**
+ * Presence Status Selector component.
+ */
 export function PresenceStatusSelector({
   currentStatus = 'online',
   onStatusChange,

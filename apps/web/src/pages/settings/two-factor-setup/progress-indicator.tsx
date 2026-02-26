@@ -7,6 +7,12 @@ interface ProgressIndicatorProps {
   stepIndex: number;
 }
 
+/**
+ * unknown for the settings module.
+ */
+/**
+ * Progress Indicator component.
+ */
 export function ProgressIndicator({ stepIndex }: ProgressIndicatorProps) {
   return (
     <div className="mb-8 flex justify-center gap-2">

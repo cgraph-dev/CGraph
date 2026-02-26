@@ -8,6 +8,12 @@ import { BadgeTooltip } from './badge-tooltip';
 import { RARITY_COLORS } from './constants';
 import type { AnimatedBadgeWithTooltipProps } from './types';
 
+/**
+ * unknown for the gamification module.
+ */
+/**
+ * Animated Badge With Tooltip component.
+ */
 export function AnimatedBadgeWithTooltip({
   showTooltip = true,
   ...props

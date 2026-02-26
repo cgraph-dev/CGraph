@@ -20,6 +20,12 @@ interface SidebarProps {
   onSave: () => void;
 }
 
+/**
+ * unknown for the forums module.
+ */
+/**
+ * Sidebar component.
+ */
 export function Sidebar({
   forumSlug,
   forumName,

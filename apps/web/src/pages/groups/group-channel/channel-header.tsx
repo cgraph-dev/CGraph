@@ -13,6 +13,12 @@ import {
 } from '@heroicons/react/24/outline';
 import type { ChannelHeaderProps } from './types';
 
+/**
+ * unknown for the groups module.
+ */
+/**
+ * Channel Header component.
+ */
 export function ChannelHeader({
   channelName,
   channelTopic,

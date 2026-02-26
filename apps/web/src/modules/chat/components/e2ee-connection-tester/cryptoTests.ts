@@ -5,15 +5,40 @@
 
 import type { TestResult } from './types';
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * simulate Work for the chat module.
+ *
+ * @param ms - The ms.
+ * @returns The result.
+ */
 export async function simulateWork(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms + Math.random() * 200));
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Key Exchange for the chat module.
+ * @returns The result.
+ */
 export async function testKeyExchange(): Promise<void> {
   await simulateWork(500);
   if (Math.random() > 0.95) throw new Error('Protocol mismatch');
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Public Key Retrieval for the chat module.
+ *
+ * @param recipientId - The recipient id.
+ * @returns The result.
+ */
 export async function testPublicKeyRetrieval(recipientId: string): Promise<void> {
   await simulateWork(400);
 
@@ -27,6 +52,13 @@ export async function testPublicKeyRetrieval(recipientId: string): Promise<void>
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Shared Secret Generation for the chat module.
+ * @returns The result.
+ */
 export async function testSharedSecretGeneration(): Promise<void> {
   await simulateWork(600);
 
@@ -44,6 +76,13 @@ export async function testSharedSecretGeneration(): Promise<void> {
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Encryption for the chat module.
+ * @returns The result.
+ */
 export async function testEncryption(): Promise<void> {
   await simulateWork(500);
 
@@ -73,6 +112,13 @@ export async function testEncryption(): Promise<void> {
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Decryption for the chat module.
+ * @returns The result.
+ */
 export async function testDecryption(): Promise<void> {
   await simulateWork(450);
 
@@ -93,6 +139,13 @@ export async function testDecryption(): Promise<void> {
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Message Authentication for the chat module.
+ * @returns The result.
+ */
 export async function testMessageAuthentication(): Promise<void> {
   await simulateWork(400);
 
@@ -111,6 +164,13 @@ export async function testMessageAuthentication(): Promise<void> {
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Replay Protection for the chat module.
+ * @returns The result.
+ */
 export async function testReplayProtection(): Promise<void> {
   await simulateWork(350);
 
@@ -123,6 +183,13 @@ export async function testReplayProtection(): Promise<void> {
   }
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Perfect Forward Secrecy for the chat module.
+ * @returns The result.
+ */
 export async function testPerfectForwardSecrecy(): Promise<void> {
   await simulateWork(550);
 
@@ -155,6 +222,15 @@ export interface LatencyTestResult {
   latency: number;
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test Connection Latency for the chat module.
+ *
+ * @param conversationId - The conversation id.
+ * @returns The result.
+ */
 export async function testConnectionLatency(conversationId: string): Promise<LatencyTestResult> {
   const start = performance.now();
 
@@ -172,6 +248,15 @@ export async function testConnectionLatency(conversationId: string): Promise<Lat
   };
 }
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * test End To End Message for the chat module.
+ *
+ * @param conversationId - The conversation id.
+ * @param recipientId - The recipient id.
+ */
 export async function testEndToEndMessage(
   conversationId: string,
   recipientId: string
@@ -197,6 +282,17 @@ export type TestRunner = (
   setTests: React.Dispatch<React.SetStateAction<TestResult[]>>
 ) => Promise<void>;
 
+/**
+ * unknown for the chat module.
+ */
+/**
+ * Creates a new test runner.
+ *
+ * @param index - The index position.
+ * @param conversationId - The conversation id.
+ * @param recipientId - The recipient id.
+ * @returns The newly created instance.
+ */
 export function createTestRunner(
   index: number,
   conversationId: string,
