@@ -14,7 +14,7 @@ const staggerContainer = {
 
 const staggerItem = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+  show: { opacity: 1, y: 0, transition: tweens.brisk },
 };
 void Link; // Reserved for forum navigation links
 import {

@@ -3,7 +3,7 @@
  * @module
  */
 import { motion } from 'framer-motion';
-import { staggerConfigs } from '@/lib/animation-presets';
+import { tweens, staggerConfigs } from '@/lib/animation-presets';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 const containerVariants = {
@@ -15,7 +15,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+  show: { opacity: 1, y: 0, transition: tweens.standard },
 };
 
 const errorIconVariants = {

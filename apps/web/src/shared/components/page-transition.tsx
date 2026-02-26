@@ -9,6 +9,7 @@
 
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import { tweens } from '@/lib/animation-presets';
 
 const PAGE_VARIANTS = {
   initial: { opacity: 0, y: 8 },
@@ -16,11 +17,7 @@ const PAGE_VARIANTS = {
   exit: { opacity: 0, y: -8 },
 };
 
-const PAGE_TRANSITION = {
-  type: 'tween' as const,
-  ease: 'easeOut' as const,
-  duration: 0.2,
-};
+const PAGE_TRANSITION = tweens.fast;
 
 interface PageTransitionProps {
   readonly children: React.ReactNode;

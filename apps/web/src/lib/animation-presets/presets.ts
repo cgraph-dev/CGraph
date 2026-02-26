@@ -9,7 +9,37 @@
  */
 
 import { type Transition, type Variants } from 'framer-motion';
-import { springs as sharedSprings, stagger as sharedStagger } from '@cgraph/animation-constants';
+import {
+  springs as sharedSprings,
+  stagger as sharedStagger,
+  durations as sharedDurations,
+} from '@cgraph/animation-constants';
+
+// =============================================================================
+// DURATION PRESETS IN SECONDS (sourced from @cgraph/animation-constants)
+// =============================================================================
+
+/**
+ * Duration presets in seconds — for inline use where only a raw number is needed.
+ *
+ * Prefer `tweens.*` when a full Framer Motion transition object is appropriate.
+ * Use `durationsSec.*` for CSS transitions, setTimeout, or partial overrides.
+ *
+ * @example
+ * ```tsx
+ * style={{ transition: `opacity ${durationsSec.normal}s ease-out` }}
+ * ```
+ */
+export const durationsSec = {
+  instant: sharedDurations.instant.ms / 1000,
+  fast: sharedDurations.fast.ms / 1000,
+  normal: sharedDurations.normal.ms / 1000,
+  slow: sharedDurations.slow.ms / 1000,
+  smooth: sharedDurations.smooth.ms / 1000,
+  slower: sharedDurations.slower.ms / 1000,
+  dramatic: sharedDurations.dramatic.ms / 1000,
+  verySlow: sharedDurations.verySlow.ms / 1000,
+} as const;
 
 // =============================================================================
 // SPRING PRESETS (sourced from @cgraph/animation-constants + FM type tag)

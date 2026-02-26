@@ -7,6 +7,7 @@
 export {
   springs,
   tweens,
+  durationsSec,
   staggerConfigs,
   entranceVariants,
   chatBubbleAnimations,

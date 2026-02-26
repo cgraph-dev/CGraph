@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { motion } from 'framer-motion';
-import { staggerConfigs } from '@/lib/animation-presets';
+import { tweens, staggerConfigs } from '@/lib/animation-presets';
 
 const containerVariants = {
   hidden: {},
@@ -15,12 +15,12 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  show: { opacity: 1, y: 0, transition: tweens.standard },
 };
 
 const iconVariants = {
   hidden: { opacity: 0, scale: 0.85 },
-  show: { opacity: 1, scale: 1, transition: { duration: 0.35 } },
+  show: { opacity: 1, scale: 1, transition: tweens.standard },
 };
 
 interface EmptyStateProps {

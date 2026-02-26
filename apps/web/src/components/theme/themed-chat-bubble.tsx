@@ -95,7 +95,7 @@ export function ThemedChatBubble({
         return {
           initial: { opacity: 0 },
           animate: { opacity: 1 },
-          transition: { duration: 0.3 },
+          transition: tweens.standard,
         };
       case 'scale':
         return {
@@ -113,7 +113,7 @@ export function ThemedChatBubble({
         return {
           initial: { rotateX: 90, opacity: 0 },
           animate: { rotateX: 0, opacity: 1 },
-          transition: { duration: 0.4 },
+          transition: tweens.moderate,
         };
       default:
         return {};

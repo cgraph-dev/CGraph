@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { tweens } from '@/lib/animation-presets';
 
 export interface PageContainerProps {
   children: React.ReactNode;
@@ -60,7 +61,7 @@ export function PageContainer({
         initial: { opacity: 0, y: 10 },
         animate: { opacity: 1, y: 0 },
         exit: { opacity: 0, y: -10 },
-        transition: { duration: 0.2 },
+        transition: tweens.fast,
       }
     : {};
 

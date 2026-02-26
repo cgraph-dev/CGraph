@@ -27,7 +27,7 @@ import { MessageEditForm } from './message-edit-form';
 import { MessageActionMenu } from './message-action-menu';
 import { MessageMediaContent } from './message-media-content';
 import { ThreadReplyBadge } from './thread-reply-badge';
-import { springs } from '@/lib/animation-presets';
+import { springs, tweens } from '@/lib/animation-presets';
 
 export const MessageBubble = memo(
   function MessageBubble({
@@ -79,7 +79,7 @@ export const MessageBubble = memo(
       () => ({
         initial: { opacity: 0, x: isOwn ? 16 : -16, y: 8, scale: 0.97 },
         animate: { opacity: 1, x: 0, y: 0, scale: 1 },
-        exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
+        exit: { opacity: 0, scale: 0.95, transition: tweens.quickFade },
       }),
       [isOwn]
     );

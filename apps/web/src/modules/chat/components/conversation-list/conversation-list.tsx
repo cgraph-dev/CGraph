@@ -18,7 +18,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarkIcon as PinIcon } from '@heroicons/react/24/outline';
-import { staggerConfigs } from '@/lib/animation-presets';
+import { tweens, staggerConfigs } from '@/lib/animation-presets';
 
 const listContainer = {
   hidden: {},
@@ -29,7 +29,7 @@ const listContainer = {
 
 const listItem = {
   hidden: { opacity: 0, x: -12 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.2 } },
+  show: { opacity: 1, x: 0, transition: tweens.fast },
 };
 import { useChatStore } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';

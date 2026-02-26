@@ -3,7 +3,7 @@
  * @module
  */
 import { motion } from 'framer-motion';
-import { springs, staggerConfigs } from '@/lib/animation-presets';
+import { springs, tweens, staggerConfigs } from '@/lib/animation-presets';
 import { 
   InboxIcon, 
   ChatBubbleLeftRightIcon, 
@@ -21,7 +21,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+  show: { opacity: 1, y: 0, transition: tweens.standard },
 };
 
 const iconVariants = {
