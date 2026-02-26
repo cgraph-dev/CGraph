@@ -7,13 +7,13 @@
 
 ## 1. Languages & Runtimes
 
-| Language       | Version                                                                 | Where Used                                                  |
-| -------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **TypeScript** | `~5.8.x` (web, landing, packages), `~5.9.x` (mobile)                    | All frontend apps and shared packages                       |
-| **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`) | `apps/backend/`                                             |
-| **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                | Backend runtime (BEAM VM)                                   |
-| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                 | Frontend builds, tooling                                    |
-| **SQL**        | PostgreSQL dialect                                                      | Database migrations in `apps/backend/priv/repo/migrations/` |
+| Language       | Version                                                                  | Where Used                                                  |
+| -------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **TypeScript** | `~5.8.x` (web, landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.x` (mobile) | All frontend apps and shared packages                       |
+| **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`)  | `apps/backend/`                                             |
+| **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                 | Backend runtime (BEAM VM)                                   |
+| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                  | Frontend builds, tooling                                    |
+| **SQL**        | PostgreSQL dialect                                                       | Database migrations in `apps/backend/priv/repo/migrations/` |
 
 ### Key Version Pins (from `package.json` root)
 
@@ -163,24 +163,24 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 
 ## 7. Testing Tools
 
-| Tool                     | Version                                               | Where                                          |
-| ------------------------ | ----------------------------------------------------- | ---------------------------------------------- |
-| **Vitest**               | `^3.1.0` (web), `^3.2.4` (landing), `^1.x` (packages) | Unit tests (TS)                                |
-| **Jest**                 | `^29.7.0`                                             | Mobile tests                                   |
-| **jest-expo**            | `~54.0.0`                                             | Expo test runner                               |
-| **Playwright**           | `^1.49.0` (web), `^1.58.2` (landing)                  | E2E browser tests                              |
-| **Testing Library**      | `@testing-library/react ^16.3.0`                      | React component testing                        |
-| **Testing Library RN**   | `^13.2.0`                                             | React Native component testing                 |
-| **MSW**                  | `^2.6.2`                                              | API mocking                                    |
-| **ExUnit**               | Built-in                                              | Elixir backend tests                           |
-| **ExCoveralls**          | `~> 0.18`                                             | Backend coverage                               |
-| **ExMachina**            | `~> 2.8`                                              | Test factories (Elixir)                        |
-| **Mox**                  | `~> 1.2`                                              | Mocking (Elixir)                               |
-| **fast-check**           | `^3.23.2`                                             | Property-based testing (crypto package)        |
-| **@vitest/coverage-v8**  | `^3.1.0`                                              | Web coverage                                   |
-| **@axe-core/playwright** | `^4.11.1`                                             | Accessibility testing                          |
-| **Lighthouse CI**        | `@lhci/cli ^0.15.1`                                   | Performance testing (landing)                  |
-| **k6**                   | —                                                     | Load testing (`infrastructure/load-tests/k6/`) |
+| Tool                     | Version                                                        | Where                                          |
+| ------------------------ | -------------------------------------------------------------- | ---------------------------------------------- |
+| **Vitest**               | `^3.1.0` (web), `^3.2.4` (landing), `^1.x`–`^3.0.0` (packages) | Unit tests (TS)                                |
+| **Jest**                 | `^29.7.0`                                                      | Mobile tests                                   |
+| **jest-expo**            | `~54.0.0`                                                      | Expo test runner                               |
+| **Playwright**           | `^1.49.0` (web), `^1.58.2` (landing)                           | E2E browser tests                              |
+| **Testing Library**      | `@testing-library/react ^16.3.0`                               | React component testing                        |
+| **Testing Library RN**   | `^13.2.0`                                                      | React Native component testing                 |
+| **MSW**                  | `^2.6.2`                                                       | API mocking                                    |
+| **ExUnit**               | Built-in                                                       | Elixir backend tests                           |
+| **ExCoveralls**          | `~> 0.18`                                                      | Backend coverage                               |
+| **ExMachina**            | `~> 2.8`                                                       | Test factories (Elixir)                        |
+| **Mox**                  | `~> 1.2`                                                       | Mocking (Elixir)                               |
+| **fast-check**           | `^3.23.2`                                                      | Property-based testing (crypto package)        |
+| **@vitest/coverage-v8**  | `^3.1.0`                                                       | Web coverage                                   |
+| **@axe-core/playwright** | `^4.11.1`                                                      | Accessibility testing                          |
+| **Lighthouse CI**        | `@lhci/cli ^0.15.1`                                            | Performance testing (landing)                  |
+| **k6**                   | —                                                              | Load testing (`infrastructure/load-tests/k6/`) |
 
 ---
 
@@ -224,7 +224,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 | [`renovate.json`](renovate.json)                                                       | Automated dependency updates                                           |
 | [`docker-compose.dev.yml`](docker-compose.dev.yml)                                     | Dev services (Postgres, Redis, MeiliSearch)                            |
 | [`apps/backend/config/config.exs`](apps/backend/config/config.exs)                     | Elixir compile-time config                                             |
-| [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (430 lines)                              |
+| [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (429 lines)                              |
 | [`apps/backend/config/stripe.exs`](apps/backend/config/stripe.exs)                     | Stripe integration config                                              |
 | [`apps/backend/.tool-versions`](apps/backend/.tool-versions)                           | asdf versions: Erlang 28.3, Elixir 1.19.4                              |
 | [`apps/backend/.credo.exs`](apps/backend/.credo.exs)                                   | Credo linter config                                                    |

@@ -57,6 +57,7 @@
 - **Config**: `JWT_SECRET` env var, issuer: `"cgraph"`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L170-L178))
 - **Token TTL**: Access 15 min (`JWT_ACCESS_TOKEN_TTL`), Refresh 7 days (`JWT_REFRESH_TOKEN_TTL`)
+  > **Note**: `.env.example` uses `ACCESS_TOKEN_EXPIRY`/`REFRESH_TOKEN_EXPIRY` (different names).
 
 ### Password Hashing
 
@@ -75,8 +76,10 @@
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L285-L320)):
   - **Google** — `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
   - **Apple** — `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY`
-  - **Facebook** — `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`
-  - **TikTok** — `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET`
+  - **Facebook** — `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET` (runtime.exs only, not in
+    `.env.example`)
+  - **TikTok** — `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET` (runtime.exs only, not in
+    `.env.example`)
   - **(Discord)** — `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` (in `.env.example`)
 
 ### Web3 / Ethereum Wallet Authentication
@@ -124,6 +127,8 @@
 - **HTTP client**: `finch ~> 0.20` (Swoosh API client)
 - **Env var**: `RESEND_API_KEY`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L188-L198))
+  > **Note**: `.env.example` has generic SMTP settings (`SMTP_HOST`, etc.) instead of
+  > `RESEND_API_KEY`.
 - **Templates**:
   [`apps/backend/lib/cgraph/mailer/templates/`](apps/backend/lib/cgraph/mailer/templates/)
 - **Background jobs**: `CGraph.Workers.EmailDigestWorker` (daily at 8 AM UTC)
@@ -132,6 +137,7 @@
 
 - **Env var**: `EXPO_ACCESS_TOKEN`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L350-L355))
+  > **Note**: Not in `.env.example`.
 - **Module**:
   [`apps/backend/lib/cgraph/notifications/push_service/`](apps/backend/lib/cgraph/notifications/push_service/)
 - **Mobile integration**: `expo-notifications ~0.32.16`
@@ -161,8 +167,8 @@
 ### Storage Providers
 
 - **Module**: [`apps/backend/lib/cgraph/storage/`](apps/backend/lib/cgraph/storage/)
-- **Backends**: `local.ex`, `r2.ex`, `s3.ex` — configurable via `STORAGE_PROVIDER` (local, s3,
-  supabase)
+- **Backends**: `local.ex`, `r2.ex`, `s3.ex` — configurable via `STORAGE_PROVIDER` (local, s3, r2).
+  Note: `.env.example` lists "supabase" as an option but no `supabase.ex` backend exists.
 - **Uploads module**: [`apps/backend/lib/cgraph/uploads/`](apps/backend/lib/cgraph/uploads/)
 
 ### Mobile File Access
@@ -199,6 +205,9 @@
 | `presence_channel.ex`     | User presence                    |
 | `marketplace_channel.ex`  | Marketplace features             |
 | `ai_channel.ex`           | AI feature channel               |
+| `user_channel.ex`         | User-specific events             |
+| `backpressure.ex`         | Channel backpressure management  |
+| `socket_security.ex`      | WebSocket security module        |
 
 ### Collaborative Editing (Yjs)
 

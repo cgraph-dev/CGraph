@@ -7,17 +7,18 @@
 
 ## 1. Test Frameworks Overview
 
-| App/Package           | Framework      | Test Runner       | Environment               | Config File                        |
-| --------------------- | -------------- | ----------------- | ------------------------- | ---------------------------------- |
-| `apps/web`            | **Vitest**     | Vitest (via Vite) | jsdom                     | `apps/web/vite.config.ts`          |
-| `apps/mobile`         | **Jest**       | jest-expo         | React Native              | `apps/mobile/jest.config.js`       |
-| `apps/landing`        | **Vitest**     | Vitest (via Vite) | jsdom                     | `apps/landing/vitest.config.ts`    |
-| `apps/backend`        | **ExUnit**     | `mix test`        | Elixir                    | `apps/backend/test/`               |
-| `packages/crypto`     | **Vitest**     | Vitest            | node                      | `packages/crypto/vitest.config.ts` |
-| `packages/utils`      | **Vitest**     | Vitest            | node                      | (inferred from package)            |
-| `packages/api-client` | **Vitest**     | Vitest            | node                      | (inferred from package)            |
-| `packages/socket`     | **Vitest**     | Vitest            | node                      | (inferred from package)            |
-| **E2E (web)**         | **Playwright** | Playwright Test   | Chromium, Firefox, WebKit | `apps/web/playwright.config.ts`    |
+| App/Package           | Framework      | Test Runner       | Environment               | Config File                         |
+| --------------------- | -------------- | ----------------- | ------------------------- | ----------------------------------- |
+| `apps/web`            | **Vitest**     | Vitest (via Vite) | jsdom                     | `apps/web/vite.config.ts`           |
+| `apps/mobile`         | **Jest**       | jest-expo         | React Native              | `apps/mobile/jest.config.js`        |
+| `apps/landing`        | **Vitest**     | Vitest (via Vite) | jsdom                     | `apps/landing/vitest.config.ts`     |
+| `apps/backend`        | **ExUnit**     | `mix test`        | Elixir                    | `apps/backend/test/`                |
+| `packages/crypto`     | **Vitest**     | Vitest            | node                      | `packages/crypto/vitest.config.ts`  |
+| `packages/utils`      | **Vitest**     | Vitest            | node                      | (inferred from package)             |
+| `packages/api-client` | **Vitest**     | Vitest            | node                      | (inferred from package)             |
+| `packages/socket`     | **Vitest**     | Vitest            | node                      | (inferred from package)             |
+| **E2E (web)**         | **Playwright** | Playwright Test   | Chromium, Firefox, WebKit | `apps/web/playwright.config.ts`     |
+| **E2E (landing)**     | **Playwright** | Playwright Test   | Chromium                  | `apps/landing/playwright.config.ts` |
 
 ### Supporting Libraries
 
@@ -27,21 +28,25 @@
 - **MSW (Mock Service Worker)** — API mocking for unit/integration tests (web)
 - **Storybook** — component development and visual testing (web + mobile)
 
+> **Note — Vitest Version Fragmentation**: Shared packages use different Vitest versions: `^1.0.0`
+> (crypto, utils, api-client, shared-types), `^1.6.0` (socket), `^3.0.0` (animation-constants). Web
+> uses `^3.1.0`, landing uses `^3.2.4`.
+
 ---
 
 ## 2. Test File Organization & Naming
 
 ### File Naming Convention
 
-| Type              | Pattern                                 | Example                                |
-| ----------------- | --------------------------------------- | -------------------------------------- |
-| Unit tests        | `{name}.test.ts(x)`                     | `authStore.test.ts`, `button.test.tsx` |
-| Spec tests        | `{name}.spec.ts(x)`                     | `auth.spec.ts`, `navigation.spec.ts`   |
-| Integration tests | `{name}.test.ts` in `test/integration/` | `api.test.ts`, `websocket.test.ts`     |
-| E2E tests         | `{name}.spec.ts` in `e2e/`              | `auth.spec.ts`, `messaging.spec.ts`    |
-| E2E setup         | `{name}.setup.ts` in `e2e/`             | `auth.setup.ts`                        |
-| Test setup        | `setup.ts` in `test/`                   | `src/test/setup.ts`                    |
-| Test utilities    | `utils.tsx` in `test/`                  | `src/test/utils.tsx`                   |
+| Type              | Pattern                                 | Example                                                    |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------- |
+| Unit tests        | `{name}.test.ts(x)`                     | `authStore.test.ts`, `button.test.tsx`                     |
+| Spec tests        | `{name}.spec.ts(x)`                     | `auth.spec.ts`, `navigation.spec.ts`                       |
+| Integration tests | `{name}.test.ts` in `test/integration/` | `api.test.ts`, `websocket.test.ts`                         |
+| E2E tests         | `{name}.spec.ts` in `e2e/`              | `auth.spec.ts`, `messaging.spec.ts`                        |
+| E2E setup         | `{name}.setup.ts` in `e2e/`             | `auth.setup.ts`                                            |
+| Test setup        | `setup.ts` in `test/`                   | `src/test/setup.ts`                                        |
+| Test utilities    | `utils.tsx` in `test/`                  | `src/test/utils.tsx` (mobile only; web has no `utils.tsx`) |
 
 ### Directory Structure
 
@@ -51,13 +56,13 @@ apps/web/src/
 │   ├── setup.ts              # Global Vitest setup (MSW, mocks, cleanup)
 │   ├── __mocks__/            # Module-level stubs (framer-motion, heroicons)
 │   ├── mocks/                # (empty — MSW handlers in src/mocks/)
-│   ├── fixtures/             # Test data fixtures
+│   ├── fixtures/             # Test data fixtures (currently empty)
 │   └── integration/
 │       ├── api.test.ts       # API client integration tests
 │       ├── app.test.tsx      # App-level integration tests
 │       └── websocket.test.ts # WebSocket integration tests
 ├── mocks/
-│   └── handlers.ts           # MSW request handlers (571 lines)
+│   └── handlers.ts           # MSW request handlers (570 lines)
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
@@ -627,7 +632,7 @@ export function createMockMessage(overrides = {}) {
 ### MSW Handlers (Web)
 
 ```typescript
-// apps/web/src/mocks/handlers.ts (571 lines)
+// apps/web/src/mocks/handlers.ts (570 lines)
 import { http, HttpResponse, delay } from 'msw';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
@@ -737,8 +742,11 @@ coverage: {
     '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}',
     '**/test/**', '**/mocks/**',
     'src/data/**', '**/constants.ts',        // Static data
-    'src/pages/**',                           // Tested via E2E
+    '**/unicode-emojis.ts', '**/presets.ts', // Static data (no logic)
     'src/components/enhanced/ui/holographic-ui/**',  // Experimental
+    'src/components/enhanced/ui/holographic-ui-v4/**', // Experimental
+    'src/themes/presets/theme-template.ts',  // Static config
+    'src/pages/**',                           // Tested via E2E
   ],
   thresholds: {
     statements: 40,

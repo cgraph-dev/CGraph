@@ -1,7 +1,7 @@
 # CGraph Codebase Concerns
 
 > **Generated**: February 26, 2026 | **Source**: Full monorepo analysis **Codebase Version**: 0.9.47
-> | **Composite Score**: 8.7/10
+> | **Composite Score**: 7.8/10
 
 ---
 
@@ -160,7 +160,7 @@ Active TODOs found in production code:
 | `apps/backend/lib/cgraph/collaboration/document_server.ex:291`           | `TODO(P2): Implement server-side Yjs state compaction` — unbounded state growth            |
 | `apps/web/src/pages/customize/progression-customization/mock-data.ts:10` | `@todo(api) Create achievements API endpoints` — using mock data                           |
 
-### 4.2 eslint-disable Suppressions (60+ occurrences)
+### 4.2 eslint-disable Suppressions (140+ in mobile/packages, 400+ total with web)
 
 Widespread use of `eslint-disable` comments indicating type safety workarounds:
 
@@ -183,11 +183,11 @@ Widespread use of `eslint-disable` comments indicating type safety workarounds:
   (6), `packages/socket/src/phoenixClient.ts` (3), `packages/api-client/src/client.ts` (4),
   `packages/crypto/src/tripleRatchet.ts`
 
-### 4.3 Type Assertion Debt — 952 Suppressed Casts
+### 4.3 Type Assertion Debt — 434 Annotated Casts (Originally 952)
 
-952 `as X` type assertions are suppressed via `eslint-disable` directives, not refactored to type
-guards. While annotated with `// type assertion: [reason]` comments, these represent **structural
-type safety debt**:
+434 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
+partially refactored). While annotated with reason comments, these represent **structural type
+safety debt**:
 
 - `scripts/fix-type-assertions.mjs` documents the situation
 - Affects 49+ web files and multiple package files
@@ -202,9 +202,9 @@ Active `@deprecated` annotations across the codebase:
 | `apps/web/src/modules/chat/store/chatBubbleStore.impl.ts`                                   | Entire file — should import from `@/stores/theme`                                   |
 | `apps/web/src/lib/crypto/e2ee/key-bundle.ts:79`                                             | Use `e2ee-secure/key-storage.ts` instead                                            |
 | `apps/web/src/modules/settings/components/ui-customization-settings.tsx`                    | Import from `./ui-customization` instead                                            |
-| `apps/web/src/modules/settings/store/customization/customizationStore.selectors.ts:107-125` | Object selectors cause infinite render loops                                        |
+| `apps/web/src/modules/settings/store/customization/customizationStore.selectors.ts:111,125` | Object selectors cause infinite render loops                                        |
 | `apps/web/src/stores/theme/selectors.ts:56`                                                 | Use individual selectors to avoid render issues                                     |
-| `apps/mobile/src/lib/crypto/e2ee.ts:179-235`                                                | 6 deprecated types — Phase 2 will replace with portable types from `@cgraph/crypto` |
+| `apps/mobile/src/lib/crypto/e2ee.ts:179-235`                                                | 7 deprecated types — Phase 2 will replace with portable types from `@cgraph/crypto` |
 | `apps/web/src/modules/forums/components/custom-emoji-picker.tsx`                            | Import from `./emoji-picker` instead                                                |
 | `apps/web/src/components/content/bb-code-editor.tsx`                                        | Import from `@/modules/forums/components/bbcode-editor`                             |
 | `apps/web/src/modules/admin/components/admin-dashboard/shared-components.tsx:159`           | Use `DashboardChart` instead                                                        |
@@ -218,7 +218,7 @@ Active `@deprecated` annotations across the codebase:
 
 Mobile E2EE still uses classical ECDH/AES-GCM. Post-quantum (PQ) scaffolding is done but full Triple
 Ratchet is deferred to Phase 2 (`docs/SECURITY_AUDIT_CHECKLIST.md` §2.1). The mobile `e2ee.ts`
-contains 6 deprecated type definitions awaiting replacement with portable types from
+contains 7 deprecated type definitions awaiting replacement with portable types from
 `@cgraph/crypto`.
 
 ### 5.2 CRDT Document Server — Unbounded State Growth
@@ -229,13 +229,13 @@ memory, which will cause issues with long-lived documents (`docs/V1_ACTION_PLAN.
 
 ### 5.3 useMemo/useCallback Debt — 1,112 Instances
 
-1,112 `useMemo`/`useCallback` hooks across ~250 files cannot be removed until React Compiler
+1,112 `useMemo`/`useCallback` hooks across ~269 files cannot be removed until React Compiler
 (`babel-plugin-react-compiler`) is enabled. These are technically unnecessary with React 19 but
 required without the compiler (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
 
 ### 5.4 Mobile File Size Non-Compliance
 
-**160 mobile TSX files exceed the 300-line limit.** CI warns but does not block. 6 were split in
+**103 mobile TSX files exceed the 300-line limit.** CI warns but does not block. 6 were split in
 Session 59 (→ 31 sub-files), but the majority remain (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 8).
 
 ### 5.5 Wave 4 (Database & Scaling) — Largely Incomplete
@@ -412,9 +412,9 @@ From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | Dimension                    | Status                                                       |
 | ---------------------------- | ------------------------------------------------------------ |
 | Animation Standards (Rule 4) | ~75% — ~100+ dynamic inline values remain                    |
-| Mobile File Size (Rule 8)    | ~60% — 160 mobile TSX files over 300 lines                   |
+| Mobile File Size (Rule 8)    | ~60% — 103 mobile TSX files over 300 lines                   |
 | Testing (Rule 9)             | **FAIL** — 17.9% web test coverage vs 100% target            |
-| Type Safety (Rule 11)        | ~80% — 952 `as` casts suppressed via eslint-disable          |
+| Type Safety (Rule 11)        | ~80% — 434 `as` casts annotated (originally 952)             |
 | React 19 (Rule 12)           | ~98% — React Compiler not enabled, 1,112 useMemo/useCallback |
 
 ### 13.3 Wave Task Completion
@@ -447,8 +447,8 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 
 ### P2 — Medium Priority
 
-11. **Split 160 oversized mobile TSX files** — CI warns but doesn't block
-12. **Refactor 952 type assertion suppressions** — Replace eslint-disable with type guards
+11. **Split 103 oversized mobile TSX files** — CI warns but doesn't block
+12. **Refactor 434 type assertion annotations** — Replace with type guards
 13. **Enable React Compiler** — Allows removal of 1,112 useMemo/useCallback hooks
 14. **Clean up deprecated files** — 10+ deprecated shims still in codebase
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
