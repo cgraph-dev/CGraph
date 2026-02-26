@@ -51,7 +51,7 @@ export function GrainEffect({ config, style }: GrainEffectProps) {
   const dotCount = 200;
   const dots = useMemo(
     () =>
-      Array.from({ length: dotCount }, (_, i) => ({
+      Array.from({ length: dotCount }, (_, _i) => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
         opacity: Math.random() * mergedConfig.opacity,

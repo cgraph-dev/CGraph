@@ -2,8 +2,6 @@
  * Type definitions and constants for the coin shop feature.
  * @module screens/premium/coin-shop-screen/types
  */
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ParamListBase } from '@react-navigation/native';
 
 export type CategoryId = 'bundles' | 'themes' | 'badges' | 'effects' | 'boosts';
 

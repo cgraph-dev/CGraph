@@ -19,7 +19,7 @@ import {
   leaveGroup as leaveGroupApi,
   createGroup as createGroupApi,
   type Group,
-  type GroupChannel,
+  type _GroupChannel,
   type GroupMember,
   type CreateGroupRequest,
 } from '../services/groupsService';
@@ -330,7 +330,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     });
   },
 
-  addReactionToChannelMessage: (messageId: string, emoji: string, userId: string) => {
+  addReactionToChannelMessage: (messageId: string, emoji: string, _userId: string) => {
     set((state) => {
       const updated: Record<string, ChannelMessage[]> = {};
       for (const [chId, msgs] of Object.entries(state.channelMessages)) {
@@ -352,7 +352,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     });
   },
 
-  removeReactionFromChannelMessage: (messageId: string, emoji: string, userId: string) => {
+  removeReactionFromChannelMessage: (messageId: string, emoji: string, _userId: string) => {
     set((state) => {
       const updated: Record<string, ChannelMessage[]> = {};
       for (const [chId, msgs] of Object.entries(state.channelMessages)) {

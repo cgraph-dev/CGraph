@@ -56,6 +56,7 @@ export function PodiumSection({ users, podiumAnims, categoryColor, colors }: Pod
               <AnimatedAvatar
                 source={
                   getValidImageUrl(user.avatar_url)
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     ? { uri: getValidImageUrl(user.avatar_url)! }
                     : require('../../../assets/default-avatar.png')
                 }

@@ -100,7 +100,7 @@ export const AttachmentPicker = memo(function AttachmentPicker({
   backgroundColor,
   textColor,
   mutedColor,
-  accentColor,
+  _accentColor,
   onSelect,
   onClose,
 }: AttachmentPickerProps) {

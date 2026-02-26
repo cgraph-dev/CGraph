@@ -17,7 +17,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  FlatList,
+  _FlatList,
   RefreshControl,
   SectionList,
 } from 'react-native';
@@ -29,8 +29,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import AnimatedAvatar from '@/components/ui/animated-avatar';
-import GlassCard from '@/components/ui/glass-card';
-import { Colors, Shadows, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
+import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 import { HapticFeedback, getStaggerDelay } from '@/lib/animations/animation-engine';
 
 type CallType = 'voice' | 'video';

@@ -52,7 +52,7 @@ export function useForumAdmin(forumId: string) {
       await api.post(`/api/v1/forums/${forumId}/modqueue/${item.id}/approve`);
       setModQueue((prev) => prev.filter((i) => i.id !== item.id));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to approve item');
     }
   };
@@ -69,7 +69,7 @@ export function useForumAdmin(forumId: string) {
             await api.post(`/api/v1/forums/${forumId}/modqueue/${item.id}/remove`);
             setModQueue((prev) => prev.filter((i) => i.id !== item.id));
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          } catch (error) {
+          } catch (_error) {
             Alert.alert('Error', 'Failed to remove item');
           }
         },
@@ -83,7 +83,7 @@ export function useForumAdmin(forumId: string) {
       await api.delete(`/api/v1/forums/${forumId}/admin/banned/${userId}`);
       setBannedUsers((prev) => prev.filter((u) => u.user.id !== userId));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to unban user');
     }
   };
@@ -103,7 +103,7 @@ export function useForumAdmin(forumId: string) {
       setBanReason('');
       setSelectedUser(null);
       fetchAdminData();
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to ban user');
     }
   };

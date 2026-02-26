@@ -117,7 +117,7 @@ export function subscribe(event: QueueEventType, callback: QueueEventListener): 
   if (!listeners.has(event)) {
     listeners.set(event, new Set());
   }
-  listeners.get(event)!.add(callback);
+  listeners.get(event)?.add(callback);
 
   return () => {
     listeners.get(event)?.delete(callback);

@@ -45,7 +45,7 @@ export interface UseSocketReturn {
  *
  */
 export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
-  const { autoConnect = true, reconnectOnAuthChange = true } = options;
+  const { autoConnect = true, _reconnectOnAuthChange = true } = options;
   
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);

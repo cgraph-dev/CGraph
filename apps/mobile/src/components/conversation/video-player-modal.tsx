@@ -8,7 +8,7 @@
  * @since v0.7.29
  */
 
-import React, { memo, useCallback, useState, useRef } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   View,
   Modal,

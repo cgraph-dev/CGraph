@@ -20,7 +20,7 @@ import {
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import GlassCard from '../../ui/glass-card';
 
-import { Sticker, StickerPack, StickerPickerProps, STICKER_PACKS, getRarityColor } from './types';
+import { Sticker, StickerPickerProps, STICKER_PACKS, getRarityColor } from './types';
 import { styles } from './styles';
 import { StickerItem } from './components';
 

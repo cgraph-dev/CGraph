@@ -371,7 +371,9 @@ describe('normalizeMessage — reply_to', () => {
     };
     const result = normalizeMessage(raw);
     expect(result.reply_to).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result.reply_to!.id).toBe('msg-49');
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result.reply_to!.content).toBe('original');
   });
 
@@ -383,6 +385,7 @@ describe('normalizeMessage — reply_to', () => {
     };
     const result = normalizeMessage(raw);
     expect(result.reply_to).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result.reply_to!.id).toBe('msg-50');
   });
 

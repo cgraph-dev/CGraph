@@ -43,12 +43,12 @@ export function AnimatedView({
   springConfig = 'default',
   style,
   loop,
-  onAnimationComplete,
+  _onAnimationComplete,
 }: AnimatedViewProps) {
   const EnteringAnimation = ENTERING_PRESETS[entering];
   const ExitingAnimation = EXITING_PRESETS[exiting];
-  const LayoutAnimation = LAYOUT_PRESETS[layout];
-  const spring = SPRING_PRESETS[springConfig];
+  const _LayoutAnimation = LAYOUT_PRESETS[layout];
+  const _spring = SPRING_PRESETS[springConfig];
 
   // Loop animation values
   const loopProgress = useSharedValue(0);

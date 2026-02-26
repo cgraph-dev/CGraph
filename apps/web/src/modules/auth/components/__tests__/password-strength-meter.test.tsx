@@ -21,13 +21,13 @@ vi.mock('framer-motion', () => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     span: ({ children, ...props }: any) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { initial, animate, exit, transition, ...rest } = props as any;
+      const { initial: _initial, animate: _animate, exit: _exit, transition: _transition, ...rest } = props as any;
       return <span {...rest}>{children}</span>;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     li: ({ children, ...props }: any) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { initial, animate, exit, transition, ...rest } = props as any;
+      const { initial: _initial, animate: _animate, exit: _exit, transition: _transition, ...rest } = props as any;
       return <li {...rest}>{children}</li>;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

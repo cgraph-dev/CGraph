@@ -151,7 +151,7 @@ export function useRealtimeChannel(
     if (!eventCallbacksRef.current.has(event)) {
       eventCallbacksRef.current.set(event, new Set());
     }
-    eventCallbacksRef.current.get(event)!.add(callback);
+    eventCallbacksRef.current.get(event)?.add(callback);
 
     // Subscribe to the event if we're joined
     const unsubscribe = socketManager.onChannelMessage(topic, (eventName, payload) => {

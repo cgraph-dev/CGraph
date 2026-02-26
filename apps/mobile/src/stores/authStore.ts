@@ -99,14 +99,14 @@ async function getSocketManager() {
       };
     }
   }
-  return socketManagerModule!.default;
+  return socketManagerModule?.default;
 }
 
 // ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>((set, _get) => ({
   ...INITIAL_STATE,
 
   initialize: async () => {

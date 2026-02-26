@@ -380,7 +380,7 @@ function TabButton({
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const color = animated
+    const _color = animated
       ? interpolateColor(
           activeIndex.value,
           [index - 1, index, index + 1],

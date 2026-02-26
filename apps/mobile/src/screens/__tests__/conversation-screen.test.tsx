@@ -2,8 +2,6 @@
  * @fileoverview Comprehensive tests for ConversationScreen component
  * Tests message rendering, optimized FlatList, and user interactions
  */
-import React from 'react';
-import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 
 // Mock the navigation
 const mockNavigation = {
@@ -97,7 +95,7 @@ describe('ConversationScreen', () => {
 
     it('should implement getItemLayout for fixed-height items', () => {
       const ITEM_HEIGHT = 72;
-      const SEPARATOR_HEIGHT = 0;
+      const _SEPARATOR_HEIGHT = 0;
 
       const getItemLayout = (_: unknown, index: number) => ({
         length: ITEM_HEIGHT,
@@ -136,7 +134,7 @@ describe('ConversationScreen', () => {
     it('should debounce scroll events', () => {
       jest.useFakeTimers();
 
-      let scrollCount = 0;
+      const _scrollCount = 0;
       const DEBOUNCE_MS = 100;
 
       const handleScroll = jest.fn(() => {
@@ -268,7 +266,7 @@ describe('ConversationScreen', () => {
       jest.useFakeTimers();
 
       const TYPING_DEBOUNCE = 1000;
-      let typingEventSent = false;
+      const _typingEventSent = false;
 
       const sendTyping = jest.fn(() => {
         typingEventSent = true;

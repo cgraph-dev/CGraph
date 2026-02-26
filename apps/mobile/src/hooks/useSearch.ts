@@ -235,7 +235,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
     try {
       const suggestions = await searchService.getSearchSuggestions(query);
       setState((prev) => ({ ...prev, suggestions, isLoadingSuggestions: false }));
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, isLoadingSuggestions: false }));
     }
   }, []);

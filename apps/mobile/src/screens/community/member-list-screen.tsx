@@ -31,17 +31,17 @@ export default function MemberListScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const [members, setMembers] = useState<Member[]>([]);
-  const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
+  const [_userGroups, setUserGroups] = useState<UserGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalMembers, setTotalMembers] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [filterGroup, setFilterGroup] = useState<string>('');
+  const [filterGroup, _setFilterGroup] = useState<string>('');
   const [filterOnlineOnly, setFilterOnlineOnly] = useState(false);
   const [sortField, setSortField] = useState<SortField>('username');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');

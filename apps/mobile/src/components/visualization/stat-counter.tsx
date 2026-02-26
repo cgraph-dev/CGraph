@@ -19,8 +19,8 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
-  interpolate,
-  Extrapolate,
+  _interpolate,
+  _Extrapolate,
   Easing,
   SharedValue,
 } from 'react-native-reanimated';

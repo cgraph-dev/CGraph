@@ -10,7 +10,7 @@ import { useCallback, useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 // expo-sharing is optional - we use clipboard fallback if not available
 import * as Clipboard from 'expo-clipboard';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import api from '../../../lib/api';
 
 // Types
@@ -126,7 +126,7 @@ export function useGroup(groupId: string) {
       setGroup(data);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return true;
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return false;
     }
@@ -138,7 +138,7 @@ export function useGroup(groupId: string) {
       await api.post(`/api/v1/groups/${groupId}/leave`);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return true;
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return false;
     }
@@ -190,7 +190,7 @@ export function useChannels(groupId: string) {
       setChannels(prev => [...prev, newChannel]);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return newChannel;
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return null;
     }

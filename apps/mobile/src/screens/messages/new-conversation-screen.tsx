@@ -79,6 +79,7 @@ export default function NewConversationScreen({ navigation }: Props) {
       >
         <View style={styles.avatarContainer}>
           {getValidImageUrl(item.avatar_url) ? (
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             <Image source={{ uri: getValidImageUrl(item.avatar_url)! }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>

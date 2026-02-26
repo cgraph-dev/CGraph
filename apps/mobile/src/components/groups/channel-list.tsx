@@ -113,7 +113,7 @@ export function ChannelList({
   }, [channels, categories, collapsedCategories]);
 
   const CHANNEL_ITEM_HEIGHT = 40;
-  const SECTION_HEADER_HEIGHT = 36;
+  const _SECTION_HEADER_HEIGHT = 36;
 
   const renderChannel = useCallback(({ item: channel }: { item: Channel }) => {
     const isActive = channel.id === activeChannelId;
@@ -178,6 +178,7 @@ export function ChannelList({
               ]}
             >
               <Text style={styles.unreadBadgeText}>
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 {channel.unreadCount! > 99 ? '99+' : channel.unreadCount}
               </Text>
             </View>
@@ -193,6 +194,7 @@ export function ChannelList({
     const isCollapsed = collapsedCategories.has(section.categoryId);
     return (
       <Pressable
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         onPress={() => handleCategoryToggle(section.categoryId!)}
         style={styles.categoryHeader}
       >

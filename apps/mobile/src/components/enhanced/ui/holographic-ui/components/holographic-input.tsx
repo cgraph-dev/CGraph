@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
+import { TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { HolographicConfig, getTheme } from '../types';

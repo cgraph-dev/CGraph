@@ -9,7 +9,7 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { FlatList, Linking, Alert } from 'react-native';
-import { useSharedValue, withTiming, withSpring, runOnJS, type SharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withSpring, runOnJS } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { createLogger } from '../../../../lib/logger';
 

@@ -3,7 +3,7 @@
  * @module screens/premium/coin-shop-screen/components/shop-header
  */
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, type SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 

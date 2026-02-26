@@ -59,7 +59,7 @@ function getQRData(userId: string, safetyNumber: string): string {
  */
 export function KeyVerificationScreen() {
   const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
-  const navigation = useNavigation();
+  const _navigation = useNavigation();
   const { userId, username } = route.params;
 
   const [state, setState] = useState<VerificationState>({
@@ -140,7 +140,7 @@ export function KeyVerificationScreen() {
           state.safetyNumber
         )}\n\nCompare this number in the CGraph app to verify end-to-end encryption.`,
       });
-    } catch (err) {
+    } catch (_err) {
       // User cancelled
     }
   };

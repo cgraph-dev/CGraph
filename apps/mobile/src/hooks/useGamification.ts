@@ -93,7 +93,7 @@ export function useGamification(): UseGamificationReturn {
   const refreshStats = useCallback(
     async (force = false) => {
       if (!force && isCacheValid(cacheRef.current.stats)) {
-        setState((prev) => ({ ...prev, stats: cacheRef.current.stats!.data }));
+        setState((prev) => ({ ...prev, stats: cacheRef.current.stats?.data }));
         return;
       }
 
@@ -130,7 +130,7 @@ export function useGamification(): UseGamificationReturn {
 
   const refreshQuests = useCallback(async () => {
     if (isCacheValid(cacheRef.current.quests)) {
-      const cached = cacheRef.current.quests!.data;
+      const cached = cacheRef.current.quests?.data;
       setState((prev) => ({
         ...prev,
         activeQuests: cached.active,
@@ -189,7 +189,7 @@ export function useGamification(): UseGamificationReturn {
 
   const refreshXpHistory = useCallback(async () => {
     if (isCacheValid(cacheRef.current.xpHistory)) {
-      setState((prev) => ({ ...prev, xpHistory: cacheRef.current.xpHistory!.data }));
+      setState((prev) => ({ ...prev, xpHistory: cacheRef.current.xpHistory?.data }));
       return;
     }
 

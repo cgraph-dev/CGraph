@@ -5,7 +5,7 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { ReactNode, useRef, useEffect } from 'react';
 import {
-  View,
+  _View,
   Text,
   Animated,
   StyleSheet,

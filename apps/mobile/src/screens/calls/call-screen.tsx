@@ -62,7 +62,7 @@ type CallStatus = 'idle' | 'ringing' | 'connecting' | 'connected' | 'ended' | 'e
 // CONSTANTS
 // =============================================================================
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CALL_STATES: Record<CallStatus, string> = {
   idle: 'Initializing...',
@@ -82,7 +82,7 @@ const CALL_STATES: Record<CallStatus, string> = {
  */
 export default function CallScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
-  const { recipientId, callType, incoming = false, roomId } = route.params;
+  const { recipientId, callType, _incoming = false, _roomId } = route.params;
 
   const [recipient, setRecipient] = useState<CallUser | null>(null);
   const [callStatus, setCallStatus] = useState<CallStatus>('idle');
@@ -90,7 +90,7 @@ export default function CallScreen({ navigation, route }: Props) {
   const [isVideoEnabled, setIsVideoEnabled] = useState(callType === 'video');
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [showControls, setShowControls] = useState(true);
+  const [_showControls, setShowControls] = useState(true);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const ringAnim = useRef(new Animated.Value(0)).current;

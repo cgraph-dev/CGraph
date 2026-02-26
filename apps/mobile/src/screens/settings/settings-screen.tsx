@@ -10,7 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
+  _Image,
   Alert,
   Animated,
 } from 'react-native';
@@ -371,6 +371,7 @@ export default function SettingsScreen({ navigation }: Props) {
               <View style={styles.profileAvatarContainer}>
                 {getValidImageUrl(user?.avatar_url) ? (
                   <AnimatedAvatar
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     source={{ uri: getValidImageUrl(user?.avatar_url)! }}
                     size={70}
                     borderAnimation="holographic"

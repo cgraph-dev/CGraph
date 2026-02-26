@@ -8,7 +8,7 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
-import paymentService, { PRODUCT_IDS, SubscriptionStatus, Product } from '../../../lib/payment';
+import paymentService, { SubscriptionStatus, Product } from '../../../lib/payment';
 import api from '../../../lib/api';
 import { TIER_FEATURES } from '../services';
 

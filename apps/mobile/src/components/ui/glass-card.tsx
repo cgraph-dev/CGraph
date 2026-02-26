@@ -38,7 +38,7 @@ export default function GlassCard({
   intensity = 'medium',
   animated = false,
   glowColor = AnimationColors.primary,
-  borderGradient = false,
+  _borderGradient = false,
   style,
 }: GlassCardProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;

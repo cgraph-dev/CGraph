@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-  TextInput,
-  Modal,
+  _TextInput,
+  _Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,7 +19,7 @@ import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 import { ForumsStackParamList } from '../../types';
-import type { ModerationItem, BannedUser, Moderator, AdminTab } from './forum-admin-screen/types';
+import type { AdminTab } from './forum-admin-screen/types';
 import { styles } from './forum-admin-screen/styles';
 import { useForumAdmin } from './forum-admin-screen/use-forum-admin';
 import { OverviewGrid, ModQueueItem, BannedUserItem, ModeratorItem } from './forum-admin-screen/components/admin-tab-views';

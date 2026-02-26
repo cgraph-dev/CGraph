@@ -16,10 +16,10 @@ import Animated, {
   useSharedValue,
   useAnimatedProps,
   useDerivedValue,
-  withTiming,
+  _withTiming,
   withSpring,
-  interpolate,
-  Easing,
+  _interpolate,
+  _Easing,
   SharedValue,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, LinearGradient, Stop, G } from 'react-native-svg';
@@ -73,7 +73,7 @@ export function ProgressRing({
   valuePrefix = '',
   valueSuffix = '%',
   animated = true,
-  animationDuration = 1000,
+  _animationDuration = 1000,
   springPreset = 'bouncy',
   lineCap = 'round',
   rotation = -90,
@@ -348,8 +348,8 @@ export function GaugeRing({
 
       const x1 = center + innerRadius * Math.cos(rad);
       const y1 = center + innerRadius * Math.sin(rad);
-      const x2 = center + outerRadius * Math.cos(rad);
-      const y2 = center + outerRadius * Math.sin(rad);
+      const _x2 = center + outerRadius * Math.cos(rad);
+      const _y2 = center + outerRadius * Math.sin(rad);
 
       tickMarks.push(
         <View

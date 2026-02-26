@@ -17,7 +17,7 @@ import { AnimatedMessageWrapper, AnimatedReactionBubble, InlineVideoThumbnail } 
 import { styles } from '../styles';
 import { getFileIcon, formatFileSize } from '../utils';
 import { MarkdownText } from '../../../../components/chat/markdown-text';
-import { useBubbleCustomization, type BubbleStyle } from '../../../../hooks/useBubbleCustomization';
+import { useBubbleCustomization } from '../../../../hooks/useBubbleCustomization';
 
 interface MessageBubbleProps {
   item: Message;
@@ -242,7 +242,7 @@ function MessageContent({
       {item.type === 'image' && item.metadata?.url && !item.metadata?.grid_images && (
         <SingleImageContent
           url={item.metadata.url}
-          onPress={() => onImagePress(item.metadata!.url!)}
+          onPress={() => onImagePress(item.metadata?.url ?? '')}
         />
       )}
 
@@ -252,7 +252,7 @@ function MessageContent({
           item={item}
           isOwnMessage={isOwnMessage}
           colors={colors}
-          onPress={() => onFilePress(item.metadata!.url!, item.metadata?.filename)}
+          onPress={() => onFilePress(item.metadata?.url ?? '', item.metadata?.filename)}
         />
       )}
 
@@ -260,7 +260,7 @@ function MessageContent({
       {item.type === 'video' && item.metadata?.url && (
         <VideoContent
           item={item}
-          onPress={() => onVideoPress(item.metadata!.url!, item.metadata?.duration)}
+          onPress={() => onVideoPress(item.metadata?.url ?? '', item.metadata?.duration)}
         />
       )}
 
@@ -359,7 +359,7 @@ function ImageGridContent({
   onImagePress: (url: string, gallery?: string[], index?: number) => void;
 }) {
    
-  const images = item.metadata!.grid_images as string[];
+  const images = item.metadata?.grid_images as string[];
   const count = images.length;
 
   const gridStyle =
@@ -497,7 +497,7 @@ function VideoContent({ item, onPress }: { item: Message; onPress: () => void })
           resizeMode="cover"
         />
       ) : (
-        <InlineVideoThumbnail videoUrl={item.metadata!.url!} />
+        <InlineVideoThumbnail videoUrl={item.metadata?.url ?? ''} />
       )}
       <View style={styles.videoPlayOverlayMessage}>
         <View style={styles.videoPlayButtonMessage}>

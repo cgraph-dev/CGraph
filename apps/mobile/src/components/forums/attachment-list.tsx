@@ -56,7 +56,7 @@ export default function AttachmentList({
         } else {
           Alert.alert('Error', 'Cannot open this file');
         }
-      } catch (error) {
+      } catch (_error) {
         Alert.alert('Error', 'Failed to open file');
       }
     }

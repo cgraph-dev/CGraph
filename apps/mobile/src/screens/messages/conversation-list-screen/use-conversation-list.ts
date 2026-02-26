@@ -41,7 +41,7 @@ export function useConversationList(user: User) {
         if (data.online && !data.hidden) { online.add(id); }
       });
       setOnlineUsers(online);
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors
     }
   }, []);

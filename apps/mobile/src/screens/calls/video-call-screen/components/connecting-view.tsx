@@ -1,4 +1,3 @@
-import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, Text, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

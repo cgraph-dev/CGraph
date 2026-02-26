@@ -33,7 +33,7 @@ type Props = {
  *
  */
 export default function RegisterScreen({ navigation }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
   const reg = useRegister();
 
   const fadeAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(0))).current;

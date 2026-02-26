@@ -36,8 +36,6 @@ import {
 
 // ── gamificationStore.utils ──────────────────────────────────────────────
 import {
-  calculateXPForLevel,
-  calculateLevelFromXP,
   XP_REWARDS,
 } from '../../store/gamificationStore.utils';
 

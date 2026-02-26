@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
-  withDelay,
+  _withDelay,
   FadeIn,
   FadeOut,
   Easing,

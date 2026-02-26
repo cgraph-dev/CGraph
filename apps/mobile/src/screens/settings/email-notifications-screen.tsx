@@ -5,7 +5,7 @@
  * Categories: Account, Social, Content, Marketing.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -149,7 +149,7 @@ export default function EmailNotificationsScreen() {
   const { colors } = useThemeStore();
   const [categories, setCategories] = useState<NotificationCategory[]>(DEFAULT_CATEGORIES);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [_saving, _setSaving] = useState(false);
 
   useEffect(() => {
     loadPreferences();

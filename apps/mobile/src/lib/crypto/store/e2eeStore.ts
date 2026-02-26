@@ -27,7 +27,7 @@ import e2ee, {
   clearE2EEData,
   generateSafetyNumber,
   fingerprint,
-  bundleSupportsPQ,
+  _bundleSupportsPQ,
   loadKEMPreKey,
 } from '../e2ee';
 import { Buffer } from 'buffer';

@@ -33,7 +33,7 @@ type Props = {
  *
  */
 export default function ForgotPasswordScreen({ navigation }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
 
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);

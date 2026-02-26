@@ -90,7 +90,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
       } else {
         Alert.alert('Cancelled', 'Biometric authentication was cancelled.');
       }
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to update biometric settings.');
     } finally {
       setIsTogglingBiometric(false);

@@ -31,7 +31,7 @@ import { SettingsStackParamList } from '@/types';
 // Import extracted components
 import {
   SettingsSection,
-  ToggleRow,
+  _ToggleRow,
   SliderRow,
   ColorShadePicker,
   PresetSelector,

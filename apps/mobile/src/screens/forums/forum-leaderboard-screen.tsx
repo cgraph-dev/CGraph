@@ -27,7 +27,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import Reanimated, {
+import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -107,7 +107,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
   const headerOpacity = useSharedValue(0);
   const headerSlide = useSharedValue(-20);
 
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
+  const _headerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: headerOpacity.value,
     transform: [{ translateY: headerSlide.value }],
   }));

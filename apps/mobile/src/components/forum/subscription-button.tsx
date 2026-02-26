@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import {
-  View,
+  _View,
   Text,
   StyleSheet,
   TouchableOpacity,

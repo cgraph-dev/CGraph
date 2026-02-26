@@ -80,6 +80,7 @@ export const createLogger = (namespace: string): Logger => {
 
     log: (...args: unknown[]) => {
       if (isDev) {
+        // eslint-disable-next-line no-console
         console.log(prefix, ...args);
       }
     },

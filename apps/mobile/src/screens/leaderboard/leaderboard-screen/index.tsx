@@ -39,7 +39,7 @@ export default function LeaderboardScreen() {
   const [category, setCategory] = useState<LeaderboardCategory>('xp');
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('weekly');
   const [leaderboard, setLeaderboard] = useState<LeaderboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
 

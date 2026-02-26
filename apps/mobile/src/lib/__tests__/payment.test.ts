@@ -146,6 +146,7 @@ describe('getProduct', () => {
 
     const product = paymentService.getProduct(PRODUCT_IDS.PREMIUM_MONTHLY);
     expect(product).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(product!.id).toBe(PRODUCT_IDS.PREMIUM_MONTHLY);
   });
 
@@ -181,6 +182,7 @@ describe('purchaseProduct — subscription', () => {
     }));
     expect(mockOpenURL).toHaveBeenCalledWith('https://checkout.stripe.com/session/test');
     expect(result).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('pending');
   });
 
@@ -236,6 +238,7 @@ describe('purchaseProduct — coins', () => {
       package_id: PRODUCT_IDS.COINS_100,
     }));
     expect(result).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('pending');
   });
 
@@ -247,6 +250,7 @@ describe('purchaseProduct — coins', () => {
     const result = await paymentService.purchaseProduct(PRODUCT_IDS.COINS_100);
 
     expect(result).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('purchased');
   });
 });

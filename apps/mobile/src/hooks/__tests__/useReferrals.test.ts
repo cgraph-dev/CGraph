@@ -238,8 +238,8 @@ describe('useReferrals', () => {
     });
 
     // Get initial call count after first load
-    const initialCodeCalls = (referralService.getReferralCode as jest.Mock).mock.calls.length;
-    const initialStatsCalls = (referralService.getReferralStats as jest.Mock).mock.calls.length;
+    const _initialCodeCalls = (referralService.getReferralCode as jest.Mock).mock.calls.length;
+    const _initialStatsCalls = (referralService.getReferralStats as jest.Mock).mock.calls.length;
 
     // Call refresh - data should still be available from cache
     await act(async () => {

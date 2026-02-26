@@ -76,13 +76,6 @@ const mockRequest: FriendRequest = {
   type: 'incoming',
 };
 
-const mockSentRequest: FriendRequest = {
-  id: 'req-2',
-  user: { id: 'user-4', username: 'eve', displayName: 'Eve', avatarUrl: null },
-  createdAt: '2025-06-01T00:00:00Z',
-  type: 'outgoing',
-};
-
 const getInitialState = () => ({
   friends: [],
   pendingRequests: [],

@@ -21,8 +21,8 @@ import {
   Particle,
   ParticleType,
   ParticleBehavior,
-  ParticleConfig,
-  EmitterConfig,
+  _ParticleConfig,
+  _EmitterConfig,
 } from './particle-system';
 import BlurEngine from './blur-engine';
 

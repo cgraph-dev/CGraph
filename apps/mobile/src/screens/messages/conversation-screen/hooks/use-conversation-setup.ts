@@ -4,7 +4,7 @@
  * @module screens/messages/conversation-screen/hooks/use-conversation-setup
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { FlatList, TextInput, Alert, Animated } from 'react-native';
+import { FlatList, TextInput, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { Message } from '../../../types';
 import type { GifResult } from '../components/gif-picker-modal';
@@ -46,7 +46,7 @@ interface SetupParams {
   colors: Record<string, unknown>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function useConversationSetup(params: SetupParams) {
   const {
     conversationId,
@@ -169,7 +169,7 @@ export function useConversationSetup(params: SetupParams) {
     removeReactionFromMessage: messageReactions.removeReactionFromMessage,
   });
 
-  const socket = useConversationSocket({
+  const _socket = useConversationSocket({
     conversationId, userId: user?.id,
     onNewMessage: socketHandlers.handleSocketNewMessage,
     onMessageUpdated: socketHandlers.handleSocketMessageUpdated,

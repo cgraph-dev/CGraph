@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAudioPlayer, useAudioPlayerStatus, AudioStatus, setAudioModeAsync } from 'expo-audio';
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 import { createLogger } from '../lib/logger';
@@ -58,7 +58,7 @@ export function VoiceMessagePlayer({
   const [audioDuration, setAudioDuration] = useState(initialDuration || 0);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [waveform, setWaveform] = useState<number[]>(
+  const [waveform, _setWaveform] = useState<number[]>(
     waveformData || generatePlaceholderWaveform(30)
   );
   const waveformContainerRef = useRef<View>(null);

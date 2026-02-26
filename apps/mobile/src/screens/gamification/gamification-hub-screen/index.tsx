@@ -79,7 +79,7 @@ export default function GamificationHubScreen() {
           `+${result.coins} coins! Your streak is now ${result.streak} days.`
         );
       }
-    } catch (error) {
+    } catch (_error) {
       HapticFeedback.error();
       Alert.alert('Error', 'Failed to claim streak bonus');
     }

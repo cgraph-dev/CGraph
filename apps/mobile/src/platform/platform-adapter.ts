@@ -9,11 +9,11 @@
  * - Consistent styling helpers
  */
 
-import { Platform, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { Platform, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { iosFeatures, IOSCapabilities } from './ios/ios-features';
-import { androidFeatures, AndroidCapabilities, MaterialYouColors } from './android/android-features';
+import { androidFeatures, AndroidCapabilities } from './android/android-features';
 
 // ============================================================================
 // Types

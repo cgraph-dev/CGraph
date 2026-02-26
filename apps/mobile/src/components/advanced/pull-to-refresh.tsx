@@ -376,7 +376,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
   );
 }
 
-function ProgressIndicator({ progress, isRefreshing, color, size }: IndicatorProps) {
+function ProgressIndicator({ progress, _isRefreshing, color, size }: IndicatorProps) {
   const animatedStyle = useAnimatedStyle(() => ({
     width: interpolate(progress.value, [0, 1], [0, size * 2]),
   }));

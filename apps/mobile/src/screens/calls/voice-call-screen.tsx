@@ -27,7 +27,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Haptics from 'expo-haptics';
 
 import AnimatedAvatar from '@/components/ui/animated-avatar';
 import GlassCard from '@/components/ui/glass-card';
@@ -35,7 +34,7 @@ import ParticleBackground from '@/components/ui/particle-background';
 import { Colors, Shadows, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 type CallStackParamList = {
   VoiceCall: {
@@ -59,20 +58,20 @@ const AUDIO_LEVELS_COUNT = 32;
 export default function VoiceCallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CallStackParamList>>();
   const route = useRoute<VoiceCallRouteProp>();
-  const { recipientId, recipientName, recipientAvatar, isIncoming } = route.params;
+  const { _recipientId, recipientName, recipientAvatar, isIncoming } = route.params;
 
   // State
   const [callState, setCallState] = useState<CallState>(isIncoming ? 'ringing' : 'connecting');
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [connectionQuality, setConnectionQuality] = useState<ConnectionQuality>('excellent');
+  const [connectionQuality, _setConnectionQuality] = useState<ConnectionQuality>('excellent');
   const [audioLevels, setAudioLevels] = useState<number[]>(Array(AUDIO_LEVELS_COUNT).fill(0));
 
   // Animations
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const ringAnim = useRef(new Animated.Value(0)).current;
-  const waveAnim = useRef(new Animated.Value(0)).current;
+  const _waveAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(100)).current;
   const avatarGlowAnim = useRef(new Animated.Value(0.5)).current;

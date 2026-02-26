@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { PrivacySettings, useSettingsStore, useThemeStore } from '@/stores';
+import type { useSettingsStore, useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {

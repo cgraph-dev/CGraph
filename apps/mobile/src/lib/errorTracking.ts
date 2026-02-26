@@ -350,7 +350,7 @@ async function processQueue(): Promise<void> {
         error.retryCount++;
         errorQueue.push(error);
       }
-    } catch (e) {
+    } catch (_e) {
       if (error.retryCount < CONFIG.maxRetries) {
         error.retryCount++;
         errorQueue.push(error);

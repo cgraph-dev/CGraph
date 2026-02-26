@@ -5,7 +5,7 @@
  * Acts as a navigation hub to more specific customization screens.
  */
 
-import React, { useState } from 'react';
+import React, { } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';

@@ -48,7 +48,7 @@ interface Report {
 }
 
 // ── Mock Data ──────────────────────────────────────────────
-const MOCK_REPORTS: Report[] = [
+const _MOCK_REPORTS: Report[] = [
   {
     id: '1',
     reporterUsername: 'alice',

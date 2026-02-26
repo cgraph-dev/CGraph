@@ -84,7 +84,7 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to save notification preferences. Please try again.');
     } finally {
       setSaving(false);

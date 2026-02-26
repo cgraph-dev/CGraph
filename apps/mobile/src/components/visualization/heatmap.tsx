@@ -49,7 +49,7 @@ export function Heatmap({
 }: HeatmapProps) {
   const [selectedCell, setSelectedCell] = useState<HeatmapData | null>(null);
 
-  const { startDate, endDate, weeks } = useMemo(() => {
+  const { startDate, _endDate, weeks } = useMemo(() => {
     const end = propEndDate || new Date();
     const start = propStartDate || new Date(end.getTime() - 365 * 24 * 60 * 60 * 1000);
     const adjustedStart = new Date(start);
@@ -65,6 +65,7 @@ export function Heatmap({
     data.forEach((item) => {
       const date = typeof item.date === 'string' ? new Date(item.date) : item.date;
       const key = date.toISOString().split('T')[0];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       map.set(key!, item);
     });
     return map;
@@ -94,6 +95,7 @@ export function Heatmap({
     for (let week = 0; week < weeks; week++) {
       for (let day = 0; day < 7; day++) {
         const dateKey = currentDate.toISOString().split('T')[0];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const cellData = dataMap.get(dateKey!);
         const value = cellData?.value || 0;
         result.push({ date: new Date(currentDate), value, color: getColor(value), weekIndex: week, dayIndex: day, data: cellData });
@@ -110,6 +112,7 @@ export function Heatmap({
     cells.forEach((cell) => {
       const month = cell.date.getMonth();
       if (month !== lastMonth && cell.dayIndex === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         labels.push({ month: MONTHS[month]!, weekIndex: cell.weekIndex });
         lastMonth = month;
       }

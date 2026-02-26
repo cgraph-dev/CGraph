@@ -19,7 +19,7 @@ import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
-import { ForumsStackParamList, Post, UserBasic } from '../../types';
+import { ForumsStackParamList, UserBasic } from '../../types';
 
 // =============================================================================
 // FORUM BOARD SCREEN
@@ -74,7 +74,7 @@ type SortOption = 'newest' | 'popular' | 'active';
  *
  */
 export default function ForumBoardScreen({ navigation, route }: Props) {
-  const { forumId, boardId, boardName } = route.params;
+  const { forumId, boardId, _boardName } = route.params;
   const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

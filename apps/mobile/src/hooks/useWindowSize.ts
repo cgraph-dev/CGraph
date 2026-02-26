@@ -2,7 +2,7 @@
  * React hook for tracking device window dimensions, scale, and font scale with real-time updates.
  * @module hooks/useWindowSize
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Dimensions, ScaledSize } from 'react-native';
 
 interface WindowSize {

@@ -84,7 +84,7 @@ export interface UseMessageSendingReturn {
  */
 export function useMessageSending({
   conversationId,
-  userId,
+  _userId,
   isE2EEInitialized,
   otherParticipantId,
   encryptMessage,

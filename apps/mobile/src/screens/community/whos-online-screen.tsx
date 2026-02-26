@@ -120,7 +120,7 @@ export default function WhosOnlineScreen() {
   const headerOpacity = useRef(new Animated.Value(0)).current;
 
   // Auto-refresh timer
-  const refreshInterval = useRef<TimerRef>(null);
+  const _refreshInterval = useRef<TimerRef>(null);
 
   useEffect(() => {
     // Animate header on mount

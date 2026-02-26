@@ -20,9 +20,8 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, Linking, ScrollView } from 'react-native';
 import { useThemeStore } from '@/stores';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 export interface MarkdownRendererProps {
@@ -109,7 +108,7 @@ export default function MarkdownRenderer({
       { regex: /@(\w+)/g, type: 'mention' as const },
     ];
 
-    const remaining = text;
+    const _remaining = text;
     let lastIndex = 0;
 
     // Simple parse - find all matches and their positions

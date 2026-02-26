@@ -37,7 +37,7 @@ export interface SpringConfig {
  * Use this when passing to withSpring() to avoid type errors.
  */
 export function getSpringConfig(config: SpringConfig): WithSpringConfig {
-  const { name, description, ...springConfig } = config;
+  const { _name, _description, ...springConfig } = config;
    
   return springConfig as WithSpringConfig;
 }

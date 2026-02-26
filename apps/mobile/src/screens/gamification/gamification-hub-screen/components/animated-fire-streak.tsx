@@ -8,7 +8,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,

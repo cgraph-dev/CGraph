@@ -3,7 +3,7 @@
  * @module screens/premium/coin-shop-screen/components/category-tabs
  */
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CategoryId, categories } from '../types';
 

@@ -13,7 +13,6 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Color from 'color';
 import chroma from 'chroma-js';
 
 // ============================================================================

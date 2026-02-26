@@ -57,6 +57,7 @@ describe('safeParseDate', () => {
   it('parses a valid ISO string', () => {
     const result = safeParseDate('2024-01-15T12:00:00Z');
     expect(result).toBeInstanceOf(Date);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.toISOString()).toBe('2024-01-15T12:00:00.000Z');
   });
 

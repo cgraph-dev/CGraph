@@ -213,7 +213,9 @@ describe('marketplaceStore', () => {
 
       const selected = useMarketplaceStore.getState().selectedListing;
       expect(selected).not.toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(selected!.id).toBe('l1');
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(selected!.itemType).toBe('avatar_border');
     });
   });

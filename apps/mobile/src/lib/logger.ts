@@ -3,7 +3,7 @@
  * Only logs in development mode to prevent sensitive data leakage
  */
 
-import { captureError, addBreadcrumb } from './errorTracking';
+import { captureError } from './errorTracking';
 
 const isDev = __DEV__;
 
@@ -27,6 +27,7 @@ export const createLogger = (namespace: string): Logger => {
   return {
     debug: (...args: unknown[]) => {
       if (isDev) {
+        // eslint-disable-next-line no-console
         console.debug(prefix, ...args);
       }
     },
@@ -37,6 +38,7 @@ export const createLogger = (namespace: string): Logger => {
     },
     log: (...args: unknown[]) => {
       if (isDev) {
+        // eslint-disable-next-line no-console
         console.log(prefix, ...args);
       }
     },

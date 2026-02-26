@@ -6,7 +6,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PluginCategory, CategoryConfig } from '../types';
+import { PluginCategory } from '../types';
 import { CATEGORIES, ALL_CATEGORY } from '../constants';
 import { styles } from '../styles';
 

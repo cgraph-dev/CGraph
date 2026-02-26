@@ -42,6 +42,7 @@ const ThrowingComponent = ({ shouldThrow = true }: { shouldThrow?: boolean }) =>
 };
 
 // Component that throws on specific action
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ConditionalThrowComponent = () => {
   const [shouldThrow, setShouldThrow] = React.useState(false);
 

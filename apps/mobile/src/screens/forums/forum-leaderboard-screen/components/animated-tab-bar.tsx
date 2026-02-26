@@ -13,7 +13,6 @@ import Animated, { useSharedValue, withSpring, useAnimatedStyle, interpolate } f
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
 import { LeaderboardType } from '../../forum-leaderboard-screen';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -35,7 +34,7 @@ interface TabBarProps {
 /**
  *
  */
-export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
+export function AnimatedTabBar({ activeTab, onTabChange, _colors }: TabBarProps) {
   const indicatorAnim = useSharedValue(activeTab === 'forums' ? 0 : 1);
   const forumsScale = useSharedValue(activeTab === 'forums' ? 1.1 : 1);
   const contributorsScale = useSharedValue(activeTab === 'contributors' ? 1.1 : 1);

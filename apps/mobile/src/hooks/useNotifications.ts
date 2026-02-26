@@ -257,7 +257,7 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
       if (isCacheValid(cacheRef.current.notifications)) {
         setState((prev) => ({
           ...prev,
-          notifications: cacheRef.current.notifications!.data,
+          notifications: cacheRef.current.notifications?.data,
         }));
       } else {
         refresh();

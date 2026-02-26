@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 vi.mock('@/lib/animation-presets', () => ({
   tweens: { standard: {}, fast: {} },
@@ -247,7 +247,7 @@ vi.mock('@/stores/theme', () => ({
 }));
 
 vi.mock('@/modules/forums/components/forum-category-list/index', () => ({
-  useForumCategoryList: (categories: { id: string }[], forums: unknown[]) => ({
+  useForumCategoryList: (categories: { id: string }[], _forums: unknown[]) => ({
     expandedCategories: new Set(categories.map((c) => c.id)),
     forumsByCategory: {},
     toggleCategory: vi.fn(),
@@ -274,11 +274,9 @@ function makeCategory(overrides: Record<string, unknown> = {}) {
 
 describe('ForumCategoryList', () => {
   let onCategoryClick: ReturnType<typeof vi.fn>;
-  let onForumClick: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     onCategoryClick = vi.fn();
-    onForumClick = vi.fn();
   });
 
   it('renders category names', () => {

@@ -131,7 +131,7 @@ export function useFriendRequests() {
       await api.post(`/api/v1/friends/${requestId}/accept`);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIncomingRequests((prev) => prev.filter((r) => r.id !== requestId));
-    } catch (error) {
+    } catch (_error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to accept friend request');
     } finally {
@@ -146,7 +146,7 @@ export function useFriendRequests() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIncomingRequests((prev) => prev.filter((r) => r.id !== requestId));
       setOutgoingRequests((prev) => prev.filter((r) => r.id !== requestId));
-    } catch (error) {
+    } catch (_error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to decline friend request');
     } finally {

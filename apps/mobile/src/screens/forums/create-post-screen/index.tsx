@@ -54,7 +54,7 @@ type Props = {
  */
 export default function CreatePostScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

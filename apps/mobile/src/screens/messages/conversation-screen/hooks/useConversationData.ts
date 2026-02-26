@@ -9,7 +9,7 @@
 import { useState, useCallback, useRef } from 'react';
 import api from '../../../../lib/api';
 import socketManager from '../../../../lib/socket';
-import { normalizeMessage, normalizeMessages } from '../../../../lib/normalizers';
+import { normalizeMessages } from '../../../../lib/normalizers';
 import { createLogger } from '../../../../lib/logger';
 import { processMessagesWithReactions } from '../utils';
 import type { Message, Conversation, ConversationParticipant, UserBasic } from '../../../../types';

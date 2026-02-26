@@ -141,7 +141,7 @@ describe('Button', () => {
     });
 
     it('shows loading indicator when loading', () => {
-      const { queryByText, UNSAFE_getByType } = render(
+      const { queryByText } = render(
         <Button loading>Loading</Button>
       );
 

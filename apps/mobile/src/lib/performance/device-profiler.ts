@@ -274,7 +274,7 @@ class DeviceProfiler {
     return 'low';
   }
 
-  private estimateRam(tier: DeviceTier, deviceModel: string | null): 'low' | 'medium' | 'high' {
+  private estimateRam(tier: DeviceTier, _deviceModel: string | null): 'low' | 'medium' | 'high' {
     switch (tier) {
       case 'high':
         return 'high';
@@ -332,8 +332,8 @@ class DeviceProfiler {
 
   private calculateLimits(
     tier: DeviceTier,
-    ram: 'low' | 'medium' | 'high',
-    gpu: 'low' | 'medium' | 'high'
+    _ram: 'low' | 'medium' | 'high',
+    _gpu: 'low' | 'medium' | 'high'
   ): {
     maxParticleCount: number;
     maxConcurrentAnimations: number;

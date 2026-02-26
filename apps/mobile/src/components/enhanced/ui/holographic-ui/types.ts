@@ -2,7 +2,6 @@
  * Holographic UI Types and Constants
  */
 
-import { ViewStyle, TextStyle } from 'react-native';
 
 // =============================================================================
 // TYPES

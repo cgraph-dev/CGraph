@@ -22,14 +22,12 @@ import {
   Dimensions,
   Modal,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/lib/design/design-system';
-import GlassCard from '@/components/ui/glass-card';
+import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

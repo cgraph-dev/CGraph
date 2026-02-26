@@ -96,7 +96,7 @@ export interface DynamicModalProps {
 // Constants
 // ============================================================================
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT, width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 const PRESENTATION_CONFIGS: Record<ModalPresentation, { height: number; borderRadius: number }> = {
   fullscreen: { height: SCREEN_HEIGHT, borderRadius: 0 },

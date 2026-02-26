@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 vi.mock('../hooks', () => ({
-  formatDateTimeLocal: (d: Date) => '2024-01-15T10:00',
-  formatDateLocal: (d: Date) => '2024-01-15',
+  formatDateTimeLocal: (_d: Date) => '2024-01-15T10:00',
+  formatDateLocal: (_d: Date) => '2024-01-15',
 }));
 
 import DateTimeFields from '../date-time-fields';

@@ -57,7 +57,7 @@ vi.mock('../advanced-search/search-bar', () => ({
 }));
 
 vi.mock('../advanced-search/filter-panel', () => ({
-  FilterPanel: ({ filters, updateFilter, handleSearch, handleReset, isLoading, forums }: any) => (
+  FilterPanel: ({ filters, updateFilter, handleSearch, handleReset, isLoading: _isLoading, forums }: any) => (
     <div data-testid="filter-panel">
       <input
         data-testid="author-input"

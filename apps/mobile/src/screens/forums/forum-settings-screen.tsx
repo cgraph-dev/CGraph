@@ -388,7 +388,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
                       try {
                         await api.delete(`/api/v1/forums/${forumId}`);
                         navigation.goBack();
-                      } catch (error) {
+                      } catch (_error) {
                         Alert.alert('Error', 'Failed to delete forum');
                       }
                     },

@@ -226,7 +226,7 @@ vi.mock('../leaderboard-widget/constants', () => ({
 }));
 
 vi.mock('../leaderboard-widget/podium', () => ({
-  Podium: ({ entries }: { entries: unknown[] }) => <div data-testid="podium">Podium</div>,
+  Podium: ({ entries: _entries }: { entries: unknown[] }) => <div data-testid="podium">Podium</div>,
 }));
 
 vi.mock('../leaderboard-widget/leaderboard-entry-row', () => ({
@@ -254,12 +254,10 @@ function makeEntry(rank: number, username: string, score: number, userId = `user
 }
 
 describe('LeaderboardWidget', () => {
-  let onUserClick: ReturnType<typeof vi.fn>;
   let onTypeChange: ReturnType<typeof vi.fn>;
   let onTimePeriodChange: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    onUserClick = vi.fn();
     onTypeChange = vi.fn();
     onTimePeriodChange = vi.fn();
   });

@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import type { Message } from '../../../../types';
 import { createLogger } from '../../../../lib/logger';
 
-const logger = createLogger('useReactions');
+const _logger = createLogger('useReactions');
 
 /** Emoji categories for picker */
 export const EMOJI_CATEGORIES = {

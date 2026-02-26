@@ -24,7 +24,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
 import GlassCard from '../../../../components/ui/glass-card';
 import { LeaderboardForum, TopContributor, LeaderboardType } from '../../forum-leaderboard-screen';
 
@@ -66,7 +65,7 @@ const getRankChange = (current: number, previous?: number) => {
 /**
  *
  */
-export function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps) {
+export function AnimatedListItem({ item, index, type, onPress, _colors }: ListItemProps) {
   // Entry animations
   const entryAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;

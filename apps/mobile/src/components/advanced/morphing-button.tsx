@@ -137,7 +137,7 @@ export function MorphingButton({
   onLongPress,
   disabled = false,
   hapticFeedback = true,
-  morphDuration = 300,
+  _morphDuration = 300,
   pressScale = 0.95,
   springPreset = 'snappy',
   autoResetAfterSuccess = true,
@@ -148,7 +148,7 @@ export function MorphingButton({
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
   const morphProgress = useSharedValue(0); // 0 = expanded, 1 = collapsed to icon
-  const stateProgress = useSharedValue(0); // For color transitions
+  const _stateProgress = useSharedValue(0); // For color transitions
   const loadingRotation = useSharedValue(0);
 
   const springConfig = SPRING_PRESETS[springPreset];

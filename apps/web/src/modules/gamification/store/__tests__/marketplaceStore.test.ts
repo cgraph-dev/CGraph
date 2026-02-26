@@ -11,7 +11,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useMarketplaceStore } from '../marketplaceSlice';
-import type { MarketplaceListing, MarketplaceFilters } from '../marketplace-types';
+import type { MarketplaceListing } from '../marketplace-types';
 
 vi.mock('@/lib/api', () => ({
   api: {

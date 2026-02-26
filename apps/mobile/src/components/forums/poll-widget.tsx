@@ -98,7 +98,7 @@ export default function PollWidget({
             try {
               await onClose();
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            } catch (error) {
+            } catch (_error) {
               Alert.alert('Error', 'Failed to close poll');
             }
           },

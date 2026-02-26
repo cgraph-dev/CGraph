@@ -318,7 +318,7 @@ function getColors(scheme: ColorScheme): ThemeColors {
 // Store
 // ---------------------------------------------------------------------------
 
-export const useThemeStore = create<ThemeStore>((set, get) => ({
+export const useThemeStore = create<ThemeStore>((set, _get) => ({
   colorScheme: 'light',
   themePreference: 'system',
   colors: lightColors,

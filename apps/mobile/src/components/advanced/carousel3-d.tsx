@@ -349,7 +349,7 @@ function CarouselItem({
     );
 
     let translateX = 0;
-    let translateZ = 0;
+    let _translateZ = 0;
     let rotateY = 0;
 
     switch (layout) {
@@ -361,7 +361,7 @@ function CarouselItem({
           [rotationAngle, 0, -rotationAngle],
           Extrapolate.CLAMP
         );
-        translateZ = interpolate(absOffset, [0, 1], [0, -100], Extrapolate.CLAMP);
+        _translateZ = interpolate(absOffset, [0, 1], [0, -100], Extrapolate.CLAMP);
         break;
 
       case 'wheel':
@@ -372,7 +372,7 @@ function CarouselItem({
           [90, 0, -90],
           Extrapolate.CLAMP
         );
-        translateZ = interpolate(absOffset, [0, visibleItems], [0, -200], Extrapolate.CLAMP);
+        _translateZ = interpolate(absOffset, [0, visibleItems], [0, -200], Extrapolate.CLAMP);
         break;
 
       case 'stack':
@@ -383,7 +383,7 @@ function CarouselItem({
           [-itemWidth * 0.5, 0, 20, 40, 60],
           Extrapolate.CLAMP
         );
-        translateZ = interpolate(
+        _translateZ = interpolate(
           offset,
           [-1, 0, 1, 2, 3],
           [-50, 0, -30, -60, -90],
@@ -474,7 +474,7 @@ export function ImageCarousel({ images, onImagePress, style }: ImageCarouselProp
   return (
     <Carousel3D
       data={images}
-      renderItem={(uri, index) => (
+      renderItem={(uri, _index) => (
         <Animated.Image source={{ uri }} style={styles.carouselImage} resizeMode="cover" />
       )}
       onItemPress={(_, index) => onImagePress?.(index)}

@@ -97,6 +97,7 @@ export function RankItem({ item, index, category, categoryColor, colors, onPress
           <AnimatedAvatar
             source={
               getValidImageUrl(item.avatar_url)
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ? { uri: getValidImageUrl(item.avatar_url)! }
                 : require('../../../assets/default-avatar.png')
             }
@@ -107,6 +108,7 @@ export function RankItem({ item, index, category, categoryColor, colors, onPress
             isPremium={item.is_premium}
           />
         ) : getValidImageUrl(item.avatar_url) ? (
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           <Image source={{ uri: getValidImageUrl(item.avatar_url)! }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>

@@ -35,7 +35,7 @@ export function MorphingGroupCard({
   index,
   onPress,
   colors,
-  isDark,
+  _isDark,
 }: MorphingGroupCardProps) {
   // Entry animations
   const slideAnim = useRef(new Animated.Value(80)).current;

@@ -279,7 +279,7 @@ export async function runTimeline(timeline: Timeline): Promise<void> {
           runKeyframeAnimation(step.target, step.animation);
           if (!step.parallel) {
             // Wait for animation to complete
-            await new Promise((resolve) => setTimeout(resolve, step.animation!.totalDuration));
+            await new Promise((resolve) => setTimeout(resolve, step.animation?.totalDuration));
           }
         }
         break;

@@ -17,7 +17,7 @@ import Animated, {
   useAnimatedProps,
   withTiming,
   withDelay,
-  withSpring,
+  _withSpring,
   interpolate,
   Easing,
   SharedValue,
@@ -34,7 +34,6 @@ import Svg, {
   G,
 } from 'react-native-svg';
 
-import { SPRING_PRESETS } from '../../lib/animations/animation-library';
 
 // ============================================================================
 // Types
@@ -222,7 +221,7 @@ export function LineChart({
         area = `M ${x} ${chartHeight} L ${x} ${y}`;
       } else if (curved) {
         const prevX = xScale(index - 1);
-        const prevY = yScale(data[index - 1]!.value);
+        const prevY = yScale(data[index - 1]?.value);
         const cpx = (prevX + x) / 2;
         line += ` C ${cpx} ${prevY}, ${cpx} ${y}, ${x} ${y}`;
         area += ` C ${cpx} ${prevY}, ${cpx} ${y}, ${x} ${y}`;
@@ -311,7 +310,7 @@ export function LineChart({
 
     return data
       .filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1)
-      .map((point, index, arr) => {
+      .map((point, index, _arr) => {
         const originalIndex = data.indexOf(point);
         const x = xScale(originalIndex);
 
@@ -393,7 +392,7 @@ export function BarChart({
   showLabels = true,
   barWidth,
   barSpacing = 8,
-  horizontal = false,
+  _horizontal = false,
   animated = true,
   animationDuration = 800,
   animationDelay = 0,

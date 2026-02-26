@@ -32,7 +32,7 @@ type Props = {
  *
  */
 export default function LoginScreen({ navigation }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
   const { login } = useAuthStore();
 
   const [identifier, setIdentifier] = useState('');

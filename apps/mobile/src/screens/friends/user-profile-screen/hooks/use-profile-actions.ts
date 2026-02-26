@@ -9,7 +9,7 @@ import api from '../../../../lib/api';
 import { createLogger } from '../../../../lib/logger';
 import type { UserProfile } from '../types';
 
-const logger = createLogger('useProfileActions');
+const _logger = createLogger('useProfileActions');
 
 interface UseProfileActionsParams {
   user: UserProfile | null;

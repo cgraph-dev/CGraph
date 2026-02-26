@@ -12,7 +12,6 @@ vi.mock('../calendarUtils', () => ({
 import { CalendarGrid } from '../calendar-grid';
 
 describe('CalendarGrid', () => {
-  const today = new Date();
   const calendarDays = [
     null,
     null,

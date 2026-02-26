@@ -24,7 +24,7 @@ vi.mock('@/lib/api', () => ({
 
 import { api } from '@/lib/api';
 import { useReportForm, REPORT_CATEGORIES } from '../useReportForm';
-import type { ReportCategory, TargetType } from '../useReportForm';
+import type { TargetType } from '../useReportForm';
 
 // ── Test wrapper with QueryClientProvider ────────────────────────────
 

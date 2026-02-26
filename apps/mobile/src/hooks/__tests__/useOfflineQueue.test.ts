@@ -4,7 +4,7 @@
  * Tests for the offline queue hook functionality.
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { useOfflineQueue } from '../useOfflineQueue';
 import * as OfflineQueue from '../../lib/offline/offline-queue';
 

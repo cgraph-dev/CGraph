@@ -18,7 +18,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { HolographicConfig, getTheme, HOLOGRAPHIC_THEMES } from '../types';
+import { HolographicConfig, getTheme } from '../types';
 import { HolographicText } from './holographic-text';
 import { Scanlines } from './decorations';
 

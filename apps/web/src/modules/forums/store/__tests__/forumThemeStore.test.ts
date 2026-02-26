@@ -86,7 +86,7 @@ describe('FORUM_THEME_PRESETS', () => {
   });
 
   it('each preset has colors', () => {
-    for (const [key, preset] of Object.entries(FORUM_THEME_PRESETS)) {
+    for (const [_key, preset] of Object.entries(FORUM_THEME_PRESETS)) {
       expect(preset.colors).toBeDefined();
       expect(preset.colors!.primary).toBeTruthy();
     }

@@ -193,6 +193,7 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
   ) => {
     if (!item) return null;
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const colors = {
       1: { gradient: ['#FFD700', '#FFA500'] as const, border: '#FFD700', shadow: '#FFD700' },
       2: { gradient: ['#C0C0C0', '#A0A0A0'] as const, border: '#C0C0C0', shadow: '#C0C0C0' },

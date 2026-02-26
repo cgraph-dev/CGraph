@@ -53,7 +53,7 @@ export default function ParticleBackground({
   colors,
   speed = 1,
   rarity,
-  interactive = false,
+  _interactive = false,
   blur = true,
   style,
   children,

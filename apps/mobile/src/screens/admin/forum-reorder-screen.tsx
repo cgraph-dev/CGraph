@@ -36,7 +36,7 @@ export default function ForumReorderScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedItem, setDraggedItem] = useState<{ type: 'category' | 'forum'; id: string } | null>(null);
-  const dragY = useRef(new Animated.Value(0)).current;
+  const _dragY = useRef(new Animated.Value(0)).current;
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -51,7 +51,7 @@ export default function ForumReorderScreen() {
         if (!categoryMap.has(catId)) {
           categoryMap.set(catId, { id: catId, name: catName, order: forum.category_order || categoryMap.size, isExpanded: true, forums: [] });
         }
-        categoryMap.get(catId)!.forums.push({
+        categoryMap.get(catId)?.forums.push({
           id: forum.id, name: forum.name || forum.title || 'Unnamed', description: forum.description || '',
           threadCount: forum.thread_count || forum.threads_count || 0, postCount: forum.post_count || forum.posts_count || 0,
           order: forum.order || forum.display_order || 0, icon: forum.icon, color: forum.color,

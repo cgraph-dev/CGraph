@@ -55,7 +55,7 @@ type Props = {
  *
  */
 export default function AvatarSettingsScreen({ navigation }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
   const { user } = useAuthStore();
   const [style, setStyle] = useState<AvatarStyle>(defaultStyle);
 

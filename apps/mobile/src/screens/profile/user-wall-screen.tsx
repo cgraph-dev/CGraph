@@ -6,7 +6,7 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  View,
+  _View,
   Text,
   FlatList,
   TouchableOpacity,

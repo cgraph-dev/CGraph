@@ -51,7 +51,7 @@ export interface AnimatedMessageWrapperProps {
 export const AnimatedMessageWrapper = memo(function AnimatedMessageWrapper({
   children,
   isOwnMessage,
-  index,
+  _index,
   isNew = false,
 }: AnimatedMessageWrapperProps) {
   const slideAnim = useSharedValue(isNew ? 30 : 0);

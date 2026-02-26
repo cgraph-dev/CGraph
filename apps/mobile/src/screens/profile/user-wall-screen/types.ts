@@ -1,4 +1,3 @@
-import { Colors } from '@/lib/design/design-system';
 
 export interface WallPost {
   id: string;

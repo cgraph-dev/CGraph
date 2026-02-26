@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
+  _Image,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -71,7 +71,7 @@ export default function ProfileScreen({ navigation }: Props) {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         updateUser(response.data.data);
-      } catch (error) {
+      } catch (_error) {
         Alert.alert('Error', 'Failed to upload avatar');
       }
     }
@@ -86,7 +86,7 @@ export default function ProfileScreen({ navigation }: Props) {
       });
       updateUser(response.data.data);
       navigation.goBack();
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to save profile');
     } finally {
       setIsSaving(false);
@@ -109,6 +109,7 @@ export default function ProfileScreen({ navigation }: Props) {
     try {
       const response = await api.put('/api/v1/me/username', { username });
       updateUser({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         ...user!,
         username: response.data.data.username,
         can_change_username: false,
@@ -138,6 +139,7 @@ export default function ProfileScreen({ navigation }: Props) {
           <AnimatedAvatar
             source={
               getValidImageUrl(user?.avatar_url)
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ? { uri: getValidImageUrl(user?.avatar_url)! }
                 : {
                     uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'U')}&background=10b981&color=fff&size=256`,

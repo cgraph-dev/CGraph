@@ -188,11 +188,11 @@ vi.mock('@/stores/theme', () => ({
 vi.mock('framer-motion', () => ({
   motion: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    div: ({ children, whileHover, whileTap, animate, initial, exit, transition, ...rest }: any) => (
+    div: ({ children, whileHover: _whileHover, whileTap: _whileTap, animate: _animate, initial: _initial, exit: _exit, transition: _transition, ...rest }: any) => (
       <div {...rest}>{children}</div>
     ),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    button: ({ children, whileHover, whileTap, ...rest }: any) => (
+    button: ({ children, whileHover: _whileHover, whileTap: _whileTap, ...rest }: any) => (
       <button {...rest}>{children}</button>
     ),
   },
@@ -201,7 +201,7 @@ vi.mock('framer-motion', () => ({
 
 vi.mock('@/shared/components/ui', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  GlassCard: ({ children, className, ...rest }: any) => (
+  GlassCard: ({ children, className, ..._rest }: any) => (
     <div data-testid="glass-card" className={className}>
       {children}
     </div>

@@ -63,7 +63,7 @@ export function useAttachmentUpload({
   onScrollToBottom,
 }: UseAttachmentUploadOptions): UseAttachmentUploadReturn {
   // Track active upload for potential cancellation
-  const uploadAbortRef = useRef<AbortController | null>(null);
+  const _uploadAbortRef = useRef<AbortController | null>(null);
 
   // Upload and send a single file as message
   const uploadAndSendFile = useCallback(

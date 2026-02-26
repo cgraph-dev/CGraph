@@ -11,9 +11,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  _ScrollView,
   FlatList,
-  Alert,
+  _Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -115,7 +115,7 @@ export default function BadgeSelectionScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();
   const [badges, setBadges] = useState<Badge[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {

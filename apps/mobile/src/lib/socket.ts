@@ -33,7 +33,7 @@ interface PresenceMeta {
   phx_ref?: string;
 }
 
-interface PresenceState {
+interface _PresenceState {
   [userId: string]: { metas: PresenceMeta[] };
 }
 
@@ -177,7 +177,7 @@ class SocketManager {
               this.joinUserChannel(String(parsed.id));
             }
           }
-        } catch (error) {
+        } catch (_error) {
           logger.warn('Failed to load stored user for user channel join');
         }
 
@@ -674,6 +674,7 @@ class SocketManager {
       this.typingUsers.set(conversationId, new Map());
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const conversationTyping = this.typingUsers.get(conversationId)!;
     const timeoutKey = `${conversationId}:${userId}`;
 
@@ -725,7 +726,7 @@ class SocketManager {
     if (!this.messageListeners.has(topic)) {
       this.messageListeners.set(topic, new Set());
     }
-    this.messageListeners.get(topic)!.add(callback);
+    this.messageListeners.get(topic)?.add(callback);
     return () => {
       this.messageListeners.get(topic)?.delete(callback);
     };
@@ -886,7 +887,7 @@ class SocketManager {
           this.onlineUsers.get(conversationId)?.add(id);
         });
 
-        presence.onLeave((id: string, _current: unknown, leftPresences: unknown) => {
+        presence.onLeave((id: string, _current: unknown, _leftPresences: unknown) => {
           // Only notify offline if ALL presences for this user have left
           const stillOnline = presence.list((uid: string) => uid === id).length > 0;
           if (!stillOnline) {

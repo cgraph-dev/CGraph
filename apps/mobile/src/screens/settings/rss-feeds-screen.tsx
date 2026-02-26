@@ -2,7 +2,7 @@
  * RSS feeds settings screen for managing feed subscriptions.
  * @module screens/settings/rss-feeds-screen
  */
-import React, { useState, useCallback } from 'react';
+import React, { } from 'react';
 import {
   View,
   Text,

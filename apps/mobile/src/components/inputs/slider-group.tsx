@@ -10,17 +10,17 @@
  * - Haptic feedback at steps
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View, ViewStyle, StyleProp, TextStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
+  _withTiming,
   runOnJS,
-  interpolate,
-  interpolateColor,
-  Extrapolate,
+  _interpolate,
+  _interpolateColor,
+  _Extrapolate,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
@@ -538,7 +538,7 @@ export function SliderGroup({
         const currentSlider = sliders.find((s) => s.id === id);
         if (!currentSlider) return;
 
-        const currentTotal = sliders.reduce((sum, s) => sum + s.value, 0);
+        const _currentTotal = sliders.reduce((sum, s) => sum + s.value, 0);
         const diff = newValue - currentSlider.value;
         const otherSliders = sliders.filter((s) => s.id !== id);
         const otherTotal = otherSliders.reduce((sum, s) => sum + s.value, 0);

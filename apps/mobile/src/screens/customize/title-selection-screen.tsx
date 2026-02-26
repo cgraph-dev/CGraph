@@ -84,7 +84,7 @@ export default function TitleSelectionScreen() {
   const navigation = useNavigation<NavProp>();
   const { colors } = useThemeStore();
   const [titles, setTitles] = useState<Title[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {

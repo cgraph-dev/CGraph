@@ -50,7 +50,12 @@ vi.mock('@/lib/animations/animation-engine', () => ({
 }));
 
 vi.mock('@/lib/api', () => ({
-  api: { post: vi.fn(), put: vi.fn(), delete: vi.fn(), patch: vi.fn() },
+  api: {
+    post: vi.fn(() => Promise.resolve({ data: {} })),
+    put: vi.fn(() => Promise.resolve({ data: {} })),
+    delete: vi.fn(() => Promise.resolve({ data: {} })),
+    patch: vi.fn(() => Promise.resolve({ data: {} })),
+  },
 }));
 
 vi.mock('../role-manager/RoleEditor', () => ({

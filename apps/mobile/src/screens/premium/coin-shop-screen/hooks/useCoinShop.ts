@@ -5,11 +5,11 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useSharedValue, withTiming, withDelay, withSpring, type SharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withDelay, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import paymentService, { PRODUCT_IDS } from '../../../../lib/payment';
-import { SHOP_ITEMS, COIN_BUNDLES, CoinBundle, ShopItem } from '../components';
+import { SHOP_ITEMS, CoinBundle, ShopItem } from '../components';
 import { CategoryId } from '../types';
 
 /**
