@@ -314,13 +314,18 @@ apps/backend/
 │   │   │
 │   │   ├── moderation/                # Moderation context
 │   │   │   ├── report.ex             # Report schema
+│   │   │   ├── reports.ex            # Reports context
 │   │   │   ├── appeal.ex             # Appeal schema
+│   │   │   ├── appeals.ex            # Appeals context
 │   │   │   ├── enforcement.ex        # Enforcement actions
+│   │   │   ├── review_action.ex      # Review action schema
 │   │   │   ├── user_restriction.ex   # User restrictions
 │   │   │   └── stats.ex              # Moderation statistics
 │   │   │
 │   │   ├── search/                    # Search context
 │   │   │   ├── search_engine/        # Full-text search engine
+│   │   │   ├── search_engine.ex      # Search engine facade
+│   │   │   ├── backend.ex            # Search backend
 │   │   │   ├── indexer.ex            # Search indexer
 │   │   │   ├── messages.ex           # Message search
 │   │   │   └── users.ex             # User search
@@ -366,13 +371,16 @@ apps/backend/
 │   │   │
 │   │   ├── webhooks/                  # Outbound webhooks
 │   │   │   ├── endpoint.ex           # Webhook endpoint schema
-│   │   │   ├── delivery.ex           # Delivery tracking
+│   │   │   ├── endpoints.ex          # Webhook endpoints context
+│   │   │   ├── delivery.ex           # Delivery schema
+│   │   │   ├── deliveries.ex         # Delivery tracking context
 │   │   │   └── signature.ex          # HMAC signature verification
 │   │   │
 │   │   ├── data_export/               # GDPR data export
 │   │   │   ├── processor.ex          # Export pipeline
 │   │   │   ├── formatter.ex          # Data formatting
 │   │   │   ├── delivery.ex           # Export delivery
+│   │   │   ├── server.ex             # Export GenServer
 │   │   │   └── storage.ex            # Export storage
 │   │   │
 │   │   ├── storage/                   # File storage (S3/R2)
@@ -471,6 +479,7 @@ apps/web/
 │   │       ├── auth-routes.tsx
 │   │       ├── dev-routes.tsx
 │   │       ├── forum-routes.tsx
+│   │       ├── public-routes.tsx
 │   │       └── settings-routes.tsx
 │   │
 │   ├── modules/                       # ★ Feature modules (DDD-style)

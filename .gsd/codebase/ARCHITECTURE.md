@@ -84,7 +84,7 @@ CGraph.Supervisor
 ├── DNSCluster                    (Fly.io multi-region clustering)
 ├── OpenTelemetry                 (distributed tracing setup)
 ├── CGraph.CacheSupervisor        (3-tier cache: L1 ETS, L2 Cachex, L3 Redis)
-├── CGraph.SecuritySupervisor     (token blacklist, account lockout, TOTP)
+├── CGraph.SecuritySupervisor     (JWT key rotation, token blacklist, account lockout)
 ├── CGraph.WorkerSupervisor       (Oban, Presence, WebRTC)
 ├── DocumentRegistry + DocumentSupervisor (real-time collaborative editing)
 ├── CGraph.Metrics                (in-app metrics collector)
@@ -406,7 +406,7 @@ src/modules/<feature>/
 
 React Router DOM v7 with:
 
-- **Route groups** under `src/routes/route-groups/` (dev, auth, forums, settings)
+- **Route groups** under `src/routes/route-groups/` (dev, auth, forums, public, settings)
 - **Lazy-loaded pages** via `React.lazy()` + `Suspense` (`src/routes/lazyPages.ts`)
 - **Route guards:** `ProtectedRoute`, `AdminRoute`, `ProfileRedirectRoute` (`src/routes/guards.tsx`)
 - **Auth initializer:** Token refresh and auth state hydration on app load
