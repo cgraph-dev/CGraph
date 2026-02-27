@@ -37,7 +37,7 @@
 - **Config**: `MEILISEARCH_URL`, `MEILISEARCH_API_KEY`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
 - **Fallback**: Gracefully degrades to PostgreSQL `ILIKE` queries when not configured
-- **Indexes**: Messages, Users (via `CGraph.Search.Indexer`)
+- **Indexes**: Messages, Users, Posts (via `CGraph.Search.Indexer`)
 
 ### WatermelonDB (Mobile Offline Database)
 

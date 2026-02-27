@@ -225,7 +225,7 @@ import { motion } from 'framer-motion';
 import { z } from 'zod';
 
 // 3. Internal packages (@cgraph/*)
-import { createHttpClient } from '@cgraph/api-client';
+import { createHttpClient } from '@cgraph/utils';
 import { formatDateHeader } from '@cgraph/utils';
 
 // 4. Relative imports (parent before sibling)
@@ -511,8 +511,9 @@ logger.breadcrumb('User clicked send'); // Adds to Sentry breadcrumb trail
 - **Production**: PII stripped, errors forwarded to Sentry, warnings sanitized
 - **Web**: `console.log`/`console.debug` banned (`no-console: error`);
   `console.warn`/`console.error` allowed
-- **Mobile**: Same as web — `console.log`/`console.debug` banned (`no-console: error`); only
-  `console.warn`/`console.error` allowed (shared ESLint rule block)
+- **Mobile**: `console.log`/`console.debug` discouraged (`no-console: warn` in mobile-local config);
+  `console.warn`/`console.error`/`console.info` allowed (root config targets `error` but
+  per-workspace lint uses local config)
 - Test files are exempt from the logger requirement
 
 ### Named Logger Instances
@@ -773,7 +774,8 @@ All enforced at **error** level in ESLint or CI:
 5. **No `useContext`** — use `use()` hook (React 19) (web, mobile only)
 6. **No direct store imports in components** — use hooks
 7. **No direct service imports in components/pages** — use hooks
-8. **No `console.log` in source** — `error` in web and mobile; use `createLogger()`
+8. **No `console.log` in source** — `error` in web, `warn` in mobile (local config); use
+   `createLogger()`
 9. **JSDoc required** on exported functions/classes
 10. **Kebab-case `.tsx` filenames** — enforced by `eslint-plugin-check-file`
 11. **300-line TSX limit** — enforced in CI

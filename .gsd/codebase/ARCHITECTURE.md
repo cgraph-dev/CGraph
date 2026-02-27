@@ -427,7 +427,7 @@ Zustand Store (client state)  ──or──  TanStack Query (server state)
   │ (optimistic update)                     │ (fetch/mutate)
   ▼                                         ▼
 Socket Manager ──────────────────────► @cgraph/api-client
-(Phoenix Channel)                      (Axios + CircuitBreaker)
+(Phoenix Channel)                      (Fetch + CircuitBreaker)
   │                                         │
   ▼                                         ▼
   WebSocket ──────────────────────────► REST API

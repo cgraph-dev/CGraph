@@ -66,7 +66,7 @@ apps/web/src/
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
-│   └── ... (17 store test files)
+│   └── ... (16 store test files)
 ├── hooks/__tests__/          # Hook unit tests (9 direct + 7 facade tests = 16)
 │   ├── useDebounce.test.ts
 │   ├── useClickOutside.test.ts

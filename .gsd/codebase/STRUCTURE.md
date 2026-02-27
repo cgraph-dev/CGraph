@@ -540,6 +540,8 @@ apps/web/
 │   │   └── theme/                     # Theme store
 │   │       ├── store.ts | themeStore.ts
 │   │       ├── actions.ts | selectors.ts | presets.ts
+│   │       ├── index.ts
+│   │       ├── __tests__/
 │   │       └── types.ts
 │   │
 │   ├── pages/                         # ★ Page components (route targets)
@@ -566,7 +568,7 @@ apps/web/
 │   │   │   ├── tooltip.tsx | popover.tsx | tabs.tsx | switch.tsx
 │   │   │   ├── skeleton.tsx | toast.tsx | glass-card.tsx
 │   │   │   ├── animated-avatar/ | animated-border.tsx
-│   │   │   └── ... (40+ UI components with Storybook stories)
+│   │   │   └── ... (50 UI components with Storybook stories)
 │   │   ├── navigation/               # Nav components
 │   │   ├── layout/                    # Layout primitives
 │   │   ├── content/                   # Content display components
@@ -580,6 +582,9 @@ apps/web/
 │   │   ├── theme/                     # Theme-related components
 │   │   ├── animated-logo/            # Animated logo component
 │   │   ├── error-boundary.tsx        # React error boundary
+│   │   ├── dev/                       # Dev-only components
+│   │   ├── index.ts                   # Component barrel exports
+│   │   ├── __tests__/                 # Component tests
 │   │   └── logo/                      # Logo component
 │   │
 │   ├── shared/                        # Cross-cutting shared code
@@ -590,7 +595,15 @@ apps/web/
 │   │   │   ├── keyboard-shortcuts-modal.tsx
 │   │   │   ├── presence-status-selector.tsx
 │   │   │   ├── push-notification-prompt.tsx
-│   │   │   └── layout/               # Shared layout components
+│   │   │   ├── animated-empty-state.tsx
+│   │   │   ├── avatar-lightbox.tsx
+│   │   │   ├── last-seen-badge.tsx
+│   │   │   ├── notification-actions.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── feedback/              # Feedback components
+│   │   │   ├── layout/               # Shared layout components
+│   │   │   ├── ui/                    # Shared UI components
+│   │   │   └── __tests__/             # Component tests
 │   │   ├── hooks/                     # Shared custom hooks
 │   │   ├── types/                     # Shared types
 │   │   └── utils/                     # Shared utilities
@@ -613,28 +626,42 @@ apps/web/
 │   │   └── useReducedMotion.ts
 │   │
 │   ├── lib/                           # Core libraries
-│   │   ├── api.ts                    # ★ Base API client (Axios + CircuitBreaker)
+│   │   ├── api.ts                    # ★ Base API client (Fetch + CircuitBreaker)
 │   │   ├── tokenService.ts           # JWT token management
 │   │   ├── socket/                    # Phoenix socket manager
 │   │   │   ├── socket-manager.ts     # Connection lifecycle
 │   │   │   ├── conversationChannel.ts | groupChannel.ts | userChannel.ts
 │   │   │   ├── forumChannel.ts | threadChannel.ts
 │   │   │   ├── presenceManager.ts    # Presence tracking
-│   │   │   └── channelHandlers.ts    # Channel event handlers
+│   │   │   ├── channelHandlers.ts    # Channel event handlers
+│   │   │   ├── connectionLifecycle.ts # Connection lifecycle
+│   │   │   ├── socket-manager-forum-thread.ts # Forum thread socket
+│   │   │   ├── socketUtils.ts        # Socket utilities
+│   │   │   ├── index.ts | types.ts
+│   │   │   └── __tests__/
 │   │   ├── crypto/                    # E2EE client implementation
 │   │   │   ├── e2ee.ts              # Main E2EE interface
 │   │   │   ├── doubleRatchet.ts     # Double Ratchet session
 │   │   │   ├── sessionManager.ts    # Session management
 │   │   │   ├── secureStorage.ts     # Encrypted key storage
 │   │   │   ├── e2eeStore.ts         # E2EE state store
+│   │   │   ├── e2ee.secure.ts       # Secure E2EE operations
+│   │   │   ├── migrateToSecureStorage.ts # Storage migration
+│   │   │   ├── index.ts
 │   │   │   ├── double-ratchet/      # Double Ratchet sub-modules
+│   │   │   ├── e2ee/                # E2EE sub-modules
 │   │   │   ├── e2ee-secure/         # Secure E2EE operations
+│   │   │   ├── e2ee-store/          # E2EE store sub-modules
 │   │   │   ├── protocol/            # Protocol implementation
-│   │   │   └── session-manager/     # Session management sub-modules
+│   │   │   ├── secure-storage/      # Secure storage sub-modules
+│   │   │   ├── session-manager/     # Session management sub-modules
+│   │   │   └── __tests__/
 │   │   ├── webrtc/                    # WebRTC client
 │   │   │   ├── webrtcService.ts     # WebRTC service
 │   │   │   ├── peerConnection.ts    # Peer connection management
-│   │   │   └── useCall.ts           # Call hook
+│   │   │   ├── useCall.ts           # Call hook
+│   │   │   ├── index.ts | types.ts
+│   │   │   └── __tests__/
 │   │   ├── ai/                        # AI features client
 │   │   │   ├── aiService.ts          # AI API integration
 │   │   │   ├── ai-message-engine.ts  # AI message processing
@@ -642,8 +669,13 @@ apps/web/
 │   │   │   ├── sentimentAnalysis.ts  # Sentiment analysis
 │   │   │   ├── summarizer.ts         # Chat summarization
 │   │   │   ├── contentModeration.ts  # Content moderation
+│   │   │   ├── conversationInsights.ts # Conversation insights
+│   │   │   ├── topicExtraction.ts    # Topic extraction
 │   │   │   ├── theme-engine/         # AI-powered theme generation
-│   │   │   └── languageDetection.ts
+│   │   │   ├── theme-engine.ts       # Theme engine module
+│   │   │   ├── languageDetection.ts
+│   │   │   ├── data.ts | index.ts | types.ts
+│   │   │   └── __tests__/
 │   │   ├── collaboration/             # Collaborative editing
 │   │   │   ├── useCollaborativeEditor.ts # Yjs editor hook
 │   │   │   └── phoenix-provider.ts   # Phoenix channel provider for Yjs
@@ -685,6 +717,7 @@ apps/web/
 │   ├── assets/                        # Static assets (images, fonts)
 │   ├── mocks/                         # MSW API mocks
 │   ├── test/                          # Test utilities
+│   ├── __dev__/                       # Development/debug utilities
 │   └── __tests__/                     # Global tests
 │
 ├── e2e/                               # Playwright E2E tests
@@ -814,7 +847,15 @@ apps/mobile/
 │   │   ├── effects/                   # Visual effects
 │   │   ├── interactions/             # Gesture/interaction utilities
 │   │   ├── error-tracking.ts         # Sentry integration
+│   │   ├── errorTracking.ts          # Error tracking utilities
+│   │   ├── logger.ts                 # Structured logging
+│   │   ├── dateUtils.ts              # Date utilities
+│   │   ├── imageUtils.ts             # Image utilities
+│   │   ├── normalizers.ts            # Data normalizers
+│   │   ├── oauth.ts                  # OAuth utilities
+│   │   ├── queryClient.ts            # TanStack Query client
 │   │   ├── payment.ts               # Payment utilities
+│   │   ├── __tests__/                # Lib tests
 │   │   └── database/                  # Local database
 │   │
 │   ├── platform/                      # Platform-specific code
