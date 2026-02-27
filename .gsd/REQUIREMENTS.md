@@ -253,11 +253,146 @@
 
 <!-- Updated by roadmap creation — maps REQ-IDs to phases -->
 
-| REQ-ID | Phase | Status |
-| ------ | ----- | ------ |
-| —      | —     | —      |
+| REQ-ID    | Phase                    | Status      |
+| --------- | ------------------------ | ----------- |
+| AUTH-01   | Phase 1 — Foundation     | Not started |
+| AUTH-02   | Phase 1 — Foundation     | Not started |
+| AUTH-03   | Phase 1 — Foundation     | Not started |
+| AUTH-04   | Phase 1 — Foundation     | Not started |
+| AUTH-05   | Phase 1 — Foundation     | Not started |
+| AUTH-06   | Phase 2 — Messaging Core | Not started |
+| AUTH-07   | Phase 1 — Foundation     | Not started |
+| AUTH-08   | Phase 3 — Social         | Not started |
+| AUTH-09   | Phase 3 — Social         | Not started |
+| AUTH-10   | Phase 3 — Social         | Not started |
+| AUTH-11   | Phase 3 — Social         | Not started |
+| AUTH-12   | Phase 10 — Launch        | Not started |
+| AUTH-13   | Phase 10 — Launch        | Not started |
+| AUTH-14   | Phase 1 — Foundation     | Not started |
+| MSG-01    | Phase 2 — Messaging Core | Not started |
+| MSG-02    | Phase 4 — Groups         | Not started |
+| MSG-03    | Phase 4 — Groups         | Not started |
+| MSG-04    | Phase 2 — Messaging Core | Not started |
+| MSG-05    | Phase 2 — Messaging Core | Not started |
+| MSG-06    | Phase 2 — Messaging Core | Not started |
+| MSG-07    | Phase 2 — Messaging Core | Not started |
+| MSG-08    | Phase 3 — Social         | Not started |
+| MSG-09    | Phase 2 — Messaging Core | Not started |
+| MSG-10    | Phase 9 — Scale & Polish | Not started |
+| MSG-11    | Phase 9 — Scale & Polish | Not started |
+| MSG-12    | Phase 9 — Scale & Polish | Not started |
+| MSG-13    | Phase 3 — Social         | Not started |
+| MSG-14    | Phase 3 — Social         | Not started |
+| MSG-15    | Phase 9 — Scale & Polish | Not started |
+| MSG-16    | Phase 3 — Social         | Not started |
+| MSG-17    | Phase 3 — Social         | Not started |
+| MSG-18    | Phase 2 — Messaging Core | Not started |
+| MSG-19    | Phase 2 — Messaging Core | Not started |
+| MSG-20    | Phase 9 — Scale & Polish | Not started |
+| MSG-21    | Phase 4 — Groups         | Not started |
+| MSG-22    | Phase 2 — Messaging Core | Not started |
+| E2EE-01   | Phase 2 — Messaging Core | Not started |
+| E2EE-02   | Phase 4 — Groups         | Not started |
+| E2EE-03   | Phase 2 — Messaging Core | Not started |
+| E2EE-04   | Phase 2 — Messaging Core | Not started |
+| E2EE-05   | Phase 9 — Scale & Polish | Not started |
+| E2EE-06   | Phase 9 — Scale & Polish | Not started |
+| E2EE-07   | Phase 5 — Voice & Video  | Not started |
+| E2EE-08   | Phase 2 — Messaging Core | Not started |
+| E2EE-09   | Phase 2 — Messaging Core | Not started |
+| FORUM-01  | Phase 6 — Forums         | Not started |
+| FORUM-02  | Phase 6 — Forums         | Not started |
+| FORUM-03  | Phase 6 — Forums         | Not started |
+| FORUM-04  | Phase 6 — Forums         | Not started |
+| FORUM-05  | Phase 6 — Forums         | Not started |
+| FORUM-06  | Phase 6 — Forums         | Not started |
+| FORUM-07  | Phase 6 — Forums         | Not started |
+| FORUM-08  | Phase 6 — Forums         | Not started |
+| FORUM-09  | Phase 6 — Forums         | Not started |
+| FORUM-10  | Phase 6 — Forums         | Not started |
+| FORUM-11  | Phase 6 — Forums         | Not started |
+| FORUM-12  | Phase 6 — Forums         | Not started |
+| FORUM-13  | Phase 6 — Forums         | Not started |
+| FORUM-14  | Phase 6 — Forums         | Not started |
+| FORUM-15  | Phase 6 — Forums         | Not started |
+| FORUM-16  | Phase 6 — Forums         | Not started |
+| GROUP-01  | Phase 4 — Groups         | Not started |
+| GROUP-02  | Phase 4 — Groups         | Not started |
+| GROUP-03  | Phase 4 — Groups         | Not started |
+| GROUP-04  | Phase 4 — Groups         | Not started |
+| GROUP-05  | Phase 4 — Groups         | Not started |
+| GROUP-06  | Phase 4 — Groups         | Not started |
+| GROUP-07  | Phase 4 — Groups         | Not started |
+| GROUP-08  | Phase 4 — Groups         | Not started |
+| GROUP-09  | Phase 4 — Groups         | Not started |
+| GAME-01   | Phase 7 — Gamification   | Not started |
+| GAME-02   | Phase 7 — Gamification   | Not started |
+| GAME-03   | Phase 7 — Gamification   | Not started |
+| GAME-04   | Phase 7 — Gamification   | Not started |
+| GAME-05   | Phase 7 — Gamification   | Not started |
+| GAME-06   | Phase 7 — Gamification   | Not started |
+| GAME-07   | Phase 7 — Gamification   | Not started |
+| GAME-08   | Phase 7 — Gamification   | Not started |
+| GAME-09   | Phase 7 — Gamification   | Not started |
+| GAME-10   | Phase 7 — Gamification   | Not started |
+| GAME-11   | Phase 7 — Gamification   | Not started |
+| GAME-12   | Phase 7 — Gamification   | Not started |
+| CALL-01   | Phase 5 — Voice & Video  | Not started |
+| CALL-02   | Phase 5 — Voice & Video  | Not started |
+| CALL-03   | Phase 5 — Voice & Video  | Not started |
+| CALL-04   | Phase 5 — Voice & Video  | Not started |
+| CALL-05   | Phase 5 — Voice & Video  | Not started |
+| CALL-06   | Phase 5 — Voice & Video  | Not started |
+| CALL-07   | Phase 5 — Voice & Video  | Not started |
+| CALL-08   | Phase 5 — Voice & Video  | Not started |
+| PAY-01    | Phase 8 — Monetization   | Not started |
+| PAY-02    | Phase 8 — Monetization   | Not started |
+| PAY-03    | Phase 8 — Monetization   | Not started |
+| PAY-04    | Phase 8 — Monetization   | Not started |
+| PAY-05    | Phase 8 — Monetization   | Not started |
+| PAY-06    | Phase 8 — Monetization   | Not started |
+| PAY-07    | Phase 8 — Monetization   | Not started |
+| PAY-08    | Phase 8 — Monetization   | Not started |
+| PAY-09    | Phase 8 — Monetization   | Not started |
+| PAY-10    | Phase 8 — Monetization   | Not started |
+| NOTIF-01  | Phase 3 — Social         | Not started |
+| NOTIF-02  | Phase 3 — Social         | Not started |
+| NOTIF-03  | Phase 3 — Social         | Not started |
+| NOTIF-04  | Phase 3 — Social         | Not started |
+| NOTIF-05  | Phase 3 — Social         | Not started |
+| NOTIF-06  | Phase 3 — Social         | Not started |
+| NOTIF-07  | Phase 3 — Social         | Not started |
+| NOTIF-08  | Phase 3 — Social         | Not started |
+| SEARCH-01 | Phase 9 — Scale & Polish | Not started |
+| SEARCH-02 | Phase 3 — Social         | Not started |
+| SEARCH-03 | Phase 6 — Forums         | Not started |
+| SEARCH-04 | Phase 9 — Scale & Polish | Not started |
+| SEARCH-05 | Phase 9 — Scale & Polish | Not started |
+| MOD-01    | Phase 4 — Groups         | Not started |
+| MOD-02    | Phase 4 — Groups         | Not started |
+| MOD-03    | Phase 3 — Social         | Not started |
+| MOD-04    | Phase 4 — Groups         | Not started |
+| MOD-05    | Phase 9 — Scale & Polish | Not started |
+| MOD-06    | Phase 9 — Scale & Polish | Not started |
+| MOD-07    | Phase 9 — Scale & Polish | Not started |
+| DESIGN-01 | Phase 1 — Foundation     | Not started |
+| DESIGN-02 | Phase 1 — Foundation     | Not started |
+| DESIGN-03 | Phase 9 — Scale & Polish | Not started |
+| DESIGN-04 | Phase 9 — Scale & Polish | Not started |
+| DESIGN-05 | Phase 1 — Foundation     | Not started |
+| DESIGN-06 | Phase 9 — Scale & Polish | Not started |
+| INFRA-01  | Phase 9 — Scale & Polish | Not started |
+| INFRA-02  | Phase 1 — Foundation     | Not started |
+| INFRA-03  | Phase 1 — Foundation     | Not started |
+| INFRA-04  | Phase 9 — Scale & Polish | Not started |
+| INFRA-05  | Phase 1 — Foundation     | Not started |
+| INFRA-06  | Phase 9 — Scale & Polish | Not started |
+| INFRA-07  | Phase 9 — Scale & Polish | Not started |
+| INFRA-08  | Phase 1 — Foundation     | Not started |
+| INFRA-09  | Phase 10 — Launch        | Not started |
+| INFRA-10  | Phase 10 — Launch        | Not started |
 
 ---
 
-_Requirements: 98 across 13 categories | v2 deferred: 12 | Out of scope: 9_ _Generated: 2026-02-27
-from research + user scoping_
+_Requirements: 136 across 13 categories | v2 deferred: 12 | Out of scope: 9_ _Generated: 2026-02-27
+from research + user scoping | Traceability updated: 2026-02-27_
