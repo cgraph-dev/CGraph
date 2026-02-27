@@ -10,48 +10,66 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 1 — Foundation** (v0.9.48)
+**Phase 1 — Infrastructure Baseline** (v0.9.48)
 
-Fix auth, restore real-time, sync versions, mobile builds, design system tokens.
+Sync package versions, audit backend routes, verify WebSocket reconnection.
 
 ## Position
 
-- **Phase:** 1 of 10
-- **Plan:** 0 of TBD
+- **Phase:** 1 of 19
+- **Plan:** 0 of 3
 - **Version target:** v0.9.48
 
 ## Status
 
-Ready to plan.
+Planned. Ready to execute.
+
+## Plans
+
+| Plan  | Name                   | Wave | Depends On | Status  |
+| ----- | ---------------------- | ---- | ---------- | ------- |
+| 01-01 | Version Sync           | 1    | —          | planned |
+| 01-02 | Backend Route Audit    | 1    | —          | planned |
+| 01-03 | Reconnection Hardening | 1    | —          | planned |
 
 ## Progress
 
 | Metric             | Value   |
 | ------------------ | ------- |
 | Overall progress   | 0%      |
-| Phases complete    | 0 / 10  |
+| Phases complete    | 0 / 19  |
 | Requirements done  | 0 / 136 |
-| Current phase reqs | 0 / 14  |
+| Current phase reqs | 0 / 3   |
 
 ## Phase Summary
 
-| #   | Phase              | Status     |
-| --- | ------------------ | ---------- |
-| 1   | Foundation         | **Active** |
-| 2   | Messaging Core     | Blocked    |
-| 3   | Social Connections | Blocked    |
-| 4   | Groups & Channels  | Blocked    |
-| 5   | Voice & Video      | Blocked    |
-| 6   | Forums             | Blocked    |
-| 7   | Gamification       | Blocked    |
-| 8   | Monetization       | Blocked    |
-| 9   | Scale & Polish     | Blocked    |
-| 10  | Launch             | Blocked    |
+| #   | Phase                   | Status              |
+| --- | ----------------------- | ------------------- |
+| 1   | Infrastructure Baseline | **Active**          |
+| 2   | Auth Core               | Blocked by 1        |
+| 3   | Auth Advanced           | Blocked by 2        |
+| 4   | Design System & Mobile  | Blocked by 1        |
+| 5   | Message Transport       | Blocked by 2        |
+| 6   | Message Features & Sync | Blocked by 5        |
+| 7   | E2EE & Mobile Security  | Blocked by 5        |
+| 8   | Social & Profiles       | Blocked by 2        |
+| 9   | Notifications & Safety  | Blocked by 8        |
+| 10  | Message Extras          | Blocked by 6        |
+| 11  | Groups & Channels       | Blocked by 5        |
+| 12  | Roles & Moderation      | Blocked by 11       |
+| 13  | Voice & Video           | Blocked by 12       |
+| 14  | Forum Core              | Blocked by 12       |
+| 15  | Forum Customization     | Blocked by 14       |
+| 16  | Gamification            | Blocked by 14       |
+| 17  | Monetization            | Blocked by 16       |
+| 18  | Rich Media & Polish     | Blocked by 7,13     |
+| 19  | Launch                  | Blocked by 15,17,18 |
 
 ## Last Action
 
-Roadmap created with 10 phases mapping 136 requirements.
+Phase 1 planned: 3 plans (all Wave 1, independent). Version Sync, Route Audit, Reconnection
+Hardening.
 
 ---
 
-_Last updated: 2026-02-27_
+_Last updated: 2025-07-14_
