@@ -17,12 +17,12 @@ Sync package versions, audit backend routes, verify WebSocket reconnection.
 ## Position
 
 - **Phase:** 1 of 19
-- **Plan:** 2 of 3
+- **Plan:** 3 of 3
 - **Version target:** v0.9.48
 
 ## Status
 
-In progress. Plans 01-01 and 01-02 complete.
+All plans complete. Ready for phase verification.
 
 ## Plans
 
@@ -30,7 +30,7 @@ In progress. Plans 01-01 and 01-02 complete.
 | ----- | ---------------------- | ---- | ---------- | -------- |
 | 01-01 | Version Sync           | 1    | —          | **done** |
 | 01-02 | Backend Route Audit    | 1    | —          | **done** |
-| 01-03 | Reconnection Hardening | 1    | —          | planned  |
+| 01-03 | Reconnection Hardening | 1    | —          | **done** |
 
 ## Progress
 
@@ -38,8 +38,8 @@ In progress. Plans 01-01 and 01-02 complete.
 | ------------------ | ------- |
 | Overall progress   | 1%      |
 | Phases complete    | 0 / 19  |
-| Requirements done  | 2 / 136 |
-| Current phase reqs | 2 / 3   |
+| Requirements done  | 3 / 136 |
+| Current phase reqs | 3 / 3   |
 
 ## Phase Summary
 
@@ -67,7 +67,8 @@ In progress. Plans 01-01 and 01-02 complete.
 
 ## Last Action
 
-Plan 01-02 (Backend Route Audit) complete. 613 routes audited, zero 500 errors on critical path.
+Phase 01 all plans complete. Plan 01-03 (Reconnection Hardening) added circuit breaker, session
+resumption, rejoin jitter. 23/23 tests passing.
 
 ---
 
