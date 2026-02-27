@@ -94,11 +94,11 @@ top is safe.
 
 ### Plans
 
-| Plan  | Scope                                                                   | Status  |
-| ----- | ----------------------------------------------------------------------- | ------- |
-| 01-01 | Version Sync — update all 10 packages to 0.9.47                         | planned |
-| 01-02 | Backend Route Audit — verify health/auth/public routes                  | planned |
-| 01-03 | WebSocket Reconnection Hardening — circuit breaker + session resumption | planned |
+| Plan  | Scope                                                                   | Status   |
+| ----- | ----------------------------------------------------------------------- | -------- |
+| 01-01 | Version Sync — update all 10 packages to 0.9.47                         | **done** |
+| 01-02 | Backend Route Audit — verify health/auth/public routes                  | **done** |
+| 01-03 | WebSocket Reconnection Hardening — circuit breaker + session resumption | **done** |
 
 ---
 
