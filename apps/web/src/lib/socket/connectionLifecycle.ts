@@ -38,6 +38,9 @@ logger.debug('VITE_API_URL:', import.meta.env.VITE_API_URL);
 
 // ── State interface shared across modules ─────────────────────────────
 
+/** Maximum reconnect attempts before circuit breaker trips (web) */
+const MAX_RECONNECT_ATTEMPTS_WEB = 15;
+
 export interface SocketManagerState {
   socket: Socket | null;
   channels: Map<string, Channel>;
@@ -52,6 +55,8 @@ export interface SocketManagerState {
   // Session resumption state
   sessionId: string | null;
   lastSequence: number;
+  // Circuit breaker state
+  reconnectAttempts: number;
 }
 
 /**
@@ -92,6 +97,8 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
     state.socket.onOpen(() => {
       clearTimeout(connectionTimeout);
       logger.log('Socket connected to:', SOCKET_URL);
+      // Reset circuit breaker on successful connection
+      state.reconnectAttempts = 0;
       if (state.reconnectTimer) {
         clearTimeout(state.reconnectTimer);
         state.reconnectTimer = null;
@@ -102,6 +109,15 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
 
     state.socket.onClose(() => {
       logger.log('Socket disconnected');
+      // Circuit breaker: track reconnect attempts
+      state.reconnectAttempts++;
+      if (state.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS_WEB) {
+        logger.warn(
+          `Circuit breaker: max reconnect attempts (${MAX_RECONNECT_ATTEMPTS_WEB}) reached, stopping`
+        );
+        state.socket?.disconnect();
+        state.socket = null;
+      }
       // Preserve session info for resumption on reconnect  
       if (state.sessionId) {
         try {
@@ -117,6 +133,15 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
     state.socket.onError((error: unknown) => {
       clearTimeout(connectionTimeout);
       logger.error('Socket error:', error);
+      // Circuit breaker: track reconnect attempts on error too
+      state.reconnectAttempts++;
+      if (state.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS_WEB) {
+        logger.warn(
+          `Circuit breaker: max reconnect attempts (${MAX_RECONNECT_ATTEMPTS_WEB}) reached, stopping`
+        );
+        state.socket?.disconnect();
+        state.socket = null;
+      }
       state.connectionPromise = null;
       reject(error);
     });

@@ -95,6 +95,10 @@ class SocketManager {
   private sessionId: string | null = null;
   private lastSequence = 0;
 
+  // Circuit breaker — stop reconnecting after repeated failures
+  private reconnectAttempts = 0;
+  private readonly MAX_RECONNECT_ATTEMPTS = 10;
+
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
     if (this.connectionPromise) {
@@ -165,6 +169,8 @@ class SocketManager {
 
       this.socket.onOpen(async () => {
         logger.log('Socket connected');
+        // Reset circuit breaker on successful connection
+        this.reconnectAttempts = 0;
         // Auto-join global presence channel for friend status tracking
         this.joinPresenceChannel();
 
@@ -186,10 +192,28 @@ class SocketManager {
 
       this.socket.onError((error) => {
         logger.error('Socket error:', error);
+        // Circuit breaker: track reconnect attempts on error
+        this.reconnectAttempts++;
+        if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+          logger.warn(
+            `Circuit breaker: max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) reached, stopping`
+          );
+          this.socket?.disconnect();
+          this.socket = null;
+        }
       });
 
       this.socket.onClose(() => {
         logger.log('Socket closed');
+        // Circuit breaker: track reconnect attempts on close
+        this.reconnectAttempts++;
+        if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+          logger.warn(
+            `Circuit breaker: max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) reached, stopping`
+          );
+          this.socket?.disconnect();
+          this.socket = null;
+        }
         // Preserve session info for resumption on reconnect
         if (this.sessionId) {
           SecureStore.setItemAsync('ws_session_id', this.sessionId).catch(() => {});

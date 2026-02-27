@@ -11,6 +11,9 @@ import { exponentialBackoffWithJitter } from './backoff';
 
 const defaultBackoff = exponentialBackoffWithJitter();
 
+/** Default maximum reconnect attempts before circuit breaker trips */
+const DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
+
 /** Client for connecting to and managing Phoenix WebSocket channels with reconnection and event handling. */
 export class PhoenixClient {
   private socket: Socket | null = null;
@@ -18,6 +21,13 @@ export class PhoenixClient {
   private options: SocketOptions;
   private connectionState: ConnectionState = 'closed';
   private connectionListeners: Set<(state: ConnectionState) => void> = new Set();
+
+  // Circuit breaker state
+  private reconnectAttempts = 0;
+
+  // Session resumption state
+  private sessionId: string | null = null;
+  private lastSequence = 0;
 
   constructor(options: SocketOptions) {
     this.options = options;
@@ -33,25 +43,38 @@ export class PhoenixClient {
 
     this.setConnectionState('connecting');
 
+    const backoffFn = this.options.reconnectAfterMs ?? defaultBackoff;
+    const maxAttempts = this.options.maxReconnectAttempts ?? DEFAULT_MAX_RECONNECT_ATTEMPTS;
+
     this.socket = new Socket(this.options.url, {
       params: () => ({
         token: this.options.token,
         ...this.options.params,
+        // Session resumption: include sessionId/lastSequence when available
+        ...(this.sessionId
+          ? { sessionId: this.sessionId, lastSequence: this.lastSequence }
+          : {}),
       }),
-      reconnectAfterMs: this.options.reconnectAfterMs ?? defaultBackoff,
+      reconnectAfterMs: backoffFn,
+      // Apply jitter to channel rejoins to prevent thundering herd
+      rejoinAfterMs: defaultBackoff,
       heartbeatIntervalMs: this.options.heartbeatIntervalMs,
       timeout: this.options.timeout,
     });
 
     this.socket.onOpen(() => {
+      // Reset circuit breaker on successful connection
+      this.reconnectAttempts = 0;
       this.setConnectionState('open');
     });
 
     this.socket.onClose(() => {
+      this.handleReconnectAttempt(maxAttempts);
       this.setConnectionState('closed');
     });
 
     this.socket.onError(() => {
+      this.handleReconnectAttempt(maxAttempts);
       this.setConnectionState('closed');
     });
 
@@ -163,6 +186,42 @@ export class PhoenixClient {
     if (this.socket && this.isConnected()) {
       this.disconnect();
       this.connect();
+    }
+  }
+
+  /**
+   * Update session tracking for resumption on reconnect.
+   */
+  updateSession(sessionId: string, lastSequence: number): void {
+    this.sessionId = sessionId;
+    this.lastSequence = lastSequence;
+  }
+
+  /**
+   * Get current session info for external persistence.
+   */
+  getSessionInfo(): { sessionId: string | null; lastSequence: number } {
+    return { sessionId: this.sessionId, lastSequence: this.lastSequence };
+  }
+
+  /**
+   * Get current reconnect attempt count (useful for UI indicators).
+   */
+  getReconnectAttempts(): number {
+    return this.reconnectAttempts;
+  }
+
+  /** Increment reconnect attempts and trip circuit breaker if max exceeded. */
+  private handleReconnectAttempt(maxAttempts: number): void {
+    this.reconnectAttempts++;
+    if (this.reconnectAttempts >= maxAttempts) {
+      console.warn(
+        `[PhoenixClient] Circuit breaker: max reconnect attempts (${maxAttempts}) reached`
+      );
+      this.options.onMaxReconnects?.();
+      // Stop further reconnection by disconnecting the socket
+      this.socket?.disconnect();
+      this.socket = null;
     }
   }
 

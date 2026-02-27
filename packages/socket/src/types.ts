@@ -11,6 +11,10 @@ export interface SocketOptions {
   reconnectAfterMs?: (tries: number) => number;
   heartbeatIntervalMs?: number;
   timeout?: number;
+  /** Maximum reconnection attempts before triggering circuit breaker (default: 10) */
+  maxReconnectAttempts?: number;
+  /** Callback invoked when maxReconnectAttempts is reached */
+  onMaxReconnects?: () => void;
 }
 
 export interface ChannelOptions {

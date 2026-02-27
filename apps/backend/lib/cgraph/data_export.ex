@@ -124,6 +124,19 @@ defmodule CGraph.DataExport do
   # ---------------------------------------------------------------------------
 
   @doc """
+  Returns a child specification for the DataExport supervisor child.
+  """
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 5000
+    }
+  end
+
+  @doc """
   Start the DataExport GenServer.
   """
   @spec start_link(keyword()) :: GenServer.on_start()
