@@ -75,12 +75,22 @@ Key rules:
 ### EditorConfig (`.editorconfig`)
 
 ```
+[*]
 charset = utf-8
 end_of_line = lf
 indent_size = 2
 indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab
 ```
 
 ### lint-staged (pre-commit)
@@ -186,7 +196,7 @@ From `eslint.config.js`:
 | Barrel exports            | `index.ts`                                       | `stores/index.ts`, `modules/auth/index.ts` |
 | Zod schemas               | grouped in `schemas/` folder                     | `schemas/base.ts`, `schemas/auth.ts`       |
 | Storybook stories         | Same name + `.stories`                           | `button.stories.tsx`                       |
-| CSS modules               | Same name + `.module.css`                        | `GlassCard.module.css`                     |
+| CSS modules               | PascalCase + `.module.css` (legacy)              | `GlassCard.module.css`                     |
 
 ### TypeScript Naming
 
@@ -227,8 +237,10 @@ import type { User } from '@cgraph/shared-types';
 ### Path Aliases
 
 - **Web/Landing**: `@/` → `src/` (configured in `vite.config.ts` via `resolve.alias`)
-- **Mobile**: `@/` → `src/`, plus `@components/`, `@contexts/`, `@hooks/`, `@lib/`, `@screens/`,
-  `@types/` (Jest `moduleNameMapper`)
+- **Mobile**: `@/` → `src/`, plus `@components/`, `@hooks/`, `@lib/`, `@screens/` (in both
+  `tsconfig.json` paths and Jest `moduleNameMapper`). tsconfig also has `@features/`, `@services/`
+  and package aliases (`@cgraph/*`). Jest additionally maps `@contexts/` and `@types/` (no
+  corresponding tsconfig paths — `src/contexts/` does not exist on disk)
 
 ### Barrel Files
 
@@ -495,9 +507,10 @@ logger.breadcrumb('User clicked send'); // Adds to Sentry breadcrumb trail
 
 - **Development**: Full logging with stack traces
 - **Production**: PII stripped, errors forwarded to Sentry, warnings sanitized
-- `console.log/console.info/console.debug` are **banned** in source files (ESLint
-  `no-console: error`)
-- `console.warn` and `console.error` allowed as fallback
+- **Web**: `console.log`/`console.debug` banned (`no-console: error`);
+  `console.warn`/`console.error` allowed
+- **Mobile**: `console.log`/`console.debug` warned (`no-console: warn`);
+  `console.warn`/`console.error`/ `console.info` allowed
 - Test files are exempt from the logger requirement
 
 ### Named Logger Instances
@@ -757,7 +770,7 @@ All enforced at **error** level in ESLint or CI:
 5. **No `useContext`** — use `use()` hook (React 19)
 6. **No direct store imports in components** — use hooks
 7. **No direct service imports in components/pages** — use hooks
-8. **No `console.log` in source** — use `createLogger()`
+8. **No `console.log` in source** — `error` in web, `warn` in mobile; use `createLogger()`
 9. **JSDoc required** on exported functions/classes
 10. **Kebab-case `.tsx` filenames** — enforced by `eslint-plugin-check-file`
 11. **300-line TSX limit** — enforced in CI

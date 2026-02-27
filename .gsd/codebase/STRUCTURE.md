@@ -263,8 +263,8 @@ apps/backend/
 │   │   │   ├── hashing.ex            # Hashing utilities
 │   │   │   └── key_management.ex     # Key management
 │   │   │
+│   │   ├── crypto.ex                  # Crypto context facade
 │   │   ├── crypto/                    # Backend E2EE crypto context
-│   │   │   ├── crypto.ex             # Context facade
 │   │   │   ├── encryption.ex         # Encryption utilities
 │   │   │   ├── hashing.ex            # Hashing utilities
 │   │   │   ├── e2ee.ex               # E2EE top-level module

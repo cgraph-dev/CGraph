@@ -857,7 +857,7 @@ Triggered on: push to `main`/`develop`, PRs to `main`/`develop`.
 ```
 CI Pipeline
 ├── pr-size          # PR size check (warn >400, warn >1000 lines)
-├── file-size        # TSX <300 lines, Elixir <500 lines (hard fail)
+├── file-size        # Web TSX + Elixir <300/500 lines (hard fail), Mobile TSX (warn only)
 ├── lint             # ESLint + Prettier format:check
 ├── typecheck        # tsc --noEmit across workspace
 ├── backend-test     # mix test --cover (with Postgres + Redis)
