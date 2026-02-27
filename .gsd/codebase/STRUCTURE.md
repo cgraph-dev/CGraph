@@ -130,6 +130,7 @@ apps/backend/
 │   │   │   ├── cors.ex                 # CORS configuration
 │   │   │   └── ... (current_user, geo_router, raw_body, etc.)
 │   │   ├── api/
+│   │   │   ├── input_validation/       # Input validation modules
 │   │   │   ├── input_validation.ex     # Request input validation
 │   │   │   └── response.ex            # Standardized API responses
 │   │   ├── error_tracker/             # Error tracking integration
@@ -137,8 +138,10 @@ apps/backend/
 │   │   ├── templates/                 # HTML templates (email, admin)
 │   │   ├── telemetry/                 # Web telemetry events
 │   │   ├── validation/                # Request validation
+│   │   ├── error_tracker.ex           # Error tracker module
 │   │   ├── gettext.ex                 # i18n
-│   │   └── presence.ex               # Phoenix Presence module
+│   │   ├── presence.ex               # Phoenix Presence module
+│   │   └── telemetry.ex              # Web telemetry module
 │   │
 │   ├── cgraph/                        # === DOMAIN CONTEXTS ===
 │   │   ├── application.ex             # OTP Application supervisor (entry point)
@@ -245,7 +248,8 @@ apps/backend/
 │   │   │   ├── event_system.ex       # Event logic
 │   │   │   ├── title_shop_system.ex  # Title shop logic
 │   │   │   ├── events/               # Event sub-modules
-│   │   │   └── repositories/         # Data access layer
+│   │   │   ├── repositories/         # Data access layer
+│   │   │   └── ... (34 entries total — schemas, systems, events, repositories)
 │   │   ├── gamification.ex            # Gamification context facade
 │   │   │
 │   │   ├── notifications/             # Notifications context
@@ -288,19 +292,24 @@ apps/backend/
 │   │   │   ├── room.ex               # Call room schema
 │   │   │   ├── participant.ex        # Call participant schema
 │   │   │   ├── calls.ex              # Call operations
+│   │   │   ├── call_history.ex       # Call history tracking
 │   │   │   └── room_utils.ex         # Room utilities
 │   │   │
 │   │   ├── auth/                      # Auth utilities
-│   │   │   └── token_manager/        # JWT token lifecycle management
+│   │   │   ├── token_manager/        # JWT token lifecycle management
+│   │   │   └── token_manager.ex      # Token manager module
 │   │   │
 │   │   ├── security/                  # Security context
 │   │   │   ├── abuse_detection.ex    # Abuse pattern detection
 │   │   │   ├── account_lockout/      # Progressive account lockout
+│   │   │   ├── account_lockout.ex    # Account lockout module
 │   │   │   ├── input_validator.ex    # Input sanitization
 │   │   │   ├── jwt_key_rotation.ex   # JWT key rotation
 │   │   │   ├── password_breach_check.ex # HaveIBeenPwned check
 │   │   │   ├── token_blacklist/      # JWT revocation (Redis)
-│   │   │   └── totp/                 # TOTP 2FA implementation
+│   │   │   ├── token_blacklist.ex    # Token blacklist module
+│   │   │   ├── totp/                 # TOTP 2FA implementation
+│   │   │   └── totp.ex               # TOTP module
 │   │   │
 │   │   ├── cache/                     # 3-tier caching
 │   │   │   ├── l1.ex                 # L1 ETS cache
@@ -309,6 +318,8 @@ apps/backend/
 │   │   │   ├── tiered.ex            # Tiered cache orchestrator
 │   │   │   ├── unified.ex           # Unified cache interface
 │   │   │   ├── distributed/         # Distributed cache logic
+│   │   │   ├── distributed.ex       # Distributed cache module
+│   │   │   ├── redis_pool.ex        # Redis connection pool
 │   │   │   ├── stampede.ex          # Stampede/thundering herd protection
 │   │   │   ├── tags.ex              # Cache tag-based invalidation
 │   │   │   └── telemetry.ex         # Cache hit/miss metrics
@@ -413,7 +424,9 @@ apps/backend/
 │   │   ├── request_context/           # Request context propagation
 │   │   ├── error_reporter/            # Error reporting utilities
 │   │   ├── health_check/              # Health check logic
+│   │   ├── ... (many contexts also have companion .ex facade files, e.g. accounts.ex, messaging.ex, etc.)
 │   │   ├── services/registry/         # Service registry
+│   │   ├── services/registry.ex       # Service registry module
 │   │   ├── performance/               # Performance monitoring
 │   │   ├── admin/                     # Admin context
 │   │   │   └── metrics.ex            # Admin metrics
@@ -477,6 +490,7 @@ apps/web/
 │   │   ├── auth-initializer.tsx       # Token refresh on app load
 │   │   ├── guards.tsx                 # ProtectedRoute, AdminRoute, ProfileRedirectRoute
 │   │   ├── lazyPages.ts              # React.lazy() page imports
+│   │   ├── __tests__/                 # Route tests
 │   │   └── route-groups/             # Modular route group definitions
 │   │       ├── index.ts
 │   │       ├── auth-routes.tsx
@@ -569,6 +583,7 @@ apps/web/
 │   │   └── logo/                      # Logo component
 │   │
 │   ├── shared/                        # Cross-cutting shared code
+│   │   ├── index.ts                  # Shared barrel exports
 │   │   ├── components/                # Shared compound components
 │   │   │   ├── quick-switcher.tsx    # ⌘K quick switcher
 │   │   │   ├── page-transition.tsx   # Route transitions
@@ -581,6 +596,7 @@ apps/web/
 │   │   └── utils/                     # Shared utilities
 │   │
 │   ├── layouts/                       # Page layouts
+│   │   ├── app-layout/               # App layout module
 │   │   ├── app-layout.tsx            # Main authenticated layout (sidebar + content)
 │   │   ├── auth-layout.tsx           # Login/register layout
 │   │   ├── customize-layout.tsx      # Customization layout
@@ -653,9 +669,12 @@ apps/web/
 │   │
 │   ├── contexts/                      # React contexts
 │   │   ├── theme-context.tsx         # Base theme context
-│   │   └── theme-context-enhanced.tsx # Enhanced theme with animations
+│   │   ├── theme-context-enhanced.tsx # Enhanced theme with animations
+│   │   ├── theme-enhanced/           # Theme enhanced module
+│   │   └── __tests__/                # Context tests
 │   │
 │   ├── providers/                     # React providers
+│   │   ├── notification-provider/    # Notification provider module
 │   │   └── notification-provider.tsx  # Notification system provider
 │   │
 │   ├── themes/                        # Theme system
@@ -686,12 +705,15 @@ apps/mobile/
 ├── app.config.js                      # Expo config
 ├── app.json                           # Expo app metadata
 ├── App.tsx                            # ★ App entry component
+├── App.js                             # App entry (JS)
 ├── index.js                           # ★ registerRootComponent entry
 ├── metro.config.js                    # Metro bundler config
 ├── babel.config.js                    # Babel config
+├── eslint.config.js                   # ESLint flat config
 ├── eas.json                           # EAS Build config
 ├── jest.config.js                     # Jest test config
 ├── tsconfig.json                      # TypeScript config
+├── expo-env.d.ts                      # Expo type declarations
 │
 ├── src/
 │   ├── screens/                       # ★ Screen components (57+ screens)
@@ -822,6 +844,9 @@ apps/landing/
 ├── tailwind.config.js                 # Tailwind config
 ├── index.html                         # Entry HTML
 ├── lighthouserc.json                  # Lighthouse CI config (performance budget)
+├── postcss.config.js                  # PostCSS config
+├── tsconfig.json                      # TypeScript config
+├── README.md                          # Landing app documentation
 ├── playwright.config.ts               # E2E test config
 │
 ├── src/
@@ -845,7 +870,9 @@ apps/landing/
 │   ├── lib/                           # Utilities
 │   ├── data/                          # Static data
 │   ├── assets/                        # Images
-│   └── styles/                        # CSS
+│   ├── styles/                        # CSS
+│   ├── __tests__/                     # Tests
+│   └── vite-env.d.ts                  # Vite type declarations
 │
 ├── e2e/                               # Playwright E2E tests
 ├── public/                            # Static public files
@@ -963,7 +990,8 @@ infrastructure/
 │
 ├── fly/                               # Fly.io deployment
 │   ├── fly.toml.reference            # Reference config
-│   └── fly.web.toml                  # Web app Fly config
+│   ├── fly.web.toml                  # Web app Fly config
+│   └── README.md                     # Fly.io documentation
 │
 ├── docker/
 │   └── init-db.sql/                  # Database initialization
@@ -972,7 +1000,9 @@ infrastructure/
 │   ├── dashboards/                   # Pre-built dashboards
 │   ├── provisioning/                 # Auto-provisioning configs
 │   ├── alerts/                       # Alert rules
-│   └── alloy-config.alloy            # Grafana Alloy config
+│   ├── alloy-config.alloy            # Grafana Alloy config
+│   ├── alloy-env.example             # Alloy environment template
+│   └── grafana-cloud-remote-write.yml # Grafana Cloud remote write config
 │
 ├── prometheus/
 │   ├── prometheus.yml                # Prometheus config
@@ -1032,7 +1062,8 @@ docs/
 │   ├── 018-reanimated-v4-migration.md
 │   ├── 019-elixir-phoenix-backend.md
 │   ├── 020-postgresql-database.md
-│   └── 021-ddd-feature-structure.md
+│   ├── 021-ddd-feature-structure.md
+│   └── README.md
 │
 ├── guides/                            # Developer guides
 ├── CURRENT_STATE_DASHBOARD.md         # Real-time status dashboard

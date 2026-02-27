@@ -9,7 +9,7 @@
 
 | Language       | Version                                                                             | Where Used                                                  |
 | -------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **TypeScript** | `~5.8.0` (web), `~5.8.3` (landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.x` (mobile) | All frontend apps and shared packages                       |
+| **TypeScript** | `~5.8.0` (web), `~5.8.3` (landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.0` (mobile) | All frontend apps and shared packages                       |
 | **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`)             | `apps/backend/`                                             |
 | **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                            | Backend runtime (BEAM VM)                                   |
 | **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                             | Frontend builds, tooling                                    |

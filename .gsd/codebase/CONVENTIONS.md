@@ -192,7 +192,7 @@ From `eslint.config.js`:
 | React components (`.tsx`) | **kebab-case** (enforced by ESLint `check-file`) | `user-profile.tsx`, `glass-card.tsx`       |
 | Hooks                     | **camelCase** with `use` prefix                  | `useDebounce.ts`, `useAuth.ts`             |
 | Stores                    | **camelCase** with `Store` suffix                | `authStore.impl.ts`, `chatStore.ts`        |
-| Utilities                 | **camelCase**                                    | `formatDate.ts`, `validation.ts`           |
+| Utilities                 | **camelCase**                                    | `format.ts`, `validation.ts`               |
 | Types                     | **camelCase** + `.types` suffix                  | `authStore.types.ts`, `admin.types.ts`     |
 | Tests                     | Same name + `.test`                              | `authStore.test.ts`, `button.test.tsx`     |
 | Barrel exports            | `index.ts`                                       | `stores/index.ts`, `modules/auth/index.ts` |
@@ -225,8 +225,8 @@ import { motion } from 'framer-motion';
 import { z } from 'zod';
 
 // 3. Internal packages (@cgraph/*)
-import { Button } from '@cgraph/ui';
-import { formatDate } from '@cgraph/utils';
+import { createHttpClient } from '@cgraph/api-client';
+import { formatDateHeader } from '@cgraph/utils';
 
 // 4. Relative imports (parent before sibling)
 import { useAuth } from '../hooks';
@@ -462,7 +462,7 @@ class ErrorBoundary extends Component<Props, State> {
 
 ```typescript
 // apps/web/src/lib/error-tracking.ts
-import * as Sentry from '@sentry/react';
+const Sentry = await import('@sentry/react');
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -511,8 +511,8 @@ logger.breadcrumb('User clicked send'); // Adds to Sentry breadcrumb trail
 - **Production**: PII stripped, errors forwarded to Sentry, warnings sanitized
 - **Web**: `console.log`/`console.debug` banned (`no-console: error`);
   `console.warn`/`console.error` allowed
-- **Mobile**: `console.log`/`console.debug` warned (`no-console: warn`);
-  `console.warn`/`console.error`/ `console.info` allowed
+- **Mobile**: Same as web — `console.log`/`console.debug` banned (`no-console: error`); only
+  `console.warn`/`console.error` allowed (shared ESLint rule block)
 - Test files are exempt from the logger requirement
 
 ### Named Logger Instances
@@ -766,13 +766,14 @@ export { useChatStore } from '../modules/chat/store';
 All enforced at **error** level in ESLint or CI:
 
 1. **No `any`** — `@typescript-eslint/no-explicit-any: error`
-2. **No type assertions** — `consistent-type-assertions: never` (except tests)
-3. **No `React.FC`** — banned via `no-restricted-syntax`
-4. **No `forwardRef`** — React 19, ref is a regular prop
-5. **No `useContext`** — use `use()` hook (React 19)
+2. **No type assertions** — `consistent-type-assertions: never` (web, mobile, packages — landing
+   exempt; except tests)
+3. **No `React.FC`** — banned via `no-restricted-syntax` (web, mobile only)
+4. **No `forwardRef`** — React 19, ref is a regular prop (web, mobile only)
+5. **No `useContext`** — use `use()` hook (React 19) (web, mobile only)
 6. **No direct store imports in components** — use hooks
 7. **No direct service imports in components/pages** — use hooks
-8. **No `console.log` in source** — `error` in web, `warn` in mobile; use `createLogger()`
+8. **No `console.log` in source** — `error` in web and mobile; use `createLogger()`
 9. **JSDoc required** on exported functions/classes
 10. **Kebab-case `.tsx` filenames** — enforced by `eslint-plugin-check-file`
 11. **300-line TSX limit** — enforced in CI
