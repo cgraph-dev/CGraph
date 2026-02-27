@@ -17,19 +17,19 @@ Sync package versions, audit backend routes, verify WebSocket reconnection.
 ## Position
 
 - **Phase:** 1 of 19
-- **Plan:** 1 of 3
+- **Plan:** 2 of 3
 - **Version target:** v0.9.48
 
 ## Status
 
-In progress. Plan 01-01 (Version Sync) complete.
+In progress. Plans 01-01 and 01-02 complete.
 
 ## Plans
 
 | Plan  | Name                   | Wave | Depends On | Status   |
 | ----- | ---------------------- | ---- | ---------- | -------- |
 | 01-01 | Version Sync           | 1    | —          | **done** |
-| 01-02 | Backend Route Audit    | 1    | —          | planned  |
+| 01-02 | Backend Route Audit    | 1    | —          | **done** |
 | 01-03 | Reconnection Hardening | 1    | —          | planned  |
 
 ## Progress
@@ -38,8 +38,8 @@ In progress. Plan 01-01 (Version Sync) complete.
 | ------------------ | ------- |
 | Overall progress   | 1%      |
 | Phases complete    | 0 / 19  |
-| Requirements done  | 1 / 136 |
-| Current phase reqs | 1 / 3   |
+| Requirements done  | 2 / 136 |
+| Current phase reqs | 2 / 3   |
 
 ## Phase Summary
 
@@ -67,7 +67,7 @@ In progress. Plan 01-01 (Version Sync) complete.
 
 ## Last Action
 
-Plan 01-01 (Version Sync) complete. All 12 packages synced to 0.9.47. Monorepo builds cleanly.
+Plan 01-02 (Backend Route Audit) complete. 613 routes audited, zero 500 errors on critical path.
 
 ---
 
