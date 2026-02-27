@@ -35,7 +35,8 @@
 ├── .pre-commit-config.yaml        # Pre-commit hooks (secret scanning)
 ├── .secrets.baseline              # detect-secrets baseline
 ├── .husky/                        # Git hooks (commitlint, lint-staged)
-└── .github/                       # GitHub Actions, skills, issue templates
+├── .github/                       # GitHub Actions, skills, issue templates
+└── ...                            # Plus: LICENSE, README.md, CHANGELOG.md, SECURITY.md, etc.
 ```
 
 ---
@@ -366,6 +367,7 @@ apps/backend/
 │   │   ├── presence/                  # Online presence tracking
 │   │   │   ├── tracker.ex            # Presence tracker
 │   │   │   ├── store.ex              # Presence store
+│   │   │   ├── sampled.ex            # Sampled presence module
 │   │   │   ├── sampled/              # Sampled presence for scale
 │   │   │   └── queries.ex            # Presence queries
 │   │   │
@@ -476,6 +478,7 @@ apps/web/
 │   │   ├── guards.tsx                 # ProtectedRoute, AdminRoute, ProfileRedirectRoute
 │   │   ├── lazyPages.ts              # React.lazy() page imports
 │   │   └── route-groups/             # Modular route group definitions
+│   │       ├── index.ts
 │   │       ├── auth-routes.tsx
 │   │       ├── dev-routes.tsx
 │   │       ├── forum-routes.tsx
@@ -519,6 +522,7 @@ apps/web/
 │   │
 │   ├── stores/                        # ★ Unified store exports
 │   │   ├── index.ts                   # Re-exports all Zustand stores from modules
+│   │   ├── __tests__/                 # Store tests
 │   │   └── theme/                     # Theme store
 │   │       ├── store.ts | themeStore.ts
 │   │       ├── actions.ts | selectors.ts | presets.ts
@@ -584,6 +588,8 @@ apps/web/
 │   │
 │   ├── hooks/                         # Global custom hooks
 │   │   ├── facades/                   # Hook facades for complex logic
+│   │   ├── __tests__/                 # Hook tests
+│   │   ├── index.ts                   # Hook re-exports
 │   │   ├── useDebounce.ts | useLocalStorage.ts | useMediaQuery.ts
 │   │   ├── useClickOutside.ts | useCopyToClipboard.ts
 │   │   ├── useAdaptiveInterval.ts | useAdaptiveMotion.ts
@@ -732,6 +738,7 @@ apps/mobile/
 │   │   └── index.ts
 │   │
 │   ├── stores/                        # Zustand stores
+│   │   ├── __tests__/                 # Store tests
 │   │   ├── authStore.ts | chatStore.ts | friendStore.ts
 │   │   ├── gamificationStore.ts | groupStore.ts | marketplaceStore.ts
 │   │   ├── notificationStore.ts | settingsStore.ts | themeStore.ts
@@ -950,7 +957,9 @@ infrastructure/
 │   ├── pages.tf                      # Cloudflare Pages
 │   ├── zone_settings.tf              # Zone settings
 │   ├── variables.tf                  # Input variables
-│   └── outputs.tf                    # Output values
+│   ├── outputs.tf                    # Output values
+│   ├── production.tfvars.example     # Production variable template
+│   └── README.md                     # Terraform documentation
 │
 ├── fly/                               # Fly.io deployment
 │   ├── fly.toml.reference            # Reference config

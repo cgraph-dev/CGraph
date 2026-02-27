@@ -7,13 +7,13 @@
 
 ## 1. Languages & Runtimes
 
-| Language       | Version                                                                  | Where Used                                                  |
-| -------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| **TypeScript** | `~5.8.x` (web, landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.x` (mobile) | All frontend apps and shared packages                       |
-| **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`)  | `apps/backend/`                                             |
-| **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                 | Backend runtime (BEAM VM)                                   |
-| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                  | Frontend builds, tooling                                    |
-| **SQL**        | PostgreSQL dialect                                                       | Database migrations in `apps/backend/priv/repo/migrations/` |
+| Language       | Version                                                                             | Where Used                                                  |
+| -------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **TypeScript** | `~5.8.0` (web), `~5.8.3` (landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.x` (mobile) | All frontend apps and shared packages                       |
+| **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`)             | `apps/backend/`                                             |
+| **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                            | Backend runtime (BEAM VM)                                   |
+| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                             | Frontend builds, tooling                                    |
+| **SQL**        | PostgreSQL dialect                                                                  | Database migrations in `apps/backend/priv/repo/migrations/` |
 
 ### Key Version Pins (from `package.json` root)
 
@@ -145,19 +145,19 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 
 ## 6. Build Tools & Bundlers
 
-| Tool                         | Version                             | Where                            |
-| ---------------------------- | ----------------------------------- | -------------------------------- |
-| **Vite**                     | `^6.3.0` (web), `^6.4.1` (landing)  | Frontend build/dev               |
-| **@vitejs/plugin-react-swc** | `^3.9.0`                            | Web app — SWC compiler for React |
-| **@vitejs/plugin-react**     | `^4.5.1`                            | Landing page                     |
-| **tsup**                     | `^8.0.0`                            | `@cgraph/socket` package bundler |
-| **Expo / Metro**             | Expo `~54`                          | Mobile bundler                   |
-| **esbuild**                  | `~> 0.10` (Elixir wrapper)          | Backend asset pipeline           |
-| **Tailwind**                 | `~> 0.4` (Elixir wrapper)           | Backend LiveView CSS             |
-| **PostCSS**                  | `^8.5.0` (web), `^8.4.38` (landing) | CSS processing                   |
-| **Autoprefixer**             | `^10.4.x`                           | CSS vendor prefixing             |
-| **vite-plugin-compression2** | `^2.4.0`                            | Landing page build compression   |
-| **rollup-plugin-visualizer** | `^5.14.0`                           | Web bundle analysis              |
+| Tool                         | Version                                | Where                            |
+| ---------------------------- | -------------------------------------- | -------------------------------- |
+| **Vite**                     | `^6.3.0` (web), `^6.4.1` (landing)     | Frontend build/dev               |
+| **@vitejs/plugin-react-swc** | `^3.9.0`                               | Web app — SWC compiler for React |
+| **@vitejs/plugin-react**     | `^4.5.1`                               | Landing page                     |
+| **tsup**                     | `^8.0.0`                               | `@cgraph/socket` package bundler |
+| **Expo / Metro**             | Expo `~54`                             | Mobile bundler                   |
+| **esbuild**                  | `~> 0.10` (Elixir wrapper)             | Backend asset pipeline           |
+| **Tailwind**                 | `~> 0.4` (Elixir wrapper)              | Backend LiveView CSS             |
+| **PostCSS**                  | `^8.5.0` (web), `^8.4.38` (landing)    | CSS processing                   |
+| **Autoprefixer**             | `^10.4.21` (web), `^10.4.19` (landing) | CSS vendor prefixing             |
+| **vite-plugin-compression2** | `^2.4.0`                               | Landing page build compression   |
+| **rollup-plugin-visualizer** | `^5.14.0`                              | Web bundle analysis              |
 
 ---
 
@@ -226,7 +226,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 | [`apps/backend/config/config.exs`](apps/backend/config/config.exs)                     | Elixir compile-time config                                             |
 | [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (429 lines)                              |
 | [`apps/backend/config/stripe.exs`](apps/backend/config/stripe.exs)                     | Stripe integration config                                              |
-| [`apps/backend/.tool-versions`](apps/backend/.tool-versions)                           | asdf versions: Erlang 28.3, Elixir 1.19.4                              |
+| [`apps/backend/.tool-versions`](apps/backend/.tool-versions)                           | asdf versions: Erlang 28.3, Elixir 1.19.4-otp-28                       |
 | [`apps/backend/.credo.exs`](apps/backend/.credo.exs)                                   | Credo linter config                                                    |
 | [`apps/backend/.sobelow-conf`](apps/backend/.sobelow-conf)                             | Sobelow security scanner config                                        |
 | [`apps/backend/coveralls.json`](apps/backend/coveralls.json)                           | Coverage service config                                                |

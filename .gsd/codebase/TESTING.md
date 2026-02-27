@@ -66,11 +66,11 @@ apps/web/src/
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
-│   └── ... (16 store test files)
-├── hooks/__tests__/          # Hook unit tests
+│   └── ... (17 store test files)
+├── hooks/__tests__/          # Hook unit tests (9 direct + 7 facade tests = 16)
 │   ├── useDebounce.test.ts
 │   ├── useClickOutside.test.ts
-│   └── ... (9 hook test files)
+│   └── ... (9 hook test files + hooks/facades/__tests__/ with 7 facade tests)
 ├── components/__tests__/     # Component unit tests
 │   ├── modal.test.tsx
 │   ├── toast.test.tsx
@@ -864,7 +864,7 @@ CI Pipeline
 │   ├── mix format --check-formatted
 │   ├── mix credo --strict
 │   ├── mix compile --warnings-as-errors
-│   ├── mix test --cover
+│   ├── mix test --cover --export-coverage default
 │   └── mix dialyzer
 ├── packages-test    # Test all shared packages
 │   ├── @cgraph/api-client (test + typecheck)
@@ -893,12 +893,16 @@ Triggered on: push to `main`, PRs to `main`/`develop`, nightly at 4 AM UTC.
 
 ```
 E2E Pipeline
-└── e2e-web
-    ├── Services: Postgres 16, Redis 7.2
-    ├── Install Playwright browsers (chromium only in CI)
-    ├── Build web app
-    ├── Run Playwright tests (SKIP_AUTH=true for CI)
-    └── Upload: playwright-report, test-results artifacts
+├── e2e-web
+│   ├── Services: Postgres 16, Redis 7.2
+│   ├── Install Playwright browsers (chromium only in CI)
+│   ├── Build web app
+│   ├── Run Playwright tests (SKIP_AUTH=true for CI)
+│   └── Upload: playwright-report, playwright-results artifacts
+├── e2e-mobile (nightly/tagged only, macos-latest)
+│   └── Maestro mobile E2E tests
+└── e2e-complete (gate, needs: e2e-web)
+    └── Summary and status check
 ```
 
 ### Workflow: `.github/workflows/coverage.yml`

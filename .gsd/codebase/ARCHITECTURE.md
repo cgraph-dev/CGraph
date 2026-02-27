@@ -83,7 +83,7 @@ CGraph.Supervisor
 ├── Phoenix.PubSub                (PG2 adapter, auto-clusters via Erlang distribution)
 ├── DNSCluster                    (Fly.io multi-region clustering)
 ├── OpenTelemetry                 (distributed tracing setup)
-├── CGraph.CacheSupervisor        (3-tier cache: L1 ETS, L2 Cachex, L3 Redis)
+├── CGraph.CacheSupervisor        (Cachex instances: general, session, token caches)
 ├── CGraph.SecuritySupervisor     (JWT key rotation, token blacklist, account lockout)
 ├── CGraph.WorkerSupervisor       (Oban, Presence, WebRTC)
 ├── DocumentRegistry + DocumentSupervisor (real-time collaborative editing)
@@ -170,11 +170,11 @@ organized by resource (auth, users, messages, groups, forums, gamification, etc.
 - `AuditLogPlug` — Per-category audit logging
 - `RequireAuth` / `RequireAdmin` — Authorization enforcement
 - `CorrelationId` — Distributed tracing correlation
-- `EtagPlug` — HTTP ETag caching
+- `EtagPlug` — HTTP ETag caching (available but not wired into pipelines)
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with workers in `lib/cgraph/workers/`:
+**Oban** job processing system with 22 workers in `lib/cgraph/workers/` (notable workers):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -187,7 +187,11 @@ organized by resource (auth, users, messages, groups, forums, gamification, etc.
 - `DeadLetterWorker` — failed job retry
 - `WebhookDeliveryWorker` — outbound webhook delivery
 - `HardDeleteUser` — GDPR hard delete
-- Worker orchestrator for complex multi-step jobs
+- `SendEmailNotification` / `SendPushNotification` — delivery workers
+- `CriticalAlertDispatcher` — high-priority alert delivery
+- `DeleteExpiredMessages` / `EmailDigestWorker` / `EventExporter` / `NotificationRetryWorker` /
+  `PartitionManager`
+- Worker orchestrator (`base.ex`) for complex multi-step jobs
 
 ---
 
@@ -408,7 +412,8 @@ React Router DOM v7 with:
 
 - **Route groups** under `src/routes/route-groups/` (dev, auth, forums, public, settings)
 - **Lazy-loaded pages** via `React.lazy()` + `Suspense` (`src/routes/lazyPages.ts`)
-- **Route guards:** `ProtectedRoute`, `AdminRoute`, `ProfileRedirectRoute` (`src/routes/guards.tsx`)
+- **Route guards:** `ProtectedRoute`, `PublicRoute`, `AdminRoute`, `ProfileRedirectRoute`
+  (`src/routes/guards.tsx`)
 - **Auth initializer:** Token refresh and auth state hydration on app load
 
 ### 6.5 Data Flow
@@ -496,16 +501,16 @@ Each module has own `components/`, `hooks/`, `store/` etc.
 
 Signal Protocol-inspired with post-quantum extensions:
 
-| Layer                     | Protocol                              | File                                   |
-| ------------------------- | ------------------------------------- | -------------------------------------- |
-| Key Exchange              | X3DH (Extended Triple Diffie-Hellman) | `packages/crypto/src/x3dh.ts`          |
-| Post-Quantum Key Exchange | PQXDH (X3DH + ML-KEM-768)             | `packages/crypto/src/pqxdh.ts`         |
-| Session Ratchet           | Double Ratchet (AES-256-GCM)          | `packages/crypto/src/doubleRatchet.ts` |
-| Post-Quantum Ratchet      | Triple Ratchet (ECDH + ML-KEM-768)    | `packages/crypto/src/tripleRatchet.ts` |
-| SPQR                      | Sub-Protocol for Quantum Resistance   | `packages/crypto/src/spqr.ts`          |
-| SCKA                      | Session Continuity Key Agreement      | `packages/crypto/src/scka.ts`          |
-| KEM                       | ML-KEM-768 (Kyber) post-quantum KEM   | `packages/crypto/src/kem.ts`           |
-| Symmetric                 | AES-256-GCM                           | `packages/crypto/src/aes.ts`           |
+| Layer                     | Protocol                                       | File                                   |
+| ------------------------- | ---------------------------------------------- | -------------------------------------- |
+| Key Exchange              | X3DH (Extended Triple Diffie-Hellman)          | `packages/crypto/src/x3dh.ts`          |
+| Post-Quantum Key Exchange | PQXDH (X3DH + ML-KEM-768)                      | `packages/crypto/src/pqxdh.ts`         |
+| Session Ratchet           | Double Ratchet (AES-256-GCM)                   | `packages/crypto/src/doubleRatchet.ts` |
+| Post-Quantum Ratchet      | Triple Ratchet (ECDH + ML-KEM-768)             | `packages/crypto/src/tripleRatchet.ts` |
+| SPQR                      | Sparse Post-Quantum Ratchet                    | `packages/crypto/src/spqr.ts`          |
+| SCKA                      | Sparse Continuous Key Agreement (ML-KEM Braid) | `packages/crypto/src/scka.ts`          |
+| KEM                       | ML-KEM-768 (Kyber) post-quantum KEM            | `packages/crypto/src/kem.ts`           |
+| Symmetric                 | AES-256-GCM                                    | `packages/crypto/src/aes.ts`           |
 
 **Dependencies:** `@noble/hashes`, `@noble/post-quantum` (no native crypto dependencies)
 
