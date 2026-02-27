@@ -75,6 +75,8 @@ Key rules:
 ### EditorConfig (`.editorconfig`)
 
 ```
+root = true
+
 [*]
 charset = utf-8
 end_of_line = lf
