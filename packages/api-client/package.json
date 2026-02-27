@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/api-client",
-  "version": "0.9.31",
+  "version": "0.9.47",
   "private": true,
   "description": "Resilient API client for CGraph with circuit breaker, retry, and timeout",
   "main": "./src/index.ts",
