@@ -34,6 +34,9 @@ channels don't function reliably across web and mobile, nothing else matters.
 - ✓ Infrastructure-as-code (Fly.io, Terraform, Docker) — established
 - ✓ CI/CD pipeline (GitHub Actions) — established
 - ✓ Subscription/premium tier system — established
+- ✓ All package versions synced to 0.9.47 baseline — Phase 1
+- ✓ Backend routes audited (613 routes, zero 500s on critical path) — Phase 1
+- ✓ WebSocket reconnection with circuit breaker + session resumption + jitter — Phase 1
 
 ### Active
 
@@ -46,8 +49,6 @@ channels don't function reliably across web and mobile, nothing else matters.
 - [ ] Professional design system — color gradient palette with industry-standard ratios, consistent
       typography, spacing, component library
 - [ ] Mobile build passing — Expo builds for iOS and Android without errors
-- [ ] Sync all package versions to 0.9.47 baseline
-- [ ] Backend route audit — identify and fix erroring routes
 
 **Core Social (v0.9.5x)**
 
@@ -139,19 +140,21 @@ effectively orphaned; the real v1.0 launch is the goal of this project.
 
 ## Key Decisions
 
-| Decision                               | Rationale                                                 | Outcome |
-| -------------------------------------- | --------------------------------------------------------- | ------- |
-| Phased v0.9.48→v1.0.0 versioning       | Manage risk, ship incrementally, validate each phase      | —       |
-| Sync all packages to v0.9.47           | Eliminate version drift, single source of truth           | —       |
-| Open alpha (anyone can sign up)        | Maximize early feedback, stress-test at scale             | —       |
-| Stripe web-only initially              | Simplest integration path, mobile payments add complexity | —       |
-| Copilot-proposed design system         | No designer dependency, derive from existing palette      | —       |
-| Fly.io as sole hosting target          | Already configured, avoid multi-cloud complexity          | —       |
-| Skip external security audit for alpha | Budget constraint, focus on functional correctness first  | —       |
-| Forums before v1.0                     | Core differentiator — community features in messaging app | —       |
-| E2EE required for alpha                | Primary competitive advantage, must prove it works early  | —       |
-| No AI features in alpha                | Not differentiating, adds complexity without core value   | —       |
+| Decision                               | Rationale                                                 | Outcome   |
+| -------------------------------------- | --------------------------------------------------------- | --------- |
+| Phased v0.9.48→v1.0.0 versioning       | Manage risk, ship incrementally, validate each phase      | —         |
+| Sync all packages to v0.9.47           | Eliminate version drift, single source of truth           | ✓ Phase 1 |
+| Open alpha (anyone can sign up)        | Maximize early feedback, stress-test at scale             | —         |
+| Stripe web-only initially              | Simplest integration path, mobile payments add complexity | —         |
+| Copilot-proposed design system         | No designer dependency, derive from existing palette      | —         |
+| Fly.io as sole hosting target          | Already configured, avoid multi-cloud complexity          | —         |
+| Skip external security audit for alpha | Budget constraint, focus on functional correctness first  | —         |
+| Forums before v1.0                     | Core differentiator — community features in messaging app | —         |
+| E2EE required for alpha                | Primary competitive advantage, must prove it works early  | —         |
+| No AI features in alpha                | Not differentiating, adds complexity without core value   | —         |
+| Circuit breaker for WebSocket          | Prevent infinite reconnect loops; mobile battery savings  | ✓ Phase 1 |
+| Session resumption on reconnect        | Delta sync vs full resync; zero-loss reconnection goal    | ✓ Phase 1 |
 
 ---
 
-_Last updated: 2026-02-27 after GSD Phase 4 (Project Definition)_
+_Last updated: 2026-02-27 after Phase 1 (Infrastructure Baseline)_

@@ -10,27 +10,27 @@
 
 ## Phase Overview
 
-| #   | Phase                   | Goal                                               | Reqs | Depends On     |
-| --- | ----------------------- | -------------------------------------------------- | ---- | -------------- |
-| 1   | Infrastructure Baseline | Monorepo builds, versions aligned, routes healthy  | 3    | —              |
-| 2   | Auth Core               | Register, verify, login, token refresh — all work  | 4    | Phase 1        |
-| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2        |
-| 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1        |
-| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2        |
-| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5        |
-| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5        |
-| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2        |
-| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8        |
-| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6        |
-| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5        |
-| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11       |
-| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12       |
-| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12       |
-| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14       |
-| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14       |
-| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16       |
-| 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7, 13    |
-| 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18 |
+| #   | Phase                   | Goal                                               | Reqs | Depends On                 |
+| --- | ----------------------- | -------------------------------------------------- | ---- | -------------------------- |
+| 1   | Infrastructure Baseline | Monorepo builds, versions aligned, routes healthy  | 3    | — ✅ Complete (2026-02-27) |
+| 2   | Auth Core               | Register, verify, login, token refresh — all work  | 4    | Phase 1                    |
+| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2                    |
+| 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1                    |
+| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2                    |
+| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5                    |
+| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                    |
+| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2                    |
+| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                    |
+| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                    |
+| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                    |
+| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                   |
+| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12                   |
+| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12                   |
+| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14                   |
+| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14                   |
+| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16                   |
+| 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7, 13                |
+| 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18             |
 
 **Dependency Graph:**
 
@@ -67,7 +67,9 @@ Phase 1 (Infrastructure)
 
 ---
 
-## Phase 1: Infrastructure Baseline
+## Phase 1: Infrastructure Baseline ✅
+
+**Completed:** 2026-02-27 | **Plans:** 3/3 | **Verification:** Passed (12/12)
 
 **Goal:** Monorepo is healthy — all packages at same version, backend routes respond, WebSocket
 reconnects reliably.
