@@ -41,8 +41,9 @@ export const createInitialize = (set: Set, get: Get) => async (): Promise<void> 
     const isSetUp = await isE2EESetUp();
     const deviceId = await getDeviceId();
 
-    let fp: string | null = null;
     if (isSetUp) {
+      // Existing keys found — load identity, initialize session manager
+      let fp: string | null = null;
       const identityKey = await loadIdentityKeyPair();
       if (identityKey) {
         const publicKey = await exportPublicKey(identityKey.keyPair.publicKey);
@@ -50,20 +51,39 @@ export const createInitialize = (set: Set, get: Get) => async (): Promise<void> 
       }
 
       await sessionManager.initialize();
-      logger.log('Session manager initialized with Double Ratchet support');
-    }
+      sessionManager.setUseTripleRatchet(true);
+      logger.log('Session manager initialized — PQXDH + Triple Ratchet enabled');
 
-    set({
-      isInitialized: isSetUp,
-      deviceId,
-      fingerprint: fp,
-      isLoading: false,
-    });
+      set({
+        isInitialized: true,
+        deviceId,
+        fingerprint: fp,
+        useTripleRatchet: true,
+        isLoading: false,
+      });
 
-    if (isSetUp) {
       get()
         .getPrekeyCount()
         .catch((err: unknown) => logger.error('Failed to get prekey count:', err));
+    } else {
+      // Auto-bootstrap: generate key bundle transparently on first login
+      logger.log('E2EE not set up — auto-bootstrapping key bundle');
+      try {
+        await get().setupE2EE();
+        // setupE2EE sets isInitialized, deviceId, fingerprint, isLoading
+        // Now initialize session manager with PQXDH enabled
+        await sessionManager.initialize();
+        sessionManager.setUseTripleRatchet(true);
+        set({ useTripleRatchet: true });
+        logger.log('Auto-bootstrap complete — PQXDH + Triple Ratchet enabled');
+      } catch (setupErr) {
+        logger.error('Auto-bootstrap failed:', setupErr);
+        set({
+          isLoading: false,
+          error:
+            setupErr instanceof Error ? setupErr.message : 'Failed to auto-bootstrap E2EE',
+        });
+      }
     }
   } catch (error) {
     set({

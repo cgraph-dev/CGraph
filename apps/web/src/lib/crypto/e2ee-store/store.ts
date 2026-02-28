@@ -46,7 +46,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
   prekeyCount: 0,
   bundleCache: new Map(),
   useDoubleRatchet: true,
-  useTripleRatchet: false,
+  useTripleRatchet: true,
 
   // Core actions
   initialize: createInitialize(set, get),
@@ -85,7 +85,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
     prekeyCount: 0,
     bundleCache: new Map(),
     useDoubleRatchet: true,
-    useTripleRatchet: false,
+    useTripleRatchet: true,
     initialize: createInitialize(set, get),
     setupE2EE: createSetupE2EE(set, get),
     resetE2EE: createResetE2EE(set, get),
