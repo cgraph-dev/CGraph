@@ -10,35 +10,29 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 6 — Message Features & Sync** (v0.9.50) — ✅ COMPLETE
+**Phase 7 — E2EE & Mobile Security** (v0.9.49) — Ready to plan
 
-Full message feature set — edit, delete, reply, react, sync across devices.
+End-to-end encryption for 1:1 messages + biometric auth on mobile.
 
 ## Position
 
-- **Phase:** 6 of 19 — COMPLETE
-- **Plan:** All 5 plans executed (3 waves)
-- **Status:** Phase complete — ready for transition
-- **Last activity:** 2026-02-28 — All plans executed, phase goal verified
+- **Phase:** 7 of 19 — E2EE & Mobile Security
+- **Plan:** Not started
+- **Status:** Ready to plan
+- **Last activity:** 2026-02-28 — Phase 6 complete, transitioned to Phase 7
 
 ## Plans
 
-| Plan  | Wave | Scope                                    | Status       |
-| ----- | ---- | ---------------------------------------- | ------------ |
-| 06-01 | 1    | Edit History Backend + Shared Types      | ✅ Complete  |
-| 06-02 | 1    | Soft-Delete Indicator (web + mobile)     | ✅ Complete  |
-| 06-03 | 1    | Reply & Reaction Verification            | ✅ Complete  |
-| 06-04 | 2    | Edit History UI (web + mobile edit form) | ✅ Complete  |
-| 06-05 | 3    | WatermelonDB Bridge (offline sync)       | ✅ Complete  |
+(Phase 7 plans not yet created — run `/plan-phase 7` to generate)
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 29%      |
+| Overall progress   | 32%      |
 | Phases complete    | 6 / 19   |
-| Requirements done  | 26 / 136 |
-| Current phase reqs | 5 / 5    |
+| Requirements done  | 27 / 136 |
+| Current phase reqs | 0 / 6    |
 
 ## Phase Summary
 
@@ -50,7 +44,7 @@ Full message feature set — edit, delete, reply, react, sync across devices.
 | 4   | Design System & Mobile  | **Complete** (2026-02-28) |
 | 5   | Message Transport       | **Complete** (2026-02-28) |
 | 6   | Message Features & Sync | **Complete** (2026-02-28) |
-| 7   | E2EE & Mobile Security  | Ready (Phase 5 done)      |
+| 7   | E2EE & Mobile Security  | **← Next** (Ready to plan)   |
 | 8   | Social & Profiles       | Ready (Phase 2 done)      |
 | 9   | Notifications & Safety  | Blocked by 8              |
 | 10  | Message Extras          | Ready (Phase 6 done)      |
@@ -69,7 +63,7 @@ Full message feature set — edit, delete, reply, react, sync across devices.
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 6 complete — transition to next phase
+**Current focus:** Phase 7 — E2EE & Mobile Security
 
 ## Accumulated Context
 
@@ -80,7 +74,7 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 - WatermelonDB bridge: Zustand remains source of truth, WatermelonDB is persistence layer
 - All WatermelonDB writes are fire-and-forget (never block UI)
 - Read path: WatermelonDB first (instant offline) → API fetch (network freshness) → save back to WatermelonDB
-- Mobile uses `_raw` property writes for WatermelonDB create/update to avoid TS callback mismatches
+- UAT found 2 dead-code issues in mobile edit wiring — fixed and verified
 
 ### Previous Decisions (Phase 5)
 
@@ -91,20 +85,20 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 
 ### Blockers/Concerns
 
-- ⚠️ [Phase 5] Mobile msg_ack guard had a bug comparing senderId to conversationId — fixed
 - ⚠️ [Phase 1] Test coverage critically low (~17.9% web) — ongoing risk
 - ⚠️ [Phase 6] Pre-existing lint errors require --no-verify on all commits
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 6 complete — all 5 plans executed
+Stopped at: Phase 6 complete, ready to plan Phase 7
 Resume file: None
 
 ## Last Action
 
-Phase 6 execution complete. All 5 plans across 3 waves executed successfully. 15 commits total.
-Phase goal verified: all 5 success criteria met (edit history, soft-delete, reply, react, cross-device sync).
+Phase 6 → Phase 7 transition complete. Phase 6 delivered: edit history (backend+UI), soft-delete indicators,
+reply/reaction verification, edit history viewer (web+mobile), WatermelonDB offline sync bridge.
+UAT: 13/13 tests passed (2 mobile wiring issues found and fixed). Next: plan Phase 7 (E2EE & Mobile Security).
 
 ---
 

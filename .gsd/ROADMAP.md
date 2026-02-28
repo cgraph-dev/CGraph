@@ -17,7 +17,7 @@
 | 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28) |
 | 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28) |
 | 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
-| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
+| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28)  |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                          |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
@@ -263,7 +263,9 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 ---
 
-## Phase 6: Message Features & Sync ✅ Complete
+## Phase 6: Message Features & Sync ✅
+
+**Completed:** 2026-02-28 | **Plans:** 5/5 | **UAT:** Passed (13/13, 2 fixed)
 
 **Goal:** Full message feature set — edit, delete, reply, react, sync across devices.
 
@@ -303,7 +305,7 @@ thread replies, and emoji reactions are expected in any modern messenger. Cross-
 
 ---
 
-## Phase 7: E2EE & Mobile Security ← Next
+## Phase 7: E2EE & Mobile Security ← Next Phase
 
 **Goal:** All 1:1 messages are end-to-end encrypted. Biometric auth on mobile.
 
@@ -877,13 +879,13 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 2     | Auth Core               | ✅ Complete (2026-02-28)  | 100%     |
 | 3     | Auth Advanced           | ✅ Complete (2026-02-28)  | 100%     |
 | 4     | Design System & Mobile  | ✅ Complete (2026-02-28)  | 100%     |
-| 5     | Message Transport       | **Complete** (2026-02-28) | 100%     |
-| 6     | Message Features & Sync | Blocked by 5              | 0%       |
-| 7     | E2EE & Mobile Security  | Blocked by 5              | 0%       |
+| 5     | Message Transport       | ✅ Complete (2026-02-28)  | 100%     |
+| 6     | Message Features & Sync | ✅ Complete (2026-02-28)  | 100%     |
+| 7     | E2EE & Mobile Security  | ← Next                   | 0%       |
 | 8     | Social & Profiles       | Ready to plan             | 0%       |
 | 9     | Notifications & Safety  | Blocked by 8              | 0%       |
-| 10    | Message Extras          | Blocked by 6              | 0%       |
-| 11    | Groups & Channels       | Blocked by 5              | 0%       |
+| 10    | Message Extras          | Ready to plan             | 0%       |
+| 11    | Groups & Channels       | Ready to plan             | 0%       |
 | 12    | Roles & Moderation      | Blocked by 11             | 0%       |
 | 13    | Voice & Video           | Blocked by 12             | 0%       |
 | 14    | Forum Core              | Blocked by 12             | 0%       |

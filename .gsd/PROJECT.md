@@ -52,6 +52,11 @@ channels don't function reliably across web and mobile, nothing else matters.
 - ✓ Typing indicators with throttle, auto-clear, privacy gating — Phase 5
 - ✓ Read receipts with privacy opt-out on both platforms — Phase 5
 - ✓ Delivery receipts via msg_ack + DeliveryTracking pipeline — Phase 5
+- ✓ Message editing with full edit history (backend + web + mobile UI) — Phase 6
+- ✓ Soft-delete with "[This message was deleted]" placeholder — Phase 6
+- ✓ Reply/quote with thread context on both platforms — Phase 6
+- ✓ Emoji reactions in real-time on both platforms — Phase 6
+- ✓ Cross-device message sync via WatermelonDB bridge — Phase 6
 
 ### Active
 
@@ -66,9 +71,6 @@ channels don't function reliably across web and mobile, nothing else matters.
 
 **Core Messaging (v0.9.49)**
 
-- [ ] Message editing with history, deletion with soft-delete indicator
-- [ ] Reply/quote and emoji reactions in real-time
-- [ ] Cross-device message sync (WatermelonDB on mobile)
 - [ ] Friends system — add, accept, block, online status, all platforms
 - [ ] Groups and channels — create, join, message, manage roles, web-mobile parity
 - [ ] E2EE for 1:1 conversations — triple ratchet protocol fully operational
@@ -188,7 +190,12 @@ effectively orphaned; the real v1.0 launch is the goal of this project.
 | Client-side privacy gating (not backend)        | Backend broadcasts all events; clients gate mark_read/typing based on local privacy settings               | ✓ Phase 5 |
 | msg_ack delivery pipeline (client → backend)    | Auto-ACK on receive → DeliveryTracking.mark_delivered → broadcast msg_delivered; no polling              | ✓ Phase 5 |
 | 3s typing throttle + 5s auto-stop + 6s clear   | Prevents typing event flood; three-layer defense: throttle, auto-stop, safety-net auto-clear               | ✓ Phase 5 |
+| Edit history via Ecto.Multi                      | Insert MessageEdit record alongside message update in single transaction                                   | ✓ Phase 6 |
+| Soft-delete preserves message row                 | Set deleted_at + show placeholder; never hard-delete for audit trail                                       | ✓ Phase 6 |
+| WatermelonDB as persistence layer only            | Zustand remains source of truth; WatermelonDB handles offline cache; fire-and-forget writes                | ✓ Phase 6 |
+| Read-path: WatermelonDB first, then API           | Instant offline load from local DB, then background API fetch to refresh; save back to WatermelonDB        | ✓ Phase 6 |
+| Mobile `_raw` property writes for WatermelonDB    | Avoids TS callback type mismatches with standard WatermelonDB create/update API                             | ✓ Phase 6 |
 
 ---
 
-_Last updated: 2026-02-28 after Phase 5 (Message Transport)_
+_Last updated: 2026-02-28 after Phase 6 (Message Features & Sync)_
