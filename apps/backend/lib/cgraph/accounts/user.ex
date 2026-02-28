@@ -58,6 +58,7 @@ defmodule CGraph.Accounts.User do
     field :status, :string, default: "online"
     field :custom_status, :string
     field :status_message, :string
+    field :status_expires_at, :utc_datetime
 
     # Account status
     field :is_active, :boolean, default: true
@@ -216,9 +217,10 @@ defmodule CGraph.Accounts.User do
   @spec profile_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def profile_changeset(user, attrs) do
     user
-    |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :pronouns])
+    |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :status_message, :status_expires_at, :pronouns])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)
+    |> validate_length(:status_message, max: 128)
     |> validate_length(:pronouns, max: 50)
   end
 

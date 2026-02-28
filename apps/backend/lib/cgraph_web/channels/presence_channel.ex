@@ -20,7 +20,9 @@ defmodule CGraphWeb.PresenceChannel do
   use CGraphWeb, :channel
 
   alias CGraph.Accounts.Friends
+  alias CGraph.Accounts.User
   alias CGraph.Presence
+  alias CGraph.Repo
 
   @heartbeat_interval_ms 15_000
   @offline_grace_period_ms 8_000
@@ -46,26 +48,46 @@ defmodule CGraphWeb.PresenceChannel do
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
 
+    # Restore persisted status from DB on reconnect
+    user = Repo.get!(User, user.id)
+    {restored_status, restored_meta} = restore_persisted_status(user)
+
     # Get user's friend IDs for presence filtering
     friend_ids = get_friend_ids(user.id)
 
-    # Track user in global presence with device metadata
+    # Track user in global presence with device metadata + restored status
     # Using "lobby" as the room_id for the global presence channel
-    Presence.track_user(socket, user.id, "lobby", %{
-      device_type: socket.assigns[:device_type] || "unknown",
-      platform: socket.assigns[:platform] || "web",
-      app_state: "foreground"
-    })
+    track_meta =
+      %{
+        device_type: socket.assigns[:device_type] || "unknown",
+        platform: socket.assigns[:platform] || "web",
+        app_state: "foreground"
+      }
+      |> Map.merge(restored_meta)
+
+    Presence.track_user(socket, user.id, "lobby", track_meta)
 
     # Push presence list filtered by friends to joining user
     # Uses pipelined Redis lookups for friends only — O(F) not O(all users)
     presence_list = build_friend_presence(friend_ids)
     push(socket, "presence_state", %{users: presence_list})
 
-    # Notify friends that this user is now online
+    # Push restored status back to the reconnecting user so the client can hydrate
+    if user.status_message || user.custom_status do
+      push(socket, "status_restored", %{
+        status: restored_status,
+        status_message: user.status_message,
+        custom_status: user.custom_status,
+        status_expires_at: user.status_expires_at && DateTime.to_iso8601(user.status_expires_at)
+      })
+    end
+
+    # Notify friends that this user is now online (with restored status if any)
     broadcast_to_friends(user.id, friend_ids, "friend_online", %{
       user_id: user.id,
-      status: "online",
+      status: restored_status,
+      status_message: user.status_message,
+      custom_status: user.custom_status,
       online_at: DateTime.utc_now() |> DateTime.to_iso8601()
     })
 
@@ -105,11 +127,38 @@ defmodule CGraphWeb.PresenceChannel do
 
     case Presence.update_status(socket, user.id, "lobby", status) do
       {:ok, _} ->
+        # Persist status to database so it survives reconnections
+        status_message = params["status_message"]
+        custom_status = params["custom_status"]
+        expires_in = params["expires_in"]
+
+        expires_at =
+          if is_integer(expires_in) and expires_in > 0 do
+            DateTime.utc_now()
+            |> DateTime.add(expires_in, :second)
+            |> DateTime.truncate(:second)
+          else
+            nil
+          end
+
+        db_attrs = %{
+          status: status,
+          status_message: status_message,
+          custom_status: custom_status,
+          status_expires_at: expires_at
+        }
+
+        user
+        |> Ecto.Changeset.change(db_attrs)
+        |> Repo.update()
+
         # Broadcast status change only to friends
         broadcast_to_friends(user.id, friend_ids, "friend_status_changed", %{
           user_id: user.id,
           status: status,
-          status_message: params["status_message"],
+          status_message: status_message,
+          custom_status: custom_status,
+          expires_at: expires_at && DateTime.to_iso8601(expires_at),
           updated_at: DateTime.utc_now() |> DateTime.to_iso8601()
         })
         {:reply, :ok, socket}
@@ -290,6 +339,45 @@ defmodule CGraphWeb.PresenceChannel do
   defp get_friend_ids(user_id) do
     Friends.list_friends(user_id)
     |> Enum.map(& &1.friend_id)
+  end
+
+  # Restore persisted status from DB on reconnect.
+  # Returns {status, metadata_map} where expired statuses are cleared.
+  @spec restore_persisted_status(%User{}) :: {String.t(), map()}
+  defp restore_persisted_status(user) do
+    now = DateTime.utc_now()
+
+    expired? =
+      user.status_expires_at != nil and
+        DateTime.compare(user.status_expires_at, now) == :lt
+
+    if expired? do
+      # Status has expired — clear from DB
+      user
+      |> Ecto.Changeset.change(%{
+        status_message: nil,
+        custom_status: nil,
+        status_expires_at: nil,
+        status: "online"
+      })
+      |> Repo.update()
+
+      {"online", %{}}
+    else
+      # Restore persisted status into presence metadata
+      status = user.status || "online"
+
+      meta =
+        %{}
+        |> then(fn m ->
+          if user.status_message, do: Map.put(m, :status_message, user.status_message), else: m
+        end)
+        |> then(fn m ->
+          if user.custom_status, do: Map.put(m, :custom_status, user.custom_status), else: m
+        end)
+
+      {status, meta}
+    end
   end
 
   # Broadcast a message to all friends of a user
