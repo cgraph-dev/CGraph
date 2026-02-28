@@ -9,37 +9,53 @@ defmodule CGraph.Accounts.Sessions do
   alias CGraph.Accounts.Session
   alias CGraph.Repo
 
+  @session_validity_days 60
+
   @doc """
   Creates a new session.
+
+  Returns `{:ok, session, raw_token}` on success so callers can issue the
+  raw token to the client while only the hash is persisted.
   """
-  @spec create_session(struct(), map()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_session(struct(), map()) :: {:ok, Session.t(), String.t()} | {:error, Ecto.Changeset.t()}
   def create_session(user, device_info \\ %{}) do
     token = generate_session_token()
-    expires_at = DateTime.add(DateTime.utc_now(), 60, :day)
+    token_hash = hash_token(token)
+    expires_at = DateTime.add(DateTime.utc_now(), @session_validity_days, :day)
+
+    device_name = device_info[:device] || parse_device(device_info[:user_agent])
+    device_type = parse_device_type(device_info[:user_agent])
 
     %Session{}
     |> Session.changeset(%{
       user_id: user.id,
-      token: token,
+      token_hash: token_hash,
       expires_at: expires_at,
-      device: device_info[:device] || parse_device(device_info[:user_agent]),
+      device_name: device_name,
+      device_type: device_type,
       ip_address: device_info[:ip],
-      user_agent: device_info[:user_agent],
-      last_active_at: DateTime.utc_now()
+      user_agent: device_info[:user_agent]
     })
     |> Repo.insert()
+    |> case do
+      {:ok, session} -> {:ok, session, token}
+      error -> error
+    end
   end
 
   @doc """
-  Gets a session by token.
+  Gets a session by raw token.
+
+  Hashes the token and looks up by `token_hash`.
   """
   @spec get_session(String.t()) :: Session.t() | nil
   def get_session(token) do
+    token_hash = hash_token(token)
     now = DateTime.utc_now()
 
     Repo.one(
       from(s in Session,
-        where: s.token == ^token,
+        where: s.token_hash == ^token_hash,
         where: s.expires_at > ^now,
         where: is_nil(s.revoked_at),
         preload: [:user]
@@ -61,7 +77,7 @@ defmodule CGraph.Accounts.Sessions do
   @spec touch_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def touch_session(session) do
     session
-    |> Session.changeset(%{last_active_at: DateTime.utc_now()})
+    |> Ecto.Changeset.change(last_active_at: DateTime.utc_now())
     |> Repo.update()
   end
 
@@ -71,7 +87,7 @@ defmodule CGraph.Accounts.Sessions do
   @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(session) do
     session
-    |> Session.changeset(%{revoked_at: DateTime.utc_now()})
+    |> Ecto.Changeset.change(revoked_at: DateTime.utc_now())
     |> Repo.update()
   end
 
@@ -167,7 +183,11 @@ defmodule CGraph.Accounts.Sessions do
   # Private helpers
 
   defp generate_session_token do
-    :crypto.strong_rand_bytes(32) |> Base.url_encode64()
+    :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
+  end
+
+  defp hash_token(token) do
+    :crypto.hash(:sha256, token) |> Base.encode64()
   end
 
   defp parse_device(nil), do: "Unknown"
@@ -180,6 +200,16 @@ defmodule CGraph.Accounts.Sessions do
       String.contains?(user_agent, "Mac") -> "Mac"
       String.contains?(user_agent, "Linux") -> "Linux"
       true -> "Unknown"
+    end
+  end
+
+  defp parse_device_type(nil), do: "web"
+  defp parse_device_type(user_agent) do
+    cond do
+      String.contains?(user_agent, "iPhone") or String.contains?(user_agent, "iPad") -> "ios"
+      String.contains?(user_agent, "Android") -> "android"
+      String.contains?(user_agent, "Electron") or String.contains?(user_agent, "Desktop") -> "desktop"
+      true -> "web"
     end
   end
 end
