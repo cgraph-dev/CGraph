@@ -60,6 +60,24 @@ export function createBlockUser(set: Set, get: Get) {
       if (current?.id === userId) {
         set({ currentProfile: { ...current, isBlocked: true } });
       }
+
+      // Remove blocked user from friend store (friends list + pending requests + presence)
+      try {
+        const { useFriendStore } = await import('./friendStore.impl');
+        const friendState = useFriendStore.getState();
+        useFriendStore.setState({
+          friends: friendState.friends.filter((f) => f.id !== userId),
+          pendingRequests: friendState.pendingRequests.filter(
+            (r) => r.user.id !== userId,
+          ),
+          sentRequests: friendState.sentRequests.filter(
+            (r) => r.user.id !== userId,
+          ),
+        });
+      } catch {
+        // friendStore import failure is non-critical
+        logger.warn('Could not update friend store after block');
+      }
     } catch (error) {
       logger.error('Failed to block user:', error);
       throw error;

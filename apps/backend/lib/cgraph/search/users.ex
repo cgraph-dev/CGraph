@@ -109,13 +109,14 @@ defmodule CGraph.Search.Users do
 
   defp maybe_exclude_blocked(query, nil), do: query
   defp maybe_exclude_blocked(query, current_user) do
-    blocker_id = current_user.id
-    from u in query,
-      where: u.id not in subquery(
-        from b in "blocks",
-        where: b.blocker_id == type(^blocker_id, Ecto.UUID),
-        select: b.blocked_id
-      )
+    # Bidirectional: exclude users who blocked the current user AND users the current user blocked
+    blocked_ids = CGraph.Accounts.Friends.Queries.get_blocked_user_ids(current_user.id)
+
+    if blocked_ids == [] do
+      query
+    else
+      from u in query, where: u.id not in ^blocked_ids
+    end
   end
 
   defp count_user_results(true, users, _query), do: length(users)

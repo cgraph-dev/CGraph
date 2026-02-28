@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.V1.UserController do
 
   alias CGraph.Accounts
   alias CGraph.Accounts.Friends
+  alias CGraph.Accounts.Friends.Queries, as: FriendQueries
   alias CGraph.Accounts.User
   alias CGraph.Presence
 
@@ -181,35 +182,51 @@ defmodule CGraphWeb.API.V1.UserController do
     current_user = conn.assigns[:current_user]
 
     with {:ok, user} <- Accounts.get_user(id) do
-      # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
-      show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
-      # Get friendship status for the viewing user
-      friendship_status = if current_user && !is_own_profile do
-        Accounts.get_friendship_status(current_user, user)
+      # Block check: return restricted profile if mutually blocked
+      is_blocked = current_user && !is_own_profile &&
+        FriendQueries.mutually_blocked?(current_user.id, user.id)
+
+      if is_blocked do
+        conn
+        |> put_status(:ok)
+        |> json(%{data: %{
+          id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          blocked: true
+        }})
       else
-        :none
-      end
+        # Check if the profile should be private for this viewer
+        is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
+        show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
-      friend_request_sent = friendship_status == :pending
-      friend_request_received = friendship_status == :incoming
+        # Get friendship status for the viewing user
+        friendship_status = if current_user && !is_own_profile do
+          Accounts.get_friendship_status(current_user, user)
+        else
+          :none
+        end
 
-      if show_full_profile do
-        render(conn, :show,
-          user: user,
-          is_friend: is_friend,
-          friend_request_sent: friend_request_sent,
-          friend_request_received: friend_request_received
-        )
-      else
-        render(conn, :private_profile,
-          user: user,
-          is_friend: is_friend,
-          friend_request_sent: friend_request_sent,
-          friend_request_received: friend_request_received
-        )
+        friend_request_sent = friendship_status == :pending
+        friend_request_received = friendship_status == :incoming
+
+        if show_full_profile do
+          render(conn, :show,
+            user: user,
+            is_friend: is_friend,
+            friend_request_sent: friend_request_sent,
+            friend_request_received: friend_request_received
+          )
+        else
+          render(conn, :private_profile,
+            user: user,
+            is_friend: is_friend,
+            friend_request_sent: friend_request_sent,
+            friend_request_received: friend_request_received
+          )
+        end
       end
     end
   end
@@ -223,15 +240,31 @@ defmodule CGraphWeb.API.V1.UserController do
     current_user = conn.assigns[:current_user]
 
     with {:ok, user} <- Accounts.get_user_by_username(username) do
-      # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
-      show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
-      if show_full_profile do
-        render(conn, :profile, user: user)
+      # Block check: return restricted profile if mutually blocked
+      is_blocked = current_user && !is_own_profile &&
+        FriendQueries.mutually_blocked?(current_user.id, user.id)
+
+      if is_blocked do
+        conn
+        |> put_status(:ok)
+        |> json(%{data: %{
+          id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          blocked: true
+        }})
       else
-        render(conn, :private_profile, user: user)
+        # Check if the profile should be private for this viewer
+        is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
+        show_full_profile = is_own_profile || is_friend || !user.is_profile_private
+
+        if show_full_profile do
+          render(conn, :profile, user: user)
+        else
+          render(conn, :private_profile, user: user)
+        end
       end
     end
   end
@@ -258,6 +291,32 @@ defmodule CGraphWeb.API.V1.UserController do
   @spec check_username_availability(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_username_availability(conn, params) do
     CGraphWeb.API.UsernameController.check_availability(conn, params)
+  end
+
+  @doc """
+  Mark onboarding as complete for the current user.
+
+  Sets `onboarding_completed_at` to the current UTC time.
+  Idempotent: returns success if already completed without re-updating.
+  """
+  @spec complete_onboarding(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def complete_onboarding(conn, _params) do
+    user = conn.assigns.current_user
+
+    if user.onboarding_completed_at do
+      # Already completed — idempotent success
+      conn
+      |> put_status(:ok)
+      |> json(%{data: %{onboarding_completed: true}})
+    else
+      now = DateTime.truncate(DateTime.utc_now(), :second)
+
+      with {:ok, _updated} <- Accounts.update_user(user, %{onboarding_completed_at: now}) do
+        conn
+        |> put_status(:ok)
+        |> json(%{data: %{onboarding_completed: true}})
+      end
+    end
   end
 
   @doc """
