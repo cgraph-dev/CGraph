@@ -153,6 +153,12 @@ defmodule CGraphWeb.Router.UserRoutes do
         post "/e2ee/keys/:key_id/verify", E2EEController, :verify_key
         post "/e2ee/keys/:key_id/revoke", E2EEController, :revoke_key
 
+        # E2EE Cross-Signing & Key Sync
+        post "/e2ee/devices/:device_id/cross-sign", E2EEController, :cross_sign_device
+        get "/e2ee/devices/trust-chain", E2EEController, :device_trust_chain
+        post "/e2ee/devices/:device_id/sync", E2EEController, :sync_keys
+        get "/e2ee/devices/sync-packages", E2EEController, :get_sync_packages
+
         # MyBB Feature: Private Messages (PM)
         get "/pm/folders", PMController, :list_folders
         post "/pm/folders", PMController, :create_folder

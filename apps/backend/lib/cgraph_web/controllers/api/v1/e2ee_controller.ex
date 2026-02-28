@@ -24,6 +24,8 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   alias CGraph.Accounts.Friends
   alias CGraph.Crypto.E2EE
+  alias CGraph.Crypto.E2EE.CrossSigning
+  alias CGraph.Crypto.E2EE.KeySync
 
   action_fallback CGraphWeb.FallbackController
 
@@ -368,6 +370,209 @@ defmodule CGraphWeb.API.V1.E2EEController do
   end
 
   # ============================================================================
+  # Cross-Signing & Key Sync Endpoints
+  # ============================================================================
+
+  @doc """
+  Cross-sign another device's identity key.
+
+  Creates a cross-signature from the caller's device to the target device,
+  establishing trust in the multi-device trust chain.
+
+  ## Request Body
+
+      {
+        "signer_device_id": "uuid-of-signing-identity-key",
+        "signature": "base64_encoded_signature",
+        "algorithm": "ed25519"
+      }
+
+  ## Response
+
+      {
+        "data": {
+          "status": "verified",
+          "trust_chain": [...]
+        }
+      }
+  """
+  @spec cross_sign_device(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def cross_sign_device(conn, %{"device_id" => signed_device_id} = params) do
+    user = conn.assigns.current_user
+    signer_device_id = params["signer_device_id"]
+    signature_b64 = params["signature"]
+    algorithm = params["algorithm"] || "ed25519"
+
+    with {:ok, signature} <- decode_base64(signature_b64, "signature") do
+      case CrossSigning.create_cross_signature(signer_device_id, signed_device_id, user.id, signature, algorithm) do
+        {:ok, _cross_sig} ->
+          {:ok, trust_chain} = CrossSigning.get_device_trust_chain(user.id)
+
+          render_data(conn, %{
+            status: "verified",
+            trust_chain: Enum.map(trust_chain, &format_cross_signature/1)
+          })
+
+        {:error, :device_not_found} ->
+          {:error, :not_found, "One or both devices not found or not owned by current user"}
+
+        {:error, :devices_not_same_user} ->
+          {:error, :forbidden, "Both devices must belong to the same user"}
+
+        {:error, changeset} ->
+          {:error, :unprocessable_entity, format_changeset_errors(changeset)}
+      end
+    end
+  end
+
+  @doc """
+  Get the device trust chain for the current user.
+
+  Returns all cross-signatures showing which devices trust which,
+  along with trust status for each device.
+
+  ## Response
+
+      {
+        "data": {
+          "devices": [
+            {
+              "device_id": "...",
+              "identity_key_id": "...",
+              "cross_signatures": [...],
+              "is_trusted": true
+            }
+          ]
+        }
+      }
+  """
+  @spec device_trust_chain(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def device_trust_chain(conn, _params) do
+    user = conn.assigns.current_user
+
+    with {:ok, devices} <- E2EE.list_user_devices(user.id),
+         {:ok, signatures} <- CrossSigning.get_device_trust_chain(user.id) do
+
+      # Build trust info per device
+      device_info = Enum.map(devices, fn device ->
+        device_sigs = Enum.filter(signatures, fn sig ->
+          sig.signed_device_id == device.identity_key_id || sig.signer_device_id == device.identity_key_id
+        end)
+
+        # A device is trusted if it has at least one verified cross-signature as signed_device
+        is_trusted = Enum.any?(signatures, fn sig ->
+          sig.signed_device_id == device.identity_key_id && sig.status == "verified"
+        end)
+
+        %{
+          device_id: device.device_id,
+          identity_key_id: device.identity_key_id,
+          cross_signatures: Enum.map(device_sigs, &format_cross_signature/1),
+          is_trusted: is_trusted
+        }
+      end)
+
+      render_data(conn, %{devices: device_info})
+    end
+  end
+
+  @doc """
+  Send encrypted key material to another device for key sync.
+
+  The server acts as a blind relay — it stores the encrypted package
+  without inspecting or decrypting the contents.
+
+  ## Request Body
+
+      {
+        "encrypted_key_material": "base64_encoded_ciphertext",
+        "target_device_id": "uuid-of-target-identity-key"
+      }
+
+  ## Response
+
+      {
+        "data": {
+          "package_id": "uuid",
+          "status": "pending"
+        }
+      }
+  """
+  @spec sync_keys(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def sync_keys(conn, %{"device_id" => from_device_id} = params) do
+    user = conn.assigns.current_user
+    target_device_id = params["target_device_id"]
+    material_b64 = params["encrypted_key_material"]
+
+    with {:ok, encrypted_material} <- decode_base64(material_b64, "encrypted_key_material") do
+      case KeySync.create_sync_package(from_device_id, target_device_id, user.id, encrypted_material) do
+        {:ok, package} ->
+          render_data(conn, %{
+            package_id: package.id,
+            status: package.status
+          })
+
+        {:error, :device_not_found} ->
+          {:error, :not_found, "One or both devices not found or not owned by current user"}
+
+        {:error, changeset} ->
+          {:error, :unprocessable_entity, format_changeset_errors(changeset)}
+      end
+    end
+  end
+
+  @doc """
+  Get pending sync packages for the current user's device.
+
+  Returns encrypted key packages awaiting pickup. After retrieving,
+  the client should decrypt locally and call mark_sync_complete.
+
+  ## Query Parameters
+
+    - `device_id` - The identity key UUID of the device requesting packages
+
+  ## Response
+
+      {
+        "data": {
+          "packages": [
+            {
+              "id": "uuid",
+              "from_device_id": "uuid",
+              "encrypted_key_material": "base64",
+              "created_at": "2026-01-01T00:00:00Z"
+            }
+          ]
+        }
+      }
+  """
+  @spec get_sync_packages(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_sync_packages(conn, params) do
+    user = conn.assigns.current_user
+    device_id = params["device_id"]
+
+    # Verify the device belongs to the current user
+    case verify_device_ownership(device_id, user.id) do
+      :ok ->
+        {:ok, packages} = KeySync.get_pending_sync_packages(device_id)
+
+        render_data(conn, %{
+          packages: Enum.map(packages, fn pkg ->
+            %{
+              id: pkg.id,
+              from_device_id: pkg.from_device_id,
+              encrypted_key_material: Base.encode64(pkg.encrypted_key_material),
+              created_at: pkg.inserted_at
+            }
+          end)
+        })
+
+      {:error, reason} ->
+        {:error, :not_found, reason}
+    end
+  end
+
+  # ============================================================================
   # Private Functions
   # ============================================================================
 
@@ -427,4 +632,55 @@ defmodule CGraphWeb.API.V1.E2EEController do
     |> Enum.reject(&is_nil/1)
   end
   defp parse_prekey_list(_), do: []
+
+  # Decode a base64 string, returning a friendly error on failure
+  defp decode_base64(nil, field), do: {:error, :unprocessable_entity, "#{field} is required"}
+  defp decode_base64(value, field) when is_binary(value) do
+    case Base.decode64(value) do
+      {:ok, decoded} -> {:ok, decoded}
+      :error -> {:error, :unprocessable_entity, "#{field} is not valid base64"}
+    end
+  end
+  defp decode_base64(_, field), do: {:error, :unprocessable_entity, "#{field} must be a string"}
+
+  # Format a cross-signature for JSON response
+  defp format_cross_signature(sig) do
+    %{
+      id: sig.id,
+      signer_device_id: sig.signer_device_id,
+      signed_device_id: sig.signed_device_id,
+      algorithm: sig.algorithm,
+      status: sig.status,
+      created_at: sig.inserted_at
+    }
+  end
+
+  # Format changeset errors into a readable string
+  defp format_changeset_errors(%Ecto.Changeset{} = changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
+    |> Enum.map_join(", ", fn {k, v} -> "#{k}: #{Enum.join(v, ", ")}" end)
+  end
+  defp format_changeset_errors(error), do: inspect(error)
+
+  # Verify that a device identity key belongs to the given user
+  defp verify_device_ownership(nil, _user_id), do: {:error, "device_id is required"}
+  defp verify_device_ownership(device_id, user_id) do
+    import Ecto.Query
+    alias CGraph.Crypto.E2EE.IdentityKey
+
+    exists =
+      from(k in IdentityKey,
+        where: k.id == ^device_id,
+        where: k.user_id == ^user_id,
+        where: is_nil(k.revoked_at),
+        select: count()
+      )
+      |> CGraph.Repo.one()
+
+    if exists > 0, do: :ok, else: {:error, "Device not found or not owned by current user"}
+  end
 end
