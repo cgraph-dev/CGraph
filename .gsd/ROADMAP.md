@@ -405,15 +405,15 @@ that must exist before scaling users.
 - [ ] 08-06-PLAN.md — Block enforcement across messaging, presence, profile, search (MOD-03)
 - [ ] 08-07-PLAN.md — QR code login protocol: backend + web + mobile (AUTH-11)
 
-| Plan  | Scope                                                    | Wave | Status |
-| ----- | -------------------------------------------------------- | ---- | ------ |
-| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —      |
-| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —      |
-| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —      |
-| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —      |
-| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 1    | —      |
-| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 1    | —      |
-| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —      |
+| Plan  | Scope                                                    | Wave | Depends | Status |
+| ----- | -------------------------------------------------------- | ---- | ------- | ------ |
+| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —       | —      |
+| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —       | —      |
+| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —       | —      |
+| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —       | —      |
+| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 2    | 03      | —      |
+| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 2    | 03      | —      |
+| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —       | —      |
 
 ---
 
