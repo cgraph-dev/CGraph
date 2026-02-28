@@ -10,7 +10,7 @@ import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 export { useProfileData } from './useProfileData';
 export type { UseProfileDataReturn } from './useProfileData';
 export { useProfileEdit } from './useProfileEdit';
-export type { UseProfileEditReturn } from './useProfileEdit';
+export type { UseProfileEditReturn, ProfileFields } from './useProfileEdit';
 
 // ============================================================================
 // Profile Actions Hook (Friend requests, messaging, etc.)

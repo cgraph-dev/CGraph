@@ -15,6 +15,12 @@ const logger = createLogger('useProfileActions');
 // Profile Edit Hook (Bio editing, avatar/banner uploads)
 // ============================================================================
 
+export interface ProfileFields {
+  display_name?: string;
+  bio?: string;
+  signature?: string;
+}
+
 export interface UseProfileEditReturn {
   editMode: boolean;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,6 +35,10 @@ export interface UseProfileEditReturn {
   handleSaveProfile: () => Promise<void>;
   handleCancelEdit: () => void;
   isSaving: boolean;
+  /** Update profile fields via PUT /api/v1/me */
+  updateProfile: (fields: ProfileFields) => Promise<void>;
+  /** Upload avatar via POST /api/v1/me/avatar (multipart FormData) */
+  uploadAvatar: (file: File) => Promise<string>;
 }
 
 /**
@@ -181,6 +191,82 @@ export function useProfileEdit(
     HapticFeedback.light();
   }, [profile?.bio]);
 
+  /**
+   * Update profile fields via PUT /api/v1/me.
+   * Only sends non-undefined fields.
+   */
+  const updateProfile = useCallback(
+    async (fields: ProfileFields) => {
+      setIsSaving(true);
+      try {
+        const response = await api.put('/api/v1/me', fields);
+        const updated = response.data?.data ?? response.data;
+
+        // Sync local state with response
+        setProfile((prev) =>
+          prev
+            ? {
+                ...prev,
+                ...(fields.display_name !== undefined && { displayName: fields.display_name }),
+                ...(fields.bio !== undefined && { bio: fields.bio }),
+                ...(fields.signature !== undefined && { signature: fields.signature }),
+              }
+            : null
+        );
+
+        if (fields.bio !== undefined) {
+          setEditedBio(fields.bio);
+        }
+
+        HapticFeedback.success();
+        toast.success('Profile updated!');
+        return updated;
+      } catch (err) {
+        logger.error('Failed to update profile:', err);
+        toast.error('Failed to update profile. Please try again.');
+        HapticFeedback.error();
+        throw err;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [setProfile]
+  );
+
+  /**
+   * Upload an avatar via POST /api/v1/me/avatar (multipart FormData).
+   * Returns the new avatar URL on success.
+   */
+  const uploadAvatar = useCallback(
+    async (file: File): Promise<string> => {
+      setIsUploadingAvatar(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await api.post('/api/v1/me/avatar', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        const avatarUrl = response.data?.data?.avatar_url ?? response.data?.url ?? '';
+
+        setProfile((prev) => (prev ? { ...prev, avatarUrl } : null));
+
+        HapticFeedback.success();
+        toast.success('Avatar updated!');
+        return avatarUrl;
+      } catch (err) {
+        logger.error('Failed to upload avatar:', err);
+        toast.error('Failed to upload avatar. Please try again.');
+        HapticFeedback.error();
+        throw err;
+      } finally {
+        setIsUploadingAvatar(false);
+      }
+    },
+    [setProfile]
+  );
+
   return {
     editMode,
     setEditMode,
@@ -195,5 +281,7 @@ export function useProfileEdit(
     handleSaveProfile,
     handleCancelEdit,
     isSaving,
+    updateProfile,
+    uploadAvatar,
   };
 }
