@@ -38,6 +38,7 @@ const {
   mockFingerprint: vi.fn(),
   mockSessionManager: {
     initialize: vi.fn(),
+    setUseTripleRatchet: vi.fn(),
     destroySession: vi.fn(() => Promise.resolve()),
     destroyAllSessions: vi.fn(() => Promise.resolve()),
   },
@@ -139,18 +140,42 @@ describe('createInitialize', () => {
     expect(state.deviceId).toBe('dev-1');
     expect(state.fingerprint).toBe('fp-abc');
     expect(state.isLoading).toBe(false);
+    expect(state.useTripleRatchet).toBe(true);
     expect(mockSessionManager.initialize).toHaveBeenCalled();
+    expect(mockSessionManager.setUseTripleRatchet).toHaveBeenCalledWith(true);
   });
 
-  it('sets isInitialized to false when not set up', async () => {
-    const { get, set, state } = makeMockStore();
+  it('auto-bootstraps E2EE when not set up', async () => {
+    const mockSetupE2EE = vi.fn(async () => {
+      // Simulate what setupE2EE does to the store state
+    });
+    const { get, set, state } = makeMockStore({ setupE2EE: mockSetupE2EE });
+    mockIsE2EESetUp.mockResolvedValue(false);
+    mockGetDeviceId.mockReturnValue(null);
+    mockSessionManager.initialize.mockResolvedValue(undefined);
+
+    const init = createInitialize(set as never, get as never);
+    await init();
+
+    expect(mockSetupE2EE).toHaveBeenCalled();
+    expect(mockSessionManager.initialize).toHaveBeenCalled();
+    expect(mockSessionManager.setUseTripleRatchet).toHaveBeenCalledWith(true);
+    expect(state.useTripleRatchet).toBe(true);
+  });
+
+  it('sets error when auto-bootstrap fails', async () => {
+    const mockSetupE2EE = vi.fn(async () => {
+      throw new Error('setup failed');
+    });
+    const { get, set, state } = makeMockStore({ setupE2EE: mockSetupE2EE });
     mockIsE2EESetUp.mockResolvedValue(false);
     mockGetDeviceId.mockReturnValue(null);
 
     const init = createInitialize(set as never, get as never);
     await init();
 
-    expect(state.isInitialized).toBe(false);
+    expect(state.error).toBe('setup failed');
+    expect(state.isLoading).toBe(false);
   });
 
   it('sets error on failure', async () => {
