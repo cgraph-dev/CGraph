@@ -361,7 +361,10 @@ function MessageContent({
         item.type !== 'video' &&
         item.type !== 'image' &&
         !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|📎 .+|\d+ photos?)$/) && (
-          <MarkdownText style={styles.messageText} color={isOwnMessage ? '#fff' : colors.text}>
+          <MarkdownText
+            style={[styles.messageText, item.decryption_failed && { opacity: 0.6 }]}
+            color={isOwnMessage ? '#fff' : colors.text}
+          >
             {item.content}
           </MarkdownText>
         )
@@ -399,6 +402,24 @@ function MessageContent({
             </Text>
           )}
         </Text>
+        {/* E2EE lock icon for encrypted messages */}
+        {item.is_encrypted && !item.decryption_failed && (
+          <Ionicons
+            name="lock-closed"
+            size={12}
+            color={isOwnMessage ? 'rgba(255,255,255,0.6)' : colors.textTertiary}
+            style={{ marginLeft: 4 }}
+          />
+        )}
+        {/* Warning icon for decrypt failures */}
+        {item.decryption_failed && (
+          <Ionicons
+            name="warning"
+            size={12}
+            color="#e5a100"
+            style={{ marginLeft: 4 }}
+          />
+        )}
         {isOwnMessage &&
           (() => {
             const statusInfo = getMessageStatus(item, isOwnMessage);
