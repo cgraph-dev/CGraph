@@ -31,6 +31,9 @@ defmodule CGraphWeb.UserSocket do
   # Collaborative editing (Yjs CRDT sync)
   channel "document:*", CGraphWeb.Channels.DocumentChannel
 
+  # QR code login (unauthenticated — web client awaits mobile approval)
+  channel "qr_auth:*", CGraphWeb.QrAuthChannel
+
   @impl true
   @doc "Authenticates and establishes a socket connection."
   @spec connect(map(), Phoenix.Socket.t(), map()) :: {:ok, Phoenix.Socket.t()} | :error
@@ -54,6 +57,11 @@ defmodule CGraphWeb.UserSocket do
     end
   end
 
+  # Allow unauthenticated connections for QR auth channels
+  def connect(%{"qr_auth" => "true"}, socket, _connect_info) do
+    {:ok, assign(socket, :current_user, nil)}
+  end
+
   def connect(_params, _socket, _connect_info) do
     :error
   end
@@ -61,6 +69,7 @@ defmodule CGraphWeb.UserSocket do
   @impl true
   @doc "Returns the socket identifier for the connection."
   @spec id(Phoenix.Socket.t()) :: String.t() | nil
+  def id(%{assigns: %{current_user: nil}}), do: nil
   def id(socket), do: "user_socket:#{socket.assigns.current_user.id}"
 
   defp verify_token(token) do

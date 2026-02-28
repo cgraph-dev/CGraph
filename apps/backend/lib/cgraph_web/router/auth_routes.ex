@@ -22,6 +22,9 @@ defmodule CGraphWeb.Router.AuthRoutes do
         post "/auth/forgot-password", AuthController, :forgot_password
         post "/auth/reset-password", AuthController, :reset_password
         post "/auth/verify-email", AuthController, :verify_email
+
+        # QR code login - create session (public, unauthenticated)
+        post "/auth/qr-session", QrAuthController, :create_session
       end
 
       # OAuth Authentication Routes (public - strict rate limiting)
@@ -76,6 +79,9 @@ defmodule CGraphWeb.Router.AuthRoutes do
         # Authentication - logout and email verification require auth
         post "/auth/logout", AuthController, :logout
         post "/auth/resend-verification", AuthController, :resend_verification
+
+        # QR code login - approve from authenticated mobile session
+        post "/auth/qr-login", QrAuthController, :approve_login
       end
 
       # Two-factor authentication — strict rate limiting (20 req/60s)
