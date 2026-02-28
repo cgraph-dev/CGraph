@@ -69,7 +69,7 @@
         "backgroundColor": "#10b981"
       },
       "package": "org.cgraph.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [
         "CAMERA",
         "READ_MEDIA_IMAGES",
@@ -94,7 +94,7 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#6366f1",
+          "color": "#10b981",
           "defaultChannel": "default"
         }
       ],
@@ -127,18 +127,9 @@
       ]
     ],
     "extra": {
-      "apiUrl": "https://cgraph-backend.fly.dev",
       "eas": {
-        "projectId": "cgraph-production"
+        "projectId": "CONFIGURE_VIA_EAS_INIT"
       }
-    },
-    "updates": {
-      "enabled": true,
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/cgraph-production"
-    },
-    "experiments": {
-      "typedRoutes": true
     }
   }
 }

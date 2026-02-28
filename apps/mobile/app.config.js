@@ -85,7 +85,7 @@ module.exports = ({ config }) => {
       resizeMode: 'contain',
       backgroundColor: '#10b981',
     },
-    assetBundlePatterns: ['**/*'],
+    assetBundlePatterns: ['assets/**/*'],
     ios: {
       ...config.ios,
       supportsTablet: true,
@@ -160,7 +160,7 @@ module.exports = ({ config }) => {
         backgroundColor: '#10b981',
       },
       package: `org.cgraph.app${getAppVariantSuffix().replace('.', '')}`,
-      versionCode: 3,
+      versionCode: 4,
       // Android App Links (Deep Links)
       intentFilters: [
         {
