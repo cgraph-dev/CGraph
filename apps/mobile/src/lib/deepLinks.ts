@@ -66,6 +66,8 @@ export const linkingConfig: LinkingOptions<RootStackParamList>['config'] = {
         Login: 'login',
         Register: 'register',
         ForgotPassword: 'forgot-password',
+        VerifyEmail: 'auth/verify-email/:token',
+        ResetPassword: 'auth/reset-password/:token',
       },
     },
 
