@@ -8,7 +8,9 @@
   }
 
   body {
-    @apply bg-dark-900 text-gray-100;
+    /* Use token variables with Tailwind dark fallbacks */
+    background-color: var(--token-bg-primary, #111827);
+    color: var(--token-text-primary, #f3f4f6);
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 

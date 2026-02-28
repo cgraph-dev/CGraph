@@ -9,15 +9,16 @@
    ============================================================================= */
 
 :root {
-  /* Default theme variables will be injected by ThemeRegistry */
-  /* These are fallback values */
+  /* Default theme variables — driven by design tokens injected at runtime.
+     The --token-* variables are set by injectSemanticTokens() from tokens.ts.
+     These legacy --theme-* vars map to the new token layer for backward compat. */
 
-  /* Colors */
-  --theme-color-primary: #10b981;
-  --theme-color-primary-dark: #059669;
-  --theme-color-primary-light: #34d399;
-  --theme-color-background: #0f172a;
-  --theme-color-text-primary: #f1f5f9;
+  /* Colors — read from token CSS variables, with safe fallbacks */
+  --theme-color-primary: var(--token-interactive-primary, #6366f1);
+  --theme-color-primary-dark: var(--token-interactive-active, #4f46e5);
+  --theme-color-primary-light: var(--token-interactive-hover, #818cf8);
+  --theme-color-background: var(--token-bg-primary, #0f0f0f);
+  --theme-color-text-primary: var(--token-text-primary, #ffffff);
 
   /* Typography */
   --theme-font-primary: 'Inter', sans-serif;

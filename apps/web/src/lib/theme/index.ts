@@ -41,3 +41,17 @@ export {
   getCurrentTheme,
   subscribeToTheme,
 } from './theme-engine';
+
+// Tokens (single source of truth)
+export {
+  TOKEN_REGISTRY,
+  getTokensForTheme,
+  injectSemanticTokens,
+  contrastRatio,
+  passesAA,
+  passesAALarge,
+  hexToLuminance,
+  hexToRgb,
+  rgbString,
+} from './tokens';
+export type { SemanticTokens } from './tokens';
