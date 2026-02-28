@@ -14,6 +14,7 @@
 import { create } from 'zustand';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
+import { useAuthStore } from './authStore';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -669,7 +670,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
           // Push delivery ACK for messages from other users
           const channel = socketManager.getChannel(topic);
-          if (channel && msg.senderId !== useChatStore.getState().activeConversationId) {
+          const currentUserId = useAuthStore.getState().user?.id;
+          if (channel && currentUserId && msg.senderId !== currentUserId) {
             channel.push('msg_ack', { message_id: msg.id });
           }
           break;
