@@ -5,21 +5,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Matrix-inspired green palette - blends with cipher background
+        // Token-driven colors — read from CSS variables set by the theme engine.
+        // The `rgb(var(--token-X-rgb) / <alpha>)` pattern lets Tailwind opacity
+        // utilities (bg-primary/50) work correctly.
         primary: {
+          DEFAULT: 'rgb(var(--token-interactive-primary-rgb) / <alpha-value>)',
+          light: 'rgb(var(--token-interactive-hover-rgb) / <alpha-value>)',
+          dark: 'rgb(var(--token-interactive-active-rgb) / <alpha-value>)',
+          // Keep numeric scale for legacy usage; maps to static Tailwind palette
           50: '#ecfdf5',
           100: '#d1fae5',
           200: '#a7f3d0',
           300: '#6ee7b7',
           400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
+          500: 'rgb(var(--token-interactive-primary-rgb) / <alpha-value>)',
+          600: 'rgb(var(--token-interactive-active-rgb) / <alpha-value>)',
           700: '#047857',
           800: '#065f46',
           900: '#064e3b',
           950: '#022c22',
         },
-        // Matrix accent - phosphor glow effect
+        // Matrix-inspired green palette
         matrix: {
           50: '#f0fff4',
           100: '#c6f6d5',
@@ -35,7 +41,7 @@ export default {
           dim: '#003b00',
           bright: '#39ff14',
         },
-        // Dark theme
+        // Dark theme — token-driven surfaces
         dark: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -43,25 +49,30 @@ export default {
           300: '#d1d5db',
           400: '#9ca3af',
           500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+          600: 'rgb(var(--token-border-default-rgb, 75 85 99) / <alpha-value>)',
+          700: 'rgb(var(--token-bg-tertiary-rgb, 55 65 81) / <alpha-value>)',
+          800: 'rgb(var(--token-bg-secondary-rgb, 31 41 55) / <alpha-value>)',
+          900: 'rgb(var(--token-bg-primary-rgb, 17 24 39) / <alpha-value>)',
           950: '#030712',
         },
-        // Chat/messaging colors
+        // Chat/messaging colors — token-driven
         chat: {
-          bg: '#36393f',
-          hover: '#32353b',
-          input: '#40444b',
+          bg: 'var(--token-chat-bg, #36393f)',
+          hover: 'var(--token-sidebar-hover, #32353b)',
+          input: 'var(--token-input-bg, #40444b)',
           mention: 'rgba(250, 166, 26, 0.1)',
         },
-        // Sidebar colors
+        // Sidebar colors — token-driven
         sidebar: {
-          bg: '#2f3136',
-          hover: '#34373c',
-          active: '#393c43',
+          bg: 'var(--token-sidebar-bg, #2f3136)',
+          hover: 'var(--token-sidebar-hover, #34373c)',
+          active: 'var(--token-sidebar-active, #393c43)',
         },
+        // Feedback semantic colors
+        success: 'rgb(var(--token-feedback-success-rgb, 34 197 94) / <alpha-value>)',
+        warning: 'rgb(var(--token-feedback-warning-rgb, 245 158 11) / <alpha-value>)',
+        error: 'rgb(var(--token-feedback-error-rgb, 239 68 68) / <alpha-value>)',
+        info: 'rgb(var(--token-feedback-info-rgb, 59 130 246) / <alpha-value>)',
       },
       fontFamily: {
         sans: [
