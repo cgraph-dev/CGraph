@@ -14,12 +14,12 @@
 | --- | ----------------------- | -------------------------------------------------- | ---- | -------------------------------- |
 | 1   | Infrastructure Baseline | Monorepo builds, versions aligned, routes healthy  | 3    | — ✅ Complete (2026-02-27)       |
 | 2   | Auth Core               | Register, verify, login, token refresh — all work  | 4    | Phase 1 ✅ Complete (2026-02-28) |
-| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2                          |
+| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28) |
 | 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1                          |
-| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2                          |
+| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
 | 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5                          |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                          |
-| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2                          |
+| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
@@ -104,7 +104,9 @@ top is safe.
 
 ---
 
-## Phase 2: Auth Core
+## Phase 2: Auth Core ✅
+
+**Completed:** 2026-02-28 | **Plans:** 3/3 | **Verification:** Passed (11/11)
 
 **Goal:** Users can register, verify email, log in, reset password, and stay logged in reliably on
 both platforms.
@@ -155,7 +157,7 @@ Plans:
 control. Backend for all three is fully implemented — the gaps are mobile 2FA screens (zero exist)
 and frontend session management UI (missing on both platforms).
 
-**Depends on:** Phase 2
+**Depends on:** Phase 2 ✅
 
 ### Requirements (3)
 
@@ -852,27 +854,27 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ## Progress
 
-| Phase | Name                    | Status              | Progress |
-| ----- | ----------------------- | ------------------- | -------- |
-| 1     | Infrastructure Baseline | Ready to plan       | 0%       |
-| 2     | Auth Core               | Blocked by 1        | 0%       |
-| 3     | Auth Advanced           | Blocked by 2        | 0%       |
-| 4     | Design System & Mobile  | Blocked by 1        | 0%       |
-| 5     | Message Transport       | Blocked by 2        | 0%       |
-| 6     | Message Features & Sync | Blocked by 5        | 0%       |
-| 7     | E2EE & Mobile Security  | Blocked by 5        | 0%       |
-| 8     | Social & Profiles       | Blocked by 2        | 0%       |
-| 9     | Notifications & Safety  | Blocked by 8        | 0%       |
-| 10    | Message Extras          | Blocked by 6        | 0%       |
-| 11    | Groups & Channels       | Blocked by 5        | 0%       |
-| 12    | Roles & Moderation      | Blocked by 11       | 0%       |
-| 13    | Voice & Video           | Blocked by 12       | 0%       |
-| 14    | Forum Core              | Blocked by 12       | 0%       |
-| 15    | Forum Customization     | Blocked by 14       | 0%       |
-| 16    | Gamification            | Blocked by 14       | 0%       |
-| 17    | Monetization            | Blocked by 16       | 0%       |
-| 18    | Rich Media & Polish     | Blocked by 7,13     | 0%       |
-| 19    | Launch                  | Blocked by 15,17,18 | 0%       |
+| Phase | Name                    | Status                   | Progress |
+| ----- | ----------------------- | ------------------------ | -------- |
+| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27) | 100%     |
+| 2     | Auth Core               | ✅ Complete (2026-02-28) | 100%     |
+| 3     | Auth Advanced           | Ready to plan            | 0%       |
+| 4     | Design System & Mobile  | Ready to plan            | 0%       |
+| 5     | Message Transport       | Ready to plan            | 0%       |
+| 6     | Message Features & Sync | Blocked by 5             | 0%       |
+| 7     | E2EE & Mobile Security  | Blocked by 5             | 0%       |
+| 8     | Social & Profiles       | Ready to plan            | 0%       |
+| 9     | Notifications & Safety  | Blocked by 8             | 0%       |
+| 10    | Message Extras          | Blocked by 6             | 0%       |
+| 11    | Groups & Channels       | Blocked by 5             | 0%       |
+| 12    | Roles & Moderation      | Blocked by 11            | 0%       |
+| 13    | Voice & Video           | Blocked by 12            | 0%       |
+| 14    | Forum Core              | Blocked by 12            | 0%       |
+| 15    | Forum Customization     | Blocked by 14            | 0%       |
+| 16    | Gamification            | Blocked by 14            | 0%       |
+| 17    | Monetization            | Blocked by 16            | 0%       |
+| 18    | Rich Media & Polish     | Blocked by 7,13          | 0%       |
+| 19    | Launch                  | Blocked by 15,17,18      | 0%       |
 
 ---
 

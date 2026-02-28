@@ -10,50 +10,47 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 2 — Auth Core** (v0.9.48)
+**Phase 3 — Auth Advanced** (v0.9.48)
 
-Register, verify email, login, reset password, token refresh — working on both platforms.
+OAuth, 2FA, and session management complete on all platforms.
 
 ## Position
 
-- **Phase:** 2 of 19
+- **Phase:** 3 of 19
 - **Plan:** Not started
 - **Version target:** v0.9.48
 
 ## Status
 
-Phase 2 verification **passed**. 11/11 truths verified. 9/9 artifacts confirmed. 7/7 key links
-wired. 0 anti-patterns. 4 human verification items (non-blocking). Ready to transition.
+Ready to plan Phase 3. Phase 2 transitioned successfully.
 
 ## Plans
 
-| Plan  | Name                       | Wave | Depends On | Status   |
-| ----- | -------------------------- | ---- | ---------- | -------- |
-| 02-01 | Backend Auth Fixes         | 1    | —          | Complete |
-| 02-02 | Frontend Auth Completeness | 1    | —          | Complete |
-| 02-03 | Token Refresh Wiring (TDD) | 2    | 02-01      | Complete |
+| Plan | Name | Wave | Depends On | Status |
+| ---- | ---- | ---- | ---------- | ------ |
+| —    | TBD  | —    | —          | —      |
 
 ## Progress
 
-| Metric             | Value   |
-| ------------------ | ------- |
-| Overall progress   | 5%      |
-| Phases complete    | 1 / 19  |
-| Requirements done  | 7 / 136 |
-| Current phase reqs | 4 / 4   |
+| Metric             | Value    |
+| ------------------ | -------- |
+| Overall progress   | 10%      |
+| Phases complete    | 2 / 19   |
+| Requirements done  | 10 / 136 |
+| Current phase reqs | 0 / 3    |
 
 ## Phase Summary
 
 | #   | Phase                   | Status                    |
 | --- | ----------------------- | ------------------------- |
 | 1   | Infrastructure Baseline | **Complete** (2026-02-27) |
-| 2   | Auth Core               | **Active**                |
-| 3   | Auth Advanced           | Blocked by 2              |
+| 2   | Auth Core               | **Complete** (2026-02-28) |
+| 3   | Auth Advanced           | **Active**                |
 | 4   | Design System & Mobile  | Ready (Phase 1 done)      |
-| 5   | Message Transport       | Blocked by 2              |
+| 5   | Message Transport       | Ready (Phase 2 done)      |
 | 6   | Message Features & Sync | Blocked by 5              |
 | 7   | E2EE & Mobile Security  | Blocked by 5              |
-| 8   | Social & Profiles       | Blocked by 2              |
+| 8   | Social & Profiles       | Ready (Phase 2 done)      |
 | 9   | Notifications & Safety  | Blocked by 8              |
 | 10  | Message Extras          | Blocked by 6              |
 | 11  | Groups & Channels       | Blocked by 5              |
@@ -68,10 +65,9 @@ wired. 0 anti-patterns. 4 human verification items (non-blocking). Ready to tran
 
 ## Last Action
 
-Phase 2 (Auth Core) verification **passed**. 11/11 must-haves verified by goal-backward analysis. 4
-human verification items noted (email delivery, deep links on device, token persistence, concurrent
-refresh under latency). Ready for transition to Phase 3.
+Phase 2 (Auth Core) transitioned. 3/3 plans, 11/11 verification truths passed. Advanced to Phase 3
+(Auth Advanced). 4 requirements validated, 2 emerged (startup refresh, mutex tests).
 
 ---
 
-_Last updated: 2026-02-27_
+_Last updated: 2026-02-28_
