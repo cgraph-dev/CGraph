@@ -157,7 +157,7 @@ export interface SemanticTokens {
  * Key contrast ratios:
  * - text-primary (#ffffff) on bg-primary (#0f0f0f): 19.3:1 ✅
  * - text-secondary (#a3a3a3) on bg-primary (#0f0f0f): 8.5:1  ✅
- * - text-muted (#737373) on bg-primary (#0f0f0f): 4.9:1      ✅ (AA)
+ * - text-muted (#808080) on bg-primary (#0f0f0f): 4.9:1      ✅ (AA)
  * - text-on-primary (#ffffff) on interactive-primary (#6366f1): 5.5:1 ✅
  */
 export const DARK_TOKENS: SemanticTokens = {
@@ -170,7 +170,7 @@ export const DARK_TOKENS: SemanticTokens = {
   // Text
   'text-primary': '#ffffff',
   'text-secondary': '#a3a3a3',
-  'text-muted': '#737373',
+  'text-muted': '#808080',
   'text-inverse': '#0f0f0f',
   'text-on-primary': '#ffffff',
   'text-on-error': '#ffffff',
