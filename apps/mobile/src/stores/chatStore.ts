@@ -15,6 +15,8 @@ import { create } from 'zustand';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
 import { useAuthStore } from './authStore';
+import { getLocalMessages } from '../lib/database/messageBridge';
+import { sync as syncWatermelon } from '../lib/database/sync';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -334,6 +336,30 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   fetchMessages: async (conversationId: string, before?: string) => {
     set({ isLoadingMessages: true });
+
+    // ── Offline-first: load from WatermelonDB immediately ──────────
+    if (!before) {
+      try {
+        const localMessages = await getLocalMessages(conversationId);
+        if (localMessages.length > 0) {
+          set((state) => {
+            const idSet = new Set<string>();
+            localMessages.forEach((m) => idSet.add(m.id));
+            return {
+              messages: { ...state.messages, [conversationId]: localMessages },
+              messageIds: { ...state.messageIds, [conversationId]: idSet },
+            };
+          });
+        }
+      } catch {
+        // WatermelonDB read failed — continue to API fetch
+      }
+
+      // Fire-and-forget sync pull for freshness
+      syncWatermelon().catch(() => {});
+    }
+
+    // ── Network fetch for freshness ────────────────────────────────
     try {
       const params: Record<string, unknown> = { limit: 50 };
       if (before) params.before = before;
