@@ -21,7 +21,11 @@ defmodule CGraph.CacheSupervisor do
       Supervisor.child_spec({Cachex, cachex_config(:session_cache, limit: 50_000, ttl: :timer.hours(24))}, id: :session_cache),
 
       # Token cache for JWT/rate limit lookups
-      Supervisor.child_spec({Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))}, id: :token_cache)
+      Supervisor.child_spec({Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))}, id: :token_cache),
+
+      # 2FA login challenge tokens — short-lived (5 min TTL), stores temp tokens
+      # used between password verification and TOTP code submission
+      Supervisor.child_spec({Cachex, cachex_config(:two_factor_challenges, limit: 50_000, ttl: :timer.minutes(5))}, id: :two_factor_challenges)
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

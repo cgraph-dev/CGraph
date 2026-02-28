@@ -15,6 +15,7 @@ defmodule CGraphWeb.Router.AuthRoutes do
         # Authentication - strict rate limiting to prevent brute force attacks
         post "/auth/register", AuthController, :register
         post "/auth/login", AuthController, :login
+        post "/auth/login/2fa", AuthController, :verify_login_2fa
         post "/auth/refresh", AuthController, :refresh
         post "/auth/wallet/challenge", AuthController, :wallet_challenge
         post "/auth/wallet/verify", AuthController, :wallet_verify

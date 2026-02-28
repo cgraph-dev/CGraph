@@ -21,6 +21,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   alias CGraph.Auth.TokenManager
   alias CGraph.Guardian
   alias CGraph.Security.AccountLockout
+  alias CGraph.Security.TOTP
   alias CGraphWeb.Plugs.CookieAuth
   alias CGraphWeb.Validation.AuthParams
 
@@ -114,6 +115,96 @@ defmodule CGraphWeb.API.V1.AuthController do
   end
 
   defp handle_successful_login(conn, user, lockout_key) do
+    safe_clear_attempts(lockout_key)
+
+    if user.totp_enabled do
+      # 2FA is enabled — issue a temp token, require TOTP verification before issuing JWT tokens
+      temp_token = Base.url_encode64(:crypto.strong_rand_bytes(32), padding: false)
+
+      Cachex.put(:two_factor_challenges, temp_token, %{
+        user_id: user.id,
+        lockout_key: lockout_key
+      }, ttl: :timer.minutes(5))
+
+      conn
+      |> put_status(:ok)
+      |> json(%{status: "2fa_required", two_factor_token: temp_token})
+    else
+      # No 2FA — issue tokens directly
+      with {:ok, tokens} <- TokenManager.generate_tokens(user),
+           {:ok, _session} <- Accounts.create_session(user, conn) do
+        conn
+        |> maybe_set_cookies(tokens)
+        |> render(:auth_response, user: user, tokens: tokens)
+      end
+    end
+  end
+
+  @doc """
+  Verify 2FA code after password login for users with TOTP enabled.
+
+  Accepts a temp token (from login response) and a TOTP code or backup code.
+  On success, issues JWT tokens and creates a session.
+  """
+  @spec verify_login_2fa(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def verify_login_2fa(conn, %{"two_factor_token" => two_factor_token, "code" => code}) do
+    case Cachex.get(:two_factor_challenges, two_factor_token) do
+      {:ok, nil} ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid or expired two-factor token"})
+
+      {:ok, %{user_id: user_id, lockout_key: lockout_key}} ->
+        case Accounts.get_user(user_id) do
+          {:ok, user} ->
+            verify_2fa_code_and_issue_tokens(conn, user, code, two_factor_token, lockout_key)
+
+          {:error, _} ->
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{error: "Invalid or expired two-factor token"})
+        end
+
+      {:error, _} ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid or expired two-factor token"})
+    end
+  end
+
+  def verify_login_2fa(conn, _params) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{error: "Missing required parameters: two_factor_token, code"})
+  end
+
+  defp verify_2fa_code_and_issue_tokens(conn, user, code, two_factor_token, lockout_key) do
+    case TOTP.verify(user, code) do
+      :ok ->
+        issue_tokens_after_2fa(conn, user, two_factor_token, lockout_key)
+
+      {:error, :invalid_code} ->
+        # Try backup code
+        case TOTP.use_backup_code(user, code) do
+          {:ok, _remaining} ->
+            issue_tokens_after_2fa(conn, user, two_factor_token, lockout_key)
+
+          {:error, _} ->
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{error: "Invalid verification code"})
+        end
+
+      {:error, _} ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid verification code"})
+    end
+  end
+
+  defp issue_tokens_after_2fa(conn, user, two_factor_token, lockout_key) do
+    # Delete temp token (single-use)
+    Cachex.del(:two_factor_challenges, two_factor_token)
     safe_clear_attempts(lockout_key)
 
     with {:ok, tokens} <- TokenManager.generate_tokens(user),

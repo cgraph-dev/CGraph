@@ -13,7 +13,6 @@ defmodule CGraphWeb.Auth.TwoFactorLoginTest do
   """
   use CgraphWeb.ConnCase, async: false
 
-  alias CGraph.Security.TOTP
   alias CGraph.Security.TOTP.{Algorithm, BackupCodes}
 
   import CgraphWeb.UserFixtures
