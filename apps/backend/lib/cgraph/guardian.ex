@@ -70,8 +70,11 @@ defmodule CGraph.Guardian do
       _ -> "default"
     end
 
+    # Preserve existing JTI if set by caller (e.g. TokenManager)
+    jti = Map.get(claims, "jti") || generate_jti()
+
     claims = claims
-    |> Map.put("jti", generate_jti())
+    |> Map.put("jti", jti)
     |> Map.put("iat", System.system_time(:second))
     |> Map.put("kid", key_id)
 
@@ -124,7 +127,11 @@ defmodule CGraph.Guardian do
   Refresh an access token using a refresh token.
 
   The old refresh token is revoked after successful refresh.
+
+  **Deprecated:** Use `CGraph.Auth.TokenManager.refresh/2` instead,
+  which provides token rotation, family tracking, and theft detection.
   """
+  @deprecated "Use CGraph.Auth.TokenManager.refresh/2 for rotation and theft detection"
   @spec refresh_tokens(String.t()) :: {:ok, map()} | {:error, term()}
   def refresh_tokens(refresh_token) do
     with {:ok, claims} <- decode_and_verify(refresh_token, %{"typ" => "refresh"}),

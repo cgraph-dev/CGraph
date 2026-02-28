@@ -18,6 +18,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Accounts
+  alias CGraph.Auth.TokenManager
   alias CGraph.Guardian
   alias CGraph.Security.AccountLockout
   alias CGraphWeb.Plugs.CookieAuth
@@ -33,7 +34,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   def register(conn, %{"user" => user_params}) do
       with {:ok, attrs} <- AuthParams.validate_register(user_params),
         {:ok, user} <- Accounts.register_user(attrs),
-         {:ok, tokens} <- Guardian.generate_tokens(user),
+         {:ok, tokens} <- TokenManager.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
       |> maybe_set_cookies(tokens)
@@ -115,7 +116,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   defp handle_successful_login(conn, user, lockout_key) do
     safe_clear_attempts(lockout_key)
 
-    with {:ok, tokens} <- Guardian.generate_tokens(user),
+    with {:ok, tokens} <- TokenManager.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
       |> maybe_set_cookies(tokens)
@@ -190,11 +191,26 @@ defmodule CGraphWeb.API.V1.AuthController do
           |> json(%{error: "No refresh token provided"})
 
         token ->
-          case Guardian.refresh_tokens(token) do
+          case TokenManager.refresh(token) do
             {:ok, tokens} ->
               conn
               |> maybe_set_cookies(tokens)
               |> json(%{tokens: tokens})
+
+            {:error, :token_reused} ->
+              conn
+              |> CookieAuth.clear_auth_cookies()
+              |> render_error(401, "session_revoked")
+
+            {:error, :family_revoked} ->
+              conn
+              |> CookieAuth.clear_auth_cookies()
+              |> render_error(401, "session_revoked")
+
+            {:error, :device_mismatch} ->
+              conn
+              |> CookieAuth.clear_auth_cookies()
+              |> render_error(401, "device_mismatch")
 
             {:error, _reason} ->
               conn
@@ -238,7 +254,7 @@ defmodule CGraphWeb.API.V1.AuthController do
     with {:ok, %{wallet_address: wallet_address, signature: sig}} <-
            AuthParams.validate_wallet_verify(%{"wallet_address" => address, "signature" => signature}),
          {:ok, user} <- Accounts.verify_wallet_signature(wallet_address, sig),
-         {:ok, tokens} <- Guardian.generate_tokens(user),
+         {:ok, tokens} <- TokenManager.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
       |> maybe_set_cookies(tokens)

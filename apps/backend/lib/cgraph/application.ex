@@ -64,6 +64,9 @@ defmodule CGraph.Application do
       # 2. Security Layer
       CGraph.SecuritySupervisor,
 
+      # 2.5 Token Manager (refresh token rotation, family tracking, theft detection)
+      CGraph.Auth.TokenManager,
+
       # 3. Worker Layer (Oban, Presence, WebRTC)
       CGraph.WorkerSupervisor,
 

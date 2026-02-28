@@ -155,8 +155,8 @@ defmodule CGraph.Auth.TokenManager do
     session_name = Keyword.get(opts, :session_name, "default")
     remember_me = Keyword.get(opts, :remember_me, false)
 
-    # Generate token family ID (groups related tokens)
-    family_id = generate_family_id()
+    # Use existing family_id if provided (for refresh rotation), else generate new
+    family_id = Keyword.get(opts, :family_id) || generate_family_id()
 
     # Device fingerprint for token binding
     device_fingerprint = compute_device_fingerprint(device_info)
@@ -185,11 +185,14 @@ defmodule CGraph.Auth.TokenManager do
 
     # Generate tokens
     with {:ok, access_token, _} <- Guardian.encode_and_sign(user, access_claims, ttl: @access_token_ttl),
-         {:ok, refresh_token, _full_claims} <- Guardian.encode_and_sign(user, refresh_claims, ttl: refresh_ttl) do
+         {:ok, refresh_token, full_claims} <- Guardian.encode_and_sign(user, refresh_claims, ttl: refresh_ttl) do
+
+      # Use the actual JTI from the encoded token (Guardian.build_claims may have resolved it)
+      actual_jti = full_claims["jti"] || refresh_claims["jti"]
 
       # Store refresh token metadata
       Store.store_refresh_token(%{
-        jti: refresh_claims["jti"],
+        jti: actual_jti,
         user_id: user.id,
         family_id: family_id,
         device_fingerprint: device_fingerprint,
@@ -250,10 +253,11 @@ defmodule CGraph.Auth.TokenManager do
       # Mark old token as used
       Store.mark_token_used(claims["jti"])
 
-      # Generate new token pair in same family
+      # Generate new token pair in same family (propagate family_id for theft detection)
       generate_tokens(user, [
         device_info: device_info,
-        session_name: stored_token.session_name
+        session_name: stored_token.session_name,
+        family_id: stored_token.family_id
       ])
     else
       {:error, :token_already_used} ->
@@ -466,6 +470,8 @@ defmodule CGraph.Auth.TokenManager do
       |> Enum.sort_by(& &1.created_at, {:asc, DateTime})
       |> Enum.take(length(sessions) - @max_sessions_per_user)
       |> Enum.each(fn session ->
+        # Mark as used so list_user_sessions excludes it, then revoke
+        Store.mark_token_used(session.session_id)
         revoke_by_jti(session.session_id)
       end)
     end
