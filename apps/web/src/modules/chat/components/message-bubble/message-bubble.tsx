@@ -3,6 +3,7 @@
 import { useState, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { Lock, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import {
@@ -215,8 +216,16 @@ export const MessageBubble = memo(
                       />
                     ) : (
                       <>
-                        <MarkdownContent content={message.content} />
-                        <RichMediaEmbed content={message.content} isOwnMessage={isOwn} />
+                        {message.decryptionFailed ? (
+                          <p className="text-sm italic text-gray-500">
+                            {message.content || 'Unable to decrypt message'}
+                          </p>
+                        ) : (
+                          <>
+                            <MarkdownContent content={message.content} />
+                            <RichMediaEmbed content={message.content} isOwnMessage={isOwn} />
+                          </>
+                        )}
                       </>
                     )}
                   </>
@@ -246,6 +255,22 @@ export const MessageBubble = memo(
                     ) : (
                       <span>(edited)</span>
                     )}
+                  </span>
+                )}
+                {message.decryptionFailed && (
+                  <span
+                    className="flex items-center gap-0.5 text-amber-400/70"
+                    title="This message could not be decrypted"
+                  >
+                    <ShieldAlert className="h-3 w-3" />
+                  </span>
+                )}
+                {message.isEncrypted && !message.decryptionFailed && (
+                  <span
+                    className="flex items-center gap-0.5 text-gray-500/60"
+                    title="End-to-end encrypted"
+                  >
+                    <Lock className="h-3 w-3" />
                   </span>
                 )}
                 {'expiresAt' in message && !!message.expiresAt && (
