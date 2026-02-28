@@ -17,18 +17,18 @@ Professional visual foundation on both platforms, mobile builds pass.
 ## Position
 
 - **Phase:** 4 of 19
-- **Plan:** Not started
+- **Plan:** 04-01 complete
 - **Version target:** v0.9.48
 
 ## Status
 
-Phase 4 planned — 3 plans across 2 waves. Ready for execution.
+Plan 04-01 (Design Tokens + WCAG Audit) complete. 04-02 and 04-03 ready.
 
 ## Plans
 
 | Plan  | Name                       | Wave | Depends On | Status      |
 | ----- | -------------------------- | ---- | ---------- | ----------- |
-| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Not started |
+| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Complete    |
 | 04-02 | Web Light Mode             | 2    | 04-01      | Not started |
 | 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Not started |
 
@@ -39,7 +39,7 @@ Phase 4 planned — 3 plans across 2 waves. Ready for execution.
 | Overall progress   | 16%      |
 | Phases complete    | 3 / 19   |
 | Requirements done  | 13 / 136 |
-| Current phase reqs | 0 / 4    |
+| Current phase reqs | 1 / 4    |
 
 ## Phase Summary
 
@@ -67,8 +67,10 @@ Phase 4 planned — 3 plans across 2 waves. Ready for execution.
 
 ## Last Action
 
-Phase 4 (Design System & Mobile) planned. 3 plans, 2 waves. Wave 1: 04-01 (tokens + WCAG) + 04-03
-(mobile builds) in parallel. Wave 2: 04-02 (web light mode) depends on 04-01.
+Plan 04-01 (Design Tokens + WCAG Audit) executed. 6 tasks complete, 6 commits. Unified tokens.ts as
+single source of truth, merged ThemeProviders, wired Tailwind to CSS variables, fixed WCAG AA
+failures (matrix textMuted, chat bubbles), synced mobile tokens, cleaned up redundant color
+definitions.
 
 ---
 
