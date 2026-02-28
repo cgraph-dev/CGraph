@@ -9,6 +9,7 @@ import { socketLogger as logger } from '../logger';
 import { connectSocket, disconnectSocket, type SocketManagerState } from './connectionLifecycle';
 import {
   sendTyping as sendTypingImpl,
+  sendTypingDebounced as sendTypingDebouncedImpl,
   sendReaction as sendReactionImpl,
   peekConversationsPresence as peekPresenceImpl,
 } from './socketUtils';
@@ -374,7 +375,7 @@ export class SocketManager {
    *
    */
   sendTyping(topic: string, isTyping: boolean) {
-    sendTypingImpl(topic, isTyping, this.channels);
+    sendTypingDebouncedImpl(topic, isTyping, this.channels);
   }
 
   /**

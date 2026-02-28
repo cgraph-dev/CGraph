@@ -20,6 +20,63 @@ export function sendTyping(topic: string, isTyping: boolean, channels: Map<strin
   }
 }
 
+// ── Debounced Typing ─────────────────────────────────────────────────
+
+/** Typing throttle/debounce state per topic. */
+const typingState = new Map<
+  string,
+  { lastSentAt: number; inactivityTimer: ReturnType<typeof setTimeout> | null }
+>();
+
+const TYPING_THROTTLE_MS = 3000; // Max once per 3 seconds
+const TYPING_INACTIVITY_MS = 5000; // Auto-stop after 5 seconds of inactivity
+
+/**
+ * Debounced typing indicator.
+ *
+ * - Throttles `isTyping=true` pushes to max once per 3 seconds.
+ * - After 5 seconds of inactivity, auto-sends `isTyping=false`.
+ * - `isTyping=false` is always sent immediately.
+ */
+export function sendTypingDebounced(
+  topic: string,
+  isTyping: boolean,
+  channels: Map<string, Channel>
+) {
+  let state = typingState.get(topic);
+  if (!state) {
+    state = { lastSentAt: 0, inactivityTimer: null };
+    typingState.set(topic, state);
+  }
+
+  // Clear existing inactivity timer
+  if (state.inactivityTimer) {
+    clearTimeout(state.inactivityTimer);
+    state.inactivityTimer = null;
+  }
+
+  if (!isTyping) {
+    // Always send stop-typing immediately
+    sendTyping(topic, false, channels);
+    state.lastSentAt = 0;
+    return;
+  }
+
+  // Throttle: only send if enough time has passed since last send
+  const now = Date.now();
+  if (now - state.lastSentAt >= TYPING_THROTTLE_MS) {
+    sendTyping(topic, true, channels);
+    state.lastSentAt = now;
+  }
+
+  // Set inactivity timer: auto-send stop after 5s of no further calls
+  state.inactivityTimer = setTimeout(() => {
+    sendTyping(topic, false, channels);
+    state!.lastSentAt = 0;
+    state!.inactivityTimer = null;
+  }, TYPING_INACTIVITY_MS);
+}
+
 /**
  * Send or remove a reaction on a message.
  */

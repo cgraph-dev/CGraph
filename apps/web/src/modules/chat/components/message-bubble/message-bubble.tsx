@@ -215,14 +215,15 @@ export const MessageBubble = memo(
                 {isOwn && (
                   <MessageStatusIndicator
                     status={
-                      (
+                      message.deliveryStatus ??
+                      ((
                          
                         message.metadata?.readBy as ReadByEntry[] | undefined // type assertion: metadata readBy field type
                       ) /* safe downcast – metadata field */?.length
                         ? 'read'
                         : message.metadata?.deliveredAt
                           ? 'delivered'
-                          : 'sent'
+                          : 'sent')
                     }
                   />
                 )}

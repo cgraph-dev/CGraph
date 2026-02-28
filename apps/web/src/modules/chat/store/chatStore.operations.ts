@@ -23,6 +23,10 @@ type Get = () => ChatState;
 export function createOperationsActions(set: Set, get: Get) {
   const messageOps = createMessageOpsActions(set, get);
 
+  // Typing auto-clear timers: `${conversationId}:${userId}` → timer
+  const typingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  const TYPING_AUTO_CLEAR_MS = 6000; // Clear typing after 6s of no new event
+
   return {
     // Spread all message operations (edit, delete, add, update, remove, reactions)
     ...messageOps,
@@ -37,6 +41,38 @@ export function createOperationsActions(set: Set, get: Get) {
       isTyping: boolean,
       startedAt?: string
     ) => {
+      const timerKey = `${conversationId}:${userId}`;
+
+      // Clear any existing auto-clear timer for this user
+      const existingTimer = typingTimers.get(timerKey);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+        typingTimers.delete(timerKey);
+      }
+
+      // If typing, start a 6s auto-clear timer
+      if (isTyping) {
+        const timer = setTimeout(() => {
+          typingTimers.delete(timerKey);
+          // Auto-clear: set typing to false
+          set((state) => {
+            const currentIds = state.typingUsers[conversationId] || [];
+            const currentInfo = state.typingUsersInfo[conversationId] || [];
+            return {
+              typingUsers: {
+                ...state.typingUsers,
+                [conversationId]: currentIds.filter((id) => id !== userId),
+              },
+              typingUsersInfo: {
+                ...state.typingUsersInfo,
+                [conversationId]: currentInfo.filter((u) => u.userId !== userId),
+              },
+            };
+          });
+        }, TYPING_AUTO_CLEAR_MS);
+        typingTimers.set(timerKey, timer);
+      }
+
       set((state) => {
         const currentIds = state.typingUsers[conversationId] || [];
         const currentInfo = state.typingUsersInfo[conversationId] || [];
