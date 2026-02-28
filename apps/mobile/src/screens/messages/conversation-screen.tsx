@@ -2,7 +2,7 @@
  * Conversation screen for viewing and sending messages in a thread.
  * @module screens/messages/conversation-screen
  */
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import {
   View,
   FlatList,
@@ -18,6 +18,7 @@ import { usePrivacySettings } from '../../stores/settingsStore';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { createLogger } from '../../lib/logger';
+import { useChatStore } from '../../stores/chatStore';
 
 import {
   EmptyConversation,
@@ -54,6 +55,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
   const privacy = usePrivacySettings();
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
 
   // Core data hook
   const {
@@ -135,6 +137,31 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setup.header, user?.id, setup.presence,
   ]);
 
+  // ── Edit handlers ──────────────────────────────────────────────────
+  const handleEdit = useCallback(() => {
+    const msg = setup.messageActions.selectedMessage;
+    if (msg) {
+      setEditingMessageId(msg.id);
+      setup.messageActions.closeMessageActions();
+    }
+  }, [setup.messageActions]);
+
+  const handleSaveEdit = useCallback(
+    async (messageId: string, content: string) => {
+      try {
+        await useChatStore.getState().editMessage(conversationId, messageId, content);
+      } catch {
+        // Error silently — store handles toast/feedback
+      }
+      setEditingMessageId(null);
+    },
+    [conversationId],
+  );
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingMessageId(null);
+  }, []);
+
   // Render a single message
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
@@ -160,10 +187,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
           onVideoPress={setup.mediaViewer.handleVideoPress}
           onFilePress={setup.mediaViewer.handleFilePress}
           onReactionTap={setup.messageReactions.handleReactionTap}
+          isEditing={editingMessageId === item.id}
+          onSaveEdit={(content: string) => handleSaveEdit(item.id, content)}
+          onCancelEdit={handleCancelEdit}
         />
       );
     },
-    [user?.id, colors, setup],
+    [user?.id, colors, setup, editingMessageId, handleSaveEdit, handleCancelEdit],
   );
 
   if (isLoading) {
@@ -195,6 +225,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         actionItemAnims={setup.messageActions.actionItemAnims}
         closeMessageActions={setup.messageActions.closeMessageActions}
         onReply={setup.actionWrappers.handleReply}
+        onEdit={handleEdit}
         onTogglePin={setup.actionWrappers.handleTogglePin}
         onUnsend={setup.actionWrappers.handleUnsend}
         onQuickReaction={setup.actionWrappers.handleQuickReaction}

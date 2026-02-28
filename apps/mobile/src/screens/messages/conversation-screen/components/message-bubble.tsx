@@ -345,8 +345,17 @@ function MessageContent({
         />
       )}
 
-      {/* Text content - hide for voice, video, and image messages with default placeholder content */}
-      {item.content &&
+      {/* Inline edit form when editing */}
+      {isEditing && onSaveEdit && onCancelEdit ? (
+        <MessageEditForm
+          initialContent={item.content}
+          onSave={onSaveEdit}
+          onCancel={onCancelEdit}
+          colors={colors}
+        />
+      ) : (
+        /* Text content - hide for voice, video, and image messages with default placeholder content */
+        item.content &&
         item.type !== 'voice' &&
         item.type !== 'audio' &&
         item.type !== 'video' &&
@@ -355,7 +364,8 @@ function MessageContent({
           <MarkdownText style={styles.messageText} color={isOwnMessage ? '#fff' : colors.text}>
             {item.content}
           </MarkdownText>
-        )}
+        )
+      )}
 
       {/* Show caption for media if it's not just a placeholder */}
       {item.content &&
@@ -380,7 +390,14 @@ function MessageContent({
           ]}
         >
           {formatTime(item.inserted_at)}
-          {item.is_edited && ' • edited'}
+          {item.is_edited && (
+            <Text
+              onPress={onEditHistoryPress}
+              style={{ color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary, textDecorationLine: 'underline' }}
+            >
+              {' • edited'}
+            </Text>
+          )}
         </Text>
         {isOwnMessage &&
           (() => {

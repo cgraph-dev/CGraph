@@ -56,6 +56,7 @@ interface MessageActionsMenuProps {
   actionItemAnims: Animated.Value[];
   onClose: () => void;
   onReply: () => void;
+  onEdit: () => void;
   onTogglePin: () => void;
   onUnsend: () => void;
   onQuickReaction: (emoji: string) => void;
@@ -78,6 +79,7 @@ export function MessageActionsMenu({
   actionItemAnims,
   onClose,
   onReply,
+  onEdit,
   onTogglePin,
   onUnsend,
   onQuickReaction,
@@ -98,6 +100,15 @@ export function MessageActionsMenu({
       gradient: ['#3b82f6', '#60a5fa'],
       onPress: onReply,
       visible: true,
+    },
+    {
+      id: 'edit',
+      icon: 'create-outline',
+      label: 'Edit',
+      color: '#f59e0b',
+      gradient: ['#f59e0b', '#fbbf24'],
+      onPress: onEdit,
+      visible: isOwnMessage && !selectedMessage.is_deleted && !selectedMessage.deleted_at,
     },
     {
       id: 'copy',

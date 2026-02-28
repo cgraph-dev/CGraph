@@ -33,6 +33,7 @@ interface ConversationModalsProps {
   actionItemAnims: Animated.Value[];
   closeMessageActions: () => void;
   onReply: () => void;
+  onEdit: () => void;
   onTogglePin: () => void;
   onUnsend: () => void;
   onQuickReaction: () => void;
@@ -101,6 +102,7 @@ export function ConversationModals(props: ConversationModalsProps) {
         actionItemAnims={props.actionItemAnims}
         onClose={props.closeMessageActions}
         onReply={props.onReply}
+        onEdit={props.onEdit}
         onTogglePin={props.onTogglePin}
         onUnsend={props.onUnsend}
         onQuickReaction={props.onQuickReaction}
