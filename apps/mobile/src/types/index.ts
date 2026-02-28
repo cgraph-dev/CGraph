@@ -73,6 +73,7 @@ export interface Message {
   reactions: Reaction[];
   is_edited: boolean;
   is_deleted: boolean;
+  deleted_at?: string | null;
   is_pinned?: boolean;
   pinned_at?: string;
   pinned_by_id?: string;

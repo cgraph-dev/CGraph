@@ -67,6 +67,32 @@ export function MessageBubble({
   // Read user's chat bubble customization (colors, radius, gradient, etc.)
   const bubble = useBubbleCustomization();
 
+  // Soft-deleted messages: render a non-interactive placeholder
+  if (item.deleted_at || item.is_deleted) {
+    return (
+      <AnimatedMessageWrapper isOwnMessage={isOwnMessage} index={0} isNew={false}>
+        <View
+          style={[styles.messageContainer, isOwnMessage ? styles.ownMessage : styles.otherMessage]}
+        >
+          <View
+            style={[
+              styles.messageBubble,
+              isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble,
+              {
+                backgroundColor: 'rgba(128, 128, 128, 0.15)',
+                borderRadius: bubble.borderRadius,
+              },
+            ]}
+          >
+            <Text style={{ fontStyle: 'italic', color: colors.textTertiary, fontSize: 14 }}>
+              [This message was deleted]
+            </Text>
+          </View>
+        </View>
+      </AnimatedMessageWrapper>
+    );
+  }
+
   return (
     <AnimatedMessageWrapper isOwnMessage={isOwnMessage} index={0} isNew={isNewMessage}>
       <TouchableOpacity

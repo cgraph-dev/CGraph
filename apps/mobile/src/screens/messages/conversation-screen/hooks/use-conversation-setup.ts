@@ -102,7 +102,14 @@ export function useConversationSetup(params: SetupParams) {
 
   const onMessageDeletedCallback = useCallback((messageId: string) => {
     deletedMessageIdsRef.current.add(messageId);
-    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    // Soft-delete: mark as deleted instead of removing
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId
+          ? { ...m, is_deleted: true, deleted_at: new Date().toISOString(), content: '' }
+          : m
+      )
+    );
   }, [setMessages, deletedMessageIdsRef]);
 
   const pinAndDelete = usePinAndDelete({

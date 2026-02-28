@@ -436,9 +436,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   deleteMessage: async (conversationId: string, messageId: string) => {
+    // Optimistic soft-delete: mark as deleted immediately
+    set((state) => {
+      const msgs = state.messages[conversationId] || [];
+      return {
+        messages: {
+          ...state.messages,
+          [conversationId]: msgs.map((m) =>
+            m.id === messageId
+              ? { ...m, deletedAt: new Date().toISOString(), content: '' }
+              : m
+          ),
+        },
+      };
+    });
+
     try {
       await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
-      get().removeMessage(messageId, conversationId);
     } catch {
       // Network error — caller should handle UI feedback
     }
@@ -711,7 +725,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
         case 'message_deleted': {
            
           const msgId = (data.message_id || data.id) as string;
-          if (msgId) useChatStore.getState().removeMessage(msgId, conversationId);
+          if (msgId) {
+            // Soft-delete: mark as deleted instead of removing
+            set((state) => {
+              const newMessages = { ...state.messages };
+              for (const [convId, msgs] of Object.entries(newMessages)) {
+                const idx = msgs.findIndex((m) => m.id === msgId);
+                if (idx !== -1) {
+                  const updated = [...msgs];
+                  updated[idx] = {
+                    ...updated[idx],
+                    deletedAt: new Date().toISOString(),
+                    content: '',
+                  };
+                  newMessages[convId] = updated;
+                  return { messages: newMessages };
+                }
+              }
+              return state;
+            });
+          }
           break;
         }
         case 'typing': {

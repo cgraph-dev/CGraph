@@ -67,10 +67,16 @@ export function useSocketEventHandlers(
     [setMessages]
   );
 
-  // Handle message deletion from socket
+  // Handle message deletion from socket — soft-delete
   const handleSocketMessageDeleted = useCallback(
     (messageId: string) => {
-      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, is_deleted: true, deleted_at: new Date().toISOString(), content: '' }
+            : m
+        )
+      );
     },
     [setMessages]
   );
