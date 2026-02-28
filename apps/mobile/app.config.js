@@ -258,13 +258,16 @@ module.exports = ({ config }) => {
       environment: IS_DEV ? 'development' : IS_PREVIEW ? 'preview' : 'production',
       sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
       eas: {
-        projectId: process.env.EAS_PROJECT_ID || 'cgraph-production',
+        // REQUIRED: Set EAS_PROJECT_ID before building.
+        // Run `eas init` in this directory to generate a real Expo project UUID,
+        // then export it: export EAS_PROJECT_ID="your-uuid-here"
+        projectId: process.env.EAS_PROJECT_ID ?? 'CONFIGURE_VIA_EAS_INIT',
       },
     },
     updates: {
       enabled: !IS_DEV,
       fallbackToCacheTimeout: 0,
-      url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID || 'cgraph-production'}`,
+      url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID ?? 'CONFIGURE_VIA_EAS_INIT'}`,
     },
     experiments: {
       typedRoutes: true,
