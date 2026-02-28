@@ -2,7 +2,7 @@
  * Hook managing WebSocket event handlers for real-time conversation updates.
  * @module screens/messages/conversation-screen/hooks/useSocketEventHandlers
  */
-import { useCallback } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { Message } from '../../../../types';
 
 interface UseSocketEventHandlersOptions {
@@ -165,4 +165,45 @@ export function useSocketEventHandlers(
     handleSocketReactionAdded,
     handleSocketReactionRemoved,
   };
+}
+
+/**
+ * Safety net hook: auto-clears typing state for users after 6s if no follow-up event.
+ * Prevents "stuck typing" indicators when stop-typing events are lost.
+ */
+export function useTypingAutoClear(
+  typingUsers: string[],
+  onClearTyping: (userId: string) => void
+) {
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    const currentTimers = timersRef.current;
+
+    // Set 6s auto-clear timers for each typing user
+    for (const userId of typingUsers) {
+      // Clear existing timer for this user
+      const existing = currentTimers.get(userId);
+      if (existing) clearTimeout(existing);
+
+      const timer = setTimeout(() => {
+        onClearTyping(userId);
+        currentTimers.delete(userId);
+      }, 6000);
+      currentTimers.set(userId, timer);
+    }
+
+    // Clean up timers for users no longer typing
+    for (const [userId, timer] of currentTimers.entries()) {
+      if (!typingUsers.includes(userId)) {
+        clearTimeout(timer);
+        currentTimers.delete(userId);
+      }
+    }
+
+    return () => {
+      currentTimers.forEach((timer) => clearTimeout(timer));
+      currentTimers.clear();
+    };
+  }, [typingUsers, onClearTyping]);
 }

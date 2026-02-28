@@ -18,6 +18,7 @@ const logger = createLogger('useConversationSocket');
 interface UseConversationSocketOptions {
   conversationId: string;
   userId: string | undefined;
+  showReadReceipts?: boolean;
   onNewMessage: (message: Message) => void;
   onMessageUpdated: (message: Message) => void;
   onMessageDeleted: (messageId: string) => void;
@@ -47,6 +48,7 @@ interface ReactionData {
 export function useConversationSocket({
   conversationId,
   userId,
+  showReadReceipts = true,
   onNewMessage,
   onMessageUpdated,
   onMessageDeleted,
@@ -220,8 +222,8 @@ export function useConversationSocket({
           case 'new_message':
             if (!isMessageDeleted(normalized.id)) {
               onNewMessage(normalized);
-              // Mark as read if from someone else
-              if (normalized.sender_id !== userId) {
+              // Mark as read if from someone else (gated by privacy setting)
+              if (showReadReceipts && normalized.sender_id !== userId) {
                 markMessageRead(normalized.id);
               }
             }
@@ -259,6 +261,7 @@ export function useConversationSocket({
   }, [
     conversationId,
     userId,
+    showReadReceipts,
     onNewMessage,
     onMessageUpdated,
     onMessageDeleted,

@@ -30,6 +30,7 @@ import {
   formatSimpleTime,
   getMessageStatusInfo,
 } from '../utils';
+import { usePrivacySettings } from '../../../../stores/settingsStore';
 
 const logger = createLogger('useConversationSetup');
 
@@ -81,6 +82,11 @@ export function useConversationSetup(params: SetupParams) {
     setTimeout(() => { flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, 100);
   }, []);
 
+  // ── Privacy Settings ──────────────────────────────────────────
+  const privacy = usePrivacySettings();
+  const showReadReceipts = privacy?.showReadReceipts ?? true;
+  const showTypingIndicators = privacy?.showTypingIndicators ?? true;
+
   // ── Hooks ────────────────────────────────────────────────────
   const presence = usePresence({ conversationId, otherParticipantId });
   const mediaViewer = useMediaViewer();
@@ -115,7 +121,7 @@ export function useConversationSetup(params: SetupParams) {
   const header = useConversationHeader({
     navigation, colors,
     isOtherUserOnline: presence.isOtherUserOnline,
-    isOtherUserTyping: presence.isOtherUserTyping,
+    isOtherUserTyping: showTypingIndicators && presence.isOtherUserTyping,
     otherParticipantLastSeen: presence.otherParticipantLastSeen,
     otherParticipantId,
     otherUser: null, // set from outside
@@ -171,6 +177,7 @@ export function useConversationSetup(params: SetupParams) {
 
   const _socket = useConversationSocket({
     conversationId, userId: user?.id,
+    showReadReceipts,
     onNewMessage: socketHandlers.handleSocketNewMessage,
     onMessageUpdated: socketHandlers.handleSocketMessageUpdated,
     onMessageDeleted: socketHandlers.handleSocketMessageDeleted,
@@ -198,8 +205,12 @@ export function useConversationSetup(params: SetupParams) {
   });
 
   const handleTextChange = useCallback((text: string) => {
-    presence.handleTextChange(text, textSending.setInputText);
-  }, [presence, textSending.setInputText]);
+    if (showTypingIndicators) {
+      presence.handleTextChange(text, textSending.setInputText);
+    } else {
+      textSending.setInputText(text);
+    }
+  }, [presence, textSending.setInputText, showTypingIndicators]);
 
   const handleAttachmentPickerSelect = useCallback(
     (assets: Array<{ uri: string; type: 'image' | 'video' | 'file'; name?: string; mimeType?: string; duration?: number }>) => {

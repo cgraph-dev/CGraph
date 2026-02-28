@@ -100,6 +100,9 @@ export function useMessageSending({
   const sendButtonAnim = useSharedValue(1);
   const waveAnim = useSharedValue(0);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
+  const TYPING_THROTTLE_MS = 3000;
+  const TYPING_STOP_MS = 5000;
 
   // Animated send button press effect
   const animateSendButton = useCallback(() => {
@@ -118,7 +121,7 @@ export function useMessageSending({
     socketManager.sendTyping(`conversation:${conversationId}`, false);
   }, [conversationId]);
 
-  // Handle text input changes with typing indicator
+  // Handle text input changes with typing indicator (throttled to 1 event per 3s)
   const handleTextChange = useCallback(
     (text: string) => {
       setInputText(text);
@@ -126,15 +129,29 @@ export function useMessageSending({
       const channelTopic = `conversation:${conversationId}`;
 
       if (text.length > 0) {
-        socketManager.sendTyping(channelTopic, true);
+        // Throttle: only send typing event if 3s since last send
+        const now = Date.now();
+        if (now - lastTypingSentRef.current >= TYPING_THROTTLE_MS) {
+          socketManager.sendTyping(channelTopic, true);
+          lastTypingSentRef.current = now;
+        }
 
+        // Reset auto-stop timer on every keystroke
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
-
         typingTimeoutRef.current = setTimeout(() => {
           socketManager.sendTyping(channelTopic, false);
-        }, 5000);
+          lastTypingSentRef.current = 0;
+        }, TYPING_STOP_MS);
+      } else {
+        // Text cleared — stop typing immediately
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+        socketManager.sendTyping(channelTopic, false);
+        lastTypingSentRef.current = 0;
       }
     },
     [conversationId]
