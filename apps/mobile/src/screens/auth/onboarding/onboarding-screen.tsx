@@ -26,6 +26,7 @@ import {
   ActivityIndicator,
   Animated,
   Platform,
+  FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -56,6 +57,13 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
     mentions: true,
     friendRequests: true,
   });
+
+  // Find friends state
+  const [friendQuery, setFriendQuery] = useState('');
+  const [friendResults, setFriendResults] = useState<Array<{ id: string; username: string; display_name: string | null; avatar_url: string | null }>>([]);
+  const [friendSearchLoading, setFriendSearchLoading] = useState(false);
+  const [sentFriendRequests, setSentFriendRequests] = useState<Set<string>>(new Set());
+  const friendSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -300,6 +308,141 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
       case 3:
         return (
           <View style={styles.stepContent}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Find Friends</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              Search for people you know
+            </Text>
+
+            <View style={[styles.inputGroup, { marginBottom: 16 }]}>
+              <TextInput
+                value={friendQuery}
+                onChangeText={(text) => {
+                  setFriendQuery(text);
+                  if (friendSearchTimer.current) clearTimeout(friendSearchTimer.current);
+                  if (text.length >= 2) {
+                    setFriendSearchLoading(true);
+                    friendSearchTimer.current = setTimeout(async () => {
+                      try {
+                        const res = await api.get('/api/v1/search/users', { params: { q: text } });
+                        setFriendResults(res.data?.data ?? []);
+                      } catch {
+                        setFriendResults([]);
+                      } finally {
+                        setFriendSearchLoading(false);
+                      }
+                    }, 300);
+                  } else {
+                    setFriendResults([]);
+                    setFriendSearchLoading(false);
+                  }
+                }}
+                placeholder="Search by username or name…"
+                placeholderTextColor={colors.textTertiary}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    color: colors.text,
+                    borderColor: colors.border,
+                  },
+                ]}
+              />
+            </View>
+
+            {friendSearchLoading && (
+              <ActivityIndicator color={colors.primary} style={{ marginVertical: 12 }} />
+            )}
+
+            <FlatList
+              data={friendResults}
+              keyExtractor={(item) => item.id}
+              style={{ maxHeight: 240 }}
+              renderItem={({ item }) => {
+                const isSent = sentFriendRequests.has(item.id);
+                return (
+                  <View
+                    style={[
+                      styles.notificationItem,
+                      { backgroundColor: colors.surface, marginBottom: 8 },
+                    ]}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                      {item.avatar_url ? (
+                        <Image
+                          source={{ uri: item.avatar_url }}
+                          style={{ width: 36, height: 36, borderRadius: 18, marginRight: 10 }}
+                        />
+                      ) : (
+                        <View
+                          style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 18,
+                            marginRight: 10,
+                            backgroundColor: colors.primary,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                            {(item.display_name ?? item.username).charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                      )}
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.notificationTitle, { color: colors.text }]}>
+                          {item.display_name ?? item.username}
+                        </Text>
+                        <Text style={[styles.notificationDesc, { color: colors.textSecondary }]}>
+                          @{item.username}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      disabled={isSent}
+                      onPress={async () => {
+                        try {
+                          await api.post('/api/v1/friends', { friend_id: item.id });
+                          setSentFriendRequests((prev) => new Set(prev).add(item.id));
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        } catch {
+                          // ignore
+                        }
+                      }}
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: 8,
+                        backgroundColor: isSent ? colors.border : colors.primary,
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>
+                        {isSent ? 'Sent' : 'Add'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+              ListEmptyComponent={
+                !friendSearchLoading && friendQuery.length >= 2 ? (
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: colors.textSecondary,
+                      marginTop: 16,
+                    }}
+                  >
+                    No users found
+                  </Text>
+                ) : null
+              }
+            />
+          </View>
+        );
+
+      case 4:
+        return (
+          <View style={styles.stepContent}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Stay Connected</Text>
             <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
               Choose how you want to be notified
@@ -350,7 +493,7 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
           </View>
         );
 
-      case 4:
+      case 5:
         return (
           <View style={styles.stepContent}>
             <View style={styles.readyIconContainer}>

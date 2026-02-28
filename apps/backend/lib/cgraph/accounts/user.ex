@@ -60,6 +60,9 @@ defmodule CGraph.Accounts.User do
     field :status_message, :string
     field :status_expires_at, :utc_datetime
 
+    # Onboarding
+    field :onboarding_completed_at, :utc_datetime
+
     # Account status
     field :is_active, :boolean, default: true
     field :is_verified, :boolean, default: false
@@ -217,7 +220,7 @@ defmodule CGraph.Accounts.User do
   @spec profile_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def profile_changeset(user, attrs) do
     user
-    |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :status_message, :status_expires_at, :pronouns])
+    |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :status_message, :status_expires_at, :pronouns, :onboarding_completed_at])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)
     |> validate_length(:status_message, max: 128)
@@ -291,7 +294,8 @@ defmodule CGraph.Accounts.User do
     user
     |> cast(attrs, [
       :username, :display_name, :bio, :avatar_url, :banner_url,
-      :custom_status, :pronouns, :status, :is_admin, :is_verified, :is_premium, :is_profile_private
+      :custom_status, :pronouns, :status, :is_admin, :is_verified, :is_premium, :is_profile_private,
+      :onboarding_completed_at
     ])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)

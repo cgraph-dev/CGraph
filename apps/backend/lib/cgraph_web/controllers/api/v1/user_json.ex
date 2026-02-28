@@ -117,6 +117,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
       streak_days: user.streak_days || 0,
       subscription_tier: user.subscription_tier || "free",
       equipped_title_id: user.equipped_title_id,
+      onboarding_completed: user.onboarding_completed_at != nil,
       created_at: user.inserted_at
     }
   end

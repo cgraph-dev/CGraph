@@ -25,6 +25,7 @@ defmodule CGraphWeb.Router.UserRoutes do
         get "/me/sessions", UserController, :sessions
         delete "/me/sessions/:id", UserController, :revoke_session
         post "/me/export", UserController, :request_data_export
+        post "/me/onboarding/complete", UserController, :complete_onboarding
         post "/me/delete-account", AccountDeletionController, :create
         delete "/me/delete-account", AccountDeletionController, :delete
 

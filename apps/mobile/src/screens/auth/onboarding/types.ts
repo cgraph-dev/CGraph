@@ -23,8 +23,9 @@ export interface NotificationSettings {
 export const STEPS = [
   { id: 1, title: 'Welcome', icon: '👋' },
   { id: 2, title: 'Profile', icon: '👤' },
-  { id: 3, title: 'Notifications', icon: '🔔' },
-  { id: 4, title: 'Ready', icon: '🚀' },
+  { id: 3, title: 'Find Friends', icon: '🔍' },
+  { id: 4, title: 'Notifications', icon: '🔔' },
+  { id: 5, title: 'Ready', icon: '🚀' },
 ];
 
 export const FEATURES = [
