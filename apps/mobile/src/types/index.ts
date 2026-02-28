@@ -327,6 +327,7 @@ export type AuthStackParamList = {
   Register: undefined;
   ForgotPassword: undefined;
   Onboarding: undefined;
+  TwoFactorVerify: { twoFactorToken: string };
   ResetPassword: { token: string };
   VerifyEmail: { token: string };
 };

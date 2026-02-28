@@ -50,7 +50,11 @@ interface AuthState {
 
 interface AuthActions {
   readonly initialize: () => Promise<void>;
-  readonly login: (identifier: string, password: string) => Promise<void>;
+  readonly login: (
+    identifier: string,
+    password: string
+  ) => Promise<{ twoFactorRequired: true; twoFactorToken: string } | void>;
+  readonly verifyLoginTwoFactor: (twoFactorToken: string, code: string) => Promise<void>;
   readonly register: (email: string, username: string | null, password: string) => Promise<void>;
   readonly logout: () => Promise<void>;
   readonly updateUser: (user: User) => void;
@@ -161,7 +165,47 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
     set({ isLoading: true });
     try {
       const response = await api.post('/api/v1/auth/login', { identifier, password });
-      const { user, tokens } = response.data?.data || response.data;
+      const data = response.data?.data || response.data;
+
+      // Handle 2FA-required response
+      if (data?.status === '2fa_required' && data?.two_factor_token) {
+        set({ isLoading: false });
+        return {
+          twoFactorRequired: true as const,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          twoFactorToken: data.two_factor_token as string,
+        };
+      }
+
+      const { user, tokens } = data;
+
+      await saveAuth(tokens.access_token, tokens.refresh_token, user);
+
+      set({
+        user,
+        token: tokens.access_token,
+        isLoading: false,
+        isAuthenticated: true,
+      });
+
+      // Connect socket
+      const socketManager = await getSocketManager();
+      socketManager.connect().catch(() => {});
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  verifyLoginTwoFactor: async (twoFactorToken: string, code: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await api.post('/api/v1/auth/login/2fa', {
+        two_factor_token: twoFactorToken,
+        code,
+      });
+      const data = response.data?.data || response.data;
+      const { user, tokens } = data;
 
       await saveAuth(tokens.access_token, tokens.refresh_token, user);
 

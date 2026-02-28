@@ -10,12 +10,11 @@ import RegisterScreen from '../screens/auth/register-screen';
 import ForgotPasswordScreen from '../screens/auth/forgot-password-screen';
 import VerifyEmailScreen from '../screens/auth/verify-email-screen';
 import ResetPasswordScreen from '../screens/auth/reset-password-screen';
+import TwoFactorVerifyScreen from '../screens/auth/two-factor-verify-screen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
-/**
- *
- */
+/** Auth stack navigator — login, register, password recovery, and 2FA screens. */
 export default function AuthNavigator() {
   return (
     <Stack.Navigator
@@ -27,6 +26,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="TwoFactorVerify" component={TwoFactorVerifyScreen} />
       <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>

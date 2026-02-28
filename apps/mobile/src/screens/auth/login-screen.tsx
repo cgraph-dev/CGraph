@@ -28,9 +28,7 @@ type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 };
 
-/**
- *
- */
+/** Login screen for user authentication. */
 export default function LoginScreen({ navigation }: Props) {
   const { _colors } = useThemeStore();
   const { login } = useAuthStore();
@@ -124,14 +122,23 @@ export default function LoginScreen({ navigation }: Props) {
 
     setIsLoading(true);
     try {
-      await login(identifier, password);
+      const result = await login(identifier, password);
+
+      // Backend requires 2FA — navigate to TOTP screen
+      if (result?.twoFactorRequired) {
+        navigation.navigate('TwoFactorVerify', {
+          twoFactorToken: result.twoFactorToken,
+        });
+        return;
+      }
+      // Normal login success — auth store sets isAuthenticated, root navigator handles transition
     } catch (error: unknown) {
       // Backend returns errors in multiple formats:
       // - {error: "message"} for simple errors
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const err = error as {
         response?: {
           data?: {
@@ -170,8 +177,9 @@ export default function LoginScreen({ navigation }: Props) {
 
       // Log for debugging in development
       if (__DEV__) {
-        if (__DEV__)
-          {console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));}
+        if (__DEV__) {
+          console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
+        }
       }
 
       Alert.alert('Login Failed', errorMessage);
