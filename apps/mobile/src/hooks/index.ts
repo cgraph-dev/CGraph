@@ -16,6 +16,7 @@ export { useInterval, useTimeout, useIsMounted, usePrevious } from './useInterva
 // Feature-specific hooks
 export { useGamification } from './useGamification';
 export { useFriendPresence, useIsFriendOnline, useFriendsPresence } from './useFriendPresence';
+export { useContactsPresence } from './useContactsPresence';
 export { useNotifications } from './useNotifications';
 export { useSearch } from './useSearch';
 export { useGroups } from './useGroups';
