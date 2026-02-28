@@ -17,7 +17,7 @@
 | 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28) |
 | 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28) |
 | 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
-| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5                          |
+| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                          |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
@@ -263,7 +263,7 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 ---
 
-## Phase 6: Message Features & Sync ← Next
+## Phase 6: Message Features & Sync ✅ Complete
 
 **Goal:** Full message feature set — edit, delete, reply, react, sync across devices.
 
@@ -293,17 +293,17 @@ thread replies, and emoji reactions are expected in any modern messenger. Cross-
 
 ### Plans
 
-| Plan  | Scope                                                                             | Wave | Status |
-| ----- | --------------------------------------------------------------------------------- | ---- | ------ |
-| 06-01 | Edit History Backend + Shared Types — MessageEdit record wiring, EditHistory type | 1    | —      |
-| 06-02 | Soft-Delete Indicator — "[Message deleted]" placeholder on web + mobile           | 1    | —      |
-| 06-03 | Reply & Reaction Verification — Confirm MSG-07 + MSG-09 end-to-end                | 1    | —      |
-| 06-04 | Edit History UI — History viewer (web+mobile), mobile edit form                   | 2    | —      |
-| 06-05 | WatermelonDB Bridge — Wire chatStore ↔ WatermelonDB for offline sync              | 3    | —      |
+| Plan  | Scope                                                                             | Wave | Status     |
+| ----- | --------------------------------------------------------------------------------- | ---- | ---------- |
+| 06-01 | Edit History Backend + Shared Types — MessageEdit record wiring, EditHistory type | 1    | ✅ Done    |
+| 06-02 | Soft-Delete Indicator — "[Message deleted]" placeholder on web + mobile           | 1    | ✅ Done    |
+| 06-03 | Reply & Reaction Verification — Confirm MSG-07 + MSG-09 end-to-end                | 1    | ✅ Done    |
+| 06-04 | Edit History UI — History viewer (web+mobile), mobile edit form                   | 2    | ✅ Done    |
+| 06-05 | WatermelonDB Bridge — Wire chatStore ↔ WatermelonDB for offline sync              | 3    | ✅ Done    |
 
 ---
 
-## Phase 7: E2EE & Mobile Security
+## Phase 7: E2EE & Mobile Security ← Next
 
 **Goal:** All 1:1 messages are end-to-end encrypted. Biometric auth on mobile.
 
