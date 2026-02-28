@@ -22,13 +22,15 @@ OAuth, 2FA, and session management complete on all platforms.
 
 ## Status
 
-Ready to plan Phase 3. Phase 2 transitioned successfully.
+Phase 3 planned — 3 plans across 2 waves. Ready to execute.
 
 ## Plans
 
-| Plan | Name | Wave | Depends On | Status |
-| ---- | ---- | ---- | ---------- | ------ |
-| —    | TBD  | —    | —          | —      |
+| Plan  | Name                       | Wave | Depends On | Status      |
+| ----- | -------------------------- | ---- | ---------- | ----------- |
+| 03-01 | 2FA Login Gate (TDD)       | 1    | —          | Not started |
+| 03-02 | Frontend 2FA Login UI      | 2    | 03-01      | Not started |
+| 03-03 | Session-Token Bridge (TDD) | 1    | —          | Not started |
 
 ## Progress
 
