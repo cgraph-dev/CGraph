@@ -7,6 +7,14 @@
  * Read path:  WatermelonDB → chatStore Message format (instant offline display)
  * Write path: chatStore mutations → WatermelonDB persistence (fire-and-forget)
  *
+ * Sync compatibility:
+ *  - WatermelonDB sync engine (sync.ts) already handles messages table via
+ *    DEFAULT_SYNC_TABLES — pull creates/updates/deletes records automatically.
+ *  - Schema v1 includes all required fields (is_edited, is_deleted, is_pinned, etc.)
+ *  - No schema migration needed for this bridge.
+ *  - All operations are wrapped in try/catch — WatermelonDB errors never crash the app.
+ *  - Zustand remains the source of truth; WatermelonDB is the persistence/cache layer.
+ *
  * @module lib/database/messageBridge
  * @since v0.9.32
  */
@@ -28,9 +36,11 @@ import type { Message, MessageSender } from '../../stores/chatStore';
  *  - WatermelonDB `reactions` is Record<string, string[]> → chatStore Reaction[]
  */
 export function watermelonToMessage(record: WMDBMessage): Message {
-  // Convert epoch ms to ISO string, handling 0/undefined gracefully
-  const toISO = (ts: number | undefined | null): string =>
-    ts ? new Date(ts).toISOString() : new Date().toISOString();
+  // Convert epoch ms to ISO string, handling 0/undefined/NaN gracefully
+  const toISO = (ts: number | undefined | null): string => {
+    if (!ts || typeof ts !== 'number' || Number.isNaN(ts)) return new Date().toISOString();
+    return new Date(ts).toISOString();
+  };
 
   // Build a minimal sender stub — WatermelonDB doesn't store sender details
   const senderStub: MessageSender = {
@@ -41,16 +51,22 @@ export function watermelonToMessage(record: WMDBMessage): Message {
   };
 
   // Convert WatermelonDB reactions (Record<emoji, userId[]>) to chatStore Reaction[]
-  const reactions = record.reactions
-    ? Object.entries(record.reactions).flatMap(([emoji, userIds]) =>
-        (userIds || []).map((userId: string) => ({
+  let reactions: Message['reactions'] = [];
+  try {
+    if (record.reactions && typeof record.reactions === 'object') {
+      reactions = Object.entries(record.reactions).flatMap(([emoji, userIds]) =>
+        (Array.isArray(userIds) ? userIds : []).map((userId: string) => ({
           id: `${record.id}-${emoji}-${userId}`,
           emoji,
           userId,
           user: { id: userId, username: '' },
         }))
-      )
-    : [];
+      );
+    }
+  } catch {
+    // Corrupted reactions JSON — return empty array
+    reactions = [];
+  }
 
   return {
     id: record.id,
