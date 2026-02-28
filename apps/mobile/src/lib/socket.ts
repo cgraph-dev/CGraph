@@ -934,6 +934,8 @@ class SocketManager {
         'reaction_added',
         'reaction_removed',
         'typing',
+        'msg_delivered',
+        'message_read',
       ].forEach((event) => {
         channel.on(event, (payload: unknown) => {
           // Track sequence number for session resumption

@@ -49,6 +49,12 @@ export interface Message {
   sender: MessageSender;
   createdAt: string;
   updatedAt: string;
+  // Delivery tracking
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+  deliveredAt?: string;
+  readAt?: string;
+  isOptimistic?: boolean;
+  clientMessageId?: string;
 }
 
 export interface ConversationParticipant {
@@ -128,6 +134,12 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
     createdAt: (raw.created_at || raw.createdAt || raw.inserted_at || '') as string,
      
     updatedAt: (raw.updated_at || raw.updatedAt || '') as string,
+    // Delivery tracking
+    status: (raw.status || undefined) as Message['status'],
+    deliveredAt: (raw.delivered_at || raw.deliveredAt || undefined) as string | undefined,
+    readAt: (raw.read_at || raw.readAt || undefined) as string | undefined,
+    isOptimistic: (raw.is_optimistic ?? raw.isOptimistic ?? undefined) as boolean | undefined,
+    clientMessageId: (raw.client_message_id || raw.clientMessageId || undefined) as string | undefined,
   };
 }
 
@@ -234,6 +246,12 @@ interface ChatState {
   // Socket-driven mutations
   addMessage: (message: Message) => void;
   updateMessage: (message: Message) => void;
+  updateMessageStatus: (
+    conversationId: string,
+    messageId: string,
+    status: Message['status'],
+    extra?: Partial<Message>
+  ) => void;
   removeMessage: (messageId: string, conversationId: string) => void;
   setTypingUser: (conversationId: string, userId: string, isTyping: boolean) => void;
   addReactionToMessage: (
@@ -337,8 +355,35 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
+    const clientMessageId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+    // Optimistic insert — show message immediately with 'sending' status
+    const optimisticMessage: Message = {
+      id: clientMessageId,
+      conversationId,
+      senderId: '',
+      content,
+      messageType: 'text',
+      replyToId: replyToId || null,
+      replyTo: null,
+      isPinned: false,
+      isEdited: false,
+      isEncrypted: false,
+      encryptedContent: null,
+      deletedAt: null,
+      metadata: {},
+      reactions: [],
+      sender: { id: '', username: '', displayName: null, avatarUrl: null },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: 'sending',
+      isOptimistic: true,
+      clientMessageId,
+    };
+    get().addMessage(optimisticMessage);
+
     try {
-      const payload: Record<string, unknown> = { content };
+      const payload: Record<string, unknown> = { content, client_message_id: clientMessageId };
       if (replyToId) payload.reply_to_id = replyToId;
 
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
@@ -346,10 +391,29 @@ export const useChatStore = create<ChatState>((set, get) => ({
       if (rawMessage) {
          
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
-        get().addMessage(message);
+        // Replace optimistic message with server-confirmed version
+        set((state) => {
+          const msgs = state.messages[conversationId] || [];
+          const idSet = state.messageIds[conversationId] || new Set<string>();
+          const newIdSet = new Set(idSet);
+          newIdSet.delete(clientMessageId);
+          newIdSet.add(message.id);
+          return {
+            messages: {
+              ...state.messages,
+              [conversationId]: msgs.map((m) =>
+                m.id === clientMessageId
+                  ? { ...message, status: 'sent' as const, isOptimistic: false }
+                  : m
+              ),
+            },
+            messageIds: { ...state.messageIds, [conversationId]: newIdSet },
+          };
+        });
       }
     } catch {
-      // Network error — caller should handle UI feedback
+      // Mark as failed — user can retry
+      get().updateMessageStatus(conversationId, clientMessageId, 'failed');
     }
   },
 
@@ -462,6 +526,22 @@ export const useChatStore = create<ChatState>((set, get) => ({
         ...state.messages,
         [message.conversationId]: (state.messages[message.conversationId] || []).map((m) =>
           m.id === message.id ? message : m
+        ),
+      },
+    }));
+  },
+
+  updateMessageStatus: (
+    conversationId: string,
+    messageId: string,
+    status: Message['status'],
+    extra?: Partial<Message>
+  ) => {
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [conversationId]: (state.messages[conversationId] || []).map((m) =>
+          m.id === messageId ? { ...m, status, ...extra } : m
         ),
       },
     }));
@@ -586,6 +666,36 @@ export const useChatStore = create<ChatState>((set, get) => ({
             data.message ? (data.message as Record<string, unknown>) : data
           );
           useChatStore.getState().addMessage(msg);
+
+          // Push delivery ACK for messages from other users
+          const channel = socketManager.getChannel(topic);
+          if (channel && msg.senderId !== useChatStore.getState().activeConversationId) {
+            channel.push('msg_ack', { message_id: msg.id });
+          }
+          break;
+        }
+        case 'msg_delivered': {
+          const msgId = (data.message_id || data.id) as string;
+          if (msgId) {
+            useChatStore.getState().updateMessageStatus(
+              conversationId,
+              msgId,
+              'delivered',
+              { deliveredAt: (data.delivered_at as string) || new Date().toISOString() }
+            );
+          }
+          break;
+        }
+        case 'message_read': {
+          const msgId = (data.message_id || data.id) as string;
+          if (msgId) {
+            useChatStore.getState().updateMessageStatus(
+              conversationId,
+              msgId,
+              'read',
+              { readAt: (data.read_at as string) || new Date().toISOString() }
+            );
+          }
           break;
         }
         case 'message_updated': {
