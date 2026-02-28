@@ -13,7 +13,6 @@ defmodule CGraph.Auth.TokenRefreshTest do
   use CGraph.DataCase, async: false
 
   alias CGraph.Auth.TokenManager
-  alias CGraph.Auth.TokenManager.Store
   alias CGraph.Guardian
 
   import CgraphWeb.UserFixtures
@@ -148,7 +147,7 @@ defmodule CGraph.Auth.TokenRefreshTest do
   describe "TokenManager integration — max sessions" do
     test "enforces max sessions per user", %{user: user} do
       # Generate 11 sessions (max is 10)
-      tokens =
+      _tokens =
         for _i <- 1..11 do
           {:ok, t} = TokenManager.generate_tokens(user)
           t

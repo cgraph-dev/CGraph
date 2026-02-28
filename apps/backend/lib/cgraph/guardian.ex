@@ -107,7 +107,11 @@ defmodule CGraph.Guardian do
 
   @doc """
   Generate access and refresh token pair.
+
+  **Deprecated:** Use `CGraph.Auth.TokenManager.generate_tokens/2` instead,
+  which provides token family tracking, device fingerprinting, and session management.
   """
+  @deprecated "Use CGraph.Auth.TokenManager.generate_tokens/2 for family tracking and session management"
   @spec generate_tokens(Accounts.User.t()) :: {:ok, map()} | {:error, term()}
   def generate_tokens(user) do
     access_ttl = Application.get_env(:cgraph, :jwt_access_token_ttl, 900)  # 15 min default

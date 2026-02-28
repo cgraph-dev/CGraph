@@ -124,7 +124,7 @@ defmodule CGraph.OAuth do
     with {:ok, tokens} <- Providers.exchange_code_for_tokens(provider, config, code),
          {:ok, user_info} <- Providers.fetch_user_info(provider, config, tokens),
          {:ok, user} <- UserManager.find_or_create_user(provider, user_info),
-         {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
+         {:ok, jwt_tokens} <- CGraph.Auth.TokenManager.generate_tokens(user) do
 
       Logger.info("OAuth login successful", provider: provider, user_id: user.id)
 
@@ -173,7 +173,7 @@ defmodule CGraph.OAuth do
 
     with {:ok, user_info} <- Providers.fetch_user_info(provider, config, tokens),
          {:ok, user} <- UserManager.find_or_create_user(provider, user_info),
-         {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
+         {:ok, jwt_tokens} <- CGraph.Auth.TokenManager.generate_tokens(user) do
 
       Logger.info("Mobile OAuth login successful", provider: provider, user_id: user.id)
 
