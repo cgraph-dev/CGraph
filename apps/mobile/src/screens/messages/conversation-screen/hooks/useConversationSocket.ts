@@ -24,6 +24,7 @@ interface UseConversationSocketOptions {
   onMessagePinned: (messageId: string, pinnedAt: string, pinnedById: string) => void;
   onMessageUnpinned: (messageId: string) => void;
   onMessageRead: (messageId: string, userId: string) => void;
+  onMessageDelivered: (messageId: string) => void;
   onReactionAdded: (data: ReactionData) => void;
   onReactionRemoved: (data: ReactionData) => void;
 }
@@ -52,6 +53,7 @@ export function useConversationSocket({
   onMessagePinned,
   onMessageUnpinned,
   onMessageRead,
+  onMessageDelivered,
   onReactionAdded,
   onReactionRemoved,
 }: UseConversationSocketOptions) {
@@ -109,6 +111,16 @@ export function useConversationSocket({
           const data = payload as { user_id: string; message_id: string };
           if (data.message_id && data.user_id !== userId) {
             onMessageRead(data.message_id, data.user_id);
+          }
+          return;
+        }
+
+        // Handle delivery receipt event
+        if (event === 'msg_delivered') {
+           
+          const data = payload as { message_id: string; delivered_at?: string };
+          if (data.message_id) {
+            onMessageDelivered(data.message_id);
           }
           return;
         }
@@ -253,6 +265,7 @@ export function useConversationSocket({
     onMessagePinned,
     onMessageUnpinned,
     onMessageRead,
+    onMessageDelivered,
     onReactionAdded,
     onReactionRemoved,
     markMessageDeleted,
@@ -267,6 +280,69 @@ export function useConversationSocket({
     isMessageDeleted,
     sendTyping,
   };
+}
+
+/**
+ * Auto-read hook: marks messages as read when they become visible in the viewport.
+ * Debounces to max once per 2s. Respects showReadReceipts privacy toggle.
+ */
+export function useAutoReadOnVisibility({
+  conversationId,
+  userId,
+  showReadReceipts,
+}: {
+  conversationId: string;
+  userId: string | undefined;
+  showReadReceipts: boolean;
+}) {
+  const lastAutoReadRef = useRef<number>(0);
+  const initialReadDone = useRef(false);
+
+  // Mark visible messages as read with 2s debounce
+  const handleViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: Array<{ item: Message }> }) => {
+      if (!showReadReceipts || !userId) return;
+
+      const now = Date.now();
+      if (now - lastAutoReadRef.current < 2000) return;
+
+      // Find the latest unread message from the other user
+      const latestUnread = viewableItems
+        .map((v) => v.item)
+        .filter((m) => m.sender_id !== userId && !m.read_at)
+        .sort((a, b) => new Date(b.inserted_at || b.created_at).getTime() - new Date(a.inserted_at || a.created_at).getTime())[0];
+
+      if (latestUnread) {
+        const channel = socketManager.getChannel(`conversation:${conversationId}`);
+        if (channel) {
+          channel.push('mark_read', { message_id: latestUnread.id });
+          lastAutoReadRef.current = now;
+        }
+      }
+    },
+    [conversationId, userId, showReadReceipts]
+  );
+
+  // Initial read on conversation open (500ms delay)
+  const triggerInitialRead = useCallback(
+    (messages: Message[]) => {
+      if (initialReadDone.current || !showReadReceipts || !userId) return;
+      initialReadDone.current = true;
+
+      setTimeout(() => {
+        const latestUnread = messages.find((m) => m.sender_id !== userId && !m.read_at);
+        if (latestUnread) {
+          const channel = socketManager.getChannel(`conversation:${conversationId}`);
+          if (channel) {
+            channel.push('mark_read', { message_id: latestUnread.id });
+          }
+        }
+      }, 500);
+    },
+    [conversationId, userId, showReadReceipts]
+  );
+
+  return { handleViewableItemsChanged, triggerInitialRead };
 }
 
 export default useConversationSocket;

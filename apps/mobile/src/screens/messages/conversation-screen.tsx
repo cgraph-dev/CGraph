@@ -14,6 +14,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useAuthStore, useThemeStore } from '@/stores';
+import { usePrivacySettings } from '../../stores/settingsStore';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { createLogger } from '../../lib/logger';
@@ -27,6 +28,7 @@ import {
 import { ConversationModals } from './conversation-screen/components/conversation-modals';
 import { styles } from './conversation-screen/styles';
 import { useConversationData } from './conversation-screen/hooks';
+import { useAutoReadOnVisibility } from './conversation-screen/hooks/useConversationSocket';
 import { useConversationSetup } from './conversation-screen/hooks/use-conversation-setup';
 import {
   isValidMessage,
@@ -50,6 +52,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const isDark = colorScheme === 'dark';
   const { user } = useAuthStore();
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
+  const privacy = usePrivacySettings();
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
 
   // Core data hook
@@ -79,6 +82,23 @@ export default function ConversationScreen({ navigation, route }: Props) {
     navigation,
     colors,
   });
+
+  // Auto-read on scroll visibility (gated by privacy toggle)
+  const { handleViewableItemsChanged, triggerInitialRead } = useAutoReadOnVisibility({
+    conversationId,
+    userId: user?.id,
+    showReadReceipts: privacy?.showReadReceipts ?? true,
+  });
+
+  // Viewability config for auto-read (50% threshold)
+  const viewabilityConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
+
+  // Trigger initial read when messages load
+  useEffect(() => {
+    if (messages.length > 0) {
+      triggerInitialRead(messages);
+    }
+  }, [messages.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch messages on mount
   useEffect(() => { fetchMessages(); }, [conversationId, fetchMessages]);
@@ -249,6 +269,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
         initialNumToRender={20}
         updateCellsBatchingPeriod={50}
         removeClippedSubviews={true}
+        onViewableItemsChanged={handleViewableItemsChanged}
+        viewabilityConfig={viewabilityConfigRef.current}
         onScrollToIndexFailed={(info) => {
           setup.flatListRef.current?.scrollToOffset({
             offset: info.averageItemLength * info.index,

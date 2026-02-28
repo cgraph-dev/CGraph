@@ -25,6 +25,7 @@ interface UseSocketEventHandlersReturn {
   handleSocketMessagePinned: (messageId: string, pinnedAt: string, pinnedById: string) => void;
   handleSocketMessageUnpinned: (messageId: string) => void;
   handleSocketMessageRead: (messageId: string, userId: string) => void;
+  handleSocketMessageDelivered: (messageId: string) => void;
   handleSocketReactionAdded: (data: {
     messageId: string;
     emoji: string;
@@ -117,6 +118,21 @@ export function useSocketEventHandlers(
     [setMessages, userId]
   );
 
+  // Handle message delivered status from socket
+  const handleSocketMessageDelivered = useCallback(
+    (messageId: string) => {
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === messageId && m.sender_id === userId && m.status !== 'read') {
+            return { ...m, status: 'delivered' as const, delivered_at: new Date().toISOString() };
+          }
+          return m;
+        })
+      );
+    },
+    [setMessages, userId]
+  );
+
   // Handle reaction added from socket
   const handleSocketReactionAdded = useCallback(
     (data: {
@@ -145,6 +161,7 @@ export function useSocketEventHandlers(
     handleSocketMessagePinned,
     handleSocketMessageUnpinned,
     handleSocketMessageRead,
+    handleSocketMessageDelivered,
     handleSocketReactionAdded,
     handleSocketReactionRemoved,
   };

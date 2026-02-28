@@ -177,6 +177,7 @@ export function useConversationSetup(params: SetupParams) {
     onMessagePinned: socketHandlers.handleSocketMessagePinned,
     onMessageUnpinned: socketHandlers.handleSocketMessageUnpinned,
     onMessageRead: socketHandlers.handleSocketMessageRead,
+    onMessageDelivered: socketHandlers.handleSocketMessageDelivered,
     onReactionAdded: socketHandlers.handleSocketReactionAdded,
     onReactionRemoved: socketHandlers.handleSocketReactionRemoved,
   });
