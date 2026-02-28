@@ -371,6 +371,7 @@ export type MessagesStackParamList = {
   Conversation: { conversationId: string };
   NewConversation: undefined;
   SavedMessages: undefined;
+  SafetyNumber: { recipientId: string; recipientName: string };
 };
 
 export type NotificationsStackParamList = {

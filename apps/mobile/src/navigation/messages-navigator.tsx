@@ -10,6 +10,7 @@ import ConversationListScreen from '../screens/messages/conversation-list-screen
 import ConversationScreen from '../screens/messages/conversation-screen';
 import NewConversationScreen from '../screens/messages/new-conversation-screen';
 import SavedMessagesScreen from '../screens/messages/saved-messages-screen';
+import SafetyNumberScreen from '../screens/chat/safety-number-screen';
 
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
@@ -51,6 +52,11 @@ export default function MessagesNavigator() {
         name="SavedMessages"
         component={SavedMessagesScreen}
         options={{ title: 'Saved Messages' }}
+      />
+      <Stack.Screen
+        name="SafetyNumber"
+        component={SafetyNumberScreen}
+        options={{ title: 'Verify Identity' }}
       />
     </Stack.Navigator>
   );

@@ -159,6 +159,19 @@ export function useConversationHeader({
           <View style={styles.headerActions}>
             <TouchableOpacity
               style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
+              onPress={() => {
+                if (otherParticipantId) {
+                  navigation.navigate('SafetyNumber', {
+                    recipientId: otherParticipantId,
+                    recipientName: name,
+                  });
+                }
+              }}
+            >
+              <Ionicons name="finger-print-outline" size={20} color={colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
               onPress={() => onStartCall('audio')}
             >
               <Ionicons name="call-outline" size={20} color={colors.text} />
