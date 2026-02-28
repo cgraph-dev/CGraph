@@ -235,7 +235,7 @@ defmodule CGraphWeb.ConversationChannel do
 
     case Messaging.edit_message(message_id, user.id, content) do
       {:ok, message} ->
-        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to, :edits])
         serialized = MessageJSON.message_data(message)
         broadcast!(socket, "message_updated", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}

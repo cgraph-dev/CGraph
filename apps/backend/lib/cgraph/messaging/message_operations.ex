@@ -8,8 +8,9 @@ defmodule CGraph.Messaging.MessageOperations do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Messaging.{Message, ReadReceipt}
+  alias CGraph.Messaging.{Message, MessageEdit, ReadReceipt}
   alias CGraph.Repo
+  alias Ecto.Multi
   import CGraph.Query.SoftDelete
 
   @max_pins_per_user 3
@@ -148,7 +149,40 @@ defmodule CGraph.Messaging.MessageOperations do
 
       {:ok, message} ->
         if message.sender_id == user_id do
-          update_message(message, %{content: content})
+          previous_content = message.content
+
+          Multi.new()
+          |> Multi.run(:count_edits, fn _repo, _changes ->
+            count =
+              from(me in MessageEdit,
+                where: me.message_id == ^message.id,
+                select: count(me.id)
+              )
+              |> Repo.one()
+
+            {:ok, count || 0}
+          end)
+          |> Multi.run(:save_history, fn _repo, %{count_edits: count} ->
+            %MessageEdit{}
+            |> MessageEdit.changeset(%{
+              previous_content: previous_content,
+              edit_number: count + 1,
+              edited_by_id: user_id,
+              message_id: message.id
+            })
+            |> Repo.insert()
+          end)
+          |> Multi.run(:update_message, fn _repo, _changes ->
+            update_message(message, %{content: content})
+          end)
+          |> Repo.transaction()
+          |> case do
+            {:ok, %{update_message: updated_message}} ->
+              {:ok, Repo.preload(updated_message, [:edits], force: true)}
+
+            {:error, _step, changeset, _changes} ->
+              {:error, changeset}
+          end
         else
           {:error, :unauthorized}
         end
