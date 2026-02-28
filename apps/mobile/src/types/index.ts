@@ -77,6 +77,7 @@ export interface Message {
   is_pinned?: boolean;
   pinned_at?: string;
   pinned_by_id?: string;
+  edits?: EditHistory[];
   inserted_at: string;
   updated_at: string;
   // Message delivery status
@@ -86,6 +87,15 @@ export interface Message {
   // For optimistic updates
   is_optimistic?: boolean;
   file_url?: string;
+}
+
+export interface EditHistory {
+  id: string;
+  messageId: string;
+  previousContent: string;
+  editNumber: number;
+  editedById: string;
+  createdAt: string;
 }
 
 export interface Attachment {

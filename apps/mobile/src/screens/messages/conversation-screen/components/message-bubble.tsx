@@ -7,7 +7,7 @@
  * @module screens/messages/ConversationScreen/components
  */
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +18,8 @@ import { styles } from '../styles';
 import { getFileIcon, formatFileSize } from '../utils';
 import { MarkdownText } from '../../../../components/chat/markdown-text';
 import { useBubbleCustomization } from '../../../../hooks/useBubbleCustomization';
+import { MessageEditForm } from './message-edit-form';
+import { EditHistoryViewer } from './edit-history-viewer';
 
 interface MessageBubbleProps {
   item: Message;
@@ -32,6 +34,7 @@ interface MessageBubbleProps {
     textTertiary: string;
     surface: string;
     input: string;
+    border: string;
     [key: string]: unknown; // Allow additional color properties
   };
   formatTime: (dateString: string) => string;
@@ -44,6 +47,10 @@ interface MessageBubbleProps {
   onVideoPress: (url: string, duration?: number) => void;
   onFilePress: (url: string, filename?: string) => void;
   onReactionTap: (messageId: string, emoji: string, hasReacted: boolean) => void;
+  // Edit support
+  isEditing?: boolean;
+  onSaveEdit?: (content: string) => void;
+  onCancelEdit?: () => void;
 }
 
 /**
@@ -63,9 +70,19 @@ export function MessageBubble({
   onVideoPress,
   onFilePress,
   onReactionTap,
+  isEditing,
+  onSaveEdit,
+  onCancelEdit,
 }: MessageBubbleProps) {
   // Read user's chat bubble customization (colors, radius, gradient, etc.)
   const bubble = useBubbleCustomization();
+  const [showEditHistory, setShowEditHistory] = useState(false);
+
+  const handleEditHistoryPress = useCallback(() => {
+    if (item.edits && item.edits.length > 0) {
+      setShowEditHistory(true);
+    }
+  }, [item.edits]);
 
   // Soft-deleted messages: render a non-interactive placeholder
   if (item.deleted_at || item.is_deleted) {
@@ -150,6 +167,10 @@ export function MessageBubble({
                 onVideoPress={onVideoPress}
                 onFilePress={onFilePress}
                 onReactionTap={onReactionTap}
+                isEditing={isEditing}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+                onEditHistoryPress={handleEditHistoryPress}
               />
             </LinearGradient>
           ) : (
@@ -174,11 +195,26 @@ export function MessageBubble({
                 onVideoPress={onVideoPress}
                 onFilePress={onFilePress}
                 onReactionTap={onReactionTap}
+                isEditing={isEditing}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+                onEditHistoryPress={handleEditHistoryPress}
               />
             </View>
           )}
         </View>
       </TouchableOpacity>
+
+      {/* Edit History Viewer Modal */}
+      {item.edits && item.edits.length > 0 && (
+        <EditHistoryViewer
+          edits={item.edits}
+          currentContent={item.content}
+          visible={showEditHistory}
+          onClose={() => setShowEditHistory(false)}
+          colors={colors}
+        />
+      )}
     </AnimatedMessageWrapper>
   );
 }
@@ -193,6 +229,7 @@ interface MessageContentProps {
     textSecondary: string;
     textTertiary: string;
     input: string;
+    surface: string;
     [key: string]: unknown; // Allow additional color properties
   };
   formatTime: (dateString: string) => string;
@@ -204,6 +241,10 @@ interface MessageContentProps {
   onVideoPress: (url: string, duration?: number) => void;
   onFilePress: (url: string, filename?: string) => void;
   onReactionTap: (messageId: string, emoji: string, hasReacted: boolean) => void;
+  isEditing?: boolean;
+  onSaveEdit?: (content: string) => void;
+  onCancelEdit?: () => void;
+  onEditHistoryPress?: () => void;
 }
 
 function MessageContent({
@@ -216,6 +257,10 @@ function MessageContent({
   onVideoPress,
   onFilePress,
   onReactionTap,
+  isEditing,
+  onSaveEdit,
+  onCancelEdit,
+  onEditHistoryPress,
 }: MessageContentProps) {
   return (
     <>

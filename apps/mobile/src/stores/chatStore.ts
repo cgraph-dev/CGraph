@@ -47,6 +47,7 @@ export interface Message {
   deletedAt: string | null;
   metadata: Record<string, unknown>;
   reactions: Reaction[];
+  edits?: EditHistoryEntry[];
   sender: MessageSender;
   createdAt: string;
   updatedAt: string;
@@ -56,6 +57,15 @@ export interface Message {
   readAt?: string;
   isOptimistic?: boolean;
   clientMessageId?: string;
+}
+
+export interface EditHistoryEntry {
+  id: string;
+  messageId: string;
+  previousContent: string;
+  editNumber: number;
+  editedById: string;
+  createdAt: string;
 }
 
 export interface ConversationParticipant {
@@ -121,6 +131,7 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
      
     metadata: (raw.metadata || {}) as Record<string, unknown>,
     reactions: normalizeReactions(raw.reactions),
+    edits: normalizeEdits(raw.edits),
     sender: {
        
       id: (sender.id || '') as string,
@@ -159,6 +170,18 @@ function normalizeReactions(raw: unknown): Reaction[] {
        
       username: ((r.user as Record<string, unknown>)?.username || '') as string,
     },
+  }));
+}
+
+function normalizeEdits(raw: unknown): EditHistoryEntry[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  return raw.map((edit: Record<string, unknown>) => ({
+    id: (edit.id || '') as string,
+    messageId: (edit.messageId ?? edit.message_id ?? '') as string,
+    previousContent: (edit.previousContent ?? edit.previous_content ?? '') as string,
+    editNumber: (edit.editNumber ?? edit.edit_number ?? 0) as number,
+    editedById: (edit.editedById ?? edit.edited_by_id ?? '') as string,
+    createdAt: (edit.createdAt ?? edit.created_at ?? edit.inserted_at ?? '') as string,
   }));
 }
 
