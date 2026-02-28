@@ -68,6 +68,18 @@ export default {
           hover: 'var(--token-sidebar-hover, #34373c)',
           active: 'var(--token-sidebar-active, #393c43)',
         },
+        // Token-driven foreground / text colors — swap automatically with theme
+        foreground: {
+          DEFAULT: 'rgb(var(--token-text-primary-rgb, 255 255 255) / <alpha-value>)',
+          secondary: 'rgb(var(--token-text-secondary-rgb, 163 163 163) / <alpha-value>)',
+          muted: 'rgb(var(--token-text-muted-rgb, 115 115 115) / <alpha-value>)',
+          inverse: 'rgb(var(--token-text-inverse-rgb, 15 15 15) / <alpha-value>)',
+        },
+        // Token-driven border colors
+        'token-border': {
+          DEFAULT: 'rgb(var(--token-border-default-rgb, 51 51 51) / <alpha-value>)',
+          muted: 'rgb(var(--token-border-muted-rgb, 42 42 42) / <alpha-value>)',
+        },
         // Feedback semantic colors
         success: 'rgb(var(--token-feedback-success-rgb, 34 197 94) / <alpha-value>)',
         warning: 'rgb(var(--token-feedback-warning-rgb, 245 158 11) / <alpha-value>)',
