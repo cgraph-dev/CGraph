@@ -218,7 +218,7 @@ untested. This phase establishes visual quality before feature work.
 | ----- | ---------------------------------------------------------------------------- | ---- | ----------- |
 | 04-01 | Unified Design Tokens + WCAG Audit — single token source, fix contrast pairs | 1    | Not started |
 | 04-02 | Web Light Mode — make CSS theme-aware, light mode actually renders           | 2    | Not started |
-| 04-03 | Mobile EAS Build Pipeline — fix config, verify builds, add scripts           | 1    | Not started |
+| 04-03 | Mobile EAS Build Pipeline — fix config, verify builds, add scripts           | 1    | Complete    |
 
 ---
 

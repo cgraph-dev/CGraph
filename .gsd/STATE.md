@@ -17,12 +17,12 @@ Professional visual foundation on both platforms, mobile builds pass.
 ## Position
 
 - **Phase:** 4 of 19
-- **Plan:** 04-01 complete
+- **Plan:** 04-01 and 04-03 complete, 04-02 remaining
 - **Version target:** v0.9.48
 
 ## Status
 
-Plan 04-01 (Design Tokens + WCAG Audit) complete. 04-02 and 04-03 ready.
+Plan 04-01 and 04-03 (wave 1) complete. 04-02 (wave 2) ready.
 
 ## Plans
 
@@ -30,7 +30,7 @@ Plan 04-01 (Design Tokens + WCAG Audit) complete. 04-02 and 04-03 ready.
 | ----- | -------------------------- | ---- | ---------- | ----------- |
 | 04-01 | Design Tokens + WCAG Audit | 1    | —          | Complete    |
 | 04-02 | Web Light Mode             | 2    | 04-01      | Not started |
-| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Not started |
+| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Complete    |
 
 ## Progress
 
@@ -67,10 +67,10 @@ Plan 04-01 (Design Tokens + WCAG Audit) complete. 04-02 and 04-03 ready.
 
 ## Last Action
 
-Plan 04-01 (Design Tokens + WCAG Audit) executed. 6 tasks complete, 6 commits. Unified tokens.ts as
-single source of truth, merged ThemeProviders, wired Tailwind to CSS variables, fixed WCAG AA
-failures (matrix textMuted, chat bubbles), synced mobile tokens, cleaned up redundant color
-definitions.
+Plan 04-03 (Mobile EAS Build Pipeline) executed. 5 tasks complete, 4 commits. Fixed EAS project ID
+placeholder, synced app.json/app.config.js drift (versionCode, colors, asset patterns), added 8 EAS
+build convenience scripts, verified config validity, created BUILD.md. Wave 1 complete (04-01 +
+04-03). Wave 2 (04-02) ready.
 
 ---
 
