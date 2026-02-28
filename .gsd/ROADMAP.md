@@ -131,11 +131,19 @@ token refresh today.
 3. Concurrent API 401s trigger exactly one refresh request, not a race condition
 4. User resets password via email link and logs in with new password
 
-### Plans
+**Plans:** 3 plans in 2 waves
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+Plans:
+
+- [ ] 02-01-PLAN.md — Backend auth fixes (password reset email, sessions field fix, cleanup)
+- [ ] 02-02-PLAN.md — Frontend auth completeness (web validation, mobile deep linking)
+- [ ] 02-03-PLAN.md — Token refresh wiring with TDD (TokenManager, rotation, theft detection)
+
+| Plan  | Scope                                                                     | Wave | Status      |
+| ----- | ------------------------------------------------------------------------- | ---- | ----------- |
+| 02-01 | Backend Auth Fixes — password reset email, sessions fields, cleanup       | 1    | Not started |
+| 02-02 | Frontend Auth Completeness — web password validation, mobile deep linking | 1    | Not started |
+| 02-03 | Token Refresh Wiring (TDD) — TokenManager, rotation, theft detection      | 2    | Not started |
 
 ---
 
