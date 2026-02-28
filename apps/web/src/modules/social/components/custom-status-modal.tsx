@@ -9,6 +9,7 @@ import { XMarkIcon, FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline
 import { GlassCard } from '@/shared/components/ui';
 import { entranceVariants } from '@/lib/animation-presets';
 import { api } from '@/lib/api';
+import { socketManager } from '@/lib/socket';
 
 const PRESENCE_MODES = [
   { id: 'online', label: 'Online', color: 'bg-green-500', description: 'Visible to everyone' },
@@ -49,6 +50,26 @@ const EXPIRY_OPTIONS = [
   { label: 'Today', value: 'today' },
 ];
 
+/** Convert expiry option string to seconds */
+function computeExpiresInSeconds(option: string): number | null {
+  switch (option) {
+    case '30m':
+      return 30 * 60;
+    case '1h':
+      return 60 * 60;
+    case '4h':
+      return 4 * 60 * 60;
+    case 'today': {
+      const now = new Date();
+      const endOfDay = new Date(now);
+      endOfDay.setHours(23, 59, 59, 999);
+      return Math.max(1, Math.floor((endOfDay.getTime() - now.getTime()) / 1000));
+    }
+    default:
+      return null;
+  }
+}
+
 /**
  * unknown for the social module.
  */
@@ -80,7 +101,22 @@ export function CustomStatusModal({
     setSaving(true);
     try {
       const customStatus = emoji ? `${emoji} ${statusText}` : statusText;
-      // Update custom status text
+
+      // Compute expires_in in seconds from the selected expiry option
+      const expiresInSeconds = computeExpiresInSeconds(expiresIn);
+
+      // Push status via WebSocket for real-time broadcast to friends
+      const presenceChannel = socketManager.getChannel('presence:lobby');
+      if (presenceChannel) {
+        presenceChannel.push('set_status', {
+          status: presenceMode === 'dnd' ? 'busy' : presenceMode,
+          status_message: statusText || null,
+          custom_status: customStatus || null,
+          expires_in: expiresInSeconds || null,
+        });
+      }
+
+      // Also persist via REST API for redundancy
       await api.put('/api/v1/me', {
         custom_status: customStatus,
         status_message: statusText,
@@ -101,6 +137,17 @@ export function CustomStatusModal({
   const handleClear = async () => {
     setSaving(true);
     try {
+      // Push clear via WebSocket
+      const presenceChannel = socketManager.getChannel('presence:lobby');
+      if (presenceChannel) {
+        presenceChannel.push('set_status', {
+          status: 'online',
+          status_message: null,
+          custom_status: null,
+          expires_in: null,
+        });
+      }
+
       await api.put('/api/v1/me', {
         custom_status: null,
         status_message: null,

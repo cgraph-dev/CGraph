@@ -66,6 +66,8 @@ config :cgraph, Oban,
     {Oban.Plugins.Cron, crontab: [
       # Process scheduled messages every minute
       {"* * * * *", CGraph.Workers.ScheduledMessageWorker},
+      # Clear expired custom statuses every minute
+      {"* * * * *", CGraph.Workers.StatusExpiryWorker},
       # Daily cleanup jobs
       {"0 3 * * *", CGraph.Workers.CleanupWorker},
       # Send email digests daily at 8 AM UTC
