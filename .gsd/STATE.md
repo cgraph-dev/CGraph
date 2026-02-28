@@ -10,20 +10,29 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 7 — E2EE & Mobile Security** (v0.9.49) — Ready to plan
+**Phase 7 — E2EE & Mobile Security** (v0.9.49) — Planned, ready to execute
 
 End-to-end encryption for 1:1 messages + biometric auth on mobile.
 
 ## Position
 
 - **Phase:** 7 of 19 — E2EE & Mobile Security
-- **Plan:** Not started
-- **Status:** Ready to plan
-- **Last activity:** 2026-02-28 — Phase 6 complete, transitioned to Phase 7
+- **Plan:** 8 plans in 4 waves — verified ✓
+- **Status:** Ready to execute
+- **Last activity:** 2026-02-28 — Phase 7 planned (8 plans, 4 waves)
 
 ## Plans
 
-(Phase 7 plans not yet created — run `/plan-phase 7` to generate)
+| Plan  | Objective                               | Wave | Autonomous | Depends On |
+| ----- | --------------------------------------- | ---- | ---------- | ---------- |
+| 07-01 | Web PQXDH enable + auto-bootstrap       | 1    | ✅          | —          |
+| 07-02 | Mobile PQ-bridge wiring + auto-bootstrap| 1    | ✅          | —          |
+| 07-03 | Biometric auth gate on mobile           | 1    | ✅          | —          |
+| 07-04 | Web decrypt-on-receive + lock icon      | 2    | ✅          | 07-01      |
+| 07-05 | Mobile decrypt-on-receive + lock icon   | 2    | ✅          | 07-02      |
+| 07-06 | Safety number screens (web + mobile)    | 3    | ✅          | 07-04,05   |
+| 07-07 | Backend key sync + cross-signing API    | 3    | ✅          | 07-04,05   |
+| 07-08 | Client device sync + UI (checkpoint)    | 4    | ❌          | 07-07      |
 
 ## Progress
 
@@ -44,7 +53,7 @@ End-to-end encryption for 1:1 messages + biometric auth on mobile.
 | 4   | Design System & Mobile  | **Complete** (2026-02-28) |
 | 5   | Message Transport       | **Complete** (2026-02-28) |
 | 6   | Message Features & Sync | **Complete** (2026-02-28) |
-| 7   | E2EE & Mobile Security  | **← Next** (Ready to plan)   |
+| 7   | E2EE & Mobile Security  | **Planned** (8 plans, 4 waves) |
 | 8   | Social & Profiles       | Ready (Phase 2 done)      |
 | 9   | Notifications & Safety  | Blocked by 8              |
 | 10  | Message Extras          | Ready (Phase 6 done)      |
@@ -91,14 +100,16 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 6 complete, ready to plan Phase 7
+Stopped at: Phase 7 planned, ready to execute
 Resume file: None
 
 ## Last Action
 
-Phase 6 → Phase 7 transition complete. Phase 6 delivered: edit history (backend+UI), soft-delete indicators,
-reply/reaction verification, edit history viewer (web+mobile), WatermelonDB offline sync bridge.
-UAT: 13/13 tests passed (2 mobile wiring issues found and fixed). Next: plan Phase 7 (E2EE & Mobile Security).
+Phase 7 planned. 8 plans in 4 waves verified by checker (0 blockers, 2 warnings).
+Research confirmed @cgraph/crypto is complete — Phase 7 is integration engineering.
+Plans cover: PQXDH+Triple Ratchet wiring (web+mobile), auto-bootstrap, biometric auth,
+decrypt-on-receive + lock icons, safety number verification, multi-device key sync.
+Plan 07-08 (multi-device sync) has human-verify checkpoint. Next: `/execute-phase 7`.
 
 ---
 
