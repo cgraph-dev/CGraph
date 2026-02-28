@@ -30,6 +30,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   def store_refresh_token(token_data) do
     jti = token_data.jti
     user_id = token_data.user_id
+    session_id = Map.get(token_data, :session_id)
 
     # ETS — always write for local cache
     :ets.insert(:refresh_tokens, {jti, token_data})
@@ -40,6 +41,11 @@ defmodule CGraph.Auth.TokenManager.Store do
       encoded = serialize(token_data)
       redis_cmd(["SETEX", key(:rt, jti), to_string(ttl), encoded])
       redis_cmd(["SADD", key(:user_tokens, user_id), jti])
+
+      # Track session → token mapping when session_id is provided
+      if session_id do
+        redis_cmd(["SADD", key(:session_tokens, session_id), jti])
+      end
     end)
   end
 
@@ -192,6 +198,50 @@ defmodule CGraph.Auth.TokenManager.Store do
     end
   end
 
+  # ---------------------------------------------------------------------------
+  # Session-Scoped Operations
+  # ---------------------------------------------------------------------------
+
+  @doc "Get all JTIs associated with a specific session."
+  @spec get_session_token_jtis(String.t()) :: list(String.t())
+  def get_session_token_jtis(session_id) when is_binary(session_id) do
+    case redis_cmd_safe(["SMEMBERS", key(:session_tokens, session_id)]) do
+      {:ok, jtis} when is_list(jtis) and jtis != [] ->
+        jtis
+
+      _ ->
+        # ETS fallback: scan refresh_tokens for matching session_id
+        :ets.foldl(
+          fn {jti, token_data}, acc ->
+            if Map.get(token_data, :session_id) == session_id do
+              [jti | acc]
+            else
+              acc
+            end
+          end,
+          [],
+          :refresh_tokens
+        )
+    end
+  end
+
+  def get_session_token_jtis(_), do: []
+
+  @doc "Revoke all tokens associated with a specific session."
+  @spec revoke_tokens_for_session(String.t()) :: :ok
+  def revoke_tokens_for_session(session_id) when is_binary(session_id) do
+    jtis = get_session_token_jtis(session_id)
+
+    Enum.each(jtis, fn jti ->
+      revoke_by_jti(jti)
+      mark_token_used(jti)
+    end)
+
+    :ok
+  end
+
+  def revoke_tokens_for_session(_), do: :ok
+
   @doc "Delete all refresh tokens for a user."
   @spec delete_user_tokens(String.t()) :: :ok
   def delete_user_tokens(user_id) do
@@ -253,6 +303,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   defp key(:rev, id), do: "#{@redis_prefix}rev:#{id}"
   defp key(:user_tokens, id), do: "#{@redis_prefix}user_tokens:#{id}"
   defp key(:user_fams, id), do: "#{@redis_prefix}user_fams:#{id}"
+  defp key(:session_tokens, id), do: "#{@redis_prefix}session_tokens:#{id}"
 
   defp with_redis(fun) do
     if redis_available?() do

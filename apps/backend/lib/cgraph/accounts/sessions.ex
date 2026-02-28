@@ -7,6 +7,7 @@ defmodule CGraph.Accounts.Sessions do
 
   import Ecto.Query
   alias CGraph.Accounts.Session
+  alias CGraph.Auth.TokenManager.Store, as: TokenStore
   alias CGraph.Repo
 
   @session_validity_days 60
@@ -83,12 +84,21 @@ defmodule CGraph.Accounts.Sessions do
 
   @doc """
   Revokes a session.
+
+  After marking the session as revoked in the database, also revokes
+  any associated JWT tokens in TokenManager.Store so that the session's
+  access/refresh tokens cannot be used for API requests.
   """
   @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(session) do
-    session
-    |> Ecto.Changeset.change(revoked_at: DateTime.utc_now())
-    |> Repo.update()
+    with {:ok, revoked} <-
+           session
+           |> Ecto.Changeset.change(revoked_at: DateTime.utc_now())
+           |> Repo.update() do
+      # Bridge: revoke associated tokens in TokenManager.Store
+      TokenStore.revoke_tokens_for_session(session.id)
+      {:ok, revoked}
+    end
   end
 
   @doc """
@@ -125,15 +135,32 @@ defmodule CGraph.Accounts.Sessions do
 
   @doc """
   Revokes all sessions except the current one.
+
+  Also revokes associated JWT tokens in TokenManager.Store for each
+  revoked session so that other devices cannot continue making API requests.
   """
   @spec revoke_other_sessions(struct(), String.t()) :: :ok
   def revoke_other_sessions(user, current_session_id) do
+    # Collect other session IDs before bulk-revoking (needed for token cleanup)
+    other_session_ids =
+      from(s in Session,
+        where: s.user_id == ^user.id,
+        where: s.id != ^current_session_id,
+        where: is_nil(s.revoked_at),
+        select: s.id
+      )
+      |> Repo.all()
+
+    # Bulk revoke sessions in DB
     from(s in Session,
       where: s.user_id == ^user.id,
       where: s.id != ^current_session_id,
       where: is_nil(s.revoked_at)
     )
     |> Repo.update_all(set: [revoked_at: DateTime.utc_now()])
+
+    # Bridge: revoke tokens for each other session in TokenManager.Store
+    Enum.each(other_session_ids, &TokenStore.revoke_tokens_for_session/1)
 
     :ok
   end

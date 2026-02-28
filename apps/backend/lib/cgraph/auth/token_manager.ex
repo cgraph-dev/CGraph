@@ -153,6 +153,7 @@ defmodule CGraph.Auth.TokenManager do
   def generate_tokens(%User{} = user, opts \\ []) do
     device_info = Keyword.get(opts, :device_info, %{})
     session_name = Keyword.get(opts, :session_name, "default")
+    session_id = Keyword.get(opts, :session_id)
     remember_me = Keyword.get(opts, :remember_me, false)
 
     # Use existing family_id if provided (for refresh rotation), else generate new
@@ -191,7 +192,7 @@ defmodule CGraph.Auth.TokenManager do
       actual_jti = full_claims["jti"] || refresh_claims["jti"]
 
       # Store refresh token metadata
-      Store.store_refresh_token(%{
+      token_data = %{
         jti: actual_jti,
         user_id: user.id,
         family_id: family_id,
@@ -200,7 +201,10 @@ defmodule CGraph.Auth.TokenManager do
         expires_at: refresh_expires_at,
         created_at: DateTime.utc_now(),
         used: false
-      })
+      }
+
+      token_data = if session_id, do: Map.put(token_data, :session_id, session_id), else: token_data
+      Store.store_refresh_token(token_data)
 
       # Store family info
       Store.store_family(%{

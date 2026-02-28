@@ -8,6 +8,7 @@ defmodule CGraph.Accounts.SessionManagement do
   import Ecto.Query, warn: false
 
   alias CGraph.Accounts.{Session, Token, User}
+  alias CGraph.Auth.TokenManager.Store, as: TokenStore
   alias CGraph.Repo
 
   @session_token_validity_days 60
@@ -71,13 +72,24 @@ defmodule CGraph.Accounts.SessionManagement do
   @spec list_user_sessions(User.t()) :: [Session.t()]
   def list_user_sessions(user), do: list_sessions(user)
 
-  @doc "Revoke a session."
+  @doc """
+  Revoke a session.
+
+  After marking the session as revoked in the database, also revokes
+  any associated JWT tokens in TokenManager.Store.
+  """
   @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(%Session{} = session) do
     now = DateTime.utc_now()
-    session
-    |> Ecto.Changeset.change(revoked_at: now)
-    |> Repo.update()
+
+    with {:ok, revoked} <-
+           session
+           |> Ecto.Changeset.change(revoked_at: now)
+           |> Repo.update() do
+      # Bridge: revoke associated tokens in TokenManager.Store
+      TokenStore.revoke_tokens_for_session(session.id)
+      {:ok, revoked}
+    end
   end
 
   @doc "Revoke a session by user + session_id."
