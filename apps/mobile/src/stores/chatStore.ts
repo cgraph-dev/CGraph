@@ -15,8 +15,10 @@ import { create } from 'zustand';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
 import { useAuthStore } from './authStore';
+import { useE2EEStore } from '../lib/crypto/store/e2eeStore';
 import { getLocalMessages, saveMessageLocally, saveMessagesLocally, markMessageDeletedLocally, markMessageEditedLocally } from '../lib/database/messageBridge';
 import { sync as syncWatermelon } from '../lib/database/sync';
+import { e2eeLogger } from '../lib/logger';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -46,6 +48,7 @@ export interface Message {
   isEdited: boolean;
   isEncrypted: boolean;
   encryptedContent: string | null;
+  decryptionFailed?: boolean;
   deletedAt: string | null;
   metadata: Record<string, unknown>;
   reactions: Reaction[];
@@ -154,6 +157,7 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
     readAt: (raw.read_at || raw.readAt || undefined) as string | undefined,
     isOptimistic: (raw.is_optimistic ?? raw.isOptimistic ?? undefined) as boolean | undefined,
     clientMessageId: (raw.client_message_id || raw.clientMessageId || undefined) as string | undefined,
+    decryptionFailed: (raw.decryption_failed ?? raw.decryptionFailed ?? undefined) as boolean | undefined,
   };
 }
 
@@ -373,6 +377,35 @@ export const useChatStore = create<ChatState>((set, get) => ({
       );
       const hasMore = newMessages.length === 50;
 
+      // ── E2EE: Decrypt fetched encrypted messages ──────────────
+      const fetchCurrentUserId = useAuthStore.getState().user?.id;
+      const fetchE2eeState = useE2EEStore.getState();
+      if (fetchE2eeState.isInitialized && fetchCurrentUserId) {
+        for (const msg of newMessages) {
+          if (msg.isEncrypted && msg.senderId !== fetchCurrentUserId && !msg.decryptionFailed) {
+            try {
+              const encryptedPayload = {
+                ciphertext: msg.encryptedContent || msg.content,
+                ephemeralPublicKey: (msg.metadata?.ephemeral_public_key as string) || '',
+                senderIdentityKey: (msg.metadata?.sender_identity_key as string) || '',
+                recipientIdentityKeyId: '',
+                nonce: (msg.metadata?.nonce as string) || '',
+                protocol_version: (msg.metadata?.protocol_version as string) || 'pqxdh_v1',
+                session_id: (msg.metadata?.session_id as string) || '',
+              };
+              const plaintext = await fetchE2eeState.decryptMessage(
+                msg.senderId,
+                encryptedPayload as Parameters<typeof fetchE2eeState.decryptMessage>[1]
+              );
+              msg.content = plaintext;
+            } catch {
+              msg.content = '\u26A0\uFE0F Unable to decrypt';
+              msg.decryptionFailed = true;
+            }
+          }
+        }
+      }
+
       set((state) => {
         const existingIds = state.messageIds[conversationId] || new Set<string>();
         const newIdSet = new Set(existingIds);
@@ -409,24 +442,78 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
     const clientMessageId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const currentUserId = useAuthStore.getState().user?.id || '';
+
+    // ── E2EE: Encrypt for 1:1 (direct) conversations ──────────────
+    let sendContent = content;
+    let isEncrypted = false;
+    let encryptionMetadata: Record<string, unknown> = {};
+
+    const e2eeState = useE2EEStore.getState();
+    if (e2eeState.isInitialized && currentUserId) {
+      const recipientId = get().getRecipientId(conversationId, currentUserId);
+      if (recipientId) {
+        // Direct conversation — encrypt via e2eeStore (PQXDH + Triple Ratchet)
+        try {
+          const encrypted = await e2eeState.encryptMessage(recipientId, content);
+          sendContent = encrypted.ciphertext;
+          isEncrypted = true;
+          encryptionMetadata = {
+            ephemeral_public_key: encrypted.ephemeralPublicKey || '',
+            nonce: encrypted.nonce || '',
+            protocol_version: (encrypted as unknown as Record<string, unknown>).protocol_version || 'pqxdh_v1',
+            session_id: (encrypted as unknown as Record<string, unknown>).session_id || '',
+          };
+          e2eeLogger.log(`Encrypted message for recipient ${recipientId}`);
+        } catch (err) {
+          // CRITICAL: Never fall back to plaintext on encrypt failure
+          e2eeLogger.error('Encrypt-on-send failed — aborting message send:', err);
+          // Show optimistic failed message, then abort
+          const failedMessage: Message = {
+            id: clientMessageId,
+            conversationId,
+            senderId: currentUserId,
+            content: '⚠️ Encryption failed',
+            messageType: 'text',
+            replyToId: replyToId || null,
+            replyTo: null,
+            isPinned: false,
+            isEdited: false,
+            isEncrypted: false,
+            encryptedContent: null,
+            deletedAt: null,
+            metadata: {},
+            reactions: [],
+            sender: { id: currentUserId, username: '', displayName: null, avatarUrl: null },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: 'failed',
+            isOptimistic: true,
+            clientMessageId,
+          };
+          get().addMessage(failedMessage);
+          return;
+        }
+      }
+    }
 
     // Optimistic insert — show message immediately with 'sending' status
     const optimisticMessage: Message = {
       id: clientMessageId,
       conversationId,
-      senderId: '',
+      senderId: currentUserId,
       content,
       messageType: 'text',
       replyToId: replyToId || null,
       replyTo: null,
       isPinned: false,
       isEdited: false,
-      isEncrypted: false,
-      encryptedContent: null,
+      isEncrypted,
+      encryptedContent: isEncrypted ? sendContent : null,
       deletedAt: null,
       metadata: {},
       reactions: [],
-      sender: { id: '', username: '', displayName: null, avatarUrl: null },
+      sender: { id: currentUserId, username: '', displayName: null, avatarUrl: null },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: 'sending',
@@ -436,7 +523,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
     get().addMessage(optimisticMessage);
 
     try {
-      const payload: Record<string, unknown> = { content, client_message_id: clientMessageId };
+      const payload: Record<string, unknown> = {
+        content: sendContent,
+        client_message_id: clientMessageId,
+      };
+      if (isEncrypted) {
+        payload.is_encrypted = true;
+        payload.encrypted_content = sendContent;
+        Object.assign(payload, encryptionMetadata);
+      }
       if (replyToId) payload.reply_to_id = replyToId;
 
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
@@ -740,17 +835,55 @@ export const useChatStore = create<ChatState>((set, get) => ({
              
             data.message ? (data.message as Record<string, unknown>) : data
           );
-          useChatStore.getState().addMessage(msg);
 
-          // Persist to WatermelonDB
-          saveMessageLocally(msg).catch(console.warn);
+          // ── E2EE: Decrypt incoming encrypted messages ──────────
+          const msgRecipientUserId = useAuthStore.getState().user?.id;
+          const handleNewMessage = async () => {
+            if (msg.isEncrypted && msgRecipientUserId && msg.senderId !== msgRecipientUserId) {
+              const e2eeState = useE2EEStore.getState();
+              if (e2eeState.isInitialized) {
+                try {
+                  const encryptedPayload = {
+                    ciphertext: msg.encryptedContent || msg.content,
+                    ephemeralPublicKey: (msg.metadata?.ephemeral_public_key as string) || '',
+                    senderIdentityKey: (msg.metadata?.sender_identity_key as string) || '',
+                    recipientIdentityKeyId: '',
+                    nonce: (msg.metadata?.nonce as string) || '',
+                    protocol_version: (msg.metadata?.protocol_version as string) || 'pqxdh_v1',
+                    session_id: (msg.metadata?.session_id as string) || '',
+                  };
+                  const plaintext = await e2eeState.decryptMessage(
+                    msg.senderId,
+                    encryptedPayload as Parameters<typeof e2eeState.decryptMessage>[1]
+                  );
+                  msg.content = plaintext;
+                  // Keep isEncrypted: true for the lock icon
+                } catch (err) {
+                  e2eeLogger.error('Decrypt-on-receive failed:', err);
+                  msg.content = '\u26A0\uFE0F Unable to decrypt';
+                  msg.decryptionFailed = true;
+                }
+              } else {
+                // E2EE not initialized — store encrypted, decrypt on foreground
+                e2eeLogger.log('E2EE not initialized — storing encrypted message for later decryption');
+                msg.content = '\u26A0\uFE0F Unable to decrypt';
+                msg.decryptionFailed = true;
+              }
+            }
 
-          // Push delivery ACK for messages from other users
-          const channel = socketManager.getChannel(topic);
-          const currentUserId = useAuthStore.getState().user?.id;
-          if (channel && currentUserId && msg.senderId !== currentUserId) {
-            channel.push('msg_ack', { message_id: msg.id });
-          }
+            useChatStore.getState().addMessage(msg);
+
+            // Persist to WatermelonDB
+            saveMessageLocally(msg).catch(console.warn);
+
+            // Push delivery ACK for messages from other users
+            const channel = socketManager.getChannel(topic);
+            const ackUserId = useAuthStore.getState().user?.id;
+            if (channel && ackUserId && msg.senderId !== ackUserId) {
+              channel.push('msg_ack', { message_id: msg.id });
+            }
+          };
+          void handleNewMessage();
           break;
         }
         case 'msg_delivered': {

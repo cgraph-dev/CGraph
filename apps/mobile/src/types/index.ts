@@ -84,6 +84,10 @@ export interface Message {
   status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
   delivered_at?: string;
   read_at?: string;
+  // E2EE fields
+  is_encrypted?: boolean;
+  encrypted_content?: string | null;
+  decryption_failed?: boolean;
   // For optimistic updates
   is_optimistic?: boolean;
   file_url?: string;
