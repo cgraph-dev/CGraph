@@ -22,13 +22,15 @@ Professional visual foundation on both platforms, mobile builds pass.
 
 ## Status
 
-Ready to plan. Phase 3 complete, transitioned to Phase 4.
+Phase 4 planned — 3 plans across 2 waves. Ready for execution.
 
 ## Plans
 
-| Plan | Name | Wave | Depends On | Status |
-| ---- | ---- | ---- | ---------- | ------ |
-| —    | TBD  | —    | —          | —      |
+| Plan  | Name                       | Wave | Depends On | Status      |
+| ----- | -------------------------- | ---- | ---------- | ----------- |
+| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Not started |
+| 04-02 | Web Light Mode             | 2    | 04-01      | Not started |
+| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Not started |
 
 ## Progress
 
@@ -65,7 +67,8 @@ Ready to plan. Phase 3 complete, transitioned to Phase 4.
 
 ## Last Action
 
-Phase 3 (Auth Advanced) complete. 3/3 plans, UAT 18/18. Transitioned to Phase 4.
+Phase 4 (Design System & Mobile) planned. 3 plans, 2 waves. Wave 1: 04-01 (tokens + WCAG) + 04-03
+(mobile builds) in parallel. Wave 2: 04-02 (web light mode) depends on 04-01.
 
 ---
 
