@@ -175,11 +175,11 @@ and frontend session management UI (missing on both platforms).
 
 ### Plans
 
-| Plan  | Scope                                                                          | Wave | Status      |
-| ----- | ------------------------------------------------------------------------------ | ---- | ----------- |
-| 03-01 | 2FA Login Gate (TDD) — backend gates login on TOTP, temp token + verify action | 1    | Not started |
-| 03-02 | Frontend 2FA Login UI — web TOTP form + mobile TwoFactorVerifyScreen           | 2    | Not started |
-| 03-03 | Session-Token Bridge (TDD) — revoke session also revokes tokens in Store       | 1    | Not started |
+| Plan  | Scope                                                                          | Wave | Status                   |
+| ----- | ------------------------------------------------------------------------------ | ---- | ------------------------ |
+| 03-01 | 2FA Login Gate (TDD) — backend gates login on TOTP, temp token + verify action | 1    | ✅ Complete (2026-02-28) |
+| 03-02 | Frontend 2FA Login UI — web TOTP form + mobile TwoFactorVerifyScreen           | 2    | ✅ Complete (2026-02-28) |
+| 03-03 | Session-Token Bridge (TDD) — revoke session also revokes tokens in Store       | 1    | ✅ Complete (2026-02-28) |
 
 ---
 
