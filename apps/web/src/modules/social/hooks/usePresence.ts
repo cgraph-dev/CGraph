@@ -21,6 +21,10 @@ export interface PresenceState {
   isUserOnline: (userId: string) => boolean;
   /** Get count of online friends */
   onlineCount: number;
+  /** Real-time status messages keyed by user ID */
+  statusMessages: Map<string, string>;
+  /** Get the latest status message for a user (from real-time updates) */
+  getStatusMessage: (userId: string) => string | undefined;
 }
 
 /**
@@ -52,12 +56,14 @@ export function usePresence(): PresenceState {
   const { isAuthenticated, user } = useAuthStore();
   const [onlineFriends, setOnlineFriends] = useState<Set<string>>(new Set());
   const [isConnected, setIsConnected] = useState(false);
+  const [statusMessages, setStatusMessages] = useState<Map<string, string>>(new Map());
 
   // Connect to presence lobby on mount
   useEffect(() => {
     if (!isAuthenticated || !user) {
       setIsConnected(false);
       setOnlineFriends(new Set());
+      setStatusMessages(new Map());
       return;
     }
 
@@ -67,6 +73,28 @@ export function usePresence(): PresenceState {
       setIsConnected(true);
       // Get initial state
       setOnlineFriends(new Set(socketManager.getOnlineFriends()));
+
+      // Listen for real-time status message changes
+      const handleStatusChanged = (rawPayload: unknown) => {
+        const payload = rawPayload as {
+          user_id: string;
+          status_message?: string;
+          custom_status?: string;
+        };
+        if (payload.user_id && payload.status_message != null) {
+          setStatusMessages((prev) => {
+            const next = new Map(prev);
+            next.set(String(payload.user_id), payload.status_message ?? '');
+            return next;
+          });
+        }
+      };
+      const statusRef = channel.on('friend_status_changed', handleStatusChanged);
+
+      // Cleanup channel listener on unmount
+      var cleanupChannel = () => {
+        channel.off('friend_status_changed', statusRef);
+      };
     }
 
     // Subscribe to status changes
@@ -86,6 +114,7 @@ export function usePresence(): PresenceState {
 
     return () => {
       unsubscribe();
+      cleanupChannel?.();
       // Don't leave presence lobby on unmount - other components may need it
       // socketManager.leavePresenceLobby();
     };
@@ -111,11 +140,20 @@ export function usePresence(): PresenceState {
 
   const onlineCount = useMemo(() => onlineFriends.size, [onlineFriends]);
 
+  const getStatusMessage = useCallback(
+    (userId: string): string | undefined => {
+      return statusMessages.get(String(userId));
+    },
+    [statusMessages]
+  );
+
   return {
     isConnected,
     onlineFriends,
     isUserOnline,
     onlineCount,
+    statusMessages,
+    getStatusMessage,
   };
 }
 
