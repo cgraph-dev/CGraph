@@ -9,6 +9,7 @@
 import { useState, useEffect, useActionState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store';
+import { validatePassword } from '@/modules/auth/utils/password-validation';
 
 interface RegisterFormState {
   error: string | null;
@@ -45,9 +46,12 @@ export function useRegisterForm() {
       if (password !== confirmPassword) {
         return { error: 'Passwords do not match' };
       }
-      if (password.length < 8) {
-        return { error: 'Password must be at least 8 characters' };
+
+      const validation = validatePassword(password);
+      if (!validation.isValid) {
+        return { error: validation.errors.join('. ') };
       }
+
       if (!agreeToTerms) {
         return { error: 'Please agree to the Terms of Service and Privacy Policy' };
       }
