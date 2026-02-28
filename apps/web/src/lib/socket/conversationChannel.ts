@@ -158,7 +158,7 @@ export function joinConversation(
     channel.on('message_deleted', (payload) => {
        
       const data = payload as { message_id: string };
-      useChatStore.getState().removeMessage(data.message_id, conversationId);
+      useChatStore.getState().markMessageDeleted(data.message_id);
     });
 
     channel.on('typing', (payload) => {

@@ -52,8 +52,10 @@ export function createMessageOpsActions(set: Set, get: Get) {
         throw new Error('Message not found in any conversation');
       }
 
+      // Optimistic soft-delete: mark as deleted immediately
+      get().markMessageDeleted(messageId);
+
       await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
-      get().removeMessage(messageId, conversationId);
     },
 
     addReaction: async (messageId: string, emoji: string) => {
@@ -206,6 +208,27 @@ export function createMessageOpsActions(set: Set, get: Get) {
             ),
           },
         };
+      });
+    },
+
+    /** Soft-delete a message: mark as deleted without removing from the array. */
+    markMessageDeleted: (messageId: string) => {
+      set((state) => {
+        const newMessages = { ...state.messages };
+        for (const [convId, msgs] of Object.entries(newMessages)) {
+          const idx = msgs.findIndex((m) => m.id === messageId);
+          if (idx !== -1) {
+            const updated = [...msgs];
+            updated[idx] = {
+              ...updated[idx],
+              deletedAt: new Date().toISOString(),
+              content: '',
+            };
+            newMessages[convId] = updated;
+            return { messages: newMessages };
+          }
+        }
+        return state;
       });
     },
 

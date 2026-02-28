@@ -84,6 +84,23 @@ export const MessageBubble = memo(
       [isOwn]
     );
 
+    // Soft-deleted messages: render a non-interactive placeholder
+    if (message.deletedAt) {
+      return (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className={cn('group flex items-end gap-2', isOwn ? 'flex-row-reverse' : '')}
+        >
+          <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} max-w-[70%]`}>
+            <div className="rounded-2xl bg-dark-800/50 px-4 py-2">
+              <p className="text-sm italic text-gray-500">[This message was deleted]</p>
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+
     return (
       <motion.div
         variants={bubbleVariants}

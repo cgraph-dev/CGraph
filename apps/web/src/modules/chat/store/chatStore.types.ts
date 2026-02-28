@@ -190,6 +190,7 @@ export interface ChatState {
   addMessage: (message: Message) => void;
   updateMessage: (message: Message) => void;
   removeMessage: (messageId: string, conversationId: string) => void;
+  markMessageDeleted: (messageId: string) => void;
   setTypingUser: (
     conversationId: string,
     userId: string,
