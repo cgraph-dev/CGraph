@@ -82,6 +82,7 @@ export interface Message {
   deletedAt: string | null;
   metadata: MessageMetadata;
   reactions: Reaction[];
+  edits?: EditHistory[];
   deliveryStatus?: 'sending' | 'sent' | 'delivered' | 'read';
   createdAt: string;
   updatedAt: string;
@@ -118,6 +119,15 @@ export interface Reaction {
 
 /** Alias for Reaction for backwards compatibility */
 export type MessageReaction = Reaction;
+
+export interface EditHistory {
+  id: string;
+  messageId: string;
+  previousContent: string;
+  editNumber: number;
+  editedById: string;
+  createdAt: string;
+}
 
 export interface TypingIndicator {
   conversationId: string;
@@ -411,14 +421,14 @@ export const Permissions = {
   MANAGE_CHANNELS: 1n << 1n,
   MANAGE_ROLES: 1n << 2n,
   MANAGE_GROUP: 1n << 3n,
-  
+
   // Membership
   KICK_MEMBERS: 1n << 4n,
   BAN_MEMBERS: 1n << 5n,
   CREATE_INVITES: 1n << 6n,
   CHANGE_NICKNAME: 1n << 7n,
   MANAGE_NICKNAMES: 1n << 8n,
-  
+
   // Text Channels
   SEND_MESSAGES: 1n << 9n,
   EMBED_LINKS: 1n << 10n,
@@ -428,7 +438,7 @@ export const Permissions = {
   MENTION_EVERYONE: 1n << 14n,
   MANAGE_MESSAGES: 1n << 15n,
   READ_MESSAGE_HISTORY: 1n << 16n,
-  
+
   // Voice Channels
   CONNECT: 1n << 17n,
   SPEAK: 1n << 18n,
@@ -436,7 +446,7 @@ export const Permissions = {
   MUTE_MEMBERS: 1n << 20n,
   DEAFEN_MEMBERS: 1n << 21n,
   MOVE_MEMBERS: 1n << 22n,
-  
+
   // Admin
   ADMINISTRATOR: 1n << 31n,
 } as const;
