@@ -29,7 +29,7 @@ Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. 
 
 | Plan  | Scope                           | Wave | Status      |
 | ----- | ------------------------------- | ---- | ----------- |
-| 05-01 | Web Message Transport Wiring    | 1    | Not started |
+| 05-01 | Web Message Transport Wiring    | 1    | **Complete** |
 | 05-02 | Mobile Message Transport Wiring | 1    | Not started |
 
 ## Progress
@@ -67,10 +67,10 @@ Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. 
 
 ## Last Action
 
-Phase 5 planned. 2 plans in 1 wave: 05-01 (web socket→store→UI wiring for delivery/read receipts,
-typing debounce) and 05-02 (mobile delivery ACK, status rendering, auto-read on scroll, privacy
-toggle integration). Backend is 95% complete — ConversationChannel has all 13 events, schemas are
-production-grade. Phase 5 is a wiring phase connecting existing infrastructure.
+Plan 05-01 (Web Message Transport) completed. 3/3 tasks done: delivery status tracking in types
+and store, socket handlers for delivery/read receipts with auto-ack, message status indicator
+wired to real data with typing debounce (3s throttle, 5s inactivity, 6s auto-clear). 05-02
+(mobile) remains.
 
 ---
 
