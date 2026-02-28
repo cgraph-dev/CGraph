@@ -44,6 +44,10 @@ channels don't function reliably across web and mobile, nothing else matters.
 - ✓ OAuth (Google, Apple) on both platforms — Phase 3
 - ✓ TOTP 2FA with recovery codes on both platforms — Phase 3
 - ✓ Session management with device revocation — Phase 3
+- ✓ Unified design token system with CSS variable theming (7 themes) — Phase 4
+- ✓ WCAG AA contrast ratios verified across all themes — Phase 4
+- ✓ Dark/light/system mode with persisted preference (web + mobile) — Phase 4
+- ✓ Mobile EAS build pipeline configured with convenience scripts — Phase 4
 
 ### Active
 
@@ -55,9 +59,6 @@ channels don't function reliably across web and mobile, nothing else matters.
       expired access token
 - [ ] httpClient mutex unit tests — concurrent-401 → single-refresh → queue-replay test coverage
 - [ ] Restore real-time messaging — Phoenix Channels connected, messages deliver reliably
-- [ ] Professional design system — color gradient palette with industry-standard ratios, consistent
-      typography, spacing, component library
-- [ ] Mobile build passing — Expo builds for iOS and Android without errors
 
 **Core Social (v0.9.5x)**
 
@@ -142,37 +143,42 @@ effectively orphaned; the real v1.0 launch is the goal of this project.
 - **Security**: E2EE must work in alpha — it's the primary differentiator
 - **Parity**: Web and mobile must have identical feature sets at v1.0
 - **Versioning**: All packages sync to 0.9.47 baseline, increment together
-- **Design**: Copilot-proposed professional design system following existing color gradient with
-  industry-standard ratios — no external design tool dependency
+- **Design**: Unified design token system with 7 themes, CSS variable theming, WCAG AA compliance —
+  single source of truth in `tokens.ts`, no external design tool dependency
 - **Quality**: "No inflation — only real working code that makes this project work and be easy to
   scale from one to hundreds of millions of users"
 
 ## Key Decisions
 
-| Decision                               | Rationale                                                                          | Outcome   |
-| -------------------------------------- | ---------------------------------------------------------------------------------- | --------- |
-| Phased v0.9.48→v1.0.0 versioning       | Manage risk, ship incrementally, validate each phase                               | —         |
-| Sync all packages to v0.9.47           | Eliminate version drift, single source of truth                                    | ✓ Phase 1 |
-| Open alpha (anyone can sign up)        | Maximize early feedback, stress-test at scale                                      | —         |
-| Stripe web-only initially              | Simplest integration path, mobile payments add complexity                          | —         |
-| Copilot-proposed design system         | No designer dependency, derive from existing palette                               | —         |
-| Fly.io as sole hosting target          | Already configured, avoid multi-cloud complexity                                   | —         |
-| Skip external security audit for alpha | Budget constraint, focus on functional correctness first                           | —         |
-| Forums before v1.0                     | Core differentiator — community features in messaging app                          | —         |
-| E2EE required for alpha                | Primary competitive advantage, must prove it works early                           | —         |
-| No AI features in alpha                | Not differentiating, adds complexity without core value                            | —         |
-| Circuit breaker for WebSocket          | Prevent infinite reconnect loops; mobile battery savings                           | ✓ Phase 1 |
-| Session resumption on reconnect        | Delta sync vs full resync; zero-loss reconnection goal                             | ✓ Phase 1 |
-| Orchestrator.enqueue for all emails    | Oban retry/dedup beats direct Mailer call; consistent pattern                      | ✓ Phase 2 |
-| TokenManager over raw Guardian         | Family tracking, rotation, theft detection not possible with plain Guardian        | ✓ Phase 2 |
-| 60-day session expiry (not 7-day)      | Matches existing SessionManagement config; avoid breaking sessions                 | ✓ Phase 2 |
-| TDD for security-critical auth         | Caught 2 integration bugs (JTI mismatch, broken family propagation)                | ✓ Phase 2 |
-| Shared password validation utils       | Identical rules on web + mobile; single source of truth pattern                    | ✓ Phase 2 |
-| Cachex temp tokens for 2FA login       | Stateless JWT can't hold pending 2FA state; Cachex TTL auto-expires tokens         | ✓ Phase 3 |
-| 2FA gates email/password only          | OAuth identity verification is sufficient; 2FA on OAuth would be redundant         | ✓ Phase 3 |
-| Session revocation cascades to tokens  | Without bridge, revoking session leaves JWT valid until expiry                     | ✓ Phase 3 |
-| TDD for security-critical 2FA + bridge | Caught integration gaps: 2FA wasn't gating login, sessions weren't revoking tokens | ✓ Phase 3 |
+| Decision                                       | Rationale                                                                                                   | Outcome   |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------- |
+| Phased v0.9.48→v1.0.0 versioning               | Manage risk, ship incrementally, validate each phase                                                        | —         |
+| Sync all packages to v0.9.47                   | Eliminate version drift, single source of truth                                                             | ✓ Phase 1 |
+| Open alpha (anyone can sign up)                | Maximize early feedback, stress-test at scale                                                               | —         |
+| Stripe web-only initially                      | Simplest integration path, mobile payments add complexity                                                   | —         |
+| Copilot-proposed design system                 | No designer dependency, derive from existing palette                                                        | —         |
+| Fly.io as sole hosting target                  | Already configured, avoid multi-cloud complexity                                                            | —         |
+| Skip external security audit for alpha         | Budget constraint, focus on functional correctness first                                                    | —         |
+| Forums before v1.0                             | Core differentiator — community features in messaging app                                                   | —         |
+| E2EE required for alpha                        | Primary competitive advantage, must prove it works early                                                    | —         |
+| No AI features in alpha                        | Not differentiating, adds complexity without core value                                                     | —         |
+| Circuit breaker for WebSocket                  | Prevent infinite reconnect loops; mobile battery savings                                                    | ✓ Phase 1 |
+| Session resumption on reconnect                | Delta sync vs full resync; zero-loss reconnection goal                                                      | ✓ Phase 1 |
+| Orchestrator.enqueue for all emails            | Oban retry/dedup beats direct Mailer call; consistent pattern                                               | ✓ Phase 2 |
+| TokenManager over raw Guardian                 | Family tracking, rotation, theft detection not possible with plain Guardian                                 | ✓ Phase 2 |
+| 60-day session expiry (not 7-day)              | Matches existing SessionManagement config; avoid breaking sessions                                          | ✓ Phase 2 |
+| TDD for security-critical auth                 | Caught 2 integration bugs (JTI mismatch, broken family propagation)                                         | ✓ Phase 2 |
+| Shared password validation utils               | Identical rules on web + mobile; single source of truth pattern                                             | ✓ Phase 2 |
+| Cachex temp tokens for 2FA login               | Stateless JWT can't hold pending 2FA state; Cachex TTL auto-expires tokens                                  | ✓ Phase 3 |
+| 2FA gates email/password only                  | OAuth identity verification is sufficient; 2FA on OAuth would be redundant                                  | ✓ Phase 3 |
+| Session revocation cascades to tokens          | Without bridge, revoking session leaves JWT valid until expiry                                              | ✓ Phase 3 |
+| TDD for security-critical 2FA + bridge         | Caught integration gaps: 2FA wasn't gating login, sessions weren't revoking tokens                          | ✓ Phase 3 |
+| Single canonical token source (tokens.ts)      | Eliminates competing color systems; CSS variables enable instant theme switching without reload             | ✓ Phase 4 |
+| Unified ThemeProvider (merge two into one)     | Competing providers shared localStorage key but different data shapes; single provider eliminates conflicts | ✓ Phase 4 |
+| Tailwind wired to CSS variables with fallbacks | Token-driven Tailwind classes adapt to any theme; fallback hex values ensure graceful degradation           | ✓ Phase 4 |
+| Mobile/web intentional color divergence        | Mobile keeps emerald-green primary for platform branding; documented as deliberate, not drift               | ✓ Phase 4 |
+| EAS project ID env-driven (not hardcoded)      | Real UUID requires `eas init` with account; placeholder with clear docs avoids fake IDs in source           | ✓ Phase 4 |
 
 ---
 
-_Last updated: 2026-02-28 after Phase 3 (Auth Advanced)_
+_Last updated: 2026-02-28 after Phase 4 (Design System & Mobile) — Alpha-0 milestone complete_

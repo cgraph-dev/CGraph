@@ -10,36 +10,33 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 4 — Design System & Mobile** (v0.9.48)
+**Phase 5 — Message Transport** (v0.9.49)
 
-Professional visual foundation on both platforms, mobile builds pass.
+Users can send and receive 1:1 text messages in real-time with typing indicators and delivery/read
+receipts.
 
 ## Position
 
-- **Phase:** 4 of 19
-- **Plan:** All 3 plans complete (04-01, 04-02, 04-03)
-- **Version target:** v0.9.48
+- **Phase:** 5 of 19
+- **Plan:** Not started
+- **Version target:** v0.9.49
 
 ## Status
 
-All plans complete. Phase 4 execution finished — ready for verification.
+Ready to plan. Phase 4 complete, transitioned to Phase 5. Alpha-0 milestone (v0.9.48) complete.
 
 ## Plans
 
-| Plan  | Name                       | Wave | Depends On | Status   |
-| ----- | -------------------------- | ---- | ---------- | -------- |
-| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Complete |
-| 04-02 | Web Light Mode             | 2    | 04-01      | Complete |
-| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Complete |
+[No plans yet — run `/plan-phase 5`]
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 18%      |
-| Phases complete    | 3 / 19   |
-| Requirements done  | 16 / 136 |
-| Current phase reqs | 4 / 4    |
+| Overall progress   | 21%      |
+| Phases complete    | 4 / 19   |
+| Requirements done  | 17 / 136 |
+| Current phase reqs | 0 / 4    |
 
 ## Phase Summary
 
@@ -48,8 +45,8 @@ All plans complete. Phase 4 execution finished — ready for verification.
 | 1   | Infrastructure Baseline | **Complete** (2026-02-27) |
 | 2   | Auth Core               | **Complete** (2026-02-28) |
 | 3   | Auth Advanced           | **Complete** (2026-02-28) |
-| 4   | Design System & Mobile  | **Active**                |
-| 5   | Message Transport       | Ready (Phase 2 done)      |
+| 4   | Design System & Mobile  | **Complete** (2026-02-28) |
+| 5   | Message Transport       | **Active**                |
 | 6   | Message Features & Sync | Blocked by 5              |
 | 7   | E2EE & Mobile Security  | Blocked by 5              |
 | 8   | Social & Profiles       | Ready (Phase 2 done)      |
@@ -67,15 +64,13 @@ All plans complete. Phase 4 execution finished — ready for verification.
 
 ## Last Action
 
-Phase 4 execution complete. All 3 plans executed across 2 waves:
-
-- 04-01 (Design Tokens + WCAG): 7 commits — canonical tokens.ts, unified ThemeProvider, Tailwind CSS
-  variables, WCAG AA fixes
-- 04-02 (Web Light Mode): 3 commits — theme-aware base styles, component classes, removed reload
-  hack, auth/layout visual QA
-- 04-03 (Mobile EAS Build): 5 commits — EAS project ID, config sync, build scripts, BUILD.md Total:
-  15 commits. All 4 requirements addressed (DESIGN-01, DESIGN-02, DESIGN-05, INFRA-08).
+Phase 4 (Design System & Mobile) complete. Transitioned to Phase 5 (Message Transport). Alpha-0
+milestone (Phases 1-4, v0.9.48) is 100% complete. Phase 4 delivered: unified design tokens (7
+themes), WCAG AA contrast compliance, light/dark/system mode on both platforms, mobile EAS build
+pipeline. 15 commits, verification 12/12, UAT 16/16.
 
 ---
+
+_Last updated: 2026-02-28_
 
 _Last updated: 2026-02-28_
