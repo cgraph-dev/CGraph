@@ -22,24 +22,24 @@ Register, verify email, login, reset password, token refresh — working on both
 
 ## Status
 
-Planned. 3 plans in 2 waves ready for execution.
+Phase 2 execution complete. 3/3 plans done. Awaiting verification.
 
 ## Plans
 
-| Plan  | Name                       | Wave | Depends On | Status      |
-| ----- | -------------------------- | ---- | ---------- | ----------- |
-| 02-01 | Backend Auth Fixes         | 1    | —          | Not started |
-| 02-02 | Frontend Auth Completeness | 1    | —          | Not started |
-| 02-03 | Token Refresh Wiring (TDD) | 2    | 02-01      | Not started |
+| Plan  | Name                       | Wave | Depends On | Status   |
+| ----- | -------------------------- | ---- | ---------- | -------- |
+| 02-01 | Backend Auth Fixes         | 1    | —          | Complete |
+| 02-02 | Frontend Auth Completeness | 1    | —          | Complete |
+| 02-03 | Token Refresh Wiring (TDD) | 2    | 02-01      | Complete |
 
 ## Progress
 
 | Metric             | Value   |
 | ------------------ | ------- |
-| Overall progress   | 2%      |
+| Overall progress   | 5%      |
 | Phases complete    | 1 / 19  |
-| Requirements done  | 3 / 136 |
-| Current phase reqs | 0 / 4   |
+| Requirements done  | 7 / 136 |
+| Current phase reqs | 4 / 4   |
 
 ## Phase Summary
 
@@ -67,7 +67,8 @@ Planned. 3 plans in 2 waves ready for execution.
 
 ## Last Action
 
-Phase 2 (Auth Core) planned. 3 plans created in 2 waves. Ready for execution.
+Phase 2 (Auth Core) execution complete. 3 plans across 2 waves. All tasks committed. Awaiting
+verification.
 
 ---
 
