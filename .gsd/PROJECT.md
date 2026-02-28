@@ -48,6 +48,10 @@ channels don't function reliably across web and mobile, nothing else matters.
 - ✓ WCAG AA contrast ratios verified across all themes — Phase 4
 - ✓ Dark/light/system mode with persisted preference (web + mobile) — Phase 4
 - ✓ Mobile EAS build pipeline configured with convenience scripts — Phase 4
+- ✓ Send/receive 1:1 text messages in real-time (web + mobile) — Phase 5
+- ✓ Typing indicators with throttle, auto-clear, privacy gating — Phase 5
+- ✓ Read receipts with privacy opt-out on both platforms — Phase 5
+- ✓ Delivery receipts via msg_ack + DeliveryTracking pipeline — Phase 5
 
 ### Active
 
@@ -60,9 +64,11 @@ channels don't function reliably across web and mobile, nothing else matters.
 - [ ] httpClient mutex unit tests — concurrent-401 → single-refresh → queue-replay test coverage
 - [ ] Restore real-time messaging — Phoenix Channels connected, messages deliver reliably
 
-**Core Social (v0.9.5x)**
+**Core Messaging (v0.9.49)**
 
-- [ ] End-to-end message flow — send/receive/read receipts working across web and mobile
+- [ ] Message editing with history, deletion with soft-delete indicator
+- [ ] Reply/quote and emoji reactions in real-time
+- [ ] Cross-device message sync (WatermelonDB on mobile)
 - [ ] Friends system — add, accept, block, online status, all platforms
 - [ ] Groups and channels — create, join, message, manage roles, web-mobile parity
 - [ ] E2EE for 1:1 conversations — triple ratchet protocol fully operational
@@ -178,7 +184,11 @@ effectively orphaned; the real v1.0 launch is the goal of this project.
 | Tailwind wired to CSS variables with fallbacks | Token-driven Tailwind classes adapt to any theme; fallback hex values ensure graceful degradation           | ✓ Phase 4 |
 | Mobile/web intentional color divergence        | Mobile keeps emerald-green primary for platform branding; documented as deliberate, not drift               | ✓ Phase 4 |
 | EAS project ID env-driven (not hardcoded)      | Real UUID requires `eas init` with account; placeholder with clear docs avoids fake IDs in source           | ✓ Phase 4 |
+| Optimistic send + server replace pattern       | Instant UI feedback; replace optimistic message with server version on API success                          | ✓ Phase 5 |
+| Client-side privacy gating (not backend)        | Backend broadcasts all events; clients gate mark_read/typing based on local privacy settings               | ✓ Phase 5 |
+| msg_ack delivery pipeline (client → backend)    | Auto-ACK on receive → DeliveryTracking.mark_delivered → broadcast msg_delivered; no polling              | ✓ Phase 5 |
+| 3s typing throttle + 5s auto-stop + 6s clear   | Prevents typing event flood; three-layer defense: throttle, auto-stop, safety-net auto-clear               | ✓ Phase 5 |
 
 ---
 
-_Last updated: 2026-02-28 after Phase 4 (Design System & Mobile) — Alpha-0 milestone complete_
+_Last updated: 2026-02-28 after Phase 5 (Message Transport)_

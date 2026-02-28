@@ -225,7 +225,9 @@ untested. This phase establishes visual quality before feature work.
 
 ---
 
-## Phase 5: Message Transport
+## Phase 5: Message Transport ✅
+
+**Completed:** 2026-02-28 | **Plans:** 2/2 | **Verification:** Passed (12/12 + 15 integration tests)
 
 **Goal:** Users can send and receive 1:1 text messages in real-time with typing indicators and
 delivery/read receipts.
@@ -256,12 +258,12 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 | Plan  | Scope                                                                          | Wave | Status      |
 | ----- | ------------------------------------------------------------------------------ | ---- | ----------- |
-| 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | **Complete** |
-| 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | **Complete** |
+| 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | ✅ Complete (2026-02-28) |
+| 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | ✅ Complete (2026-02-28) |
 
 ---
 
-## Phase 6: Message Features & Sync
+## Phase 6: Message Features & Sync ← Next
 
 **Goal:** Full message feature set — edit, delete, reply, react, sync across devices.
 
