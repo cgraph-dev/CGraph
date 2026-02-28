@@ -18,7 +18,7 @@
 | 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28) |
 | 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
 | 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
-| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                          |
+| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
@@ -29,7 +29,7 @@
 | 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14                         |
 | 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14                         |
 | 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16                         |
-| 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7, 13                      |
+| 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13                   |
 | 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                   |
 
 **Dependency Graph:**
@@ -305,7 +305,9 @@ thread replies, and emoji reactions are expected in any modern messenger. Cross-
 
 ---
 
-## Phase 7: E2EE & Mobile Security ← Next Phase
+## Phase 7: E2EE & Mobile Security ✅
+
+**Completed:** 2026-02-28 | **Plans:** 8/8 | **Verification:** Passed (6/6)
 
 **Goal:** All 1:1 messages are end-to-end encrypted. Biometric auth on mobile.
 
@@ -338,29 +340,29 @@ to the chat module. Client-side key storage and biometric auth share native Keyc
 
 Plans:
 
-- [ ] 07-01-PLAN.md — Enable PQXDH + Triple Ratchet + auto-bootstrap on web
-- [ ] 07-02-PLAN.md — Wire PQ-bridge + auto-bootstrap on mobile
-- [ ] 07-03-PLAN.md — Biometric auth gate + key protection on mobile
-- [ ] 07-04-PLAN.md — Decrypt-on-receive pipeline + lock icon on web
-- [ ] 07-05-PLAN.md — Decrypt-on-receive pipeline + lock icon on mobile
-- [ ] 07-06-PLAN.md — Safety number verification screens (web + mobile)
-- [ ] 07-07-PLAN.md — Multi-device key sync backend (cross-signing + sync API)
-- [ ] 07-08-PLAN.md — Multi-device key sync client + device management UI
+- [x] 07-01-PLAN.md — Enable PQXDH + Triple Ratchet + auto-bootstrap on web
+- [x] 07-02-PLAN.md — Wire PQ-bridge + auto-bootstrap on mobile
+- [x] 07-03-PLAN.md — Biometric auth gate + key protection on mobile
+- [x] 07-04-PLAN.md — Decrypt-on-receive pipeline + lock icon on web
+- [x] 07-05-PLAN.md — Decrypt-on-receive pipeline + lock icon on mobile
+- [x] 07-06-PLAN.md — Safety number verification screens (web + mobile)
+- [x] 07-07-PLAN.md — Multi-device key sync backend (cross-signing + sync API)
+- [x] 07-08-PLAN.md — Multi-device key sync client + device management UI
 
 | Plan  | Scope                                                            | Wave | Status |
 | ----- | ---------------------------------------------------------------- | ---- | ------ |
-| 07-01 | Web PQXDH + Triple Ratchet enable + auto-bootstrap               | 1    | —      |
-| 07-02 | Mobile PQ-bridge wiring + auto-bootstrap                         | 1    | —      |
-| 07-03 | Biometric auth gate + E2EE key protection                        | 1    | —      |
-| 07-04 | Web decrypt-on-receive + encryption lock icon                    | 2    | —      |
-| 07-05 | Mobile decrypt-on-receive + encryption lock icon                 | 2    | —      |
-| 07-06 | Safety number verification (web dialog + mobile screen + QR)     | 3    | —      |
-| 07-07 | Multi-device key sync backend (cross-signing, trust chain, sync) | 3    | —      |
-| 07-08 | Multi-device key sync client (protocol, UI, key change banners)  | 4    | —      |
+| 07-01 | Web PQXDH + Triple Ratchet enable + auto-bootstrap               | 1    | ✅ Complete (2026-02-28) |
+| 07-02 | Mobile PQ-bridge wiring + auto-bootstrap                         | 1    | ✅ Complete (2026-02-28) |
+| 07-03 | Biometric auth gate + E2EE key protection                        | 1    | ✅ Complete (2026-02-28) |
+| 07-04 | Web decrypt-on-receive + encryption lock icon                    | 2    | ✅ Complete (2026-02-28) |
+| 07-05 | Mobile decrypt-on-receive + encryption lock icon                 | 2    | ✅ Complete (2026-02-28) |
+| 07-06 | Safety number verification (web dialog + mobile screen + QR)     | 3    | ✅ Complete (2026-02-28) |
+| 07-07 | Multi-device key sync backend (cross-signing, trust chain, sync) | 3    | ✅ Complete (2026-02-28) |
+| 07-08 | Multi-device key sync client (protocol, UI, key change banners)  | 4    | ✅ Complete (2026-02-28) |
 
 ---
 
-## Phase 8: Social & Profiles
+## Phase 8: Social & Profiles ← Next Phase
 
 **Goal:** Onboarding, profiles, presence, status, user search, and user blocking make CGraph a
 social app.
