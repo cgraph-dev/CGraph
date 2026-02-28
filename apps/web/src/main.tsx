@@ -21,7 +21,6 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import ErrorBoundary from './components/error-boundary';
 import { ThemeProvider } from './contexts/theme-context';
-import { ThemeProviderEnhanced } from './contexts/theme-context-enhanced';
 import { NotificationProvider } from './providers/notification-provider';
 import { logger } from './lib/logger';
 import './i18n'; // i18n initialization (must be before App)
@@ -147,26 +146,24 @@ try {
       <ErrorBoundary>
         <Suspense fallback={<GlobalLoadingFallback />}>
           <ThemeProvider>
-            <ThemeProviderEnhanced>
-              <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
-                  <NotificationProvider>
-                    <App />
-                  </NotificationProvider>
-                  <Toaster
-                    position="bottom-right"
-                    toastOptions={{
-                      className: 'bg-dark-800 text-white border border-dark-700',
-                      duration: 4000,
-                      style: {
-                        background: '#1f2937',
-                        color: '#fff',
-                      },
-                    }}
-                  />
-                </BrowserRouter>
-              </QueryClientProvider>
-            </ThemeProviderEnhanced>
+            <QueryClientProvider client={queryClient}>
+              <BrowserRouter>
+                <NotificationProvider>
+                  <App />
+                </NotificationProvider>
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    className: 'bg-dark-800 text-white border border-dark-700',
+                    duration: 4000,
+                    style: {
+                      background: '#1f2937',
+                      color: '#fff',
+                    },
+                  }}
+                />
+              </BrowserRouter>
+            </QueryClientProvider>
           </ThemeProvider>
         </Suspense>
       </ErrorBoundary>
