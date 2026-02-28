@@ -11,6 +11,10 @@ import { AppState } from 'react-native';
 import * as Device from 'expo-device';
 import { useEffect } from 'react';
 import api from '../../api';
+import {
+  requireAuthenticationIfNeeded,
+  isBiometricLockEnabled,
+} from '../../biometrics';
 import { e2eeLogger as logger } from '../../logger';
 import e2ee, {
   type KeyBundle,
@@ -86,6 +90,33 @@ interface E2EEActions {
 }
 
 export type E2EEStore = E2EEState & E2EEActions;
+
+// ── Biometric gate for key access ────────────────────────────────────────────
+
+/**
+ * Custom error thrown when biometric authentication is required but fails.
+ * Callers can catch this to show appropriate UI.
+ */
+export class BiometricAuthRequired extends Error {
+  constructor(message = 'Biometric authentication required to access encryption keys') {
+    super(message);
+    this.name = 'BiometricAuthRequired';
+  }
+}
+
+/**
+ * Require biometric authentication before accessing E2EE keys.
+ * No-ops when biometric lock is disabled or when already authenticated within timeout.
+ */
+async function requireBiometricForKeyAccess(): Promise<void> {
+  const enabled = await isBiometricLockEnabled();
+  if (!enabled) return;
+
+  const result = await requireAuthenticationIfNeeded('Access encryption keys');
+  if (!result.success) {
+    throw new BiometricAuthRequired(result.error ?? undefined);
+  }
+}
 
 // ── Prekey bundle cache (module-level) ──────────────────────────────────────
 
@@ -247,6 +278,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       throw new Error('E2EE not initialized');
     }
 
+    // Gate key access behind biometric when enabled
+    await requireBiometricForKeyAccess();
+
     // Check if we already have an active PQ session for this recipient
     if (hasSessionForRecipient(recipientId)) {
       const session = getSessionForRecipient(recipientId)!;
@@ -303,6 +337,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     if (!get().isInitialized) {
       throw new Error('E2EE not initialized');
     }
+
+    // Gate key access behind biometric when enabled
+    await requireBiometricForKeyAccess();
 
     // Route based on protocol version
     const protocolVersion = (encryptedMessage as EncryptedMessage & { protocol_version?: string }).protocol_version;
@@ -405,6 +442,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       throw new Error('E2EE not initialized');
     }
 
+    // Gate key access behind biometric when enabled
+    await requireBiometricForKeyAccess();
+
     const identityKey = await loadIdentityKeyPair();
     if (!identityKey) {
       throw new Error('Identity key not found');
@@ -425,6 +465,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
   },
 
   getFingerprint: async (): Promise<string | null> => {
+    // Gate key access behind biometric when enabled
+    await requireBiometricForKeyAccess();
+
     const identityKey = await loadIdentityKeyPair();
     if (!identityKey) {
       return null;
