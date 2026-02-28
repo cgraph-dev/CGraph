@@ -23,23 +23,23 @@ receipts.
 
 ## Status
 
-Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. Ready to execute.
+Complete. Both plans (05-01 web, 05-02 mobile) executed in wave 1. All 6 tasks across both plans done.
 
 ## Plans
 
-| Plan  | Scope                           | Wave | Status      |
-| ----- | ------------------------------- | ---- | ----------- |
+| Plan  | Scope                           | Wave | Status       |
+| ----- | ------------------------------- | ---- | ------------ |
 | 05-01 | Web Message Transport Wiring    | 1    | **Complete** |
-| 05-02 | Mobile Message Transport Wiring | 1    | Not started |
+| 05-02 | Mobile Message Transport Wiring | 1    | **Complete** |
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 21%      |
-| Phases complete    | 4 / 19   |
-| Requirements done  | 17 / 136 |
-| Current phase reqs | 0 / 4    |
+| Overall progress   | 26%      |
+| Phases complete    | 5 / 19   |
+| Requirements done  | 21 / 136 |
+| Current phase reqs | 4 / 4    |
 
 ## Phase Summary
 
@@ -49,7 +49,7 @@ Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. 
 | 2   | Auth Core               | **Complete** (2026-02-28) |
 | 3   | Auth Advanced           | **Complete** (2026-02-28) |
 | 4   | Design System & Mobile  | **Complete** (2026-02-28) |
-| 5   | Message Transport       | **Active**                |
+| 5   | Message Transport       | **Complete** (2026-02-28) |
 | 6   | Message Features & Sync | Blocked by 5              |
 | 7   | E2EE & Mobile Security  | Blocked by 5              |
 | 8   | Social & Profiles       | Ready (Phase 2 done)      |
@@ -67,10 +67,10 @@ Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. 
 
 ## Last Action
 
-Plan 05-01 (Web Message Transport) completed. 3/3 tasks done: delivery status tracking in types
-and store, socket handlers for delivery/read receipts with auto-ack, message status indicator
-wired to real data with typing debounce (3s throttle, 5s inactivity, 6s auto-clear). 05-02
-(mobile) remains.
+Phase 5 (Message Transport) complete. Both plans executed in parallel wave:
+- 05-01 (Web): delivery status pipeline, socket receipt handlers, typing debounce. 4 commits.
+- 05-02 (Mobile): optimistic send, delivery ACK, auto-read on scroll, privacy toggles, typing throttle. 4 commits.
+Requirements MSG-01, MSG-06, MSG-18, MSG-19 all addressed.
 
 ---
 

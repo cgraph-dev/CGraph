@@ -256,8 +256,8 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 | Plan  | Scope                                                                          | Wave | Status      |
 | ----- | ------------------------------------------------------------------------------ | ---- | ----------- |
-| 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | Not started |
-| 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | Not started |
+| 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | **Complete** |
+| 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | **Complete** |
 
 ---
 
@@ -871,7 +871,7 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 2     | Auth Core               | ✅ Complete (2026-02-28) | 100%     |
 | 3     | Auth Advanced           | ✅ Complete (2026-02-28) | 100%     |
 | 4     | Design System & Mobile  | ✅ Complete (2026-02-28) | 100%     |
-| 5     | Message Transport       | ← Next                   | 0%       |
+| 5     | Message Transport       | **Complete** (2026-02-28) | 100%     |
 | 6     | Message Features & Sync | Blocked by 5             | 0%       |
 | 7     | E2EE & Mobile Security  | Blocked by 5             | 0%       |
 | 8     | Social & Profiles       | Ready to plan            | 0%       |
