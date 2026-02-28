@@ -54,7 +54,7 @@ End-to-end encryption for 1:1 messages + biometric auth on mobile. All 8 plans e
 | 5   | Message Transport       | **Complete** (2026-02-28) |
 | 6   | Message Features & Sync | **Complete** (2026-02-28) |
 | 7   | E2EE & Mobile Security  | **Complete** (2026-02-28) |
-| 8   | Social & Profiles       | **Complete** (2026-02-28) |
+| 8   | Social & Profiles       | Ready (Phase 2 done)      |
 | 9   | Notifications & Safety  | Blocked by 8              |
 | 10  | Message Extras          | Ready (Phase 6 done)      |
 | 11  | Groups & Channels       | Ready (Phase 5 done)      |
