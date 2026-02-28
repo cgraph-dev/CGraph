@@ -2,7 +2,7 @@
  * Hook for user search with debounced Meilisearch integration.
  * @module modules/social/hooks/useUserSearch
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
@@ -41,37 +41,39 @@ export function useUserSearch(query: string): UseUserSearchReturn {
   const latestQuery = useRef(query);
   latestQuery.current = query;
 
-  const performSearch = useCallback(
-    debounce(async (q: string) => {
-      // Guard: only search if this is still the latest query
-      if (q !== latestQuery.current) return;
+  // Use useMemo to create a stable debounced function (avoids useCallback + debounce lint warning)
+  const performSearch = useMemo(
+    () =>
+      debounce(async (q: string) => {
+        // Guard: only search if this is still the latest query
+        if (q !== latestQuery.current) return;
 
-      setIsLoading(true);
-      setError(null);
+        setIsLoading(true);
+        setError(null);
 
-      try {
-        const res = await api.get('/api/v1/search/users', {
-          params: { q },
-        });
+        try {
+          const res = await api.get('/api/v1/search/users', {
+            params: { q },
+          });
 
-        // Only update if query hasn't changed during the request
-        if (q === latestQuery.current) {
-          const users = res.data?.users ?? res.data ?? [];
-          setResults(Array.isArray(users) ? users : []);
+          // Only update if query hasn't changed during the request
+          if (q === latestQuery.current) {
+            const users = res.data?.users ?? res.data ?? [];
+            setResults(Array.isArray(users) ? users : []);
+          }
+        } catch (err) {
+          logger.error('User search failed:', err);
+          if (q === latestQuery.current) {
+            setError('Failed to search users');
+            setResults([]);
+          }
+        } finally {
+          if (q === latestQuery.current) {
+            setIsLoading(false);
+          }
         }
-      } catch (err) {
-        logger.error('User search failed:', err);
-        if (q === latestQuery.current) {
-          setError('Failed to search users');
-          setResults([]);
-        }
-      } finally {
-        if (q === latestQuery.current) {
-          setIsLoading(false);
-        }
-      }
-    }, 300),
-    []
+      }, 300),
+    [],
   );
 
   useEffect(() => {
