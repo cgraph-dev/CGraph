@@ -10,36 +10,34 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 3 — Auth Advanced** (v0.9.48)
+**Phase 4 — Design System & Mobile** (v0.9.48)
 
-OAuth, 2FA, and session management complete on all platforms.
+Professional visual foundation on both platforms, mobile builds pass.
 
 ## Position
 
-- **Phase:** 3 of 19
-- **Plan:** 3 of 3 complete
+- **Phase:** 4 of 19
+- **Plan:** Not started
 - **Version target:** v0.9.48
 
 ## Status
 
-Phase 3 execution complete — all 3 plans delivered across 2 waves. Ready for verification.
+Ready to plan. Phase 3 complete, transitioned to Phase 4.
 
 ## Plans
 
-| Plan  | Name                       | Wave | Depends On | Status      |
-| ----- | -------------------------- | ---- | ---------- | ----------- |
-| 03-01 | 2FA Login Gate (TDD)       | 1    | —          | ✅ Complete |
-| 03-02 | Frontend 2FA Login UI      | 2    | 03-01      | ✅ Complete |
-| 03-03 | Session-Token Bridge (TDD) | 1    | —          | ✅ Complete |
+| Plan | Name | Wave | Depends On | Status |
+| ---- | ---- | ---- | ---------- | ------ |
+| —    | TBD  | —    | —          | —      |
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 10%      |
-| Phases complete    | 2 / 19   |
-| Requirements done  | 10 / 136 |
-| Current phase reqs | 2 / 3    |
+| Overall progress   | 16%      |
+| Phases complete    | 3 / 19   |
+| Requirements done  | 13 / 136 |
+| Current phase reqs | 0 / 4    |
 
 ## Phase Summary
 
@@ -47,8 +45,8 @@ Phase 3 execution complete — all 3 plans delivered across 2 waves. Ready for v
 | --- | ----------------------- | ------------------------- |
 | 1   | Infrastructure Baseline | **Complete** (2026-02-27) |
 | 2   | Auth Core               | **Complete** (2026-02-28) |
-| 3   | Auth Advanced           | **Active**                |
-| 4   | Design System & Mobile  | Ready (Phase 1 done)      |
+| 3   | Auth Advanced           | **Complete** (2026-02-28) |
+| 4   | Design System & Mobile  | **Active**                |
 | 5   | Message Transport       | Ready (Phase 2 done)      |
 | 6   | Message Features & Sync | Blocked by 5              |
 | 7   | E2EE & Mobile Security  | Blocked by 5              |
@@ -67,8 +65,7 @@ Phase 3 execution complete — all 3 plans delivered across 2 waves. Ready for v
 
 ## Last Action
 
-Phase 3 (Auth Advanced) execution complete. 3/3 plans, 8 tasks total. 2FA gates login (7 tests),
-session revocation invalidates tokens (5 tests), web + mobile 2FA login UI wired.
+Phase 3 (Auth Advanced) complete. 3/3 plans, UAT 18/18. Transitioned to Phase 4.
 
 ---
 

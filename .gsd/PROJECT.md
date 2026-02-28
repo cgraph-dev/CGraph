@@ -41,6 +41,9 @@ channels don't function reliably across web and mobile, nothing else matters.
 - ✓ Email verification on both platforms — Phase 2
 - ✓ Password reset via email link on both platforms — Phase 2
 - ✓ Token refresh mutex (concurrent request handling) — Phase 2
+- ✓ OAuth (Google, Apple) on both platforms — Phase 3
+- ✓ TOTP 2FA with recovery codes on both platforms — Phase 3
+- ✓ Session management with device revocation — Phase 3
 
 ### Active
 
@@ -146,26 +149,30 @@ effectively orphaned; the real v1.0 launch is the goal of this project.
 
 ## Key Decisions
 
-| Decision                               | Rationale                                                                   | Outcome   |
-| -------------------------------------- | --------------------------------------------------------------------------- | --------- |
-| Phased v0.9.48→v1.0.0 versioning       | Manage risk, ship incrementally, validate each phase                        | —         |
-| Sync all packages to v0.9.47           | Eliminate version drift, single source of truth                             | ✓ Phase 1 |
-| Open alpha (anyone can sign up)        | Maximize early feedback, stress-test at scale                               | —         |
-| Stripe web-only initially              | Simplest integration path, mobile payments add complexity                   | —         |
-| Copilot-proposed design system         | No designer dependency, derive from existing palette                        | —         |
-| Fly.io as sole hosting target          | Already configured, avoid multi-cloud complexity                            | —         |
-| Skip external security audit for alpha | Budget constraint, focus on functional correctness first                    | —         |
-| Forums before v1.0                     | Core differentiator — community features in messaging app                   | —         |
-| E2EE required for alpha                | Primary competitive advantage, must prove it works early                    | —         |
-| No AI features in alpha                | Not differentiating, adds complexity without core value                     | —         |
-| Circuit breaker for WebSocket          | Prevent infinite reconnect loops; mobile battery savings                    | ✓ Phase 1 |
-| Session resumption on reconnect        | Delta sync vs full resync; zero-loss reconnection goal                      | ✓ Phase 1 |
-| Orchestrator.enqueue for all emails    | Oban retry/dedup beats direct Mailer call; consistent pattern               | ✓ Phase 2 |
-| TokenManager over raw Guardian         | Family tracking, rotation, theft detection not possible with plain Guardian | ✓ Phase 2 |
-| 60-day session expiry (not 7-day)      | Matches existing SessionManagement config; avoid breaking sessions          | ✓ Phase 2 |
-| TDD for security-critical auth         | Caught 2 integration bugs (JTI mismatch, broken family propagation)         | ✓ Phase 2 |
-| Shared password validation utils       | Identical rules on web + mobile; single source of truth pattern             | ✓ Phase 2 |
+| Decision                               | Rationale                                                                          | Outcome   |
+| -------------------------------------- | ---------------------------------------------------------------------------------- | --------- |
+| Phased v0.9.48→v1.0.0 versioning       | Manage risk, ship incrementally, validate each phase                               | —         |
+| Sync all packages to v0.9.47           | Eliminate version drift, single source of truth                                    | ✓ Phase 1 |
+| Open alpha (anyone can sign up)        | Maximize early feedback, stress-test at scale                                      | —         |
+| Stripe web-only initially              | Simplest integration path, mobile payments add complexity                          | —         |
+| Copilot-proposed design system         | No designer dependency, derive from existing palette                               | —         |
+| Fly.io as sole hosting target          | Already configured, avoid multi-cloud complexity                                   | —         |
+| Skip external security audit for alpha | Budget constraint, focus on functional correctness first                           | —         |
+| Forums before v1.0                     | Core differentiator — community features in messaging app                          | —         |
+| E2EE required for alpha                | Primary competitive advantage, must prove it works early                           | —         |
+| No AI features in alpha                | Not differentiating, adds complexity without core value                            | —         |
+| Circuit breaker for WebSocket          | Prevent infinite reconnect loops; mobile battery savings                           | ✓ Phase 1 |
+| Session resumption on reconnect        | Delta sync vs full resync; zero-loss reconnection goal                             | ✓ Phase 1 |
+| Orchestrator.enqueue for all emails    | Oban retry/dedup beats direct Mailer call; consistent pattern                      | ✓ Phase 2 |
+| TokenManager over raw Guardian         | Family tracking, rotation, theft detection not possible with plain Guardian        | ✓ Phase 2 |
+| 60-day session expiry (not 7-day)      | Matches existing SessionManagement config; avoid breaking sessions                 | ✓ Phase 2 |
+| TDD for security-critical auth         | Caught 2 integration bugs (JTI mismatch, broken family propagation)                | ✓ Phase 2 |
+| Shared password validation utils       | Identical rules on web + mobile; single source of truth pattern                    | ✓ Phase 2 |
+| Cachex temp tokens for 2FA login       | Stateless JWT can't hold pending 2FA state; Cachex TTL auto-expires tokens         | ✓ Phase 3 |
+| 2FA gates email/password only          | OAuth identity verification is sufficient; 2FA on OAuth would be redundant         | ✓ Phase 3 |
+| Session revocation cascades to tokens  | Without bridge, revoking session leaves JWT valid until expiry                     | ✓ Phase 3 |
+| TDD for security-critical 2FA + bridge | Caught integration gaps: 2FA wasn't gating login, sessions weren't revoking tokens | ✓ Phase 3 |
 
 ---
 
-_Last updated: 2026-02-28 after Phase 2 (Auth Core)_
+_Last updated: 2026-02-28 after Phase 3 (Auth Advanced)_
