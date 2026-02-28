@@ -119,6 +119,8 @@ defmodule CGraph.OAuth do
   @doc "Handles the OAuth callback after authorization."
   @spec callback(provider(), String.t(), String.t()) :: oauth_result()
   def callback(provider, code, _state) when provider in [:google, :apple, :facebook, :tiktok] do
+    # OAuth bypasses 2FA — identity already verified by provider (Google/Apple/Facebook/TikTok).
+    # This is a deliberate security decision: OAuth login ≠ password login.
     config = Config.get_provider_config(provider)
 
     with {:ok, tokens} <- Providers.exchange_code_for_tokens(provider, config, code),
@@ -164,6 +166,8 @@ defmodule CGraph.OAuth do
 
   def mobile_callback(provider, access_token, id_token)
       when provider in [:google, :apple, :facebook, :tiktok] do
+    # OAuth bypasses 2FA — identity already verified by provider (Google/Apple/Facebook/TikTok).
+    # This is a deliberate security decision: OAuth login ≠ password login.
     config = Config.get_provider_config(provider)
 
     tokens = %{
