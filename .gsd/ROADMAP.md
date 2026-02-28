@@ -17,7 +17,7 @@
 | 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28) |
 | 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28) |
 | 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
-| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28)  |
+| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5                          |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
@@ -295,13 +295,13 @@ thread replies, and emoji reactions are expected in any modern messenger. Cross-
 
 ### Plans
 
-| Plan  | Scope                                                                             | Wave | Status     |
-| ----- | --------------------------------------------------------------------------------- | ---- | ---------- |
-| 06-01 | Edit History Backend + Shared Types — MessageEdit record wiring, EditHistory type | 1    | ✅ Done    |
-| 06-02 | Soft-Delete Indicator — "[Message deleted]" placeholder on web + mobile           | 1    | ✅ Done    |
-| 06-03 | Reply & Reaction Verification — Confirm MSG-07 + MSG-09 end-to-end                | 1    | ✅ Done    |
-| 06-04 | Edit History UI — History viewer (web+mobile), mobile edit form                   | 2    | ✅ Done    |
-| 06-05 | WatermelonDB Bridge — Wire chatStore ↔ WatermelonDB for offline sync              | 3    | ✅ Done    |
+| Plan  | Scope                                                                             | Wave | Status  |
+| ----- | --------------------------------------------------------------------------------- | ---- | ------- |
+| 06-01 | Edit History Backend + Shared Types — MessageEdit record wiring, EditHistory type | 1    | ✅ Done |
+| 06-02 | Soft-Delete Indicator — "[Message deleted]" placeholder on web + mobile           | 1    | ✅ Done |
+| 06-03 | Reply & Reaction Verification — Confirm MSG-07 + MSG-09 end-to-end                | 1    | ✅ Done |
+| 06-04 | Edit History UI — History viewer (web+mobile), mobile edit form                   | 2    | ✅ Done |
+| 06-05 | WatermelonDB Bridge — Wire chatStore ↔ WatermelonDB for offline sync              | 3    | ✅ Done |
 
 ---
 
@@ -334,11 +334,29 @@ to the chat module. Client-side key storage and biometric auth share native Keyc
 4. User adds a new device and E2EE keys sync seamlessly
 5. User authenticates with Face ID or fingerprint on mobile
 
-### Plans
+**Plans:** 8 plans in 4 waves
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+Plans:
+
+- [ ] 07-01-PLAN.md — Enable PQXDH + Triple Ratchet + auto-bootstrap on web
+- [ ] 07-02-PLAN.md — Wire PQ-bridge + auto-bootstrap on mobile
+- [ ] 07-03-PLAN.md — Biometric auth gate + key protection on mobile
+- [ ] 07-04-PLAN.md — Decrypt-on-receive pipeline + lock icon on web
+- [ ] 07-05-PLAN.md — Decrypt-on-receive pipeline + lock icon on mobile
+- [ ] 07-06-PLAN.md — Safety number verification screens (web + mobile)
+- [ ] 07-07-PLAN.md — Multi-device key sync backend (cross-signing + sync API)
+- [ ] 07-08-PLAN.md — Multi-device key sync client + device management UI
+
+| Plan  | Scope                                                            | Wave | Status |
+| ----- | ---------------------------------------------------------------- | ---- | ------ |
+| 07-01 | Web PQXDH + Triple Ratchet enable + auto-bootstrap               | 1    | —      |
+| 07-02 | Mobile PQ-bridge wiring + auto-bootstrap                         | 1    | —      |
+| 07-03 | Biometric auth gate + E2EE key protection                        | 1    | —      |
+| 07-04 | Web decrypt-on-receive + encryption lock icon                    | 2    | —      |
+| 07-05 | Mobile decrypt-on-receive + encryption lock icon                 | 2    | —      |
+| 07-06 | Safety number verification (web dialog + mobile screen + QR)     | 3    | —      |
+| 07-07 | Multi-device key sync backend (cross-signing, trust chain, sync) | 3    | —      |
+| 07-08 | Multi-device key sync client (protocol, UI, key change banners)  | 4    | —      |
 
 ---
 
@@ -873,27 +891,27 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ## Progress
 
-| Phase | Name                    | Status                    | Progress |
-| ----- | ----------------------- | ------------------------- | -------- |
-| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27)  | 100%     |
-| 2     | Auth Core               | ✅ Complete (2026-02-28)  | 100%     |
-| 3     | Auth Advanced           | ✅ Complete (2026-02-28)  | 100%     |
-| 4     | Design System & Mobile  | ✅ Complete (2026-02-28)  | 100%     |
-| 5     | Message Transport       | ✅ Complete (2026-02-28)  | 100%     |
-| 6     | Message Features & Sync | ✅ Complete (2026-02-28)  | 100%     |
+| Phase | Name                    | Status                   | Progress |
+| ----- | ----------------------- | ------------------------ | -------- |
+| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27) | 100%     |
+| 2     | Auth Core               | ✅ Complete (2026-02-28) | 100%     |
+| 3     | Auth Advanced           | ✅ Complete (2026-02-28) | 100%     |
+| 4     | Design System & Mobile  | ✅ Complete (2026-02-28) | 100%     |
+| 5     | Message Transport       | ✅ Complete (2026-02-28) | 100%     |
+| 6     | Message Features & Sync | ✅ Complete (2026-02-28) | 100%     |
 | 7     | E2EE & Mobile Security  | ← Next                   | 0%       |
-| 8     | Social & Profiles       | Ready to plan             | 0%       |
-| 9     | Notifications & Safety  | Blocked by 8              | 0%       |
-| 10    | Message Extras          | Ready to plan             | 0%       |
-| 11    | Groups & Channels       | Ready to plan             | 0%       |
-| 12    | Roles & Moderation      | Blocked by 11             | 0%       |
-| 13    | Voice & Video           | Blocked by 12             | 0%       |
-| 14    | Forum Core              | Blocked by 12             | 0%       |
-| 15    | Forum Customization     | Blocked by 14             | 0%       |
-| 16    | Gamification            | Blocked by 14             | 0%       |
-| 17    | Monetization            | Blocked by 16             | 0%       |
-| 18    | Rich Media & Polish     | Blocked by 7,13           | 0%       |
-| 19    | Launch                  | Blocked by 15,17,18       | 0%       |
+| 8     | Social & Profiles       | Ready to plan            | 0%       |
+| 9     | Notifications & Safety  | Blocked by 8             | 0%       |
+| 10    | Message Extras          | Ready to plan            | 0%       |
+| 11    | Groups & Channels       | Ready to plan            | 0%       |
+| 12    | Roles & Moderation      | Blocked by 11            | 0%       |
+| 13    | Voice & Video           | Blocked by 12            | 0%       |
+| 14    | Forum Core              | Blocked by 12            | 0%       |
+| 15    | Forum Customization     | Blocked by 14            | 0%       |
+| 16    | Gamification            | Blocked by 14            | 0%       |
+| 17    | Monetization            | Blocked by 16            | 0%       |
+| 18    | Rich Media & Polish     | Blocked by 7,13          | 0%       |
+| 19    | Launch                  | Blocked by 15,17,18      | 0%       |
 
 ---
 
