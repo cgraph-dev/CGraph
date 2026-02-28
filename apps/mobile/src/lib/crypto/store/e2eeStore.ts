@@ -2,7 +2,8 @@
  * E2EE Zustand Store for Mobile App
  *
  * Provides encryption functionality via Zustand instead of React Context.
- * Replaces E2EEContext.tsx with a standalone store.
+ * Delegates to pq-bridge for PQXDH + Triple Ratchet encryption, with
+ * legacy X3DH fallback for backward compatibility with old messages.
  */
 
 import { create } from 'zustand';
@@ -16,8 +17,8 @@ import e2ee, {
   type ServerPrekeyBundle,
   type EncryptedMessage,
   isE2EESetUp,
-  generateKeyBundle,
-  storeKeyBundle,
+  generateKeyBundle as legacyGenerateKeyBundle,
+  storeKeyBundle as legacyStoreKeyBundle,
   formatKeysForRegistration,
   encryptForRecipient,
   loadIdentityKeyPair,
@@ -27,9 +28,23 @@ import e2ee, {
   clearE2EEData,
   generateSafetyNumber,
   fingerprint,
-  _bundleSupportsPQ,
   loadKEMPreKey,
+  storeKEMPreKey,
 } from '../e2ee';
+import {
+  generateKeyBundle as pqGenerateKeyBundle,
+  initiateSession as pqInitiateSession,
+  encryptMessage as pqEncrypt,
+  decryptMessage as pqDecrypt,
+  getSessionForRecipient,
+  registerRecipientSession,
+  hasSessionForRecipient,
+  respondToSession as pqRespondToSession,
+  hasPQKeys,
+  loadIdentityKey as pqLoadIdentityKey,
+  type PQKeyBundle,
+} from '../pq-bridge';
+import { InMemoryProtocolStore } from '@cgraph/crypto';
 import { Buffer } from 'buffer';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -37,7 +52,9 @@ import { Buffer } from 'buffer';
 interface E2EEState {
   isInitialized: boolean;
   isLoading: boolean;
+  isInitializing: boolean;
   error: string | null;
+  setupError: string | null;
   reset: () => void;
 }
 
@@ -98,14 +115,47 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
   // State
   isInitialized: false,
   isLoading: true,
+  isInitializing: false,
   error: null,
+  setupError: null,
 
   // Actions
   checkStatus: async () => {
     try {
       set({ isLoading: true });
-      const isSetUp = await isE2EESetUp();
+      // Check for both legacy (X3DH) and new (PQXDH) key presence
+      const legacySetUp = await isE2EESetUp();
+      const pqSetUp = await hasPQKeys();
+      const isSetUp = legacySetUp || pqSetUp;
+
       set({ isInitialized: isSetUp });
+
+      // If legacy keys exist but no KEM prekey, trigger upgrade
+      if (legacySetUp && !pqSetUp) {
+        logger.log('Legacy X3DH keys found without KEM prekey — scheduling PQ upgrade');
+        // Fire-and-forget: generate and upload KEM prekey to upgrade bundle
+        void (async () => {
+          try {
+            const pqBundle = await pqGenerateKeyBundle(0); // 0 OTKs — just KEM key
+            // Store KEM prekey in legacy format too for compat
+            await storeKEMPreKey(
+              1, // keyId
+              pqBundle.pqPreKey.publicKey,
+              pqBundle.pqPreKey.secretKey,
+              pqBundle.signedPreKey.signature // re-use signed prekey signature for KEM
+            );
+            // Upload KEM prekey to server
+            await api.post('/api/v1/e2ee/prekeys/kem', {
+              kyber_prekey: Buffer.from(pqBundle.pqPreKey.publicKey).toString('base64'),
+              kyber_prekey_id: 1,
+              kyber_prekey_signature: Buffer.from(pqBundle.signedPreKey.signature).toString('base64'),
+            });
+            logger.log('KEM prekey upgrade complete');
+          } catch (err) {
+            logger.error('KEM prekey upgrade failed (non-blocking):', err);
+          }
+        })();
+      }
     } catch (err) {
       logger.error('Error checking E2EE status:', err);
       set({ error: 'Failed to check encryption status' });
@@ -116,33 +166,53 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
 
   setupE2EE: async () => {
     try {
-      set({ isLoading: true, error: null });
+      set({ isLoading: true, isInitializing: true, error: null, setupError: null });
 
       const deviceId = `${Device.modelName || 'unknown'}_${Date.now()}`;
-      const bundle: KeyBundle = await generateKeyBundle(deviceId, 100);
-      await storeKeyBundle(bundle);
 
-      // Include KEM prekey in registration if one exists (Phase 2: auto-generate)
-      const kemPreKey = await loadKEMPreKey();
-      const registrationData = formatKeysForRegistration(
-        bundle,
-        kemPreKey
-          ? {
-              keyId: kemPreKey.keyId,
-              publicKey: kemPreKey.publicKey,
-              signature: kemPreKey.signature,
-            }
-          : undefined
-      );
+      // Generate full PQXDH key bundle via pq-bridge (ML-KEM-768 + P-256)
+      const pqBundle: PQKeyBundle = await pqGenerateKeyBundle(100);
+
+      // Also store keys in legacy format for backward compat with isE2EESetUp()
+      const legacyBundle: KeyBundle = {
+        deviceId,
+        identityKey: {
+          publicKey: pqBundle.identityKeyPair.publicKey,
+          privateKey: pqBundle.identityKeyPair.privateKey,
+          keyId: `pq_${Date.now().toString(36)}`,
+        },
+        signedPreKey: {
+          publicKey: pqBundle.signedPreKey.publicKey,
+          privateKey: pqBundle.signedPreKey.privateKey,
+          signature: pqBundle.signedPreKey.signature,
+          keyId: `spk_${Date.now().toString(36)}`,
+        },
+        oneTimePreKeys: pqBundle.oneTimePreKeys.map((otk, i) => ({
+          publicKey: otk.publicKey,
+          privateKey: otk.privateKey,
+          keyId: `otk_${i}_${Date.now().toString(36)}`,
+        })),
+      };
+      await legacyStoreKeyBundle(legacyBundle);
+
+      // Format registration data including KEM prekey
+      const registrationData = formatKeysForRegistration(legacyBundle, {
+        keyId: 1,
+        publicKey: pqBundle.pqPreKey.publicKey,
+        signature: pqBundle.signedPreKey.signature,
+      });
+
       await api.post('/api/v1/e2ee/keys', registrationData);
 
       set({ isInitialized: true });
+      logger.log('PQXDH E2EE setup complete — keys registered with server');
     } catch (err) {
       logger.error('Error setting up E2EE:', err);
-      set({ error: 'Failed to set up encryption' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to set up encryption';
+      set({ error: errorMsg, setupError: errorMsg });
       throw err;
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false, isInitializing: false });
     }
   },
 
@@ -177,18 +247,94 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       throw new Error('E2EE not initialized');
     }
 
+    // Check if we already have an active PQ session for this recipient
+    if (hasSessionForRecipient(recipientId)) {
+      const session = getSessionForRecipient(recipientId)!;
+      const ciphertextBytes = await pqEncrypt(session.sessionId, plaintext);
+
+      return {
+        ciphertext: Buffer.from(ciphertextBytes).toString('base64'),
+        ephemeralPublicKey: '',
+        senderIdentityKey: '',
+        recipientIdentityKeyId: recipientId,
+        nonce: '',
+        protocol_version: 'pqxdh_v1',
+        is_encrypted: true,
+        session_id: session.sessionId,
+      } as EncryptedMessage & { protocol_version: string; is_encrypted: boolean; session_id: string };
+    }
+
+    // No active PQ session — initiate PQXDH key exchange
     const recipientBundle = await getRecipientBundle(recipientId);
-    return await encryptForRecipient(plaintext, recipientBundle);
+
+    // Create an in-memory protocol store for the ratchet
+    const identityKey = await pqLoadIdentityKey();
+    if (!identityKey) {
+      // Fall back to legacy encrypt if PQ keys not available
+      logger.log('PQ identity key not found — falling back to legacy X3DH encrypt');
+      return await encryptForRecipient(plaintext, recipientBundle);
+    }
+
+    const protocolStore = new InMemoryProtocolStore(identityKey, 1);
+    const { session } = await pqInitiateSession(recipientBundle, protocolStore);
+
+    // Track the recipient → session mapping
+    registerRecipientSession(recipientId, session.sessionId);
+
+    // Encrypt via Triple Ratchet
+    const ciphertextBytes = await pqEncrypt(session.sessionId, plaintext);
+
+    return {
+      ciphertext: Buffer.from(ciphertextBytes).toString('base64'),
+      ephemeralPublicKey: '',
+      senderIdentityKey: '',
+      recipientIdentityKeyId: recipientId,
+      nonce: '',
+      protocol_version: 'pqxdh_v1',
+      is_encrypted: true,
+      session_id: session.sessionId,
+    } as EncryptedMessage & { protocol_version: string; is_encrypted: boolean; session_id: string };
   },
 
   decryptMessage: async (
-    _senderId: string,
+    senderId: string,
     encryptedMessage: EncryptedMessage
   ): Promise<string> => {
     if (!get().isInitialized) {
       throw new Error('E2EE not initialized');
     }
 
+    // Route based on protocol version
+    const protocolVersion = (encryptedMessage as EncryptedMessage & { protocol_version?: string }).protocol_version;
+
+    if (protocolVersion === 'pqxdh_v1') {
+      // PQXDH + Triple Ratchet path
+      const sessionId = (encryptedMessage as EncryptedMessage & { session_id?: string }).session_id;
+      const session = sessionId
+        ? undefined // will look up by sessionId in pqDecrypt
+        : getSessionForRecipient(senderId);
+
+      const resolvedSessionId = sessionId || session?.sessionId;
+
+      if (!resolvedSessionId) {
+        // Incoming PQXDH message but no session — need to respond to initiation
+        const identityKey = await pqLoadIdentityKey();
+        if (!identityKey) {
+          throw new Error('PQ identity key not found — cannot decrypt PQXDH message');
+        }
+        const protocolStore = new InMemoryProtocolStore(identityKey, 1);
+        const ciphertextBytes = Buffer.from(encryptedMessage.ciphertext, 'base64');
+        const newSession = await pqRespondToSession(new Uint8Array(ciphertextBytes), protocolStore);
+        registerRecipientSession(senderId, newSession.sessionId);
+        // After session is established, the ciphertext itself is the ratchet message
+        return await pqDecrypt(newSession.sessionId, new Uint8Array(ciphertextBytes));
+      }
+
+      const ciphertextBytes = Buffer.from(encryptedMessage.ciphertext, 'base64');
+      return await pqDecrypt(resolvedSessionId, new Uint8Array(ciphertextBytes));
+    }
+
+    // Legacy X3DH fallback for classical_v1, classical_v2, or unversioned messages
     const identityKey = await loadIdentityKeyPair();
     if (!identityKey) {
       throw new Error('Identity key not found');
@@ -303,7 +449,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
   reset: () => set({
     isInitialized: false,
     isLoading: true,
+    isInitializing: false,
     error: null,
+    setupError: null,
   }),
 }));
 
@@ -314,7 +462,9 @@ export function useE2EEState() {
   return useE2EEStore((s) => ({
     isInitialized: s.isInitialized,
     isLoading: s.isLoading,
+    isInitializing: s.isInitializing,
     error: s.error,
+    setupError: s.setupError,
   }));
 }
 

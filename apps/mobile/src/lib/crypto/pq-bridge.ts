@@ -156,8 +156,11 @@ export async function generateKeyBundle(numOneTimeKeys = 20): Promise<PQKeyBundl
 
   // Store private keys securely
   await secureSet('identity_key', toBase64(bundle.identityKeyPair.privateKey));
+  await secureSet('identity_key_pub', toBase64(bundle.identityKeyPair.publicKey));
   await secureSet('signed_prekey', toBase64(bundle.signedPreKey.privateKey));
+  await secureSet('signed_prekey_pub', toBase64(bundle.signedPreKey.publicKey));
   await secureSet('pq_prekey_secret', toBase64(bundle.pqPreKey.secretKey));
+  await secureSet('pq_prekey_pub', toBase64(bundle.pqPreKey.publicKey));
 
   for (let i = 0; i < bundle.oneTimePreKeys.length; i++) {
     await secureSet(`otk_${i}`, toBase64(bundle.oneTimePreKeys[i].privateKey));
@@ -206,6 +209,9 @@ export interface PQSession {
 }
 
 const activeSessions = new Map<string, PQSession>();
+
+/** Maps recipientId → sessionId for looking up sessions by recipient */
+const recipientSessionMap = new Map<string, string>();
 
 /**
  * Initiate a PQXDH key exchange with a remote party.
@@ -259,6 +265,30 @@ export async function initiateSession(
     session,
     initialMessage: result.initialMessage,
   };
+}
+
+/**
+ * Look up the session for a given recipientId.
+ */
+export function getSessionForRecipient(recipientId: string): PQSession | undefined {
+  const sessionId = recipientSessionMap.get(recipientId);
+  if (!sessionId) return undefined;
+  return activeSessions.get(sessionId);
+}
+
+/**
+ * Register a recipientId → sessionId mapping for session lookups.
+ */
+export function registerRecipientSession(recipientId: string, sessionId: string): void {
+  recipientSessionMap.set(recipientId, sessionId);
+}
+
+/**
+ * Check whether an active PQ session exists for a recipient.
+ */
+export function hasSessionForRecipient(recipientId: string): boolean {
+  const sessionId = recipientSessionMap.get(recipientId);
+  return !!sessionId && activeSessions.has(sessionId);
 }
 
 /**
@@ -377,6 +407,7 @@ export async function closeAllSessions(): Promise<void> {
   for (const [id] of activeSessions) {
     await closeSession(id);
   }
+  recipientSessionMap.clear();
 }
 
 /**
@@ -394,6 +425,15 @@ export function getCryptoCapabilities(): {
     tripleRatchetVersion: TRIPLE_RATCHET_VERSION,
     activeSessions: activeSessions.size,
   };
+}
+
+/**
+ * Check whether PQXDH keys have been generated and stored on this device.
+ */
+export async function hasPQKeys(): Promise<boolean> {
+  const identityKey = await secureGet('identity_key');
+  const pqPreKey = await secureGet('pq_prekey_secret');
+  return identityKey !== null && pqPreKey !== null;
 }
 
 // Initialize native crypto detection on import
