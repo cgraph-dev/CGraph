@@ -11,6 +11,7 @@
 import { api } from '@/lib/api';
 import { ensureObject } from '@/lib/apiUtils';
 import { createMessageOpsActions } from './chatStore.message-ops';
+import { useAuthStore } from '@/modules/auth/store';
 import type { Conversation, ChatState } from './chatStore.types';
 
 type Set = (
@@ -64,11 +65,33 @@ export function createOperationsActions(set: Set, get: Get) {
     markAsRead: async (conversationId: string) => {
       try {
         await api.post(`/api/v1/conversations/${conversationId}/read`);
+
+        // Update unread count
         set((state) => ({
           conversations: state.conversations.map((conv) =>
             conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
           ),
         }));
+
+        // Update delivery status on messages from other users to 'read'
+        const currentUserId = useAuthStore.getState().user?.id;
+        if (currentUserId) {
+          set((state) => {
+            const conversationMessages = state.messages[conversationId];
+            if (!conversationMessages) return state;
+
+            const updatedMessages = conversationMessages.map((m) => {
+              if (m.senderId !== currentUserId && m.deliveryStatus !== 'read') {
+                return { ...m, deliveryStatus: 'read' as const };
+              }
+              return m;
+            });
+
+            return {
+              messages: { ...state.messages, [conversationId]: updatedMessages },
+            };
+          });
+        }
       } catch (_error) {
         // Ignore read receipt errors
       }

@@ -10,6 +10,7 @@
 import type { Socket, Channel } from 'phoenix';
 import { Presence } from 'phoenix';
 import { useChatStore, type Message } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { socketLogger as logger } from '../logger';
 import { normalizeMessage } from '../apiUtils';
 
@@ -117,6 +118,33 @@ export function joinConversation(
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       logger.log('Received new_message:', normalized);
       useChatStore.getState().addMessage(normalized);
+
+      // Auto-acknowledge delivery: push msg_ack back to the server
+      const currentUserId = useAuthStore.getState().user?.id;
+      if (currentUserId && normalized.senderId !== currentUserId) {
+        channel.push('msg_ack', { message_id: normalized.id });
+      }
+    });
+
+    channel.on('msg_delivered', (payload) => {
+       
+      const data = payload as { message_id: string; conversation_id?: string };
+      const convId = data.conversation_id || conversationId;
+      useChatStore.getState().updateMessageStatus(convId, data.message_id, 'delivered');
+    });
+
+    channel.on('message_read', (payload) => {
+       
+      const data = payload as {
+        message_id: string;
+        user_id: string;
+        read_at: string;
+        conversation_id?: string;
+      };
+      const convId = data.conversation_id || conversationId;
+      const store = useChatStore.getState();
+      store.addReadReceipt(convId, data.message_id, data.user_id, data.read_at);
+      store.updateMessageStatus(convId, data.message_id, 'read');
     });
 
     channel.on('message_updated', (payload) => {
