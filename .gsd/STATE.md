@@ -17,18 +17,19 @@ OAuth, 2FA, and session management complete on all platforms.
 ## Position
 
 - **Phase:** 3 of 19
-- **Plan:** 03-03 complete, 03-01 in progress (parallel)
+- **Plan:** 03-01 complete, 03-03 complete, 03-02 pending
 - **Version target:** v0.9.48
 
 ## Status
 
-Phase 3 in progress — plan 03-03 (Session-Token Bridge) complete. Plan 03-01 executing in parallel.
+Phase 3 in progress — plans 03-01 (2FA Login Gate) and 03-03 (Session-Token Bridge) complete. Plan
+03-02 pending.
 
 ## Plans
 
 | Plan  | Name                       | Wave | Depends On | Status      |
 | ----- | -------------------------- | ---- | ---------- | ----------- |
-| 03-01 | 2FA Login Gate (TDD)       | 1    | —          | Not started |
+| 03-01 | 2FA Login Gate (TDD)       | 1    | —          | ✅ Complete |
 | 03-02 | Frontend 2FA Login UI      | 2    | 03-01      | Not started |
 | 03-03 | Session-Token Bridge (TDD) | 1    | —          | ✅ Complete |
 
@@ -39,7 +40,7 @@ Phase 3 in progress — plan 03-03 (Session-Token Bridge) complete. Plan 03-01 e
 | Overall progress   | 10%      |
 | Phases complete    | 2 / 19   |
 | Requirements done  | 10 / 136 |
-| Current phase reqs | 1 / 3    |
+| Current phase reqs | 2 / 3    |
 
 ## Phase Summary
 
@@ -67,9 +68,8 @@ Phase 3 in progress — plan 03-03 (Session-Token Bridge) complete. Plan 03-01 e
 
 ## Last Action
 
-Plan 03-03 (Session-Token Bridge TDD) completed. 3/3 tasks: RED (5 failing tests), GREEN (bridge
-implementation), REFACTOR (docs + logging). Session revocation now cascades to TokenManager.Store.
-16/16 auth tests pass.
+Plan 03-01 (2FA Login Gate TDD) completed. 3/3 tasks, 7/7 tests pass. 2FA gates password login,
+OAuth bypass documented, rate limiting inherited via api_auth_strict.
 
 ---
 
