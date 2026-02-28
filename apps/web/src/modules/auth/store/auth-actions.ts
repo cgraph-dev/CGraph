@@ -11,7 +11,7 @@ import { api } from '@/lib/api';
 import { authLogger } from '@/lib/logger';
 import { AxiosError } from 'axios';
 
-import type { User, WalletChallenge, AuthState } from './authStore.types';
+import type { User, WalletChallenge, AuthState, TwoFactorRequired } from './authStore.types';
 import { getApiErrorMessage, mapUserFromApi } from './authStore.utils';
 
 type Set = (
@@ -32,7 +32,7 @@ type Get = () => AuthState;
  * @returns The newly created instance.
  */
 export function createLoginAction(set: Set, _get: Get) {
-  return async (email: string, password: string) => {
+  return async (email: string, password: string): Promise<TwoFactorRequired | void> => {
     set({ isLoading: true, error: null }, false, 'login/start');
     try {
       authLogger.info('[Auth] Attempting login...', { identifier: email });
@@ -40,6 +40,16 @@ export function createLoginAction(set: Set, _get: Get) {
         identifier: email, // Backend accepts email or username
         password,
       });
+
+      // Handle 2FA-required response
+      if (response.data?.status === '2fa_required' && response.data?.two_factor_token) {
+        authLogger.info('[Auth] 2FA required for user', { identifier: email });
+        set({ isLoading: false }, false, 'login/2fa_required');
+        return {
+          twoFactorRequired: true,
+          twoFactorToken: response.data.two_factor_token,
+        };
+      }
 
       // Debug logging for auth troubleshooting
       authLogger.info('[Auth] Login response received', {
@@ -95,6 +105,72 @@ export function createLoginAction(set: Set, _get: Get) {
         },
         false,
         'login/error'
+      );
+      throw error;
+    }
+  };
+}
+
+/**
+ * unknown for the auth module.
+ */
+/**
+ * Creates the verify login 2FA action.
+ *
+ * Submits TOTP or backup code to complete 2FA-gated login.
+ *
+ * @param set - The set.
+ * @param _get - The _get.
+ * @returns The newly created instance.
+ */
+export function createVerifyLoginTwoFactorAction(set: Set, _get: Get) {
+  return async (twoFactorToken: string, code: string) => {
+    set({ isLoading: true, error: null }, false, 'verify2fa/start');
+    try {
+      authLogger.info('[Auth] Verifying 2FA code...');
+      const response = await api.post('/api/v1/auth/login/2fa', {
+        two_factor_token: twoFactorToken,
+        code,
+      });
+
+      const { user, tokens } = response.data;
+
+      if (!user || !tokens) {
+        authLogger.error('[Auth] Invalid 2FA verify response', { data: response.data });
+        throw new Error('Invalid 2FA response: missing user or tokens');
+      }
+
+      set(
+        {
+          user: mapUserFromApi(user),
+          token: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          isAuthenticated: true,
+          isLoading: false,
+        },
+        false,
+        'verify2fa/success'
+      );
+
+      authLogger.info('[Auth] 2FA verification successful', {
+        userId: user.id,
+        username: user.username,
+      });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        authLogger.error('[Auth] 2FA verification failed', {
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+      }
+
+      set(
+        {
+          error: getApiErrorMessage(error, 'Invalid verification code'),
+          isLoading: false,
+        },
+        false,
+        'verify2fa/error'
       );
       throw error;
     }

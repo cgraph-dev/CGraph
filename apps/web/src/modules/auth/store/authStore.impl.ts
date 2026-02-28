@@ -53,6 +53,7 @@ try {
 // Actions (extracted to reduce file size)
 import {
   createLoginAction,
+  createVerifyLoginTwoFactorAction,
   createGetWalletChallengeAction,
   createLoginWithWalletAction,
   createRegisterAction,
@@ -77,6 +78,7 @@ export const useAuthStore = create<AuthState>()(
         error: null,
 
         login: createLoginAction(set, get),
+        verifyLoginTwoFactor: createVerifyLoginTwoFactorAction(set, get),
         getWalletChallenge: createGetWalletChallengeAction(set, get),
         loginWithWallet: createLoginWithWalletAction(set, get),
         register: createRegisterAction(set, get),

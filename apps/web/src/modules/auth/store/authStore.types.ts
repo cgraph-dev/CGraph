@@ -63,6 +63,12 @@ export interface WalletChallenge {
   nonce: string;
 }
 
+/** Returned by login() when user has 2FA enabled */
+export interface TwoFactorRequired {
+  twoFactorRequired: true;
+  twoFactorToken: string;
+}
+
 export interface AuthState {
   user: User | null;
   token: string | null;
@@ -72,7 +78,8 @@ export interface AuthState {
   error: string | null;
 
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<TwoFactorRequired | void>;
+  verifyLoginTwoFactor: (twoFactorToken: string, code: string) => Promise<void>;
   getWalletChallenge: (walletAddress: string) => Promise<WalletChallenge>;
   loginWithWallet: (walletAddress: string, signature: string) => Promise<void>;
   register: (email: string, username: string, password: string) => Promise<void>;
