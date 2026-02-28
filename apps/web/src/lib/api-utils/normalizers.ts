@@ -74,6 +74,21 @@ function normalizeSender(
 }
 
 /**
+ * Normalizes an array of edit history entries from snake_case to camelCase.
+ */
+function normalizeEdits(raw: unknown): Record<string, unknown>[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  return raw.map((edit: Record<string, unknown>) => ({
+    id: edit.id,
+    messageId: edit.messageId ?? edit.message_id,
+    previousContent: edit.previousContent ?? edit.previous_content ?? '',
+    editNumber: edit.editNumber ?? edit.edit_number ?? 0,
+    editedById: edit.editedById ?? edit.edited_by_id ?? '',
+    createdAt: edit.createdAt ?? edit.created_at ?? edit.inserted_at ?? '',
+  }));
+}
+
+/**
  * Normalizes a message object from various sources (HTTP API, WebSocket).
  * Converts snake_case to camelCase and ensures all required fields exist.
  * Handles both camelCase and snake_case input for maximum compatibility.
@@ -172,6 +187,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     deletedAt: raw.deletedAt ?? raw.deleted_at ?? null,
     metadata: metadata,
     reactions: raw.reactions ?? [],
+    edits: normalizeEdits(raw.edits),
     sender: sender,
     createdAt:
       raw.createdAt ??

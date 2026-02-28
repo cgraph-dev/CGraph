@@ -24,6 +24,7 @@ export type {
   Message,
   MessageMetadata,
   Reaction,
+  EditHistory,
   Conversation,
   ConversationParticipant,
   TypingUserInfo,

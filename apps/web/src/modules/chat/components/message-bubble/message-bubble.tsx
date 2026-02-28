@@ -1,6 +1,6 @@
 /** Message Bubble — memoized message display with media, reactions, and actions. */
 
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
@@ -24,6 +24,7 @@ import { ReplyIcon } from './icons';
 import { ReadReceipts } from './read-receipts';
 import { MessageStatusIndicator } from './message-status-indicator';
 import { MessageEditForm } from './message-edit-form';
+import { EditHistoryViewer } from './edit-history-viewer';
 import { MessageActionMenu } from './message-action-menu';
 import { MessageMediaContent } from './message-media-content';
 import { ThreadReplyBadge } from './thread-reply-badge';
@@ -49,6 +50,11 @@ export const MessageBubble = memo(
     onCancelEdit,
   }: MessageBubbleProps) {
     const [showActions, setShowActions] = useState(false);
+    const [showEditHistory, setShowEditHistory] = useState(false);
+
+    const toggleEditHistory = useCallback(() => {
+      setShowEditHistory((prev) => !prev);
+    }, []);
 
     const ownBubbleStyle = useCustomizationStore((s) => s.chatBubbleStyle);
     const ownBubbleRadius = useCustomizationStore((s) => s.bubbleBorderRadius);
@@ -220,7 +226,28 @@ export const MessageBubble = memo(
                 className={`mt-1 flex items-center gap-1 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-500'}`}
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
-                {message.isEdited && <span>(edited)</span>}
+                {message.isEdited && (
+                  <span className="relative">
+                    {message.edits && message.edits.length > 0 ? (
+                      <>
+                        <button
+                          onClick={toggleEditHistory}
+                          className="cursor-pointer underline decoration-dotted underline-offset-2 hover:text-white"
+                        >
+                          (edited)
+                        </button>
+                        <EditHistoryViewer
+                          edits={message.edits}
+                          currentContent={message.content}
+                          isOpen={showEditHistory}
+                          onClose={() => setShowEditHistory(false)}
+                        />
+                      </>
+                    ) : (
+                      <span>(edited)</span>
+                    )}
+                  </span>
+                )}
                 {'expiresAt' in message && !!message.expiresAt && (
                   <span
                     className="flex items-center gap-0.5 text-amber-400/70"

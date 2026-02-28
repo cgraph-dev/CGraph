@@ -58,6 +58,7 @@ export interface Message {
     fontFamily?: string | null;
   };
   senderTheme?: string | null;
+  edits?: EditHistory[];
   deliveryStatus?: 'sending' | 'sent' | 'delivered' | 'read';
   createdAt: string;
   updatedAt: string;
@@ -99,6 +100,15 @@ export interface Reaction {
     id: string;
     username: string;
   };
+}
+
+export interface EditHistory {
+  id: string;
+  messageId: string;
+  previousContent: string;
+  editNumber: number;
+  editedById: string;
+  createdAt: string;
 }
 
 // ── Conversation Types ─────────────────────────────────────────────────

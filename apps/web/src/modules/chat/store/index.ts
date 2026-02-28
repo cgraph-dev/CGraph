@@ -15,6 +15,7 @@ export {
   type ChatState,
   type TypingUserInfo,
   type MessageMetadata,
+  type EditHistory,
 } from './chatStore';
 
 // Chat effects store (visual effects, themes)

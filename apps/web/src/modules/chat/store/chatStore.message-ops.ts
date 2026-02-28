@@ -11,7 +11,7 @@ import { api } from '@/lib/api';
 import { ensureObject, normalizeMessage } from '@/lib/apiUtils';
 import { findConversationForMessage, updateMessageReactions } from './chatStore.utils';
 import { useAuthStore } from '@/modules/auth/store';
-import type { Message, Reaction, ChatState } from './chatStore.types';
+import type { Message, Reaction, ChatState, EditHistory } from './chatStore.types';
 
 type Set = (
   partial: ChatState | Partial<ChatState> | ((s: ChatState) => ChatState | Partial<ChatState>)
@@ -32,6 +32,29 @@ export function createMessageOpsActions(set: Set, get: Get) {
       const conversationId = findConversationForMessage(get().messages, messageId);
       if (!conversationId) {
         throw new Error('Message not found in any conversation');
+      }
+
+      // Optimistic: add current content as edit history entry
+      const currentMessage = (get().messages[conversationId] || []).find(
+        (m) => m.id === messageId
+      );
+      if (currentMessage) {
+        const currentUserId = useAuthStore.getState().user?.id || '';
+        const existingEdits = currentMessage.edits || [];
+        const optimisticEdit: EditHistory = {
+          id: `optimistic-${Date.now()}`,
+          messageId,
+          previousContent: currentMessage.content,
+          editNumber: existingEdits.length + 1,
+          editedById: currentUserId,
+          createdAt: new Date().toISOString(),
+        };
+        get().updateMessage({
+          ...currentMessage,
+          content,
+          isEdited: true,
+          edits: [...existingEdits, optimisticEdit],
+        });
       }
 
       const response = await api.patch(
