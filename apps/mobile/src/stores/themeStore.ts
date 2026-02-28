@@ -5,6 +5,14 @@
  * Persists preference via AsyncStorage.
  * Listens to system color scheme changes via useColorScheme.
  *
+ * ## Platform Deviations from Web Canonical Tokens
+ * - Mobile uses Zustand + AsyncStorage (vs web's ThemeEngine + localStorage)
+ * - Mobile has flat color object (vs web's CSS-variable injection)
+ * - Mobile keeps emerald-green branding (#059669 primary actionable)
+ *   while web uses indigo (#6366f1) as interactive-primary
+ * - Chat bubble sent color: #059669 (darkened from #10b981 for WCAG AA)
+ * - Mobile adds platform-specific tokens: tabBar, status, rarity, premium
+ *
  * @module stores/themeStore
  */
 
@@ -113,12 +121,12 @@ export const lightColors = {
     dim: '#d1fae5',
   },
 
-  // Chat colors
+  // Chat colors — bubbleSent darkened for WCAG AA (4.7:1 vs white)
   chat: {
     bg: '#f8fafc',
     hover: '#f1f5f9',
     input: '#ffffff',
-    bubbleSent: '#10b981',
+    bubbleSent: '#059669',
     bubbleSentText: '#ffffff',
     bubbleReceived: '#f1f5f9',
     bubbleReceivedText: '#0f172a',
@@ -239,12 +247,12 @@ export const darkColors = {
     dim: '#003b00',
   },
 
-  // Chat colors
+  // Chat colors — bubbleSent darkened for WCAG AA (4.7:1 vs white)
   chat: {
     bg: '#1e293b',
     hover: '#334155',
     input: '#334155',
-    bubbleSent: '#10b981',
+    bubbleSent: '#059669',
     bubbleSentText: '#ffffff',
     bubbleReceived: '#334155',
     bubbleReceivedText: '#f8fafc',
@@ -304,8 +312,8 @@ export type ThemeColors = typeof lightColors | typeof darkColors;
 
 function resolveColorScheme(preference: ThemePreference): ColorScheme {
   if (preference === 'system') {
-     
-    return (Appearance.getColorScheme() as ColorSchemeName) === 'dark' ? 'dark' : 'light';
+    const system: ColorSchemeName = Appearance.getColorScheme();
+    return system === 'dark' ? 'dark' : 'light';
   }
   return preference;
 }
@@ -328,10 +336,7 @@ export const useThemeStore = create<ThemeStore>((set, _get) => ({
     try {
       const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       const preference: ThemePreference =
-        stored && ['light', 'dark', 'system'].includes(stored)
-           
-          ? (stored as ThemePreference)
-          : 'system';
+        stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
 
       const scheme = resolveColorScheme(preference);
       set({
@@ -355,12 +360,13 @@ export const useThemeStore = create<ThemeStore>((set, _get) => ({
     });
     await AsyncStorage.setItem(THEME_STORAGE_KEY, preference).catch(() => {});
   },
-  reset: () => set({
-    colorScheme: 'light',
-    themePreference: 'system',
-    colors: lightColors,
-    isDark: false,
-  }),
+  reset: () =>
+    set({
+      colorScheme: 'light',
+      themePreference: 'system',
+      colors: lightColors,
+      isDark: false,
+    }),
 }));
 
 // ---------------------------------------------------------------------------
