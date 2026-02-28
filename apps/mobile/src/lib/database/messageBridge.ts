@@ -11,6 +11,7 @@
  * @since v0.9.32
  */
 import { Q } from '@nozbe/watermelondb';
+import type { Model } from '@nozbe/watermelondb';
 import { database, messagesCollection } from './index';
 import type WMDBMessage from './models/message';
 import type { Message, MessageSender } from '../../stores/chatStore';
@@ -93,5 +94,165 @@ export async function getLocalMessages(conversationId: string): Promise<Message[
   } catch (error) {
     console.warn('[messageBridge] getLocalMessages failed:', error);
     return [];
+  }
+}
+
+// ─── Write Path ─────────────────────────────────────────────────
+
+/** Helper: convert chatStore ISO timestamp to epoch ms for WatermelonDB */
+function toEpoch(isoOrUndefined: string | undefined | null): number {
+  if (!isoOrUndefined) return Date.now();
+  const ts = new Date(isoOrUndefined).getTime();
+  return Number.isNaN(ts) ? Date.now() : ts;
+}
+
+/** Helper: apply chatStore message fields to a WatermelonDB record's _raw */
+function applyMessageToRaw(
+  raw: Record<string, unknown>,
+  message: Message,
+  isCreate: boolean
+): void {
+  if (isCreate) {
+    raw.id = message.id;
+    raw.server_id = message.id;
+    raw.conversation_id = message.conversationId;
+    raw.channel_id = null;
+    raw.sender_id = message.senderId;
+    raw.message_type = message.messageType || 'text';
+    raw.reply_to_id = message.replyToId;
+    raw.attachments_json = JSON.stringify([]);
+    raw.created_at = toEpoch(message.createdAt);
+  }
+  raw.content = message.content;
+  raw.status = message.status || 'sent';
+  raw.is_edited = message.isEdited;
+  raw.is_deleted = !!message.deletedAt;
+  raw.is_pinned = message.isPinned;
+  raw.is_optimistic = message.isOptimistic ?? false;
+  raw.encrypted_content = message.encryptedContent;
+  raw.reactions_json = JSON.stringify(message.reactions || []);
+  raw.metadata_json = JSON.stringify(message.metadata || {});
+  raw.updated_at = toEpoch(message.updatedAt);
+}
+
+/**
+ * Upsert a single chatStore Message into WatermelonDB.
+ * Finds existing record by id — updates if found, creates if not.
+ */
+export async function saveMessageLocally(message: Message): Promise<void> {
+  try {
+    await database.write(async () => {
+      let existing: Model | null = null;
+      try {
+        existing = await messagesCollection.find(message.id);
+      } catch {
+        // Record not found — will create
+      }
+
+      if (existing) {
+        await existing.update(() => {
+          applyMessageToRaw(existing!._raw as unknown as Record<string, unknown>, message, false);
+        });
+      } else {
+        await messagesCollection.create((record) => {
+          applyMessageToRaw(record._raw as unknown as Record<string, unknown>, message, true);
+        });
+      }
+    });
+  } catch (error) {
+    console.warn('[messageBridge] saveMessageLocally failed:', error);
+  }
+}
+
+/**
+ * Mark a message as deleted in WatermelonDB.
+ */
+export async function markMessageDeletedLocally(messageId: string): Promise<void> {
+  try {
+    await database.write(async () => {
+      const record = await messagesCollection.find(messageId);
+      await record.update(() => {
+        const raw = record._raw as unknown as Record<string, unknown>;
+        raw.is_deleted = true;
+        raw.content = '';
+        raw.updated_at = Date.now();
+      });
+    });
+  } catch (error) {
+    console.warn('[messageBridge] markMessageDeletedLocally failed:', error);
+  }
+}
+
+/**
+ * Mark a message as edited in WatermelonDB and update its content.
+ */
+export async function markMessageEditedLocally(
+  messageId: string,
+  content: string
+): Promise<void> {
+  try {
+    await database.write(async () => {
+      const record = await messagesCollection.find(messageId);
+      await record.update(() => {
+        const raw = record._raw as unknown as Record<string, unknown>;
+        raw.content = content;
+        raw.is_edited = true;
+        raw.updated_at = Date.now();
+      });
+    });
+  } catch (error) {
+    console.warn('[messageBridge] markMessageEditedLocally failed:', error);
+  }
+}
+
+/**
+ * Batch-write multiple chatStore Messages into WatermelonDB.
+ * Uses database.batch() for efficiency.
+ */
+export async function saveMessagesLocally(messages: Message[]): Promise<void> {
+  if (messages.length === 0) return;
+
+  try {
+    await database.write(async () => {
+      const batchOps: Model[] = [];
+
+      for (const message of messages) {
+        let existing: Model | null = null;
+        try {
+          existing = await messagesCollection.find(message.id);
+        } catch {
+          // Not found — will create
+        }
+
+        if (existing) {
+          const existingRef = existing;
+          batchOps.push(
+            existingRef.prepareUpdate(() => {
+              applyMessageToRaw(
+                existingRef._raw as unknown as Record<string, unknown>,
+                message,
+                false
+              );
+            })
+          );
+        } else {
+          batchOps.push(
+            messagesCollection.prepareCreate((record) => {
+              applyMessageToRaw(
+                record._raw as unknown as Record<string, unknown>,
+                message,
+                true
+              );
+            })
+          );
+        }
+      }
+
+      if (batchOps.length > 0) {
+        await database.batch(...batchOps);
+      }
+    });
+  } catch (error) {
+    console.warn('[messageBridge] saveMessagesLocally failed:', error);
   }
 }

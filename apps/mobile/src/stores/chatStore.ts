@@ -15,7 +15,7 @@ import { create } from 'zustand';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
 import { useAuthStore } from './authStore';
-import { getLocalMessages } from '../lib/database/messageBridge';
+import { getLocalMessages, saveMessageLocally, saveMessagesLocally, markMessageDeletedLocally, markMessageEditedLocally } from '../lib/database/messageBridge';
 import { sync as syncWatermelon } from '../lib/database/sync';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -399,6 +399,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
           isLoadingMessages: false,
         };
       });
+
+      // Persist fetched messages to WatermelonDB (fire-and-forget)
+      saveMessagesLocally(newMessages).catch(console.warn);
     } catch {
       set({ isLoadingMessages: false });
     }
@@ -442,6 +445,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
          
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         // Replace optimistic message with server-confirmed version
+        const serverMessage = { ...message, status: 'sent' as const, isOptimistic: false };
         set((state) => {
           const msgs = state.messages[conversationId] || [];
           const idSet = state.messageIds[conversationId] || new Set<string>();
@@ -452,14 +456,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
             messages: {
               ...state.messages,
               [conversationId]: msgs.map((m) =>
-                m.id === clientMessageId
-                  ? { ...message, status: 'sent' as const, isOptimistic: false }
-                  : m
+                m.id === clientMessageId ? serverMessage : m
               ),
             },
             messageIds: { ...state.messageIds, [conversationId]: newIdSet },
           };
         });
+
+        // Persist server-confirmed message to WatermelonDB
+        saveMessageLocally(serverMessage).catch(console.warn);
       }
     } catch {
       // Mark as failed — user can retry
@@ -478,6 +483,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
          
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         get().updateMessage(message);
+
+        // Persist edit to WatermelonDB
+        markMessageEditedLocally(messageId, content).catch(console.warn);
       }
     } catch {
       // Network error — caller should handle UI feedback
@@ -499,6 +507,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         },
       };
     });
+
+    // Persist deletion to WatermelonDB
+    markMessageDeletedLocally(messageId).catch(console.warn);
 
     try {
       await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
@@ -731,6 +742,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
           );
           useChatStore.getState().addMessage(msg);
 
+          // Persist to WatermelonDB
+          saveMessageLocally(msg).catch(console.warn);
+
           // Push delivery ACK for messages from other users
           const channel = socketManager.getChannel(topic);
           const currentUserId = useAuthStore.getState().user?.id;
@@ -769,6 +783,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
             data.message ? (data.message as Record<string, unknown>) : data
           );
           useChatStore.getState().updateMessage(msg);
+
+          // Persist edit to WatermelonDB
+          markMessageEditedLocally(msg.id, msg.content).catch(console.warn);
           break;
         }
         case 'message_deleted': {
@@ -793,6 +810,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
               }
               return state;
             });
+
+            // Persist deletion to WatermelonDB
+            markMessageDeletedLocally(msgId).catch(console.warn);
           }
           break;
         }
