@@ -18,16 +18,19 @@ receipts.
 ## Position
 
 - **Phase:** 5 of 19
-- **Plan:** Not started
+- **Plan:** Planned (2 plans, 1 wave)
 - **Version target:** v0.9.49
 
 ## Status
 
-Ready to plan. Phase 4 complete, transitioned to Phase 5. Alpha-0 milestone (v0.9.48) complete.
+Planned. 2 plans in 1 wave — web and mobile transport wiring run in parallel. Ready to execute.
 
 ## Plans
 
-[No plans yet — run `/plan-phase 5`]
+| Plan  | Scope                           | Wave | Status      |
+| ----- | ------------------------------- | ---- | ----------- |
+| 05-01 | Web Message Transport Wiring    | 1    | Not started |
+| 05-02 | Mobile Message Transport Wiring | 1    | Not started |
 
 ## Progress
 
@@ -64,13 +67,11 @@ Ready to plan. Phase 4 complete, transitioned to Phase 5. Alpha-0 milestone (v0.
 
 ## Last Action
 
-Phase 4 (Design System & Mobile) complete. Transitioned to Phase 5 (Message Transport). Alpha-0
-milestone (Phases 1-4, v0.9.48) is 100% complete. Phase 4 delivered: unified design tokens (7
-themes), WCAG AA contrast compliance, light/dark/system mode on both platforms, mobile EAS build
-pipeline. 15 commits, verification 12/12, UAT 16/16.
+Phase 5 planned. 2 plans in 1 wave: 05-01 (web socket→store→UI wiring for delivery/read receipts,
+typing debounce) and 05-02 (mobile delivery ACK, status rendering, auto-read on scroll, privacy
+toggle integration). Backend is 95% complete — ConversationChannel has all 13 events, schemas are
+production-grade. Phase 5 is a wiring phase connecting existing infrastructure.
 
 ---
-
-_Last updated: 2026-02-28_
 
 _Last updated: 2026-02-28_

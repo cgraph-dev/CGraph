@@ -254,9 +254,10 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                          | Wave | Status      |
+| ----- | ------------------------------------------------------------------------------ | ---- | ----------- |
+| 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | Not started |
+| 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | Not started |
 
 ---
 
