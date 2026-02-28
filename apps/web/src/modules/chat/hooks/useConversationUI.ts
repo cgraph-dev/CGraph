@@ -13,6 +13,7 @@ import type { UIPreferences } from '@/modules/chat/components/message-bubble';
 interface PanelStates {
   showSettings: boolean;
   showE2EETester: boolean;
+  showSafetyNumber: boolean;
   showInfoPanel: boolean;
   showMessageSearch: boolean;
   showScheduledList: boolean;
@@ -59,6 +60,7 @@ export function useConversationUI(): UseConversationUIReturn {
   const [panels, setPanels] = useState<PanelStates>({
     showSettings: false,
     showE2EETester: false,
+    showSafetyNumber: false,
     showInfoPanel: false,
     showMessageSearch: false,
     showScheduledList: false,
@@ -85,6 +87,7 @@ export function useConversationUI(): UseConversationUIReturn {
     setPanels({
       showSettings: false,
       showE2EETester: false,
+      showSafetyNumber: false,
       showInfoPanel: false,
       showMessageSearch: false,
       showScheduledList: false,

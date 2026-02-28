@@ -37,6 +37,7 @@ export { ScheduledMessagesList } from './scheduled-messages-list';
 export { ConversationHeader } from './conversation-header';
 export { ConversationInput } from './conversation-input';
 export { ConversationModals, type ConversationModalsProps } from './conversation-modals';
+export { SafetyNumberDialog } from './safety-number-dialog';
 export { TypingIndicator } from './typing-indicator';
 
 // ============================================

@@ -17,6 +17,7 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon,
   ClockIcon,
+  FingerPrintIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
@@ -43,6 +44,7 @@ interface ConversationHeaderProps {
   onToggleInfoPanel: () => void;
   onToggleSettings: () => void;
   onToggleE2EETester: () => void;
+  onVerifyIdentity: () => void;
   showScheduledList: boolean;
   showInfoPanel: boolean;
   showSettings: boolean;
@@ -62,6 +64,7 @@ function ConversationHeaderComponent({
   onToggleInfoPanel,
   onToggleSettings,
   onToggleE2EETester,
+  onVerifyIdentity,
   showScheduledList,
   showInfoPanel,
   showSettings,
@@ -164,6 +167,20 @@ function ConversationHeaderComponent({
           >
             <LockClosedIcon className="h-3.5 w-3.5 text-green-400" />
             <span className="text-xs font-bold tracking-wider text-green-400">E2EE</span>
+          </motion.button>
+
+          {/* Verify Identity */}
+          <motion.button
+            onClick={() => {
+              onVerifyIdentity();
+              if (uiPreferences.enableHaptic) HapticFeedback.medium();
+            }}
+            className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            title="Verify Identity"
+          >
+            <FingerPrintIcon className="h-5 w-5" />
           </motion.button>
 
           <motion.button

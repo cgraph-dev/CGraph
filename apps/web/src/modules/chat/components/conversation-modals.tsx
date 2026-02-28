@@ -13,6 +13,7 @@ import { ScheduledMessagesList } from '@/modules/chat/components/scheduled-messa
 import { VoiceCallModal } from '@/modules/calls/components/voice-call-modal';
 import { VideoCallModal } from '@/modules/calls/components/video-call-modal';
 import ChatInfoPanel from '@/modules/chat/components/chat-info-panel';
+import { SafetyNumberDialog } from '@/modules/chat/components/safety-number-dialog';
 
 export interface ConversationModalsProps {
   conversationId: string | undefined;
@@ -21,6 +22,9 @@ export interface ConversationModalsProps {
   setShowE2EETester: (value: boolean) => void;
   otherParticipantUserId: string | undefined;
   conversationName: string;
+  // Safety Number
+  showSafetyNumber: boolean;
+  setShowSafetyNumber: (value: boolean) => void;
   // E2EE Error
   showE2EEError: boolean;
   setShowE2EEError: (value: boolean) => void;
@@ -93,6 +97,9 @@ export function ConversationModals({
   setShowE2EETester,
   otherParticipantUserId,
   conversationName,
+  // Safety Number
+  showSafetyNumber,
+  setShowSafetyNumber,
   // E2EE Error
   showE2EEError,
   setShowE2EEError,
@@ -150,6 +157,16 @@ export function ConversationModals({
           />
         )}
       </AnimatePresence>
+
+      {/* Safety Number Verification Dialog */}
+      {otherParticipantUserId && (
+        <SafetyNumberDialog
+          recipientId={otherParticipantUserId}
+          recipientName={conversationName}
+          isOpen={showSafetyNumber}
+          onClose={() => setShowSafetyNumber(false)}
+        />
+      )}
 
       {/* E2EE Error Modal */}
       <E2EEErrorModal

@@ -18,6 +18,7 @@ import { ConversationMessages } from './conversation-messages';
 import { CallModals, InfoPanel } from './conversation-modals';
 
 import { ConversationHeader } from '@/modules/chat/components';
+import { SafetyNumberDialog } from '@/modules/chat/components';
 import {
   MessageInputArea,
   UISettingsPanel,

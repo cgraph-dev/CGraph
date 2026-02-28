@@ -91,6 +91,7 @@ export function useConversationPage() {
   // Panel states
   const [showSettings, setShowSettings] = useState(false);
   const [showE2EETester, setShowE2EETester] = useState(false);
+  const [showSafetyNumber, setShowSafetyNumber] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
 
   // E2EE error state
@@ -299,6 +300,8 @@ export function useConversationPage() {
     setShowSettings,
     showE2EETester,
     setShowE2EETester,
+    showSafetyNumber,
+    setShowSafetyNumber,
     showInfoPanel,
     setShowInfoPanel,
     showMessageSearch,
