@@ -9,6 +9,7 @@ defmodule CGraph.Accounts.PasswordReset do
 
   alias CGraph.Accounts.User
   alias CGraph.Repo
+  alias CGraph.Workers.{Orchestrator, SendEmailNotification}
 
   @doc """
   Request a password reset for a user by email.
@@ -24,9 +25,18 @@ defmodule CGraph.Accounts.PasswordReset do
         :ok
 
       {:ok, user} ->
-        _token = generate_password_reset_token(user)
-        # Token stored in cache for later verification
-        # Email sent via Mailer.send_password_reset/2
+        token = generate_password_reset_token(user)
+
+        # Queue password reset email via Oban worker
+        Orchestrator.enqueue(
+          SendEmailNotification,
+          %{
+            user_id: user.id,
+            email_type: "password_reset",
+            reset_token: token
+          }
+        )
+
         :ok
     end
   end
