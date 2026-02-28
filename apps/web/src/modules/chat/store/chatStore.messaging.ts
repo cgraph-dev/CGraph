@@ -9,7 +9,7 @@
 import { api } from '@/lib/api';
 import { createIdempotencyKey } from '@cgraph/utils';
 import { ensureObject, normalizeMessage } from '@/lib/apiUtils';
-import { useE2EEStore } from '@/lib/crypto/e2eeStore';
+import { useE2EEStore, type E2EEState } from '@/lib/crypto/e2eeStore';
 import { useAuthStore } from '@/modules/auth/store';
 import { chatLogger as logger } from '@/lib/logger';
 import type { Message, ChatState } from './chatStore.types';
@@ -18,6 +18,134 @@ type Set = (
   partial: ChatState | Partial<ChatState> | ((s: ChatState) => ChatState | Partial<ChatState>)
 ) => void;
 type Get = () => ChatState;
+
+// ---------------------------------------------------------------------------
+// Decrypt helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Attempt to decrypt an encrypted message using available methods.
+ * Tries Double Ratchet (session manager) first, then falls back to legacy X3DH.
+ */
+async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Promise<string> {
+  const metadata: Record<string, unknown> = message.metadata || {};
+
+  // Try Double Ratchet / session manager first if a session exists
+  if (e2eeStore.hasRatchetSession(message.senderId)) {
+    try {
+      // Build a SecureMessage-compatible payload for the session manager
+      const secureMsg = {
+        senderId: message.senderId,
+        recipientId: useAuthStore.getState().user?.id || '',
+        sessionId: '',
+        messageId: message.id,
+        timestamp: Date.now(),
+        ratchetMessage: {
+          header: {
+            dh: (metadata.ratchet_dh as string) || '',
+            pn: (metadata.ratchet_pn as number) || 0,
+            n: (metadata.ratchet_n as number) || 0,
+            sessionId: (metadata.ratchet_session_id as string) || '',
+            timestamp: (metadata.ratchet_timestamp as number) || Date.now(),
+            version: (metadata.ratchet_version as number) || 1,
+          },
+          ciphertext: message.encryptedContent || message.content,
+          nonce: message.nonce || (metadata.nonce as string) || '',
+          mac: (metadata.ratchet_mac as string) || '',
+        },
+      };
+      const senderIdentityKey =
+        message.senderIdentityKey || (metadata.sender_identity_key as string);
+      return await e2eeStore.decryptWithRatchet(secureMsg, senderIdentityKey);
+    } catch {
+      // Ratchet decryption failed — fall through to legacy X3DH
+      logger.warn('Ratchet decryption failed, trying legacy X3DH');
+    }
+  }
+
+  // Legacy X3DH decryption
+  const encryptedPayload = {
+    ciphertext: message.encryptedContent || message.content,
+    ephemeralPublicKey:
+       
+      message.ephemeralPublicKey || (metadata.ephemeral_public_key as string), // safe downcast — validated below
+     
+    recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '', // safe downcast
+     
+    oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined, // safe downcast
+     
+    nonce: message.nonce || (metadata.nonce as string), // safe downcast — validated below
+  };
+
+  const senderIdentityKey =
+     
+    message.senderIdentityKey || (metadata.sender_identity_key as string); // safe downcast — validated below
+
+  if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {
+    throw new Error('Missing E2EE metadata for decryption');
+  }
+
+  return await e2eeStore.decryptMessage(
+    message.senderId,
+    senderIdentityKey,
+    encryptedPayload
+  );
+}
+
+/**
+ * Retry decryption after E2EE auto-bootstrap completes.
+ * Polls up to 10 times (every 500 ms) waiting for e2eeStore.isInitialized.
+ * On success updates the placeholder message via updateMessage.
+ */
+async function retryDecryptAfterInit(message: Message, get: Get) {
+  const MAX_RETRIES = 10;
+  const RETRY_DELAY_MS = 500;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+    const e2eeStore = useE2EEStore.getState();
+    if (!e2eeStore.isInitialized) continue;
+
+    // E2EE ready — attempt decryption
+    try {
+      const plaintext = await attemptDecrypt(message, e2eeStore);
+      let protocolVersion: string | undefined;
+      try {
+        const proto = e2eeStore.getSessionProtocol(message.senderId);
+        if (proto) protocolVersion = String(proto);
+      } catch {
+        // Non-critical
+      }
+      get().updateMessage({
+        ...message,
+        content: plaintext,
+        isEncrypted: true,
+        decryptionFailed: false,
+        protocolVersion,
+      });
+      logger.log('Retried and decrypted queued E2EE message');
+      return;
+    } catch (error: unknown) {
+      logger.error('Retry decryption failed:', error);
+      get().updateMessage({
+        ...message,
+        content: '⚠️ Unable to decrypt this message',
+        isEncrypted: true,
+        decryptionFailed: true,
+      });
+      return;
+    }
+  }
+
+  // Max retries exhausted — E2EE never initialized in time
+  logger.error('E2EE did not initialize in time, marking message as decrypt-failed');
+  get().updateMessage({
+    ...message,
+    content: '⚠️ Unable to decrypt this message',
+    isEncrypted: true,
+    decryptionFailed: true,
+  });
+}
 
 /** Create messaging actions for the chat store. */
 export function createMessagingActions(_set: Set, get: Get) {
@@ -223,55 +351,76 @@ export function createMessagingActions(_set: Set, get: Get) {
     },
 
     /**
-     * Decrypt an incoming encrypted message and add it to the store
+     * Decrypt an incoming encrypted message and add it to the store.
+     *
+     * - Skips decryption for own messages (sender already has plaintext).
+     * - Tries Double Ratchet first, then legacy X3DH.
+     * - Queues messages that arrive before E2EE init completes.
+     * - NEVER displays ciphertext: shows error placeholder on failure.
      */
     decryptAndAddMessage: async (message: Message) => {
-      const e2eeStore = useE2EEStore.getState();
-
-      // If not encrypted or E2EE not initialized, just add as-is
-      if (!message.isEncrypted || !e2eeStore.isInitialized) {
+      // Unencrypted messages pass through directly
+      if (!message.isEncrypted) {
         get().addMessage(message);
         return;
       }
 
+      // Own encrypted messages already have plaintext content set by sender flow
+      const currentUserId = useAuthStore.getState().user?.id;
+      if (currentUserId && message.senderId === currentUserId) {
+        get().addMessage({ ...message, isEncrypted: true });
+        return;
+      }
+
+      const e2eeStore = useE2EEStore.getState();
+
+      // E2EE not yet initialized — queue for retry after auto-bootstrap completes
+      if (!e2eeStore.isInitialized) {
+        logger.warn('E2EE not initialized, queuing encrypted message for retry');
+
+        // Add placeholder immediately so user sees *something*
+        get().addMessage({
+          ...message,
+          content: '🔒 Decrypting…',
+          isEncrypted: true,
+          decryptionFailed: false,
+        });
+
+        // Retry in background until E2EE becomes available
+        retryDecryptAfterInit(message, get);
+        return;
+      }
+
+      // --- Attempt decryption ---
       try {
-        const metadata: Record<string, unknown> = message.metadata || {};
-        const encryptedPayload = {
-          ciphertext: message.encryptedContent || message.content,
-          ephemeralPublicKey:
-             
-            message.ephemeralPublicKey || (metadata.ephemeral_public_key as string), // safe downcast — validated by truthiness check below
-           
-          recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '', // safe downcast
-           
-          oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined, // safe downcast
-           
-          nonce: message.nonce || (metadata.nonce as string), // safe downcast — validated by truthiness check below
-        };
+        const plaintext = await attemptDecrypt(message, e2eeStore);
 
-        const senderIdentityKey =
-           
-          message.senderIdentityKey || (metadata.sender_identity_key as string); // safe downcast — validated by truthiness check below
-
-        if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {
-          logger.warn('Missing E2EE metadata for decryption, showing encrypted message');
-          get().addMessage({ ...message, content: '[Encrypted message - unable to decrypt]' });
-          return;
+        // Determine protocol version from session (best-effort)
+        let protocolVersion: string | undefined;
+        try {
+          const proto = e2eeStore.getSessionProtocol(message.senderId);
+          if (proto) protocolVersion = String(proto);
+        } catch {
+          // Non-critical — just omit
         }
 
-        const plaintext = await e2eeStore.decryptMessage(
-          message.senderId,
-          senderIdentityKey,
-          encryptedPayload
-        );
-
-        // Add decrypted message
-        get().addMessage({ ...message, content: plaintext });
+        get().addMessage({
+          ...message,
+          content: plaintext,
+          isEncrypted: true,
+          decryptionFailed: false,
+          protocolVersion,
+        });
         logger.log('Decrypted and added E2EE message');
       } catch (error: unknown) {
         logger.error('Failed to decrypt message:', error);
-        // Show placeholder for failed decryption
-        get().addMessage({ ...message, content: '[Unable to decrypt message]' });
+        // CRITICAL: Never show ciphertext — display error placeholder
+        get().addMessage({
+          ...message,
+          content: '⚠️ Unable to decrypt this message',
+          isEncrypted: true,
+          decryptionFailed: true,
+        });
       }
     },
   };

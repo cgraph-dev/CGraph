@@ -117,7 +117,9 @@ export function joinConversation(
        
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       logger.log('Received new_message:', normalized);
-      useChatStore.getState().addMessage(normalized);
+
+      // Route through decrypt pipeline — handles encrypted + unencrypted messages
+      useChatStore.getState().decryptAndAddMessage(normalized);
 
       // Auto-acknowledge delivery: push msg_ack back to the server
       const currentUserId = useAuthStore.getState().user?.id;

@@ -27,6 +27,7 @@ vi.mock('@/modules/chat/store', () => ({
   useChatStore: {
     getState: vi.fn(() => ({
       addMessage: vi.fn(),
+      decryptAndAddMessage: vi.fn(),
       updateMessage: vi.fn(),
       removeMessage: vi.fn(),
       setTypingUser: vi.fn(),

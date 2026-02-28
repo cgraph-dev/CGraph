@@ -66,6 +66,10 @@ export interface Message {
   ephemeralPublicKey?: string;
   nonce?: string;
   senderIdentityKey?: string;
+  /** Set to true after successful decryption — drives lock icon in UI */
+  decryptionFailed?: boolean;
+  /** Protocol version used for encryption (e.g. 'PQXDH_V1', 'CLASSICAL_V2') */
+  protocolVersion?: string;
   // Message scheduling
   scheduledAt?: string | null;
   scheduleStatus?: 'immediate' | 'scheduled' | 'sent' | 'cancelled';
