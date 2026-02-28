@@ -19,7 +19,7 @@
 | 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
 | 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
-| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-02-28) |
+| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
@@ -362,7 +362,7 @@ Plans:
 
 ---
 
-## Phase 8: Social & Profiles ← Next Phase
+## Phase 8: Social & Profiles ✅ Complete (2026-03-01)
 
 **Goal:** Onboarding, profiles, presence, status, user search, and user blocking make CGraph a
 social app.
@@ -397,23 +397,23 @@ that must exist before scaling users.
 
 **Plans:** 7 plans in 1 wave (all parallel — independent vertical slices)
 
-- [ ] 08-01-PLAN.md — User search UI (web + mobile) wired to existing Meilisearch backend (SEARCH-02)
-- [ ] 08-02-PLAN.md — Contacts presence list with online/offline indicators (NOTIF-05)
-- [ ] 08-03-PLAN.md — Custom status persistence + expiry via Oban (NOTIF-06)
-- [ ] 08-04-PLAN.md — Profile edit with avatar cropping on web + mobile (AUTH-10)
-- [ ] 08-05-PLAN.md — Onboarding wizard enhancement: find friends + community steps (AUTH-09)
-- [ ] 08-06-PLAN.md — Block enforcement across messaging, presence, profile, search (MOD-03)
-- [ ] 08-07-PLAN.md — QR code login protocol: backend + web + mobile (AUTH-11)
+- [x] 08-01-PLAN.md — User search UI (web + mobile) wired to existing Meilisearch backend (SEARCH-02)
+- [x] 08-02-PLAN.md — Contacts presence list with online/offline indicators (NOTIF-05)
+- [x] 08-03-PLAN.md — Custom status persistence + expiry via Oban (NOTIF-06)
+- [x] 08-04-PLAN.md — Profile edit with avatar cropping on web + mobile (AUTH-10)
+- [x] 08-05-PLAN.md — Onboarding wizard enhancement: find friends + community steps (AUTH-09)
+- [x] 08-06-PLAN.md — Block enforcement across messaging, presence, profile, search (MOD-03)
+- [x] 08-07-PLAN.md — QR code login protocol: backend + web + mobile (AUTH-11)
 
 | Plan  | Scope                                                    | Wave | Depends | Status |
 | ----- | -------------------------------------------------------- | ---- | ------- | ------ |
-| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —       | —      |
-| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —       | —      |
-| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —       | —      |
-| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —       | —      |
-| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 2    | 03      | —      |
-| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 2    | 03      | —      |
-| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —       | —      |
+| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —       | ✅ Done |
+| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —       | ✅ Done |
+| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —       | ✅ Done |
+| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —       | ✅ Done |
+| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 2    | 03      | ✅ Done |
+| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 2    | 03      | ✅ Done |
+| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —       | ✅ Done |
 
 ---
 
@@ -917,9 +917,9 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 4     | Design System & Mobile  | ✅ Complete (2026-02-28) | 100%     |
 | 5     | Message Transport       | ✅ Complete (2026-02-28) | 100%     |
 | 6     | Message Features & Sync | ✅ Complete (2026-02-28) | 100%     |
-| 7     | E2EE & Mobile Security  | ← Next                   | 0%       |
-| 8     | Social & Profiles       | Ready to plan            | 0%       |
-| 9     | Notifications & Safety  | Blocked by 8             | 0%       |
+| 7     | E2EE & Mobile Security  | ✅ Complete (2026-02-28) | 100%     |
+| 8     | Social & Profiles       | ✅ Complete (2026-03-01) | 100%     |
+| 9     | Notifications & Safety  | Ready to plan            | 0%       |
 | 10    | Message Extras          | Ready to plan            | 0%       |
 | 11    | Groups & Channels       | Ready to plan            | 0%       |
 | 12    | Roles & Moderation      | Blocked by 11            | 0%       |

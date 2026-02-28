@@ -10,38 +10,37 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 7 — E2EE & Mobile Security** (v0.9.49) — **Complete**
+**Phase 8 — Social & Profiles** — **Complete**
 
-End-to-end encryption for 1:1 messages + biometric auth on mobile. All 8 plans executed, verified 6/6.
+Social layer: user search, contacts presence, custom status, profile editing, onboarding wizard, QR login, and block enforcement. All 7 plans executed across 2 waves (22 commits).
 
 ## Position
 
-- **Phase:** 7 of 19 — E2EE & Mobile Security
-- **Plan:** All 8 plans complete
+- **Phase:** 8 of 19 — Social & Profiles
+- **Plan:** All 7 plans complete
 - **Status:** Complete
-- **Last activity:** 2026-02-28 — Phase 7 execution complete (8 plans, 25 commits, verified 6/6)
+- **Last activity:** 2026-03-01 — Phase 8 execution complete (7 plans, 22 commits)
 
 ## Plans
 
-| Plan  | Objective                               | Wave | Autonomous | Depends On | Status  |
-| ----- | --------------------------------------- | ---- | ---------- | ---------- | ------- |
-| 07-01 | Web PQXDH enable + auto-bootstrap       | 1    | ✅          | —          | ✅ Done |
-| 07-02 | Mobile PQ-bridge wiring + auto-bootstrap| 1    | ✅          | —          | ✅ Done |
-| 07-03 | Biometric auth gate on mobile           | 1    | ✅          | —          | ✅ Done |
-| 07-04 | Web decrypt-on-receive + lock icon      | 2    | ✅          | 07-01      | ✅ Done |
-| 07-05 | Mobile decrypt-on-receive + lock icon   | 2    | ✅          | 07-02      | ✅ Done |
-| 07-06 | Safety number screens (web + mobile)    | 3    | ✅          | 07-04,05   | ✅ Done |
-| 07-07 | Backend key sync + cross-signing API    | 3    | ✅          | 07-04,05   | ✅ Done |
-| 07-08 | Client device sync + UI (checkpoint)    | 4    | ❌          | 07-07      | ✅ Done |
+| Plan  | Objective                                | Wave | Autonomous | Depends On | Status  |
+| ----- | ---------------------------------------- | ---- | ---------- | ---------- | ------- |
+| 08-01 | User search UI (web + mobile)            | 1    | ✅          | —          | ✅ Done |
+| 08-02 | Contacts presence list                   | 1    | ✅          | —          | ✅ Done |
+| 08-03 | Custom status persistence + Oban expiry  | 1    | ✅          | —          | ✅ Done |
+| 08-04 | Profile edit with avatar cropping        | 1    | ✅          | —          | ✅ Done |
+| 08-05 | Onboarding wizard enhancement            | 2    | ✅          | 08-03      | ✅ Done |
+| 08-06 | Block enforcement (messaging+presence)   | 2    | ✅          | 08-03      | ✅ Done |
+| 08-07 | QR code login protocol                   | 1    | ✅          | —          | ✅ Done |
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 37%      |
-| Phases complete    | 7 / 19   |
-| Requirements done  | 33 / 136 |
-| Current phase reqs | 6 / 6    |
+| Overall progress   | 42%      |
+| Phases complete    | 8 / 19   |
+| Requirements done  | 40 / 136 |
+| Current phase reqs | 7 / 7    |
 
 ## Phase Summary
 
@@ -54,7 +53,7 @@ End-to-end encryption for 1:1 messages + biometric auth on mobile. All 8 plans e
 | 5   | Message Transport       | **Complete** (2026-02-28) |
 | 6   | Message Features & Sync | **Complete** (2026-02-28) |
 | 7   | E2EE & Mobile Security  | **Complete** (2026-02-28) |
-| 8   | Social & Profiles       | **Planned** (7 plans, 2 waves) |
+| 8   | Social & Profiles       | **Complete** (2026-03-01) |
 | 9   | Notifications & Safety  | Blocked by 8              |
 | 10  | Message Extras          | Ready (Phase 6 done)      |
 | 11  | Groups & Channels       | Ready (Phase 5 done)      |
@@ -72,11 +71,23 @@ End-to-end encryption for 1:1 messages + biometric auth on mobile. All 8 plans e
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 7 complete — next: Phase 9, 10, or 11 (all unblocked)
+**Current focus:** Phase 8 complete — next: Phase 9, 10, or 11 (all unblocked)
 
 ## Accumulated Context
 
-### Recent Decisions (Phase 7)
+### Recent Decisions (Phase 8)
+
+- User search: 300ms debounced Meilisearch queries, min 2 chars, stale-query guard
+- Contacts presence: enhanced existing usePresence hook with statusMessages Map (no new hook)
+- Mobile presence: socketManager.onGlobalStatusChange pattern (existing API)
+- Custom status: status_expires_at on User schema, Oban StatusExpiryWorker cron
+- Profile edit: react-easy-crop for web avatar, expo-image-picker allowsEditing for mobile
+- Onboarding: added find-friends + community steps (web), find-friends step (mobile)
+- QR login: Redis sessions (5-min TTL), HMAC-SHA256 verification, WebSocket channel
+- Block enforcement: bidirectional mutually_blocked?/2, filters in PresenceChannel + ConversationChannel
+- Block in search: upgraded from unidirectional to bidirectional via get_blocked_user_ids/1
+
+### Previous Decisions (Phase 7)
 
 - PQXDH + Triple Ratchet enabled by default: useTripleRatchet=true in e2ee-store
 - E2EE auto-bootstraps after login with no user action (setupE2EE() in initialize)
@@ -112,17 +123,17 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 
 ## Session Continuity
 
-Last session: 2026-02-28
-Stopped at: Phase 7 complete — Alpha-1 milestone (Phases 5-7) finished
+Last session: 2026-03-01
+Stopped at: Phase 8 complete — Social & Profiles finished
 Resume file: None
 
 ## Last Action
 
-Phase 7 execution complete. All 8 plans executed across 4 waves (25 commits).
-Phase goal verified 6/6: E2EE-01 (PQXDH+TripleRatchet), E2EE-03 (safety numbers),
-E2EE-04 (device sync), E2EE-08 (secure key storage), E2EE-09 (auto-bootstrap),
-AUTH-06 (biometric auth). Alpha-1 milestone (Phases 5-7: Messaging + E2EE) complete.
+Phase 8 execution complete. All 7 plans executed across 2 waves (22 commits).
+Requirements delivered: SEARCH-02 (user search), NOTIF-05 (contacts presence),
+NOTIF-06 (custom status persistence), AUTH-09 (onboarding wizard), AUTH-10 (profile edit),
+AUTH-11 (QR code login), MOD-03 (block enforcement).
 
 ---
 
-_Last updated: 2026-02-28_
+_Last updated: 2026-03-01_
