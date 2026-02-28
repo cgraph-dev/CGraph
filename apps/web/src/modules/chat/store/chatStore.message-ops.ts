@@ -237,5 +237,63 @@ export function createMessageOpsActions(set: Set, get: Get) {
         return { messages: { ...state.messages, ...updatedMessages } };
       });
     },
+
+    /** Update a message's delivery status in the conversation's message array. */
+    updateMessageStatus: (
+      conversationId: string,
+      messageId: string,
+      status: Message['deliveryStatus']
+    ) => {
+      set((state) => {
+        const conversationMessages = state.messages[conversationId];
+        if (!conversationMessages) return state;
+
+        return {
+          messages: {
+            ...state.messages,
+            [conversationId]: conversationMessages.map((m) =>
+              m.id === messageId ? { ...m, deliveryStatus: status } : m
+            ),
+          },
+        };
+      });
+    },
+
+    /** Add a read receipt and update message status to 'read' if reader is the conversation partner. */
+    addReadReceipt: (
+      conversationId: string,
+      messageId: string,
+      userId: string,
+      readAt: string
+    ) => {
+      set((state) => {
+        // Update readReceipts record
+        const messageReceipts = state.readReceipts[messageId] || {};
+        const updatedReceipts = {
+          ...state.readReceipts,
+          [messageId]: { ...messageReceipts, [userId]: readAt },
+        };
+
+        // Also update the message's deliveryStatus to 'read' if the reader is not the sender
+        const conversationMessages = state.messages[conversationId];
+        if (!conversationMessages) {
+          return { readReceipts: updatedReceipts };
+        }
+
+        const currentUserId = useAuthStore.getState().user?.id;
+        return {
+          readReceipts: updatedReceipts,
+          messages: {
+            ...state.messages,
+            [conversationId]: conversationMessages.map((m) => {
+              if (m.id === messageId && m.senderId === currentUserId && userId !== currentUserId) {
+                return { ...m, deliveryStatus: 'read' as const };
+              }
+              return m;
+            }),
+          },
+        };
+      });
+    },
   };
 }

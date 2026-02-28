@@ -145,6 +145,7 @@ export function createMessagingActions(_set: Set, get: Get) {
           displayName: currentUser?.displayName || null,
           avatarUrl: currentUser?.avatarUrl || null,
         },
+        deliveryStatus: 'sending',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -161,7 +162,7 @@ export function createMessagingActions(_set: Set, get: Get) {
           const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Replace the optimistic message with the real server response
           get().removeMessage(clientMessageId, conversationId);
-          get().addMessage(message);
+          get().addMessage({ ...message, deliveryStatus: 'sent' });
         }
       } catch (error: unknown) {
         // Rollback: remove the optimistic message on failure

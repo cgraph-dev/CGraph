@@ -58,6 +58,7 @@ export interface Message {
     fontFamily?: string | null;
   };
   senderTheme?: string | null;
+  deliveryStatus?: 'sending' | 'sent' | 'delivered' | 'read';
   createdAt: string;
   updatedAt: string;
   // E2EE metadata for decryption
@@ -161,6 +162,7 @@ export interface ChatState {
   typingUsersInfo: Record<string, TypingUserInfo[]>;
   hasMoreMessages: Record<string, boolean>;
   conversationsLastFetchedAt: number | null;
+  readReceipts: Record<string, Record<string, string>>; // messageId → userId → readAt
   scheduledMessages: Record<string, Message[]>;
   isLoadingScheduledMessages: boolean;
 
@@ -194,6 +196,8 @@ export interface ChatState {
     isTyping: boolean,
     startedAt?: string
   ) => void;
+  updateMessageStatus: (conversationId: string, messageId: string, status: Message['deliveryStatus']) => void;
+  addReadReceipt: (conversationId: string, messageId: string, userId: string, readAt: string) => void;
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
   getRecipientId: (conversationId: string, currentUserId: string) => string | null;

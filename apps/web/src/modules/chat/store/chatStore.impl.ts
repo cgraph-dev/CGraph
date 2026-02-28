@@ -46,6 +46,7 @@ export const useChatStore = create<ChatState>()(
       conversationsLastFetchedAt: null,
       scheduledMessages: {},
       isLoadingScheduledMessages: false,
+      readReceipts: {},
 
       // ── Core Fetch Actions ─────────────────────────────────────────
 
@@ -168,6 +169,7 @@ export const useChatStore = create<ChatState>()(
           conversationsLastFetchedAt: null,
           scheduledMessages: {},
           isLoadingScheduledMessages: false,
+          readReceipts: {},
         }),
     }),
     {

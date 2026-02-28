@@ -82,6 +82,7 @@ export interface Message {
   deletedAt: string | null;
   metadata: MessageMetadata;
   reactions: Reaction[];
+  deliveryStatus?: 'sending' | 'sent' | 'delivered' | 'read';
   createdAt: string;
   updatedAt: string;
 }
