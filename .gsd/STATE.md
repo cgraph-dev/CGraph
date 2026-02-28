@@ -17,29 +17,29 @@ Professional visual foundation on both platforms, mobile builds pass.
 ## Position
 
 - **Phase:** 4 of 19
-- **Plan:** 04-01 and 04-03 complete, 04-02 remaining
+- **Plan:** All 3 plans complete (04-01, 04-02, 04-03)
 - **Version target:** v0.9.48
 
 ## Status
 
-Plan 04-01 and 04-03 (wave 1) complete. 04-02 (wave 2) ready.
+All plans complete. Phase 4 execution finished — ready for verification.
 
 ## Plans
 
-| Plan  | Name                       | Wave | Depends On | Status      |
-| ----- | -------------------------- | ---- | ---------- | ----------- |
-| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Complete    |
-| 04-02 | Web Light Mode             | 2    | 04-01      | Not started |
-| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Complete    |
+| Plan  | Name                       | Wave | Depends On | Status   |
+| ----- | -------------------------- | ---- | ---------- | -------- |
+| 04-01 | Design Tokens + WCAG Audit | 1    | —          | Complete |
+| 04-02 | Web Light Mode             | 2    | 04-01      | Complete |
+| 04-03 | Mobile EAS Build Pipeline  | 1    | —          | Complete |
 
 ## Progress
 
 | Metric             | Value    |
 | ------------------ | -------- |
-| Overall progress   | 16%      |
+| Overall progress   | 18%      |
 | Phases complete    | 3 / 19   |
-| Requirements done  | 13 / 136 |
-| Current phase reqs | 1 / 4    |
+| Requirements done  | 16 / 136 |
+| Current phase reqs | 4 / 4    |
 
 ## Phase Summary
 
@@ -67,10 +67,14 @@ Plan 04-01 and 04-03 (wave 1) complete. 04-02 (wave 2) ready.
 
 ## Last Action
 
-Plan 04-03 (Mobile EAS Build Pipeline) executed. 5 tasks complete, 4 commits. Fixed EAS project ID
-placeholder, synced app.json/app.config.js drift (versionCode, colors, asset patterns), added 8 EAS
-build convenience scripts, verified config validity, created BUILD.md. Wave 1 complete (04-01 +
-04-03). Wave 2 (04-02) ready.
+Phase 4 execution complete. All 3 plans executed across 2 waves:
+
+- 04-01 (Design Tokens + WCAG): 7 commits — canonical tokens.ts, unified ThemeProvider, Tailwind CSS
+  variables, WCAG AA fixes
+- 04-02 (Web Light Mode): 3 commits — theme-aware base styles, component classes, removed reload
+  hack, auth/layout visual QA
+- 04-03 (Mobile EAS Build): 5 commits — EAS project ID, config sync, build scripts, BUILD.md Total:
+  15 commits. All 4 requirements addressed (DESIGN-01, DESIGN-02, DESIGN-05, INFRA-08).
 
 ---
 
