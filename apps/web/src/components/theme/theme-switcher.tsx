@@ -71,24 +71,21 @@ export function ThemeSwitcher({
   };
 
   // Group themes by category
-  const themesByCategory = themes.reduce(
-    (acc, theme) => {
-      const category = theme.category;
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(theme);
-      return acc;
-    },
-     
-    {} as Record<string, AppTheme[]> // type assertion: reduce accumulator type
-  );
+  const initialAcc: Record<string, AppTheme[]> = {};
+  const themesByCategory = themes.reduce((acc, theme) => {
+    const category = theme.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(theme);
+    return acc;
+  }, initialAcc);
 
   return (
     <div className={`theme-switcher ${className}`}>
       <div className="mb-6">
         <h2 className="mb-2 text-2xl font-bold">Choose Your Theme</h2>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-foreground-muted">
           Select a theme to personalize your CGraph experience
         </p>
       </div>
@@ -97,7 +94,7 @@ export function ThemeSwitcher({
       <div className="space-y-8">
         {Object.entries(themesByCategory).map(([category, categoryThemes]) => (
           <div key={category}>
-            <h3 className="mb-4 text-lg font-semibold text-gray-300">
+            <h3 className="mb-4 text-lg font-semibold text-foreground-secondary">
               {getCategoryLabel(category)}
             </h3>
 
@@ -134,7 +131,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
       className={`relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isSelected
           ? 'border-emerald-500 shadow-lg shadow-emerald-500/50'
-          : 'border-gray-700 hover:border-gray-600'
+          : 'border-dark-600 hover:border-dark-500'
       } ${isLocked ? 'opacity-60' : ''} `}
       whileHover={{ scale: isLocked ? 1 : 1.02 }}
       whileTap={{ scale: isLocked ? 1 : 0.98 }}
@@ -185,14 +182,14 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
       </div>
 
       {/* Theme Info */}
-      <div className="border-t border-gray-700 bg-gray-900/50 p-4">
+      <div className="border-t border-dark-600 bg-dark-900/50 p-4">
         <div className="mb-2 flex items-start justify-between">
           <div className="flex-1">
-            <h4 className="flex items-center gap-2 font-semibold text-white">
+            <h4 className="flex items-center gap-2 font-semibold text-foreground">
               {theme.name}
               {theme.isPremium && <Sparkles className="h-4 w-4 text-yellow-500" />}
             </h4>
-            <p className="mt-1 text-xs text-gray-400">{theme.description}</p>
+            <p className="mt-1 text-xs text-foreground-muted">{theme.description}</p>
           </div>
         </div>
 
@@ -255,10 +252,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={loop(tweens.slow)}
-            >
+            <motion.div animate={{ rotate: 360 }} transition={loop(tweens.slow)}>
               <Sparkles className="h-8 w-8 text-emerald-500" />
             </motion.div>
           </motion.div>

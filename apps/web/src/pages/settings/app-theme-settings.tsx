@@ -32,13 +32,12 @@ export default function AppThemeSettings() {
   const handleThemeChange = (themeId: string) => {
     setCurrentThemeId(themeId);
     localStorage.setItem('cgraph-app-theme', themeId);
-
-    // Trigger theme application
-    window.location.reload(); // Simple refresh to apply theme
+    // CSS variable system enables instant theme switching — no reload needed
   };
 
   const userIsPremium =
-    user?.subscription?.tier === 'premium' || (typeof user?.subscription?.tier === 'string' && user.subscription.tier === 'enterprise');
+    user?.subscription?.tier === 'premium' ||
+    (typeof user?.subscription?.tier === 'string' && user.subscription.tier === 'enterprise');
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -49,7 +48,7 @@ export default function AppThemeSettings() {
           <h1 className="text-3xl font-bold">App Theme</h1>
           <VisibilityBadge visible="local" />
         </div>
-        <p className="text-gray-400">
+        <p className="text-foreground-muted">
           Transform your entire CGraph experience with app-wide themes
         </p>
       </div>
@@ -64,8 +63,8 @@ export default function AppThemeSettings() {
           <div className="flex items-start gap-3">
             <Sparkles className="mt-1 h-6 w-6 text-purple-500" />
             <div className="flex-1">
-              <h3 className="mb-1 font-semibold text-white">Unlock Premium Themes</h3>
-              <p className="mb-3 text-sm text-gray-300">
+              <h3 className="mb-1 font-semibold text-foreground">Unlock Premium Themes</h3>
+              <p className="mb-3 text-sm text-foreground-secondary">
                 Get access to exclusive themes like Matrix, Cyberpunk, and more with a premium
                 subscription
               </p>
@@ -79,23 +78,23 @@ export default function AppThemeSettings() {
 
       {/* Info Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
           <h3 className="mb-2 font-semibold">🎨 Complete UI Transformation</h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-muted">
             App themes change the entire look and feel of CGraph
           </p>
         </div>
 
-        <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
           <h3 className="mb-2 font-semibold">✨ Your Customizations Preserved</h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-muted">
             Avatar borders and chat bubbles work with any theme
           </p>
         </div>
 
-        <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
           <h3 className="mb-2 font-semibold">🔒 Premium Exclusives</h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-muted">
             Matrix and special themes require premium subscription
           </p>
         </div>
@@ -109,12 +108,12 @@ export default function AppThemeSettings() {
       />
 
       {/* Additional Info */}
-      <div className="mt-8 rounded-lg border border-gray-700 bg-gray-800/30 p-6">
+      <div className="mt-8 rounded-lg border border-dark-600 bg-dark-800/30 p-6">
         <h3 className="mb-4 font-semibold">About App Themes</h3>
 
-        <div className="space-y-4 text-sm text-gray-400">
+        <div className="space-y-4 text-sm text-foreground-muted">
           <div>
-            <strong className="text-gray-300">What are app themes?</strong>
+            <strong className="text-foreground-secondary">What are app themes?</strong>
             <p>
               App themes transform the entire CGraph interface - colors, fonts, animations, and
               effects. They're different from your personal customizations (avatar borders, chat
@@ -123,7 +122,9 @@ export default function AppThemeSettings() {
           </div>
 
           <div>
-            <strong className="text-gray-300">How do themes work with customizations?</strong>
+            <strong className="text-foreground-secondary">
+              How do themes work with customizations?
+            </strong>
             <p>
               Your personal customizations (from Theme Customization page) are your digital identity
               - they follow you everywhere and are visible to others. App themes only change how YOU
@@ -132,7 +133,7 @@ export default function AppThemeSettings() {
           </div>
 
           <div>
-            <strong className="text-gray-300">Can I create custom themes?</strong>
+            <strong className="text-foreground-secondary">Can I create custom themes?</strong>
             <p>
               Custom theme creation is coming soon! Premium users will be able to create and share
               their own complete app themes.
