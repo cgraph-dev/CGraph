@@ -14,6 +14,7 @@ import deepLinks from './src/lib/deepLinks';
 import { ErrorBoundary } from './src/components/error/ErrorBoundary';
 import { E2EEProvider } from './src/lib/crypto/e2-ee-context';
 import RootNavigator from './src/navigation/RootNavigator';
+import BiometricGate from './src/app/_layout';
 import { queryClient } from './src/lib/queryClient';
 import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { initErrorTracking } from './src/lib/error-tracking';
@@ -116,7 +117,9 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <ErrorBoundary name="Root" showRetry>
             <E2EEProvider>
-              <AppContent />
+              <BiometricGate>
+                <AppContent />
+              </BiometricGate>
             </E2EEProvider>
           </ErrorBoundary>
         </QueryClientProvider>
