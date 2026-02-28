@@ -467,6 +467,8 @@ export type SettingsStackParamList = {
   GDPR: undefined;
   // Session management
   Sessions: undefined;
+  // Device management (E2EE multi-device)
+  LinkedDevices: undefined;
 };
 
 // Friend types
