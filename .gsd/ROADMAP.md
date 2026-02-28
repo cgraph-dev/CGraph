@@ -395,9 +395,25 @@ that must exist before scaling users.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+**Plans:** 7 plans in 1 wave (all parallel — independent vertical slices)
+
+- [ ] 08-01-PLAN.md — User search UI (web + mobile) wired to existing Meilisearch backend (SEARCH-02)
+- [ ] 08-02-PLAN.md — Contacts presence list with online/offline indicators (NOTIF-05)
+- [ ] 08-03-PLAN.md — Custom status persistence + expiry via Oban (NOTIF-06)
+- [ ] 08-04-PLAN.md — Profile edit with avatar cropping on web + mobile (AUTH-10)
+- [ ] 08-05-PLAN.md — Onboarding wizard enhancement: find friends + community steps (AUTH-09)
+- [ ] 08-06-PLAN.md — Block enforcement across messaging, presence, profile, search (MOD-03)
+- [ ] 08-07-PLAN.md — QR code login protocol: backend + web + mobile (AUTH-11)
+
+| Plan  | Scope                                                    | Wave | Status |
+| ----- | -------------------------------------------------------- | ---- | ------ |
+| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —      |
+| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —      |
+| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —      |
+| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —      |
+| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 1    | —      |
+| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 1    | —      |
+| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —      |
 
 ---
 
