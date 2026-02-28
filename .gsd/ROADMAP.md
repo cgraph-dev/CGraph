@@ -256,8 +256,8 @@ channel clients. This phase wires everything end-to-end across web and mobile.
 
 ### Plans
 
-| Plan  | Scope                                                                          | Wave | Status      |
-| ----- | ------------------------------------------------------------------------------ | ---- | ----------- |
+| Plan  | Scope                                                                          | Wave | Status                   |
+| ----- | ------------------------------------------------------------------------------ | ---- | ------------------------ |
 | 05-01 | Web Real-Time Message Transport — socket→store→UI wiring for receipts + typing | 1    | ✅ Complete (2026-02-28) |
 | 05-02 | Mobile Real-Time Message Transport — receipt ACK, status display, auto-read    | 1    | ✅ Complete (2026-02-28) |
 
@@ -293,9 +293,13 @@ thread replies, and emoji reactions are expected in any modern messenger. Cross-
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                             | Wave | Status |
+| ----- | --------------------------------------------------------------------------------- | ---- | ------ |
+| 06-01 | Edit History Backend + Shared Types — MessageEdit record wiring, EditHistory type | 1    | —      |
+| 06-02 | Soft-Delete Indicator — "[Message deleted]" placeholder on web + mobile           | 1    | —      |
+| 06-03 | Reply & Reaction Verification — Confirm MSG-07 + MSG-09 end-to-end                | 1    | —      |
+| 06-04 | Edit History UI — History viewer (web+mobile), mobile edit form                   | 2    | —      |
+| 06-05 | WatermelonDB Bridge — Wire chatStore ↔ WatermelonDB for offline sync              | 3    | —      |
 
 ---
 
@@ -867,27 +871,27 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ## Progress
 
-| Phase | Name                    | Status                   | Progress |
-| ----- | ----------------------- | ------------------------ | -------- |
-| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27) | 100%     |
-| 2     | Auth Core               | ✅ Complete (2026-02-28) | 100%     |
-| 3     | Auth Advanced           | ✅ Complete (2026-02-28) | 100%     |
-| 4     | Design System & Mobile  | ✅ Complete (2026-02-28) | 100%     |
+| Phase | Name                    | Status                    | Progress |
+| ----- | ----------------------- | ------------------------- | -------- |
+| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27)  | 100%     |
+| 2     | Auth Core               | ✅ Complete (2026-02-28)  | 100%     |
+| 3     | Auth Advanced           | ✅ Complete (2026-02-28)  | 100%     |
+| 4     | Design System & Mobile  | ✅ Complete (2026-02-28)  | 100%     |
 | 5     | Message Transport       | **Complete** (2026-02-28) | 100%     |
-| 6     | Message Features & Sync | Blocked by 5             | 0%       |
-| 7     | E2EE & Mobile Security  | Blocked by 5             | 0%       |
-| 8     | Social & Profiles       | Ready to plan            | 0%       |
-| 9     | Notifications & Safety  | Blocked by 8             | 0%       |
-| 10    | Message Extras          | Blocked by 6             | 0%       |
-| 11    | Groups & Channels       | Blocked by 5             | 0%       |
-| 12    | Roles & Moderation      | Blocked by 11            | 0%       |
-| 13    | Voice & Video           | Blocked by 12            | 0%       |
-| 14    | Forum Core              | Blocked by 12            | 0%       |
-| 15    | Forum Customization     | Blocked by 14            | 0%       |
-| 16    | Gamification            | Blocked by 14            | 0%       |
-| 17    | Monetization            | Blocked by 16            | 0%       |
-| 18    | Rich Media & Polish     | Blocked by 7,13          | 0%       |
-| 19    | Launch                  | Blocked by 15,17,18      | 0%       |
+| 6     | Message Features & Sync | Blocked by 5              | 0%       |
+| 7     | E2EE & Mobile Security  | Blocked by 5              | 0%       |
+| 8     | Social & Profiles       | Ready to plan             | 0%       |
+| 9     | Notifications & Safety  | Blocked by 8              | 0%       |
+| 10    | Message Extras          | Blocked by 6              | 0%       |
+| 11    | Groups & Channels       | Blocked by 5              | 0%       |
+| 12    | Roles & Moderation      | Blocked by 11             | 0%       |
+| 13    | Voice & Video           | Blocked by 12             | 0%       |
+| 14    | Forum Core              | Blocked by 12             | 0%       |
+| 15    | Forum Customization     | Blocked by 14             | 0%       |
+| 16    | Gamification            | Blocked by 14             | 0%       |
+| 17    | Monetization            | Blocked by 16             | 0%       |
+| 18    | Rich Media & Polish     | Blocked by 7,13           | 0%       |
+| 19    | Launch                  | Blocked by 15,17,18       | 0%       |
 
 ---
 
