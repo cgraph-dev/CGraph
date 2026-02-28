@@ -40,7 +40,10 @@ export function LoginFormFields({
   return (
     <>
       <motion.div variants={itemVariants}>
-        <label htmlFor="identifier" className="mb-2 block text-sm font-medium text-gray-300">
+        <label
+          htmlFor="identifier"
+          className="mb-2 block text-sm font-medium text-foreground-secondary"
+        >
           {t('login.email_or_username')}
         </label>
         <motion.input
@@ -50,14 +53,17 @@ export function LoginFormFields({
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="username"
-          className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder={t('login.email_placeholder')}
           whileFocus={reduced ? {} : { scale: 1.01 }}
         />
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
+        <label
+          htmlFor="password"
+          className="mb-2 block text-sm font-medium text-foreground-secondary"
+        >
           {t('login.password')}
         </label>
         <div className="relative">
@@ -68,7 +74,7 @@ export function LoginFormFields({
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
             whileFocus={reduced ? {} : { scale: 1.01 }}
           />
@@ -85,7 +91,7 @@ export function LoginFormFields({
             type="checkbox"
             className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
           />
-          <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">
+          <span className="text-sm text-foreground-muted transition-colors group-hover:text-foreground-secondary">
             {t('login.remember_me')}
           </span>
         </label>

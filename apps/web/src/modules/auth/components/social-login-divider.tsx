@@ -44,7 +44,7 @@ export function SocialLoginDivider({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="relative bg-dark-900 px-4 text-sm text-white/50"
+          className="relative bg-dark-900 px-4 text-sm text-foreground-muted"
         >
           {text}
         </motion.span>
@@ -110,6 +110,6 @@ export function SocialLoginDivider({
       />
     </div>
   );
-};
+}
 
 export default SocialLoginDivider;

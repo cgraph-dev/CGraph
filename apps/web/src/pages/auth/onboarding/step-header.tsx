@@ -37,8 +37,8 @@ export function StepHeader({ currentStep }: StepHeaderProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
         >
-          <h2 className="text-2xl font-bold text-white">{step?.title}</h2>
-          <p className="mt-2 text-gray-400">{step?.description}</p>
+          <h2 className="text-2xl font-bold text-foreground">{step?.title}</h2>
+          <p className="mt-2 text-foreground-muted">{step?.description}</p>
         </motion.div>
       </AnimatePresence>
     </div>

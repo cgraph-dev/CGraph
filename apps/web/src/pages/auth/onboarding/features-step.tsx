@@ -20,7 +20,7 @@ export function FeaturesStep() {
       animate="visible"
       className="space-y-6"
     >
-      <motion.p variants={itemVariants} className="mb-8 text-center text-gray-300">
+      <motion.p variants={itemVariants} className="mb-8 text-center text-foreground-secondary">
         Here&apos;s what you can do with CGraph:
       </motion.p>
       <div className="grid grid-cols-2 gap-4">
@@ -32,10 +32,10 @@ export function FeaturesStep() {
             className="group rounded-xl border border-dark-600 bg-dark-800/30 p-4 transition-all duration-200 hover:border-primary-500/50 hover:bg-dark-800/50"
           >
             <span className="text-2xl">{feature.icon}</span>
-            <h4 className="mt-2 font-medium text-white transition-colors group-hover:text-primary-400">
+            <h4 className="mt-2 font-medium text-foreground transition-colors group-hover:text-primary-400">
               {feature.title}
             </h4>
-            <p className="mt-1 text-xs text-gray-400">{feature.description}</p>
+            <p className="mt-1 text-xs text-foreground-muted">{feature.description}</p>
           </motion.div>
         ))}
       </div>

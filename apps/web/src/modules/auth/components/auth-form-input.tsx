@@ -94,7 +94,7 @@ export function AuthFormInput({
           <input
             ref={ref}
             type={inputType}
-            className={`peer w-full rounded-xl border bg-dark-800/50 px-4 pb-2 pt-6 text-white placeholder-transparent transition-all focus:outline-none focus:ring-2 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} ${getBorderColor()} `}
+            className={`peer w-full rounded-xl border bg-dark-800/50 px-4 pb-2 pt-6 text-foreground placeholder-transparent transition-all focus:outline-none focus:ring-2 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} ${getBorderColor()} `}
             placeholder={label}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -161,7 +161,7 @@ export function AuthFormInput({
           <input
             ref={ref}
             type={inputType}
-            className={`w-full rounded-xl border-0 bg-dark-700/50 px-4 py-3 text-white placeholder-white/40 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/30 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} `}
+            className={`w-full rounded-xl border-0 bg-dark-700/50 px-4 py-3 text-foreground placeholder-foreground-muted/40 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/30 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} `}
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={handleChange}
@@ -210,7 +210,7 @@ export function AuthFormInput({
         <input
           ref={ref}
           type={inputType}
-          className={`w-full rounded-xl border bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 transition-all focus:scale-[1.01] focus:outline-none focus:ring-2 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} ${getBorderColor()} `}
+          className={`w-full rounded-xl border bg-dark-800/50 px-4 py-3 text-foreground placeholder-foreground-muted/40 transition-all focus:scale-[1.01] focus:outline-none focus:ring-2 ${icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''} ${getBorderColor()} `}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleChange}

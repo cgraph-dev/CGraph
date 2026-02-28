@@ -76,7 +76,7 @@ export function FloatingSidebar({
         <GlassCard variant="crystal" className="flex h-full flex-col p-2">
           <button
             onClick={toggleCollapsed}
-            className="absolute -right-3 top-8 rounded-full border border-white/10 bg-dark-800 p-1.5 hover:bg-dark-700"
+            className="absolute -right-3 top-8 rounded-full border border-dark-600/30 bg-dark-800 p-1.5 hover:bg-dark-700"
           >
             {isCollapsed ? (
               <ChevronRightIcon className="h-4 w-4 text-white" />
@@ -117,7 +117,7 @@ export function FloatingSidebar({
                     <motion.div
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-dark-800 px-3 py-1.5 text-sm text-white"
+                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-dark-800 px-3 py-1.5 text-sm text-foreground"
                     >
                       {group.name}
                     </motion.div>

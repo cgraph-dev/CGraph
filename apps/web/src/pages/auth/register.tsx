@@ -82,7 +82,7 @@ export default function Register() {
         <h2 className="text-3xl font-bold text-white">
           <GlitchText text="Create your account" className="matrix-glow" />
         </h2>
-        <p className="mt-2 text-gray-400">
+        <p className="mt-2 text-foreground-muted">
           <TextScramble
             text="Join the community and start connecting"
             delay={1000}
@@ -110,7 +110,7 @@ export default function Register() {
           <div className="w-full border-t border-dark-600/50" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-transparent px-4 text-gray-500 backdrop-blur-sm">
+          <span className="bg-transparent px-4 text-foreground-muted backdrop-blur-sm">
             Or sign up with
           </span>
         </div>
@@ -127,7 +127,10 @@ export default function Register() {
       </motion.div>
 
       {/* Sign In Link with matrix styling */}
-      <motion.p variants={reduced ? {} : itemVariants} className="text-center text-gray-400">
+      <motion.p
+        variants={reduced ? {} : itemVariants}
+        className="text-center text-foreground-muted"
+      >
         Already have an account?{' '}
         <Link to="/login" className="matrix-link font-medium">
           Sign in

@@ -94,36 +94,39 @@ export function TopNav({
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`sticky top-0 z-30 border-b border-white/5 ${getBackgroundClass()} ${className} `}
+      className={`sticky top-0 z-30 border-b border-dark-600/20 ${getBackgroundClass()} ${className} `}
     >
       <div className="flex h-16 items-center justify-between gap-4 px-4">
         {/* Left: menu toggle + breadcrumbs */}
         <div className="flex items-center gap-4">
-          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-white/10 lg:hidden">
+          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-dark-700/50 lg:hidden">
             {isMobileMenuOpen ? (
-              <XMarkIcon className="h-6 w-6 text-white" />
+              <XMarkIcon className="h-6 w-6 text-foreground" />
             ) : (
-              <Bars3Icon className="h-6 w-6 text-white" />
+              <Bars3Icon className="h-6 w-6 text-foreground" />
             )}
           </button>
 
           {showBreadcrumbs && breadcrumbs.length > 0 && (
             <nav className="hidden items-center gap-1 text-sm md:flex">
-              <Link to="/" className="text-white/40 transition-colors hover:text-white">
+              <Link
+                to="/"
+                className="text-foreground-muted transition-colors hover:text-foreground"
+              >
                 Home
               </Link>
               {breadcrumbs.map((crumb) => (
                 <React.Fragment key={crumb.label}>
-                  <ChevronRightIcon className="h-4 w-4 text-white/20" />
+                  <ChevronRightIcon className="h-4 w-4 text-foreground-muted/50" />
                   {crumb.path ? (
                     <Link
                       to={crumb.path}
-                      className="text-white/40 transition-colors hover:text-white"
+                      className="text-foreground-muted transition-colors hover:text-foreground"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="font-medium text-white">{crumb.label}</span>
+                    <span className="font-medium text-foreground">{crumb.label}</span>
                   )}
                 </React.Fragment>
               ))}
@@ -135,7 +138,7 @@ export function TopNav({
         {showSearch && (
           <form onSubmit={handleSearch} className="hidden max-w-md flex-1 sm:block">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground-muted" />
               <motion.input
                 type="text"
                 placeholder="Search..."
@@ -148,7 +151,7 @@ export function TopNav({
                     ? 'rgba(255, 255, 255, 0.1)'
                     : 'rgba(255, 255, 255, 0.05)',
                 }}
-                className="w-full rounded-xl py-2 pl-10 pr-4 text-white placeholder-white/40 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                className="w-full rounded-xl py-2 pl-10 pr-4 text-foreground placeholder-foreground-muted transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/30"
               />
               {searchQuery && (
                 <button
@@ -156,7 +159,7 @@ export function TopNav({
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  <XMarkIcon className="h-4 w-4 text-white/40 hover:text-white" />
+                  <XMarkIcon className="h-4 w-4 text-foreground-muted hover:text-foreground" />
                 </button>
               )}
             </div>
@@ -169,12 +172,12 @@ export function TopNav({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleDarkMode}
-            className="rounded-lg p-2 hover:bg-white/10"
+            className="rounded-lg p-2 hover:bg-dark-700/50"
           >
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5 text-white/60" />
+              <SunIcon className="h-5 w-5 text-foreground-secondary" />
             ) : (
-              <MoonIcon className="h-5 w-5 text-white/60" />
+              <MoonIcon className="h-5 w-5 text-foreground-secondary" />
             )}
           </motion.button>
 
@@ -184,6 +187,6 @@ export function TopNav({
       </div>
     </motion.header>
   );
-};
+}
 
 export default TopNav;

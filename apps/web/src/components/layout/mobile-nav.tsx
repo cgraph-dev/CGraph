@@ -119,7 +119,7 @@ export function MobileNav({
         animate={{ y: 0, opacity: 1 }}
         className={`fixed bottom-4 left-4 right-4 z-50 ${className}`}
       >
-        <div className="rounded-2xl border border-white/10 bg-dark-800/90 shadow-2xl backdrop-blur-xl">
+        <div className="rounded-2xl border border-dark-600/30 bg-dark-800/90 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center justify-around p-2">
             {navItems.map((item) => {
               const active = isActive(item.path);
@@ -142,7 +142,13 @@ export function MobileNav({
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ scale: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' } }}
+                        transition={{
+                          scale: {
+                            duration: durations.loop.ms / 1000,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          },
+                        }}
                         className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
@@ -169,7 +175,7 @@ export function MobileNav({
       <motion.nav
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-dark-900 ${className}`}
+        className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-dark-600/20 bg-dark-900 ${className}`}
       >
         <div className="flex items-center justify-around px-1 py-2">
           {navItems.map((item) => {
@@ -208,7 +214,7 @@ export function MobileNav({
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-dark-900/95 backdrop-blur-xl ${className}`}
+      className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-dark-600/30 bg-dark-900/95 backdrop-blur-xl ${className}`}
     >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
@@ -236,7 +242,13 @@ export function MobileNav({
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ scale: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' } }}
+                      transition={{
+                        scale: {
+                          duration: durations.loop.ms / 1000,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        },
+                      }}
                       className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                     >
                       {item.badge > 99 ? '99+' : item.badge}
@@ -265,6 +277,6 @@ export function MobileNav({
       </div>
     </motion.nav>
   );
-};
+}
 
 export default MobileNav;
