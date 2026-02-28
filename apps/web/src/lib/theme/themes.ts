@@ -190,7 +190,7 @@ export const THEME_MATRIX: Theme = {
     surfaceBorder: '#1a3a1a',
     textPrimary: '#00ff41',
     textSecondary: '#00cc33',
-    textMuted: '#008822',
+    textMuted: '#00b33c',
     textInverse: '#000000',
     success: '#00ff41',
     warning: '#ffff00',

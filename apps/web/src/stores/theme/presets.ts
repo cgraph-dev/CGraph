@@ -337,7 +337,7 @@ export function getPresetCategory(presetId: string): string {
 // =============================================================================
 
 export const DEFAULT_CHAT_BUBBLE: ChatBubbleConfig = {
-  ownMessageBg: '#10b981',
+  ownMessageBg: '#059669',
   otherMessageBg: '#374151',
   ownMessageText: '#ffffff',
   otherMessageText: '#ffffff',
@@ -391,7 +391,7 @@ export const CHAT_BUBBLE_PRESETS: Record<string, Partial<ChatBubbleConfig>> = {
     hoverEffect: true,
   },
   glass: {
-    ownMessageBg: '#10b98150',
+    ownMessageBg: '#05966980',
     otherMessageBg: '#37415150',
     useGradient: true,
     showTail: false,
