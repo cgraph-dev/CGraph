@@ -13,8 +13,8 @@ export { ProgressBar } from './progress-bar';
 export { StepHeader } from './step-header';
 export { WelcomeStep } from './welcome-step';
 export { ProfileStep } from './profile-step';
-export { NotificationsStep } from './notifications-step';
-export { FeaturesStep } from './features-step';
+export { FindFriendsStep } from './find-friends-step';
+export { CommunityStep } from './community-step';
 export { NavigationButtons } from './navigation-buttons';
 export { useOnboarding } from './useOnboarding';
 export {

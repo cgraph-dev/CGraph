@@ -12,11 +12,10 @@ import { ProgressBar } from './progress-bar';
 import { StepHeader } from './step-header';
 import { WelcomeStep } from './welcome-step';
 import { ProfileStep } from './profile-step';
-import { NotificationsStep } from './notifications-step';
-import { FeaturesStep } from './features-step';
+import { FindFriendsStep } from './find-friends-step';
+import { CommunityStep } from './community-step';
 import { NavigationButtons } from './navigation-buttons';
 import { pageVariants } from './animations';
-import type { NotificationKey } from './types';
 import { tweens } from '@/lib/animation-presets';
 
 /**
@@ -33,13 +32,8 @@ export default function Onboarding() {
     handleBack,
     handleSkip,
     updateProfileData,
-    setProfileData,
     totalSteps,
   } = useOnboarding();
-
-  const handleNotificationToggle = (key: NotificationKey) => {
-    setProfileData((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -62,9 +56,9 @@ export default function Onboarding() {
           />
         );
       case 3:
-        return <NotificationsStep profileData={profileData} onToggle={handleNotificationToggle} />;
+        return <FindFriendsStep />;
       case 4:
-        return <FeaturesStep />;
+        return <CommunityStep />;
       default:
         return null;
     }
