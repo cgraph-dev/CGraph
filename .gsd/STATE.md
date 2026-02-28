@@ -17,15 +17,15 @@ End-to-end encryption for 1:1 messages + biometric auth on mobile.
 ## Position
 
 - **Phase:** 7 of 19 — E2EE & Mobile Security
-- **Plan:** 8 plans in 4 waves — verified ✓
-- **Status:** Ready to execute
-- **Last activity:** 2026-02-28 — Phase 7 planned (8 plans, 4 waves)
+- **Plan:** 07-01 complete — executing wave 1
+- **Status:** Executing
+- **Last activity:** 2026-02-28 — Plan 07-01 complete (Web PQXDH + auto-bootstrap)
 
 ## Plans
 
 | Plan  | Objective                               | Wave | Autonomous | Depends On |
 | ----- | --------------------------------------- | ---- | ---------- | ---------- |
-| 07-01 | Web PQXDH enable + auto-bootstrap       | 1    | ✅          | —          |
+| 07-01 | Web PQXDH enable + auto-bootstrap       | 1    | ✅          | —          | ✅ Done |
 | 07-02 | Mobile PQ-bridge wiring + auto-bootstrap| 1    | ✅          | —          |
 | 07-03 | Biometric auth gate on mobile           | 1    | ✅          | —          |
 | 07-04 | Web decrypt-on-receive + lock icon      | 2    | ✅          | 07-01      |
@@ -105,11 +105,10 @@ Resume file: None
 
 ## Last Action
 
-Phase 7 planned. 8 plans in 4 waves verified by checker (0 blockers, 2 warnings).
-Research confirmed @cgraph/crypto is complete — Phase 7 is integration engineering.
-Plans cover: PQXDH+Triple Ratchet wiring (web+mobile), auto-bootstrap, biometric auth,
-decrypt-on-receive + lock icons, safety number verification, multi-device key sync.
-Plan 07-08 (multi-device sync) has human-verify checkpoint. Next: `/execute-phase 7`.
+Plan 07-01 executed. Web E2EE now defaults to PQXDH + Triple Ratchet and auto-bootstraps
+key bundles on first login. useTripleRatchet=true, auto-bootstrap in initialize(),
+session manager PQ routing verified. 2 commits: a0eb0ac2 (feat), 9ef7a53c (test).
+Next: Plans 07-02 (Mobile PQ-bridge) and 07-03 (Biometric auth) — both Wave 1, parallel.
 
 ---
 
