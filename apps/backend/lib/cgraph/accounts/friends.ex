@@ -57,6 +57,12 @@ defmodule CGraph.Accounts.Friends do
   @doc "Checks if a user has blocked another user."
   defdelegate blocked?(blocker_id, blocked_id), to: Queries
 
+  @doc "Checks if either user has blocked the other (bidirectional)."
+  defdelegate mutually_blocked?(user_a_id, user_b_id), to: Queries
+
+  @doc "Gets all user IDs involved in a block relationship with the given user."
+  defdelegate get_blocked_user_ids(user_id), to: Queries
+
   @doc "Gets the relationship between two users."
   defdelegate get_relationship(user_id, other_id), to: Queries
 

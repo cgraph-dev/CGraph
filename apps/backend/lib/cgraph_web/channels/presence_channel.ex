@@ -20,6 +20,7 @@ defmodule CGraphWeb.PresenceChannel do
   use CGraphWeb, :channel
 
   alias CGraph.Accounts.Friends
+  alias CGraph.Accounts.Friends.Queries, as: FriendQueries
   alias CGraph.Accounts.User
   alias CGraph.Presence
   alias CGraph.Repo
@@ -52,8 +53,11 @@ defmodule CGraphWeb.PresenceChannel do
     user = Repo.get!(User, user.id)
     {restored_status, restored_meta} = restore_persisted_status(user)
 
-    # Get user's friend IDs for presence filtering
+    # Get user's friend IDs for presence filtering, excluding blocked users
     friend_ids = get_friend_ids(user.id)
+    blocked_ids = FriendQueries.get_blocked_user_ids(user.id)
+    blocked_set = MapSet.new(blocked_ids)
+    friend_ids = Enum.reject(friend_ids, &MapSet.member?(blocked_set, &1))
 
     # Track user in global presence with device metadata + restored status
     # Using "lobby" as the room_id for the global presence channel
@@ -277,8 +281,11 @@ defmodule CGraphWeb.PresenceChannel do
   def handle_in("refresh_friends", _params, socket) do
     user = socket.assigns.current_user
 
-    # Refresh friend list (useful after adding/removing friends)
+    # Refresh friend list (useful after adding/removing/blocking friends)
     friend_ids = get_friend_ids(user.id)
+    blocked_ids = FriendQueries.get_blocked_user_ids(user.id)
+    blocked_set = MapSet.new(blocked_ids)
+    friend_ids = Enum.reject(friend_ids, &MapSet.member?(blocked_set, &1))
 
     # Push updated presence list filtered by new friends
     # Uses pipelined Redis lookups — O(F) not O(all users)

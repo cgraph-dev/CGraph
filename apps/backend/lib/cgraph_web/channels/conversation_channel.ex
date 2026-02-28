@@ -11,6 +11,7 @@ defmodule CGraphWeb.ConversationChannel do
   """
   use CGraphWeb, :channel
 
+  alias CGraph.Accounts.Friends
   alias CGraph.Messaging
   alias CGraph.Messaging.DeliveryTracking
   alias CGraph.Presence
@@ -33,13 +34,23 @@ defmodule CGraphWeb.ConversationChannel do
       {:error, :not_found} ->
         {:error, %{reason: "not_found"}}
 
-      {:ok, _conversation} ->
+      {:ok, conversation} ->
         if Messaging.user_in_conversation?(conversation_id, user.id) do
-          send(self(), :after_join)
-          socket = socket
-            |> assign(:conversation_id, conversation_id)
-            |> assign(:rate_limit_messages, [])  # Initialize rate limit tracking
-          {:ok, socket}
+          # Block check: reject join if any other participant has a mutual block
+          other_participant_ids =
+            conversation.participants
+            |> Enum.map(& &1.user_id)
+            |> Enum.reject(&(&1 == user.id))
+
+          if Enum.any?(other_participant_ids, &Friends.Queries.mutually_blocked?(user.id, &1)) do
+            {:error, %{reason: "blocked"}}
+          else
+            send(self(), :after_join)
+            socket = socket
+              |> assign(:conversation_id, conversation_id)
+              |> assign(:rate_limit_messages, [])  # Initialize rate limit tracking
+            {:ok, socket}
+          end
         else
           {:error, %{reason: "unauthorized"}}
         end
@@ -106,37 +117,20 @@ defmodule CGraphWeb.ConversationChannel do
     user = socket.assigns.current_user
     conversation_id = socket.assigns.conversation_id
 
-    # Check rate limit first
-    case check_rate_limit(socket) do
-      {:error, :rate_limited, socket} ->
-        {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
+    # Block check: reject if sender has a mutual block with any participant
+    with {:ok, conversation} <- Messaging.get_conversation(conversation_id) do
+      other_participant_ids =
+        conversation.participants
+        |> Enum.map(& &1.user_id)
+        |> Enum.reject(&(&1 == user.id))
 
-      {:ok, socket} ->
-        case Messaging.create_message(%{
-          content: content,
-          sender_id: user.id,
-          conversation_id: conversation_id,
-          content_type: Map.get(params, "content_type", "text"),
-          reply_to_id: Map.get(params, "reply_to_id"),
-          is_encrypted: Map.get(params, "is_encrypted", true),
-          # File attachment fields
-          file_url: Map.get(params, "file_url"),
-          file_name: Map.get(params, "file_name"),
-          file_size: Map.get(params, "file_size"),
-          file_mime_type: Map.get(params, "file_mime_type"),
-          thumbnail_url: Map.get(params, "thumbnail_url")
-        }) do
-          {:ok, message} ->
-            # Preload sender for serialization (including reply_to sender)
-            message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])
-            serialized = MessageJSON.message_data(message)
-
-            broadcast!(socket, "new_message", %{message: serialized})
-            {:reply, {:ok, %{message_id: message.id}}, socket}
-
-          {:error, changeset} ->
-            {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
-        end
+      if Enum.any?(other_participant_ids, &Friends.Queries.mutually_blocked?(user.id, &1)) do
+        {:reply, {:error, %{reason: "blocked"}}, socket}
+      else
+        send_message(socket, user, conversation_id, content, params)
+      end
+    else
+      _ -> {:reply, {:error, %{reason: "conversation_not_found"}}, socket}
     end
   end
 
@@ -364,6 +358,41 @@ defmodule CGraphWeb.ConversationChannel do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  # Extracted message creation logic (after block + rate limit checks)
+  @spec send_message(Phoenix.Socket.t(), map(), String.t(), String.t(), map()) ::
+          {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
+  defp send_message(socket, user, conversation_id, content, params) do
+    case check_rate_limit(socket) do
+      {:error, :rate_limited, socket} ->
+        {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
+
+      {:ok, socket} ->
+        case Messaging.create_message(%{
+          content: content,
+          sender_id: user.id,
+          conversation_id: conversation_id,
+          content_type: Map.get(params, "content_type", "text"),
+          reply_to_id: Map.get(params, "reply_to_id"),
+          is_encrypted: Map.get(params, "is_encrypted", true),
+          file_url: Map.get(params, "file_url"),
+          file_name: Map.get(params, "file_name"),
+          file_size: Map.get(params, "file_size"),
+          file_mime_type: Map.get(params, "file_mime_type"),
+          thumbnail_url: Map.get(params, "thumbnail_url")
+        }) do
+          {:ok, message} ->
+            message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])
+            serialized = MessageJSON.message_data(message)
+
+            broadcast!(socket, "new_message", %{message: serialized})
+            {:reply, {:ok, %{message_id: message.id}}, socket}
+
+          {:error, changeset} ->
+            {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+        end
+    end
   end
 
   # Rate limiting: sliding window implementation

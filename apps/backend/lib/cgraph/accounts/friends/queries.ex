@@ -169,6 +169,35 @@ defmodule CGraph.Accounts.Friends.Queries do
   end
 
   @doc """
+  Check if either user has blocked the other (bidirectional).
+  Returns true if A blocked B OR B blocked A.
+  """
+  @spec mutually_blocked?(String.t(), String.t()) :: boolean()
+  def mutually_blocked?(user_a_id, user_b_id) do
+    blocked?(user_a_id, user_b_id) || blocked?(user_b_id, user_a_id)
+  end
+
+  @doc """
+  Get all user IDs that are blocked by OR have blocked the given user.
+  Returns a flat list of user IDs involved in any block relationship with the given user.
+  """
+  @spec get_blocked_user_ids(String.t()) :: [String.t()]
+  def get_blocked_user_ids(user_id) do
+    from(f in Friendship,
+      where: (f.user_id == ^user_id or f.friend_id == ^user_id) and f.status == :blocked,
+      select:
+        fragment(
+          "CASE WHEN ? = ? THEN ? ELSE ? END",
+          f.user_id,
+          type(^user_id, Ecto.UUID),
+          f.friend_id,
+          f.user_id
+        )
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Gets the relationship between two users.
   """
   @spec get_relationship(String.t(), String.t()) :: Friendship.t() | nil
