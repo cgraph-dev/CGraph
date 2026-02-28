@@ -2,11 +2,18 @@ defmodule CGraph.Auth.SessionTokenBridgeTest do
   @moduledoc """
   Integration tests for the session → token revocation bridge.
 
-  Verifies that revoking a session in the DB also invalidates
-  the associated JWT tokens in TokenManager.Store. Without this
-  bridge, a revoked session's access/refresh tokens remain valid
-  in the Store until they expire naturally, allowing continued
-  API access after logout.
+  ## Why This Bridge Exists
+
+  `CGraph.Accounts.Sessions` manages DB session records while
+  `CGraph.Auth.TokenManager.Store` manages JWT token state (ETS/Redis).
+  Without a bridge, revoking a session only marks it in the DB — the
+  JWT tokens remain valid in the Store until they expire, allowing
+  continued API access after logout.
+
+  These tests verify that session revocation cascades to the token store,
+  covering: single session revocation, "revoke other sessions" (multi-device
+  logout), refresh token rejection, graceful handling when no tokens exist,
+  and DB/Store consistency.
   """
   use CGraph.DataCase, async: false
 

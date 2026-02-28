@@ -3,9 +3,12 @@ defmodule CGraph.Accounts.SessionManagement do
   Session token management — generate, resolve, list, revoke.
 
   Extracted from `CGraph.Accounts` to keep the facade under 500 lines.
+  Session revocation is bridged to `CGraph.Auth.TokenManager.Store`
+  so that invalidating a session also revokes its JWT tokens.
   """
 
   import Ecto.Query, warn: false
+  require Logger
 
   alias CGraph.Accounts.{Session, Token, User}
   alias CGraph.Auth.TokenManager.Store, as: TokenStore
@@ -88,6 +91,13 @@ defmodule CGraph.Accounts.SessionManagement do
            |> Repo.update() do
       # Bridge: revoke associated tokens in TokenManager.Store
       TokenStore.revoke_tokens_for_session(session.id)
+
+      Logger.info("session_revoked",
+        session_id: session.id,
+        user_id: session.user_id,
+        source: :session_management
+      )
+
       {:ok, revoked}
     end
   end

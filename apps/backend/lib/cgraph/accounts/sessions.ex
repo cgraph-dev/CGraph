@@ -2,10 +2,23 @@ defmodule CGraph.Accounts.Sessions do
   @moduledoc """
   Session management operations.
 
-  Handles session CRUD, activity tracking, and device management.
+  Handles session CRUD, activity tracking, device management, and bridges
+  session revocation to `CGraph.Auth.TokenManager.Store` so that revoking
+  a session also invalidates its JWT tokens.
+
+  ## Session-Token Bridge
+
+  When a session is revoked (via `revoke_session/1`, `revoke_session_by_id/2`,
+  or `revoke_other_sessions/2`), the associated JWT tokens in
+  `TokenManager.Store` are also revoked. This prevents revoked sessions
+  from making authenticated API requests until the access token expires.
+
+  The bridge is one-way: `Sessions` → `TokenManager.Store`. There is no
+  circular dependency — `TokenManager` does not depend on `Sessions`.
   """
 
   import Ecto.Query
+  require Logger
   alias CGraph.Accounts.Session
   alias CGraph.Auth.TokenManager.Store, as: TokenStore
   alias CGraph.Repo
@@ -96,7 +109,14 @@ defmodule CGraph.Accounts.Sessions do
            |> Ecto.Changeset.change(revoked_at: DateTime.utc_now())
            |> Repo.update() do
       # Bridge: revoke associated tokens in TokenManager.Store
-      TokenStore.revoke_tokens_for_session(session.id)
+      tokens_revoked = revoke_session_tokens(session.id)
+
+      Logger.info("session_revoked",
+        session_id: session.id,
+        user_id: session.user_id,
+        tokens_revoked: tokens_revoked
+      )
+
       {:ok, revoked}
     end
   end
@@ -152,17 +172,36 @@ defmodule CGraph.Accounts.Sessions do
       |> Repo.all()
 
     # Bulk revoke sessions in DB
-    from(s in Session,
-      where: s.user_id == ^user.id,
-      where: s.id != ^current_session_id,
-      where: is_nil(s.revoked_at)
-    )
-    |> Repo.update_all(set: [revoked_at: DateTime.utc_now()])
+    {revoked_count, _} =
+      from(s in Session,
+        where: s.user_id == ^user.id,
+        where: s.id != ^current_session_id,
+        where: is_nil(s.revoked_at)
+      )
+      |> Repo.update_all(set: [revoked_at: DateTime.utc_now()])
 
     # Bridge: revoke tokens for each other session in TokenManager.Store
-    Enum.each(other_session_ids, &TokenStore.revoke_tokens_for_session/1)
+    total_tokens = Enum.reduce(other_session_ids, 0, fn sid, acc ->
+      acc + revoke_session_tokens(sid)
+    end)
+
+    Logger.info("other_sessions_revoked",
+      user_id: user.id,
+      current_session_id: current_session_id,
+      sessions_revoked: revoked_count,
+      tokens_revoked: total_tokens
+    )
 
     :ok
+  end
+
+  # Revoke all tokens associated with a session in TokenManager.Store.
+  # Returns the count of tokens revoked (0 if session has no tokens).
+  @spec revoke_session_tokens(String.t()) :: non_neg_integer()
+  defp revoke_session_tokens(session_id) do
+    jtis = TokenStore.get_session_token_jtis(session_id)
+    TokenStore.revoke_tokens_for_session(session_id)
+    length(jtis)
   end
 
   @doc """
