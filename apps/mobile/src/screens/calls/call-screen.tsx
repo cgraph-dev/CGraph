@@ -28,6 +28,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { RTCView } from 'react-native-webrtc';
 import { useThemeStore } from '@/stores';
 import { useCallStore } from '@/stores/callStore';
 import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
@@ -107,6 +108,7 @@ export default function CallScreen({ navigation, route }: Props) {
   const [_showControls, setShowControls] = useState(true);
   const [isE2EEEnabled, setIsE2EEEnabled] = useState(false);
   const [groupParticipants, setGroupParticipants] = useState<MobileLiveKitParticipant[]>([]);
+  const [remoteStream, setRemoteStream] = useState<any>(null);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const ringAnim = useRef(new Animated.Value(0)).current;
@@ -151,6 +153,9 @@ export default function CallScreen({ navigation, route }: Props) {
       onCallEnded: () => {
         setCallStatus('ended');
         setTimeout(() => navigation.goBack(), 500);
+      },
+      onRemoteStream: (_userId, stream) => {
+        setRemoteStream(stream);
       },
       onError: (err) => {
         console.error('[CallScreen] WebRTC error:', err);
@@ -543,10 +548,16 @@ export default function CallScreen({ navigation, route }: Props) {
               </>
             ) : callStatus === 'connected' ? (
               isVideoEnabled && callType === 'video' ? (
-                // Video placeholder (in real app, use RTCView)
+                // Remote video via RTCView
                 <View style={styles.videoContainer}>
                   <View style={styles.remoteVideo}>
-                    {recipient?.avatarUrl ? (
+                    {remoteStream ? (
+                      <RTCView
+                        streamURL={remoteStream.toURL()}
+                        style={styles.remoteVideo}
+                        objectFit="cover"
+                      />
+                    ) : recipient?.avatarUrl ? (
                       <Image source={{ uri: recipient.avatarUrl }} style={styles.videoPlaceholder} />
                     ) : (
                       <LinearGradient

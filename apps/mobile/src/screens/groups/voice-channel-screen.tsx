@@ -151,6 +151,12 @@ export default function VoiceChannelScreen({ navigation, route }: Props) {
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
             {members.length} {members.length === 1 ? 'member' : 'members'} connected
           </Text>
+          {isMobileEncrypted() && (
+            <View style={styles.encryptionBadge}>
+              <Ionicons name="lock-closed" size={12} color="#22c55e" />
+              <Text style={styles.encryptionText}>E2EE</Text>
+            </View>
+          )}
         </View>
         <TouchableOpacity onPress={handleToggleParticipants} style={styles.headerAction}>
           <Ionicons
@@ -261,6 +267,17 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 13,
     marginTop: 2,
+  },
+  encryptionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+  },
+  encryptionText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#22c55e',
   },
   headerAction: {
     padding: 4,
