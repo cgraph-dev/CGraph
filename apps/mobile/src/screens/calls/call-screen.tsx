@@ -31,6 +31,8 @@ import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 import { useCallStore } from '@/stores/callStore';
 import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
+import { MobileLiveKitService, type MobileLiveKitParticipant } from '@/lib/webrtc/livekitService';
+import { setupMobileE2EE, isMobileEncrypted, decodeRoomKey, cleanupMobileE2EE } from '@/lib/webrtc/callEncryption';
 import socketManager from '@/lib/socket';
 import api from '../../lib/api';
 
@@ -44,6 +46,14 @@ type CallParams = {
     callType: 'audio' | 'video';
     incoming?: boolean;
     roomId?: string;
+    /** If true, use LiveKit SFU for group call */
+    isGroupCall?: boolean;
+    /** LiveKit server URL for group calls */
+    livekitUrl?: string;
+    /** LiveKit token for group calls */
+    livekitToken?: string;
+    /** E2EE room key (base64) */
+    e2eeKey?: string;
   };
 };
 
@@ -86,6 +96,7 @@ const CALL_STATES: Record<CallStatus, string> = {
 export default function CallScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
   const { recipientId, callType, _incoming = false, _roomId } = route.params;
+  const isGroupCall = route.params.isGroupCall ?? false;
 
   const [recipient, setRecipient] = useState<CallUser | null>(null);
   const [callStatus, setCallStatus] = useState<CallStatus>('idle');
@@ -94,12 +105,16 @@ export default function CallScreen({ navigation, route }: Props) {
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [_showControls, setShowControls] = useState(true);
+  const [isE2EEEnabled, setIsE2EEEnabled] = useState(false);
+  const [groupParticipants, setGroupParticipants] = useState<MobileLiveKitParticipant[]>([]);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const ringAnim = useRef(new Animated.Value(0)).current;
   const controlsAnim = useRef(new Animated.Value(1)).current;
   const callStartTimeRef = useRef<number | null>(null);
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const livekitRoomRef = useRef<any>(null);
+  const livekitCleanupRef = useRef<(() => void) | null>(null);
 
   // Fetch recipient info
   useEffect(() => {
@@ -116,6 +131,9 @@ export default function CallScreen({ navigation, route }: Props) {
 
   // Connect to WebRTC via Phoenix Channel and real peer connection
   useEffect(() => {
+    // Skip P2P setup for group calls (handled by LiveKit)
+    if (isGroupCall) return;
+
     const socket = socketManager.getSocket();
     if (!socket) {
       setCallStatus('error');
@@ -153,6 +171,87 @@ export default function CallScreen({ navigation, route }: Props) {
       // Cleanup handled by endCall
     };
   }, []);
+
+  // Connect to LiveKit for group calls
+  useEffect(() => {
+    if (!isGroupCall) return;
+
+    const { livekitUrl, livekitToken, e2eeKey } = route.params;
+    if (!livekitUrl || !livekitToken) {
+      setCallStatus('error');
+      return;
+    }
+
+    let mounted = true;
+
+    async function connectGroupCall() {
+      try {
+        setCallStatus('connecting');
+
+        const room = await MobileLiveKitService.connect(livekitUrl!, livekitToken!);
+        if (!mounted) return;
+
+        livekitRoomRef.current = room;
+
+        // Enable E2EE if key provided
+        if (e2eeKey) {
+          try {
+            const keyBytes = decodeRoomKey(e2eeKey);
+            await setupMobileE2EE(room, keyBytes);
+            setIsE2EEEnabled(true);
+          } catch {
+            setIsE2EEEnabled(false);
+          }
+        }
+
+        // Publish tracks
+        await MobileLiveKitService.publishAudioTrack(room);
+        if (callType === 'video') {
+          await MobileLiveKitService.publishVideoTrack(room);
+        }
+
+        // Event handlers
+        const cleanup = MobileLiveKitService.attachEventHandlers(room, {
+          onParticipantConnected: () => {
+            if (mounted) setGroupParticipants(MobileLiveKitService.getParticipants(room));
+          },
+          onParticipantDisconnected: () => {
+            if (mounted) setGroupParticipants(MobileLiveKitService.getParticipants(room));
+          },
+          onActiveSpeakersChanged: () => {
+            if (mounted) setGroupParticipants(MobileLiveKitService.getParticipants(room));
+          },
+          onDisconnected: () => {
+            if (mounted) {
+              setCallStatus('ended');
+              setTimeout(() => navigation.goBack(), 500);
+            }
+          },
+        });
+
+        livekitCleanupRef.current = cleanup;
+
+        setCallStatus('connected');
+        callStartTimeRef.current = Date.now();
+        setGroupParticipants(MobileLiveKitService.getParticipants(room));
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch (err) {
+        console.error('[CallScreen] LiveKit group call error:', err);
+        if (mounted) setCallStatus('error');
+      }
+    }
+
+    connectGroupCall();
+
+    return () => {
+      mounted = false;
+      livekitCleanupRef.current?.();
+      if (livekitRoomRef.current) {
+        cleanupMobileE2EE(livekitRoomRef.current);
+        MobileLiveKitService.disconnect(livekitRoomRef.current);
+      }
+    };
+  }, [isGroupCall]);
 
   // Track call duration
   useEffect(() => {
@@ -345,11 +444,21 @@ export default function CallScreen({ navigation, route }: Props) {
           {/* Header */}
           <Animated.View style={[styles.header, { opacity: controlsAnim }]}>
             <View style={styles.headerInfo}>
-              <Text style={styles.recipientName}>{recipient?.displayName || 'Calling...'}</Text>
+              <Text style={styles.recipientName}>
+                {isGroupCall ? 'Group Call' : (recipient?.displayName || 'Calling...')}
+              </Text>
               <Text style={styles.callStatus}>
                 {callStatus === 'connected' ? formattedDuration : CALL_STATES[callStatus]}
               </Text>
             </View>
+
+            {/* E2EE Indicator */}
+            {isE2EEEnabled && (
+              <View style={styles.e2eeIndicator}>
+                <Text style={styles.e2eeIcon}>🔒</Text>
+                <Text style={styles.e2eeLabel}>E2EE</Text>
+              </View>
+            )}
 
             {/* Connection Quality */}
             <View style={styles.qualityIndicator}>
@@ -683,5 +792,52 @@ const styles = StyleSheet.create({
   endCallIcon: {
     fontSize: 28,
     transform: [{ rotate: '-135deg' }],
+  },
+  e2eeIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+    gap: 4,
+  },
+  e2eeIcon: {
+    fontSize: 12,
+  },
+  e2eeLabel: {
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: '#22c55e',
+  },
+  groupGrid: {
+    flex: 1,
+    padding: 8,
+  },
+  groupGridRow: {
+    gap: 8,
+    marginBottom: 8,
+  },
+  groupParticipantTile: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    minHeight: 120,
+    borderWidth: 1,
+  },
+  groupParticipantName: {
+    fontSize: 13,
+    fontWeight: '500' as const,
+    color: '#fff',
+    marginTop: 8,
+    textAlign: 'center' as const,
+  },
+  groupParticipantMuted: {
+    fontSize: 10,
+    color: '#ef4444',
+    marginTop: 4,
   },
 });

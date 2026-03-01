@@ -25,6 +25,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useVoiceStateStore, type VoiceMember } from '@/stores/voiceStateStore';
 import { useThemeStore } from '@/stores';
+import { MobileLiveKitService } from '@/lib/webrtc/livekitService';
+import { isMobileEncrypted } from '@/lib/webrtc/callEncryption';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
