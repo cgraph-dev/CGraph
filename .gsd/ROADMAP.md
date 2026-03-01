@@ -20,7 +20,7 @@
 | 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
-| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Planned** (4 plans, 2 waves) |
+| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01) |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
 | 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                         |
