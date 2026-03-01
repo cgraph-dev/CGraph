@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Moderation do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Ban, Moderator, Post, PluginRuntime}
+  alias CGraph.Forums.{Ban, Moderator, Post, PluginRuntime, Warning}
   alias CGraph.Repo
 
   @doc """
@@ -220,5 +220,109 @@ defmodule CGraph.Forums.Moderation do
       can_edit_others: true,
       can_delete: true
     }
+  end
+
+  # ===========================================================================
+  # Warning / Strike System
+  # ===========================================================================
+
+  @mute_threshold 3
+  @temp_ban_threshold 6
+  @perm_ban_threshold 10
+
+  @doc """
+  Issue a warning to a user in a forum.
+
+  Auto-action thresholds:
+  - 3 pts → temp mute (24h)
+  - 6 pts → temp ban (7d)
+  - 10 pts → permanent ban
+  """
+  @spec warn_user(struct(), struct(), struct(), map()) :: {:ok, Warning.t()} | {:error, term()}
+  def warn_user(forum, user, issuer, attrs) do
+    warning_attrs = %{
+      forum_id: forum.id,
+      user_id: user.id,
+      issued_by_id: issuer.id,
+      reason: attrs["reason"] || attrs[:reason] || "Warning",
+      points: attrs["points"] || attrs[:points] || 1,
+      expires_at: attrs["expires_at"] || attrs[:expires_at]
+    }
+
+    case %Warning{} |> Warning.changeset(warning_attrs) |> Repo.insert() do
+      {:ok, warning} ->
+        check_auto_actions(forum, user)
+        {:ok, warning}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  @doc """
+  List warnings for a user in a forum.
+  """
+  @spec list_warnings(String.t(), String.t()) :: list(Warning.t())
+  def list_warnings(forum_id, user_id) do
+    from(w in Warning,
+      where: w.forum_id == ^forum_id and w.user_id == ^user_id,
+      where: w.revoked == false,
+      order_by: [desc: w.inserted_at],
+      preload: [:issued_by]
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Revoke a warning.
+  """
+  @spec revoke_warning(String.t(), String.t()) :: {:ok, Warning.t()} | {:error, term()}
+  def revoke_warning(warning_id, revoker_id) do
+    case Repo.get(Warning, warning_id) do
+      nil ->
+        {:error, :not_found}
+
+      warning ->
+        warning
+        |> Warning.revoke_changeset(%{revoked_by_id: revoker_id})
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Calculate active warning points for a user in a forum.
+  Only counts non-revoked, non-expired warnings.
+  """
+  @spec active_warning_points(String.t(), String.t()) :: integer()
+  def active_warning_points(forum_id, user_id) do
+    now = DateTime.utc_now()
+
+    from(w in Warning,
+      where: w.forum_id == ^forum_id and w.user_id == ^user_id,
+      where: w.revoked == false,
+      where: is_nil(w.expires_at) or w.expires_at > ^now,
+      select: coalesce(sum(w.points), 0)
+    )
+    |> Repo.one()
+  end
+
+  defp check_auto_actions(forum, user) do
+    points = active_warning_points(forum.id, user.id)
+
+    cond do
+      points >= @perm_ban_threshold ->
+        ban_user(forum, user, reason: "Auto-ban: #{points} warning points (permanent)")
+
+      points >= @temp_ban_threshold ->
+        expires = DateTime.add(DateTime.utc_now(), 7 * 24 * 3600, :second)
+        ban_user(forum, user, reason: "Auto-ban: #{points} warning points (7d)", expires_at: expires)
+
+      points >= @mute_threshold ->
+        expires = DateTime.add(DateTime.utc_now(), 24 * 3600, :second)
+        ban_user(forum, user, reason: "Auto-mute: #{points} warning points (24h)", expires_at: expires)
+
+      true ->
+        :ok
+    end
   end
 end
