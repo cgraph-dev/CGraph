@@ -10,25 +10,24 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 9 — Notifications & Safety** — **Complete**
+**Phase 10 — Message Extras** — **Planned**
 
-Push notifications, notification center, DND mode, GDPR account deletion. All 4 plans executed across 2 waves. Per-conversation notification preferences, DND schedule UI with timezone awareness, notification wiring audit with gap fixes, and account deletion polish with comprehensive cascade verification.
+Secondary messaging features: forward, pin, bookmark, link previews, disappearing messages. Discovery found 2/5 fully implemented (MSG-13 pin, MSG-14 bookmark w/ minor gaps), 2 partial (MSG-08 forward, MSG-16 link preview), 1 mostly done (MSG-17 disappearing). 3 plans created across 2 waves.
 
 ## Position
 
-- **Phase:** 9 of 19 — Notifications & Safety
-- **Plan:** 4/4 plans complete (09-01 through 09-04)
-- **Status:** Complete — all requirements fulfilled
-- **Last activity:** 2026-03-01 — Phase 9 executed (4 plans, 4 commits)
+- **Phase:** 10 of 19 — Message Extras
+- **Plan:** 3 plans created (10-01 through 10-03), 2 waves
+- **Status:** Planned — ready for execution
+- **Last activity:** 2026-03-01 — Phase 10 planned (3 plans, 2 waves)
 
 ## Plans
 
-| Plan  | Objective                                                  | Wave | Autonomous | Depends On | Status    |
-| ----- | ---------------------------------------------------------- | ---- | ---------- | ---------- | --------- |
-| 09-01 | Per-conversation & per-channel notification preferences     | 1    | ✅          | —          | ✅ Complete |
-| 09-02 | DND schedule UI & timezone-aware quiet hours               | 1    | ✅          | —          | ✅ Complete |
-| 09-03 | Notification wiring audit & gap fixes                      | 2    | ✅          | 09-01      | ✅ Complete |
-| 09-04 | Account deletion polish & phase integration                | 2    | ✅          | 09-01,02   | ✅ Complete |
+| Plan  | Objective                                                  | Wave | Autonomous | Depends On | Status  |
+| ----- | ---------------------------------------------------------- | ---- | ---------- | ---------- | ------- |
+| 10-01 | Message forwarding full stack (MSG-08)                      | 1    | ✅          | —          | —       |
+| 10-02 | Server-side link preview engine (MSG-16)                    | 1    | ✅          | —          | —       |
+| 10-03 | Extras polish — save buttons, mobile disappearing, types   | 2    | ✅          | 10-01,02   | —       |
 
 ## Progress
 
@@ -37,7 +36,7 @@ Push notifications, notification center, DND mode, GDPR account deletion. All 4 
 | Overall progress   | 47%      |
 | Phases complete    | 9 / 19   |
 | Requirements done  | 47 / 136 |
-| Current phase reqs | 7 / 7    |
+| Current phase reqs | 0 / 5    |
 
 ## Phase Summary
 
@@ -52,7 +51,7 @@ Push notifications, notification center, DND mode, GDPR account deletion. All 4 
 | 7   | E2EE & Mobile Security  | **Complete** (2026-02-28) |
 | 8   | Social & Profiles       | **Complete** (2026-03-01) |
 | 9   | Notifications & Safety  | **Complete** (2026-03-01) |
-| 10  | Message Extras          | Ready (Phase 6 done)      |
+| 10  | Message Extras          | **Planned** (3 plans)     |
 | 11  | Groups & Channels       | Ready (Phase 5 done)      |
 | 12  | Roles & Moderation      | Blocked by 11             |
 | 13  | Voice & Video           | Blocked by 12             |
@@ -121,16 +120,16 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 9 complete — all 4 plans executed
+Stopped at: Phase 10 planned — 3 plans ready for execution
 Resume file: None
 
 ## Last Action
 
-Phase 9 executed. 4 plans completed across 2 waves, 4 commits.
-- 09-01: Per-conversation notification preferences (migration, schema, context, controller, web+mobile UI)
-- 09-02: DND schedule UI + timezone-aware quiet hours (dnd_until field, web+mobile DND panels/toggles, presence sync)
-- 09-03: Notification wiring audit (offline push fix, lapsed engagement filter, unsubscribe headers, shared types)
-- 09-04: Account deletion polish (6 missing cascade deletes found+fixed, push token+session cleanup on soft delete, data export extended, 7 integration tests)
+Phase 10 planned. 3 plans created across 2 waves.
+Discovery: 2/5 requirements fully implemented (MSG-13 pin, MSG-14 bookmark).
+Partial: MSG-08 forward (web UI exists, no backend), MSG-16 link preview (rendering exists, no server fetch).
+Mostly done: MSG-17 disappearing (backend + web, missing mobile toggle).
+New work: forward backend+mobile (10-01), link preview engine (10-02), polish+integration (10-03).
 
 ---
 

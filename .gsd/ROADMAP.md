@@ -21,7 +21,7 @@
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01) |
-| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
+| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Planned** (3 plans, 2 waves) |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
 | 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                         |
 | 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12                         |
@@ -492,11 +492,21 @@ metadata make shared URLs useful. Disappearing messages add privacy options beyo
 4. Shared URL shows rich link preview with title, description, and image
 5. User enables disappearing messages and they auto-delete after configured timer
 
+### Discovery Findings
+
+- **MSG-13 (Pin) is FULLY IMPLEMENTED** — backend schema (`is_pinned`, `pinned_at`, `pinned_by`), dedicated `channel_pinned_messages` table, controllers with authorization, web pin in action menu + pinned-messages-panel, mobile pinned-messages-bar + action menu toggle.
+- **MSG-14 (Bookmark) is FULLY IMPLEMENTED** — `saved_messages` table/schema/context/controller, web saved-messages page (187 lines), mobile saved-messages-screen (342 lines). **Gap:** No "Save" button in message action menus on either platform.
+- **MSG-17 (Disappearing) is FULLY IMPLEMENTED** — `expires_at` on messages, `message_ttl` on conversations, Oban cron worker, web toggle. **Gap:** No mobile toggle, no timer indicator on messages.
+- **MSG-08 (Forward) is PARTIAL** — Web has forward modal (276 lines) + handler, but uses client-side re-send (no server tracking). Mobile has no forward UI. No `forwarded_from` schema field.
+- **MSG-16 (Link Preview) is PARTIAL** — `link_preview :map` field on messages, web component (82 lines), mobile component (149 lines), validation. **Gap:** No server-side OG metadata fetching — clients must send preview data.
+
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                              | Wave | Status |
+| ----- | ------------------------------------------------------------------ | ---- | ------ |
+| 10-01 | Message forwarding full stack — backend API + mobile UI (MSG-08)   | 1    | —      |
+| 10-02 | Server-side link preview engine with OG metadata (MSG-16)          | 1    | —      |
+| 10-03 | Extras polish — save buttons, mobile disappearing, shared types    | 2    | —      |
 
 ---
 
@@ -928,8 +938,8 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 6     | Message Features & Sync | ✅ Complete (2026-02-28) | 100%     |
 | 7     | E2EE & Mobile Security  | ✅ Complete (2026-02-28) | 100%     |
 | 8     | Social & Profiles       | ✅ Complete (2026-03-01) | 100%     |
-| 9     | Notifications & Safety  | Ready to plan            | 0%       |
-| 10    | Message Extras          | Ready to plan            | 0%       |
+| 9     | Notifications & Safety  | ✅ Complete (2026-03-01) | 100%     |
+| 10    | Message Extras          | Planned (3 plans)        | 0%       |
 | 11    | Groups & Channels       | Ready to plan            | 0%       |
 | 12    | Roles & Moderation      | Blocked by 11            | 0%       |
 | 13    | Voice & Video           | Blocked by 12            | 0%       |
