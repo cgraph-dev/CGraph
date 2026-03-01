@@ -373,7 +373,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   // ── WebSocket subscription ─────────────────────────────────────────
 
   subscribeToChannel: (channelId: string): (() => void) => {
-    const topic = `channel:${channelId}`;
+    const topic = `group:${channelId}`;
 
     socketManager.joinChannel(topic);
 
