@@ -91,6 +91,13 @@ defmodule CGraphWeb.Router.ForumRoutes do
           resources "/posts", ThreadPostController, except: [:new, :edit] do
             post "/vote", ThreadPostController, :vote
           end
+
+          # Thread polls
+          get "/poll", PollController, :show
+          post "/poll", PollController, :create
+          put "/poll", PollController, :update
+          post "/poll/vote", PollController, :vote
+          post "/poll/close", PollController, :close
         end
 
         # Standalone thread routes
