@@ -379,6 +379,12 @@ if config_env() == :prod do
     sfu_url: System.get_env("WEBRTC_SFU_URL", ""),
     max_participants: String.to_integer(System.get_env("WEBRTC_MAX_PARTICIPANTS") || "10")
 
+  # LiveKit SFU Configuration (for group calls with 3+ participants)
+  config :cgraph, CGraph.WebRTC.LiveKit,
+    api_key: System.get_env("LIVEKIT_API_KEY"),
+    api_secret: System.get_env("LIVEKIT_API_SECRET"),
+    url: System.get_env("LIVEKIT_URL") || "ws://localhost:7880"
+
   # Distributed Rate Limiting (Redis-backed, disabled if no Redis)
   config :cgraph, CGraph.RateLimiter.Distributed,
     enabled: redis_url != nil,
