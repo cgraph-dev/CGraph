@@ -73,7 +73,11 @@ config :cgraph, Oban,
       # Send email digests daily at 8 AM UTC
       {"0 8 * * *", CGraph.Workers.EmailDigestWorker},
       # Archive old messages daily at 3 AM UTC
-      {"0 3 * * *", CGraph.Workers.MessageArchivalWorker}
+      {"0 3 * * *", CGraph.Workers.MessageArchivalWorker},
+      # Update forum rankings hourly
+      {"0 * * * *", CGraph.Workers.RankingUpdateWorker},
+      # Reset weekly forum scores every Monday at 00:00 UTC
+      {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
@@ -99,7 +103,8 @@ config :cgraph, Oban,
     emails: 15,               # Transactional email delivery
     media: 10,                # Media processing jobs
     sync: 15,                 # Data synchronization
-    link_previews: 10         # Link preview fetching
+    link_previews: 10,        # Link preview fetching
+    rankings: 5               # Forum ranking updates
   ]
 
 # Rate limiting settings for production (balanced for 10K users)

@@ -93,7 +93,11 @@ config :cgraph, Oban,
        # Archive old messages daily at 3 AM UTC
        {"0 3 * * *", CGraph.Workers.MessageArchivalWorker},
        # Clean up expired link preview cache entries daily at 4 AM UTC
-       {"0 4 * * *", CGraph.Workers.CleanupLinkPreviewCache}
+       {"0 4 * * *", CGraph.Workers.CleanupLinkPreviewCache},
+       # Update forum rankings hourly
+       {"0 * * * *", CGraph.Workers.RankingUpdateWorker},
+       # Reset weekly forum scores every Monday at 00:00 UTC
+       {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}}
      ]}
   ],
   queues: [
@@ -117,7 +121,8 @@ config :cgraph, Oban,
     emails: 5,
     media: 3,
     sync: 5,
-    link_previews: 5
+    link_previews: 5,
+    rankings: 5
   ]
 
 # Swoosh mailer configuration
