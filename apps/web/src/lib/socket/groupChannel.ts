@@ -13,6 +13,26 @@ import { socketLogger as logger } from '../logger';
 import { normalizeMessage } from '../apiUtils';
 
 /**
+ * Convert a normalizeMessage() result to ChannelMessage shape.
+ * normalizeMessage returns sender/senderId but ChannelMessage uses author/authorId.
+ */
+function toChannelMessage(raw: Record<string, unknown>): ChannelMessage {
+  const normalized = normalizeMessage(raw);
+  const sender = (normalized.sender ?? {}) as Record<string, unknown>;
+  return {
+    ...normalized,
+    authorId: (normalized.senderId ?? sender.id ?? '') as string,
+    author: {
+      id: (sender.id ?? '') as string,
+      username: (sender.username ?? '') as string,
+      displayName: (sender.displayName ?? sender.display_name ?? null) as string | null,
+      avatarUrl: (sender.avatarUrl ?? sender.avatar_url ?? null) as string | null,
+      member: null,
+    },
+  } as unknown as ChannelMessage;
+}
+
+/**
  * Join a group channel and wire up message/typing handlers.
  */
 export function joinGroupChannel(
@@ -39,7 +59,7 @@ export function joinGroupChannel(
      
     const data = payload as { message: Record<string, unknown> };
      
-    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
+    const normalized = toChannelMessage(data.message);
     useGroupStore.getState().addChannelMessage(normalized);
   });
 
@@ -47,7 +67,7 @@ export function joinGroupChannel(
      
     const data = payload as { message: Record<string, unknown> };
      
-    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
+    const normalized = toChannelMessage(data.message);
     useGroupStore.getState().updateChannelMessage(normalized);
   });
 
@@ -61,7 +81,7 @@ export function joinGroupChannel(
      
     const data = payload as { message: Record<string, unknown> };
     if (data.message) {
-      const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+      const normalized = toChannelMessage(data.message);
       useGroupStore.getState().updateChannelMessage(normalized);
     }
   });
