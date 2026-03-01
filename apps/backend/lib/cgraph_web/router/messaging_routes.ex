@@ -98,6 +98,9 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         # Reactions (for conversation messages)
         post "/conversations/:conversation_id/messages/:message_id/reactions", ReactionController, :create
         delete "/conversations/:conversation_id/messages/:message_id/reactions/:emoji", ReactionController, :delete
+
+        # Call History (voice/video calls)
+        resources "/calls", CallController, only: [:index, :show]
       end
     end
   end
