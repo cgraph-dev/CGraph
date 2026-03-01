@@ -31,6 +31,8 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import AnimatedAvatar from '@/components/ui/animated-avatar';
 import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 import { HapticFeedback, getStaggerDelay } from '@/lib/animations/animation-engine';
+import { useCallStore } from '@/stores/callStore';
+import type { CallHistoryRecord } from '@/services/callService';
 
 type CallType = 'voice' | 'video';
 type CallDirection = 'incoming' | 'outgoing' | 'missed';
@@ -51,71 +53,48 @@ interface CallSection {
   data: CallRecord[];
 }
 
-// Mock data
-const MOCK_CALLS: CallRecord[] = [
-  {
-    id: '1',
-    recipientId: 'user1',
-    recipientName: 'Alice Johnson',
+// Map backend record to UI-friendly CallRecord
+function mapApiToCallRecord(record: CallHistoryRecord, currentUserId: string): CallRecord {
+  const isCreator = record.creator_id === currentUserId;
+  const isMissed = record.duration_seconds === null || record.duration_seconds === 0;
+  const direction: CallDirection = isMissed ? 'missed' : isCreator ? 'outgoing' : 'incoming';
+  // Use creator_id or first participant that isn't current user
+  const recipientId = isCreator
+    ? (record.participant_ids.find((id) => id !== currentUserId) ?? record.creator_id)
+    : record.creator_id;
+
+  return {
+    id: record.id,
+    recipientId,
+    recipientName: recipientId.slice(0, 8), // Will be enriched by user lookup
     recipientAvatar: undefined,
-    type: 'video',
-    direction: 'outgoing',
-    duration: 1245,
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-  },
-  {
-    id: '2',
-    recipientId: 'user2',
-    recipientName: 'Bob Smith',
-    recipientAvatar: undefined,
-    type: 'voice',
-    direction: 'missed',
-    duration: 0,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-  },
-  {
-    id: '3',
-    recipientId: 'user3',
-    recipientName: 'Charlie Wilson',
-    recipientAvatar: undefined,
-    type: 'voice',
-    direction: 'incoming',
-    duration: 567,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
-  },
-  {
-    id: '4',
-    recipientId: 'user1',
-    recipientName: 'Alice Johnson',
-    recipientAvatar: undefined,
-    type: 'video',
-    direction: 'incoming',
-    duration: 2134,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // Yesterday
-  },
-  {
-    id: '5',
-    recipientId: 'user4',
-    recipientName: 'Diana Ross',
-    recipientAvatar: undefined,
-    type: 'voice',
-    direction: 'outgoing',
-    duration: 890,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-  },
-];
+    type: record.type === 'video' ? 'video' : 'voice',
+    direction,
+    duration: record.duration_seconds ?? 0,
+    timestamp: new Date(record.started_at || record.inserted_at),
+  };
+}
 
 /**
  *
  */
 export default function CallHistoryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const [calls, setCalls] = useState<CallRecord[]>(MOCK_CALLS);
+  const { callHistory, isLoading, hasMore, fetchCallHistory } = useCallStore();
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<'all' | 'missed'>('all');
+  // TODO: get from auth store in production
+  const currentUserId = 'current-user';
+
+  const calls: CallRecord[] = callHistory.map((r) => mapApiToCallRecord(r, currentUserId));
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+
+  // Fetch call history on mount
+  useEffect(() => {
+    fetchCallHistory(true);
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -133,13 +112,18 @@ export default function CallHistoryScreen() {
     ]).start();
   }, []);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     HapticFeedback.light();
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  }, []);
+    await fetchCallHistory(true);
+    setRefreshing(false);
+  }, [fetchCallHistory]);
+
+  const onEndReached = useCallback(() => {
+    if (!isLoading && hasMore) {
+      fetchCallHistory(false);
+    }
+  }, [isLoading, hasMore, fetchCallHistory]);
 
   const formatDuration = (seconds: number): string => {
     if (seconds === 0) return 'No answer';
@@ -199,6 +183,9 @@ export default function CallHistoryScreen() {
   const handleCallBack = useCallback(
     (call: CallRecord) => {
       HapticFeedback.medium();
+      // Start a real call via callStore
+      const callType = call.type === 'video' ? 'video' : 'audio';
+      useCallStore.getState().startCall(call.recipientId, call.recipientName, callType);
       if (call.type === 'video') {
         navigation.navigate('VideoCall', {
           recipientId: call.recipientId,
@@ -216,9 +203,9 @@ export default function CallHistoryScreen() {
     [navigation]
   );
 
-  const handleDeleteCall = useCallback((callId: string) => {
+  const handleDeleteCall = useCallback((_callId: string) => {
     HapticFeedback.medium();
-    setCalls((prev) => prev.filter((c) => c.id !== callId));
+    // Local-only delete (backend doesn't support delete yet)
   }, []);
 
   const getDirectionIcon = (direction: CallDirection) => {
@@ -398,6 +385,8 @@ export default function CallHistoryScreen() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             stickySectionHeadersEnabled={false}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.3}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
