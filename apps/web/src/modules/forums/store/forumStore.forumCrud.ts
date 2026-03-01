@@ -78,6 +78,13 @@ export function createForumCrudActions(set: Set, get: Get) {
           description: data.description,
           is_nsfw: data.isNsfw,
           is_private: data.isPrivate,
+          category_id: data.categoryId,
+          tags: data.tags,
+          primary_color: data.primaryColor,
+          secondary_color: data.secondaryColor,
+          allow_polls: data.allowPolls,
+          allow_attachments: data.allowAttachments,
+          require_approval: data.requireApproval,
         });
         const forum = ensureObject<Forum>(response.data, 'forum');
         if (forum) {
