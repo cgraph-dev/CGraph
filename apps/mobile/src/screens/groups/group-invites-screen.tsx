@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Alert,
   Share,
+  TextInput,
 } from 'react-native';
 import Animated, { FadeInDown, FadeOutLeft } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
@@ -45,6 +46,8 @@ export default function GroupInvitesScreen({ route }: Props) {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [joinCode, setJoinCode] = useState('');
+  const [isJoining, setIsJoining] = useState(false);
 
   const fetchInvites = useCallback(async () => {
     try {
@@ -123,6 +126,21 @@ export default function GroupInvitesScreen({ route }: Props) {
     ]);
   };
 
+  const handleJoinByCode = async () => {
+    if (!joinCode.trim()) return;
+    setIsJoining(true);
+    try {
+      const code = joinCode.trim().split('/').pop() || joinCode.trim();
+      await api.post(`/api/v1/invites/${code}/join`);
+      Alert.alert('Success', 'You have joined the group!');
+      setJoinCode('');
+    } catch {
+      Alert.alert('Error', 'Invalid or expired invite code');
+    } finally {
+      setIsJoining(false);
+    }
+  };
+
   const formatExpiry = (expiresAt: string | null) => {
     if (!expiresAt) return 'Never expires';
     const date = new Date(expiresAt);
@@ -158,6 +176,28 @@ export default function GroupInvitesScreen({ route }: Props) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Join by Code */}
+      <View style={styles.headerRow}>
+        <View style={styles.joinRow}>
+          <TextInput
+            style={[styles.joinInput, { backgroundColor: colors.surface, color: colors.text }]}
+            placeholder="Enter invite code..."
+            placeholderTextColor={colors.textTertiary}
+            value={joinCode}
+            onChangeText={setJoinCode}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            style={[styles.joinBtn, { backgroundColor: colors.primary, opacity: joinCode.trim() && !isJoining ? 1 : 0.5 }]}
+            onPress={handleJoinByCode}
+            disabled={!joinCode.trim() || isJoining}
+          >
+            <Text style={styles.joinBtnText}>{isJoining ? '...' : 'Join'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Create Button */}
       <View style={styles.headerRow}>
         <TouchableOpacity
@@ -204,7 +244,21 @@ export default function GroupInvitesScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerRow: { paddingHorizontal: 16, paddingVertical: 12 },
+  headerRow: { paddingHorizontal: 16, paddingVertical: 6 },
+  joinRow: { flexDirection: 'row', gap: 8 },
+  joinInput: {
+    flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    fontSize: 14,
+  },
+  joinBtn: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    borderRadius: 12,
+  },
+  joinBtnText: { color: '#fff', fontSize: 14, fontWeight: '600' },
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
