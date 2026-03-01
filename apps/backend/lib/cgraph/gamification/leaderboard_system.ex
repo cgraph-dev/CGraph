@@ -60,6 +60,38 @@ defmodule CGraph.Gamification.LeaderboardSystem do
   @spec get_xp_leaderboard(pos_integer()) :: list()
   def get_xp_leaderboard(_limit \\ 10), do: []
 
+  @doc """
+  Get forum-specific leaderboard using unified scoring (forum karma + XP).
+
+  Delegates to `RankingEngine.get_unified_leaderboard/2`.
+  Returns ranked entries with rank badge info attached.
+  """
+  @spec get_forum_leaderboard(String.t(), keyword()) :: [map()]
+  def get_forum_leaderboard(forum_id, opts \\ []) do
+    alias CGraph.Forums.{RankingEngine, ForumRank}
+
+    entries = RankingEngine.get_unified_leaderboard(forum_id, opts)
+
+    # Attach rank badge info to each entry
+    Enum.map(entries, fn entry ->
+      rank = ForumRank.get_rank_for_score(forum_id, trunc(entry.score))
+
+      rank_info =
+        if rank do
+          %{
+            id: rank.id,
+            name: rank.name,
+            color: rank.color,
+            image_url: rank.image_url,
+            min_score: rank.min_score,
+            max_score: rank.max_score
+          }
+        end
+
+      Map.put(entry, :rank, rank_info)
+    end)
+  end
+
   # ============================================================================
   # Private
   # ============================================================================

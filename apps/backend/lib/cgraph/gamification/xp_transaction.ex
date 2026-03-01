@@ -8,7 +8,7 @@ defmodule CGraph.Gamification.XpTransaction do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  @sources ~w(message post comment achievement quest daily_login streak forum_join vote received_vote profile_complete friend_added admin)
+  @sources ~w(message post comment achievement quest daily_login streak forum_join vote received_vote profile_complete friend_added admin forum_thread_created forum_post_created forum_upvote_received forum_best_answer)
 
   schema "xp_transactions" do
     belongs_to :user, CGraph.Accounts.User

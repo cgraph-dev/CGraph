@@ -20,7 +20,7 @@ defmodule CGraph.Forums.RankingEngine do
   import Ecto.Query
   import CGraph.Query.SoftDelete
 
-  alias CGraph.Forums.{Forum, ForumVote}
+  alias CGraph.Forums.{Forum, ForumVote, UserLeaderboard}
   alias CGraph.Repo
 
   @doc """
@@ -248,5 +248,94 @@ defmodule CGraph.Forums.RankingEngine do
     |> Repo.update_all(set: [featured: true])
 
     {:ok, length(top_forums)}
+  end
+
+  # ── Unified scoring (bridges forum karma + gamification XP) ──────────
+
+  @doc """
+  Calculate a unified score for a user in a forum.
+
+  Formula: `forum_karma * karma_weight + xp * xp_weight`
+
+  Default weights: karma=1.0, xp=0.1 (configurable per forum in the future).
+  """
+  @spec calculate_unified_score(String.t(), String.t(), keyword()) :: float()
+  def calculate_unified_score(forum_id, user_id, opts \\ []) do
+    karma_weight = Keyword.get(opts, :karma_weight, 1.0)
+    xp_weight = Keyword.get(opts, :xp_weight, 0.1)
+
+    # Get forum karma for this user
+    {users, _meta} = UserLeaderboard.get_forum_user_leaderboard(forum_id, per_page: 1_000_000)
+    forum_karma =
+      Enum.find_value(users, 0, fn entry ->
+        if entry[:user] && entry.user.id == user_id, do: entry[:forum_karma], else: nil
+      end)
+
+    # Get gamification XP
+    user = Repo.get(CGraph.Accounts.User, user_id)
+    xp = if user, do: user.xp || 0, else: 0
+
+    forum_karma * karma_weight + xp * xp_weight
+  end
+
+  @doc """
+  Get unified leaderboard for a forum — combines karma + XP into a single ranked list.
+
+  Options:
+  - `:period` — `:all_time` | `:monthly` | `:weekly` | `:daily` (default `:all_time`)
+  - `:limit` — max entries (default 50)
+  """
+  @spec get_unified_leaderboard(String.t(), keyword()) :: [map()]
+  def get_unified_leaderboard(forum_id, opts \\ []) do
+    period = Keyword.get(opts, :period, :all_time)
+    limit = Keyword.get(opts, :limit, 50)
+
+    time_range = case period do
+      :daily -> :week    # Use week's data for daily (approximation for now)
+      :weekly -> :week
+      :monthly -> :month
+      _ -> :all
+    end
+
+    {users, _meta} = UserLeaderboard.get_forum_user_leaderboard(forum_id, per_page: 1_000, time_range: time_range)
+
+    users
+    |> Enum.map(fn entry ->
+      user = entry[:user]
+      if user do
+        xp = user.xp || 0
+        forum_karma = entry[:forum_karma] || 0
+        unified = forum_karma * 1.0 + xp * 0.1
+
+        %{
+          user_id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          avatar_url: user.avatar_url,
+          level: user.level,
+          is_verified: user.is_verified || false,
+          is_premium: (user.subscription_tier || "") in ["premium", "enterprise"],
+          forum_karma: forum_karma,
+          xp: xp,
+          score: unified
+        }
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.sort_by(& -(&1.score))
+    |> Enum.take(limit)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {entry, position} -> Map.put(entry, :position, position) end)
+  end
+
+  @doc """
+  Reset weekly scores for a specific forum.
+  """
+  @spec reset_weekly_scores(String.t()) :: {:ok, :reset}
+  def reset_weekly_scores(forum_id) do
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(set: [weekly_score: 0])
+
+    {:ok, :reset}
   end
 end
