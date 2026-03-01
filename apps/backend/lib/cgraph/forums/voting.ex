@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Voting do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Post, Vote}
+  alias CGraph.Forums.{Members, Post, Vote}
   alias CGraph.Repo
 
   @doc """
@@ -30,13 +30,17 @@ defmodule CGraph.Forums.Voting do
             value: vote_value
           })
           |> Repo.insert!()
-          |> tap(fn _vote -> update_post_karma(post, vote_value) end)
+          |> tap(fn _vote ->
+            update_post_karma(post, vote_value)
+            propagate_post_reputation(user.id, post, vote_value)
+          end)
 
         vote ->
           if vote.value == vote_value do
             # Same vote - remove it
             Repo.delete!(vote)
             update_post_karma(post, -vote_value)
+            propagate_post_reputation(user.id, post, -vote_value)
             nil
           else
             # Different vote - update it
@@ -46,6 +50,8 @@ defmodule CGraph.Forums.Voting do
 
             # Adjust karma (remove old, add new)
             update_post_karma(post, vote_value * 2)
+            propagate_post_reputation(user.id, post, vote_value)
+            propagate_post_reputation(user.id, post, vote_value)
             updated
           end
       end
@@ -102,25 +108,35 @@ defmodule CGraph.Forums.Voting do
 
     existing_vote = Repo.get_by(Vote, user_id: user.id, comment_id: comment.id)
 
-    case existing_vote do
+    result = case existing_vote do
       nil ->
-        %Vote{}
-        |> Vote.changeset(%{
-          user_id: user.id,
-          comment_id: comment.id,
-          value: vote_value
-        })
-        |> Repo.insert()
+        res = %Vote{}
+          |> Vote.changeset(%{
+            user_id: user.id,
+            comment_id: comment.id,
+            value: vote_value
+          })
+          |> Repo.insert()
+        propagate_comment_reputation(user.id, comment, vote_value)
+        res
 
       vote ->
         if vote.value == vote_value do
-          Repo.delete(vote)
+          res = Repo.delete(vote)
+          propagate_comment_reputation(user.id, comment, -vote_value)
+          res
         else
-          vote
-          |> Vote.changeset(%{value: vote_value})
-          |> Repo.update()
+          res = vote
+            |> Vote.changeset(%{value: vote_value})
+            |> Repo.update()
+          # Changed direction: propagate the new value twice (undo old + apply new)
+          propagate_comment_reputation(user.id, comment, vote_value)
+          propagate_comment_reputation(user.id, comment, vote_value)
+          res
         end
     end
+
+    result
   end
 
   @doc """
@@ -145,5 +161,25 @@ defmodule CGraph.Forums.Voting do
   defp update_post_karma(post, delta) do
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(inc: [score: delta])
+  end
+
+  # Propagate reputation to post author (skip self-votes)
+  defp propagate_post_reputation(voter_id, post, delta) do
+    if voter_id != post.author_id do
+      rep_delta = if delta > 0, do: 1, else: -1
+      Members.update_reputation(post.forum_id, post.author_id, rep_delta)
+    end
+  end
+
+  # Propagate reputation to comment author via post -> forum_id (skip self-votes)
+  defp propagate_comment_reputation(voter_id, comment, delta) do
+    if voter_id != comment.author_id do
+      # Load post to get forum_id
+      post = Repo.get(Post, comment.post_id)
+      if post do
+        rep_delta = if delta > 0, do: 1, else: -1
+        Members.update_reputation(post.forum_id, comment.author_id, rep_delta)
+      end
+    end
   end
 end

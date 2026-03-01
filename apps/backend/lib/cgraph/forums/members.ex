@@ -259,6 +259,22 @@ defmodule CGraph.Forums.Members do
     )
   end
 
+  @doc """
+  Updates a member's reputation within a forum.
+
+  `delta` must be 1 or -1. Increments reputation and the
+  corresponding positive/negative counter.
+  """
+  @spec update_reputation(String.t(), String.t(), 1 | -1) :: {integer(), nil}
+  def update_reputation(forum_id, user_id, delta) when delta in [1, -1] do
+    field = if delta > 0, do: :reputation_positive, else: :reputation_negative
+
+    from(m in ForumMember,
+      where: m.forum_id == ^forum_id and m.user_id == ^user_id
+    )
+    |> Repo.update_all(inc: [{field, 1}, {:reputation, delta}])
+  end
+
   # Private helpers
 
   defp maybe_filter_by_role(query, nil), do: query

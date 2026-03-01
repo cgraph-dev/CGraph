@@ -6,7 +6,7 @@ defmodule CGraph.Forums.ThreadPosts do
   import Ecto.Query, warn: false
   import CGraph.Query.SoftDelete
 
-  alias CGraph.Forums.{Board, Forum, ForumMember, Thread, ThreadPost, ThreadVote, PostVote}
+  alias CGraph.Forums.{Board, Forum, ForumMember, Members, Thread, ThreadPost, ThreadVote, PostVote}
   alias CGraph.Forums.SubscriptionService
   alias CGraph.Repo
 
@@ -142,6 +142,7 @@ defmodule CGraph.Forums.ThreadPosts do
         case result do
           {:ok, vote} ->
             update_thread_score(thread_id, value)
+            propagate_thread_reputation(user_id, thread_id, value)
             {:ok, vote}
           error -> error
         end
@@ -149,6 +150,7 @@ defmodule CGraph.Forums.ThreadPosts do
       existing_vote when existing_vote.value == value ->
         Repo.delete(existing_vote)
         update_thread_score(thread_id, -value)
+        propagate_thread_reputation(user_id, thread_id, -value)
         {:ok, :removed}
 
       existing_vote ->
@@ -160,6 +162,9 @@ defmodule CGraph.Forums.ThreadPosts do
         case result do
           {:ok, vote} ->
             update_thread_score(thread_id, value - old_value)
+            # Changed direction: undo old + apply new
+            propagate_thread_reputation(user_id, thread_id, -old_value)
+            propagate_thread_reputation(user_id, thread_id, value)
             {:ok, vote}
           error -> error
         end
@@ -180,6 +185,7 @@ defmodule CGraph.Forums.ThreadPosts do
         case result do
           {:ok, vote} ->
             update_post_score(post_id, value)
+            propagate_thread_post_reputation(user_id, post_id, value)
             {:ok, vote}
           error -> error
         end
@@ -187,6 +193,7 @@ defmodule CGraph.Forums.ThreadPosts do
       existing_vote when existing_vote.value == value ->
         Repo.delete(existing_vote)
         update_post_score(post_id, -value)
+        propagate_thread_post_reputation(user_id, post_id, -value)
         {:ok, :removed}
 
       existing_vote ->
@@ -198,6 +205,8 @@ defmodule CGraph.Forums.ThreadPosts do
         case result do
           {:ok, vote} ->
             update_post_score(post_id, value - old_value)
+            propagate_thread_post_reputation(user_id, post_id, -old_value)
+            propagate_thread_post_reputation(user_id, post_id, value)
             {:ok, vote}
           error -> error
         end
@@ -245,5 +254,32 @@ defmodule CGraph.Forums.ThreadPosts do
 
     from(p in ThreadPost, where: p.id == ^post_id)
     |> Repo.update_all(inc: [score: delta, upvotes: upvotes, downvotes: downvotes])
+  end
+
+  # Resolve thread -> board -> forum for forum_id, then propagate reputation
+  defp propagate_thread_reputation(voter_id, thread_id, delta) do
+    thread = Repo.get(Thread, thread_id)
+    if thread && voter_id != thread.author_id do
+      board = Repo.get(Board, thread.board_id)
+      if board do
+        rep_delta = if delta > 0, do: 1, else: -1
+        Members.update_reputation(board.forum_id, thread.author_id, rep_delta)
+      end
+    end
+  end
+
+  # Resolve thread_post -> thread -> board -> forum for forum_id, then propagate reputation
+  defp propagate_thread_post_reputation(voter_id, post_id, delta) do
+    post = Repo.get(ThreadPost, post_id)
+    if post && voter_id != post.author_id do
+      thread = Repo.get(Thread, post.thread_id)
+      if thread do
+        board = Repo.get(Board, thread.board_id)
+        if board do
+          rep_delta = if delta > 0, do: 1, else: -1
+          Members.update_reputation(board.forum_id, post.author_id, rep_delta)
+        end
+      end
+    end
   end
 end
