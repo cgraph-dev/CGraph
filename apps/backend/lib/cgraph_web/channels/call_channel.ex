@@ -78,7 +78,7 @@ defmodule CGraphWeb.CallChannel do
   require Logger
 
   alias CGraph.WebRTC
-  alias CGraph.WebRTC.Room
+  alias CGraph.WebRTC.{CallEncryption, Room}
 
   @doc "Handles channel join requests and initializes socket state."
   @impl true
@@ -103,11 +103,16 @@ defmodule CGraphWeb.CallChannel do
           |> assign(:device, device)
           |> assign(:media, media)
 
+        # Generate / fetch per-room E2EE key
+        {:ok, e2ee_key} = CallEncryption.get_or_create_room_key(room_id)
+
         response = %{
           room: Room.to_map(room),
           ice_servers: WebRTC.get_ice_servers(),
           sfu_enabled: WebRTC.sfu_enabled?(),
-          sfu_url: WebRTC.get_sfu_url()
+          sfu_url: WebRTC.get_sfu_url(),
+          e2ee_key: e2ee_key,
+          e2ee_enabled: true
         }
 
         {:ok, response, socket}
@@ -159,6 +164,14 @@ defmodule CGraphWeb.CallChannel do
   @impl true
   def handle_info({:room_ended, _payload}, socket) do
     push(socket, "call:ended", %{})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:e2ee_key_rotated, %{room_id: room_id}}, socket) do
+    # Send rotated key to participant
+    {:ok, new_key} = CallEncryption.get_or_create_room_key(room_id)
+    push(socket, "e2ee:key_rotated", %{e2ee_key: new_key})
     {:noreply, socket}
   end
 
@@ -295,6 +308,8 @@ defmodule CGraphWeb.CallChannel do
 
     case WebRTC.leave_room(room_id, user_id) do
       {:ok, _} ->
+        # Rotate E2EE key when a participant leaves
+        CallEncryption.rotate_room_key(room_id)
         {:stop, :normal, socket}
 
       {:error, reason} ->
@@ -309,6 +324,8 @@ defmodule CGraphWeb.CallChannel do
 
     case WebRTC.end_room(room_id, user_id) do
       {:ok, _} ->
+        # Clean up E2EE key when room ends
+        CallEncryption.cleanup_room_key(room_id)
         {:stop, :normal, socket}
 
       {:error, reason} ->
