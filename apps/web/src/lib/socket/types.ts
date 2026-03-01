@@ -164,6 +164,14 @@ export interface ThreadChannelCallbacks {
   onCommentVoteChanged?: (data: CommentVotePayload) => void;
   onTyping?: (data: ThreadTypingPayload) => void;
   onPollUpdated?: (data: ThreadPollPayload) => void;
+  onPostEdited?: (post: {
+    id: string;
+    content: string;
+    content_html: string;
+    is_edited: boolean;
+    edit_count: number;
+    edited_at: string;
+  }) => void;
   onThreadStatusChanged?: (data: {
     thread_id: string;
     is_locked: boolean;

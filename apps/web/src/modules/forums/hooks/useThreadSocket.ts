@@ -27,6 +27,15 @@ export interface UseThreadSocketOptions {
   onCommentVoteChanged?: (data: CommentVotePayload) => void;
   /** Called when poll is updated */
   onPollUpdated?: (data: ThreadPollPayload) => void;
+  /** Called when a post is edited */
+  onPostEdited?: (post: {
+    id: string;
+    content: string;
+    content_html: string;
+    is_edited: boolean;
+    edit_count: number;
+    edited_at: string;
+  }) => void;
   /** Called when thread is locked/pinned */
   onThreadStatusChanged?: (data: {
     thread_id: string;
@@ -172,6 +181,9 @@ export function useThreadSocket(
         },
         onPollUpdated: (data) => {
           optionsRef.current.onPollUpdated?.(data);
+        },
+        onPostEdited: (post) => {
+          optionsRef.current.onPostEdited?.(post);
         },
         onThreadStatusChanged: (data) => {
           optionsRef.current.onThreadStatusChanged?.(data);

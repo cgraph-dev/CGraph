@@ -217,6 +217,12 @@ export function setupThreadHandlers(
     getCallbacks().get(threadId)?.onPollUpdated?.(data);
   });
 
+  channel.on('post_edited', (payload) => {
+     
+    const data = payload as { post: { id: string; content: string; content_html: string; is_edited: boolean; edit_count: number; edited_at: string } };
+    getCallbacks().get(threadId)?.onPostEdited?.(data.post);
+  });
+
   channel.on('thread_status_changed', (payload) => {
      
     const data = payload as { thread_id: string; is_locked: boolean; is_pinned: boolean }; // safe downcast – Phoenix channel event
