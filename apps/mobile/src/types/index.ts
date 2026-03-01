@@ -424,6 +424,8 @@ export type GroupsStackParamList = {
   GroupInvites: { groupId: string };
   GroupModeration: { groupId: string };
   ChannelPermissions: { channelId: string; groupId: string };
+  ReportContent: { targetType: string; targetId: string; groupId: string; targetPreview?: string };
+  BanList: { groupId: string };
 };
 
 export type ForumsStackParamList = {

@@ -25,7 +25,7 @@ type Props = {
   route: RouteProp<GroupsStackParamList, 'GroupModeration'>;
 };
 
-type Tab = 'bans' | 'audit';
+type Tab = 'reports' | 'bans' | 'audit';
 
 interface BannedUser {
   id: string;
@@ -45,6 +45,22 @@ interface AuditEntry {
   createdAt: string;
 }
 
+interface GroupReport {
+  id: string;
+  category: string;
+  status: string;
+  targetType: string;
+  reporterUsername: string;
+  description: string | null;
+  createdAt: string;
+}
+
+const statusColors: Record<string, string> = {
+  pending: '#f59e0b',
+  reviewed: '#22c55e',
+  dismissed: '#6b7280',
+};
+
 const actionIcons: Record<string, string> = {
   member_banned: 'ban-outline',
   member_kicked: 'exit-outline',
@@ -62,9 +78,10 @@ const actionIcons: Record<string, string> = {
 export default function GroupModerationScreen({ route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
-  const [tab, setTab] = useState<Tab>('bans');
+  const [tab, setTab] = useState<Tab>('reports');
   const [bans, setBans] = useState<BannedUser[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
+  const [reports, setReports] = useState<GroupReport[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchBans = useCallback(async () => {
@@ -123,10 +140,34 @@ export default function GroupModerationScreen({ route }: Props) {
     }
   }, [groupId]);
 
+  const fetchReports = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/api/v1/groups/${groupId}/moderation/reports`);
+      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      setReports(
+        data.map((r: Record<string, unknown>) => ({
+          id: (r.id ?? '') as string,
+          category: (r.category ?? '') as string,
+          status: (r.status ?? 'pending') as string,
+          targetType: (r.target_type ?? r.targetType ?? '') as string,
+          reporterUsername: (r.reporter_username ?? (r.reporter as Record<string, unknown>)?.username ?? 'unknown') as string,
+          description: (r.description ?? null) as string | null,
+          createdAt: (r.created_at ?? r.createdAt ?? r.inserted_at ?? '') as string,
+        }))
+      );
+    } catch {
+      // Handle silently
+    } finally {
+      setLoading(false);
+    }
+  }, [groupId]);
+
   useEffect(() => {
-    if (tab === 'bans') fetchBans();
+    if (tab === 'reports') fetchReports();
+    else if (tab === 'bans') fetchBans();
     else fetchAuditLog();
-  }, [tab, fetchBans, fetchAuditLog]);
+  }, [tab, fetchBans, fetchAuditLog, fetchReports]);
 
   const handleUnban = (ban: BannedUser) => {
     Alert.alert('Unban User', `Unban ${ban.username}?`, [
@@ -209,14 +250,14 @@ export default function GroupModerationScreen({ route }: Props) {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Tab Bar */}
       <View style={[styles.tabBar, { backgroundColor: colors.surface }]}>
-        {(['bans', 'audit'] as const).map((t) => (
+        {(['reports', 'bans', 'audit'] as const).map((t) => (
           <TouchableOpacity
             key={t}
             style={[styles.tab, tab === t && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
             onPress={() => setTab(t)}
           >
             <Text style={[styles.tabText, { color: tab === t ? colors.primary : colors.textSecondary }]}>
-              {t === 'bans' ? 'Bans' : 'Audit Log'}
+              {t === 'reports' ? 'Reports' : t === 'bans' ? 'Bans' : 'Audit Log'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -226,6 +267,45 @@ export default function GroupModerationScreen({ route }: Props) {
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
+      ) : tab === 'reports' ? (
+        <FlatList
+          data={reports}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <Animated.View entering={FadeInDown.springify().delay(index * 30)}>
+              <View style={[styles.item, { backgroundColor: colors.surface }]}>
+                <View style={[styles.avatar, { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' }]}>
+                  <Ionicons name="flag-outline" size={18} color={statusColors[item.status] || colors.textTertiary} />
+                </View>
+                <View style={styles.info}>
+                  <Text style={[styles.name, { color: colors.text }]}>
+                    {item.category.replace(/_/g, ' ')}
+                  </Text>
+                  <Text style={[styles.meta, { color: colors.textSecondary }]}>
+                    Reported by {item.reporterUsername} · {item.targetType}
+                  </Text>
+                  {item.description && (
+                    <Text style={[styles.meta, { color: colors.textTertiary }]} numberOfLines={1}>
+                      {item.description}
+                    </Text>
+                  )}
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' }]}>
+                  <Text style={[styles.statusText, { color: statusColors[item.status] || colors.textTertiary }]}>
+                    {item.status}
+                  </Text>
+                </View>
+              </View>
+            </Animated.View>
+          )}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="flag-outline" size={48} color={colors.textTertiary} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No reports</Text>
+            </View>
+          }
+        />
       ) : tab === 'bans' ? (
         <FlatList
           data={bans}
@@ -287,4 +367,6 @@ const styles = StyleSheet.create({
   unbanText: { fontSize: 13, fontWeight: '600' },
   emptyContainer: { alignItems: 'center', paddingTop: 60, gap: 12 },
   emptyText: { fontSize: 16 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  statusText: { fontSize: 11, fontWeight: '600', textTransform: 'capitalize' },
 });

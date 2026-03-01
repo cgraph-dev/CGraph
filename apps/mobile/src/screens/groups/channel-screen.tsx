@@ -14,6 +14,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ActionSheetIOS,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
@@ -122,8 +124,49 @@ export default function ChannelScreen({ navigation, route }: Props) {
         <TouchableOpacity
           activeOpacity={0.7}
           onLongPress={() => {
-            setThreadMessage(item);
-            setThreadVisible(true);
+            const options = ['Thread', 'Report', 'Cancel'];
+            const cancelIndex = 2;
+            if (Platform.OS === 'ios') {
+              ActionSheetIOS.showActionSheetWithOptions(
+                { options, cancelButtonIndex: cancelIndex, destructiveButtonIndex: 1 },
+                (idx) => {
+                  if (idx === 0) {
+                    setThreadMessage(item);
+                    setThreadVisible(true);
+                  } else if (idx === 1) {
+                    navigation.navigate('ReportContent', {
+                      targetType: 'message',
+                      targetId: item.id,
+                      groupId,
+                      targetPreview: item.content?.slice(0, 200),
+                    });
+                  }
+                }
+              );
+            } else {
+              Alert.alert('Message Actions', undefined, [
+                {
+                  text: 'Thread',
+                  onPress: () => {
+                    setThreadMessage(item);
+                    setThreadVisible(true);
+                  },
+                },
+                {
+                  text: 'Report',
+                  style: 'destructive',
+                  onPress: () => {
+                    navigation.navigate('ReportContent', {
+                      targetType: 'message',
+                      targetId: item.id,
+                      groupId,
+                      targetPreview: item.content?.slice(0, 200),
+                    });
+                  },
+                },
+                { text: 'Cancel', style: 'cancel' },
+              ]);
+            }
           }}
         >
         <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>

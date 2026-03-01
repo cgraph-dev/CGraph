@@ -14,6 +14,8 @@ export interface ChannelMessageItemProps {
   showHeader: boolean;
   onReply: () => void;
   onOpenThread: () => void;
+  onReport?: () => void;
+  currentUserId?: string;
   threadReplyCount?: number;
 }
 
@@ -59,6 +61,8 @@ export interface MessagesAreaProps {
   onLoadMore: () => void;
   onReply: (message: ChannelMessage) => void;
   onOpenThread: (message: ChannelMessage) => void;
+  onReport?: (message: ChannelMessage) => void;
+  currentUserId?: string;
   threadReplyCounts: Record<string, number>;
   formatDateHeader: (date: Date) => string;
 }

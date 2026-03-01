@@ -24,6 +24,8 @@ export function MessagesArea({
   onLoadMore,
   onReply,
   onOpenThread,
+  onReport,
+  currentUserId,
   threadReplyCounts,
   formatDateHeader,
 }: MessagesAreaProps) {
@@ -80,6 +82,8 @@ export function MessagesArea({
                   showHeader={showHeader}
                   onReply={() => onReply(message)}
                   onOpenThread={() => onOpenThread(message)}
+                  onReport={onReport ? () => onReport(message) : undefined}
+                  currentUserId={currentUserId}
                   threadReplyCount={threadReplyCounts[message.id]}
                 />
               );

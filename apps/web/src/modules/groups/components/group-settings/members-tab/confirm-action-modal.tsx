@@ -10,7 +10,9 @@ interface ConfirmActionModalProps {
   action: MemberAction;
   memberId: string;
   banDuration: string;
+  reason: string;
   onBanDurationChange: (value: string) => void;
+  onReasonChange: (value: string) => void;
   onConfirm: (memberId: string, action: MemberAction) => void;
   onClose: () => void;
 }
@@ -53,7 +55,9 @@ export function ConfirmActionModal({
   action,
   memberId,
   banDuration,
+  reason,
   onBanDurationChange,
+  onReasonChange,
   onConfirm,
   onClose,
 }: ConfirmActionModalProps) {
@@ -93,6 +97,16 @@ export function ConfirmActionModal({
                 <option value="7d">7 Days</option>
                 <option value="30d">30 Days</option>
               </select>
+            )}
+
+            {(action === 'kick' || action === 'ban') && (
+              <textarea
+                value={reason}
+                onChange={(e) => onReasonChange(e.target.value)}
+                placeholder="Reason (optional)"
+                rows={2}
+                className="w-full resize-none rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white placeholder-gray-500"
+              />
             )}
 
             <div className="flex justify-end gap-3">

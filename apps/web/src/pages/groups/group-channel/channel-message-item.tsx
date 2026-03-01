@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { FaceSmileIcon, EllipsisVerticalIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { FaceSmileIcon, EllipsisVerticalIcon, ChatBubbleLeftRightIcon, FlagIcon } from '@heroicons/react/24/outline';
 import type { ChannelMessageItemProps } from './types';
 import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 
@@ -16,7 +16,7 @@ import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 /**
  * Channel Message Item component.
  */
-export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread, threadReplyCount }: ChannelMessageItemProps) {
+export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread, onReport, currentUserId, threadReplyCount }: ChannelMessageItemProps) {
   const [showActions, setShowActions] = useState(false);
 
   const displayName = getDisplayName(message.author.username, message.author.displayName);
@@ -131,6 +131,15 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4" />
           </button>
+          {onReport && currentUserId && message.authorId !== currentUserId && (
+            <button
+              onClick={onReport}
+              className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-red-400"
+              title="Report"
+            >
+              <FlagIcon className="h-4 w-4" />
+            </button>
+          )}
           <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="More">
             <EllipsisVerticalIcon className="h-4 w-4" />
           </button>
