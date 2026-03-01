@@ -66,6 +66,7 @@ export interface PluginState {
 
   // Actions - Installed
   fetchInstalledPlugins: (forumId: string) => Promise<void>;
+  fetchPluginSettings: (forumId: string, pluginInstanceId: string) => Promise<InstalledPlugin>;
   installPlugin: (
     forumId: string,
     pluginId: string,
@@ -151,6 +152,13 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
       set({ isLoadingInstalled: false });
       throw error;
     }
+  },
+
+  fetchPluginSettings: async (forumId, pluginInstanceId) => {
+    const response = await api.get(`/api/v1/forums/${forumId}/plugins/${pluginInstanceId}`);
+    const plugin = ensureObject<InstalledPlugin>(response.data, 'plugin');
+    if (!plugin) throw new Error('Invalid plugin settings response');
+    return plugin;
   },
 
   installPlugin: async (forumId, pluginId, settings = {}) => {
