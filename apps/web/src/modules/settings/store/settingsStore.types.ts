@@ -31,6 +31,7 @@ export interface NotificationSettings {
   quietHoursEnabled: boolean;
   quietHoursStart: string | null; // HH:MM format
   quietHoursEnd: string | null;
+  dndUntil: string | null; // ISO 8601 datetime
 }
 
 export interface PrivacySettings {
@@ -99,6 +100,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   quietHoursEnabled: false,
   quietHoursStart: null,
   quietHoursEnd: null,
+  dndUntil: null,
 };
 
 export const DEFAULT_PRIVACY_SETTINGS: PrivacySettings = {
@@ -168,6 +170,7 @@ export interface ApiSettings {
   quiet_hours_enabled?: boolean;
   quiet_hours_start?: string | null;
   quiet_hours_end?: string | null;
+  dnd_until?: string | null;
 
   // Privacy
   show_online_status?: boolean;

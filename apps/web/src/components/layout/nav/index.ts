@@ -5,3 +5,4 @@
 
 export { NotificationDropdown } from './notification-dropdown';
 export { UserDropdown } from './user-dropdown';
+export { DndToggle } from './dnd-toggle';

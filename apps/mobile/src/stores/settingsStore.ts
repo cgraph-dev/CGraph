@@ -35,6 +35,7 @@ export interface NotificationSettings {
   readonly quietHoursEnabled: boolean;
   readonly quietHoursStart: string | null;
   readonly quietHoursEnd: string | null;
+  readonly dndUntil: string | null;
 }
 
 export interface PrivacySettings {
@@ -90,6 +91,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   quietHoursEnabled: false,
   quietHoursStart: null,
   quietHoursEnd: null,
+  dndUntil: null,
 };
 
 const DEFAULT_PRIVACY_SETTINGS: PrivacySettings = {
@@ -145,6 +147,7 @@ interface ApiSettings {
   quiet_hours_enabled?: boolean;
   quiet_hours_start?: string | null;
   quiet_hours_end?: string | null;
+  dnd_until?: string | null;
   show_online_status?: boolean;
   show_read_receipts?: boolean;
   show_typing_indicators?: boolean;
@@ -182,6 +185,7 @@ function mapSettingsFromApi(data: ApiSettings): UserSettings {
       quietHoursEnabled: data.quiet_hours_enabled ?? DEFAULT_NOTIFICATION_SETTINGS.quietHoursEnabled,
       quietHoursStart: data.quiet_hours_start ?? null,
       quietHoursEnd: data.quiet_hours_end ?? null,
+      dndUntil: data.dnd_until ?? null,
     },
     privacy: {
       showOnlineStatus: data.show_online_status ?? DEFAULT_PRIVACY_SETTINGS.showOnlineStatus,
@@ -229,6 +233,7 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (n.quietHoursEnabled !== undefined) result.quiet_hours_enabled = n.quietHoursEnabled;
     if (n.quietHoursStart !== undefined) result.quiet_hours_start = n.quietHoursStart;
     if (n.quietHoursEnd !== undefined) result.quiet_hours_end = n.quietHoursEnd;
+    if (n.dndUntil !== undefined) result.dnd_until = n.dndUntil;
   }
 
   if (settings.privacy) {

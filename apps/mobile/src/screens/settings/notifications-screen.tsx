@@ -11,6 +11,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { NotificationSettings, useSettingsStore, useThemeStore } from '@/stores';
@@ -161,6 +162,27 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Sound</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           {soundSettings.map(renderSwitch)}
+        </View>
+      </View>
+
+      {/* DND Schedule Link */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Do Not Disturb</Text>
+        <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
+          <TouchableOpacity
+            style={[styles.settingItem, { borderBottomColor: colors.border }]}
+            onPress={() => _navigation.navigate('DndSchedule')}
+          >
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingTitle, { color: colors.text }]}>
+                Quiet Hours Schedule
+              </Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                Configure scheduled quiet hours and timezone
+              </Text>
+            </View>
+            <Text style={{ color: colors.textSecondary, fontSize: 18 }}>›</Text>
+          </TouchableOpacity>
         </View>
       </View>
 

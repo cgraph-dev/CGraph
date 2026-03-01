@@ -44,6 +44,7 @@ export function mapSettingsFromApi(data: ApiSettings): UserSettings {
         data.quiet_hours_enabled ?? DEFAULT_NOTIFICATION_SETTINGS.quietHoursEnabled,
       quietHoursStart: data.quiet_hours_start ?? null,
       quietHoursEnd: data.quiet_hours_end ?? null,
+      dndUntil: data.dnd_until ?? null,
     },
     privacy: {
       showOnlineStatus: data.show_online_status ?? DEFAULT_PRIVACY_SETTINGS.showOnlineStatus,
@@ -117,6 +118,7 @@ export function mapSettingsToApi(settings: Partial<UserSettings>): Record<string
     if (n.quietHoursEnabled !== undefined) result.quiet_hours_enabled = n.quietHoursEnabled;
     if (n.quietHoursStart !== undefined) result.quiet_hours_start = n.quietHoursStart;
     if (n.quietHoursEnd !== undefined) result.quiet_hours_end = n.quietHoursEnd;
+    if (n.dndUntil !== undefined) result.dnd_until = n.dndUntil;
   }
 
   if (settings.privacy) {

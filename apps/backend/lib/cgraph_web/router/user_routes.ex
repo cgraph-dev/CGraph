@@ -38,6 +38,11 @@ defmodule CGraphWeb.Router.UserRoutes do
         put "/settings/locale", SettingsController, :update_locale
         post "/settings/reset", SettingsController, :reset
 
+        # DND (Do Not Disturb)
+        get "/settings/dnd", SettingsController, :get_dnd
+        post "/settings/dnd", SettingsController, :set_dnd
+        delete "/settings/dnd", SettingsController, :clear_dnd
+
         # Theme Endpoints (Global Theme System)
         get "/users/:id/theme", ThemeController, :show
         put "/users/:id/theme", ThemeController, :update

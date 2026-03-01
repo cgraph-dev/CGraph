@@ -173,6 +173,73 @@ defmodule CGraphWeb.PresenceChannel do
   end
 
   @impl true
+  def handle_in("set_dnd", %{"duration_minutes" => minutes}, socket)
+      when is_integer(minutes) and minutes > 0 do
+    user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+
+    # Save DND to settings
+    CGraph.Accounts.Settings.set_dnd(user.id, minutes)
+
+    # Update presence to "dnd"
+    case Presence.update_status(socket, user.id, "lobby", "dnd") do
+      {:ok, _} ->
+        broadcast_to_friends(user.id, friend_ids, "friend_status_changed", %{
+          user_id: user.id,
+          status: "dnd",
+          updated_at: DateTime.utc_now() |> DateTime.to_iso8601()
+        })
+        {:reply, :ok, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("set_dnd", %{"indefinite" => true}, socket) do
+    user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+
+    CGraph.Accounts.Settings.set_dnd(user.id, :indefinite)
+
+    case Presence.update_status(socket, user.id, "lobby", "dnd") do
+      {:ok, _} ->
+        broadcast_to_friends(user.id, friend_ids, "friend_status_changed", %{
+          user_id: user.id,
+          status: "dnd",
+          updated_at: DateTime.utc_now() |> DateTime.to_iso8601()
+        })
+        {:reply, :ok, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("clear_dnd", _params, socket) do
+    user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+
+    CGraph.Accounts.Settings.clear_dnd(user.id)
+
+    # Restore to online status
+    case Presence.update_status(socket, user.id, "lobby", "online") do
+      {:ok, _} ->
+        broadcast_to_friends(user.id, friend_ids, "friend_status_changed", %{
+          user_id: user.id,
+          status: "online",
+          updated_at: DateTime.utc_now() |> DateTime.to_iso8601()
+        })
+        {:reply, :ok, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  @impl true
   def handle_in("set_app_state", %{"state" => app_state}, socket) when app_state in ["foreground", "background"] do
     user = socket.assigns.current_user
 

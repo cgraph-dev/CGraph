@@ -132,15 +132,21 @@ defmodule CGraph.Accounts.Settings do
 
   @doc """
   Checks if the user should receive a specific type of notification.
+  Also checks DND override (dnd_until).
   """
   @spec should_notify?(User.t(), atom()) :: boolean()
   def should_notify?(%User{} = user, type) do
     {:ok, settings} = get_settings(user)
 
-    base_enabled = settings.push_notifications || settings.email_notifications
-    type_enabled = type_notification_enabled?(settings, type)
+    # DND override takes priority — if dnd_until is in the future, suppress all notifications
+    if dnd_active?(settings) do
+      false
+    else
+      base_enabled = settings.push_notifications || settings.email_notifications
+      type_enabled = type_notification_enabled?(settings, type)
 
-    base_enabled && type_enabled && !in_quiet_hours?(settings)
+      base_enabled && type_enabled && !in_quiet_hours?(settings)
+    end
   end
 
   defp type_notification_enabled?(settings, type) do
@@ -152,6 +158,7 @@ defmodule CGraph.Accounts.Settings do
 
   @doc """
   Checks if current time is within the user's quiet hours.
+  Uses the user's timezone setting for correct local-time comparison.
   """
   @spec in_quiet_hours?(UserSettings.t()) :: boolean()
   def in_quiet_hours?(%UserSettings{quiet_hours_enabled: false}), do: false
@@ -161,16 +168,86 @@ defmodule CGraph.Accounts.Settings do
       {nil, _} -> false
       {_, nil} -> false
       {start, finish} ->
-        now = Time.utc_now()
+        now = local_time_now(settings.timezone)
 
         if Time.compare(start, finish) == :lt do
-          # Normal range (e.g., 22:00 to 07:00)
+          # Same-day range (e.g., 09:00 to 17:00)
           Time.compare(now, start) != :lt && Time.compare(now, finish) == :lt
         else
           # Overnight range (e.g., 22:00 to 07:00)
           Time.compare(now, start) != :lt || Time.compare(now, finish) == :lt
         end
     end
+  end
+
+  @doc """
+  Checks if DND (Do Not Disturb) is currently active for the user.
+  DND is active if `dnd_until` is set and in the future.
+  """
+  @spec dnd_active?(UserSettings.t()) :: boolean()
+  def dnd_active?(%UserSettings{dnd_until: nil}), do: false
+
+  def dnd_active?(%UserSettings{dnd_until: dnd_until}) do
+    DateTime.compare(DateTime.utc_now(), dnd_until) == :lt
+  end
+
+  @doc """
+  Sets DND for a duration in minutes. Pass `:indefinite` for no expiry.
+  """
+  @spec set_dnd(User.t() | String.t(), pos_integer() | :indefinite) ::
+          {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
+  def set_dnd(user, :indefinite) do
+    # Set to far future (1 year)
+    dnd_until =
+      DateTime.utc_now()
+      |> DateTime.add(365 * 24 * 3600, :second)
+      |> DateTime.truncate(:second)
+
+    update_settings(user, %{dnd_until: dnd_until})
+  end
+
+  def set_dnd(user, duration_minutes) when is_integer(duration_minutes) and duration_minutes > 0 do
+    dnd_until =
+      DateTime.utc_now()
+      |> DateTime.add(duration_minutes * 60, :second)
+      |> DateTime.truncate(:second)
+
+    update_settings(user, %{dnd_until: dnd_until})
+  end
+
+  @doc """
+  Clears DND for a user.
+  """
+  @spec clear_dnd(User.t() | String.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
+  def clear_dnd(user) do
+    update_settings(user, %{dnd_until: nil})
+  end
+
+  @doc """
+  Returns the current DND state for a user.
+  """
+  @spec get_dnd_state(User.t() | String.t()) :: %{active: boolean(), dnd_until: DateTime.t() | nil}
+  def get_dnd_state(user) do
+    {:ok, settings} = get_settings(user)
+
+    %{
+      active: dnd_active?(settings),
+      dnd_until: settings.dnd_until
+    }
+  end
+
+  # Converts UTC now to local time in the user's timezone using Timex.
+  # Falls back to UTC if timezone is invalid.
+  defp local_time_now(nil), do: Time.utc_now()
+  defp local_time_now("UTC"), do: Time.utc_now()
+
+  defp local_time_now(timezone) do
+    case Timex.now(timezone) do
+      %DateTime{} = dt -> DateTime.to_time(dt)
+      {:error, _} -> Time.utc_now()
+    end
+  rescue
+    _ -> Time.utc_now()
   end
 
   @doc """

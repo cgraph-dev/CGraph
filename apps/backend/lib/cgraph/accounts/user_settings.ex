@@ -29,6 +29,7 @@ defmodule CGraph.Accounts.UserSettings do
     field :quiet_hours_enabled, :boolean, default: false
     field :quiet_hours_start, :time
     field :quiet_hours_end, :time
+    field :dnd_until, :utc_datetime
 
     # Privacy settings
     field :show_online_status, :boolean, default: true
@@ -93,6 +94,7 @@ defmodule CGraph.Accounts.UserSettings do
       :quiet_hours_enabled,
       :quiet_hours_start,
       :quiet_hours_end,
+      :dnd_until,
       :show_online_status,
       :show_read_receipts,
       :show_typing_indicators,

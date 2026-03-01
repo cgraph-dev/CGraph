@@ -65,7 +65,8 @@ defmodule CGraphWeb.SettingsController do
       "notification_sound",
       "quiet_hours_enabled",
       "quiet_hours_start",
-      "quiet_hours_end"
+      "quiet_hours_end",
+      "timezone"
     ])
 
     case Settings.update_settings(user, notification_params) do
@@ -82,7 +83,9 @@ defmodule CGraphWeb.SettingsController do
               notification_sound: settings.notification_sound,
               quiet_hours_enabled: settings.quiet_hours_enabled,
               quiet_hours_start: settings.quiet_hours_start,
-              quiet_hours_end: settings.quiet_hours_end
+              quiet_hours_end: settings.quiet_hours_end,
+              timezone: settings.timezone,
+              dnd_until: settings.dnd_until
             }
         })
 
@@ -223,6 +226,82 @@ defmodule CGraphWeb.SettingsController do
 
   # Private helpers
 
+  @doc """
+  POST /api/v1/settings/dnd
+
+  Activates Do Not Disturb mode for a duration.
+  Body: {"duration_minutes": 60} or {"indefinite": true}
+  """
+  @spec set_dnd(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def set_dnd(conn, %{"indefinite" => true}) do
+    user = conn.assigns.current_user
+
+    case Settings.set_dnd(user, :indefinite) do
+      {:ok, settings} ->
+        render_data(conn, %{
+          dnd: %{
+            active: true,
+            dnd_until: settings.dnd_until
+          }
+        })
+
+      {:error, changeset} ->
+        render_error(conn, 422, inspect(format_errors(changeset)))
+    end
+  end
+
+  def set_dnd(conn, %{"duration_minutes" => minutes}) when is_integer(minutes) and minutes > 0 do
+    user = conn.assigns.current_user
+
+    case Settings.set_dnd(user, minutes) do
+      {:ok, settings} ->
+        render_data(conn, %{
+          dnd: %{
+            active: true,
+            dnd_until: settings.dnd_until
+          }
+        })
+
+      {:error, changeset} ->
+        render_error(conn, 422, inspect(format_errors(changeset)))
+    end
+  end
+
+  def set_dnd(conn, _params) do
+    render_error(conn, 400, "Must provide duration_minutes (positive integer) or indefinite: true")
+  end
+
+  @doc """
+  DELETE /api/v1/settings/dnd
+
+  Clears Do Not Disturb mode.
+  """
+  @spec clear_dnd(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def clear_dnd(conn, _params) do
+    user = conn.assigns.current_user
+
+    case Settings.clear_dnd(user) do
+      {:ok, _settings} ->
+        render_data(conn, %{dnd: %{active: false, dnd_until: nil}})
+
+      {:error, changeset} ->
+        render_error(conn, 422, inspect(format_errors(changeset)))
+    end
+  end
+
+  @doc """
+  GET /api/v1/settings/dnd
+
+  Returns current DND state.
+  """
+  @spec get_dnd(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_dnd(conn, _params) do
+    user = conn.assigns.current_user
+    dnd_state = Settings.get_dnd_state(user)
+
+    render_data(conn, %{dnd: dnd_state})
+  end
+
   defp serialize_settings(settings) do
     %{
       notifications: %{
@@ -236,7 +315,9 @@ defmodule CGraphWeb.SettingsController do
         notification_sound: settings.notification_sound,
         quiet_hours_enabled: settings.quiet_hours_enabled,
         quiet_hours_start: settings.quiet_hours_start,
-        quiet_hours_end: settings.quiet_hours_end
+        quiet_hours_end: settings.quiet_hours_end,
+        timezone: settings.timezone,
+        dnd_until: settings.dnd_until
       },
       privacy: %{
         show_online_status: settings.show_online_status,

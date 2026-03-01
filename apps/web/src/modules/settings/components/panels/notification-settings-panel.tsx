@@ -237,6 +237,24 @@ export function NotificationSettingsPanel() {
             />
           </div>
         </GlassCard>
+
+        {/* DND Schedule Link */}
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Do Not Disturb Schedule</h3>
+              <p className="text-sm text-gray-400">
+                Configure quiet hours and timezone settings
+              </p>
+            </div>
+            <a
+              href="/settings/dnd-schedule"
+              className="rounded-lg bg-dark-600 px-3 py-1.5 text-sm text-primary-400 transition-colors hover:bg-dark-500"
+            >
+              Configure
+            </a>
+          </div>
+        </GlassCard>
       </div>
     </motion.div>
   );

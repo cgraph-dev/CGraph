@@ -430,6 +430,7 @@ export type SettingsStackParamList = {
   ChatBubbles: undefined;
   AvatarSettings: undefined;
   Notifications: undefined;
+  DndSchedule: undefined;
   Privacy: undefined;
   Premium: undefined;
   CoinShop: undefined;
