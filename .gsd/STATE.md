@@ -10,22 +10,22 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 11 — Groups & Channels** — **Planned**
+**Phase 11 — Groups & Channels** — **In Progress**
 
-3 plans across 2 waves. Critical WebSocket topic mismatch discovered (backend routes "group:*" but clients send "channel:*"). Wave 1: fix socket alignment + wire group CRUD/channels/invites E2E. Wave 2: explore page for group discovery + channel message threads.
+3 plans across 2 waves. WebSocket topic mismatch fixed (Plan 11-01). Wave 1 continues: group CRUD/channels/invites E2E. Wave 2: explore page + channel message threads.
 
 ## Position
 
 - **Phase:** 11 of 19 — Groups & Channels
-- **Plan:** 0/3 plans complete
-- **Status:** Planned — ready for execution
-- **Last activity:** 2026-03-01 — Phase 11 planned (3 plans, 2 waves)
+- **Plan:** 1/3 plans complete
+- **Status:** In Progress — Plan 11-01 complete, 11-02 next
+- **Last activity:** 2026-03-01 — Plan 11-01 executed (WebSocket alignment + E2E wiring)
 
 ## Plans
 
 | Plan  | Objective                                                           | Wave | Autonomous | Depends On | Status      |
 | ----- | ------------------------------------------------------------------- | ---- | ---------- | ---------- | ----------- |
-| 11-01 | WebSocket topic alignment + group channel messaging E2E (MSG-02/03) | 1    | ✅          | —          | Not started |
+| 11-01 | WebSocket topic alignment + group channel messaging E2E (MSG-02/03) | 1    | ✅          | —          | ✅ Complete  |
 | 11-02 | Group CRUD, channels, and invites E2E wiring (GROUP-01/02/05)       | 1    | ✅          | —          | Not started |
 | 11-03 | Explore page + channel threads (GROUP-09, MSG-21)                   | 2    | ✅          | 11-01,02   | Not started |
 
@@ -33,10 +33,10 @@ Secure real-time communication that works end-to-end.
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 51%       |
+| Overall progress   | 52%       |
 | Phases complete    | 10 / 19   |
-| Requirements done  | 52 / 136  |
-| Current phase reqs | 0 / 7     |
+| Requirements done  | 54 / 136  |
+| Current phase reqs | 2 / 7     |
 
 ## Phase Summary
 
