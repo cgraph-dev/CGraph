@@ -17,16 +17,16 @@ Secure real-time communication that works end-to-end.
 ## Position
 
 - **Phase:** 13 of 19 — Voice & Video
-- **Plan:** 1/4 plans executed
-- **Status:** In Progress — Wave 1 (13-01 complete, 13-02 pending)
-- **Last activity:** 2026-03-01 — Plan 13-01 complete (Mobile WebRTC wiring + call history API)
+- **Plan:** 2/4 plans executed
+- **Status:** In Progress — Wave 1 complete, Wave 2 ready
+- **Last activity:** 2026-03-01 — Plan 13-02 complete (LiveKit SFU integration — group calls)
 
 ## Plans
 
 | Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
 | 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | ✅ Complete |
-| 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | Not started |
+| 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | ✅ Complete |
 | 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | Not started |
 | 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | Not started |
 
@@ -36,8 +36,8 @@ Secure real-time communication that works end-to-end.
 | ------------------ | --------- |
 | Overall progress   | 65%       |
 | Phases complete    | 12 / 19   |
-| Requirements done  | 72 / 136  |
-| Current phase reqs | 4 / 9     |
+| Requirements done  | 75 / 136  |
+| Current phase reqs | 7 / 9     |
 
 ## Phase Summary
 
@@ -55,7 +55,7 @@ Secure real-time communication that works end-to-end.
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
-| 13  | Voice & Video           | **In Progress** (1/4 plans done) |
+| 13  | Voice & Video           | **In Progress** (2/4 plans done) |
 | 14  | Forum Core              | Unblocked                 |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
