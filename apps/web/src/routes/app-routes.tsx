@@ -20,6 +20,7 @@ import {
   // Groups
   Groups,
   GroupChannel,
+  ExploreGroups,
   // Profile & Community
   UserProfile,
   UserLeaderboard,
@@ -78,6 +79,7 @@ export function AppRoutes() {
         <Route path="groups" element={<Groups />}>
           <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
         </Route>
+        <Route path="groups/explore" element={<ExploreGroups />} />
 
         {/* Forums */}
         {ForumRoutes()}

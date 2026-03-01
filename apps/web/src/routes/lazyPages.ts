@@ -26,6 +26,7 @@ export const Conversation = lazy(() => import('@/pages/messages/conversation'));
 // ── Groups ─────────────────────────────────────────────────────────────
 export const Groups = lazy(() => import('@/pages/groups/groups'));
 export const GroupChannel = lazy(() => import('@/pages/groups/group-channel'));
+export const ExploreGroups = lazy(() => import('@/pages/groups/explore-groups'));
 
 // ── Forums ─────────────────────────────────────────────────────────────
 export const Forums = lazy(() => import('@/pages/forums/forums'));

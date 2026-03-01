@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { PlusIcon, ChatBubbleLeftRightIcon, TicketIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ChatBubbleLeftRightIcon, TicketIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { CreateGroupModal } from '@/modules/groups/components/group-list/create-group-modal';
 import { useGroupStore } from '@/modules/groups/store';
@@ -124,6 +124,26 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           transition={tweens.standard}
         />
       </motion.button>
+
+      {/* Explore public groups */}
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <NavLink
+          to="/groups/explore"
+          onClick={() => HapticFeedback.medium()}
+          aria-label="Explore public groups"
+          className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-emerald-600 hover:to-teal-700"
+          style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
+        >
+          <GlobeAltIcon className="h-6 w-6 text-emerald-400 transition-colors group-hover:text-white" />
+          <motion.div
+            className="pointer-events-none absolute inset-0 rounded-2xl bg-emerald-600/20 opacity-0 blur-lg group-hover:opacity-100"
+            transition={tweens.standard}
+          />
+        </NavLink>
+      </motion.div>
 
       {/* Create Group Modal */}
       <AnimatePresence>
