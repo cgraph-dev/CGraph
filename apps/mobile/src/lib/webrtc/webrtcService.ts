@@ -2,44 +2,35 @@
  * WebRTC Service (Mobile)
  *
  * Handles peer-to-peer voice and video calls using WebRTC.
- * Uses Phoenix Channels for signaling - connects to the same backend as web.
- *
- * NOTE: Requires react-native-webrtc package for full functionality.
- * For Expo managed workflow, consider expo-av for audio-only calls
- * or eject to bare workflow for full WebRTC support.
+ * Uses react-native-webrtc for real RTCPeerConnection + mediaDevices.
+ * Uses Phoenix Channels for signaling — connects to the same backend as web.
  *
  * @module lib/webrtc
- * @version 0.8.6
+ * @version 1.0.0
  */
 
 import { Channel, Socket } from 'phoenix';
+import {
+  RTCPeerConnection,
+  RTCSessionDescription,
+  RTCIceCandidate,
+  mediaDevices,
+  MediaStream as RTCMediaStream,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  RTCView,
+} from 'react-native-webrtc';
 
 // =============================================================================
-// WebRTC Type Definitions for React Native
-// These provide proper typing for react-native-webrtc package
+// Types (extended from react-native-webrtc)
 // =============================================================================
 
-/** Media stream track from react-native-webrtc */
+/** Media stream track */
 interface RTCMediaStreamTrack {
   id: string;
   kind: 'audio' | 'video';
   enabled: boolean;
   stop(): void;
-}
-
-/** RTCPeerConnection type for react-native-webrtc */
-interface RTCPeerConnectionType {
-  createOffer(): Promise<RTCSessionDescriptionInit>;
-  createAnswer(): Promise<RTCSessionDescriptionInit>;
-  setLocalDescription(desc: RTCSessionDescriptionInit): Promise<void>;
-  setRemoteDescription(desc: RTCSessionDescriptionInit): Promise<void>;
-  addIceCandidate(candidate: RTCIceCandidateInit): Promise<void>;
-  addTrack(track: RTCMediaStreamTrack, stream: RTCMediaStream): void;
-  close(): void;
-  connectionState: RTCPeerConnectionState;
-  onicecandidate: ((event: RTCIceCandidateEvent) => void) | null;
-  ontrack: ((event: RTCTrackEvent) => void) | null;
-  onconnectionstatechange: (() => void) | null;
+  _switchCamera?(): void;
 }
 
 /** RTCPeerConnection state values */
@@ -77,51 +68,6 @@ interface RTCSessionDescriptionInit {
 }
 
 type RTCSessionDescriptionType = 'offer' | 'answer' | 'pranswer' | 'rollback';
-
-// Declare WebRTC constructors from react-native-webrtc
-// These will be available when the package is installed
-declare const RTCPeerConnection: new (config: RTCConfiguration) => RTCPeerConnectionType;
-declare const RTCSessionDescription: new (
-  init: RTCSessionDescriptionInit
-) => RTCSessionDescriptionInit;
-declare const RTCIceCandidate: new (init: RTCIceCandidateInit) => RTCIceCandidateInit;
-
-/** RTCPeerConnection configuration */
-interface RTCConfiguration {
-  iceServers: RTCIceServer[];
-}
-
-interface RTCIceServer {
-  urls: string | string[];
-  username?: string;
-  credential?: string;
-}
-
-/** Navigator with mediaDevices for react-native-webrtc */
-interface NavigatorWithMedia extends Navigator {
-  mediaDevices: {
-    getUserMedia(constraints: MediaStreamConstraints): Promise<RTCMediaStream>;
-  };
-}
-
-interface MediaStreamConstraints {
-  audio?: boolean | MediaTrackConstraints;
-  video?: boolean | MediaTrackConstraints;
-}
-
-interface MediaTrackConstraints {
-  facingMode?: string;
-  width?: number;
-  height?: number;
-}
-
-// Extended MediaStream type for react-native-webrtc
-interface RTCMediaStream {
-  getTracks(): RTCMediaStreamTrack[];
-  getAudioTracks(): RTCMediaStreamTrack[];
-  getVideoTracks(): RTCMediaStreamTrack[];
-  toURL(): string;
-}
 
 // Types
 export interface CallParticipant {
@@ -165,7 +111,7 @@ const ICE_SERVERS = [
  * Check if WebRTC is available (react-native-webrtc must be installed)
  */
 export function isWebRTCAvailable(): boolean {
-  return typeof RTCPeerConnection !== 'undefined';
+  return RTCPeerConnection != null;
 }
 
 /**
@@ -181,7 +127,7 @@ export class WebRTCManager {
   private socket: Socket | null = null;
   private channel: Channel | null = null;
 
-  private peerConnections: Map<string, RTCPeerConnectionType> = new Map();
+  private peerConnections: Map<string, any> = new Map();
   private localStream: RTCMediaStream | null = null;
   private eventHandlers: CallEventHandler = {};
 
@@ -242,10 +188,10 @@ export class WebRTCManager {
     try {
       // Get local media stream (requires react-native-webrtc)
        
-      this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
-        video: options.video,
-        audio: options.audio,
-      });
+      this.localStream = await mediaDevices.getUserMedia({
+        video: options.video ? { facingMode: 'user' } : false,
+        audio: options.audio !== false,
+      }) as unknown as RTCMediaStream;
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
 
@@ -291,12 +237,11 @@ export class WebRTCManager {
     }
 
     try {
-      // Get local media stream
-       
-      this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
-        video: options.video,
-        audio: options.audio,
-      });
+      // Get local media stream via react-native-webrtc
+      this.localStream = await mediaDevices.getUserMedia({
+        video: options.video ? { facingMode: 'user' } : false,
+        audio: options.audio !== false,
+      }) as unknown as RTCMediaStream;
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
 
@@ -516,7 +461,7 @@ export class WebRTCManager {
     });
   }
 
-  private getOrCreatePeerConnection(userId: string): RTCPeerConnectionType {
+  private getOrCreatePeerConnection(userId: string): any {
     if (this.peerConnections.has(userId)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.peerConnections.get(userId)!;
@@ -576,6 +521,92 @@ export class WebRTCManager {
     } catch (error) {
       console.error('[WebRTC] Error initiating connection:', error);
     }
+  }
+
+  /**
+   * Restart ICE for a specific peer (handles WiFi → cellular transitions).
+   */
+  async restartIce(userId: string): Promise<void> {
+    try {
+      const pc = this.peerConnections.get(userId);
+      if (!pc) return;
+
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+
+      await this.pushToChannel('offer', {
+        to: userId,
+        sdp: offer.sdp,
+        ice_restart: true,
+      });
+
+      if (__DEV__) console.log(`[WebRTC] ICE restart initiated for ${userId}`);
+    } catch (error) {
+      console.error('[WebRTC] Error restarting ICE:', error);
+    }
+  }
+
+  /**
+   * Switch the active camera between front and back.
+   */
+  switchCamera(): void {
+    if (this.localStream) {
+      const videoTrack = this.localStream.getVideoTracks()[0] as RTCMediaStreamTrack | undefined;
+      if (videoTrack && videoTrack._switchCamera) {
+        videoTrack._switchCamera();
+      }
+    }
+  }
+
+  /**
+   * Start screen sharing (where available on mobile).
+   * Falls back gracefully if getDisplayMedia is not available.
+   */
+  async startScreenShare(): Promise<boolean> {
+    try {
+      // react-native-webrtc supports getDisplayMedia on Android
+      const displayMedia = (mediaDevices as any).getDisplayMedia;
+      if (typeof displayMedia !== 'function') {
+        if (__DEV__) console.log('[WebRTC] Screen share not available on this platform');
+        return false;
+      }
+
+      const screenStream = await displayMedia({ video: true }) as unknown as RTCMediaStream;
+      const screenTrack = screenStream.getVideoTracks()[0];
+
+      // Replace video track in all peer connections
+      this.peerConnections.forEach((pc) => {
+        const senders = (pc as any).getSenders?.() ?? [];
+        const videoSender = senders.find((s: any) => s.track?.kind === 'video');
+        if (videoSender) {
+          videoSender.replaceTrack(screenTrack);
+        }
+      });
+
+      this.state.isScreenSharing = true;
+      return true;
+    } catch (error) {
+      console.error('[WebRTC] Error starting screen share:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Stop screen sharing and revert to camera.
+   */
+  async stopScreenShare(): Promise<void> {
+    if (!this.state.isScreenSharing || !this.localStream) return;
+
+    const cameraTrack = this.localStream.getVideoTracks()[0];
+    this.peerConnections.forEach((pc) => {
+      const senders = (pc as any).getSenders?.() ?? [];
+      const videoSender = senders.find((s: any) => s.track?.kind === 'video');
+      if (videoSender && cameraTrack) {
+        videoSender.replaceTrack(cameraTrack);
+      }
+    });
+
+    this.state.isScreenSharing = false;
   }
 }
 
