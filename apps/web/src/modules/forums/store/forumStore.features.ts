@@ -34,19 +34,23 @@ export function createFeatureActions(set: Set, _get: Get) {
   return {
     // ── Thread Prefixes ──────────────────────────────────────────────
 
-    fetchThreadPrefixes: async () => {
-      const standardPrefixes: ThreadPrefix[] = [
-        { id: 'discussion', name: 'Discussion', color: '#3B82F6', isDefault: true },
-        { id: 'question', name: 'Question', color: '#8B5CF6', isDefault: false },
-        { id: 'help', name: 'Help', color: '#EF4444', isDefault: false },
-        { id: 'solved', name: 'Solved', color: '#10B981', isDefault: false },
-        { id: 'announcement', name: 'Announcement', color: '#F59E0B', isDefault: false },
-        { id: 'guide', name: 'Guide', color: '#06B6D4', isDefault: false },
-        { id: 'news', name: 'News', color: '#EC4899', isDefault: false },
-        { id: 'bug', name: 'Bug', color: '#DC2626', isDefault: false },
-        { id: 'feature', name: 'Feature Request', color: '#7C3AED', isDefault: false },
-      ];
-      set({ threadPrefixes: standardPrefixes });
+    fetchThreadPrefixes: async (forumId?: string) => {
+      try {
+        const url = forumId ? `/api/v1/forums/${forumId}/thread-prefixes` : '/api/v1/admin/thread-prefixes';
+        const response = await api.get(url);
+        const prefixes = ensureArray<ThreadPrefix>(response.data, 'prefixes');
+        set({ threadPrefixes: prefixes });
+      } catch {
+        // Fallback to defaults if API not available
+        set({
+          threadPrefixes: [
+            { id: 'discussion', name: 'Discussion', color: '#3B82F6', isDefault: true },
+            { id: 'question', name: 'Question', color: '#8B5CF6' },
+            { id: 'help', name: 'Help', color: '#EF4444' },
+            { id: 'solved', name: 'Solved', color: '#10B981' },
+          ],
+        });
+      }
     },
 
     createThreadPrefix: async (data: CreateThreadPrefixData) => {
