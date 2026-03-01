@@ -52,7 +52,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     joinChannel();
 
     return () => {
-      socketManager.leaveChannel(`group:${groupId}:channel:${channelId}`);
+      socketManager.leaveChannel(`group:${channelId}`);
     };
   }, [groupId, channelId]);
 
@@ -79,7 +79,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
   };
 
   const joinChannel = () => {
-    const phoenixChannel = socketManager.joinChannel(`group:${groupId}:channel:${channelId}`);
+    const phoenixChannel = socketManager.joinChannel(`group:${channelId}`);
     if (phoenixChannel) {
       phoenixChannel.on('new_message', (payload: unknown) => {
          
