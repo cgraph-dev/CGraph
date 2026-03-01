@@ -68,6 +68,14 @@ defmodule CGraphWeb.GroupChannel do
     serialized_messages = Enum.map(messages, &MessageJSON.message_data/1)
     push(socket, "message_history", %{messages: serialized_messages})
 
+    # Push E2EE session keys for this user in this group
+    e2ee_keys = CGraph.Crypto.E2EE.GroupKeyDistribution.get_session_keys(
+      socket.assigns.group_id, user.id
+    )
+    if e2ee_keys != [] do
+      push(socket, "e2ee_session_keys", %{keys: e2ee_keys})
+    end
+
     {:noreply, socket}
   end
 
@@ -208,6 +216,48 @@ defmodule CGraphWeb.GroupChannel do
     else
       {:reply, {:error, %{reason: "no_permission"}}, socket}
     end
+  end
+
+  # E2EE: Register sender key for this group
+  @impl true
+  def handle_in("register_sender_key", %{"device_id" => device_id, "public_sender_key" => key_b64}, socket) do
+    user = socket.assigns.current_user
+    group_id = socket.assigns.group_id
+    public_key = Base.decode64!(key_b64)
+
+    case CGraph.Crypto.E2EE.GroupKeyDistribution.register_sender_key(group_id, user.id, device_id, public_key) do
+      {:ok, session} ->
+        {:reply, {:ok, %{session_id: session.id, sender_key_id: session.sender_key_id}}, socket}
+      {:error, _} ->
+        {:reply, {:error, %{reason: "registration_failed"}}, socket}
+    end
+  end
+
+  # E2EE: Distribute encrypted sender key to a recipient
+  @impl true
+  def handle_in("distribute_sender_key", %{"session_id" => session_id, "recipient_user_id" => recipient_user_id, "recipient_device_id" => recipient_device_id, "encrypted_sender_key" => encrypted_key_b64}, socket) do
+    encrypted_key = Base.decode64!(encrypted_key_b64)
+
+    case CGraph.Crypto.E2EE.GroupKeyDistribution.distribute_key(session_id, recipient_user_id, recipient_device_id, encrypted_key) do
+      {:ok, _dist} -> {:reply, :ok, socket}
+      {:error, _} -> {:reply, {:error, %{reason: "distribution_failed"}}, socket}
+    end
+  end
+
+  # E2EE: Request key distribution — ask existing members to share their keys
+  @impl true
+  def handle_in("request_key_distribution", _params, socket) do
+    user = socket.assigns.current_user
+    group_id = socket.assigns.group_id
+
+    members_keys = CGraph.Crypto.E2EE.GroupKeyDistribution.get_group_members_keys(group_id)
+    # Broadcast to all group members asking them to distribute their keys to this new member
+    broadcast_from!(socket, "key_distribution_request", %{
+      requesting_user_id: user.id,
+      requesting_device_id: socket.assigns[:device_id] || "default"
+    })
+
+    {:reply, {:ok, %{existing_members: length(members_keys)}}, socket}
   end
 
   # ============================================================================
