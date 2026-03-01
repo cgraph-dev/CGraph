@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { FaceSmileIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { FaceSmileIcon, EllipsisVerticalIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import type { ChannelMessageItemProps } from './types';
 import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 
@@ -16,7 +16,7 @@ import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 /**
  * Channel Message Item component.
  */
-export function ChannelMessageItem({ message, showHeader, onReply }: ChannelMessageItemProps) {
+export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread, threadReplyCount }: ChannelMessageItemProps) {
   const [showActions, setShowActions] = useState(false);
 
   const displayName = getDisplayName(message.author.username, message.author.displayName);
@@ -98,6 +98,17 @@ export function ChannelMessageItem({ message, showHeader, onReply }: ChannelMess
             ))}
           </div>
         )}
+
+        {/* Thread reply count badge */}
+        {threadReplyCount != null && threadReplyCount > 0 && (
+          <button
+            onClick={onOpenThread}
+            className="mt-1 flex items-center gap-1.5 rounded px-2 py-1 text-xs text-primary-400 hover:bg-primary-500/10 transition-colors"
+          >
+            <ChatBubbleLeftRightIcon className="h-3.5 w-3.5" />
+            <span>{threadReplyCount} {threadReplyCount === 1 ? 'reply' : 'replies'}</span>
+          </button>
+        )}
       </div>
 
       {/* Actions */}
@@ -112,6 +123,13 @@ export function ChannelMessageItem({ message, showHeader, onReply }: ChannelMess
             title="Reply"
           >
             <ReplyIcon />
+          </button>
+          <button
+            onClick={onOpenThread}
+            className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white"
+            title="Reply in Thread"
+          >
+            <ChatBubbleLeftRightIcon className="h-4 w-4" />
           </button>
           <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="More">
             <EllipsisVerticalIcon className="h-4 w-4" />

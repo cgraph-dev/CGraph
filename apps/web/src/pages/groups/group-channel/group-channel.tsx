@@ -18,6 +18,8 @@ import { MessagesArea } from './messages-area';
 import { MessageInput } from './message-input';
 import { MembersSidebar } from './members-sidebar';
 import { PinnedMessagesPanel } from './pinned-messages-panel';
+import { ChannelThreadPanel } from './channel-thread-panel';
+import { useChannelThreadStore } from '@/modules/groups/store/channelThreadStore';
 import { formatDateHeader, groupMessagesByDate } from './utils';
 import type { ChannelMessage } from './types';
 
@@ -53,6 +55,9 @@ export default function GroupChannel() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Thread panel state
+  const { isOpen: threadOpen, replyCounts, openThread, fetchReplyCounts } = useChannelThreadStore();
+
   const group = groups.find((g) => g.id === groupId);
   const channel = group?.channels?.find((c) => c.id === channelId);
   const messages = channelId ? channelMessages[channelId] || [] : [];
@@ -67,6 +72,7 @@ export default function GroupChannel() {
     socketManager.joinGroupChannel(channelId);
     fetchChannelMessages(channelId);
     fetchMembers(groupId);
+    fetchReplyCounts(channelId);
 
     return () => {
       setActiveChannel(null);
@@ -179,6 +185,8 @@ export default function GroupChannel() {
           messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onLoadMore={handleLoadMore}
           onReply={setReplyTo}
+          onOpenThread={(msg) => channelId && openThread(channelId, msg)}
+          threadReplyCounts={replyCounts}
           formatDateHeader={formatDateHeader}
         />
 
@@ -198,6 +206,11 @@ export default function GroupChannel() {
       {showMembers && (
         <MembersSidebar onlineMembers={onlineMembers} offlineMembers={offlineMembers} />
       )}
+
+      {/* Thread panel */}
+      <AnimatePresence>
+        {threadOpen && channelId && <ChannelThreadPanel />}
+      </AnimatePresence>
 
       {/* Pinned messages panel */}
       <AnimatePresence>

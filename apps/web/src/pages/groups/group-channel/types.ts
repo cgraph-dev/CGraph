@@ -13,6 +13,8 @@ export interface ChannelMessageItemProps {
   message: ChannelMessage;
   showHeader: boolean;
   onReply: () => void;
+  onOpenThread: () => void;
+  threadReplyCount?: number;
 }
 
 /**
@@ -56,6 +58,8 @@ export interface MessagesAreaProps {
   messagesEndRef: React.RefObject<HTMLDivElement>;
   onLoadMore: () => void;
   onReply: (message: ChannelMessage) => void;
+  onOpenThread: (message: ChannelMessage) => void;
+  threadReplyCounts: Record<string, number>;
   formatDateHeader: (date: Date) => string;
 }
 

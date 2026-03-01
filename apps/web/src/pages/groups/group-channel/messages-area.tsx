@@ -23,6 +23,8 @@ export function MessagesArea({
   messagesEndRef,
   onLoadMore,
   onReply,
+  onOpenThread,
+  threadReplyCounts,
   formatDateHeader,
 }: MessagesAreaProps) {
   const hasMessages = groupedMessages.some((g) => g.messages.length > 0);
@@ -77,6 +79,8 @@ export function MessagesArea({
                   message={message}
                   showHeader={showHeader}
                   onReply={() => onReply(message)}
+                  onOpenThread={() => onOpenThread(message)}
+                  threadReplyCount={threadReplyCounts[message.id]}
                 />
               );
             })}
