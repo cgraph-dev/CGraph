@@ -11,6 +11,7 @@ import ForgotPasswordScreen from '../screens/auth/forgot-password-screen';
 import VerifyEmailScreen from '../screens/auth/verify-email-screen';
 import ResetPasswordScreen from '../screens/auth/reset-password-screen';
 import TwoFactorVerifyScreen from '../screens/auth/two-factor-verify-screen';
+import QrLoginScannerScreen from '../screens/auth/qr-login-scanner';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
@@ -29,6 +30,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="TwoFactorVerify" component={TwoFactorVerifyScreen} />
       <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+      <Stack.Screen name="QrLoginScanner" component={QrLoginScannerScreen} />
     </Stack.Navigator>
   );
 }

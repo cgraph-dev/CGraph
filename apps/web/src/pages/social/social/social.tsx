@@ -13,6 +13,7 @@ import { useSearchStore } from '@/modules/search/store';
 import { FriendsTab } from './friends-tab';
 import { NotificationsTab } from './notifications-tab';
 import { DiscoverTab } from './discover-tab';
+import { ContactsPresenceList } from '@/modules/social/components/contacts-presence-list';
 import type { SocialTab, Notification, SearchResult } from './types';
 import { tweens } from '@/lib/animation-presets';
 
@@ -203,17 +204,19 @@ export function Social() {
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={tab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={tweens.standard}
-            className="p-6"
-          >
-            {tab === 'friends' && (
-              <FriendsTab
+        <div className="flex gap-6 p-6">
+          {/* Main content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={tweens.standard}
+              className={tab === 'friends' ? 'flex-1' : 'w-full'}
+            >
+              {tab === 'friends' && (
+                <FriendsTab
                 friends={filteredFriends}
                 pendingRequests={pendingRequests}
                 sentRequests={sentRequests}
@@ -248,6 +251,19 @@ export function Social() {
             )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Online contacts sidebar — visible on friends tab */}
+        {tab === 'friends' && (
+          <aside className="hidden w-64 flex-shrink-0 lg:block">
+            <div className="sticky top-0 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
+              <ContactsPresenceList
+                className="max-h-[calc(100vh-12rem)] overflow-y-auto"
+                onContactClick={(friend) => navigate(`/messages?user=${friend.id}`)}
+              />
+            </div>
+          </aside>
+        )}
+        </div>
       </div>
     </div>
   );

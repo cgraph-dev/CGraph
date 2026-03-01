@@ -55,13 +55,13 @@ export function useOnboarding() {
         if (avatarFile) {
           const formData = new FormData();
           formData.append('avatar', avatarFile);
-          const response = await api.post('/api/v1/users/avatar', formData);
+          const response = await api.post('/api/v1/me/avatar', formData);
           avatarUrl = response.data.avatar_url;
         }
 
         // Update profile via API
          
-        await api.patch('/api/v1/users/profile', {
+        await api.put('/api/v1/me', {
           display_name: profileData.displayName,
           bio: profileData.bio,
           avatar_url: avatarUrl,
@@ -74,14 +74,14 @@ export function useOnboarding() {
         });
 
         // Update notification preferences
-        await api.patch('/api/v1/users/settings/notifications', {
+        await api.put('/api/v1/settings/notifications', {
           messages: profileData.notifyMessages,
           mentions: profileData.notifyMentions,
           friend_requests: profileData.notifyFriendRequests,
         });
 
         // Mark onboarding complete
-        await api.post('/api/v1/users/onboarding/complete');
+        await api.post('/api/v1/me/onboarding/complete');
 
         navigate('/messages');
       } catch (error) {

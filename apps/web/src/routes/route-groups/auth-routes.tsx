@@ -15,6 +15,7 @@ import {
   OAuthCallback,
   ResetPassword,
   VerifyEmail,
+  QrLogin,
 } from '../lazyPages';
 
 /** Auth routes (login, register, password reset, etc.) */
@@ -79,6 +80,18 @@ export function AuthRoutes() {
           <RouteErrorBoundary routeName="Verify Email">
             <VerifyEmail />
           </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="/qr-login"
+        element={
+          <PublicRoute>
+            <AuthLayout>
+              <RouteErrorBoundary routeName="QR Login">
+                <QrLogin />
+              </RouteErrorBoundary>
+            </AuthLayout>
+          </PublicRoute>
         }
       />
     </>

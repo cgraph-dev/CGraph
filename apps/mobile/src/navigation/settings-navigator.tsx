@@ -48,6 +48,7 @@ import {
   QuestsScreen,
   TitlesScreen,
 } from '../screens/gamification';
+import CustomStatusScreen from '../screens/social/custom-status-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -258,6 +259,11 @@ export default function SettingsNavigator() {
         name="Sessions"
         component={SessionsScreen}
         options={{ title: 'Active Sessions', headerShown: false }}
+      />
+      <Stack.Screen
+        name="CustomStatus"
+        component={CustomStatusScreen}
+        options={{ title: 'Custom Status', headerShown: false }}
       />
     </Stack.Navigator>
   );

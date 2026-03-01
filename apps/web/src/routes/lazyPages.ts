@@ -17,6 +17,7 @@ export const OAuthCallback = lazy(() => import('@/pages/auth/o-auth-callback'));
 export const Onboarding = lazy(() => import('@/pages/auth/onboarding'));
 export const ResetPassword = lazy(() => import('@/pages/auth/reset-password'));
 export const VerifyEmail = lazy(() => import('@/pages/auth/verify-email'));
+export const QrLogin = lazy(() => import('@/pages/auth/login/qr-login'));
 
 // ── Core Messaging ─────────────────────────────────────────────────────
 export const Messages = lazy(() => import('@/pages/messages/messages'));

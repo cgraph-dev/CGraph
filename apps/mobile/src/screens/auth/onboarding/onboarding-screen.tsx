@@ -158,18 +158,18 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
             type: 'image/jpeg',
             name: 'avatar.jpg',
           } as unknown as Blob);
-          await api.post('/api/v1/users/avatar', formData, {
+          await api.post('/api/v1/me/avatar', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
           });
         }
 
-        await api.patch('/api/v1/users/profile', {
+        await api.put('/api/v1/me', {
           display_name: displayName,
           bio,
         });
 
-        await api.patch('/api/v1/users/settings/notifications', notifications);
-        await api.post('/api/v1/users/onboarding/complete');
+        await api.put('/api/v1/settings/notifications', notifications);
+        await api.post('/api/v1/me/onboarding/complete');
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         navigation.goBack();

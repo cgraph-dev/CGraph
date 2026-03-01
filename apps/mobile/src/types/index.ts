@@ -345,6 +345,7 @@ export type AuthStackParamList = {
   TwoFactorVerify: { twoFactorToken: string };
   ResetPassword: { token: string };
   VerifyEmail: { token: string };
+  QrLoginScanner: undefined;
 };
 
 export type MainTabParamList = {
@@ -384,6 +385,9 @@ export type FriendsStackParamList = {
   FriendRequests: undefined;
   UserProfile: { userId: string };
   Leaderboard: undefined;
+  Contacts: undefined;
+  UserSearch: undefined;
+  ProfileEdit: { userId?: string };
 };
 
 export type SearchStackParamList = {
@@ -452,6 +456,8 @@ export type SettingsStackParamList = {
   BlockedUsers: undefined;
   KeyVerification: { userId: string; username: string };
   EmailNotifications: undefined;
+  // Social screens
+  CustomStatus: undefined;
   // Customize hub screens
   Customize: undefined;
   IdentityCustomization: undefined;
