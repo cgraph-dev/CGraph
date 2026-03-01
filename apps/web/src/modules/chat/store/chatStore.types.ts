@@ -77,6 +77,16 @@ export interface Message {
   forwardedFromId?: string | null;
   forwardedFromUserId?: string | null;
   forwardedFromUserName?: string | null;
+  // Server-side link preview
+  linkPreview?: {
+    url?: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    siteName?: string;
+    type?: string;
+    favicon?: string;
+  } | null;
 }
 
 /**

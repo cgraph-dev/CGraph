@@ -150,6 +150,17 @@ export function useConversationSocket({
           return;
         }
 
+        // Handle link preview updated
+        if (event === 'link_preview_updated') {
+           
+          const data = payload as { message: Record<string, unknown> };
+          if (data.message) {
+            const normalized = normalizeMessage(data.message);
+            onMessageUpdated(normalized);
+          }
+          return;
+        }
+
         // Handle reaction added
         if (event === 'reaction_added') {
            

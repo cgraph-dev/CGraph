@@ -62,6 +62,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
       fileName: msg.file_name,
       fileSize: msg.file_size,
       fileMimeType: msg.file_mime_type,
+      linkPreview: build_link_preview(msg.link_preview),
       sender: sender_data(msg.sender),
       attachment: build_attachment(msg),
       reactions: reaction_summary(msg.reactions),
@@ -272,4 +273,18 @@ defmodule CGraphWeb.API.V1.MessageJSON do
   defp truncate(nil, _), do: nil
   defp truncate(str, max) when byte_size(str) <= max, do: str
   defp truncate(str, max), do: String.slice(str, 0, max) <> "..."
+
+  defp build_link_preview(nil), do: nil
+  defp build_link_preview(preview) when preview == %{}, do: nil
+  defp build_link_preview(preview) when is_map(preview) do
+    %{
+      url: preview["url"] || preview[:url],
+      title: preview["title"] || preview[:title],
+      description: preview["description"] || preview[:description],
+      image: preview["image"] || preview[:image],
+      siteName: preview["siteName"] || preview[:siteName] || preview["site_name"] || preview[:site_name],
+      type: preview["type"] || preview[:type] || "website",
+      favicon: preview["favicon"] || preview[:favicon]
+    }
+  end
 end

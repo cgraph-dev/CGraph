@@ -91,7 +91,9 @@ config :cgraph, Oban,
        # Send email digests daily at 8 AM UTC
        {"0 8 * * *", CGraph.Workers.EmailDigestWorker},
        # Archive old messages daily at 3 AM UTC
-       {"0 3 * * *", CGraph.Workers.MessageArchivalWorker}
+       {"0 3 * * *", CGraph.Workers.MessageArchivalWorker},
+       # Clean up expired link preview cache entries daily at 4 AM UTC
+       {"0 4 * * *", CGraph.Workers.CleanupLinkPreviewCache}
      ]}
   ],
   queues: [
@@ -114,7 +116,8 @@ config :cgraph, Oban,
     critical: 10,
     emails: 5,
     media: 3,
-    sync: 5
+    sync: 5,
+    link_previews: 5
   ]
 
 # Swoosh mailer configuration

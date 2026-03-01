@@ -57,6 +57,15 @@ export function joinGroupChannel(
     useGroupStore.getState().removeChannelMessage(data.message_id, channelId);
   });
 
+  channel.on('link_preview_updated', (payload) => {
+     
+    const data = payload as { message: Record<string, unknown> };
+    if (data.message) {
+      const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+      useGroupStore.getState().updateChannelMessage(normalized);
+    }
+  });
+
   channel.on('typing', (payload) => {
      
     const data = payload as { user_id: string; is_typing: boolean };

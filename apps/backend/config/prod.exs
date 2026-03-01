@@ -98,7 +98,8 @@ config :cgraph, Oban,
     archival: 5,              # Message archival jobs
     emails: 15,               # Transactional email delivery
     media: 10,                # Media processing jobs
-    sync: 15                  # Data synchronization
+    sync: 15,                 # Data synchronization
+    link_previews: 10         # Link preview fetching
   ]
 
 # Rate limiting settings for production (balanced for 10K users)

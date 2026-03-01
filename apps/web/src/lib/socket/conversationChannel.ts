@@ -163,6 +163,15 @@ export function joinConversation(
       useChatStore.getState().markMessageDeleted(data.message_id);
     });
 
+    channel.on('link_preview_updated', (payload) => {
+       
+      const data = payload as { message: Record<string, unknown> };
+      if (data.message) {
+        const normalized = normalizeMessage(data.message) as unknown as Message;
+        useChatStore.getState().updateMessage(normalized);
+      }
+    });
+
     channel.on('typing', (payload) => {
        
       const data = payload as { user_id: string; is_typing: boolean; started_at?: string };

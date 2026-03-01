@@ -95,6 +95,16 @@ export interface Message {
   forwarded_from_id?: string | null;
   forwarded_from_user_id?: string | null;
   forwarded_from_user_name?: string | null;
+  // Server-side link preview
+  link_preview?: {
+    url?: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    siteName?: string;
+    type?: string;
+    favicon?: string;
+  } | null;
 }
 
 export interface EditHistory {

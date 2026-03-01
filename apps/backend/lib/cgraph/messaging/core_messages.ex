@@ -14,6 +14,7 @@ defmodule CGraph.Messaging.CoreMessages do
 
   alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message}
   alias CGraph.Accounts.User
+  alias CGraph.Messaging.LinkPreviewService
   alias CGraph.Repo
   alias CGraph.Search.Indexer
 
@@ -322,6 +323,8 @@ defmodule CGraph.Messaging.CoreMessages do
           _ -> :ok
         end
 
+        maybe_enqueue_link_preview(message)
+
         {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
 
       error -> error
@@ -347,6 +350,20 @@ defmodule CGraph.Messaging.CoreMessages do
       {k, v} when is_atom(k) -> {Atom.to_string(k), v}
       {k, v} -> {k, v}
     end)
+  end
+
+  defp maybe_enqueue_link_preview(message) do
+    if is_nil(message.link_preview) || message.link_preview == %{} do
+      case LinkPreviewService.extract_urls(message.content) do
+        [] -> :ok
+        _urls ->
+          %{"message_id" => message.id}
+          |> CGraph.Workers.FetchLinkPreview.new()
+          |> Oban.insert()
+      end
+    end
+  rescue
+    _ -> :ok
   end
 
   defp maybe_set_expires_at(%Conversation{message_ttl: nil}, attrs), do: attrs
