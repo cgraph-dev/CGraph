@@ -14,6 +14,7 @@ defmodule CGraphWeb.ConversationChannel do
   alias CGraph.Accounts.Friends
   alias CGraph.Messaging
   alias CGraph.Messaging.DeliveryTracking
+  alias CGraph.Notifications
   alias CGraph.Presence
   alias CGraphWeb.API.V1.MessageJSON
   alias CGraphWeb.Channels.Backpressure
@@ -387,11 +388,50 @@ defmodule CGraphWeb.ConversationChannel do
             serialized = MessageJSON.message_data(message)
 
             broadcast!(socket, "new_message", %{message: serialized})
+
+            # Notify offline participants via push notifications
+            notify_offline_participants(user, message, conversation_id)
+
             {:reply, {:ok, %{message_id: message.id}}, socket}
 
           {:error, changeset} ->
             {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
         end
+    end
+  end
+
+  # Notify other conversation participants who are not currently connected to the
+  # conversation channel.  This ensures offline users receive push notifications
+  # and a Notification DB record through the standard delivery pipeline.
+  @spec notify_offline_participants(map(), struct(), String.t()) :: :ok
+  defp notify_offline_participants(sender, message, conversation_id) do
+    case Messaging.get_conversation(conversation_id) do
+      {:ok, conversation} ->
+        participant_ids =
+          conversation.participants
+          |> Enum.map(& &1.user_id)
+          |> Enum.reject(&(&1 == sender.id))
+
+        # Users currently in the conversation channel already see the message in real-time
+        presences = Presence.list("conversation:#{conversation_id}")
+        online_user_ids = MapSet.new(Map.keys(presences))
+
+        Enum.each(participant_ids, fn uid ->
+          unless MapSet.member?(online_user_ids, uid) do
+            case CGraph.Repo.get(CGraph.Accounts.User, uid) do
+              nil -> :ok
+              recipient ->
+                preview = String.slice(message.content || "", 0, 100)
+                Notifications.notify(recipient, :new_message, "New message from #{sender.username}",
+                  body: preview,
+                  actor: sender,
+                  data: %{"conversation_id" => conversation_id, "message_id" => message.id}
+                )
+            end
+          end
+        end)
+
+      _ -> :ok
     end
   end
 

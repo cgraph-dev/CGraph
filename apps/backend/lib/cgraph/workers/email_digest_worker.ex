@@ -59,7 +59,9 @@ defmodule CGraph.Workers.EmailDigestWorker do
   def enqueue_all_digests do
     now = DateTime.utc_now()
 
-    # Find users who should receive digests
+    # Find users who should receive digests.
+    # Lapsed engagement: only send to users who haven't been active in 3+ days.
+    # Active users already see content in-app and don't need email digests.
     users =
       from(u in User,
         where: u.email_digest_enabled == true,
@@ -71,6 +73,9 @@ defmodule CGraph.Workers.EmailDigestWorker do
                fragment("? < NOW() - INTERVAL '7 days'", u.last_digest_sent_at)) or
             (u.email_digest_frequency == "monthly" and
                fragment("? < NOW() - INTERVAL '30 days'", u.last_digest_sent_at)),
+        where:
+          is_nil(u.last_seen_at) or
+            fragment("? < NOW() - INTERVAL '3 days'", u.last_seen_at),
         select: u.id
       )
       |> Repo.all()

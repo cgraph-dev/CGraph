@@ -90,7 +90,7 @@ defmodule CGraph.Mailer.Builder do
     |> header("X-User-ID", user.id)
   end
 
-  defp add_unsubscribe_header(email, user, email_type) when email_type in [:notification] do
+  defp add_unsubscribe_header(email, user, email_type) when email_type in [:notification, :digest] do
     base_url = Application.get_env(:cgraph, :base_url, "https://cgraph.app")
     unsubscribe_url = "#{base_url}/settings/notifications?user=#{user.id}"
 

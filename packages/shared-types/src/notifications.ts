@@ -46,3 +46,39 @@ export const MUTE_DURATIONS = {
 } as const;
 
 export type MuteDurationKey = keyof typeof MUTE_DURATIONS;
+
+// ---------------------------------------------------------------------------
+// Core notification types — shared across web, mobile, and backend serialization
+// ---------------------------------------------------------------------------
+
+/** Notification type categories */
+export type NotificationType = 'message' | 'social' | 'group' | 'forum' | 'system';
+
+/** A notification record as returned by the API / broadcast via socket */
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  actionUrl?: string;
+  groupKey?: string;
+  count?: number;
+  readAt?: string;
+  clickedAt?: string;
+  createdAt: string;
+}
+
+/** Payload sent through push notification providers (APNS, FCM, Expo, Web Push) */
+export interface PushPayload {
+  title: string;
+  body: string;
+  data?: Record<string, string>;
+  badge?: number;
+  sound?: string;
+}
+
+/** Aggregate notification counts */
+export interface NotificationStats {
+  total: number;
+  unread: number;
+}
