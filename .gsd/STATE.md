@@ -10,34 +10,34 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 12 — Roles & Moderation** — **Planned**
+**Phase 12 — Roles & Moderation** — **Complete**
 
-4 plans across 2 waves. 9 requirements: roles hardening, ban/kick, automod, emoji permissions, group E2EE, content reporting, moderation panel.
+4 plans across 2 waves executed. All 9 requirements delivered: effective permissions with channel overrides, ban/kick with reasons, content reporting, automod enforcement, emoji permissions, group E2EE sender key protocol, moderation panel.
 
 ## Position
 
 - **Phase:** 12 of 19 — Roles & Moderation
-- **Plan:** 0/4 plans complete
-- **Status:** Planned
-- **Last activity:** 2026-03-01 — Phase 12 planning complete (4 plans, 2 waves)
+- **Plan:** 4/4 plans complete
+- **Status:** Complete
+- **Last activity:** 2026-03-01 — Phase 12 fully executed (4 plans, 2 waves, 10 commits)
 
 ## Plans
 
-| Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
-| ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
-| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | ✅          | —          | Not started |
-| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | ✅          | —          | Not started |
-| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | ✅          | 12-01      | Not started |
-| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | ✅          | 12-01      | Not started |
+| Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status   |
+| ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | -------- |
+| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | ✅          | —          | Complete |
+| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | ✅          | —          | Complete |
+| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | ✅          | 12-01      | Complete |
+| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | ✅          | 12-01      | Complete |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 56%       |
-| Phases complete    | 11 / 19   |
-| Requirements done  | 59 / 136  |
-| Current phase reqs | 0 / 9     |
+| Overall progress   | 63%       |
+| Phases complete    | 12 / 19   |
+| Requirements done  | 68 / 136  |
+| Current phase reqs | 9 / 9     |
 
 ## Phase Summary
 
@@ -54,9 +54,9 @@ Secure real-time communication that works end-to-end.
 | 9   | Notifications & Safety  | **Complete** (2026-03-01) |
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
-| 12  | Roles & Moderation      | **Planned** (4 plans)     |
-| 13  | Voice & Video           | Blocked by 12             |
-| 14  | Forum Core              | Blocked by 12             |
+| 12  | Roles & Moderation      | **Complete** (2026-03-01) |
+| 13  | Voice & Video           | Unblocked                 |
+| 14  | Forum Core              | Unblocked                 |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
 | 17  | Monetization            | Blocked by 16             |
@@ -131,18 +131,19 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 11 complete — all 3 plans executed, 7/7 requirements verified
+Stopped at: Phase 12 complete — all 4 plans executed, 9/9 requirements delivered
 Resume file: None
 
 ## Last Action
 
-Phase 11 executed and verified. All 3 plans complete:
-- 11-01: WebSocket topic alignment + group channel messaging E2E (10 commits)
-- 11-02: Group CRUD, channels, invites E2E wiring (7 commits)
-- 11-03: Explore page + channel threads (8 commits)
+Phase 12 executed. All 4 plans complete:
+- 12-01: Effective permissions with channel overrides, mobile role editor + channel permissions (4 commits)
+- 12-02: Ban/kick with reasons, content reporting, group moderation panel (3 commits)
+- 12-03: Automod enforcement pipeline — word/link/spam/caps filters with 4 action types (1 commit)
+- 12-04: Custom emoji permissions + group E2EE sender key protocol (1 commit)
 
-7/7 requirements verified: GROUP-01, GROUP-02, GROUP-05, GROUP-09, MSG-02, MSG-03, MSG-21.
-Phase 12 (Roles & Moderation) is now unblocked.
+9/9 requirements delivered: GROUP-03, GROUP-04, GROUP-06, GROUP-07, GROUP-08, E2EE-02, MOD-01, MOD-02, MOD-04.
+Phase 13 (Voice & Video) and Phase 14 (Forum Core) are now unblocked.
 
 ---
 

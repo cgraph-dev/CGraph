@@ -22,10 +22,10 @@
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01) |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Complete** (2026-03-01) |
-| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
-| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                         |
-| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12                         |
-| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12                         |
+| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5 ✅ Complete (2026-03-01)  |
+| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11 ✅ Complete (2026-03-01) |
+| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12 ✅                       |
+| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                       |
 | 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14                         |
 | 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14                         |
 | 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16                         |
@@ -553,7 +553,9 @@ forums, voice channels, and gamification all build on.
 
 ---
 
-## Phase 12: Roles & Moderation
+## Phase 12: Roles & Moderation ✅
+
+**Completed:** 2026-03-01 | **Plans:** 4/4 | **Commits:** 9
 
 **Goal:** Group governance — roles, permissions, moderation tools, automod, group E2EE, and content
 reporting.
@@ -588,12 +590,12 @@ This must be correct before forums and gamification layer on top.
 
 ### Plans
 
-| Plan  | Scope                                                              | Wave | Status      |
-| ----- | ------------------------------------------------------------------ | ---- | ----------- |
-| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | Not started |
-| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | Not started |
-| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | Not started |
-| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | Not started |
+| Plan  | Scope                                                              | Wave | Status   |
+| ----- | ------------------------------------------------------------------ | ---- | -------- |
+| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | Complete |
+| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | Complete |
+| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | Complete |
+| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | Complete |
 
 ---
 
