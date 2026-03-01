@@ -17,6 +17,7 @@ import {
   ForumAdmin,
   PluginMarketplace,
   ModerationQueue,
+  ForumSearchResults,
 } from '../lazyPages';
 
 /** All forum-related protected routes */
@@ -60,6 +61,14 @@ export function ForumRoutes() {
         element={
           <RouteErrorBoundary routeName="Moderation Queue">
             <ModerationQueue />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="forums/search"
+        element={
+          <RouteErrorBoundary routeName="Forum Search">
+            <ForumSearchResults />
           </RouteErrorBoundary>
         }
       />

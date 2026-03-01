@@ -39,6 +39,7 @@ export const ForumBoardView = lazy(() => import('@/pages/forums/forum-board-view
 export const ForumAdmin = lazy(() => import('@/pages/forums/forum-admin'));
 export const PluginMarketplace = lazy(() => import('@/pages/forums/plugin-marketplace'));
 export const ModerationQueue = lazy(() => import('@/pages/forums/moderation-queue'));
+export const ForumSearchResults = lazy(() => import('@/pages/forums/forum-search-results'));
 
 // ── Settings & Profile ─────────────────────────────────────────────────
 export const Settings = lazy(() => import('@/pages/settings/settings'));
