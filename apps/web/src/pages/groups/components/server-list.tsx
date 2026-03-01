@@ -5,19 +5,47 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NavLink } from 'react-router-dom';
-import { PlusIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { PlusIcon, ChatBubbleLeftRightIcon, TicketIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { CreateGroupModal } from '@/modules/groups/components/group-list/create-group-modal';
+import { useGroupStore } from '@/modules/groups/store';
+import { GlassCard } from '@/shared/components/ui';
 import type { ServerListProps } from './types';
 import { ServerIcon } from './server-icon';
 import { tweens, springs } from '@/lib/animation-presets';
 
 /**
- * Server List component with create group support.
+ * Server List component with create group and join-by-invite support.
  */
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
+  const { joinGroup } = useGroupStore();
+  const navigate = useNavigate();
+
+  const handleJoinByInvite = async () => {
+    if (!inviteCode.trim()) return;
+    setIsJoining(true);
+    setJoinError(null);
+    try {
+      // Extract code from full URL if pasted
+      const code = inviteCode.trim().split('/').pop() || inviteCode.trim();
+      await joinGroup(code);
+      HapticFeedback.success();
+      setShowJoinModal(false);
+      setInviteCode('');
+      navigate('/groups');
+    } catch {
+      setJoinError('Invalid or expired invite code');
+      HapticFeedback.error();
+    } finally {
+      setIsJoining(false);
+    }
+  };
   return (
     <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 py-3 backdrop-blur-xl">
       {/* Ambient glow */}
@@ -78,6 +106,25 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
         />
       </motion.button>
 
+      {/* Join by invite button */}
+      <motion.button
+        onClick={() => {
+          HapticFeedback.medium();
+          setShowJoinModal(true);
+        }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        aria-label="Join server with invite"
+        className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-blue-600 hover:to-blue-700"
+        style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
+      >
+        <TicketIcon className="h-6 w-6 text-blue-400 transition-colors group-hover:text-white" />
+        <motion.div
+          className="pointer-events-none absolute inset-0 rounded-2xl bg-blue-600/20 opacity-0 blur-lg group-hover:opacity-100"
+          transition={tweens.standard}
+        />
+      </motion.button>
+
       {/* Create Group Modal */}
       <AnimatePresence>
         {showCreateModal && (
@@ -85,6 +132,68 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
             isOpen={showCreateModal}
             onClose={() => setShowCreateModal(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Join by Invite Code Modal */}
+      <AnimatePresence>
+        {showJoinModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            onClick={() => setShowJoinModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GlassCard variant="crystal" glow className="p-6">
+                <div className="mb-6 text-center">
+                  <TicketIcon className="mx-auto mb-3 h-12 w-12 text-blue-400" />
+                  <h2 className="text-xl font-bold text-white">Join a Server</h2>
+                  <p className="mt-1 text-sm text-gray-400">Enter an invite link or code</p>
+                </div>
+
+                {joinError && (
+                  <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                    {joinError}
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                  placeholder="https://cgraph.app/invite/abc123 or abc123"
+                  className="mb-4 w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                  onKeyDown={(e) => e.key === 'Enter' && handleJoinByInvite()}
+                />
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowJoinModal(false)}
+                    className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleJoinByInvite}
+                    disabled={!inviteCode.trim() || isJoining}
+                    className="flex-1 rounded-xl bg-blue-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isJoining ? 'Joining...' : 'Join Server'}
+                  </motion.button>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
