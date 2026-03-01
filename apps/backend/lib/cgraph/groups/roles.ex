@@ -139,7 +139,11 @@ defmodule CGraph.Groups.Roles do
       if (base &&& admin_bit) != 0 do
         all_perms
       else
-        apply_channel_overrides(base, member, channel)
+        if channel == nil do
+          base
+        else
+          apply_channel_overrides(base, member, channel)
+        end
       end
     end
   end

@@ -11,7 +11,7 @@ defmodule CGraph.Groups.PermissionOverwrite do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
-  schema "channel_permission_overwrites" do
+  schema "permission_overwrites" do
     belongs_to :channel, CGraph.Groups.Channel
     belongs_to :role, CGraph.Groups.Role
     belongs_to :member, CGraph.Groups.Member
@@ -21,7 +21,7 @@ defmodule CGraph.Groups.PermissionOverwrite do
     # Permissions that are explicitly denied
     field :deny, :integer, default: 0
     # Type of overwrite: "role" or "member"
-    field :type, :string
+    field :type, :string, source: :target_type
 
     timestamps()
   end
@@ -34,8 +34,8 @@ defmodule CGraph.Groups.PermissionOverwrite do
     |> validate_required([:channel_id, :type])
     |> validate_inclusion(:type, ["role", "member"])
     |> validate_target()
-    |> unique_constraint([:channel_id, :role_id], name: :channel_permission_overwrites_role_index)
-    |> unique_constraint([:channel_id, :member_id], name: :channel_permission_overwrites_member_index)
+    |> unique_constraint([:channel_id, :role_id], name: :permission_overwrites_role_unique)
+    |> unique_constraint([:channel_id, :member_id], name: :permission_overwrites_member_unique)
     |> foreign_key_constraint(:channel_id)
   end
 
