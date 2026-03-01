@@ -16,7 +16,8 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, StarIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';
 
 import { CustomEmojiPickerProps, CustomEmoji } from './types';
@@ -30,6 +31,80 @@ import {
   UnicodeEmojisGrid,
 } from './grids';
 import { tweens } from '@/lib/animation-presets';
+
+/**
+ * Pack group with collapsible header and animated emoji preview
+ */
+const PackGroup = memo(function PackGroup({
+  name,
+  emojis: groupEmojis,
+  favorites,
+  handleSelect,
+  toggleFavorite,
+}: {
+  name: string;
+  emojis: CustomEmoji[];
+  favorites: CustomEmoji[];
+  handleSelect: (emoji: CustomEmoji | string) => void;
+  toggleFavorite: (emoji: CustomEmoji) => void;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const favIds = useMemo(() => new Set(favorites.map((f) => f.id)), [favorites]);
+
+  return (
+    <div className="mb-2">
+      <button
+        type="button"
+        onClick={() => setCollapsed(!collapsed)}
+        className="flex w-full items-center gap-1 rounded-md px-1 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700"
+      >
+        <span className={`transition-transform ${collapsed ? '' : 'rotate-90'}`}>▶</span>
+        {name}
+        <span className="ml-auto text-[10px] text-gray-400">{groupEmojis.length}</span>
+      </button>
+      {!collapsed && (
+        <div className="grid grid-cols-8 gap-1 px-1">
+          {groupEmojis.map((emoji) => {
+            const isAnimated = emoji.is_animated || (emoji as Record<string, unknown>).isAnimated;
+            const isHovered = hoveredId === emoji.id;
+            return (
+              <div
+                key={emoji.id}
+                className="group relative flex cursor-pointer flex-col items-center rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onMouseEnter={() => setHoveredId(emoji.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                onClick={() => handleSelect(emoji)}
+                title={`:${emoji.shortcode}:`}
+              >
+                <img
+                  src={emoji.image_url}
+                  alt={emoji.shortcode}
+                  className={`h-7 w-7 object-contain ${isAnimated && !isHovered ? 'pause-animation' : ''}`}
+                  loading="lazy"
+                />
+                {isAnimated && (
+                  <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-purple-500" title="Animated" />
+                )}
+                <button
+                  type="button"
+                  className="absolute -left-0.5 -top-0.5 hidden group-hover:block"
+                  onClick={(e) => { e.stopPropagation(); toggleFavorite(emoji); }}
+                >
+                  {favIds.has(emoji.id) ? (
+                    <StarIconSolid className="h-3 w-3 text-amber-500" />
+                  ) : (
+                    <StarIcon className="h-3 w-3 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+});
 
 /**
  * Main CustomEmojiPicker component
@@ -225,12 +300,22 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
               toggleFavorite={toggleFavorite}
             />
           ) : activeTab === 'custom' ? (
-            <CustomEmojisGrid
-              emojis={filteredEmojis}
-              favorites={favorites}
-              handleSelect={handleSelect}
-              toggleFavorite={toggleFavorite}
-            />
+            <div className="p-2">
+              {/* Group by pack with collapsible headers */}
+              {(() => {
+                const grouped = new Map<string, { name: string; items: typeof filteredEmojis }>();
+                const noPackKey = '__no_pack__';
+                for (const e of filteredEmojis) {
+                  const key = (e as Record<string, unknown>).pack_id as string || noPackKey;
+                  const name = key === noPackKey ? 'Uncategorized' : (e as Record<string, unknown>).pack_name as string || 'Pack';
+                  if (!grouped.has(key)) grouped.set(key, { name, items: [] });
+                  grouped.get(key)!.items.push(e);
+                }
+                return Array.from(grouped.entries()).map(([key, group]) => (
+                  <PackGroup key={key} name={group.name} emojis={group.items} favorites={favorites} handleSelect={handleSelect} toggleFavorite={toggleFavorite} />
+                ));
+              })()}
+            </div>
           ) : activeTab === 'unicode' ? (
             <UnicodeEmojisGrid handleSelect={handleSelect} />
           ) : null}
