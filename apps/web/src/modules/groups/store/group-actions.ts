@@ -250,7 +250,15 @@ export function createGroupActions(
     },
 
     updateGroup: async (groupId: string, data) => {
-      const response = await api.patch(`/api/v1/groups/${groupId}`, data);
+      // Map camelCase props to backend-expected params
+      const payload: Record<string, unknown> = {};
+      if (data.name !== undefined) payload.name = data.name;
+      if (data.description !== undefined) payload.description = data.description;
+      if (data.isPublic !== undefined) payload.visibility = data.isPublic ? 'public' : 'private';
+      if (data.iconUrl !== undefined) payload.icon_url = data.iconUrl;
+      if (data.bannerUrl !== undefined) payload.banner_url = data.bannerUrl;
+
+      const response = await api.patch(`/api/v1/groups/${groupId}`, payload);
       const updatedGroup = ensureObject<Group>(response.data, 'group');
       if (updatedGroup) {
         set((state) => ({
