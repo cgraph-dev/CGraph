@@ -111,6 +111,12 @@ export interface GroupState {
   hasMoreMessages: Record<string, boolean>;
   typingUsers: Record<string, string[]>;
   justJoinedGroupName: string | null;
+  /** Discoverable public groups fetched from explore */
+  discoverableGroups: Group[];
+  /** Loading state for discoverable groups */
+  isLoadingDiscover: boolean;
+  /** Current discover search term */
+  discoverSearch: string;
 
   // Actions
   fetchGroups: () => Promise<void>;
@@ -137,6 +143,13 @@ export interface GroupState {
     groupId: string,
     options?: { maxUses?: number; expiresIn?: number }
   ) => Promise<{ code: string; expiresAt: string }>;
+  fetchDiscoverableGroups: (params?: {
+    search?: string;
+    sort?: string;
+    page?: number;
+    limit?: number;
+  }) => Promise<void>;
+  joinPublicGroup: (groupId: string) => Promise<void>;
   clearJoinCelebration: () => void;
   reset: () => void;
 }

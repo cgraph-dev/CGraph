@@ -29,6 +29,9 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   hasMoreMessages: {},
   typingUsers: {},
   justJoinedGroupName: null,
+  discoverableGroups: [],
+  isLoadingDiscover: false,
+  discoverSearch: '',
   clearJoinCelebration: () => set({ justJoinedGroupName: null }),
   ...createGroupActions(set, get),
 
@@ -44,5 +47,8 @@ export const useGroupStore = create<GroupState>((set, get) => ({
       hasMoreMessages: {},
       typingUsers: {},
       justJoinedGroupName: null,
+      discoverableGroups: [],
+      isLoadingDiscover: false,
+      discoverSearch: '',
     }),
 }));

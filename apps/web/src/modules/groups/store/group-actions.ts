@@ -67,6 +67,9 @@ export function createGroupActions(
   | 'typingUsers'
   | 'justJoinedGroupName'
   | 'clearJoinCelebration'
+  | 'discoverableGroups'
+  | 'isLoadingDiscover'
+  | 'discoverSearch'
   | 'reset'
 > {
   return {
@@ -298,6 +301,42 @@ export function createGroupActions(
       });
        
       return response.data.invite as { code: string; expiresAt: string };
+    },
+
+    fetchDiscoverableGroups: async (params) => {
+      set({ isLoadingDiscover: true, discoverSearch: params?.search ?? '' });
+      try {
+        const response = await api.get('/api/v1/groups/public', {
+          params: {
+            search: params?.search,
+            sort: params?.sort,
+            page: params?.page,
+            limit: params?.limit ?? 20,
+          },
+        });
+        set({
+          discoverableGroups: ensureArray<Group>(response.data, 'groups'),
+          isLoadingDiscover: false,
+        });
+      } catch (error) {
+        set({ isLoadingDiscover: false });
+        throw error;
+      }
+    },
+
+    joinPublicGroup: async (groupId: string) => {
+      const response = await api.post(`/api/v1/groups/${groupId}/members`);
+      const group = ensureObject<Group>(response.data, 'group');
+      if (group) {
+        set((state) => ({
+          groups: state.groups.some((g) => g.id === group.id)
+            ? state.groups
+            : [...state.groups, group].slice(-200),
+          justJoinedGroupName: group.name,
+          // Remove from discoverable list since user has joined
+          discoverableGroups: state.discoverableGroups.filter((g) => g.id !== group.id),
+        }));
+      }
     },
   };
 }
