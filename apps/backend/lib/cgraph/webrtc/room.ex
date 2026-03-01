@@ -31,6 +31,7 @@ defmodule CGraph.WebRTC.Room do
     creator_id: String.t(),
     participants: %{String.t() => CGraph.WebRTC.Participant.t()},
     state: :waiting | :active | :ended,
+    mode: :p2p | :sfu,
     max_participants: pos_integer(),
     group_id: String.t() | nil,
     created_at: DateTime.t(),
@@ -48,6 +49,7 @@ defmodule CGraph.WebRTC.Room do
     :ended_at,
     participants: %{},
     state: :waiting,
+    mode: :p2p,
     max_participants: 10
   ]
 
@@ -93,6 +95,7 @@ defmodule CGraph.WebRTC.Room do
     %{
       id: room.id,
       type: room.type,
+      mode: room.mode,
       creator_id: room.creator_id,
       state: room.state,
       participant_count: participant_count(room),

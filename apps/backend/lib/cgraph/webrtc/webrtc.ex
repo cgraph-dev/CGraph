@@ -137,6 +137,7 @@ defmodule CGraph.WebRTC do
     room_id = RoomUtils.generate_room_id()
     max = Keyword.get(opts, :max_participants, @max_participants)
     group_id = Keyword.get(opts, :group_id)
+    mode = Keyword.get(opts, :mode, :p2p)
 
     room = %Room{
       id: room_id,
@@ -144,6 +145,7 @@ defmodule CGraph.WebRTC do
       creator_id: creator_id,
       participants: %{},
       state: :waiting,
+      mode: mode,
       max_participants: max,
       group_id: group_id,
       created_at: DateTime.utc_now(),
@@ -151,15 +153,32 @@ defmodule CGraph.WebRTC do
       ended_at: nil
     }
 
+    # For SFU mode, also create the LiveKit room
+    if mode == :sfu do
+      livekit_room_name = room_id
+      _ = CGraph.WebRTC.LiveKit.create_room(livekit_room_name, max_participants: max)
+    end
+
     case GenServer.call(__MODULE__, {:create_room, room}) do
       :ok ->
-        Logger.info("webrtc_room_created_by", room_id: room_id, creator_id: creator_id)
+        Logger.info("webrtc_room_created_by", room_id: room_id, creator_id: creator_id, mode: mode)
         RoomUtils.emit_telemetry(:room_created, room)
         {:ok, room}
 
       {:error, _} = error ->
         error
     end
+  end
+
+  @doc """
+  Escalate a P2P room to SFU mode when a 3rd participant joins.
+
+  This creates a LiveKit room and updates the local room registry mode.
+  Existing participants will need to reconnect via LiveKit.
+  """
+  @spec escalate_to_sfu(room_id()) :: {:ok, room()} | {:error, term()}
+  def escalate_to_sfu(room_id) do
+    GenServer.call(__MODULE__, {:escalate_to_sfu, room_id})
   end
 
   @doc """
@@ -189,7 +208,18 @@ defmodule CGraph.WebRTC do
       state: :connecting
     }
 
-    GenServer.call(__MODULE__, {:join_room, room_id, participant})
+    case GenServer.call(__MODULE__, {:join_room, room_id, participant}) do
+      {:ok, %Room{mode: :p2p} = room} ->
+        # Auto-escalate to SFU when 3+ participants join a P2P room
+        if map_size(room.participants) >= 3 and CGraph.WebRTC.LiveKitToken.configured?() do
+          Logger.info("auto_escalating_to_sfu", room_id: room_id, participants: map_size(room.participants))
+          _ = escalate_to_sfu(room_id)
+        end
+        {:ok, room}
+
+      other ->
+        other
+    end
   end
 
   @doc """
@@ -322,12 +352,41 @@ defmodule CGraph.WebRTC do
 
           # Notify other participants
           broadcast_room_event(room_id, :participant_joined, %{
-            participant_id: participant.id
+            participant_id: participant.id,
+            mode: updated.mode
           })
 
           RoomUtils.emit_telemetry(:participant_joined, updated, participant)
           {:reply, {:ok, updated}, state}
         end
+
+      [] ->
+        {:reply, {:error, :not_found}, state}
+    end
+  end
+
+  @impl true
+  def handle_call({:escalate_to_sfu, room_id}, _from, state) do
+    case :ets.lookup(@ets_table, room_id) do
+      [{^room_id, %Room{mode: :p2p} = room}] ->
+        # Create LiveKit room
+        _ = CGraph.WebRTC.LiveKit.create_room(room_id, max_participants: room.max_participants)
+
+        updated = %{room | mode: :sfu}
+        :ets.insert(@ets_table, {room_id, updated})
+
+        # Notify all participants to switch to SFU mode
+        broadcast_room_event(room_id, :mode_changed, %{
+          mode: :sfu,
+          room_id: room_id
+        })
+
+        Logger.info("room_escalated_to_sfu", room_id: room_id)
+        {:reply, {:ok, updated}, state}
+
+      [{^room_id, %Room{mode: :sfu} = room}] ->
+        # Already SFU, no-op
+        {:reply, {:ok, room}, state}
 
       [] ->
         {:reply, {:error, :not_found}, state}
