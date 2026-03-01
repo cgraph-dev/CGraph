@@ -83,9 +83,15 @@ defmodule CGraphWeb.API.V1.LiveKitController do
   defp authorize_room_access(user, %{"channel_id" => channel_id, "group_id" => group_id})
        when is_binary(channel_id) and is_binary(group_id) do
     # Verify user is a member of the group that owns this channel
-    case CGraph.Groups.get_member(group_id, user.id) do
-      {:ok, _member} -> :ok
-      _ -> {:error, :forbidden}
+    case CGraph.Groups.get_group(group_id) do
+      {:ok, group} ->
+        case CGraph.Groups.get_member_by_user(group, user.id) do
+          nil -> {:error, :forbidden}
+          _member -> :ok
+        end
+
+      _ ->
+        {:error, :forbidden}
     end
   end
 
