@@ -25,6 +25,7 @@ defmodule CGraphWeb.UserSocket do
   # Forum Channels
   channel "forum:*", CGraphWeb.ForumChannel
   channel "thread:*", CGraphWeb.ThreadChannel
+  channel "board:*", CGraphWeb.BoardChannel
 
   # AI Channel (streaming AI responses)
   channel "ai:*", CGraphWeb.Channels.AIChannel

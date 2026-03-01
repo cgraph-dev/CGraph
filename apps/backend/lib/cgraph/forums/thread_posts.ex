@@ -113,9 +113,30 @@ defmodule CGraph.Forums.ThreadPosts do
       edited_by_id: editor_id
     })
 
-    post
-    |> ThreadPost.changeset(attrs)
-    |> Repo.update()
+    result =
+      post
+      |> ThreadPost.changeset(attrs)
+      |> Repo.update()
+
+    case result do
+      {:ok, updated_post} ->
+        # Broadcast post edit to thread channel
+        CGraphWeb.Endpoint.broadcast("thread:#{updated_post.thread_id}", "post_edited", %{
+          post: %{
+            id: updated_post.id,
+            content: updated_post.content,
+            content_html: Map.get(updated_post, :content_html),
+            is_edited: updated_post.is_edited,
+            edit_count: updated_post.edit_count,
+            edited_at: updated_post.edited_at
+          }
+        })
+
+        result
+
+      _error ->
+        result
+    end
   end
 
   @doc """

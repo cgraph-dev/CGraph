@@ -101,7 +101,24 @@ defmodule CGraph.Forums.Threads do
             {:ok, _post} ->
               # Create poll if poll data present
               maybe_create_poll(thread, attrs)
-              Repo.preload(thread, [:author, :posts])
+              loaded = Repo.preload(thread, [:author, :posts])
+
+              # Broadcast to board channel
+              if loaded.board_id do
+                CGraphWeb.Endpoint.broadcast("board:#{loaded.board_id}", "new_thread", %{
+                  thread: %{
+                    id: loaded.id,
+                    title: loaded.title,
+                    slug: loaded.slug,
+                    author_id: loaded.author_id,
+                    inserted_at: loaded.inserted_at,
+                    is_pinned: loaded.is_pinned || false,
+                    is_locked: loaded.is_locked || false
+                  }
+                })
+              end
+
+              loaded
             {:error, reason} ->
               Repo.rollback(reason)
           end

@@ -118,6 +118,16 @@ defmodule CGraph.Forums.Polls do
       {:ok, vote} ->
         from(p in ThreadPoll, where: p.id == ^poll_id)
         |> Repo.update_all(inc: [total_votes: 1])
+
+        # Broadcast updated poll results to thread channel
+        poll = Repo.get!(ThreadPoll, poll_id)
+        results = get_poll_results(poll_id)
+        CGraphWeb.Endpoint.broadcast("thread:#{poll.thread_id}", "poll_vote_update", %{
+          poll_id: poll_id,
+          total_votes: results.total_votes,
+          option_counts: results.option_counts
+        })
+
         {:ok, vote}
       error ->
         error
