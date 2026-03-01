@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Moderation do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Ban, Moderator, Post}
+  alias CGraph.Forums.{Ban, Moderator, Post, PluginRuntime}
   alias CGraph.Repo
 
   @doc """
@@ -129,7 +129,7 @@ defmodule CGraph.Forums.Moderation do
     reason = Keyword.get(opts, :reason, "Banned by moderator")
     expires_at = Keyword.get(opts, :expires_at)
 
-    %Ban{}
+    result = %Ban{}
     |> Ban.changeset(%{
       forum_id: forum.id,
       user_id: user.id,
@@ -137,6 +137,14 @@ defmodule CGraph.Forums.Moderation do
       expires_at: expires_at
     })
     |> Repo.insert()
+
+    # Dispatch plugin hook for ban (fire-and-forget)
+    case result do
+      {:ok, _ban} -> PluginRuntime.dispatch(forum.id, :member_banned, %{user_id: user.id, reason: reason})
+      _ -> :ok
+    end
+
+    result
   end
 
   @doc """
@@ -177,6 +185,10 @@ defmodule CGraph.Forums.Moderation do
       flag_reason: reason,
       flagged_by_id: user.id
     ])
+
+    # Dispatch plugin hook for report (fire-and-forget)
+    if post.forum_id, do: PluginRuntime.dispatch(post.forum_id, :report_filed, %{post_id: post.id, reporter_id: user.id, reason: reason})
+
     :ok
   end
 

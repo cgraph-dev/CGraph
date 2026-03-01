@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Threads do
 
   import Ecto.Query, warn: false
   alias CGraph.Forums.{Thread, ThreadPost}
-  alias CGraph.Forums.Polls
+  alias CGraph.Forums.{Polls, PluginRuntime}
   alias CGraph.Repo
 
   @doc """
@@ -118,6 +118,12 @@ defmodule CGraph.Forums.Threads do
                 })
               end
 
+              # Dispatch plugin hook (fire-and-forget)
+              if loaded.board_id do
+                board = CGraph.Repo.get(CGraph.Forums.Board, loaded.board_id)
+                if board, do: PluginRuntime.dispatch(board.forum_id, :thread_created, %{thread_id: loaded.id, author_id: user.id, title: loaded.title})
+              end
+
               loaded
             {:error, reason} ->
               Repo.rollback(reason)
@@ -219,6 +225,11 @@ defmodule CGraph.Forums.Threads do
     |> case do
       {:ok, post} ->
         update_thread_stats(thread)
+        # Dispatch plugin hook for post creation (fire-and-forget)
+        if thread.board_id do
+          board = CGraph.Repo.get(CGraph.Forums.Board, thread.board_id)
+          if board, do: PluginRuntime.dispatch(board.forum_id, :post_created, %{post_id: post.id, thread_id: thread.id, author_id: post.author_id})
+        end
         {:ok, Repo.preload(post, [:author])}
       error ->
         error

@@ -12,7 +12,7 @@ defmodule CGraph.Forums.ForumVoting do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Forum, ForumVote}
+  alias CGraph.Forums.{Forum, ForumVote, PluginRuntime}
   alias CGraph.Repo
 
   # Minimum account age (in days) required to vote
@@ -181,6 +181,7 @@ defmodule CGraph.Forums.ForumVoting do
   defp apply_vote_action(user_id, forum_id, value, nil) do
     create_forum_vote(user_id, forum_id, value)
     update_forum_scores(forum_id, value, 0)
+    notify_vote_plugin(forum_id, user_id, value)
     vote_result(value)
   end
   defp apply_vote_action(_user_id, forum_id, value, %ForumVote{value: existing_value} = existing) when value == existing_value do
@@ -197,6 +198,10 @@ defmodule CGraph.Forums.ForumVoting do
 
   defp vote_result(1), do: :upvoted
   defp vote_result(-1), do: :downvoted
+
+  defp notify_vote_plugin(forum_id, user_id, value) do
+    PluginRuntime.dispatch(forum_id, :vote_cast, %{forum_id: forum_id, user_id: user_id, value: value})
+  end
 
   defp create_forum_vote(user_id, forum_id, value) do
     %ForumVote{}
