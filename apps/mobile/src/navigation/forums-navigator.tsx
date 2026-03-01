@@ -18,6 +18,8 @@ import ForumAdminScreen from '../screens/forums/forum-admin-screen';
 import ForumLeaderboardScreen from '../screens/forums/forum-leaderboard-screen';
 import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen';
 import ForumSearchScreen from '../screens/forums/forum-search-screen';
+import ForumUserGroupsScreen from '../screens/forums/forum-user-groups-screen';
+import BoardPermissionsScreen from '../screens/forums/board-permissions-screen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
@@ -95,6 +97,16 @@ export default function ForumsNavigator() {
         name="ForumSearch"
         component={ForumSearchScreen}
         options={{ title: 'Search Forums' }}
+      />
+      <Stack.Screen
+        name="ForumUserGroups"
+        component={ForumUserGroupsScreen}
+        options={{ title: 'User Groups' }}
+      />
+      <Stack.Screen
+        name="BoardPermissions"
+        component={BoardPermissionsScreen}
+        options={{ title: 'Board Permissions' }}
       />
     </Stack.Navigator>
   );

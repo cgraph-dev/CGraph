@@ -442,6 +442,8 @@ export type ForumsStackParamList = {
   ForumAdmin: { forumId: string };
   ForumLeaderboard: { forumId?: string };
   PluginMarketplace: { forumId?: string };
+  ForumUserGroups: { forumId: string };
+  BoardPermissions: { forumId: string; boardId: string; boardName?: string };
 };
 
 export type SettingsStackParamList = {
