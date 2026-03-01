@@ -10,16 +10,16 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 13 — Voice & Video** — **In Progress**
+**Phase 13 — Voice & Video** — **Complete**
 
-4 plans across 2 waves. Covers CALL-01 through CALL-08 + E2EE-07 (9 requirements). Wave 1: Mobile WebRTC wiring + LiveKit SFU integration (parallel). Wave 2: Persistent voice channels + call E2EE (both depend on LiveKit).
+4 plans across 2 waves executed. All 9 requirements delivered: mobile WebRTC wiring, call history API, LiveKit SFU group calls, hybrid P2P/SFU routing, persistent voice channels, call E2EE with SFrame, mobile LiveKit SDK.
 
 ## Position
 
 - **Phase:** 13 of 19 — Voice & Video
-- **Plan:** 3/4 plans executed
-- **Status:** In Progress — Wave 2 in progress (13-03 complete, 13-04 next)
-- **Last activity:** 2026-03-01 — Plan 13-03 complete (persistent voice channels)
+- **Plan:** 4/4 plans complete
+- **Status:** Complete
+- **Last activity:** 2026-03-01 — Phase 13 fully executed (4 plans, 2 waves)
 
 ## Plans
 
@@ -28,16 +28,16 @@ Secure real-time communication that works end-to-end.
 | 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | ✅ Complete |
 | 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | ✅ Complete |
 | 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | ✅ Complete |
-| 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | Not started |
+| 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | ✅ Complete |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 67%       |
-| Phases complete    | 12 / 19   |
-| Requirements done  | 76 / 136  |
-| Current phase reqs | 8 / 9     |
+| Overall progress   | 68%       |
+| Phases complete    | 13 / 19   |
+| Requirements done  | 77 / 136  |
+| Current phase reqs | 9 / 9     |
 
 ## Phase Summary
 
@@ -55,12 +55,12 @@ Secure real-time communication that works end-to-end.
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
-| 13  | Voice & Video           | **In Progress** (3/4 plans done) |
+| 13  | Voice & Video           | **Complete** (2026-03-01) |
 | 14  | Forum Core              | Unblocked                 |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
 | 17  | Monetization            | Blocked by 16             |
-| 18  | Rich Media & Polish     | Blocked by 13             |
+| 18  | Rich Media & Polish     | Unblocked                 |
 | 19  | Launch                  | Blocked by 15,17,18       |
 
 ## Project Reference
@@ -68,20 +68,19 @@ Secure real-time communication that works end-to-end.
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 13 planned (4 plans, 2 waves) — ready for execution
+**Current focus:** Phase 13 complete (4 plans, 2 waves, 9/9 requirements)
 
 ## Accumulated Context
 
-### Recent Decisions (Phase 13 Planning)
+### Recent Decisions (Phase 13 Execution)
 
-- **Existing P2P infrastructure is fully functional** on web + backend (8,000+ lines across 41 files) — no rework needed
-- **Mobile WebRTC is UI-only**: all WebRTC state simulated with setTimeout, no react-native-webrtc installed — Plan 13-01 wires real native module
-- **Hybrid call routing**: P2P mesh for 1:1 calls (keep existing), LiveKit SFU for 3+ participants (new)
-- **No LiveKit SDKs anywhere**: livekit-client (web), @livekit/react-native (mobile), livekit_server_sdk (Elixir) all need fresh installation
-- **SFrame E2EE via ExternalE2EEKeyProvider**: HKDF-SHA256 key derivation, per-room 256-bit AES keys, key rotation on participant leave
-- **Persistent voice channels**: Phoenix Presence for connection tracking, voice_state_channel.ex for join/leave/mute/deafen events
-- **Docker Compose for local LiveKit**: livekit-server in docker-compose.dev.yml for development
-- **Call history table exists**: `call_history` migration already done — just needs REST API endpoints
+- **JOSE-based LiveKit tokens**: No external LiveKit SDK — used existing JOSE + :httpc for JWT generation and Twirp API calls
+- **Hybrid routing in webrtc.ex**: P2P for 1:1 calls (existing), LiveKit SFU for 3+ participants (new `escalate_to_sfu/1`)
+- **SFrame E2EE**: ExternalE2EEKeyProvider + HKDF-SHA256 key derivation, per-room 256-bit AES keys in ETS
+- **Voice channels via Phoenix Presence**: VoiceChannelManager tracks occupancy, auto-cleanup on disconnect
+- **@livekit/react-native-webrtc** replaces standalone react-native-webrtc for LiveKit compatibility on mobile
+- **Docker Compose for LiveKit** at `infrastructure/docker-compose.livekit.yml` (matches observability pattern)
+- **Call history REST API**: GET /api/v1/calls with cursor pagination (added to messaging_routes.ex)
 
 ### Recent Decisions (Phase 11 Planning)
 
@@ -142,21 +141,20 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Plan 13-03 complete — 13-04 (Call E2EE + mobile LiveKit) next
+Stopped at: Phase 13 complete — all 4 plans executed, 9/9 requirements delivered
 Resume file: None
 
 ## Last Action
 
-Plan 13-03 complete (persistent voice channels). Remaining: 13-04 (Call E2EE + mobile LiveKit).
+Phase 13 executed. All 4 plans complete:
+- 13-01: Mobile WebRTC wiring — react-native-webrtc, real RTCPeerConnection, call history REST API (5 commits)
+- 13-02: LiveKit SFU integration — JOSE JWT tokens, Twirp room management, hybrid P2P/SFU, web livekit-client + hooks + UI, Docker Compose (7 commits)
+- 13-03: Persistent voice channels — voice_channel_manager with Presence, voice state channel, channel list voice items, voice panel, mobile voice screen (6 commits)
+- 13-04: Call E2EE + mobile LiveKit — SFrame ExternalE2EEKeyProvider, per-room keys in ETS, encryption indicator, mobile @livekit/react-native, mobile group call screens (6 commits)
 
-Phase 13 plans across 2 waves:
-- 13-01 (Wave 1): Mobile WebRTC wiring — install react-native-webrtc, replace setTimeout simulation with real RTCPeerConnection, wire call history to REST API (CALL-01, CALL-02, CALL-05, CALL-07)
-- 13-02 (Wave 1): LiveKit SFU integration — backend JWT token generation, room management, hybrid P2P/SFU routing, web livekit-client SDK, Docker Compose dev setup (CALL-03, CALL-04)
-- 13-03 (Wave 2, depends 13-02): Persistent voice channels — Phoenix Presence tracking, voice state channel, channel list voice items, persistent overlay panel (CALL-06)
-- 13-04 (Wave 2, depends 13-02): Call E2EE + mobile LiveKit — SFrame encryption via ExternalE2EEKeyProvider, per-room key management, mobile @livekit/react-native SDK (CALL-08, E2EE-07)
-
-9 requirements covered: CALL-01 through CALL-08 + E2EE-07.
+9/9 requirements delivered: CALL-01 through CALL-08 + E2EE-07.
+Phase 14 (Forum Core) and Phase 18 (Rich Media & Polish) are now unblocked.
 
 ---
 
-_Last updated: 2026-03-01 — Plan 13-03 complete_
+_Last updated: 2026-03-01_
