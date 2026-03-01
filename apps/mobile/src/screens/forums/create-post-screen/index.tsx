@@ -19,7 +19,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Switch, StyleSheet, Alert, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -61,6 +61,12 @@ export default function CreatePostScreen({ navigation, route }: Props) {
   const [postType, setPostType] = useState<PostType>('text');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Poll state
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState(['', '']);
+  const [pollMultipleChoice, setPollMultipleChoice] = useState(false);
+
   // Entry animation
   const fadeAnim = useSharedValue(0);
   const slideAnim = useSharedValue(30);
@@ -92,11 +98,28 @@ export default function CreatePostScreen({ navigation, route }: Props) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await api.post(`/api/v1/forums/${forumId}/posts`, {
+      const payload: Record<string, unknown> = {
         title: title.trim(),
         content: content.trim(),
         type: postType,
-      });
+      };
+
+      if (showPoll && pollQuestion.trim()) {
+        const validOptions = pollOptions.filter((o) => o.trim());
+        if (validOptions.length < 2) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          Alert.alert('Error', 'Polls need at least 2 options');
+          setIsSubmitting(false);
+          return;
+        }
+        payload.poll = {
+          question: pollQuestion.trim(),
+          options: validOptions.map((o) => o.trim()),
+          multiple_choice: pollMultipleChoice,
+        };
+      }
+
+      await api.post(`/api/v1/forums/${forumId}/posts`, payload);
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       navigation.goBack();
@@ -161,6 +184,75 @@ export default function CreatePostScreen({ navigation, route }: Props) {
           {/* Preview */}
           <PostPreview title={title} content={content} postType={postType} />
 
+          {/* Poll Toggle & Fields */}
+          <View style={pollStyles.pollSection}>
+            <View style={pollStyles.pollToggleRow}>
+              <Text style={pollStyles.pollLabel}>Attach Poll</Text>
+              <Switch
+                value={showPoll}
+                onValueChange={(v) => {
+                  setShowPoll(v);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                trackColor={{ false: '#374151', true: '#8B5CF6' }}
+              />
+            </View>
+
+            {showPoll && (
+              <View style={pollStyles.pollFields}>
+                <TextInput
+                  style={pollStyles.pollInput}
+                  placeholder="Poll question..."
+                  placeholderTextColor="#6B7280"
+                  value={pollQuestion}
+                  onChangeText={setPollQuestion}
+                />
+
+                {pollOptions.map((opt, idx) => (
+                  <View key={idx} style={pollStyles.optionRow}>
+                    <TextInput
+                      style={[pollStyles.pollInput, { flex: 1 }]}
+                      placeholder={`Option ${idx + 1}`}
+                      placeholderTextColor="#6B7280"
+                      value={opt}
+                      onChangeText={(text) => {
+                        const next = [...pollOptions];
+                        next[idx] = text;
+                        setPollOptions(next);
+                      }}
+                    />
+                    {pollOptions.length > 2 && (
+                      <TouchableOpacity
+                        onPress={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                        style={pollStyles.removeBtn}
+                      >
+                        <Text style={pollStyles.removeBtnText}>×</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+
+                {pollOptions.length < 10 && (
+                  <TouchableOpacity
+                    onPress={() => setPollOptions([...pollOptions, ''])}
+                    style={pollStyles.addOptionBtn}
+                  >
+                    <Text style={pollStyles.addOptionText}>+ Add option</Text>
+                  </TouchableOpacity>
+                )}
+
+                <View style={pollStyles.pollToggleRow}>
+                  <Text style={pollStyles.pollSubLabel}>Allow multiple choices</Text>
+                  <Switch
+                    value={pollMultipleChoice}
+                    onValueChange={setPollMultipleChoice}
+                    trackColor={{ false: '#374151', true: '#8B5CF6' }}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
+
           {/* Spacer for footer */}
           <View style={{ height: 120 }} />
         </Animated.ScrollView>
@@ -183,3 +275,72 @@ export default function CreatePostScreen({ navigation, route }: Props) {
     </View>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Poll-specific styles
+// ---------------------------------------------------------------------------
+
+const pollStyles = StyleSheet.create({
+  pollSection: {
+    marginTop: 16,
+    paddingHorizontal: 4,
+  },
+  pollToggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  pollLabel: {
+    color: '#E5E7EB',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  pollSubLabel: {
+    color: '#9CA3AF',
+    fontSize: 13,
+  },
+  pollFields: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 4,
+    gap: 8,
+  },
+  pollInput: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: '#F9FAFB',
+    fontSize: 14,
+  },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  removeBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(220,38,38,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeBtnText: {
+    color: '#dc2626',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  addOptionBtn: {
+    alignSelf: 'flex-start',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+  },
+  addOptionText: {
+    color: '#8B5CF6',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+});

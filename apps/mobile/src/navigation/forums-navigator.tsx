@@ -17,6 +17,7 @@ import ForumSettingsScreen from '../screens/forums/forum-settings-screen';
 import ForumAdminScreen from '../screens/forums/forum-admin-screen';
 import ForumLeaderboardScreen from '../screens/forums/forum-leaderboard-screen';
 import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen';
+import ForumSearchScreen from '../screens/forums/forum-search-screen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
@@ -89,6 +90,11 @@ export default function ForumsNavigator() {
         name="PluginMarketplace"
         component={PluginMarketplaceScreen}
         options={{ title: 'Plugins' }}
+      />
+      <Stack.Screen
+        name="ForumSearch"
+        component={ForumSearchScreen}
+        options={{ title: 'Search Forums' }}
       />
     </Stack.Navigator>
   );

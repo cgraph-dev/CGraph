@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -42,6 +43,55 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   const { postId } = route.params;
   const { colors } = useThemeStore();
   const { user: _user } = useAuthStore();
+
+  // ─── Delete handlers ──────────────────────────────────────────────
+  const handleDeletePost = useCallback(() => {
+    Alert.alert(
+      'Delete Post',
+      'Are you sure you want to delete this post? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.delete(`/api/v1/posts/${postId}`);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              _navigation.goBack();
+            } catch (error) {
+              console.error('Error deleting post:', error);
+              Alert.alert('Error', 'Failed to delete post. Please try again.');
+            }
+          },
+        },
+      ],
+    );
+  }, [postId, _navigation]);
+
+  const handleDeleteComment = useCallback((commentId: string) => {
+    Alert.alert(
+      'Delete Comment',
+      'Are you sure you want to delete this comment?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.delete(`/api/v1/comments/${commentId}`);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              setComments((prev) => prev.filter((c) => c.id !== commentId));
+            } catch (error) {
+              console.error('Error deleting comment:', error);
+              Alert.alert('Error', 'Failed to delete comment.');
+            }
+          },
+        },
+      ],
+    );
+  }, []);
   
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -191,6 +241,17 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
                 Reply
               </Text>
             </TouchableOpacity>
+            {(_user?.id === comment.author?.id) && (
+              <TouchableOpacity
+                style={styles.commentAction}
+                onPress={() => handleDeleteComment(comment.id)}
+              >
+                <Ionicons name="trash-outline" size={16} color="#dc2626" />
+                <Text style={[styles.commentActionText, { color: '#dc2626' }]}>
+                  Delete
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         {comment.replies?.map((reply) => renderComment(reply, depth + 1))}
@@ -337,6 +398,15 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
                 Share
               </Text>
             </TouchableOpacity>
+
+            {(_user?.id === post.author?.id) && (
+              <TouchableOpacity style={styles.postAction} onPress={handleDeletePost}>
+                <Ionicons name="trash-outline" size={18} color="#dc2626" />
+                <Text style={[styles.postActionText, { color: '#dc2626' }]}>
+                  Delete
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         

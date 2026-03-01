@@ -87,6 +87,17 @@ export type {
   TimeFormat,
 } from './settingsStore';
 
+// ─── Forums ──────────────────────────────────────────────────────────────────
+export {
+  useForumStore,
+  useForums,
+  useCurrentForum,
+  useForumThreads,
+  useForumSearchResults,
+  useForumLoading,
+  useForumError,
+} from './forumStore';
+
 // ─── Customization ──────────────────────────────────────────────────────────
 export { useCustomizationStore } from './customizationStore';
 
