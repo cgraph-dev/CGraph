@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Threads do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Thread, ThreadPost}
+  alias CGraph.Forums.{Thread, ThreadPost, PostIcon}
   alias CGraph.Forums.{Polls, PluginRuntime, ForumAutomod}
   alias CGraph.Repo
 
@@ -96,7 +96,8 @@ defmodule CGraph.Forums.Threads do
           board_id: board_id,
           author_id: user.id,
           title: attrs["title"] || attrs[:title],
-          content: attrs["content"] || attrs[:content]
+          content: attrs["content"] || attrs[:content],
+          post_icon_id: attrs["post_icon_id"] || attrs[:post_icon_id]
         })
         |> Repo.insert()
 
@@ -269,5 +270,14 @@ defmodule CGraph.Forums.Threads do
       inc: [reply_count: 1],
       set: [last_post_at: DateTime.truncate(DateTime.utc_now(), :second)]
     )
+  end
+
+  @doc """
+  List post icons available for a specific board.
+  """
+  @spec list_post_icons(binary()) :: [PostIcon.t()]
+  def list_post_icons(board_id) do
+    board = Repo.get(CGraph.Forums.Board, board_id)
+    if board, do: PostIcon.available_for_board(board.forum_id, board_id), else: []
   end
 end

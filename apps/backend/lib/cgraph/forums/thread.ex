@@ -67,6 +67,7 @@ defmodule CGraph.Forums.Thread do
     belongs_to :board, CGraph.Forums.Board
     belongs_to :author, CGraph.Accounts.User
     belongs_to :last_poster, CGraph.Accounts.User
+    belongs_to :post_icon, CGraph.Forums.PostIcon
     has_many :posts, CGraph.Forums.ThreadPost
     has_many :votes, CGraph.Forums.ThreadVote
     has_one :poll, CGraph.Forums.ThreadPoll
@@ -83,7 +84,7 @@ defmodule CGraph.Forums.Thread do
     |> cast(attrs, [
       :title, :slug, :content, :content_html, :thread_type,
       :is_locked, :is_pinned, :is_hidden, :is_approved,
-      :prefix, :prefix_color, :board_id, :author_id
+      :prefix, :prefix_color, :board_id, :author_id, :post_icon_id
     ])
     |> validate_required([:title, :content, :board_id, :author_id])
     |> validate_length(:title, min: 3, max: 200)
