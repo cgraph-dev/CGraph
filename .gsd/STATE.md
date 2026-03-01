@@ -17,9 +17,9 @@ Secure real-time communication that works end-to-end.
 ## Position
 
 - **Phase:** 13 of 19 — Voice & Video
-- **Plan:** 2/4 plans executed
-- **Status:** In Progress — Wave 1 complete, Wave 2 ready
-- **Last activity:** 2026-03-01 — Plan 13-02 complete (LiveKit SFU integration — group calls)
+- **Plan:** 3/4 plans executed
+- **Status:** In Progress — Wave 2 in progress (13-03 complete, 13-04 next)
+- **Last activity:** 2026-03-01 — Plan 13-03 complete (persistent voice channels)
 
 ## Plans
 
@@ -27,17 +27,17 @@ Secure real-time communication that works end-to-end.
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
 | 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | ✅ Complete |
 | 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | ✅ Complete |
-| 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | Not started |
+| 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | ✅ Complete |
 | 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | Not started |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 65%       |
+| Overall progress   | 67%       |
 | Phases complete    | 12 / 19   |
-| Requirements done  | 75 / 136  |
-| Current phase reqs | 7 / 9     |
+| Requirements done  | 76 / 136  |
+| Current phase reqs | 8 / 9     |
 
 ## Phase Summary
 
@@ -55,7 +55,7 @@ Secure real-time communication that works end-to-end.
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
-| 13  | Voice & Video           | **In Progress** (2/4 plans done) |
+| 13  | Voice & Video           | **In Progress** (3/4 plans done) |
 | 14  | Forum Core              | Unblocked                 |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
@@ -142,12 +142,14 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 13 planned — 4 plans created, ready for execution
+Stopped at: Plan 13-03 complete — 13-04 (Call E2EE + mobile LiveKit) next
 Resume file: None
 
 ## Last Action
 
-Phase 13 planned. 4 plans across 2 waves:
+Plan 13-03 complete (persistent voice channels). Remaining: 13-04 (Call E2EE + mobile LiveKit).
+
+Phase 13 plans across 2 waves:
 - 13-01 (Wave 1): Mobile WebRTC wiring — install react-native-webrtc, replace setTimeout simulation with real RTCPeerConnection, wire call history to REST API (CALL-01, CALL-02, CALL-05, CALL-07)
 - 13-02 (Wave 1): LiveKit SFU integration — backend JWT token generation, room management, hybrid P2P/SFU routing, web livekit-client SDK, Docker Compose dev setup (CALL-03, CALL-04)
 - 13-03 (Wave 2, depends 13-02): Persistent voice channels — Phoenix Presence tracking, voice state channel, channel list voice items, persistent overlay panel (CALL-06)
@@ -157,4 +159,4 @@ Phase 13 planned. 4 plans across 2 waves:
 
 ---
 
-_Last updated: 2026-03-01_
+_Last updated: 2026-03-01 — Plan 13-03 complete_
