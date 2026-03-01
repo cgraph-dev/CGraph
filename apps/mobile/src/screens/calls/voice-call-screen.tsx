@@ -33,6 +33,9 @@ import GlassCard from '@/components/ui/glass-card';
 import ParticleBackground from '@/components/ui/particle-background';
 import { Colors, Shadows, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
+import { useCallStore } from '@/stores/callStore';
+import socketManager from '@/lib/socket';
 
 const { width: SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -96,9 +99,26 @@ export default function VoiceCallScreen() {
       }),
     ]).start();
 
-    // Simulate connection
+    // Connect to WebRTC via real peer connection
     if (callState === 'connecting') {
-      simulateConnection();
+      const socket = socketManager.getSocket();
+      if (socket) {
+        const manager = getWebRTCManager(socket);
+        manager.on({
+          onCallConnected: () => {
+            HapticFeedback.success();
+            setCallState('connected');
+          },
+          onCallEnded: () => {
+            setCallState('ended');
+            setTimeout(() => navigation.goBack(), 500);
+          },
+          onError: (err) => {
+            console.error('[VoiceCall] WebRTC error:', err);
+          },
+        });
+        manager.startCall(_recipientId, { video: false, audio: true });
+      }
     }
 
     return () => {
@@ -183,13 +203,6 @@ export default function VoiceCallScreen() {
     }
   }, [callState, isMuted]);
 
-  const simulateConnection = () => {
-    setTimeout(() => {
-      HapticFeedback.success();
-      setCallState('connected');
-    }, 2000);
-  };
-
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -198,7 +211,14 @@ export default function VoiceCallScreen() {
 
   const handleMute = useCallback(() => {
     HapticFeedback.medium();
-    setIsMuted(!isMuted);
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      const muted = manager.toggleMute();
+      setIsMuted(muted);
+    } else {
+      setIsMuted(!isMuted);
+    }
   }, [isMuted]);
 
   const handleSpeaker = useCallback(() => {
@@ -209,13 +229,28 @@ export default function VoiceCallScreen() {
   const handleEndCall = useCallback(() => {
     HapticFeedback.heavy();
     setCallState('ended');
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      manager.endCall();
+    }
+    useCallStore.getState().endCall();
     setTimeout(() => navigation.goBack(), 500);
   }, [navigation]);
 
   const handleAnswer = useCallback(() => {
     HapticFeedback.success();
     setCallState('connecting');
-    simulateConnection();
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      manager.on({
+        onCallConnected: () => {
+          HapticFeedback.success();
+          setCallState('connected');
+        },
+      });
+    }
   }, []);
 
   const handleDecline = useCallback(() => {

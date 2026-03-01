@@ -29,6 +29,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
+import { useCallStore } from '@/stores/callStore';
+import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
+import socketManager from '@/lib/socket';
 import api from '../../lib/api';
 
 // =============================================================================
@@ -111,19 +114,44 @@ export default function CallScreen({ navigation, route }: Props) {
     fetchRecipient();
   }, [recipientId]);
 
-  // Simulate call connection (in real app, use WebRTC)
+  // Connect to WebRTC via Phoenix Channel and real peer connection
   useEffect(() => {
-    setCallStatus('ringing');
-    const timeout = setTimeout(() => {
-      setCallStatus('connecting');
-      setTimeout(() => {
+    const socket = socketManager.getSocket();
+    if (!socket) {
+      setCallStatus('error');
+      return;
+    }
+
+    const manager = getWebRTCManager(socket);
+
+    manager.on({
+      onCallConnected: () => {
         setCallStatus('connected');
         callStartTimeRef.current = Date.now();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }, 1500);
-    }, 2000);
+      },
+      onCallEnded: () => {
+        setCallStatus('ended');
+        setTimeout(() => navigation.goBack(), 500);
+      },
+      onError: (err) => {
+        console.error('[CallScreen] WebRTC error:', err);
+        setCallStatus('error');
+      },
+    });
 
-    return () => clearTimeout(timeout);
+    // Start or answer based on params
+    if (_incoming && _roomId) {
+      setCallStatus('connecting');
+      manager.answerCall(_roomId, { video: callType === 'video', audio: true });
+    } else {
+      setCallStatus('ringing');
+      manager.startCall(recipientId, { video: callType === 'video', audio: true });
+    }
+
+    return () => {
+      // Cleanup handled by endCall
+    };
   }, []);
 
   // Track call duration
@@ -226,12 +254,22 @@ export default function CallScreen({ navigation, route }: Props) {
 
   // Call actions
   const handleToggleMute = useCallback(() => {
-    setIsMuted((prev) => !prev);
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      const muted = manager.toggleMute();
+      setIsMuted(muted);
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
   const handleToggleVideo = useCallback(() => {
-    setIsVideoEnabled((prev) => !prev);
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      const enabled = manager.toggleVideo();
+      setIsVideoEnabled(enabled);
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
@@ -243,6 +281,12 @@ export default function CallScreen({ navigation, route }: Props) {
   const handleEndCall = useCallback(() => {
     setCallStatus('ended');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const manager = getWebRTCManager(socket);
+      manager.endCall();
+    }
+    useCallStore.getState().endCall();
     setTimeout(() => {
       navigation.goBack();
     }, 500);
