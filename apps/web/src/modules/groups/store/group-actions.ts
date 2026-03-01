@@ -8,6 +8,36 @@ import { createIdempotencyKey } from '@cgraph/utils';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';
 import type { Group, GroupState, Channel, ChannelMessage, Member } from './group-types';
 
+/**
+ * Normalize a raw API message to ChannelMessage shape.
+ * Backend sends sender/senderId; ChannelMessage type expects author/authorId.
+ */
+function normalizeToChannelMessage(raw: Record<string, unknown>): ChannelMessage {
+  const sender = (raw.sender ?? raw.author ?? {}) as Record<string, unknown>;
+  return {
+    ...raw,
+    authorId: (raw.authorId ?? raw.senderId ?? raw.sender_id ?? sender.id ?? '') as string,
+    author: {
+      id: (sender.id ?? '') as string,
+      username: (sender.username ?? '') as string,
+      displayName: (sender.displayName ?? sender.display_name ?? null) as string | null,
+      avatarUrl: (sender.avatarUrl ?? sender.avatar_url ?? null) as string | null,
+      member: null,
+    },
+    channelId: (raw.channelId ?? raw.channel_id ?? '') as string,
+    content: (raw.content ?? '') as string,
+    messageType: (raw.messageType ?? raw.message_type ?? raw.contentType ?? 'text') as ChannelMessage['messageType'],
+    replyToId: (raw.replyToId ?? raw.reply_to_id ?? null) as string | null,
+    replyTo: raw.replyTo ? normalizeToChannelMessage(raw.replyTo as Record<string, unknown>) : null,
+    isPinned: (raw.isPinned ?? raw.is_pinned ?? false) as boolean,
+    isEdited: (raw.isEdited ?? raw.is_edited ?? false) as boolean,
+    deletedAt: (raw.deletedAt ?? raw.deleted_at ?? null) as string | null,
+    metadata: (raw.metadata ?? {}) as Record<string, unknown>,
+    reactions: (raw.reactions ?? []) as ChannelMessage['reactions'],
+    createdAt: (raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? '') as string,
+  } as ChannelMessage;
+}
+
 type SetState = StoreApi<GroupState>['setState'];
 type GetState = StoreApi<GroupState>['getState'];
 
@@ -71,7 +101,8 @@ export function createGroupActions(
       try {
         const params = before ? { before, limit: 50 } : { limit: 50 };
         const response = await api.get(`/api/v1/channels/${channelId}/messages`, { params });
-        const newMessages = ensureArray<ChannelMessage>(response.data, 'messages');
+        const rawMessages = ensureArray<Record<string, unknown>>(response.data, 'messages');
+        const newMessages = rawMessages.map(normalizeToChannelMessage);
         const hasMore = newMessages.length === 50;
 
         set((state) => ({
@@ -111,7 +142,8 @@ export function createGroupActions(
       if (replyToId) payload.reply_to_id = replyToId;
 
       const response = await api.post(`/api/v1/channels/${channelId}/messages`, payload);
-      const message = ensureObject<ChannelMessage>(response.data, 'message');
+      const raw = ensureObject<Record<string, unknown>>(response.data, 'message');
+      const message = raw ? normalizeToChannelMessage(raw) : null;
       if (message) {
         get().addChannelMessage(message);
       }
