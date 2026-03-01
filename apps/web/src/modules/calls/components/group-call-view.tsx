@@ -23,6 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ConnectionState } from 'livekit-client';
 import { LiveKitParticipantTile } from './livekit-participant-tile';
+import { EncryptionIndicator } from './encryption-indicator';
 import { useLiveKitRoom } from '../hooks/useLiveKitRoom';
 import type { UseLiveKitRoomOptions } from '../hooks/useLiveKitRoom';
 
@@ -45,6 +46,7 @@ export function GroupCallView({
     isMuted,
     isVideoOn,
     isScreenSharing,
+    isE2EEEnabled,
     room,
     connect,
     toggleMute,
@@ -204,9 +206,15 @@ export function GroupCallView({
         </button>
       </div>
 
-      {/* Participant count */}
-      <div className="absolute right-4 top-4 rounded-lg bg-black/50 px-2.5 py-1 text-xs text-white/70">
-        {totalCount} participant{totalCount !== 1 ? 's' : ''}
+      {/* Participant count + Encryption indicator */}
+      <div className="absolute right-4 top-4 flex items-center gap-2">
+        <EncryptionIndicator
+          status={isE2EEEnabled ? 'enabled' : 'disabled'}
+          size="sm"
+        />
+        <div className="rounded-lg bg-black/50 px-2.5 py-1 text-xs text-white/70">
+          {totalCount} participant{totalCount !== 1 ? 's' : ''}
+        </div>
       </div>
     </div>
   );

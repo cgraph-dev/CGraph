@@ -23,6 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useVoiceStateStore } from '@/stores/voiceStateStore';
 import { useVoiceChannel } from '@/modules/calls/hooks/useVoiceChannel';
+import { EncryptionIndicator } from '@/modules/calls/components/encryption-indicator';
 import { springs } from '@/lib/animation-presets';
 
 // ── Component ──────────────────────────────────────────────────────────
@@ -59,6 +60,7 @@ export function VoiceChannelPanel() {
               <p className="text-xs font-semibold text-green-400">Voice Connected</p>
               <p className="truncate text-xs text-gray-400">Channel {currentChannelId}</p>
             </div>
+            <EncryptionIndicator status="enabled" size="sm" />
           </div>
 
           {/* Participant List (max 6 visible) */}
