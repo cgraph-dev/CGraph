@@ -21,7 +21,7 @@ export function joinGroupChannel(
   channels: Map<string, Channel>,
   connectFn: () => Promise<void>
 ): Channel | null {
-  const topic = `channel:${channelId}`;
+  const topic = `group:${channelId}`;
 
   if (channels.has(topic)) {
     return channels.get(topic)!;
@@ -90,7 +90,7 @@ export function joinGroupChannel(
  * Leave and clean up a group channel.
  */
 export function leaveGroupChannel(channelId: string, channels: Map<string, Channel>): void {
-  const topic = `channel:${channelId}`;
+  const topic = `group:${channelId}`;
   const channel = channels.get(topic);
   if (channel) {
     channel.leave();
