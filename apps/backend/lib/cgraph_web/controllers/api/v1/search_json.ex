@@ -76,6 +76,20 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @doc "Renders forum search results as JSON."
+  @spec forum_search(map()) :: map()
+  def forum_search(%{results: results, meta: meta, type: type}) do
+    data = case type do
+      t when t in ["thread", "post", "comment", "thread_post"] ->
+        Enum.map(results, &render_forum_result/1)
+      _ ->
+        # search_all returns tagged maps already
+        results
+    end
+
+    %{data: data, meta: meta}
+  end
+
   # Private helpers
 
   defp render_users(users) do
@@ -107,5 +121,17 @@ defmodule CGraphWeb.API.V1.SearchJSON do
       GroupJSON.group_data(group)
       |> Map.put(:is_member, Map.get(group, :is_member, false))
     end)
+  end
+
+  defp render_forum_result(record) do
+    %{
+      id: record.id,
+      type: Map.get(record, :type, "unknown"),
+      title: Map.get(record, :title),
+      content: Map.get(record, :content),
+      author_id: Map.get(record, :author_id),
+      score: Map.get(record, :score, 0),
+      inserted_at: Map.get(record, :inserted_at)
+    }
   end
 end

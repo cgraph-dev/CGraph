@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Search
+  alias CGraph.Forums.Search, as: ForumSearch
 
   action_fallback CGraphWeb.FallbackController
 
@@ -203,6 +204,43 @@ defmodule CGraphWeb.API.V1.SearchController do
     send_resp(conn, :no_content, "")
   end
 
+  @doc """
+  Search forum content (threads, posts, comments).
+  GET /api/v1/search/forums
+  """
+  @spec forum_search(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def forum_search(conn, params) do
+    query = Map.get(params, "q", "")
+    type = Map.get(params, "type", "all")
+
+    if String.length(query) < 2 do
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "Query must be at least 2 characters"})
+    else
+      opts = [
+        forum_id: params["forum_id"],
+        board_id: params["board_id"],
+        author_id: params["author_id"],
+        date_from: parse_datetime(params["date_from"]),
+        date_to: parse_datetime(params["date_to"]),
+        sort: Map.get(params, "sort", "relevance"),
+        cursor: params["cursor"],
+        per_page: parse_int(params["limit"], 20, min: 1, max: @max_per_page)
+      ] |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+
+      {results, meta} = case type do
+        "thread" -> ForumSearch.search_threads(query, opts)
+        "post" -> ForumSearch.search_posts(query, opts)
+        "comment" -> ForumSearch.search_comments(query, opts)
+        "thread_post" -> ForumSearch.search_thread_posts(query, opts)
+        _ -> ForumSearch.search_all(query, opts)
+      end
+
+      render(conn, :forum_search, results: results, meta: meta, type: type)
+    end
+  end
+
   # Private helpers
 
   defp parse_types("all"), do: [:users, :messages, :posts, :groups]
@@ -257,4 +295,13 @@ defmodule CGraphWeb.API.V1.SearchController do
     end)
     |> Enum.take(limit)
   end
+
+  defp parse_datetime(nil), do: nil
+  defp parse_datetime(str) when is_binary(str) do
+    case DateTime.from_iso8601(str) do
+      {:ok, dt, _} -> dt
+      _ -> nil
+    end
+  end
+  defp parse_datetime(_), do: nil
 end

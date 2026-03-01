@@ -83,6 +83,7 @@ defmodule CGraphWeb.Router.UserRoutes do
         get "/search/messages", SearchController, :messages
         get "/search/posts", SearchController, :posts
         get "/search/groups", SearchController, :groups
+        get "/search/forums", SearchController, :forum_search
         get "/search/suggestions", SearchController, :suggestions
         get "/search/recent", SearchController, :recent
         delete "/search/recent", SearchController, :clear_history
