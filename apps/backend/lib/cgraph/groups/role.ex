@@ -43,6 +43,7 @@ defmodule CGraph.Groups.Role do
     change_nickname: 1 <<< 20,
     manage_nicknames: 1 <<< 21,
     manage_emojis: 1 <<< 22,
+    manage_automod: 1 <<< 23,
     administrator: 1 <<< 31
   }
 

@@ -6,8 +6,9 @@ defmodule CGraph.Groups.Roles do
   """
 
   import Ecto.Query, warn: false
+  import Bitwise
 
-  alias CGraph.Groups.{Group, Member, Role}
+  alias CGraph.Groups.{Group, Member, Role, PermissionOverwrite}
   alias CGraph.Repo
 
   # ============================================================================
@@ -106,6 +107,96 @@ defmodule CGraph.Groups.Roles do
     Enum.any?(member.roles, fn role ->
       role.is_admin || check_role_permission(role, action)
     end)
+  end
+
+  # ============================================================================
+  # Effective Permissions (with channel overrides)
+  # ============================================================================
+
+  @doc """
+  Calculate effective permissions for a member in a specific channel.
+
+  Merges the member's role-based bitmask with channel permission overwrites.
+  Precedence: member overrides > role overrides > base role permissions.
+  Owner and administrator bypass all overrides.
+
+  Returns the effective permission bitmask as an integer.
+  """
+  @spec calculate_effective_permissions(Member.t(), Group.t(), struct()) :: integer()
+  def calculate_effective_permissions(%Member{} = member, %Group{} = group, channel) do
+    # All permission bits OR'd together
+    all_perms = Enum.reduce(Role.permissions_map(), 0, fn {_k, v}, acc -> acc ||| v end)
+
+    # Owner gets everything
+    if group.owner_id == member.user_id do
+      all_perms
+    else
+      base = calculate_base_bitmask(member)
+
+      # Administrator bypasses all channel overrides
+      admin_bit = Role.permissions_map()[:administrator]
+
+      if (base &&& admin_bit) != 0 do
+        all_perms
+      else
+        apply_channel_overrides(base, member, channel)
+      end
+    end
+  end
+
+  @doc """
+  Check if a member has a specific effective permission in a channel.
+  """
+  @spec has_effective_permission?(Member.t(), Group.t(), struct(), atom()) :: boolean()
+  def has_effective_permission?(%Member{} = member, %Group{} = group, channel, permission_atom) when is_atom(permission_atom) do
+    case Map.get(Role.permissions_map(), permission_atom) do
+      nil -> false
+      bit ->
+        effective = calculate_effective_permissions(member, group, channel)
+        (effective &&& bit) != 0
+    end
+  end
+
+  # Calculate the base bitmask by OR-combining all role permission bitmasks
+  defp calculate_base_bitmask(%Member{} = member) do
+    roles = member.roles || []
+
+    Enum.reduce(roles, 0, fn role, acc ->
+      acc ||| (role.permissions || 0)
+    end)
+  end
+
+  # Apply channel permission overwrites to a base bitmask
+  defp apply_channel_overrides(base, %Member{} = member, channel) do
+    overwrites = list_channel_overwrites(channel.id)
+
+    role_ids = (member.roles || []) |> Enum.map(& &1.id) |> MapSet.new()
+
+    # Phase 1: Apply role-based overwrites
+    perms =
+      overwrites
+      |> Enum.filter(fn ow -> ow.type == "role" and MapSet.member?(role_ids, ow.role_id) end)
+      |> Enum.reduce(base, fn ow, acc ->
+        acc
+        |> bor(ow.allow || 0)
+        |> band(bnot(ow.deny || 0))
+      end)
+
+    # Phase 2: Apply member-specific overwrites (trump role overrides)
+    overwrites
+    |> Enum.filter(fn ow -> ow.type == "member" and ow.member_id == member.id end)
+    |> Enum.reduce(perms, fn ow, acc ->
+      acc
+      |> bor(ow.allow || 0)
+      |> band(bnot(ow.deny || 0))
+    end)
+  end
+
+  defp list_channel_overwrites(channel_id) do
+    from(ow in PermissionOverwrite,
+      where: ow.channel_id == ^channel_id
+    )
+    |> Repo.all()
   end
 
   # ============================================================================
