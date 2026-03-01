@@ -17,16 +17,16 @@ Phase 15 builds on the Phase 14 forum core with 8 requirements: 50+ customizatio
 ## Position
 
 - **Phase:** 15 of 19 — Forum Customization (Planned)
-- **Plan:** 1/5 plans complete
-- **Status:** Executing — Wave 1 in progress
-- **Last activity:** 2026-03-01 — Plan 15-03 complete
+- **Plan:** 3/5 plans complete
+- **Status:** Executing — Wave 1 complete, Wave 2 starting
+- **Last activity:** 2026-03-01 — Wave 1 complete (15-01, 15-02, 15-03)
 
 ## Plans
 
 | Plan  | Objective                                                          | Wave | Autonomous | Depends On      | Status      |
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | --------------- | ----------- |
-| 15-01 | Customization engine — 55 options, CSS editor, widgets, fields     | 1    | ✅          | —               | —           |
-| 15-02 | Plugin runtime + forum automod + warn/strike system                | 1    | ✅          | —               | —           |
+| 15-01 | Customization engine — 55 options, CSS editor, widgets, fields     | 1    | ✅          | —               | ✅ Complete |
+| 15-02 | Plugin runtime + forum automod + warn/strike system                | 1    | ✅          | —               | ✅ Complete |
 | 15-03 | User groups admin UI + per-board permissions UI + templates        | 1    | ✅          | —               | ✅ Complete |
 | 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS              | 2    | ✅          | 15-01,15-02,15-03 | —         |
 | 15-05 | Ranking integration + leaderboard + gamification bridge            | 2    | ✅          | 15-01,15-02,15-03 | —         |
