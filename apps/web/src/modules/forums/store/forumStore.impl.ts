@@ -51,6 +51,8 @@ export type {
   CreateBanData,
   CreateReportData,
   ForumState,
+  ForumSearchResult,
+  ForumSearchFilters,
 } from './forumStore.types';
 
 // ── Store Creation ─────────────────────────────────────────────────────

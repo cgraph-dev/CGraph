@@ -28,6 +28,8 @@ export {
   type Comment,
   type ForumState,
   type CreatePostData,
+  type ForumSearchResult,
+  type ForumSearchFilters,
 } from './forumStore';
 
 // Forum hosting store
