@@ -34,7 +34,7 @@ export interface GroupListItemProps {
 export interface CreateGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; description: string; isPublic: boolean }) => Promise<void>;
+  onSubmit?: (data: { name: string; description: string; isPublic: boolean }) => Promise<void>;
 }
 
 // Re-export Group type for convenience

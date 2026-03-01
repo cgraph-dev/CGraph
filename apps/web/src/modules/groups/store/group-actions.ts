@@ -213,7 +213,11 @@ export function createGroupActions(
     },
 
     createGroup: async (data) => {
-      const response = await api.post('/api/v1/groups', data);
+      const response = await api.post('/api/v1/groups', {
+        name: data.name,
+        description: data.description,
+        visibility: data.isPublic !== false ? 'public' : 'private',
+      });
       const group = ensureObject<Group>(response.data, 'group');
       if (group) {
         set((state) => ({

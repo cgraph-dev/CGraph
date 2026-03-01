@@ -3,21 +3,21 @@
  * @module pages/groups
  */
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 import { PlusIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { CreateGroupModal } from '@/modules/groups/components/group-list/create-group-modal';
 import type { ServerListProps } from './types';
 import { ServerIcon } from './server-icon';
 import { tweens, springs } from '@/lib/animation-presets';
 
 /**
- * unknown for the groups module.
- */
-/**
- * Server List component.
+ * Server List component with create group support.
  */
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
+  const [showCreateModal, setShowCreateModal] = useState(false);
   return (
     <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 py-3 backdrop-blur-xl">
       {/* Ambient glow */}
@@ -61,7 +61,10 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
 
       {/* Add server button */}
       <motion.button
-        onClick={() => HapticFeedback.medium()}
+        onClick={() => {
+          HapticFeedback.medium();
+          setShowCreateModal(true);
+        }}
         whileHover={{ scale: 1.05, rotate: 90 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Create new server"
@@ -74,6 +77,16 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           transition={tweens.standard}
         />
       </motion.button>
+
+      {/* Create Group Modal */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <CreateGroupModal
+            isOpen={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
