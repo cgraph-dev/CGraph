@@ -27,7 +27,6 @@ import {
   SearchResultsGrid,
   RecentEmojisGrid,
   FavoritesGrid,
-  CustomEmojisGrid,
   UnicodeEmojisGrid,
 } from './grids';
 import { tweens } from '@/lib/animation-presets';
@@ -66,7 +65,7 @@ const PackGroup = memo(function PackGroup({
       {!collapsed && (
         <div className="grid grid-cols-8 gap-1 px-1">
           {groupEmojis.map((emoji) => {
-            const isAnimated = emoji.is_animated || (emoji as Record<string, unknown>).isAnimated;
+            const isAnimated = !!(emoji.is_animated || (emoji as unknown as Record<string, unknown>).isAnimated);
             const isHovered = hoveredId === emoji.id;
             return (
               <div
@@ -306,8 +305,8 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
                 const grouped = new Map<string, { name: string; items: typeof filteredEmojis }>();
                 const noPackKey = '__no_pack__';
                 for (const e of filteredEmojis) {
-                  const key = (e as Record<string, unknown>).pack_id as string || noPackKey;
-                  const name = key === noPackKey ? 'Uncategorized' : (e as Record<string, unknown>).pack_name as string || 'Pack';
+                  const key = (e as unknown as Record<string, unknown>).pack_id as string || noPackKey;
+                  const name = key === noPackKey ? 'Uncategorized' : (e as unknown as Record<string, unknown>).pack_name as string || 'Pack';
                   if (!grouped.has(key)) grouped.set(key, { name, items: [] });
                   grouped.get(key)!.items.push(e);
                 }

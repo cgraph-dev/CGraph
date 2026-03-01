@@ -60,7 +60,7 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
     setWidgetOrder((prev) => {
       const next = [...prev];
       const [moved] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, moved);
+      next.splice(toIndex, 0, moved!);
       return next;
     });
   }, []);

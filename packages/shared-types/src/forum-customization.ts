@@ -126,7 +126,6 @@ export interface ForumCustomizationOptions {
   custom_fields: CustomFieldsOptions;
   reputation_and_ranks: ReputationAndRanksOptions;
   custom_css_and_advanced: CustomCssAndAdvancedOptions;
-  [key: string]: Record<string, unknown>;
 }
 
 // =============================================================================

@@ -16,7 +16,7 @@ import {
   XMarkIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import { useUserGroupsStore, type ForumUserGroupLocal } from '../../store/forumStore.userGroups';
+import { useUserGroupsStore } from '../../store/forumStore.userGroups';
 
 // ── Permission definitions ───────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
     for (const group of groups) {
       state[group.id] = {};
       for (const perm of PERMISSION_DEFS) {
-        state[group.id][perm.key] = !!group.permissions[perm.key];
+        state[group.id]![perm.key] = !!group.permissions?.[perm.key];
       }
     }
     setPermState(state);

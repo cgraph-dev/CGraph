@@ -47,7 +47,7 @@ export function HeaderBrandingEditor({ options, onSave, saving }: HeaderBranding
           placeholder="https://example.com/logo.png"
           className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
         />
-        {draft.logo_url && (
+        {!!draft.logo_url && (
           <div className="mt-2 p-2 bg-white/5 rounded inline-block">
             <img src={draft.logo_url as string} alt="Logo preview" className="h-12 object-contain" />
           </div>
@@ -135,7 +135,7 @@ export function HeaderBrandingEditor({ options, onSave, saving }: HeaderBranding
           }}
         >
           <div className="flex items-center gap-3">
-            {draft.logo_url && (
+            {!!draft.logo_url && (
               <img src={draft.logo_url as string} alt="" className="h-10 object-contain" />
             )}
             <div>
@@ -145,8 +145,8 @@ export function HeaderBrandingEditor({ options, onSave, saving }: HeaderBranding
               >
                 Forum Title
               </h3>
-              {draft.subtitle_text && (
-                <p className="text-xs text-white/60">{draft.subtitle_text as string}</p>
+              {!!draft.subtitle_text && (
+                <p className="text-xs text-white/60">{String(draft.subtitle_text)}</p>
               )}
             </div>
           </div>

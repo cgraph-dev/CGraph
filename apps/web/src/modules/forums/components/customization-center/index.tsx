@@ -19,7 +19,6 @@ import {
   TrophyIcon,
   CodeBracketIcon,
   ArrowPathIcon,
-  CheckIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
@@ -32,7 +31,6 @@ import { WidgetConfigurator } from './widget-configurator';
 import { CssEditor } from './css-editor';
 import { CustomFieldsEditor } from './custom-fields-editor';
 import { KarmaSettings } from './karma-settings';
-import { BadgeManager } from './badge-manager';
 import type { ForumCustomizationOptions, CustomizationCategory } from '@cgraph/shared-types';
 
 // =============================================================================
@@ -70,7 +68,7 @@ const TABS: TabConfig[] = [
 // COMPONENT
 // =============================================================================
 
-export function CustomizationCenter({ forumId, isOwner }: CustomizationCenterProps) {
+export function CustomizationCenter({ forumId }: CustomizationCenterProps) {
   const [activeTab, setActiveTab] = useState<CustomizationCategory>('appearance');
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -267,7 +265,7 @@ interface CategoryEditorProps {
 }
 
 function CategoryEditor({ category, options, forumId, onSave, saving }: CategoryEditorProps) {
-  const categoryOptions = options[category] ?? {};
+  const categoryOptions = (options[category] ?? {}) as unknown as Record<string, unknown>;
 
   switch (category) {
     case 'appearance':

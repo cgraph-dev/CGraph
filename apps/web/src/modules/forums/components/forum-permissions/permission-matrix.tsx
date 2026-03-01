@@ -20,7 +20,7 @@ import {
   usePermissionsStore,
   type PermLevel,
 } from '../../store/forumStore.permissions';
-import { useUserGroupsStore, type ForumUserGroupLocal } from '../../store/forumStore.userGroups';
+import { useUserGroupsStore } from '../../store/forumStore.userGroups';
 import { BOARD_PERMISSIONS } from '../forum-permissions/types';
 
 interface PermissionMatrixProps {
@@ -72,12 +72,12 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
     for (const board of boards) {
       cache[board.id] = {};
       for (const group of groups) {
-        cache[board.id][group.id] = {};
+        cache[board.id]![group.id] = {};
         const perm = boardPermissions.find(
           (p) => p.boardId === board.id && p.groupId === group.id,
         );
         for (const def of BOARD_PERMISSIONS) {
-          cache[board.id][group.id][def.key] = perm?.permissions[def.key] || 'inherit';
+          cache[board.id]![group.id]![def.key] = perm?.permissions?.[def.key] || 'inherit';
         }
       }
     }

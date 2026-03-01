@@ -13,16 +13,8 @@ import { RankBadge } from './rank-badge';
 
 import type { Contributor, TimeRange, ForumLeaderboardWidgetProps } from './types';
 import { UserRow } from './user-row';
-import type { LeaderboardPeriod } from '@cgraph/shared-types';
 
 const logger = createLogger('LeaderboardWidget');
-
-/** Map compact period labels to API periods. */
-const PERIOD_MAP: Record<string, LeaderboardPeriod> = {
-  '7d': 'weekly',
-  '30d': 'monthly',
-  '∞': 'all_time',
-};
 
 interface RankInfo {
   name: string;

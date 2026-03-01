@@ -75,7 +75,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
   const membersByGroup = secondaryMembers.reduce<Record<string, SecondaryGroupMember[]>>(
     (acc, m) => {
       if (!acc[m.groupId]) acc[m.groupId] = [];
-      acc[m.groupId].push(m);
+      acc[m.groupId]!.push(m);
       return acc;
     },
     {},

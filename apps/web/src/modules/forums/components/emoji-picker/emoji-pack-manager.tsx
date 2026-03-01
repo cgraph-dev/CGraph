@@ -15,10 +15,6 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   TrashIcon,
-  PencilIcon,
-  CheckCircleIcon,
-  XMarkIcon,
-  GlobeAltIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useEmojiPackStore } from '../../store/forumStore.emoji';
@@ -53,7 +49,7 @@ const PackCard = memo(function PackCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={tweens.snappy}
+      transition={tweens.brisk}
       className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
     >
       {/* Header */}
@@ -125,7 +121,7 @@ const PackCard = memo(function PackCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={tweens.snappy}
+            transition={tweens.brisk}
             className="overflow-hidden"
           >
             <div className="mt-4 grid grid-cols-8 gap-2 sm:grid-cols-10 md:grid-cols-12">

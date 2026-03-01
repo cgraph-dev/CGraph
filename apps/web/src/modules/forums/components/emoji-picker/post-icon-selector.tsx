@@ -165,7 +165,7 @@ export const PostIconSelector = memo(function PostIconSelector({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={tweens.snappy}
+            transition={tweens.brisk}
             className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"
           >
             {(() => {

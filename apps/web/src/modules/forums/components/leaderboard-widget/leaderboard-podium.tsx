@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { LeaderboardEntry } from '@cgraph/shared-types';
 import { RankBadge } from './rank-badge';
-import { TrophyIcon, StarIcon } from '@heroicons/react/24/solid';
+import { StarIcon } from '@heroicons/react/24/solid';
 
 // ── Types ──────────────────────────────────────────────────────────────
 

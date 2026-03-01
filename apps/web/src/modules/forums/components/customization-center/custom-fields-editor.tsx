@@ -9,12 +9,11 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import {
-  CheckIcon,
   PlusIcon,
   TrashIcon,
   PencilIcon,
 } from '@heroicons/react/24/outline';
-import type { CustomField, CustomFieldType } from '@cgraph/shared-types';
+import type { CustomField, CustomFieldType, CustomFieldTarget } from '@cgraph/shared-types';
 
 interface CustomFieldsEditorProps {
   forumId: string;
@@ -37,7 +36,7 @@ const TARGETS = [
   { value: 'profile', label: 'Profiles' },
 ];
 
-export function CustomFieldsEditor({ forumId, onSave, saving }: CustomFieldsEditorProps) {
+export function CustomFieldsEditor({ forumId }: CustomFieldsEditorProps) {
   const [fields, setFields] = useState<CustomField[]>([]);
   const [activeTarget, setActiveTarget] = useState('thread');
   const [editing, setEditing] = useState<Partial<CustomField> | null>(null);
@@ -160,7 +159,7 @@ export function CustomFieldsEditor({ forumId, onSave, saving }: CustomFieldsEdit
       {/* Add Button */}
       <button
         onClick={() =>
-          setEditing({ name: '', fieldType: 'text', target: activeTarget, required: false, position: fields.length, visibleTo: 'all', options: [] })
+          setEditing({ name: '', fieldType: 'text', target: activeTarget as CustomFieldTarget, required: false, position: fields.length, visibleTo: 'all', options: [] })
         }
         className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm transition-colors"
       >
@@ -200,7 +199,7 @@ export function CustomFieldsEditor({ forumId, onSave, saving }: CustomFieldsEdit
               <label className="block text-xs text-white/50 mb-1">Visible To</label>
               <select
                 value={editing.visibleTo ?? 'all'}
-                onChange={(e) => setEditing({ ...editing, visibleTo: e.target.value })}
+                onChange={(e) => setEditing({ ...editing, visibleTo: e.target.value as 'all' | 'members' | 'mods' | 'admins' })}
                 className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
               >
                 <option value="all">Everyone</option>

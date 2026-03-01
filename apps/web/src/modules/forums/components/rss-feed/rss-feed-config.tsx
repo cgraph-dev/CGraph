@@ -9,7 +9,6 @@
  */
 
 import { useState, useEffect, useCallback, memo } from 'react';
-import { motion } from 'framer-motion';
 import {
   RssIcon,
   ClipboardDocumentIcon,
@@ -19,7 +18,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRssConfigStore } from '../../store/forumStore.rss';
 import type { BoardRssConfig } from '../../store/forumStore.rss';
-import { tweens } from '@/lib/animation-presets';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

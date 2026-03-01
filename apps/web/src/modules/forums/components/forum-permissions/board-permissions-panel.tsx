@@ -9,7 +9,6 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import {
   ShieldCheckIcon,
   ArrowPathIcon,
@@ -22,15 +21,15 @@ import {
   type BoardPermissionLocal,
 } from '../../store/forumStore.permissions';
 import { useUserGroupsStore } from '../../store/forumStore.userGroups';
-import { BOARD_PERMISSIONS } from '../forum-permissions/types';
+import { BOARD_PERMISSIONS, type PermissionDef } from '../forum-permissions/types';
 
 // ── Permission keys ──────────────────────────────────────────────────────
 
 const PERM_KEYS = BOARD_PERMISSIONS.map((p) => p.key);
-const PERM_BY_CATEGORY = BOARD_PERMISSIONS.reduce<Record<string, typeof BOARD_PERMISSIONS>>(
+const PERM_BY_CATEGORY = BOARD_PERMISSIONS.reduce<Record<string, PermissionDef[]>>(
   (acc, p) => {
     if (!acc[p.category]) acc[p.category] = [];
-    acc[p.category].push(p);
+    acc[p.category]!.push(p);
     return acc;
   },
   {},
@@ -69,7 +68,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
       const perm = boardPermissions.find((p) => p.groupId === group.id);
       state[group.id] = {};
       for (const key of PERM_KEYS) {
-        state[group.id][key] = perm?.permissions[key] || 'inherit';
+        state[group.id]![key] = perm?.permissions?.[key] || 'inherit';
       }
     }
     setLocalPerms(state);

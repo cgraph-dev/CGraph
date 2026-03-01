@@ -60,7 +60,7 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
   const addThreshold = useCallback(() => {
     setThresholds((prev) => [
       ...prev,
-      { name: '', minKarma: prev.length > 0 ? (prev[prev.length - 1].minKarma + 100) : 0, imageUrl: '' },
+      { name: '', minKarma: prev.length > 0 ? ((prev[prev.length - 1]?.minKarma ?? 0) + 100) : 0, imageUrl: '' },
     ]);
   }, []);
 
