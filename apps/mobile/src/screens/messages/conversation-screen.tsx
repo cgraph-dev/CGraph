@@ -36,6 +36,7 @@ import {
   isOwnMessage as checkIsOwnMessage,
   getSenderInfo,
 } from './conversation-screen/utils';
+import { DisappearingMessagesToggle } from '../../components/chat/disappearing-messages-toggle';
 
 const logger = createLogger('ConversationScreen');
 
@@ -335,6 +336,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onVoiceComplete={setup.voiceAndWave.handleVoiceComplete}
         onCancelReply={setup.actionWrappers.cancelReply}
         onGifPress={() => setup.setShowGifPicker(true)}
+      />
+
+      <DisappearingMessagesToggle
+        conversationId={conversationId}
+        currentTTL={setup.conversationTTL}
+        isOpen={setup.showDisappearingMessages}
+        onClose={() => setup.setShowDisappearingMessages(false)}
+        onUpdate={(ttl) => setup.setConversationTTL(ttl)}
       />
     </KeyboardAvoidingView>
   );

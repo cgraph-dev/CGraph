@@ -68,4 +68,6 @@ export interface MessageActionMenuProps {
   isMenuOpen?: boolean;
   onToggleMenu?: () => void;
   isOwn: boolean;
+  /** Message ID for save/bookmark functionality */
+  messageId?: string;
 }

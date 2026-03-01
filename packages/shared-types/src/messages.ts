@@ -27,3 +27,23 @@ export interface ForwardMessageResponse {
     forwarded_count: number;
   };
 }
+
+/**
+ * A saved/bookmarked message.
+ */
+export interface SavedMessage {
+  id: string;
+  messageId: string;
+  note?: string;
+  savedAt: string;
+}
+
+/**
+ * Configuration for disappearing/ephemeral messages.
+ */
+export interface DisappearingConfig {
+  /** TTL in seconds. null = off, 86400 = 24h, 604800 = 7d, 2592000 = 30d */
+  ttl: number | null;
+  /** ISO 8601 timestamp when the message expires */
+  expiresAt?: string;
+}

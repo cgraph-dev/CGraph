@@ -1,16 +1,15 @@
 /**
  * Message Action Menu Component
  *
- * Dropdown menu for message actions (edit, pin, forward, delete).
+ * Dropdown menu for message actions (edit, pin, forward, save, delete).
  */
 
+import { useState, useCallback, useEffect } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import type { MessageActionMenuProps } from './types';
-import { ReplyIcon, EditIcon, PinIcon, ForwardIcon, DeleteIcon } from './icons';
+import { ReplyIcon, EditIcon, PinIcon, ForwardIcon, DeleteIcon, BookmarkIcon, BookmarkFilledIcon } from './icons';
+import { api } from '@/lib/api';
 
-/**
- * unknown for the chat module.
- */
 /**
  * Message Action Menu component.
  */
@@ -22,7 +21,53 @@ export function MessageActionMenu({
   onDelete,
   isMenuOpen,
   onToggleMenu,
+  messageId,
 }: MessageActionMenuProps) {
+  const [isSaved, setIsSaved] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Check saved state when menu opens
+  useEffect(() => {
+    if (!isMenuOpen || !messageId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get('/api/v1/saved-messages');
+        const saved = (data.data || []).find(
+          (s: { message_id: string; id: string }) => s.message_id === messageId
+        );
+        if (!cancelled) {
+          setIsSaved(!!saved);
+          setSavedId(saved?.id ?? null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isMenuOpen, messageId]);
+
+  const handleToggleSave = useCallback(async () => {
+    if (saving || !messageId) return;
+    setSaving(true);
+    try {
+      if (isSaved && savedId) {
+        await api.delete(`/api/v1/saved-messages/${savedId}`);
+        setIsSaved(false);
+        setSavedId(null);
+      } else {
+        const { data } = await api.post('/api/v1/saved-messages', { message_id: messageId });
+        setIsSaved(true);
+        setSavedId(data.data?.id ?? null);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+  }, [isSaved, savedId, saving, messageId]);
+
   return (
     <div className="relative flex items-center gap-1">
       <button
@@ -62,6 +107,14 @@ export function MessageActionMenu({
           >
             <ForwardIcon />
             Forward
+          </button>
+          <button
+            onClick={handleToggleSave}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+            disabled={saving}
+          >
+            {isSaved ? <BookmarkFilledIcon /> : <BookmarkIcon />}
+            {isSaved ? 'Unsave' : 'Save'}
           </button>
           <button
             onClick={onDelete}

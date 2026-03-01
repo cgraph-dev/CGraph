@@ -105,6 +105,8 @@ export interface Message {
     type?: string;
     favicon?: string;
   } | null;
+  // Disappearing messages
+  expires_at?: string | null;
 }
 
 export interface EditHistory {

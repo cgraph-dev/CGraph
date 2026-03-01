@@ -436,6 +436,15 @@ function MessageContent({
             style={{ marginLeft: 4 }}
           />
         )}
+        {/* Timer icon for disappearing messages */}
+        {item.expires_at && (
+          <Ionicons
+            name="timer-outline"
+            size={12}
+            color={isOwnMessage ? 'rgba(255,255,255,0.6)' : colors.textTertiary}
+            style={{ marginLeft: 4 }}
+          />
+        )}
         {isOwnMessage &&
           (() => {
             const statusInfo = getMessageStatus(item, isOwnMessage);

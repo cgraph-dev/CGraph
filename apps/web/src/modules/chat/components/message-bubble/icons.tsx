@@ -100,6 +100,33 @@ export function DeleteIcon() {
 }
 
 /**
+ * Bookmark Icon component (outline).
+ */
+export function BookmarkIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Bookmark Filled Icon component (saved state).
+ */
+export function BookmarkFilledIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+    </svg>
+  );
+}
+
+/**
  * unknown for the chat module.
  */
 /**

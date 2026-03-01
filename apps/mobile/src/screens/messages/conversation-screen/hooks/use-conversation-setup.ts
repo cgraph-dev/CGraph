@@ -67,6 +67,8 @@ export function useConversationSetup(params: SetupParams) {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
+  const [showDisappearingMessages, setShowDisappearingMessages] = useState(false);
+  const [conversationTTL, setConversationTTL] = useState<number | null>(null);
 
   // ── Refs ─────────────────────────────────────────────────────
   const isMountedRef = useRef(true);
@@ -133,6 +135,7 @@ export function useConversationSetup(params: SetupParams) {
     otherParticipantId,
     otherUser: null, // set from outside
     onStartCall: handleStartCall,
+    onOpenDisappearingMessages: () => setShowDisappearingMessages(true),
   });
 
   const attachmentUpload = useAttachmentUpload({
@@ -238,6 +241,7 @@ export function useConversationSetup(params: SetupParams) {
   return {
     // state
     isSending, isVoiceMode, setIsVoiceMode, showGifPicker, setShowGifPicker, newMessageIds,
+    showDisappearingMessages, setShowDisappearingMessages, conversationTTL, setConversationTTL,
     // refs
     flatListRef, inputRef, isMountedRef,
     // grouped hooks

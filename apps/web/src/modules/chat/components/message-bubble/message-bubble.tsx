@@ -190,6 +190,7 @@ export const MessageBubble = memo(
                 isMenuOpen={isMenuOpen}
                 onToggleMenu={onToggleMenu}
                 isOwn={true}
+                messageId={message.id}
               />
             )}
 

@@ -8,7 +8,7 @@
  * @since v0.7.29
  */
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Message } from '../../types';
 import { QUICK_REACTIONS, ACTION_COLORS } from './constants';
+import api from '../../lib/api';
 
 export interface MessageActionsMenuProps {
   /** Whether the menu is visible */
@@ -108,6 +109,50 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
     [message?.reactions]
   );
 
+  const [isSaved, setIsSaved] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !message) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get('/api/v1/saved-messages');
+        const found = (data.data || []).find(
+          (s: { message_id: string; id: string }) => s.message_id === message.id
+        );
+        if (!cancelled) {
+          setIsSaved(!!found);
+          setSavedId(found?.id ?? null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [visible, message]);
+
+  const handleToggleSave = useCallback(async () => {
+    if (saving || !message) return;
+    setSaving(true);
+    try {
+      if (isSaved && savedId) {
+        await api.delete(`/api/v1/saved-messages/${savedId}`);
+        setIsSaved(false);
+        setSavedId(null);
+      } else {
+        const { data } = await api.post('/api/v1/saved-messages', { message_id: message.id });
+        setIsSaved(true);
+        setSavedId(data.data?.id ?? null);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+  }, [isSaved, savedId, saving, message]);
+
   // Early return after hooks
   if (!visible || !message) return null;
 
@@ -147,6 +192,14 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
       color: ACTION_COLORS.forward,
       onPress: onForward ?? (() => {}),
       visible: !!onForward,
+    },
+    {
+      id: 'save',
+      icon: isSaved ? 'bookmark' : 'bookmark-outline',
+      label: isSaved ? 'Unsave' : 'Save',
+      color: '#6366f1',
+      onPress: handleToggleSave,
+      visible: true,
     },
     {
       id: 'delete',

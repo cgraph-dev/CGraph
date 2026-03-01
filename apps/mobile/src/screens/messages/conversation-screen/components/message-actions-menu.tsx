@@ -7,7 +7,7 @@
  * @module screens/messages/ConversationScreen/components
  */
 
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import * as Clipboard from 'expo-clipboard';
 import type { Message } from '../../../../types';
 import { styles } from '../styles';
 import { QUICK_REACTIONS } from '../hooks/useReactions';
+import api from '../../../../lib/api';
 
 interface ActionItem {
   id: string;
@@ -86,6 +87,53 @@ export function MessageActionsMenu({
   onOpenReactionPicker,
   getReactionState,
 }: MessageActionsMenuProps) {
+  const [isSaved, setIsSaved] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Check saved state when menu opens
+  useEffect(() => {
+    if (!visible || !selectedMessage) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get('/api/v1/saved-messages');
+        const found = (data.data || []).find(
+          (s: { message_id: string; id: string }) => s.message_id === selectedMessage.id
+        );
+        if (!cancelled) {
+          setIsSaved(!!found);
+          setSavedId(found?.id ?? null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [visible, selectedMessage]);
+
+  const handleToggleSave = useCallback(async () => {
+    if (saving || !selectedMessage) return;
+    setSaving(true);
+    try {
+      if (isSaved && savedId) {
+        await api.delete(`/api/v1/saved-messages/${savedId}`);
+        setIsSaved(false);
+        setSavedId(null);
+      } else {
+        const { data } = await api.post('/api/v1/saved-messages', { message_id: selectedMessage.id });
+        setIsSaved(true);
+        setSavedId(data.data?.id ?? null);
+      }
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+    onClose();
+  }, [isSaved, savedId, saving, selectedMessage, onClose]);
+
   if (!visible || !selectedMessage) return null;
 
   const isPinned = selectedMessage.is_pinned;
@@ -132,6 +180,15 @@ export function MessageActionsMenu({
       color: isPinned ? '#f59e0b' : '#10b981',
       gradient: isPinned ? ['#f59e0b', '#fbbf24'] : ['#10b981', '#34d399'],
       onPress: onTogglePin,
+      visible: true,
+    },
+    {
+      id: 'save',
+      icon: isSaved ? 'bookmark' : 'bookmark-outline',
+      label: isSaved ? 'Unsave' : 'Save',
+      color: '#6366f1',
+      gradient: ['#6366f1', '#818cf8'],
+      onPress: handleToggleSave,
       visible: true,
     },
     {

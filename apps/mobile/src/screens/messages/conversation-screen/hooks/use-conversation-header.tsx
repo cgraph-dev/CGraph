@@ -28,6 +28,8 @@ interface UseConversationHeaderOptions {
   otherParticipantId: string | null;
   otherUser: UserBasic | null;
   onStartCall: (type: 'audio' | 'video') => void;
+  /** Callback to open disappearing messages toggle */
+  onOpenDisappearingMessages?: () => void;
 }
 
 /**
@@ -66,6 +68,7 @@ export function useConversationHeader({
   otherParticipantId,
   otherUser,
   onStartCall,
+  onOpenDisappearingMessages,
 }: UseConversationHeaderOptions) {
   const [displayName, setDisplayName] = useState<string>('Conversation');
   const lastUpdateRef = useRef<string>('');
@@ -170,6 +173,14 @@ export function useConversationHeader({
             >
               <Ionicons name="finger-print-outline" size={20} color={colors.text} />
             </TouchableOpacity>
+            {onOpenDisappearingMessages && (
+              <TouchableOpacity
+                style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
+                onPress={onOpenDisappearingMessages}
+              >
+                <Ionicons name="timer-outline" size={20} color={colors.text} />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
               onPress={() => onStartCall('audio')}
@@ -195,6 +206,7 @@ export function useConversationHeader({
       otherUser,
       navigation,
       onStartCall,
+      onOpenDisappearingMessages,
     ]
   );
 
