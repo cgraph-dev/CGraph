@@ -63,6 +63,17 @@ defmodule CGraphWeb.Router.ForumRoutes do
             post "/toggle", PluginController, :toggle
           end
 
+          # Forum moderation (warnings, automod, stats)
+          scope "/moderation" do
+            get "/queue", ForumModerationController, :queue
+            post "/action", ForumModerationController, :action
+            get "/warnings", ForumModerationController, :warnings
+            post "/warn", ForumModerationController, :warn
+            get "/automod", ForumModerationController, :automod
+            put "/automod", ForumModerationController, :update_automod
+            get "/stats", ForumModerationController, :stats
+          end
+
           # Forum customization engine (55 options, 8 categories)
           get "/customization", ForumCustomizationController, :show
           get "/customization/options", ForumCustomizationController, :list_options
