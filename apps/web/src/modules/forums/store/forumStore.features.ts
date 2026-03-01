@@ -19,6 +19,7 @@ import type {
   CreateThreadPrefixData,
   CreatePollData,
   ForumState,
+  ForumCategory,
 } from './forumStore.types';
 
 const logger = createLogger('ForumStore:Features');
@@ -284,6 +285,91 @@ export function createFeatureActions(set: Set, _get: Get) {
           error instanceof Error ? error : new Error(String(error)),
           'fetchSubscriptions'
         );
+      }
+    },
+
+    // ── Category CRUD ────────────────────────────────────────────────
+
+    fetchCategories: async (forumId: string) => {
+      try {
+        const response = await api.get(`/api/v1/forums/${forumId}/categories`);
+        const categories = ensureArray<ForumCategory>(response.data, 'categories');
+        set((state) => ({
+          currentForum: state.currentForum?.id === forumId
+            ? { ...state.currentForum, categories }
+            : state.currentForum,
+        }));
+      } catch (error: unknown) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchCategories');
+      }
+    },
+
+    createCategory: async (forumId: string, data: { name: string; color?: string; description?: string }) => {
+      try {
+        const response = await api.post(`/api/v1/forums/${forumId}/categories`, data);
+        const category = response.data?.category as ForumCategory | undefined;
+        if (category) {
+          set((state) => ({
+            currentForum: state.currentForum?.id === forumId
+              ? { ...state.currentForum, categories: [...(state.currentForum.categories || []), category] }
+              : state.currentForum,
+          }));
+        }
+      } catch (error: unknown) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'createCategory');
+        throw error;
+      }
+    },
+
+    updateCategory: async (forumId: string, categoryId: string, data: Partial<ForumCategory>) => {
+      try {
+        await api.put(`/api/v1/forums/${forumId}/categories/${categoryId}`, data);
+        set((state) => ({
+          currentForum: state.currentForum?.id === forumId
+            ? {
+                ...state.currentForum,
+                categories: (state.currentForum.categories || []).map((c) =>
+                  c.id === categoryId ? { ...c, ...data } : c
+                ),
+              }
+            : state.currentForum,
+        }));
+      } catch (error: unknown) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'updateCategory');
+        throw error;
+      }
+    },
+
+    deleteCategory: async (forumId: string, categoryId: string) => {
+      try {
+        await api.delete(`/api/v1/forums/${forumId}/categories/${categoryId}`);
+        set((state) => ({
+          currentForum: state.currentForum?.id === forumId
+            ? {
+                ...state.currentForum,
+                categories: (state.currentForum.categories || []).filter((c) => c.id !== categoryId),
+              }
+            : state.currentForum,
+        }));
+      } catch (error: unknown) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteCategory');
+        throw error;
+      }
+    },
+
+    reorderCategories: async (forumId: string, categoryIds: string[]) => {
+      try {
+        await api.put(`/api/v1/forums/${forumId}/categories/reorder`, { category_ids: categoryIds });
+        set((state) => {
+          if (state.currentForum?.id !== forumId) return {};
+          const ordered = categoryIds
+            .map((id) => (state.currentForum!.categories || []).find((c) => c.id === id))
+            .filter(Boolean) as ForumCategory[];
+          return { currentForum: { ...state.currentForum!, categories: ordered } };
+        });
+      } catch (error: unknown) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'reorderCategories');
+        throw error;
       }
     },
   };
