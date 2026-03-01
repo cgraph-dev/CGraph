@@ -21,7 +21,7 @@
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
 | 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01) |
-| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Planned** (3 plans, 2 waves) |
+| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
 | 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                         |
 | 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12                         |
@@ -466,6 +466,8 @@ users.
 
 ## Phase 10: Message Extras
 
+**Completed:** 2026-03-01 | **Plans:** 3/3 | **Requirements:** 5/5
+
 **Goal:** Secondary messaging features — forward, pin, bookmark, link previews, disappearing
 messages.
 
@@ -502,11 +504,11 @@ metadata make shared URLs useful. Disappearing messages add privacy options beyo
 
 ### Plans
 
-| Plan  | Scope                                                              | Wave | Status |
-| ----- | ------------------------------------------------------------------ | ---- | ------ |
-| 10-01 | Message forwarding full stack — backend API + mobile UI (MSG-08)   | 1    | —      |
-| 10-02 | Server-side link preview engine with OG metadata (MSG-16)          | 1    | —      |
-| 10-03 | Extras polish — save buttons, mobile disappearing, shared types    | 2    | —      |
+| Plan  | Scope                                                              | Wave | Status     |
+| ----- | ------------------------------------------------------------------ | ---- | ---------- |
+| 10-01 | Message forwarding full stack — backend API + mobile UI (MSG-08)   | 1    | ✅ Complete |
+| 10-02 | Server-side link preview engine with OG metadata (MSG-16)          | 1    | ✅ Complete |
+| 10-03 | Extras polish — save buttons, mobile disappearing, shared types    | 2    | ✅ Complete |
 
 ---
 

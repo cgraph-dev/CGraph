@@ -10,33 +10,33 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 10 — Message Extras** — **Planned**
+**Phase 10 — Message Extras** — **Complete**
 
-Secondary messaging features: forward, pin, bookmark, link previews, disappearing messages. Discovery found 2/5 fully implemented (MSG-13 pin, MSG-14 bookmark w/ minor gaps), 2 partial (MSG-08 forward, MSG-16 link preview), 1 mostly done (MSG-17 disappearing). 3 plans created across 2 waves.
+All 5 MSG requirements delivered across 3 plans (2 waves). Forward messages full stack (backend tracking + mobile UI), server-side link preview engine (OG metadata fetching + caching + real-time broadcast), save/bookmark buttons wired into action menus, mobile disappearing messages toggle, timer icons on ephemeral messages. Shared types consolidated.
 
 ## Position
 
 - **Phase:** 10 of 19 — Message Extras
-- **Plan:** 3 plans created (10-01 through 10-03), 2 waves
-- **Status:** Planned — ready for execution
-- **Last activity:** 2026-03-01 — Phase 10 planned (3 plans, 2 waves)
+- **Plan:** 3/3 plans complete
+- **Status:** Complete
+- **Last activity:** 2026-03-01 — Phase 10 executed (3 plans, 2 waves, all committed)
 
 ## Plans
 
-| Plan  | Objective                                                  | Wave | Autonomous | Depends On | Status  |
-| ----- | ---------------------------------------------------------- | ---- | ---------- | ---------- | ------- |
-| 10-01 | Message forwarding full stack (MSG-08)                      | 1    | ✅          | —          | —       |
-| 10-02 | Server-side link preview engine (MSG-16)                    | 1    | ✅          | —          | —       |
-| 10-03 | Extras polish — save buttons, mobile disappearing, types   | 2    | ✅          | 10-01,02   | —       |
+| Plan  | Objective                                                  | Wave | Autonomous | Depends On | Status     |
+| ----- | ---------------------------------------------------------- | ---- | ---------- | ---------- | ---------- |
+| 10-01 | Message forwarding full stack (MSG-08)                      | 1    | ✅          | —          | ✅ Complete |
+| 10-02 | Server-side link preview engine (MSG-16)                    | 1    | ✅          | —          | ✅ Complete |
+| 10-03 | Extras polish — save buttons, mobile disappearing, types   | 2    | ✅          | 10-01,02   | ✅ Complete |
 
 ## Progress
 
-| Metric             | Value    |
-| ------------------ | -------- |
-| Overall progress   | 47%      |
-| Phases complete    | 9 / 19   |
-| Requirements done  | 47 / 136 |
-| Current phase reqs | 0 / 5    |
+| Metric             | Value     |
+| ------------------ | --------- |
+| Overall progress   | 51%       |
+| Phases complete    | 10 / 19   |
+| Requirements done  | 52 / 136  |
+| Current phase reqs | 5 / 5     |
 
 ## Phase Summary
 
@@ -51,7 +51,7 @@ Secondary messaging features: forward, pin, bookmark, link previews, disappearin
 | 7   | E2EE & Mobile Security  | **Complete** (2026-02-28) |
 | 8   | Social & Profiles       | **Complete** (2026-03-01) |
 | 9   | Notifications & Safety  | **Complete** (2026-03-01) |
-| 10  | Message Extras          | **Planned** (3 plans)     |
+| 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | Ready (Phase 5 done)      |
 | 12  | Roles & Moderation      | Blocked by 11             |
 | 13  | Voice & Video           | Blocked by 12             |
@@ -120,16 +120,16 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 10 planned — 3 plans ready for execution
+Stopped at: Phase 10 complete — all 3 plans executed and committed
 Resume file: None
 
 ## Last Action
 
-Phase 10 planned. 3 plans created across 2 waves.
-Discovery: 2/5 requirements fully implemented (MSG-13 pin, MSG-14 bookmark).
-Partial: MSG-08 forward (web UI exists, no backend), MSG-16 link preview (rendering exists, no server fetch).
-Mostly done: MSG-17 disappearing (backend + web, missing mobile toggle).
-New work: forward backend+mobile (10-01), link preview engine (10-02), polish+integration (10-03).
+Phase 10 executed. 3 plans across 2 waves, all committed.
+- 10-01: Message forwarding full stack (42ccaaca) — 21 files, backend API + mobile UI + web upgrade
+- 10-02: Server-side link preview engine (788aca36) — 15 files, OG fetching + caching + real-time
+- 10-03: Extras polish (cf9e1b29) — 13 files, save buttons + mobile disappearing + timer icons
+All 5 requirements (MSG-08, MSG-13, MSG-14, MSG-16, MSG-17) verified complete.
 
 ---
 
