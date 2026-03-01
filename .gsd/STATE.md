@@ -10,26 +10,26 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 14 — Forum Core** — **Complete**
+**Phase 15 — Forum Customization** — **Planned (5 plans, 2 waves)**
 
-All 5 plans executed across 2 waves. 10 requirements delivered: forum CRUD, boards, threads with BBCode, nested comments, polls, voting with reputation, real-time broadcasting, full-text search. ~26 commits, 64 integration tests.
+Phase 15 builds on the Phase 14 forum core with 8 requirements: 50+ customization options, plugin system, forum moderation, per-board permissions, emoji packs, RSS feeds, user groups, and ranking/leaderboard. Backend is 85-90% complete across all requirements — this phase is primarily frontend admin UI + integration work.
 
 ## Position
 
-- **Phase:** 14 of 19 — Forum Core (Complete)
-- **Plan:** 5/5 plans complete
-- **Status:** Complete — ready for Phase 15
-- **Last activity:** 2026-03-01 — Phase 14 executed
+- **Phase:** 15 of 19 — Forum Customization (Planned)
+- **Plan:** 1/5 plans complete
+- **Status:** Executing — Wave 1 in progress
+- **Last activity:** 2026-03-01 — Plan 15-03 complete
 
 ## Plans
 
-| Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
-| ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
-| 14-01 | BBCode parser + poll API + attachment uploads                       | 1    | ✅          | —          | ✅ Complete |
-| 14-02 | Full-text search + reputation propagation                           | 1    | ✅          | —          | ✅ Complete |
-| 14-03 | Web forum wiring — search, categories, comments, store gaps         | 2    | ✅          | 14-01,14-02| ✅ Complete |
-| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows  | 2    | ✅          | 14-01,14-02| ✅ Complete |
-| 14-05 | Real-time broadcasting gaps + integration tests                     | 2    | ✅          | 14-01,14-02| ✅ Complete |
+| Plan  | Objective                                                          | Wave | Autonomous | Depends On      | Status      |
+| ----- | ------------------------------------------------------------------ | ---- | ---------- | --------------- | ----------- |
+| 15-01 | Customization engine — 55 options, CSS editor, widgets, fields     | 1    | ✅          | —               | —           |
+| 15-02 | Plugin runtime + forum automod + warn/strike system                | 1    | ✅          | —               | —           |
+| 15-03 | User groups admin UI + per-board permissions UI + templates        | 1    | ✅          | —               | ✅ Complete |
+| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS              | 2    | ✅          | 15-01,15-02,15-03 | —         |
+| 15-05 | Ranking integration + leaderboard + gamification bridge            | 2    | ✅          | 15-01,15-02,15-03 | —         |
 
 ## Progress
 
@@ -38,7 +38,7 @@ All 5 plans executed across 2 waves. 10 requirements delivered: forum CRUD, boar
 | Overall progress   | 74%       |
 | Phases complete    | 14 / 19   |
 | Requirements done  | 87 / 136  |
-| Current phase reqs | 10 / 10   |
+| Current phase reqs | 0 / 8     |
 
 ## Phase Summary
 
@@ -58,7 +58,7 @@ All 5 plans executed across 2 waves. 10 requirements delivered: forum CRUD, boar
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
 | 13  | Voice & Video           | **Complete** (2026-03-01) |
 | 14  | Forum Core              | **Complete** (2026-03-01) |
-| 15  | Forum Customization     | Unblocked                 |
+| 15  | Forum Customization     | **Planned** (5 plans)     |
 | 16  | Gamification            | Unblocked                 |
 | 17  | Monetization            | Blocked by 16             |
 | 18  | Rich Media & Polish     | Unblocked                 |
@@ -69,7 +69,7 @@ All 5 plans executed across 2 waves. 10 requirements delivered: forum CRUD, boar
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 14 complete (64 integration tests, 10/10 requirements)
+**Current focus:** Phase 15 planned (5 plans, 2 waves, 8 requirements)
 
 ## Accumulated Context
 
@@ -154,20 +154,19 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 14 complete — all 5 plans executed, 10/10 requirements delivered
-Resume file: None
+Stopped at: Plan 15-03 complete — 12/12 tasks, 1/5 plans done, Wave 1 in progress
+Resume file: .gsd/phases/15-forum-customization/15-03-SUMMARY.md
 
 ## Last Action
 
-Phase 14 executed. All 5 plans complete:
-- 14-01: BBCode parser + poll API + attachment uploads — BBCode.to_html/1 with XSS protection, PollController (show/create/vote/close/update), ThreadAttachment context+controller (6 commits)
-- 14-02: Full-text search + reputation propagation — tsvector migration with GIN indexes, search.ex rewrite with ts_rank_cd, forum_search endpoint, reputation propagation on votes (6 commits)
-- 14-03: Web forum wiring — search results page + components + route, useForumSearch hook with debounce, category CRUD, expanded createForum payload, real API fetchThreadPrefixes (8 commits)
-- 14-04: Mobile forum wiring — BBCode renderer (14 tags), Zustand forumStore + forumService, ForumSearchScreen, delete confirmation flows, inline poll creation, module exports fix (2 commits)
-- 14-05: Real-time broadcasting + integration tests — BoardChannel, useBoardSocket hook, post_edited handler, broadcasting in threads/posts/polls contexts, 64 integration tests (4 commits)
+Phase 15 planned. Discovery complete (HIGH confidence). 5 plans in 2 waves:
+- 15-01 (Wave 1): Customization engine — 55 enumerated options, CSS editor, widget configurator, custom fields, badge manager, karma names, rank images (FORUM-07)
+- 15-02 (Wave 1): Plugin execution runtime + forum-level automod + warning/strike system (FORUM-08, FORUM-11)
+- 15-03 (Wave 1): User groups admin UI + per-board permissions UI + permission templates (FORUM-15, FORUM-12)
+- 15-04 (Wave 2): Emoji pack import/export + post icon selector + per-board RSS + mobile RSS (FORUM-13, FORUM-14)
+- 15-05 (Wave 2): Ranking/gamification bridge + Oban scheduler + rank images + full leaderboard pages (FORUM-16)
 
-10/10 requirements delivered: FORUM-01 through FORUM-06, FORUM-09, FORUM-10, SEARCH-03.
-Phases 15 (Forum Customization) and 16 (Gamification) are now unblocked.
+Key finding: Backend is 85-90% complete across all 8 requirements. Primary work is frontend admin UIs (web + mobile) and integration glue.
 
 ---
 
