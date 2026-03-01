@@ -7,7 +7,7 @@
  */
 
 import { api, ensureArray, ensureObject, mapForumFromApi } from './forumStore.utils';
-import type { Forum, Post, Comment, CreatePostData, ForumState } from './forumStore.types';
+import type { Forum, Post, Comment, CreatePostData, ForumState, ForumSearchFilters, ForumSearchResult } from './forumStore.types';
 
 type Set = (
   partial: ForumState | Partial<ForumState> | ((s: ForumState) => ForumState | Partial<ForumState>)
@@ -39,6 +39,12 @@ type ForumDataState = Pick<
   | 'moderationQueue'
   | 'reports'
   | 'multiQuoteBuffer'
+  | 'searchResults'
+  | 'searchQuery'
+  | 'searchFilters'
+  | 'searchLoading'
+  | 'searchHasMore'
+  | 'searchCursor'
 >;
 
 /** Initial state values for the forum store. */
@@ -65,6 +71,12 @@ export const forumInitialState: ForumDataState = {
   moderationQueue: [],
   reports: [],
   multiQuoteBuffer: [],
+  searchResults: [],
+  searchQuery: '',
+  searchFilters: {},
+  searchLoading: false,
+  searchHasMore: false,
+  searchCursor: undefined,
 };
 
 /** Create core CRUD + voting actions for the forum store. */
@@ -279,5 +291,80 @@ export function createCoreActions(set: Set, get: Get) {
     setSortBy: (sort: ForumState['sortBy']) => set({ sortBy: sort, posts: [], hasMorePosts: true }),
     setTimeRange: (range: ForumState['timeRange']) =>
       set({ timeRange: range, posts: [], hasMorePosts: true }),
+
+    // ── Search ─────────────────────────────────────────────────────
+
+    searchForums: async (query: string, filters?: ForumSearchFilters) => {
+      set({ searchLoading: true, searchQuery: query, searchFilters: filters || {} });
+      try {
+        const params = new URLSearchParams({ q: query });
+        if (filters?.type && filters.type !== 'all') params.set('type', filters.type);
+        if (filters?.forumId) params.set('forum_id', filters.forumId);
+        if (filters?.boardId) params.set('board_id', filters.boardId);
+        if (filters?.authorId) params.set('author_id', filters.authorId);
+        if (filters?.dateFrom) params.set('date_from', filters.dateFrom);
+        if (filters?.dateTo) params.set('date_to', filters.dateTo);
+        if (filters?.sort) params.set('sort', filters.sort);
+        const response = await api.get(`/api/v1/search/forums?${params}`);
+        const results = ensureArray<ForumSearchResult>(response.data, 'data');
+        const cursor = response.data?.meta?.cursor;
+        const hasMore = response.data?.meta?.has_more ?? false;
+        set({ searchResults: results, searchCursor: cursor, searchHasMore: hasMore, searchLoading: false });
+      } catch (error) {
+        set({ searchLoading: false });
+        throw error;
+      }
+    },
+
+    searchMore: async () => {
+      const { searchQuery, searchFilters, searchCursor, searchHasMore } = get();
+      if (!searchHasMore || !searchCursor) return;
+      set({ searchLoading: true });
+      try {
+        const params = new URLSearchParams({ q: searchQuery, cursor: searchCursor });
+        if (searchFilters?.type && searchFilters.type !== 'all') params.set('type', searchFilters.type);
+        if (searchFilters?.forumId) params.set('forum_id', searchFilters.forumId);
+        const response = await api.get(`/api/v1/search/forums?${params}`);
+        const results = ensureArray<ForumSearchResult>(response.data, 'data');
+        const cursor = response.data?.meta?.cursor;
+        const hasMore = response.data?.meta?.has_more ?? false;
+        set((state) => ({
+          searchResults: [...state.searchResults, ...results],
+          searchCursor: cursor,
+          searchHasMore: hasMore,
+          searchLoading: false,
+        }));
+      } catch (error) {
+        set({ searchLoading: false });
+        throw error;
+      }
+    },
+
+    clearSearch: () => set({ searchResults: [], searchQuery: '', searchFilters: {}, searchCursor: undefined, searchHasMore: false }),
+
+    // ── Comment Edit/Delete ─────────────────────────────────────────
+
+    editComment: async (postId: string, commentId: string, content: string) => {
+      const response = await api.put(`/api/v1/comments/${commentId}`, { content });
+      const updated = ensureObject<Comment>(response.data, 'comment');
+      if (updated) {
+        set((state) => ({
+          comments: {
+            ...state.comments,
+            [postId]: (state.comments[postId] || []).map((c) => c.id === commentId ? { ...c, ...updated } : c),
+          },
+        }));
+      }
+    },
+
+    deleteComment: async (postId: string, commentId: string) => {
+      await api.delete(`/api/v1/comments/${commentId}`);
+      set((state) => ({
+        comments: {
+          ...state.comments,
+          [postId]: (state.comments[postId] || []).filter((c) => c.id !== commentId),
+        },
+      }));
+    },
   };
 }

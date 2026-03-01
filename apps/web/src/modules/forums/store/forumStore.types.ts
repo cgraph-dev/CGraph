@@ -365,6 +365,13 @@ export interface CreateForumData {
   description?: string;
   isNsfw?: boolean;
   isPrivate?: boolean;
+  categoryId?: string;
+  tags?: string[];
+  primaryColor?: string;
+  secondaryColor?: string;
+  allowPolls?: boolean;
+  allowAttachments?: boolean;
+  requireApproval?: boolean;
 }
 
 export interface UpdateForumData {
@@ -424,6 +431,32 @@ export interface CreateReportData {
   details?: string;
 }
 
+// ── Search Types ──────────────────────────────────────────────────────
+
+export interface ForumSearchResult {
+  type: 'thread' | 'post' | 'comment';
+  id: string;
+  title?: string;
+  contentPreview: string;
+  author: { id: string; username: string; avatar?: string };
+  forum: { id: string; name: string; slug: string };
+  board?: { id: string; name: string; slug: string };
+  score: number;
+  rank: number;
+  createdAt: string;
+  highlights?: string[];
+}
+
+export interface ForumSearchFilters {
+  type?: 'thread' | 'post' | 'comment' | 'all';
+  forumId?: string;
+  boardId?: string;
+  authorId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  sort?: 'relevance' | 'newest' | 'oldest' | 'most_votes';
+}
+
 // ── Store State Interface ──────────────────────────────────────────────
 
 export interface ForumState {
@@ -452,6 +485,14 @@ export interface ForumState {
   reports: Report[];
   multiQuoteBuffer: string[];
 
+  // Search state
+  searchResults: ForumSearchResult[];
+  searchQuery: string;
+  searchFilters: ForumSearchFilters;
+  searchLoading: boolean;
+  searchHasMore: boolean;
+  searchCursor?: string;
+
   // Core actions
   fetchForums: () => Promise<void>;
   fetchForum: (slug: string) => Promise<Forum>;
@@ -471,6 +512,22 @@ export interface ForumState {
   createForum: (data: CreateForumData) => Promise<Forum>;
   updateForum: (forumId: string, data: UpdateForumData) => Promise<Forum>;
   deleteForum: (forumId: string) => Promise<void>;
+
+  // Search actions
+  searchForums: (query: string, filters?: ForumSearchFilters) => Promise<void>;
+  searchMore: () => Promise<void>;
+  clearSearch: () => void;
+
+  // Comment edit/delete
+  editComment: (postId: string, commentId: string, content: string) => Promise<void>;
+  deleteComment: (postId: string, commentId: string) => Promise<void>;
+
+  // Category CRUD
+  fetchCategories: (forumId: string) => Promise<void>;
+  createCategory: (forumId: string, data: { name: string; color?: string; description?: string }) => Promise<void>;
+  updateCategory: (forumId: string, categoryId: string, data: Partial<ForumCategory>) => Promise<void>;
+  deleteCategory: (forumId: string, categoryId: string) => Promise<void>;
+  reorderCategories: (forumId: string, categoryIds: string[]) => Promise<void>;
 
   // Moderation actions
   pinPost: (forumId: string, postId: string) => Promise<void>;
