@@ -10,20 +10,18 @@ defmodule CGraph.Forums.PollVote do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "poll_votes" do
-    field :option_ids, {:array, :string}, default: []
-
     belongs_to :poll, CGraph.Forums.ThreadPoll
     belongs_to :user, CGraph.Accounts.User
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 
   @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(vote, attrs) do
     vote
-    |> cast(attrs, [:option_ids, :poll_id, :user_id])
-    |> validate_required([:option_ids, :poll_id, :user_id])
+    |> cast(attrs, [:poll_id, :user_id])
+    |> validate_required([:poll_id, :user_id])
     |> unique_constraint([:poll_id, :user_id])
     |> foreign_key_constraint(:poll_id)
     |> foreign_key_constraint(:user_id)

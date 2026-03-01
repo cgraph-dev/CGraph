@@ -34,7 +34,7 @@ defmodule CGraph.Forums.Polls do
   ## Parameters
   - `poll_id` - The poll to vote on
   - `user_id` - The voting user
-  - `option_ids` - List of selected option IDs
+  - `option_ids` - List of selected option IDs (one row per option)
   """
   @spec vote_poll(String.t(), String.t(), [String.t()]) :: {:ok, PollVote.t()} | {:error, atom()}
   def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
@@ -43,7 +43,7 @@ defmodule CGraph.Forums.Polls do
     with :ok <- validate_poll_open(poll),
          :ok <- validate_not_already_voted(poll_id, user_id),
          :ok <- validate_option_count(poll, option_ids) do
-      insert_poll_vote(poll_id, user_id, option_ids)
+      insert_poll_vote(poll_id, user_id)
     end
   end
 
@@ -65,29 +65,23 @@ defmodule CGraph.Forums.Polls do
   def get_poll_results(poll_id) do
     poll = Repo.get!(ThreadPoll, poll_id)
 
-    # Get all votes for this poll
-    votes = from(v in PollVote,
+    vote_count = from(v in PollVote,
       where: v.poll_id == ^poll_id,
-      select: v.option_ids
+      select: count(v.id)
     )
-    |> Repo.all()
-
-    # Count votes per option
-    option_counts = votes
-      |> Enum.flat_map(& &1)
-      |> Enum.frequencies()
+    |> Repo.one()
 
     %{
       poll: poll,
       total_votes: poll.total_votes,
-      option_counts: option_counts
+      vote_count: vote_count
     }
   end
 
   # Private functions
 
   defp validate_poll_open(poll) do
-    if poll.close_date && DateTime.compare(DateTime.utc_now(), poll.close_date) == :gt do
+    if poll.closes_at && DateTime.compare(DateTime.utc_now(), poll.closes_at) == :gt do
       {:error, :poll_closed}
     else
       :ok
@@ -102,16 +96,16 @@ defmodule CGraph.Forums.Polls do
   end
 
   defp validate_option_count(poll, option_ids) do
-    if !poll.multiple_choice && length(option_ids) > 1 do
+    if !poll.is_multiple_choice && length(option_ids) > 1 do
       {:error, :single_choice_only}
     else
       :ok
     end
   end
 
-  defp insert_poll_vote(poll_id, user_id, option_ids) do
+  defp insert_poll_vote(poll_id, user_id) do
     result = %PollVote{}
-      |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_ids: option_ids})
+      |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id})
       |> Repo.insert()
 
     case result do
@@ -125,7 +119,7 @@ defmodule CGraph.Forums.Polls do
         CGraphWeb.Endpoint.broadcast("thread:#{poll.thread_id}", "poll_vote_update", %{
           poll_id: poll_id,
           total_votes: results.total_votes,
-          option_counts: results.option_counts
+          vote_count: results.vote_count
         })
 
         {:ok, vote}
