@@ -8,6 +8,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { chatLogger as logger } from '@/lib/logger';
 import type { Channel } from '@/modules/groups/store';
+import { useGroupStore } from '@/modules/groups/store';
 import { channelTypeIcons, channelTypes } from './constants';
 import type { CreateChannelModalProps } from './types';
 import { api } from '@/lib/api';
@@ -23,6 +24,7 @@ export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChann
   const [type, setType] = useState<Channel['type']>('text');
   const [isNsfw, setIsNsfw] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const { fetchGroup } = useGroupStore();
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -33,10 +35,12 @@ export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChann
         name: name.trim(),
         type,
         category_id: categoryId || null,
-        is_nsfw: isNsfw,
+        nsfw: isNsfw,
       });
       logger.log('Created channel:', { groupId, categoryId, name, type, isNsfw });
       HapticFeedback.success();
+      // Refresh the group's channel list in the store
+      await fetchGroup(groupId);
       onClose();
     } catch (error) {
       logger.error('Failed to create channel:', error);

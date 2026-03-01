@@ -3,18 +3,23 @@
  * @module pages/groups
  */
 
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDownIcon, Cog6ToothIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  Cog6ToothIcon,
+  UserGroupIcon,
+  PlusIcon,
+} from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { api } from '@/lib/api';
+import { useGroupStore } from '@/modules/groups/store';
 import type { ChannelListProps } from './types';
 import { ChannelItem } from './channel-item';
 import { tweens, loop, springs } from '@/lib/animation-presets';
 
 /**
- * unknown for the groups module.
- */
-/**
- * Channel List component.
+ * Channel List component with category creation.
  */
 export function ChannelList({
   activeGroup,
@@ -22,6 +27,9 @@ export function ChannelList({
   expandedCategories,
   toggleCategory,
 }: ChannelListProps) {
+  const [showCategoryInput, setShowCategoryInput] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
+  const { fetchGroup } = useGroupStore();
   if (!activeGroup) {
     return (
       <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-dark-800/50 backdrop-blur-xl">
@@ -155,6 +163,48 @@ export function ChannelList({
               />
             </motion.div>
           ))}
+
+        {/* Create Category */}
+        <div className="mt-2 px-2">
+          {showCategoryInput ? (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-1"
+            >
+              <input
+                type="text"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="Category name"
+                autoFocus
+                onKeyDown={async (e) => {
+                  if (e.key === 'Enter' && categoryName.trim()) {
+                    await api.post(`/api/v1/groups/${activeGroup.id}/categories`, {
+                      name: categoryName.trim(),
+                    });
+                    setCategoryName('');
+                    setShowCategoryInput(false);
+                    fetchGroup(activeGroup.id);
+                  } else if (e.key === 'Escape') {
+                    setShowCategoryInput(false);
+                    setCategoryName('');
+                  }
+                }}
+                className="min-w-0 flex-1 rounded bg-dark-700 px-2 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+            </motion.div>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setShowCategoryInput(true)}
+              className="flex w-full items-center gap-1 rounded px-1 py-1 text-xs text-gray-500 transition-colors hover:text-primary-400"
+            >
+              <PlusIcon className="h-3 w-3" />
+              Create Category
+            </motion.button>
+          )}
+        </div>
       </div>
 
       {/* User Panel */}
