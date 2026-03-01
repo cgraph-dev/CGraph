@@ -117,17 +117,7 @@ defmodule CGraph.Forums.ThreadPost do
     case get_change(changeset, :content) do
       nil -> changeset
       content ->
-        html = content
-          |> escape_html()
-          |> String.replace("\n", "<br>")
-        put_change(changeset, :content_html, html)
+        put_change(changeset, :content_html, CGraph.Forums.BBCode.to_html(content))
     end
-  end
-
-  defp escape_html(text) do
-    text
-    |> String.replace("&", "&amp;")
-    |> String.replace("<", "&lt;")
-    |> String.replace(">", "&gt;")
   end
 end

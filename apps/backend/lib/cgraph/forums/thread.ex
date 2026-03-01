@@ -137,19 +137,7 @@ defmodule CGraph.Forums.Thread do
     case get_change(changeset, :content) do
       nil -> changeset
       content ->
-        # Simple markdown/bbcode to HTML conversion
-        # In production, use a proper sanitizer like HtmlSanitizeEx
-        html = content
-          |> String.replace("\n", "<br>")
-          |> escape_html()
-        put_change(changeset, :content_html, html)
+        put_change(changeset, :content_html, CGraph.Forums.BBCode.to_html(content))
     end
-  end
-
-  defp escape_html(text) do
-    text
-    |> String.replace("&", "&amp;")
-    |> String.replace("<", "&lt;")
-    |> String.replace(">", "&gt;")
   end
 end
