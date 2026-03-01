@@ -98,6 +98,11 @@ defmodule CGraphWeb.Router.ForumRoutes do
           put "/poll", PollController, :update
           post "/poll/vote", PollController, :vote
           post "/poll/close", PollController, :close
+
+          # Thread attachments
+          get "/attachments", ThreadAttachmentController, :index
+          post "/attachments", ThreadAttachmentController, :upload
+          delete "/attachments/:id", ThreadAttachmentController, :delete
         end
 
         # Standalone thread routes
