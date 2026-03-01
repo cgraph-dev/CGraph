@@ -7,6 +7,7 @@ defmodule CGraph.Forums.Threads do
 
   import Ecto.Query, warn: false
   alias CGraph.Forums.{Thread, ThreadPost}
+  alias CGraph.Forums.Polls
   alias CGraph.Repo
 
   @doc """
@@ -98,6 +99,8 @@ defmodule CGraph.Forums.Threads do
 
           case create_post(thread, user, post_attrs) do
             {:ok, _post} ->
+              # Create poll if poll data present
+              maybe_create_poll(thread, attrs)
               Repo.preload(thread, [:author, :posts])
             {:error, reason} ->
               Repo.rollback(reason)
@@ -202,6 +205,20 @@ defmodule CGraph.Forums.Threads do
         {:ok, Repo.preload(post, [:author])}
       error ->
         error
+    end
+  end
+
+  defp maybe_create_poll(thread, attrs) do
+    poll_attrs = attrs["poll"] || attrs[:poll]
+
+    case poll_attrs do
+      nil -> :ok
+      poll_data when is_map(poll_data) ->
+        case Polls.create_thread_poll(thread.id, poll_data) do
+          {:ok, _poll} -> :ok
+          {:error, reason} -> Repo.rollback(reason)
+        end
+      _ -> :ok
     end
   end
 
