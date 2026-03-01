@@ -2,7 +2,7 @@
  * Group settings screen for managing group configuration.
  * @module screens/groups/group-settings-screen
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useThemeStore } from '@/stores';
 import { GroupsStackParamList } from '../../types';
+import { api } from '../../services/api';
 
 type Props = {
   navigation: NativeStackNavigationProp<GroupsStackParamList, 'GroupSettings'>;
@@ -28,12 +30,44 @@ type Props = {
 export default function GroupSettingsScreen({ navigation, route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
+  const [showOverview, setShowOverview] = useState(false);
+  const [groupName, setGroupName] = useState('');
+  const [groupDescription, setGroupDescription] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    // Fetch current group data for overview editing
+    api.get(`/api/v1/groups/${groupId}`)
+      .then((res) => {
+        const data = res.data?.data || res.data;
+        setGroupName(data?.name || '');
+        setGroupDescription(data?.description || '');
+      })
+      .catch(() => {});
+  }, [groupId]);
+
+  const handleSaveOverview = async () => {
+    if (!groupName.trim()) return;
+    setIsSaving(true);
+    try {
+      await api.patch(`/api/v1/groups/${groupId}`, {
+        name: groupName.trim(),
+        description: groupDescription.trim() || null,
+      });
+      Alert.alert('Saved', 'Group settings updated');
+      setShowOverview(false);
+    } catch {
+      Alert.alert('Error', 'Failed to update group settings');
+    } finally {
+      setIsSaving(false);
+    }
+  };
   
   const settingsItems = [
     {
       title: 'Overview',
       icon: 'information-circle-outline' as const,
-      onPress: () => {},
+      onPress: () => setShowOverview(true),
     },
     {
       title: 'Roles',
@@ -71,9 +105,13 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
         {
           text: 'Leave',
           style: 'destructive',
-          onPress: () => {
-            // API call to leave group
-            navigation.goBack();
+          onPress: async () => {
+            try {
+              await api.delete(`/api/v1/groups/${groupId}/members/@me`);
+              navigation.goBack();
+            } catch {
+              Alert.alert('Error', 'Failed to leave group');
+            }
           },
         },
       ]
@@ -82,6 +120,49 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
   
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Overview Edit Panel */}
+      {showOverview && (
+        <View style={[styles.section, { gap: 12 }]}>
+          <View style={[styles.overviewCard, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.overviewLabel, { color: colors.textSecondary }]}>Group Name</Text>
+            <TextInput
+              style={[styles.overviewInput, { backgroundColor: colors.background, color: colors.text }]}
+              value={groupName}
+              onChangeText={setGroupName}
+              placeholder="Group name"
+              placeholderTextColor={colors.textTertiary}
+            />
+            <Text style={[styles.overviewLabel, { color: colors.textSecondary, marginTop: 12 }]}>Description</Text>
+            <TextInput
+              style={[styles.overviewInput, styles.overviewTextArea, { backgroundColor: colors.background, color: colors.text }]}
+              value={groupDescription}
+              onChangeText={setGroupDescription}
+              placeholder="Group description"
+              placeholderTextColor={colors.textTertiary}
+              multiline
+              numberOfLines={3}
+            />
+            <View style={styles.overviewActions}>
+              <TouchableOpacity
+                style={[styles.overviewBtn, { backgroundColor: colors.background }]}
+                onPress={() => setShowOverview(false)}
+              >
+                <Text style={{ color: colors.text }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.overviewBtn, { backgroundColor: colors.primary }]}
+                onPress={handleSaveOverview}
+                disabled={isSaving}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600' }}>
+                  {isSaving ? 'Saving...' : 'Save'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
       <View style={styles.section}>
         {settingsItems.map((item, index) => (
           <TouchableOpacity
@@ -158,5 +239,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginLeft: 8,
+  },
+  overviewCard: {
+    borderRadius: 12,
+    padding: 16,
+  },
+  overviewLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  overviewInput: {
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 15,
+  },
+  overviewTextArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  overviewActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+    justifyContent: 'flex-end',
+  },
+  overviewBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
