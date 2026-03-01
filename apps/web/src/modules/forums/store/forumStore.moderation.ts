@@ -187,5 +187,89 @@ export function createModerationActions(set: Set, _get: Get) {
     },
 
     clearMultiQuote: () => set({ multiQuoteBuffer: [] }),
+
+    // ── Forum-Level Moderation ───────────────────────────────────────
+
+    fetchForumModQueue: async (forumId: string, status = 'pending') => {
+      try {
+        const response = await api.get(
+          `/api/v1/forums/${forumId}/moderation/queue?status=${status}`
+        );
+        return response.data?.data || [];
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'fetchForumModQueue'
+        );
+        throw error;
+      }
+    },
+
+    takeForumModAction: async (
+      forumId: string,
+      postId: string,
+      action: 'approve' | 'remove' | 'hide'
+    ) => {
+      try {
+        await api.post(`/api/v1/forums/${forumId}/moderation/action`, {
+          post_id: postId,
+          action,
+        });
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'takeForumModAction'
+        );
+        throw error;
+      }
+    },
+
+    issueWarning: async (
+      forumId: string,
+      userId: string,
+      reason: string,
+      points: number
+    ) => {
+      try {
+        const response = await api.post(`/api/v1/forums/${forumId}/moderation/warn`, {
+          user_id: userId,
+          reason,
+          points,
+        });
+        return response.data?.warning;
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'issueWarning'
+        );
+        throw error;
+      }
+    },
+
+    fetchForumAutomod: async (forumId: string) => {
+      try {
+        const response = await api.get(`/api/v1/forums/${forumId}/moderation/automod`);
+        return response.data?.data || {};
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'fetchForumAutomod'
+        );
+        throw error;
+      }
+    },
+
+    updateForumAutomod: async (forumId: string, rules: Record<string, unknown>) => {
+      try {
+        const response = await api.put(`/api/v1/forums/${forumId}/moderation/automod`, rules);
+        return response.data?.data || {};
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'updateForumAutomod'
+        );
+        throw error;
+      }
+    },
   };
 }
