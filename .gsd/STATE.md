@@ -10,24 +10,24 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 10 — Message Extras** — **Complete**
+**Phase 11 — Groups & Channels** — **Planned**
 
-All 5 MSG requirements delivered across 3 plans (2 waves). Forward messages full stack (backend tracking + mobile UI), server-side link preview engine (OG metadata fetching + caching + real-time broadcast), save/bookmark buttons wired into action menus, mobile disappearing messages toggle, timer icons on ephemeral messages. Shared types consolidated.
+3 plans across 2 waves. Critical WebSocket topic mismatch discovered (backend routes "group:*" but clients send "channel:*"). Wave 1: fix socket alignment + wire group CRUD/channels/invites E2E. Wave 2: explore page for group discovery + channel message threads.
 
 ## Position
 
-- **Phase:** 10 of 19 — Message Extras
-- **Plan:** 3/3 plans complete
-- **Status:** Complete
-- **Last activity:** 2026-03-01 — Phase 10 executed (3 plans, 2 waves, all committed)
+- **Phase:** 11 of 19 — Groups & Channels
+- **Plan:** 0/3 plans complete
+- **Status:** Planned — ready for execution
+- **Last activity:** 2026-03-01 — Phase 11 planned (3 plans, 2 waves)
 
 ## Plans
 
-| Plan  | Objective                                                  | Wave | Autonomous | Depends On | Status     |
-| ----- | ---------------------------------------------------------- | ---- | ---------- | ---------- | ---------- |
-| 10-01 | Message forwarding full stack (MSG-08)                      | 1    | ✅          | —          | ✅ Complete |
-| 10-02 | Server-side link preview engine (MSG-16)                    | 1    | ✅          | —          | ✅ Complete |
-| 10-03 | Extras polish — save buttons, mobile disappearing, types   | 2    | ✅          | 10-01,02   | ✅ Complete |
+| Plan  | Objective                                                           | Wave | Autonomous | Depends On | Status      |
+| ----- | ------------------------------------------------------------------- | ---- | ---------- | ---------- | ----------- |
+| 11-01 | WebSocket topic alignment + group channel messaging E2E (MSG-02/03) | 1    | ✅          | —          | Not started |
+| 11-02 | Group CRUD, channels, and invites E2E wiring (GROUP-01/02/05)       | 1    | ✅          | —          | Not started |
+| 11-03 | Explore page + channel threads (GROUP-09, MSG-21)                   | 2    | ✅          | 11-01,02   | Not started |
 
 ## Progress
 
@@ -36,7 +36,7 @@ All 5 MSG requirements delivered across 3 plans (2 waves). Forward messages full
 | Overall progress   | 51%       |
 | Phases complete    | 10 / 19   |
 | Requirements done  | 52 / 136  |
-| Current phase reqs | 5 / 5     |
+| Current phase reqs | 0 / 7     |
 
 ## Phase Summary
 
@@ -52,7 +52,7 @@ All 5 MSG requirements delivered across 3 plans (2 waves). Forward messages full
 | 8   | Social & Profiles       | **Complete** (2026-03-01) |
 | 9   | Notifications & Safety  | **Complete** (2026-03-01) |
 | 10  | Message Extras          | **Complete** (2026-03-01) |
-| 11  | Groups & Channels       | Ready (Phase 5 done)      |
+| 11  | Groups & Channels       | **Planned** (3 plans, 2 waves)  |
 | 12  | Roles & Moderation      | Blocked by 11             |
 | 13  | Voice & Video           | Blocked by 12             |
 | 14  | Forum Core              | Blocked by 12             |
@@ -70,6 +70,16 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 **Current focus:** Phase 9 planned (4 plans, 2 waves) — ready for execution
 
 ## Accumulated Context
+
+### Recent Decisions (Phase 11 Planning)
+
+- WebSocket topic mismatch: backend "group:*" vs web "channel:*" vs mobile composite — all clients must use "group:{channelId}"
+- Extensive existing infrastructure: backend 24+ files (2800+ lines), web stores/components (2700+ lines), mobile services/screens (2800+ lines)
+- Full DB schema already migrated: groups, channels, categories, members, roles, invites, audit_logs, permissions, pinned_messages
+- Mobile groupsService has getPublicGroups() + getFeaturedGroups() but no dedicated explore screen
+- Web discover-tab is generic search — needs dedicated explore page for GROUP-09
+- Thread infrastructure exists (backend 405+211 lines, web threadStore 212 lines + thread-panel 261 lines) — needs wiring for channel context
+- 3 plans, 2 waves: Wave 1 parallel (socket fix + CRUD wiring), Wave 2 sequential (explore + threads)
 
 ### Recent Decisions (Phase 8)
 
@@ -120,16 +130,17 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 10 complete — all 3 plans executed and committed
+Stopped at: Phase 11 planned — 3 plans across 2 waves, ready for execution
 Resume file: None
 
 ## Last Action
 
-Phase 10 executed. 3 plans across 2 waves, all committed.
-- 10-01: Message forwarding full stack (42ccaaca) — 21 files, backend API + mobile UI + web upgrade
-- 10-02: Server-side link preview engine (788aca36) — 15 files, OG fetching + caching + real-time
-- 10-03: Extras polish (cf9e1b29) — 13 files, save buttons + mobile disappearing + timer icons
-All 5 requirements (MSG-08, MSG-13, MSG-14, MSG-16, MSG-17) verified complete.
+Phase 11 planned. 3 plans across 2 waves:
+- 11-01 (Wave 1): WebSocket topic alignment + group channel messaging E2E (MSG-02, MSG-03)
+- 11-02 (Wave 1): Group CRUD, channels, invites E2E wiring (GROUP-01, GROUP-02, GROUP-05)
+- 11-03 (Wave 2): Explore page + channel threads (GROUP-09, MSG-21)
+
+Critical discovery: Backend routes "group:*" but web sends "channel:*" and mobile sends a composite format — no real-time messaging works until aligned.
 
 ---
 
