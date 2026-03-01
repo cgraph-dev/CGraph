@@ -180,6 +180,101 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
     titleAnimation: 'none',
     titleAnimationSpeed: 1,
   },
+  forest: {
+    name: 'Forest',
+    preset: 'fantasy-guild',
+    colors: {
+      ...DEFAULT_FORUM_COLORS,
+      primary: '#2D6A4F',
+      secondary: '#40916C',
+      accent: '#95D5B2',
+      background: '#1B4332',
+      textPrimary: '#D8F3DC',
+    },
+    borderRadius: 'md',
+    glassmorphism: false,
+    shadows: 'subtle',
+    borderWidth: 1,
+    fontSize: 'md',
+    titleAnimation: 'gradient',
+    titleAnimationSpeed: 3,
+  },
+  ocean: {
+    name: 'Ocean',
+    preset: 'arctic-frost',
+    colors: {
+      ...DEFAULT_FORUM_COLORS,
+      primary: '#0077B6',
+      secondary: '#00B4D8',
+      accent: '#90E0EF',
+      background: '#03045E',
+      textPrimary: '#CAF0F8',
+    },
+    borderRadius: 'lg',
+    glassmorphism: true,
+    shadows: 'medium',
+    borderWidth: 1,
+    fontSize: 'md',
+    titleAnimation: 'holographic',
+    titleAnimationSpeed: 2,
+  },
+  sunset: {
+    name: 'Sunset',
+    preset: 'sunset-gradient',
+    colors: {
+      ...DEFAULT_FORUM_COLORS,
+      primary: '#E63946',
+      secondary: '#F4A261',
+      accent: '#E9C46A',
+      background: '#264653',
+      textPrimary: '#F1FAEE',
+    },
+    borderRadius: 'md',
+    glassmorphism: false,
+    shadows: 'medium',
+    borderWidth: 1,
+    fontSize: 'md',
+    titleAnimation: 'gradient',
+    titleAnimationSpeed: 4,
+  },
+  neon: {
+    name: 'Neon',
+    preset: 'matrix-code',
+    colors: {
+      ...DEFAULT_FORUM_COLORS,
+      primary: '#39FF14',
+      secondary: '#FF073A',
+      accent: '#FF6EC7',
+      background: '#0D0D0D',
+      textPrimary: '#FFFFFF',
+    },
+    borderRadius: 'none',
+    glassmorphism: true,
+    shadows: 'dramatic',
+    borderWidth: 2,
+    fontSize: 'md',
+    titleAnimation: 'electric',
+    titleAnimationSpeed: 1,
+  },
+  monochrome: {
+    name: 'Monochrome',
+    preset: 'minimal-pro',
+    colors: {
+      ...DEFAULT_FORUM_COLORS,
+      primary: '#FFFFFF',
+      secondary: '#CCCCCC',
+      accent: '#999999',
+      background: '#111111',
+      textPrimary: '#E5E5E5',
+    },
+    borderRadius: 'sm',
+    glassmorphism: false,
+    shadows: 'none',
+    borderWidth: 1,
+    fontSize: 'md',
+    titleAnimation: 'none',
+    titleAnimationSpeed: 1,
+  },
 };
 
 // =============================================================================
@@ -198,3 +293,84 @@ export const useActiveForumTheme = () => {
 };
 
 export const useForumThemePresets = () => FORUM_THEME_PRESETS;
+
+// =============================================================================
+// CUSTOMIZATION STATE (55 options, 8 categories)
+// =============================================================================
+
+import { create } from 'zustand';
+import type { ForumCustomizationOptions, CustomizationCategory } from '@cgraph/shared-types';
+
+interface CustomizationState {
+  options: ForumCustomizationOptions | null;
+  loading: boolean;
+  saving: boolean;
+  error: string | null;
+  previewDraft: ForumCustomizationOptions | null;
+
+  // Actions
+  fetchCustomization: (forumId: string) => Promise<void>;
+  updateCustomization: (forumId: string, category: CustomizationCategory, changes: Record<string, unknown>) => Promise<void>;
+  previewCustomization: (category: CustomizationCategory, changes: Record<string, unknown>) => void;
+  resetCategory: (forumId: string, category: CustomizationCategory) => Promise<void>;
+  clearPreview: () => void;
+}
+
+export const useCustomizationStore = create<CustomizationState>((set, get) => ({
+  options: null,
+  loading: false,
+  saving: false,
+  error: null,
+  previewDraft: null,
+
+  fetchCustomization: async (forumId: string) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await fetch(`/api/v1/forums/${forumId}/customization`);
+      const json = await res.json();
+      set({ options: json.data, loading: false });
+    } catch (err) {
+      set({ error: 'Failed to fetch customization', loading: false });
+    }
+  },
+
+  updateCustomization: async (forumId: string, category: CustomizationCategory, changes: Record<string, unknown>) => {
+    set({ saving: true, error: null });
+    try {
+      const res = await fetch(`/api/v1/forums/${forumId}/customization/${category}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(changes),
+      });
+      const json = await res.json();
+      set({ options: json.data, saving: false, previewDraft: null });
+    } catch (err) {
+      set({ error: 'Failed to save', saving: false });
+    }
+  },
+
+  previewCustomization: (category: CustomizationCategory, changes: Record<string, unknown>) => {
+    const current = get().options;
+    if (!current) return;
+    const merged = {
+      ...current,
+      [category]: { ...(current[category] ?? {}), ...changes },
+    };
+    set({ previewDraft: merged as ForumCustomizationOptions });
+  },
+
+  resetCategory: async (forumId: string, category: CustomizationCategory) => {
+    set({ saving: true, error: null });
+    try {
+      const res = await fetch(`/api/v1/forums/${forumId}/customization/${category}`, {
+        method: 'DELETE',
+      });
+      const json = await res.json();
+      set({ options: json.data, saving: false, previewDraft: null });
+    } catch (err) {
+      set({ error: 'Failed to reset', saving: false });
+    }
+  },
+
+  clearPreview: () => set({ previewDraft: null }),
+}));
