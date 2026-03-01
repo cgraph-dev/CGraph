@@ -671,11 +671,27 @@ it all together with real-time Phoenix Channel updates and full-text search.
 4. User searches forum content and finds relevant threads ranked by relevance
 5. User upvotes/downvotes posts and reputation scores update
 
+### Discovery Findings
+
+- **FORUM-01 (Forum CRUD):** ~95% complete — Forum schema (444L), Core context (95L + sub-modules), ForumController (399L), hierarchy controller, full routes. Gap: no backend admin-specific bulk operations.
+- **FORUM-02 (Boards/Categories):** ~90% complete — Board schema (103L) with sub-board nesting, Category schema (48L), Boards context (103L), Categories context (85L), BoardController (119L), routes. Gap: category CRUD not in web store, board reorder endpoint not routed.
+- **FORUM-03 (Threads/BBCode/Attachments):** ~70% complete — Thread schema (162L), ThreadPost schema (127L), ThreadAttachment schema (110L), full context functions. **Gap: BBCode parser is a STUB** (only html_escape + newline→br). No attachment upload controller/routes.
+- **FORUM-04 (Posts/Comments/Nested Discussion):** ~90% complete — Two parallel systems: reddit-style (Post 207L + Comment 133L) and MyBB-style (ThreadPost 127L). Full contexts with nested comment support (depth max 10). Gap: no editComment/deleteComment store actions on web, no markBestAnswer.
+- **FORUM-05 (Polls):** ~85% complete — ThreadPoll schema (81L), PollVote schema (33L), Polls context (110L) with create/vote/results. **Gap: No PollController or routes** — polls unreachable via HTTP.
+- **FORUM-06 (Voting/Reputation):** ~80% complete — Vote system fully implemented (voting.ex 148L, forum_voting.ex 225L, ranking_engine.ex 253L). **Gap: votes update entity score but NEVER update ForumMember.reputation fields**.
+- **FORUM-09 (Real-time):** ~85% complete — ForumChannel (220L) + ThreadChannel (406L). Web hooks fully wired. Gap: no BoardChannel, no poll vote broadcast, no post edit broadcast.
+- **FORUM-10/SEARCH-03 (Full-text Search):** ~40% complete — search.ex (63L) uses ILIKE only on reddit-style Posts. **Gap: No tsvector/GIN indexes, no Thread/ThreadPost search, no relevance ranking**. Web search component has full UI but no store action. Mobile search hits old endpoint.
+- **Overall:** 64+ backend files (~7,500L schemas + contexts), 8 controllers (~2,200L), 2 channels (626L), web store (60+ actions, ~43,000L total), mobile 10 screens + 5 components (~5,000L). ~80-85% built.
+
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                    | Wave | Depends   | Status |
+| ----- | ------------------------------------------------------------------------ | ---- | --------- | ------ |
+| 14-01 | BBCode parser + poll API + attachment uploads (FORUM-03, FORUM-05)       | 1    | —         | —      |
+| 14-02 | Full-text search + reputation propagation (FORUM-10, SEARCH-03, FORUM-06)| 1    | —         | —      |
+| 14-03 | Web forum wiring — search, categories, comments, store gaps              | 2    | 14-01, 02 | —      |
+| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows       | 2    | 14-01, 02 | —      |
+| 14-05 | Real-time broadcasting gaps + integration tests (FORUM-09, ALL)          | 2    | 14-01, 02 | —      |
 
 ---
 

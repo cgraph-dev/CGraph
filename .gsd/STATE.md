@@ -10,25 +10,26 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 13 — Voice & Video** — **Complete (Verified)**
+**Phase 14 — Forum Core** — **Planning Complete**
 
-4 plans across 2 waves executed. All 9 requirements delivered: mobile WebRTC wiring, call history API, LiveKit SFU group calls, hybrid P2P/SFU routing, persistent voice channels, call E2EE with SFrame, mobile LiveKit SDK. UAT: 66/66 tests passing.
+5 plans across 2 waves. 10 requirements: forum CRUD, boards, threads with BBCode, nested comments, polls, voting with reputation, real-time updates, full-text search. Infrastructure is ~80-85% built; plans focus on closing gaps (BBCode parser, poll API, full-text search, reputation propagation, mobile store, real-time broadcasting).
 
 ## Position
 
-- **Phase:** 13 of 19 — Voice & Video
-- **Plan:** 4/4 plans complete
-- **Status:** Complete
-- **Last activity:** 2026-03-01 — Phase 13 UAT complete (66/66 tests passing)
+- **Phase:** 14 of 19 — Forum Core
+- **Plan:** 0/5 plans complete (planned)
+- **Status:** Planned — ready to execute
+- **Last activity:** 2026-03-01 — Phase 14 plans created
 
 ## Plans
 
 | Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
-| 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | ✅ Complete |
-| 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | ✅ Complete |
-| 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | ✅ Complete |
-| 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | ✅ Complete |
+| 14-01 | BBCode parser + poll API + attachment uploads                       | 1    | ✅          | —          | — Planned   |
+| 14-02 | Full-text search + reputation propagation                           | 1    | ✅          | —          | — Planned   |
+| 14-03 | Web forum wiring — search, categories, comments, store gaps         | 2    | ✅          | 14-01,14-02| — Planned   |
+| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows  | 2    | ✅          | 14-01,14-02| — Planned   |
+| 14-05 | Real-time broadcasting gaps + integration tests                     | 2    | ✅          | 14-01,14-02| — Planned   |
 
 ## Progress
 
@@ -37,7 +38,7 @@ Secure real-time communication that works end-to-end.
 | Overall progress   | 68%       |
 | Phases complete    | 13 / 19   |
 | Requirements done  | 77 / 136  |
-| Current phase reqs | 9 / 9     |
+| Current phase reqs | 0 / 10    |
 
 ## Phase Summary
 
@@ -56,7 +57,7 @@ Secure real-time communication that works end-to-end.
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
 | 13  | Voice & Video           | **Complete** (2026-03-01) |
-| 14  | Forum Core              | Unblocked                 |
+| 14  | Forum Core              | **Planned** (5 plans)     |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
 | 17  | Monetization            | Blocked by 16             |
