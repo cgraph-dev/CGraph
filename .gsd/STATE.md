@@ -10,24 +10,25 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 11 — Groups & Channels** — **Complete**
+**Phase 12 — Roles & Moderation** — **Planned**
 
-All 3 plans executed across 2 waves. 7/7 requirements verified. WebSocket topics aligned, group CRUD/channels/invites wired E2E, explore pages built, channel threads implemented.
+4 plans across 2 waves. 9 requirements: roles hardening, ban/kick, automod, emoji permissions, group E2EE, content reporting, moderation panel.
 
 ## Position
 
-- **Phase:** 11 of 19 — Groups & Channels
-- **Plan:** 3/3 plans complete
-- **Status:** Complete
-- **Last activity:** 2026-03-01 — Phase 11 fully executed and verified
+- **Phase:** 12 of 19 — Roles & Moderation
+- **Plan:** 0/4 plans complete
+- **Status:** Planned
+- **Last activity:** 2026-03-01 — Phase 12 planning complete (4 plans, 2 waves)
 
 ## Plans
 
-| Plan  | Objective                                                           | Wave | Autonomous | Depends On | Status      |
-| ----- | ------------------------------------------------------------------- | ---- | ---------- | ---------- | ----------- |
-| 11-01 | WebSocket topic alignment + group channel messaging E2E (MSG-02/03) | 1    | ✅          | —          | ✅ Complete  |
-| 11-02 | Group CRUD, channels, and invites E2E wiring (GROUP-01/02/05)       | 1    | ✅          | —          | ✅ Complete  |
-| 11-03 | Explore page + channel threads (GROUP-09, MSG-21)                   | 2    | ✅          | 11-01,02   | ✅ Complete  |
+| Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
+| ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
+| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | ✅          | —          | Not started |
+| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | ✅          | —          | Not started |
+| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | ✅          | 12-01      | Not started |
+| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | ✅          | 12-01      | Not started |
 
 ## Progress
 
@@ -36,7 +37,7 @@ All 3 plans executed across 2 waves. 7/7 requirements verified. WebSocket topics
 | Overall progress   | 56%       |
 | Phases complete    | 11 / 19   |
 | Requirements done  | 59 / 136  |
-| Current phase reqs | 7 / 7     |
+| Current phase reqs | 0 / 9     |
 
 ## Phase Summary
 
@@ -53,7 +54,7 @@ All 3 plans executed across 2 waves. 7/7 requirements verified. WebSocket topics
 | 9   | Notifications & Safety  | **Complete** (2026-03-01) |
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
-| 12  | Roles & Moderation      | Next up                   |
+| 12  | Roles & Moderation      | **Planned** (4 plans)     |
 | 13  | Voice & Video           | Blocked by 12             |
 | 14  | Forum Core              | Blocked by 12             |
 | 15  | Forum Customization     | Blocked by 14             |

@@ -588,15 +588,16 @@ This must be correct before forums and gamification layer on top.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                              | Wave | Status      |
+| ----- | ------------------------------------------------------------------ | ---- | ----------- |
+| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | Not started |
+| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | Not started |
+| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | Not started |
+| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | Not started |
 
 ---
 
 ## Phase 13: Voice & Video
-
-**Goal:** Voice and video calls work across platforms — 1:1 via WebRTC, group via LiveKit, all E2EE.
 
 **Rationale:** Calls complete the communication suite. LiveKit SFU enables group calls beyond 2
 participants. Call E2EE is critical for privacy positioning. Persistent voice channels
