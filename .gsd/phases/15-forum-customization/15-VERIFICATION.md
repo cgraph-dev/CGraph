@@ -15,8 +15,8 @@
 | Artifacts VERIFIED | **32/32** |
 | Artifacts STUB | 0/32 |
 | Artifacts MISSING | 0/32 |
-| Key Wiring WIRED | **13/15** |
-| Key Wiring PARTIAL | 2/15 |
+| Key Wiring WIRED | **15/15** |
+| Key Wiring PARTIAL | 0/15 |
 | Key Wiring NOT_WIRED | 0/15 |
 | Anti-Patterns Found | **0** (15 false-positive "placeholder" hits = form `placeholder=""` attrs) |
 | Overall | **PASSED** — goals achieved, not just tasks |
@@ -91,11 +91,11 @@
 | # | Source → Target | Status | Evidence |
 |---|----------------|--------|----------|
 | W1 | `forum_customization_controller.ex` → `customizations.ex` | ✅ **WIRED** | Calls `Customizations.list_options()`, `.get_options()`, `.update_options()` |
-| W2 | `customization-center/index.tsx` → `forumThemeStore` | ⚠️ **PARTIAL** | Uses raw `fetch()` API calls. Store exists (376 lines) but is not imported. |
+| W2 | `customization-center/index.tsx` → `forumThemeStore` | ✅ **WIRED** | Refactored: `import { useCustomizationStore } from '../../store/forumThemeStore'` |
 | W3 | `plugin_runtime.ex` → `Task.Supervisor` | ✅ **WIRED** | `Task.Supervisor.start_child(CGraph.TaskSupervisor, ...)` for plugin isolation |
 | W4 | `threads.ex` → `PluginRuntime.dispatch` | ✅ **WIRED** | `PluginRuntime.dispatch(...)` on thread_created and post_created hooks |
 | W5 | `forum_automod.ex` → `check_content` | ✅ **WIRED** | `def check_content(forum_id, content)` implemented |
-| W6 | `forum-mod-dashboard.tsx` → `forumStore.moderation` | ⚠️ **PARTIAL** | Uses dynamic `import('@/lib/api')` + direct API calls. Store exists but not imported. |
+| W6 | `forum-mod-dashboard.tsx` → `forumStore.moderation` | ✅ **WIRED** | Refactored: `import { useForumStore } from '../../store/forumStore'` — uses `fetchForumModQueue`, `takeForumModAction`, `fetchForumModStats` |
 | W7 | `user-group-manager.tsx` → `forumStore.userGroups` | ✅ **WIRED** | `import { useUserGroupsStore } from '../../store/forumStore.userGroups'` |
 | W8 | `board-permissions-panel.tsx` → permissions store | ✅ **WIRED** | `import { usePermissionsStore }` + `useUserGroupsStore` |
 | W9 | `emoji-pack-manager.tsx` → import/export | ✅ **WIRED** | `import { useEmojiPackStore }` — import/export, bulk upload documented |
@@ -124,12 +124,12 @@
 
 ## 4. Gaps
 
-Two minor architectural consistency gaps were identified. Neither represents broken functionality — both components make real API calls and render complete UI.
+~~Two minor architectural consistency gaps were identified.~~ **Both resolved** — components now use their zustand stores.
 
-| # | Issue | Severity | Detail | Recommendation |
-|---|-------|----------|--------|----------------|
-| G1 | `customization-center/index.tsx` uses raw `fetch()` instead of `useCustomizationStore` | LOW | Store exists (376 lines) but component calls API directly. Functional but inconsistent. | Refactor to use store in future cleanup phase |
-| G2 | `forum-mod-dashboard.tsx` uses dynamic `import('@/lib/api')` instead of moderation store | LOW | Same pattern as G1. Direct API calls work; store exists but unused. | Refactor to use store in future cleanup phase |
+| # | Issue | Severity | Status |
+|---|-------|----------|--------|
+| G1 | `customization-center/index.tsx` raw `fetch()` | LOW | ✅ **RESOLVED** — now uses `useCustomizationStore` |
+| G2 | `forum-mod-dashboard.tsx` dynamic `import('@/lib/api')` | LOW | ✅ **RESOLVED** — now uses `useForumStore` moderation actions |
 
 ---
 
@@ -138,6 +138,6 @@ Two minor architectural consistency gaps were identified. Neither represents bro
 **✅ PASSED** — Phase 15 goals are achieved at the codebase level, not just at the task-completion level.
 
 - All 32 critical artifacts exist with substantive implementations (no stubs, no empty returns, no TODOs)
-- 13 of 15 key wiring links are fully connected; 2 are functionally complete but architecturally inconsistent
+- 15 of 15 key wiring links are fully connected
 - Zero anti-patterns detected across all phase files
 - The phase delivers: 50+ customization options (259-line context with 12 CUSTOMIZATION_OPTIONS references), a plugin system with Task.Supervisor isolation, moderation with automod filters and warnings, user groups with permissions matrix, emoji/RSS features, and a full leaderboard/ranking system
