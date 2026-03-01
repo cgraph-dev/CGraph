@@ -31,6 +31,7 @@ defmodule CGraphWeb.API.V1.RssController do
   use CGraphWeb, :controller
 
   alias CGraph.{Accounts, Forums}
+  alias CGraph.Forums.RSS, as: ForumRSS
   import CGraphWeb.Helpers.ParamParser
 
   action_fallback CGraphWeb.FallbackController
@@ -108,11 +109,12 @@ defmodule CGraphWeb.API.V1.RssController do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
 
-    with {:ok, board} <- Forums.get_board(board_id),
+    with true <- ForumRSS.board_rss_enabled?(board_id),
+         {:ok, board} <- Forums.get_board(board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
          :ok <- check_forum_visibility(forum) do
 
-      {threads, _meta} = Forums.list_threads(board_id, page: 1, per_page: limit)
+      threads = ForumRSS.list_board_threads_for_rss(board_id, limit)
 
       feed_data = %{
         title: "#{forum.name} - #{board.name}",
@@ -123,6 +125,11 @@ defmodule CGraphWeb.API.V1.RssController do
       }
 
       render_feed(conn, feed_data, format)
+    else
+      false ->
+        conn |> put_status(:not_found) |> json(%{error: %{message: "RSS is disabled for this board"}})
+
+      error -> error
     end
   end
 

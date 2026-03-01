@@ -166,4 +166,36 @@ defmodule CGraph.Forums.RSS do
   defp get_author_name(%{author: %{display_name: name}}) when not is_nil(name), do: name
   defp get_author_name(%{user: %{username: username}}) when not is_nil(username), do: username
   defp get_author_name(_), do: "Anonymous"
+
+  # ============================================================================
+  # Per-Board RSS
+  # ============================================================================
+
+  @doc """
+  List threads for a specific board, optimised for RSS feed generation.
+  """
+  @spec list_board_threads_for_rss(binary(), non_neg_integer()) :: [struct()]
+  def list_board_threads_for_rss(board_id, limit \\ 20) do
+    from(t in Thread,
+      where: t.board_id == ^board_id and not_deleted(t),
+      order_by: [desc: t.inserted_at],
+      limit: ^limit,
+      preload: [:author, board: :forum]
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Check if RSS is enabled for a given board.
+  Falls back to `true` when the board has no `rss_enabled` field set.
+  """
+  @spec board_rss_enabled?(binary()) :: boolean()
+  def board_rss_enabled?(board_id) do
+    case Repo.get(Board, board_id) do
+      nil -> false
+      board ->
+        # rss_enabled defaults to true when nil
+        Map.get(board, :rss_enabled, true) != false
+    end
+  end
 end
