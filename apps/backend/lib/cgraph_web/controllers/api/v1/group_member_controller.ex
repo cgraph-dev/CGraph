@@ -137,18 +137,28 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   def ban(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
-    duration = Map.get(params, "duration") # nil = permanent, or seconds
+    duration_hours = parse_duration_hours(params["duration_hours"])
+
+    expires_at =
+      if duration_hours do
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.add(duration_hours * 3600, :second)
+      else
+        nil
+      end
 
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :ban_members),
          {:ok, member} <- Groups.get_member(group, member_id),
          :ok <- validate_not_self(user, member),
          :ok <- validate_can_moderate(user, member, group),
-         {:ok, ban} <- Groups.ban_member(group, member, reason: reason, duration: duration) do
+         {:ok, ban} <- Groups.ban_member(group, member, reason, user.id, expires_at) do
       Groups.log_audit_event(group, user, :member_banned, %{
         target_user_id: member.user_id,
         reason: reason,
-        duration: duration
+        duration_hours: duration_hours,
+        expires_at: expires_at
       })
 
       render(conn, :ban, ban: ban)
@@ -314,4 +324,14 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
       {:error, :not_owner}
     end
   end
+
+  defp parse_duration_hours(nil), do: nil
+  defp parse_duration_hours(val) when is_integer(val) and val > 0, do: val
+  defp parse_duration_hours(val) when is_binary(val) do
+    case Integer.parse(val) do
+      {hours, _} when hours > 0 -> hours
+      _ -> nil
+    end
+  end
+  defp parse_duration_hours(_), do: nil
 end

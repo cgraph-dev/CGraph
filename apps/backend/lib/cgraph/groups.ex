@@ -78,9 +78,12 @@ defmodule CGraph.Groups do
   defdelegate mute_member(member, until), to: Members
   defdelegate unmute_member(member), to: Members
   defdelegate compare_hierarchy(member_a, member_b), to: Members
-  defdelegate ban_member(group, user, reason \\ nil), to: Members
+  defdelegate ban_member(group, user, reason), to: Members
+  def ban_member(group, user, reason, banned_by_id, expires_at \\ nil),
+    do: Members.ban_member(group, user, reason, banned_by_id, expires_at)
   defdelegate unban_user(group, user_id), to: Members
   defdelegate list_bans(group), to: Members
+  defdelegate list_active_bans(group), to: Members
   defdelegate get_ban(group, user_id), to: Members
 
   # ============================================================================

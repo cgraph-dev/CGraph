@@ -180,8 +180,9 @@ defmodule CGraph.Groups.Members do
 
   @doc "Ban a member from a group. Removes membership and creates a ban record."
   @spec ban_member(struct(), struct(), binary() | nil) :: {:ok, map()} | {:error, any()}
-  def ban_member(group, user, reason \\ nil) do
-    member = get_member_by_user(group, user.id)
+  def ban_member(group, user_or_member, reason) do
+    user_id = extract_user_id(user_or_member)
+    member = get_member_by_user(group, user_id)
 
     Repo.transaction(fn ->
       # Remove membership if exists
@@ -189,7 +190,7 @@ defmodule CGraph.Groups.Members do
 
       # Create ban record
       ban_attrs = %{
-        user_id: user.id,
+        user_id: user_id,
         group_id: group.id,
         reason: reason
       }
@@ -197,35 +198,41 @@ defmodule CGraph.Groups.Members do
       case %GroupBan{}
            |> GroupBan.changeset(ban_attrs)
            |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id, :group_id]) do
-        {:ok, ban} -> ban
+        {:ok, ban} -> Repo.preload(ban, [:user, :banned_by])
         {:error, changeset} -> Repo.rollback(changeset)
       end
     end)
   end
 
-  @doc "Ban a member with the banning moderator tracked."
-  @spec ban_member(struct(), struct(), binary() | nil, binary()) :: {:ok, map()} | {:error, any()}
-  def ban_member(group, user, reason, banned_by_id) do
-    member = get_member_by_user(group, user.id)
+  @doc "Ban a member with moderator tracking and optional expiry."
+  @spec ban_member(struct(), struct(), binary() | nil, binary(), DateTime.t() | nil) :: {:ok, map()} | {:error, any()}
+  def ban_member(group, user_or_member, reason, banned_by_id, expires_at \\ nil) do
+    user_id = extract_user_id(user_or_member)
+    member = get_member_by_user(group, user_id)
 
     Repo.transaction(fn ->
       if member, do: Repo.delete(member)
 
       ban_attrs = %{
-        user_id: user.id,
+        user_id: user_id,
         group_id: group.id,
         reason: reason,
-        banned_by_id: banned_by_id
+        banned_by_id: banned_by_id,
+        expires_at: expires_at
       }
 
       case %GroupBan{}
            |> GroupBan.changeset(ban_attrs)
            |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id, :group_id]) do
-        {:ok, ban} -> ban
+        {:ok, ban} -> Repo.preload(ban, [:user, :banned_by])
         {:error, changeset} -> Repo.rollback(changeset)
       end
     end)
   end
+
+  @doc "List active bans (not expired) for a group."
+  @spec list_active_bans(struct()) :: list()
+  def list_active_bans(group), do: list_bans(group)
 
   @doc "Unban a user from a group."
   @spec unban_user(struct(), binary()) :: {:ok, :unbanned} | {:error, :not_found}
@@ -278,4 +285,9 @@ defmodule CGraph.Groups.Members do
       roles -> Enum.max_by(roles, & &1.position).position
     end
   end
+
+  # Extract user_id from a Member struct, User struct, or binary ID
+  defp extract_user_id(%Member{user_id: user_id}), do: user_id
+  defp extract_user_id(%{id: id}), do: id
+  defp extract_user_id(id) when is_binary(id), do: id
 end

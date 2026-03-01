@@ -61,6 +61,10 @@ defmodule CGraphWeb.Router.MessagingRoutes do
           post "/members/:id/ban", GroupMemberController, :ban
           post "/members/:id/mute", GroupMemberController, :mute
 
+          # Ban management
+          get "/bans", GroupMemberController, :list_bans
+          delete "/bans/:user_id", GroupMemberController, :unban
+
           resources "/roles", RoleController
           resources "/invites", InviteController, only: [:index, :create, :delete]
           resources "/categories", ChannelCategoryController
