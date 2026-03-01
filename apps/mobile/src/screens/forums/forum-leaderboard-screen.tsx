@@ -48,6 +48,8 @@ import {
   AnimatedPeriodSelector,
   EmptyState,
 } from './forum-leaderboard-screen/components';
+import { RankProgressBar } from './components/rank-progress-bar';
+import type { RankInfo } from './components/rank-progress-bar';
 
 // =============================================================================
 // TYPES
@@ -102,6 +104,14 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('weekly');
   const [forums, setForums] = useState<LeaderboardForum[]>([]);
   const [contributors, setContributors] = useState<TopContributor[]>([]);
+  const [myRankData, setMyRankData] = useState<{
+    position: number;
+    score: number;
+    currentRank: RankInfo;
+    nextRank: RankInfo | null;
+    progressPercent: number;
+    scoreToNextRank: number | null;
+  } | null>(null);
 
   // Header animation (reanimated v4)
   const headerOpacity = useSharedValue(0);
@@ -151,6 +161,28 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
     } finally {
       setIsLoading(false);
       setRefreshing(false);
+    }
+
+    // Fetch my rank if viewing a specific forum
+    if (forumId) {
+      try {
+        const rankResp = await api.get(`/api/v1/forums/${forumId}/leaderboard/my-rank`);
+        const d = rankResp.data?.data;
+        if (d?.progress) {
+          const cr = d.progress.current_rank;
+          const nr = d.progress.next_rank;
+          setMyRankData({
+            position: d.position,
+            score: d.score ?? 0,
+            currentRank: cr ? { name: cr.name, color: cr.color, imageUrl: cr.image_url, minScore: cr.min_score, maxScore: cr.max_score } : { name: 'Newcomer', color: '#9CA3AF', minScore: 0 },
+            nextRank: nr ? { name: nr.name, color: nr.color, imageUrl: nr.image_url, minScore: nr.min_score, maxScore: nr.max_score } : null,
+            progressPercent: d.progress.progress_percent ?? 0,
+            scoreToNextRank: d.progress.score_to_next_rank ?? null,
+          });
+        }
+      } catch {
+        // Non-critical
+      }
     }
   };
 
@@ -231,6 +263,17 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
           <>
             {/* Period selector */}
             <AnimatedPeriodSelector period={timePeriod} onPeriodChange={handlePeriodChange} />
+
+            {/* My Rank Progress Bar */}
+            {myRankData && forumId && (
+              <RankProgressBar
+                currentScore={myRankData.score}
+                currentRank={myRankData.currentRank}
+                nextRank={myRankData.nextRank}
+                progressPercent={myRankData.progressPercent}
+                scoreToNextRank={myRankData.scoreToNextRank}
+              />
+            )}
 
             {/* Podium for top 3 */}
             {topThree.length > 0 && (
