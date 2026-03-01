@@ -2,7 +2,7 @@ defmodule CGraph.Notifications.Delivery do
   @moduledoc "Notification delivery pipeline — push, email, and real-time broadcast."
 
   alias CGraph.Accounts.{Settings, User}
-  alias CGraph.Notifications.Notification
+  alias CGraph.Notifications.{Notification, Preferences}
   alias CGraph.Repo
   alias CGraph.Workers.{SendEmailNotification, SendPushNotification}
 
@@ -11,13 +11,36 @@ defmodule CGraph.Notifications.Delivery do
   def deliver(%User{} = user, %Notification{} = notification, type) do
     notification_type = type_to_setting(type)
 
-    if Settings.should_notify?(user, notification_type) do
+    # Check per-target preference first (conversation/channel/group muting)
+    target_allowed = check_target_preference(user, notification, type)
+
+    if target_allowed && Settings.should_notify?(user, notification_type) do
       broadcast(user, notification)
       maybe_send_push(user, notification)
       maybe_send_email(user, notification, type)
     end
 
     :ok
+  end
+
+  # Checks per-conversation/channel/group notification preference.
+  # Returns true if no target data in notification or if preference allows delivery.
+  defp check_target_preference(user, notification, type) do
+    data = notification.data || %{}
+
+    cond do
+      data["conversation_id"] ->
+        Preferences.should_deliver?(user.id, "conversation", data["conversation_id"], type)
+
+      data["channel_id"] ->
+        Preferences.should_deliver?(user.id, "channel", data["channel_id"], type)
+
+      data["group_id"] ->
+        Preferences.should_deliver?(user.id, "group", data["group_id"], type)
+
+      true ->
+        true
+    end
   end
 
   @doc false

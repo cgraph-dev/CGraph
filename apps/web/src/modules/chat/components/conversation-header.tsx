@@ -18,6 +18,8 @@ import {
   MagnifyingGlassIcon,
   ClockIcon,
   FingerPrintIcon,
+  BellIcon,
+  BellSlashIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
@@ -45,6 +47,8 @@ interface ConversationHeaderProps {
   onToggleSettings: () => void;
   onToggleE2EETester: () => void;
   onVerifyIdentity: () => void;
+  onToggleNotificationSettings?: () => void;
+  isMuted?: boolean;
   showScheduledList: boolean;
   showInfoPanel: boolean;
   showSettings: boolean;
@@ -65,6 +69,8 @@ function ConversationHeaderComponent({
   onToggleSettings,
   onToggleE2EETester,
   onVerifyIdentity,
+  onToggleNotificationSettings,
+  isMuted,
   showScheduledList,
   showInfoPanel,
   showSettings,
@@ -252,6 +258,26 @@ function ConversationHeaderComponent({
           >
             <Cog6ToothIcon className="h-5 w-5" />
           </motion.button>
+
+          {onToggleNotificationSettings && (
+            <motion.button
+              onClick={onToggleNotificationSettings}
+              className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
+                isMuted
+                  ? 'bg-amber-500/20 text-amber-400'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              title={isMuted ? 'Unmute Conversation' : 'Notification Settings'}
+            >
+              {isMuted ? (
+                <BellSlashIcon className="h-5 w-5" />
+              ) : (
+                <BellIcon className="h-5 w-5" />
+              )}
+            </motion.button>
+          )}
         </motion.div>
       </div>
     </GlassCard>

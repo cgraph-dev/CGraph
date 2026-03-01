@@ -90,6 +90,12 @@ defmodule CGraphWeb.Router.UserRoutes do
         post "/notifications/:id/read", NotificationController, :mark_read
         delete "/notifications/:id", NotificationController, :delete
 
+        # Notification Preferences (per-conversation/channel/group)
+        get "/notification-preferences", NotificationPreferenceController, :index
+        get "/notification-preferences/:target_type/:target_id", NotificationPreferenceController, :show
+        put "/notification-preferences/:target_type/:target_id", NotificationPreferenceController, :upsert
+        delete "/notification-preferences/:target_type/:target_id", NotificationPreferenceController, :delete
+
         # Push notification tokens
         post "/push-tokens", PushTokenController, :create
         delete "/push-tokens/:token", PushTokenController, :delete

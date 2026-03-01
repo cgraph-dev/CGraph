@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { UserGroupIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, BellSlashIcon } from '@heroicons/react/24/outline';
 import { chatLogger } from '@/lib/logger';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { ConversationItemProps } from './types';
@@ -89,7 +89,12 @@ export function ConversationItem({
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between">
               <span className="truncate font-semibold text-white">{name}</span>
-              <span className="text-xs text-gray-500">{lastMessageTime}</span>
+              <div className="flex items-center gap-1">
+                {conversation.isMuted && (
+                  <BellSlashIcon className="h-3.5 w-3.5 text-gray-500" title="Muted" />
+                )}
+                <span className="text-xs text-gray-500">{lastMessageTime}</span>
+              </div>
             </div>
 
             <div className="mt-0.5 flex items-center justify-between">

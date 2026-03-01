@@ -81,13 +81,18 @@ export function AnimatedConversationItem({
                   item.unread_count > 0 && styles.unreadName]} numberOfLines={1}>
                   {displayName}
                 </Text>
-                {item.last_message && (
-                  <View style={styles.timeContainer}>
-                    <Text style={[styles.time, { color: colors.textTertiary }]}>
-                      {safeFormatConversationTime(item.last_message.inserted_at)}
-                    </Text>
-                  </View>
-                )}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  {(item as Record<string, unknown>).is_muted && (
+                    <Ionicons name="notifications-off" size={14} color={colors.textTertiary} />
+                  )}
+                  {item.last_message && (
+                    <View style={styles.timeContainer}>
+                      <Text style={[styles.time, { color: colors.textTertiary }]}>
+                        {safeFormatConversationTime(item.last_message.inserted_at)}
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </View>
               {item.last_message && (
                 <View style={styles.messagePreview}>
