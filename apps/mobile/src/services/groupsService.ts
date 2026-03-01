@@ -175,7 +175,7 @@ export async function createGroup(data: CreateGroupRequest): Promise<Group> {
   const response = await api.post('/api/v1/groups', {
     name: data.name,
     description: data.description,
-    is_public: data.isPublic,
+    visibility: data.isPublic !== false ? 'public' : 'private',
     category: data.category,
     features: data.features,
   });
@@ -189,7 +189,7 @@ export async function updateGroup(groupId: string, data: UpdateGroupRequest): Pr
   const response = await api.patch(`/api/v1/groups/${groupId}`, {
     name: data.name,
     description: data.description,
-    is_public: data.isPublic,
+    visibility: data.isPublic !== undefined ? (data.isPublic ? 'public' : 'private') : undefined,
     category: data.category,
     features: data.features,
   });
