@@ -10,22 +10,22 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 13 — Voice & Video** — **Planned**
+**Phase 13 — Voice & Video** — **In Progress**
 
 4 plans across 2 waves. Covers CALL-01 through CALL-08 + E2EE-07 (9 requirements). Wave 1: Mobile WebRTC wiring + LiveKit SFU integration (parallel). Wave 2: Persistent voice channels + call E2EE (both depend on LiveKit).
 
 ## Position
 
 - **Phase:** 13 of 19 — Voice & Video
-- **Plan:** 0/4 plans executed
-- **Status:** Planned — ready for execution
-- **Last activity:** 2026-03-01 — Phase 13 planned (4 plans, 2 waves)
+- **Plan:** 1/4 plans executed
+- **Status:** In Progress — Wave 1 (13-01 complete, 13-02 pending)
+- **Last activity:** 2026-03-01 — Plan 13-01 complete (Mobile WebRTC wiring + call history API)
 
 ## Plans
 
 | Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
-| 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | Not started |
+| 13-01 | Mobile WebRTC wiring + call history API integration                 | 1    | ✅          | —          | ✅ Complete |
 | 13-02 | LiveKit SFU integration — group voice & video calls                 | 1    | ✅          | —          | Not started |
 | 13-03 | Persistent voice channels — Discord-style always-on voice lobbies   | 2    | ✅          | 13-02      | Not started |
 | 13-04 | Call E2EE (SFrame) + mobile LiveKit integration                     | 2    | ✅          | 13-02      | Not started |
@@ -34,10 +34,10 @@ Secure real-time communication that works end-to-end.
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 63%       |
+| Overall progress   | 65%       |
 | Phases complete    | 12 / 19   |
-| Requirements done  | 68 / 136  |
-| Current phase reqs | 0 / 9     |
+| Requirements done  | 72 / 136  |
+| Current phase reqs | 4 / 9     |
 
 ## Phase Summary
 
@@ -55,7 +55,7 @@ Secure real-time communication that works end-to-end.
 | 10  | Message Extras          | **Complete** (2026-03-01) |
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
-| 13  | Voice & Video           | **Planned** (4 plans, 2 waves) |
+| 13  | Voice & Video           | **In Progress** (1/4 plans done) |
 | 14  | Forum Core              | Unblocked                 |
 | 15  | Forum Customization     | Blocked by 14             |
 | 16  | Gamification            | Blocked by 14             |
