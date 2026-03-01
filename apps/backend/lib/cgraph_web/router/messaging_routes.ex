@@ -101,6 +101,9 @@ defmodule CGraphWeb.Router.MessagingRoutes do
 
         # Call History (voice/video calls)
         resources "/calls", CallController, only: [:index, :show]
+
+        # LiveKit SFU (group voice/video calls)
+        post "/livekit/token", LiveKitController, :create_token
       end
     end
   end
