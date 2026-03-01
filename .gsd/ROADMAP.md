@@ -20,7 +20,7 @@
 | 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
 | 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
 | 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
-| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8                          |
+| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Planned** (4 plans, 2 waves) |
 | 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6                          |
 | 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5                          |
 | 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11                         |
@@ -447,11 +447,20 @@ users.
 4. User enables DND mode and stops receiving all notifications
 5. User deletes account and all personal data is purged or exported
 
+### Discovery Findings
+
+- **NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-08, AUTH-08 are FULLY IMPLEMENTED** — backend services (PushService, ExpoClient, APNsClient, FCMClient, WebPushClient), frontend hooks (usePushNotifications, web-push service worker), notification center (full page + stores + API), email digest workers, and account deletion (soft → hard delete, data export, GDPR UI) all exist and are substantive.
+- **NOTIF-04 needs per-conversation/channel preferences** — global toggles exist but no per-target mute/mode.
+- **NOTIF-07 needs schedule UI + timezone** — backend `quiet_hours` fields exist but no UI, and logic uses UTC only.
+
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                              | Wave | Status |
+| ----- | ------------------------------------------------------------------ | ---- | ------ |
+| 09-01 | Per-conversation & per-channel notification preferences (NOTIF-04) | 1    | —      |
+| 09-02 | DND schedule UI & timezone-aware quiet hours (NOTIF-07)            | 1    | —      |
+| 09-03 | Notification wiring audit & gap fixes (NOTIF-01/02/03/08)          | 2    | —      |
+| 09-04 | Account deletion polish & phase integration (AUTH-08)              | 2    | —      |
 
 ---
 
