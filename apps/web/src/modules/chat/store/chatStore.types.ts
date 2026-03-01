@@ -73,6 +73,10 @@ export interface Message {
   // Message scheduling
   scheduledAt?: string | null;
   scheduleStatus?: 'immediate' | 'scheduled' | 'sent' | 'cancelled';
+  // Forwarding metadata
+  forwardedFromId?: string | null;
+  forwardedFromUserId?: string | null;
+  forwardedFromUserName?: string | null;
 }
 
 /**

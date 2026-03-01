@@ -71,4 +71,5 @@ export const ACTION_COLORS = {
   pin: '#10b981',
   unpin: '#f59e0b',
   delete: '#ef4444',
+  forward: '#0ea5e9',
 } as const;

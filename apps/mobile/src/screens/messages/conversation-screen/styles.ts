@@ -861,6 +861,15 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.8,
   },
+  // Forwarded message attribution
+  forwardedBanner: {
+    marginBottom: 4,
+    paddingHorizontal: 2,
+  },
+  forwardedText: {
+    fontSize: 11,
+    fontStyle: 'italic',
+  },
   // Reactions display styles
   reactionsContainer: {
     flexDirection: 'row',

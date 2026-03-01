@@ -264,6 +264,22 @@ function MessageContent({
 }: MessageContentProps) {
   return (
     <>
+      {/* Forwarded message attribution */}
+      {item.forwarded_from_user_id && (
+        <View style={styles.forwardedBanner}>
+          <Text
+            style={[
+              styles.forwardedText,
+              { color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary },
+            ]}
+          >
+            ↪ {item.forwarded_from_user_name
+              ? `Forwarded from ${item.forwarded_from_user_name}`
+              : 'Forwarded'}
+          </Text>
+        </View>
+      )}
+
       {/* Reply preview if this message is a reply */}
       {item.reply_to && (
         <View

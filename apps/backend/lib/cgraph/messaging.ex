@@ -78,6 +78,11 @@ defmodule CGraph.Messaging do
   @spec broadcast_typing(struct(), struct()) :: :ok
   defdelegate broadcast_typing(conversation, user), to: CoreMessages
 
+  @doc "Forward a message to one or more conversations."
+  @spec forward_message(struct(), binary(), [binary()]) ::
+          {:ok, [struct()]} | {:error, atom() | String.t()}
+  defdelegate forward_message(user, original_message_id, target_conversation_ids), to: CoreMessages
+
   # ============================================================================
   # Reactions
   # ============================================================================

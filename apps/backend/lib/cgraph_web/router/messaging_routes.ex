@@ -34,6 +34,9 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         patch "/messages/:id/reschedule", MessageController, :reschedule
         delete "/messages/:id/cancel-schedule", MessageController, :cancel_schedule
 
+        # Message forwarding (outside conversation scope)
+        post "/messages/:id/forward", MessageController, :forward
+
         # Saved Messages (bookmarks)
         get "/saved-messages", SavedMessageController, :index
         post "/saved-messages", SavedMessageController, :create

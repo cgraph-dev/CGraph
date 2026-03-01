@@ -164,6 +164,20 @@ export const MessageBubble = memo(
             </div>
           )}
 
+          {/* Forwarded message attribution */}
+          {message.forwardedFromUserId && (
+            <div
+              className={`mb-1 flex items-center gap-1 px-1 text-xs text-gray-400 ${isOwn ? 'justify-end' : ''}`}
+            >
+              <span>↪</span>
+              <span className="italic">
+                {message.forwardedFromUserName
+                  ? `Forwarded from ${message.forwardedFromUserName}`
+                  : 'Forwarded'}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             {/* Actions (for own messages, show on left) */}
             {isOwn && showActions && (

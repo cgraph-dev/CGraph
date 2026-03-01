@@ -386,4 +386,57 @@ defmodule CGraphWeb.API.V1.MessageController do
       {:error, :unauthorized}
     end
   end
+
+  @doc """
+  Forward a message to one or more conversations.
+
+  POST /api/v1/messages/:id/forward
+  Body: %{"conversation_ids" => [uuid, ...]}
+  Max 5 targets per forward.
+  """
+  @spec forward(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def forward(conn, %{"id" => message_id} = params) do
+    user = conn.assigns.current_user
+    conversation_ids = Map.get(params, "conversation_ids", [])
+
+    cond do
+      not is_list(conversation_ids) or length(conversation_ids) == 0 ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "conversation_ids must be a non-empty list"})
+
+      length(conversation_ids) > 5 ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "Maximum 5 conversations per forward"})
+
+      true ->
+        case Messaging.forward_message(user, message_id, conversation_ids) do
+          {:ok, messages} ->
+            conn
+            |> put_status(:ok)
+            |> json(%{data: %{forwarded_count: length(messages)}})
+
+          {:error, :not_found} ->
+            conn
+            |> put_status(:not_found)
+            |> json(%{error: "Message not found"})
+
+          {:error, :unauthorized} ->
+            conn
+            |> put_status(:forbidden)
+            |> json(%{error: "You don't have access to this message or target conversation"})
+
+          {:error, :too_many_targets} ->
+            conn
+            |> put_status(:bad_request)
+            |> json(%{error: "Maximum 5 conversations per forward"})
+
+          {:error, _reason} ->
+            conn
+            |> put_status(:unprocessable_entity)
+            |> json(%{error: "Failed to forward message"})
+        end
+    end
+  end
 end

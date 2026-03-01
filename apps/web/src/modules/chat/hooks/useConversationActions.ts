@@ -148,31 +148,15 @@ export function useConversationActions(
     if (enableHaptic) HapticFeedback.medium();
   }, []);
 
-  // Forward message to selected conversations
+  // Forward message to selected conversations via API
   const handleForwardMessage = useCallback(
     async (conversationIds: string[]) => {
       if (!messageToForward) return;
 
       try {
-        // Forward to each selected conversation
-        const forwardPromises = conversationIds.map((targetConversationId) => {
-          const forwardedContent =
-            messageToForward.messageType === 'text'
-              ? messageToForward.content
-              : `[Forwarded ${messageToForward.messageType}]`;
-
-          return sendMessage(targetConversationId, forwardedContent, undefined, {
-            type: messageToForward.messageType,
-            metadata: {
-              ...messageToForward.metadata,
-              forwarded: true,
-              originalMessageId: messageToForward.id,
-              originalSenderId: messageToForward.senderId,
-            },
-          });
+        await api.post(`/api/v1/messages/${messageToForward.id}/forward`, {
+          conversation_ids: conversationIds,
         });
-
-        await Promise.all(forwardPromises);
         toast.success(`Message forwarded to ${conversationIds.length} conversation(s)`);
         setShowForwardModal(false);
         setMessageToForward(null);
@@ -181,7 +165,7 @@ export function useConversationActions(
         toast.error('Failed to forward message');
       }
     },
-    [messageToForward, sendMessage]
+    [messageToForward]
   );
 
   // Schedule message

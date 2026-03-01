@@ -13,6 +13,7 @@ defmodule CGraph.Messaging.CoreMessages do
   import CGraph.Query.SoftDelete
 
   alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message}
+  alias CGraph.Accounts.User
   alias CGraph.Repo
   alias CGraph.Search.Indexer
 
@@ -180,6 +181,105 @@ defmodule CGraph.Messaging.CoreMessages do
     case Repo.get(Conversation, conversation_id) do
       nil -> {:error, :not_found}
       conv -> {:ok, conv.message_ttl}
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Message Forwarding
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Forward a message to one or more target conversations.
+
+  Validates:
+  - User has access to the original message's conversation
+  - User has access to each target conversation
+  - Max 5 targets per forward
+
+  Returns `{:ok, forwarded_messages}` or `{:error, reason}`.
+  """
+  @spec forward_message(struct(), binary(), [binary()]) ::
+          {:ok, [struct()]} | {:error, atom() | String.t()}
+  def forward_message(user, original_message_id, target_conversation_ids)
+      when is_list(target_conversation_ids) do
+    if length(target_conversation_ids) > 5 do
+      {:error, :too_many_targets}
+    else
+      with {:ok, original} <- get_original_message(original_message_id),
+           :ok <- verify_access(user.id, original.conversation_id || original.channel_id) do
+        results =
+          Enum.reduce_while(target_conversation_ids, {:ok, []}, fn conv_id, {:ok, acc} ->
+            case forward_to_conversation(user, original, conv_id) do
+              {:ok, msg} -> {:cont, {:ok, [msg | acc]}}
+              {:error, _} = err -> {:halt, err}
+            end
+          end)
+
+        case results do
+          {:ok, messages} -> {:ok, Enum.reverse(messages)}
+          error -> error
+        end
+      end
+    end
+  end
+
+  defp get_original_message(message_id) do
+    query =
+      from m in Message,
+        where: m.id == ^message_id,
+        preload: [:sender]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      message -> {:ok, message}
+    end
+  end
+
+  defp verify_access(user_id, conversation_or_channel_id) do
+    if user_in_conversation?(conversation_or_channel_id, user_id) do
+      :ok
+    else
+      {:error, :unauthorized}
+    end
+  end
+
+  defp forward_to_conversation(user, original, target_conversation_id) do
+    unless user_in_conversation?(target_conversation_id, user.id) do
+      {:error, :unauthorized}
+    else
+      target_conversation = Repo.get!(Conversation, target_conversation_id)
+
+      attrs = %{
+        "content" => original.content,
+        "content_type" => original.content_type || "text",
+        "sender_id" => user.id,
+        "conversation_id" => target_conversation_id,
+        "is_encrypted" => false,
+        "forwarded_from_id" => original.id,
+        "forwarded_from_user_id" => original.sender_id,
+        "file_url" => original.file_url,
+        "file_name" => original.file_name,
+        "file_size" => original.file_size,
+        "file_mime_type" => original.file_mime_type,
+        "thumbnail_url" => original.thumbnail_url
+      }
+
+      case do_create_message(target_conversation, attrs) do
+        {:ok, message} ->
+          # Broadcast to target conversation channel
+          alias CGraphWeb.API.V1.MessageJSON
+
+          CGraphWeb.Endpoint.broadcast!(
+            "conversation:#{target_conversation_id}",
+            "new_message",
+            %{message: MessageJSON.message_data(message)}
+          )
+
+          {:ok, message}
+
+        error ->
+          error
+      end
     end
   end
 

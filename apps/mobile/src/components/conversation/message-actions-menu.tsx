@@ -60,6 +60,8 @@ export interface MessageActionsMenuProps {
   onTogglePin: () => void;
   /** Callback when delete is selected */
   onDelete: () => void;
+  /** Callback when forward is selected */
+  onForward?: () => void;
   /** Callback for quick reaction selection */
   onQuickReaction: (emoji: string) => void;
   /** Callback to open full reaction picker */
@@ -93,6 +95,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onCopy,
   onTogglePin,
   onDelete,
+  onForward,
   onQuickReaction,
   onOpenReactionPicker,
 }: MessageActionsMenuProps) {
@@ -136,6 +139,14 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
       color: isPinned ? ACTION_COLORS.unpin : ACTION_COLORS.pin,
       onPress: onTogglePin,
       visible: true,
+    },
+    {
+      id: 'forward',
+      icon: 'arrow-redo',
+      label: 'Forward',
+      color: ACTION_COLORS.forward,
+      onPress: onForward ?? (() => {}),
+      visible: !!onForward,
     },
     {
       id: 'delete',

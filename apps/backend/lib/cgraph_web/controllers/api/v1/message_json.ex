@@ -51,6 +51,10 @@ defmodule CGraphWeb.API.V1.MessageJSON do
       replyToId: msg.reply_to_id,
       replyTo: reply_data(msg.reply_to),
       deletedAt: msg.deleted_at,
+      # Forwarding metadata
+      forwardedFromId: msg.forwarded_from_id,
+      forwardedFromUserId: msg.forwarded_from_user_id,
+      forwardedFromUserName: forwarded_from_user_name(msg),
       # Include file info in metadata for voice/audio/file message types
       metadata: file_metadata,
       # Also include at root level for backwards compatibility
@@ -248,6 +252,21 @@ defmodule CGraphWeb.API.V1.MessageJSON do
       content: truncate(msg.content, 100),
       sender: sender_data(msg.sender)
     }
+  end
+
+  # Extract name of the original sender for forwarded messages
+  defp forwarded_from_user_name(%Message{forwarded_from_user_id: nil}), do: nil
+  defp forwarded_from_user_name(%Message{} = msg) do
+    case msg.forwarded_from_user do
+      %User{} = user -> user.display_name || user.username
+      %Ecto.Association.NotLoaded{} ->
+        # Preload on-demand if not already loaded
+        case CGraph.Repo.get(User, msg.forwarded_from_user_id) do
+          nil -> nil
+          user -> user.display_name || user.username
+        end
+      _ -> nil
+    end
   end
 
   defp truncate(nil, _), do: nil

@@ -84,6 +84,9 @@ export interface Message {
   reactions: Reaction[];
   edits?: EditHistory[];
   deliveryStatus?: 'sending' | 'sent' | 'delivered' | 'read';
+  forwardedFromId?: string | null;
+  forwardedFromUserId?: string | null;
+  forwardedFromUserName?: string | null;
   createdAt: string;
   updatedAt: string;
 }

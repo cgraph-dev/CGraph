@@ -91,6 +91,10 @@ export interface Message {
   // For optimistic updates
   is_optimistic?: boolean;
   file_url?: string;
+  // Forwarding metadata
+  forwarded_from_id?: string | null;
+  forwarded_from_user_id?: string | null;
+  forwarded_from_user_name?: string | null;
 }
 
 export interface EditHistory {

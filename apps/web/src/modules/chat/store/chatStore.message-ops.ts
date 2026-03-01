@@ -246,7 +246,7 @@ export function createMessageOpsActions(set: Set, get: Get) {
               ...updated[idx],
               deletedAt: new Date().toISOString(),
               content: '',
-            };
+            } as Message;
             newMessages[convId] = updated;
             return { messages: newMessages };
           }

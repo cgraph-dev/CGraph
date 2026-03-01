@@ -71,6 +71,10 @@ defmodule CGraph.Messaging.Message do
     belongs_to :channel, CGraph.Groups.Channel  # For group messages
     belongs_to :reply_to, __MODULE__
 
+    # Forwarding support
+    belongs_to :forwarded_from, __MODULE__
+    belongs_to :forwarded_from_user, CGraph.Accounts.User
+
     has_many :reactions, CGraph.Messaging.Reaction
     has_many :read_receipts, CGraph.Messaging.ReadReceipt
     has_many :edits, CGraph.Messaging.MessageEdit
@@ -90,7 +94,8 @@ defmodule CGraph.Messaging.Message do
       :conversation_id, :channel_id, :reply_to_id,
       :file_url, :file_name, :file_size, :file_mime_type,
       :thumbnail_url, :link_preview, :client_message_id,
-      :scheduled_at, :schedule_status, :expires_at
+      :scheduled_at, :schedule_status, :expires_at,
+      :forwarded_from_id, :forwarded_from_user_id
     ])
     |> validate_required([:content, :sender_id])
     |> maybe_assign_snowflake_id()
