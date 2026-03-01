@@ -17,6 +17,7 @@ import GroupMembersScreen from '../screens/groups/group-members-screen';
 import GroupChannelsScreen from '../screens/groups/group-channels-screen';
 import GroupInvitesScreen from '../screens/groups/group-invites-screen';
 import GroupModerationScreen from '../screens/groups/group-moderation-screen';
+import ChannelPermissionsScreen from '../screens/groups/channel-permissions-screen';
 
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
@@ -93,6 +94,11 @@ export default function GroupsNavigator() {
         name="GroupModeration"
         component={GroupModerationScreen}
         options={{ title: 'Moderation' }}
+      />
+      <Stack.Screen
+        name="ChannelPermissions"
+        component={ChannelPermissionsScreen}
+        options={{ title: 'Channel Permissions' }}
       />
     </Stack.Navigator>
   );

@@ -423,6 +423,7 @@ export type GroupsStackParamList = {
   GroupChannels: { groupId: string };
   GroupInvites: { groupId: string };
   GroupModeration: { groupId: string };
+  ChannelPermissions: { channelId: string; groupId: string };
 };
 
 export type ForumsStackParamList = {
