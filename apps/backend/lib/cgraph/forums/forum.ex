@@ -131,6 +131,10 @@ defmodule CGraph.Forums.Forum do
     has_many :user_groups, CGraph.Forums.ForumUserGroup
     has_many :members, CGraph.Forums.ForumMember
     has_many :announcements, CGraph.Forums.ForumAnnouncement
+    has_many :custom_fields, CGraph.Forums.CustomField
+
+    # Customization engine — 55 options stored as JSONB
+    field :customization_options, :map, default: %{}
 
     timestamps()
   end
