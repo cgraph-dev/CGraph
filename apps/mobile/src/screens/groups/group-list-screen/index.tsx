@@ -14,9 +14,10 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import { View, FlatList, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
 import api from '../../../lib/api';
 import type { GroupListScreenProps, Group } from './types';
@@ -48,12 +49,23 @@ export default function GroupListScreen({ navigation }: GroupListScreenProps) {
         fontWeight: '700',
       },
       headerRight: () => (
-        <AnimatedHeader
-          colors={colors}
-          onCreatePress={() => {
-            // Navigate to create group
-          }}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              navigation.navigate('ExploreGroups');
+            }}
+            style={{ padding: 4 }}
+          >
+            <Ionicons name="compass-outline" size={24} color={colors.primary} />
+          </TouchableOpacity>
+          <AnimatedHeader
+            colors={colors}
+            onCreatePress={() => {
+              // Navigate to create group
+            }}
+          />
+        </View>
       ),
     });
   }, [colors, navigation, headerOpacity, headerSlide]);

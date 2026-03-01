@@ -413,6 +413,7 @@ export type SearchStackParamList = {
 
 export type GroupsStackParamList = {
   GroupList: undefined;
+  ExploreGroups: undefined;
   Group: { groupId: string };
   Channel: { groupId: string; channelId: string };
   GroupSettings: { groupId: string };
