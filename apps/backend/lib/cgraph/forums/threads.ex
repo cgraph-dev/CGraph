@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Threads do
 
   import Ecto.Query, warn: false
   alias CGraph.Forums.{Thread, ThreadPost}
-  alias CGraph.Forums.{Polls, PluginRuntime}
+  alias CGraph.Forums.{Polls, PluginRuntime, ForumAutomod}
   alias CGraph.Repo
 
   @doc """
@@ -75,6 +75,19 @@ defmodule CGraph.Forums.Threads do
     Repo.transaction(fn ->
       # Get or determine the board_id
       board_id = attrs["board_id"] || attrs[:board_id]
+      content = attrs["content"] || attrs[:content] || ""
+      title = attrs["title"] || attrs[:title] || ""
+
+      # Automod pre-check (look up forum_id from board)
+      board = if board_id, do: Repo.get(CGraph.Forums.Board, board_id)
+      forum_id = if board, do: board.forum_id
+
+      if forum_id do
+        case ForumAutomod.check_content(forum_id, "#{title} #{content}") do
+          {:block, reason} -> Repo.rollback({:automod_blocked, reason})
+          _ -> :ok
+        end
+      end
 
       # Create thread
       thread_result =

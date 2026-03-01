@@ -103,6 +103,9 @@ defmodule CGraph.Forums.Forum do
     field :redirect_count, :integer, default: 0
     field :inherit_permissions, :boolean, default: true
 
+    # Forum-level automod rules (JSON map)
+    field :automod_rules, :map, default: %{}
+
     # Aggregate stats (including sub-forums)
     field :total_thread_count, :integer, default: 0
     field :total_post_count, :integer, default: 0
