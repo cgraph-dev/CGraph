@@ -7,7 +7,7 @@
  * @module modules/forums/components/customization-center
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   PaintBrushIcon,
@@ -24,6 +24,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { toast } from '@/shared/components/ui';
+import { useCustomizationStore } from '../../store/forumThemeStore';
 import { ThemeEditor } from './theme-editor';
 import { LayoutEditor } from './layout-editor';
 import { HeaderBrandingEditor } from './header-branding-editor';
@@ -71,61 +72,53 @@ const TABS: TabConfig[] = [
 
 export function CustomizationCenter({ forumId, isOwner }: CustomizationCenterProps) {
   const [activeTab, setActiveTab] = useState<CustomizationCategory>('appearance');
-  const [options, setOptions] = useState<ForumCustomizationOptions | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
 
-  // Fetch current customization
-  const fetchOptions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/v1/forums/${forumId}/customization`);
-      const json = await res.json();
-      setOptions(json.data);
-    } catch {
-      toast.error('Failed to load customization options');
-    } finally {
-      setLoading(false);
-    }
-  }, [forumId]);
+  const {
+    options,
+    loading,
+    saving,
+    error,
+    previewDraft,
+    fetchCustomization,
+    updateCustomization,
+    resetCategory,
+    previewCustomization: _previewCustomization,
+    clearPreview: _clearPreview,
+  } = useCustomizationStore();
 
+  // Fetch current customization from store
   useEffect(() => {
-    fetchOptions();
-  }, [fetchOptions]);
+    fetchCustomization(forumId);
+  }, [forumId, fetchCustomization]);
 
-  // Save category changes
-  const handleSave = useCallback(async (category: CustomizationCategory, changes: Record<string, unknown>) => {
+  // Show error toasts from store
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
+  // Save category changes via store
+  const handleSave = async (category: CustomizationCategory, changes: Record<string, unknown>) => {
     try {
-      setSaving(true);
-      const res = await fetch(`/api/v1/forums/${forumId}/customization/${category}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(changes),
-      });
-      const json = await res.json();
-      setOptions(json.data);
+      await updateCustomization(forumId, category, changes);
       toast.success('Customization saved');
     } catch {
       toast.error('Failed to save changes');
-    } finally {
-      setSaving(false);
     }
-  }, [forumId]);
+  };
 
-  // Reset category to defaults
-  const handleReset = useCallback(async (category: CustomizationCategory) => {
+  // Reset category to defaults via store
+  const handleReset = async (category: CustomizationCategory) => {
     try {
-      const res = await fetch(`/api/v1/forums/${forumId}/customization/${category}`, {
-        method: 'DELETE',
-      });
-      const json = await res.json();
-      setOptions(json.data);
+      await resetCategory(forumId, category);
       toast.success('Reset to defaults');
     } catch {
       toast.error('Failed to reset');
     }
-  }, [forumId]);
+  };
+
+  // Use preview draft for the live preview, falling back to persisted options
+  const displayOptions = previewDraft ?? options;
 
   if (loading) {
     return (
@@ -207,10 +200,10 @@ export function CustomizationCenter({ forumId, isOwner }: CustomizationCenterPro
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {options && (
+              {displayOptions && (
                 <CategoryEditor
                   category={activeTab}
-                  options={options}
+                  options={displayOptions}
                   forumId={forumId}
                   onSave={(changes) => handleSave(activeTab, changes)}
                   saving={saving}
@@ -229,28 +222,28 @@ export function CustomizationCenter({ forumId, isOwner }: CustomizationCenterPro
             <div
               className="rounded-lg overflow-hidden border border-white/10"
               style={{
-                backgroundColor: options?.appearance?.background_color ?? '#1a1a1a',
-                color: options?.appearance?.text_color ?? '#ffffff',
-                fontFamily: (options?.appearance?.font_family as string) ?? 'Inter, system-ui, sans-serif',
+                backgroundColor: displayOptions?.appearance?.background_color ?? '#1a1a1a',
+                color: displayOptions?.appearance?.text_color ?? '#ffffff',
+                fontFamily: (displayOptions?.appearance?.font_family as string) ?? 'Inter, system-ui, sans-serif',
               }}
             >
               <div
                 className="p-3 text-sm font-bold"
                 style={{
-                  backgroundColor: options?.header_and_branding?.header_background_color ?? '#1F2937',
+                  backgroundColor: displayOptions?.header_and_branding?.header_background_color ?? '#1F2937',
                   color: '#fff',
                 }}
               >
                 Forum Header Preview
               </div>
               <div className="p-3 space-y-2 text-xs">
-                <div className="p-2 rounded" style={{ backgroundColor: `${options?.appearance?.primary_color ?? '#3B82F6'}20` }}>
-                  <span style={{ color: options?.appearance?.primary_color ?? '#3B82F6' }}>Sample Thread Title</span>
+                <div className="p-2 rounded" style={{ backgroundColor: `${displayOptions?.appearance?.primary_color ?? '#3B82F6'}20` }}>
+                  <span style={{ color: displayOptions?.appearance?.primary_color ?? '#3B82F6' }}>Sample Thread Title</span>
                 </div>
                 <div className="p-2 rounded bg-white/5">
-                  <span style={{ color: options?.appearance?.link_color ?? '#2563EB' }}>A link example</span>
+                  <span style={{ color: displayOptions?.appearance?.link_color ?? '#2563EB' }}>A link example</span>
                   {' — regular text with '}
-                  <span style={{ color: options?.appearance?.accent_color ?? '#F59E0B' }}>accent</span>
+                  <span style={{ color: displayOptions?.appearance?.accent_color ?? '#F59E0B' }}>accent</span>
                 </div>
               </div>
             </div>

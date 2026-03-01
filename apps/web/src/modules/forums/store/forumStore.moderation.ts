@@ -271,5 +271,18 @@ export function createModerationActions(set: Set, _get: Get) {
         throw error;
       }
     },
+
+    fetchForumModStats: async (forumId: string) => {
+      try {
+        const response = await api.get(`/api/v1/forums/${forumId}/moderation/stats`);
+        return response.data?.data || { pending_count: 0, resolved_count: 0 };
+      } catch (error: unknown) {
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'fetchForumModStats'
+        );
+        throw error;
+      }
+    },
   };
 }

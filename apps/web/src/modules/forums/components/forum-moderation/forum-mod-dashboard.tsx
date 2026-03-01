@@ -5,7 +5,8 @@
  *
  * @module modules/forums/components/forum-moderation/forum-mod-dashboard
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useForumStore } from '../../store/forumStore';
 import ForumAutomodSettings from './forum-automod-settings';
 import WarningPanel from './warning-panel';
 import { createLogger } from '@/lib/logger';
@@ -66,37 +67,34 @@ export default function ForumModDashboard({ forumId }: ForumModDashboardProps) {
 function ModQueueTab({ forumId }: { forumId: string }) {
   const [items, setItems] = useState<ModQueueItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const fetchForumModQueue = useForumStore((s) => s.fetchForumModQueue);
+  const takeForumModAction = useForumStore((s) => s.takeForumModAction);
 
-  const loadQueue = async () => {
-    setIsLoading(true);
-    try {
-      const { api } = await import('@/lib/api');
-      const response = await api.get(`/api/v1/forums/${forumId}/moderation/queue`);
-      setItems(response.data?.data || []);
-    } catch (error) {
-      logger.error(error instanceof Error ? error : new Error(String(error)), 'loadQueue');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    let cancelled = false;
+    const loadQueue = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchForumModQueue(forumId);
+        if (!cancelled) setItems(data as unknown as ModQueueItem[]);
+      } catch (error) {
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'loadQueue');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+    loadQueue();
+    return () => { cancelled = true; };
+  }, [forumId, fetchForumModQueue]);
 
   const handleAction = async (postId: string, action: string) => {
     try {
-      const { api } = await import('@/lib/api');
-      await api.post(`/api/v1/forums/${forumId}/moderation/action`, {
-        post_id: postId,
-        action,
-      });
+      await takeForumModAction(forumId, postId, action as 'approve' | 'remove' | 'hide');
       setItems((prev) => prev.filter((i) => i.id !== postId));
     } catch (error) {
       logger.error(error instanceof Error ? error : new Error(String(error)), 'handleAction');
     }
   };
-
-  // Load on mount
-  useState(() => {
-    loadQueue();
-  });
 
   if (isLoading) {
     return <div className="p-4 text-sm text-gray-500">Loading queue…</div>;
@@ -150,18 +148,20 @@ function ModStatsTab({ forumId }: { forumId: string }) {
   const [stats, setStats] = useState<{ pending_count: number; resolved_count: number } | null>(
     null
   );
+  const fetchForumModStats = useForumStore((s) => s.fetchForumModStats);
 
-  useState(() => {
+  useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
-        const { api } = await import('@/lib/api');
-        const response = await api.get(`/api/v1/forums/${forumId}/moderation/stats`);
-        setStats(response.data?.data || null);
+        const data = await fetchForumModStats(forumId);
+        if (!cancelled) setStats(data);
       } catch (error) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'loadStats');
       }
     })();
-  });
+    return () => { cancelled = true; };
+  }, [forumId, fetchForumModStats]);
 
   if (!stats) {
     return <div className="p-4 text-sm text-gray-500">Loading stats…</div>;

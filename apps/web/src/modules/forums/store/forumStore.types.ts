@@ -582,5 +582,13 @@ export interface ForumState {
   mergeThreads: (sourceThreadId: string, targetThreadId: string) => Promise<void>;
   closeThread: (threadId: string) => Promise<void>;
   reopenThread: (threadId: string) => Promise<void>;
+
+  // Forum-Level Moderation (queue, automod, warnings, stats)
+  fetchForumModQueue: (forumId: string, status?: string) => Promise<ModerationQueueItem[]>;
+  takeForumModAction: (forumId: string, postId: string, action: 'approve' | 'remove' | 'hide') => Promise<void>;
+  issueWarning: (forumId: string, userId: string, reason: string, points: number) => Promise<UserWarning | undefined>;
+  fetchForumAutomod: (forumId: string) => Promise<Record<string, unknown>>;
+  updateForumAutomod: (forumId: string, rules: Record<string, unknown>) => Promise<Record<string, unknown>>;
+  fetchForumModStats: (forumId: string) => Promise<{ pending_count: number; resolved_count: number }>;
   reset: () => void;
 }
