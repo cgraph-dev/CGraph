@@ -85,7 +85,7 @@ export default function GroupChannel() {
   const handleTyping = useCallback(() => {
     if (!channelId) return;
 
-    const topic = `channel:${channelId}`;
+    const topic = `group:${channelId}`;
     socketManager.sendTyping(topic, true);
 
     if (typingTimeoutRef.current) {
@@ -110,7 +110,7 @@ export default function GroupChannel() {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      socketManager.sendTyping(`channel:${channelId}`, false);
+      socketManager.sendTyping(`group:${channelId}`, false);
     } catch (error) {
       logger.error('Failed to send message:', error);
     } finally {
