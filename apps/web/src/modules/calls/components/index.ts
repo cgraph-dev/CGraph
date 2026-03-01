@@ -12,3 +12,7 @@ export { default as IncomingCallHandler } from './incoming-call-handler';
 export { default as IncomingCallModal } from './incoming-call-modal';
 export { VideoCallModal } from './video-call-modal';
 export { VoiceCallModal } from './voice-call-modal';
+
+// LiveKit group call components
+export { GroupCallView } from './group-call-view';
+export { LiveKitParticipantTile } from './livekit-participant-tile';
