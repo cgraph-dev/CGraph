@@ -29,6 +29,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
 
     with :ok <- verify_password(user, password),
          {:ok, _user} <- soft_delete_user(user),
+         :ok <- cleanup_on_soft_delete(user),
          {:ok, _job} <- schedule_hard_delete(user.id) do
       conn
       |> put_status(:ok)
@@ -87,6 +88,22 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
       is_active: true
     })
     |> Repo.update()
+  end
+
+  defp cleanup_on_soft_delete(user) do
+    import Ecto.Query
+
+    # Delete push tokens immediately — stop push notifications right away
+    from(pt in CGraph.Accounts.PushToken, where: pt.user_id == ^user.id)
+    |> Repo.delete_all()
+
+    # Revoke all auth tokens/sessions so user is signed out everywhere
+    CGraph.Auth.TokenManager.revoke_all_user_tokens(user.id)
+
+    # Presence cleanup happens automatically when socket connections drop
+    # after token revocation — Phoenix.Presence untracks by PID
+
+    :ok
   end
 
   defp schedule_hard_delete(user_id) do

@@ -88,4 +88,25 @@ defmodule CGraph.Notifications.PushTokens do
       token -> Repo.delete(token)
     end
   end
+
+  @doc "Exports all push token registrations for a user (GDPR data export). Token values are excluded for security."
+  @spec export_for_user(String.t()) :: {:ok, [map()]}
+  def export_for_user(user_id) do
+    tokens =
+      PushToken
+      |> where([p], p.user_id == ^user_id)
+      |> order_by([p], desc: p.inserted_at)
+      |> Repo.all()
+      |> Enum.map(fn t ->
+        %{
+          platform: t.platform,
+          device_id: t.device_id,
+          is_active: t.is_active,
+          last_used_at: t.last_used_at,
+          registered_at: t.inserted_at
+        }
+      end)
+
+    {:ok, tokens}
+  end
 end

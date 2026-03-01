@@ -180,6 +180,29 @@ defmodule CGraph.Notifications do
   # Serialization
   # ---------------------------------------------------------------------------
 
+  @doc "Exports all notifications for a user (GDPR data export)."
+  @spec export_user_notifications(String.t()) :: {:ok, [map()]}
+  def export_user_notifications(user_id) do
+    notifications =
+      Notification
+      |> where([n], n.user_id == ^user_id)
+      |> order_by([n], desc: n.inserted_at)
+      |> Repo.all()
+      |> Enum.map(fn n ->
+        %{
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          body: n.body,
+          data: n.data,
+          read_at: n.read_at,
+          created_at: n.inserted_at
+        }
+      end)
+
+    {:ok, notifications}
+  end
+
   @doc "Serialize a notification struct to a map for JSON/broadcast."
   @spec serialize(Notification.t()) :: map()
   def serialize(%Notification{} = n) do

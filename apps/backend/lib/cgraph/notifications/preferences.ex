@@ -114,6 +114,28 @@ defmodule CGraph.Notifications.Preferences do
     |> Repo.all()
   end
 
+  @doc "Exports all notification preferences for a user (GDPR data export)."
+  @spec export_for_user(String.t()) :: {:ok, [map()]}
+  def export_for_user(user_id) do
+    prefs =
+      NotificationPreference
+      |> where([p], p.user_id == ^user_id)
+      |> order_by([p], desc: p.updated_at)
+      |> Repo.all()
+      |> Enum.map(fn p ->
+        %{
+          target_type: p.target_type,
+          target_id: p.target_id,
+          mode: p.mode,
+          muted_until: p.muted_until,
+          created_at: p.inserted_at,
+          updated_at: p.updated_at
+        }
+      end)
+
+    {:ok, prefs}
+  end
+
   @doc "Bulk-fetches preferences for multiple targets (e.g. conversation list)."
   @spec bulk_get_preferences(String.t(), [{String.t(), String.t()}]) :: [NotificationPreference.t()]
   def bulk_get_preferences(user_id, targets) when is_list(targets) do

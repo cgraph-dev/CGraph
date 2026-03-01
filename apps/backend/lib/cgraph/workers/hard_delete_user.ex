@@ -40,7 +40,61 @@ defmodule CGraph.Workers.HardDeleteUser do
       )
       |> Repo.update_all(set: [sender_id: nil])
 
-      # Remove personal data
+      # --- Cascade deletes for associated data ---
+
+      # Notification preferences (Phase 9 — per-conversation/channel mute settings)
+      from(np in CGraph.Notifications.NotificationPreference,
+        where: np.user_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # Push tokens
+      from(pt in CGraph.Accounts.PushToken,
+        where: pt.user_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # Notifications
+      from(n in CGraph.Notifications.Notification,
+        where: n.user_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # Friendships (user can be on either side)
+      from(f in CGraph.Accounts.Friendship,
+        where: f.user_id == ^user.id or f.friend_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # E2EE keys — delete in order: one-time prekeys → signed prekeys → identity keys
+      identity_key_ids =
+        from(ik in CGraph.Crypto.E2EE.IdentityKey,
+          where: ik.user_id == ^user.id,
+          select: ik.id
+        )
+
+      from(otk in CGraph.Crypto.E2EE.OneTimePrekey,
+        where: otk.identity_key_id in subquery(identity_key_ids)
+      )
+      |> Repo.delete_all()
+
+      from(spk in CGraph.Crypto.E2EE.SignedPrekey,
+        where: spk.identity_key_id in subquery(identity_key_ids)
+      )
+      |> Repo.delete_all()
+
+      from(ik in CGraph.Crypto.E2EE.IdentityKey,
+        where: ik.user_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # User settings
+      from(us in CGraph.Accounts.UserSettings,
+        where: us.user_id == ^user.id
+      )
+      |> Repo.delete_all()
+
+      # Remove personal data (anonymize the user record)
       user
       |> Ecto.Changeset.change(%{
         email: "deleted_#{user.id}@deleted.invalid",

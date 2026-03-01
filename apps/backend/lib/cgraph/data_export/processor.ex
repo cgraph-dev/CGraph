@@ -20,7 +20,9 @@ defmodule CGraph.DataExport.Processor do
     activity: {CGraph.Audit, :export_user_activity},
     messages: {CGraph.Messages, :export_user_messages},
     connections: {CGraph.Connections, :export_user_connections},
-    notifications: {CGraph.Notifications, :export_user_notifications}
+    notifications: {CGraph.Notifications, :export_user_notifications},
+    notification_preferences: {CGraph.Notifications.Preferences, :export_for_user},
+    push_tokens: {CGraph.Notifications.PushTokens, :export_for_user}
   }
 
   # ---------------------------------------------------------------------------
