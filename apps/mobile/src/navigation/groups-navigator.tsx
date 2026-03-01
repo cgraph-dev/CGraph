@@ -20,6 +20,7 @@ import GroupModerationScreen from '../screens/groups/group-moderation-screen';
 import ChannelPermissionsScreen from '../screens/groups/channel-permissions-screen';
 import ReportContentScreen from '../screens/groups/report-content-screen';
 import BanListScreen from '../screens/groups/ban-list-screen';
+import AutomodSettingsScreen from '../screens/groups/automod-settings-screen';
 
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
@@ -111,6 +112,11 @@ export default function GroupsNavigator() {
         name="BanList"
         component={BanListScreen}
         options={{ title: 'Ban List' }}
+      />
+      <Stack.Screen
+        name="AutomodSettings"
+        component={AutomodSettingsScreen}
+        options={{ title: 'Automod Settings' }}
       />
     </Stack.Navigator>
   );

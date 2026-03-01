@@ -426,6 +426,7 @@ export type GroupsStackParamList = {
   ChannelPermissions: { channelId: string; groupId: string };
   ReportContent: { targetType: string; targetId: string; groupId: string; targetPreview?: string };
   BanList: { groupId: string };
+  AutomodSettings: { groupId: string };
 };
 
 export type ForumsStackParamList = {

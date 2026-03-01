@@ -51,6 +51,9 @@ defmodule CGraph.Groups.Operations do
             "type" => "text"
           })
 
+          # Seed default automod rules for the new group
+          CGraph.Groups.Automod.seed_default_rules(group.id)
+
           {:ok, loaded_group} = CGraph.Groups.get_group(group.id)
           loaded_group
         end)

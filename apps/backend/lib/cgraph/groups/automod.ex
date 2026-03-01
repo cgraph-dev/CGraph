@@ -58,6 +58,46 @@ defmodule CGraph.Groups.Automod do
     |> Repo.update()
   end
 
+  @doc "Get all enabled rules for a group."
+  @spec get_enabled_rules(Ecto.UUID.t()) :: [AutomodRule.t()]
+  def get_enabled_rules(group_id) do
+    AutomodRule
+    |> where(group_id: ^group_id, is_enabled: true)
+    |> order_by(asc: :inserted_at)
+    |> Repo.all()
+  end
+
+  @doc "Seed default automod rules for a newly created group."
+  @spec seed_default_rules(Ecto.UUID.t()) :: :ok
+  def seed_default_rules(group_id) do
+    defaults = [
+      %{
+        "name" => "Basic Word Filter",
+        "rule_type" => "word_filter",
+        "pattern" => "spam,scam,phishing,nigger,faggot,retard",
+        "action" => "delete",
+        "is_enabled" => true,
+        "group_id" => group_id
+      },
+      %{
+        "name" => "Phishing Link Filter",
+        "rule_type" => "link_filter",
+        "pattern" => "bit.ly,tinyurl.com,grabify.link,iplogger.org",
+        "action" => "flag_for_review",
+        "is_enabled" => true,
+        "group_id" => group_id
+      }
+    ]
+
+    Enum.each(defaults, fn attrs ->
+      %AutomodRule{}
+      |> AutomodRule.changeset(attrs)
+      |> Repo.insert()
+    end)
+
+    :ok
+  end
+
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn
       {k, v} when is_atom(k) -> {Atom.to_string(k), v}

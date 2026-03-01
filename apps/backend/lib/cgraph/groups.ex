@@ -101,6 +101,13 @@ defmodule CGraph.Groups do
   defdelegate has_effective_permission?(member, group, channel, perm), to: Roles
 
   # ============================================================================
+  # Delegated: Automod
+  # ============================================================================
+
+  defdelegate check_automod(group_id, content, sender_id), to: CGraph.Groups.Automod.Enforcement, as: :check_message
+  defdelegate seed_automod_defaults(group_id), to: CGraph.Groups.Automod, as: :seed_default_rules
+
+  # ============================================================================
   # Delegated: Invites
   # ============================================================================
 

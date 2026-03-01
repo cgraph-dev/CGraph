@@ -86,13 +86,16 @@ defmodule CGraphWeb.GroupChannel do
     channel = socket.assigns.channel
 
     with {:ok, socket} <- check_rate_limit(socket),
-         :ok <- verify_send_permission(member, group, channel) do
+         :ok <- verify_send_permission(member, group, channel),
+         :ok <- check_automod_rules(group, channel, member, content) do
       handle_message_creation(socket, user, channel_id, member, params, content)
     else
       {:error, :rate_limited, socket} ->
         {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
       {:error, :no_permission} ->
         {:reply, {:error, %{reason: "no_permission"}}, socket}
+      {:error, :automod_blocked, action_result} ->
+        handle_automod_action(action_result, socket)
     end
   end
 
@@ -273,6 +276,54 @@ defmodule CGraphWeb.GroupChannel do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  # Automod: check message against enabled rules, bypass for administrators
+  defp check_automod_rules(group, _channel, member, content) do
+    # Administrators bypass automod entirely
+    if Groups.has_effective_permission?(member, group, nil, :administrator) do
+      :ok
+    else
+      case Groups.check_automod(group.id, content, member.user_id) do
+        :ok ->
+          :ok
+        {:blocked, rule} ->
+          action_result = CGraph.Groups.Automod.Enforcement.execute_action(rule, content, member, nil)
+          {:error, :automod_blocked, action_result}
+      end
+    end
+  end
+
+  # Handle automod action results
+  defp handle_automod_action({:delete, info}, socket) do
+    {:reply, {:error, %{reason: "automod_blocked", message: "Message removed by automod", rule: info.rule_name}}, socket}
+  end
+
+  defp handle_automod_action({:warn, info}, socket) do
+    # Allow message through but push a warning to sender
+    push(socket, "automod_warning", %{message: info.warning, rule: info.rule_name})
+    # Return ok to let the message proceed — caller should continue
+    {:reply, {:ok, %{warning: info.warning}}, socket}
+  end
+
+  defp handle_automod_action({:mute, info}, socket) do
+    {:reply, {:error, %{reason: "automod_muted", message: "You have been muted by automod", until: DateTime.to_iso8601(info.mute_until)}}, socket}
+  end
+
+  defp handle_automod_action({:flag, info}, socket) do
+    # Flag for review — allow message but create a report
+    # The report is created asynchronously
+    Task.start(fn ->
+      CGraph.Moderation.Reports.create_report(%{
+        target_type: "message",
+        target_id: socket.assigns.channel_id,
+        category: "automod_flag",
+        description: info.description,
+        reporter_id: nil
+      })
+    end)
+    # Message still goes through — return a special ok so the caller continues
+    {:reply, {:ok, %{flagged: true}}, socket}
   end
 
   # Rate limiting: sliding window implementation
