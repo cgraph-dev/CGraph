@@ -94,7 +94,9 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@nozbe/watermelondb": "^0.27.1",
     "react-native-quick-crypto": "^0.7.0",
-    "react-native-webrtc": "^124.0.4"
+    "react-native-webrtc": "^124.0.4",
+    "@livekit/react-native": "^2.4.1",
+    "@livekit/react-native-webrtc": "^125.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
