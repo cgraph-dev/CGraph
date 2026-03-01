@@ -23,6 +23,7 @@ import { useAuthStore, useThemeStore } from '@/stores';
 import api from '../../lib/api';
 import { safeFormatTime } from '../../lib/dateUtils';
 import socketManager from '../../lib/socket';
+import ChannelThreadSheet from './channel-thread-sheet';
 import { GroupsStackParamList, Message, Channel } from '../../types';
 
 type Props = {
@@ -43,6 +44,8 @@ export default function ChannelScreen({ navigation, route }: Props) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [threadMessage, setThreadMessage] = useState<Message | null>(null);
+  const [threadVisible, setThreadVisible] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -116,6 +119,13 @@ export default function ChannelScreen({ navigation, route }: Props) {
       const isGrouped = prevMessage?.sender_id === item.sender_id;
 
       return (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onLongPress={() => {
+            setThreadMessage(item);
+            setThreadVisible(true);
+          }}
+        >
         <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>
           {!isGrouped && (
             <View style={styles.messageSender}>
@@ -141,7 +151,23 @@ export default function ChannelScreen({ navigation, route }: Props) {
           <View style={[styles.messageContent, !isGrouped && styles.messageContentWithAvatar]}>
             <Text style={[styles.messageText, { color: colors.text }]}>{item.content}</Text>
           </View>
+          {/* Thread reply hint */}
+          {item.thread_count != null && item.thread_count > 0 && (
+            <TouchableOpacity
+              style={[styles.threadBadge, { borderColor: colors.border }]}
+              onPress={() => {
+                setThreadMessage(item);
+                setThreadVisible(true);
+              }}
+            >
+              <Ionicons name="chatbubbles-outline" size={14} color={colors.primary} />
+              <Text style={[styles.threadBadgeText, { color: colors.primary }]}>
+                {item.thread_count} {item.thread_count === 1 ? 'reply' : 'replies'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
+        </TouchableOpacity>
       );
     },
     [messages, colors]
@@ -215,6 +241,18 @@ export default function ChannelScreen({ navigation, route }: Props) {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* Thread sheet */}
+      <ChannelThreadSheet
+        visible={threadVisible}
+        parentMessage={threadMessage}
+        groupId={groupId}
+        channelId={channelId}
+        onClose={() => {
+          setThreadVisible(false);
+          setThreadMessage(null);
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -307,5 +345,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  threadBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 44,
+    paddingTop: 4,
+    gap: 4,
+  },
+  threadBadgeText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
 });
