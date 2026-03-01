@@ -547,9 +547,9 @@ forums, voice channels, and gamification all build on.
 
 | Plan  | Scope                                                           | Wave | Status      |
 | ----- | --------------------------------------------------------------- | ---- | ----------- |
-| 11-01 | WebSocket topic alignment + group channel messaging E2E         | 1    | Not started |
-| 11-02 | Group CRUD, channels, and invites E2E wiring                    | 1    | Not started |
-| 11-03 | Explore page for group discovery + channel message threads      | 2    | Not started |
+| 11-01 | WebSocket topic alignment + group channel messaging E2E         | 1    | ✅ Complete  |
+| 11-02 | Group CRUD, channels, and invites E2E wiring                    | 1    | ✅ Complete  |
+| 11-03 | Explore page for group discovery + channel message threads      | 2    | ✅ Complete  |
 
 ---
 
