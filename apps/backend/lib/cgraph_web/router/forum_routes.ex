@@ -62,6 +62,24 @@ defmodule CGraphWeb.Router.ForumRoutes do
           resources "/plugins", PluginController, except: [:new, :edit] do
             post "/toggle", PluginController, :toggle
           end
+
+          # Forum customization engine (55 options, 8 categories)
+          get "/customization", ForumCustomizationController, :show
+          get "/customization/options", ForumCustomizationController, :list_options
+          put "/customization/:category", ForumCustomizationController, :update
+          delete "/customization/:category", ForumCustomizationController, :reset
+          post "/customization/preview", ForumCustomizationController, :preview
+
+          # Custom fields CRUD
+          get "/custom-fields", ForumCustomizationController, :list_fields
+          post "/custom-fields", ForumCustomizationController, :create_field
+          put "/custom-fields/:id", ForumCustomizationController, :update_field
+          delete "/custom-fields/:id", ForumCustomizationController, :delete_field
+
+          # Forum theme CRUD (separate from user profile ThemeController)
+          resources "/themes", ForumThemeCrudController, except: [:new, :edit] do
+            post "/activate", ForumThemeCrudController, :activate
+          end
         end
 
         # Board Permissions
