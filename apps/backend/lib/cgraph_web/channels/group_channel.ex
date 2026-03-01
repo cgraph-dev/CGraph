@@ -148,6 +148,25 @@ defmodule CGraphWeb.GroupChannel do
   end
 
   @impl true
+  def handle_in("edit_message", %{"message_id" => message_id, "content" => content}, socket) do
+    user = socket.assigns.current_user
+
+    case Messaging.edit_message(message_id, user.id, content) do
+      {:ok, message} ->
+        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to, :edits])
+        serialized = MessageJSON.message_data(message)
+        broadcast!(socket, "message_updated", %{message: serialized})
+        {:reply, {:ok, %{message_id: message.id}}, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+    end
+  end
+
+  @impl true
   def handle_in("delete_message", %{"message_id" => message_id}, socket) do
     user = socket.assigns.current_user
     member = socket.assigns.member

@@ -14,12 +14,14 @@ import type { ThemeColors } from '@/stores';
 
 interface EmptyGroupStateProps {
   colors: ThemeColors;
+  onCreatePress?: () => void;
+  onExplorePress?: () => void;
 }
 
 /**
  *
  */
-export function EmptyGroupState({ colors }: EmptyGroupStateProps) {
+export function EmptyGroupState({ colors, onCreatePress, onExplorePress }: EmptyGroupStateProps) {
   return (
     <View style={styles.emptyState}>
       <GlassCard variant="crystal" intensity="medium" style={styles.emptyCard}>
@@ -36,7 +38,7 @@ export function EmptyGroupState({ colors }: EmptyGroupStateProps) {
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              // Create group
+              onCreatePress?.();
             }}
             activeOpacity={0.8}
           >
@@ -49,7 +51,7 @@ export function EmptyGroupState({ colors }: EmptyGroupStateProps) {
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              // Browse groups
+              onExplorePress?.();
             }}
             activeOpacity={0.8}
           >

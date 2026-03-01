@@ -62,7 +62,7 @@ export default function GroupListScreen({ navigation }: GroupListScreenProps) {
           <AnimatedHeader
             colors={colors}
             onCreatePress={() => {
-              // Navigate to create group
+              navigation.navigate('CreateGroup');
             }}
           />
         </View>
@@ -103,7 +103,13 @@ export default function GroupListScreen({ navigation }: GroupListScreenProps) {
     [colors, isDark, navigation]
   );
 
-  const renderEmptyState = () => <EmptyGroupState colors={colors} />;
+  const renderEmptyState = () => (
+    <EmptyGroupState
+      colors={colors}
+      onCreatePress={() => navigation.navigate('CreateGroup')}
+      onExplorePress={() => navigation.navigate('ExploreGroups')}
+    />
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

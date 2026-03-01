@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Alert,
   TextInput,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +34,7 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
   const [showOverview, setShowOverview] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
         const data = res.data?.data || res.data;
         setGroupName(data?.name || '');
         setGroupDescription(data?.description || '');
+        setIsPublic(data?.visibility === 'public' || data?.is_public === true);
       })
       .catch(() => {});
   }, [groupId]);
@@ -53,6 +56,7 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
       await api.patch(`/api/v1/groups/${groupId}`, {
         name: groupName.trim(),
         description: groupDescription.trim() || null,
+        visibility: isPublic ? 'public' : 'private',
       });
       Alert.alert('Saved', 'Group settings updated');
       setShowOverview(false);
@@ -142,6 +146,19 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
               multiline
               numberOfLines={3}
             />
+            <View style={styles.visibilityRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.overviewLabel, { color: colors.text }]}>Public Group</Text>
+                <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+                  Anyone can find and join
+                </Text>
+              </View>
+              <Switch
+                value={isPublic}
+                onValueChange={setIsPublic}
+                trackColor={{ false: colors.border, true: colors.primary }}
+              />
+            </View>
             <View style={styles.overviewActions}>
               <TouchableOpacity
                 style={[styles.overviewBtn, { backgroundColor: colors.background }]}
@@ -264,6 +281,15 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
     justifyContent: 'flex-end',
+  },
+  visibilityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   overviewBtn: {
     paddingHorizontal: 20,

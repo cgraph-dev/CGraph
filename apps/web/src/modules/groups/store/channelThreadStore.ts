@@ -26,6 +26,8 @@ interface ChannelThreadState {
   hasMore: boolean;
   /** Per-message reply counts: messageId → count */
   replyCounts: Record<string, number>;
+  /** Derived: whether thread panel is open */
+  isOpen: boolean;
 
   // Actions
   openThread: (channelId: string, message: ChannelMessage) => Promise<void>;
@@ -45,6 +47,9 @@ export const useChannelThreadStore = create<ChannelThreadState>()(
       isLoading: false,
       hasMore: false,
       replyCounts: {},
+      get isOpen() {
+        return get().activeThread !== null;
+      },
 
       openThread: async (channelId, message) => {
         set({

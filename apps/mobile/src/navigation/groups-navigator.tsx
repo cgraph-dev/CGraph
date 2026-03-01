@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GroupsStackParamList } from '../types';
 import { useThemeStore } from '@/stores';
 import GroupListScreen from '../screens/groups/group-list-screen';
+import CreateGroupScreen from '../screens/groups/create-group-screen';
 import ExploreGroupsScreen from '../screens/groups/explore-groups-screen';
 import GroupScreen from '../screens/groups/group-screen';
 import ChannelScreen from '../screens/groups/channel-screen';
@@ -47,6 +48,11 @@ export default function GroupsNavigator() {
         name="ExploreGroups"
         component={ExploreGroupsScreen}
         options={{ title: 'Explore Groups' }}
+      />
+      <Stack.Screen
+        name="CreateGroup"
+        component={CreateGroupScreen}
+        options={{ title: 'Create Group', presentation: 'modal' }}
       />
       <Stack.Screen
         name="Group"

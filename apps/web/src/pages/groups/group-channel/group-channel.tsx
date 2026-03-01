@@ -56,7 +56,10 @@ export default function GroupChannel() {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Thread panel state
-  const { isOpen: threadOpen, replyCounts, openThread, fetchReplyCounts } = useChannelThreadStore();
+  const threadOpen = useChannelThreadStore((s) => s.activeThread !== null);
+  const replyCounts = useChannelThreadStore((s) => s.replyCounts);
+  const openThread = useChannelThreadStore((s) => s.openThread);
+  const fetchReplyCounts = useChannelThreadStore((s) => s.fetchReplyCounts);
 
   const group = groups.find((g) => g.id === groupId);
   const channel = group?.channels?.find((c) => c.id === channelId);
@@ -72,7 +75,7 @@ export default function GroupChannel() {
     socketManager.joinGroupChannel(channelId);
     fetchChannelMessages(channelId);
     fetchMembers(groupId);
-    fetchReplyCounts(channelId);
+    // Reply counts fetched reactively after messages load
 
     return () => {
       setActiveChannel(null);
@@ -86,6 +89,13 @@ export default function GroupChannel() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages.length]);
+
+  // Fetch thread reply counts when messages load
+  useEffect(() => {
+    if (!channelId || messages.length === 0) return;
+    const messageIds = messages.map((m) => m.id);
+    fetchReplyCounts(channelId, messageIds);
+  }, [channelId, messages.length, fetchReplyCounts]);
 
   // Handle typing indicator
   const handleTyping = useCallback(() => {
