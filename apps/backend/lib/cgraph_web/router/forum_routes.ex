@@ -97,6 +97,13 @@ defmodule CGraphWeb.Router.ForumRoutes do
           resources "/themes", ForumThemeCrudController, except: [:new, :edit] do
             post "/activate", ForumThemeCrudController, :activate
           end
+
+          # Forum leaderboard (unified scoring)
+          get "/leaderboard", ForumLeaderboardController, :index
+          get "/leaderboard/my-rank", ForumLeaderboardController, :my_rank
+          get "/ranks", ForumLeaderboardController, :list_ranks
+          put "/ranks", ForumLeaderboardController, :update_ranks
+          post "/leaderboard/refresh", ForumLeaderboardController, :refresh
         end
 
         # Board Permissions
