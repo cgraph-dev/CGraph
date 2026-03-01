@@ -26,7 +26,7 @@
 | 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11 ✅ Complete (2026-03-01) |
 | 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12 ✅                       |
 | 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                       |
-| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14                         |
+| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14 ✅ Complete (2026-03-02) |
 | 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14                         |
 | 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16                         |
 | 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13                   |
@@ -695,7 +695,7 @@ it all together with real-time Phoenix Channel updates and full-text search.
 
 ---
 
-## Phase 15: Forum Customization
+## Phase 15: Forum Customization ✅ Complete (2026-03-02)
 
 **Goal:** 50+ customization options, plugin system, advanced forum features.
 
@@ -726,11 +726,26 @@ names, rank images. This is what makes CGraph forums competitive with MyBB/XenFo
 4. RSS feed for a board returns valid XML with recent threads
 5. 50+ distinct customization options are enumerable and functional
 
+### Discovery Findings
+
+- **FORUM-07 (50+ Options) ~55%** — Backend: `ForumTheme` (96L), `Forum` has custom_css/sidebar/header fields, `ThemeController` (159L). Web: theme store (200L) with 3 presets, theme provider. **Gaps:** No CSS editor, no widget configurator, no custom fields, no badge manager, no karma names, no rank images. ~20 of 50 options missing.
+- **FORUM-08 (Plugins) ~70%** — Backend: `ForumPlugin` (107L) with 18 hooks, `Plugins` context (268L), controller+routes. Web: marketplace page+store. **Gap:** No plugin execution runtime (hooks defined but never dispatched), no conflict detection.
+- **FORUM-11 (Moderation) ~70%** — Backend: `moderation.ex` (213L), reports, bans, moderators. Web: 8-slice moderation store, automod settings. **Gap:** Automod is group-level not forum-level, no warning/strike system, mobile is groups-only.
+- **FORUM-12 (Permissions) ~60%** — Backend: `BoardPermission` (285L), `PermissionTemplate` (241L), `PermissionsController` (470L). Web: forum-level panel only. **Gap:** No board-level permissions UI, no template management pages, no mobile.
+- **FORUM-13 (Emoji/Icons) ~65%** — Backend: `CustomEmoji` (262L), `EmojiPack` (72L), `PostIcon` (155L), controller (445L). **Gap:** No pack import/export, no post icon selector in thread creation, mobile basic.
+- **FORUM-14 (RSS) ~60%** — Backend: `rss.ex` (170L), `RssController` (480L). Web: RSS button+feeds page. **Gap:** No per-board RSS, no mobile RSS, thin tests.
+- **FORUM-15 (User Groups) ~45%** — Backend complete (90%): `ForumUserGroup` (213L), `MemberSecondaryGroup` (209L), `GroupAutoRule` (323L), `SecondaryGroupsController` (447L). **Gap:** Zero web admin UI, zero mobile.
+- **FORUM-16 (Ranking) ~65%** — Backend: `RankingEngine` (253L), `Leaderboard` (71L), `LeaderboardController` (181L). **Gap:** No gamification bridge, no Oban cron, no custom karma names, no rank images, forum leaderboard page is 15-line stub.
+
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                    | Wave | Depends         | Status |
+| ----- | ------------------------------------------------------------------------ | ---- | --------------- | ------ |
+| 15-01 | Customization engine — 55 options, CSS editor, widgets, custom fields    | 1    | —               | —      |
+| 15-02 | Plugin execution runtime + forum automod + warn/strike system            | 1    | —               | —      |
+| 15-03 | User groups admin UI + per-board permissions UI + templates              | 1    | —               | —      |
+| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS                    | 2    | 15-01, 02, 03   | —      |
+| 15-05 | Ranking integration + leaderboard + gamification bridge + rank images    | 2    | 15-01, 02, 03   | —      |
 
 ---
 

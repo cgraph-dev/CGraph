@@ -10,16 +10,16 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 15 — Forum Customization** — **Planned (5 plans, 2 waves)**
+**Phase 15 — Forum Customization** — **Complete (5/5 plans)**
 
-Phase 15 builds on the Phase 14 forum core with 8 requirements: 50+ customization options, plugin system, forum moderation, per-board permissions, emoji packs, RSS feeds, user groups, and ranking/leaderboard. Backend is 85-90% complete across all requirements — this phase is primarily frontend admin UI + integration work.
+Phase 15 built on the Phase 14 forum core with 8 requirements delivered: 55 customization options with admin UI, plugin runtime with hook dispatch, forum automod with warning/strike system, user groups + per-board permissions, emoji pack import/export, per-board RSS feeds, and ranking/leaderboard integrated with gamification.
 
 ## Position
 
-- **Phase:** 15 of 19 — Forum Customization (Planned)
-- **Plan:** 3/5 plans complete
-- **Status:** Executing — Wave 1 complete, Wave 2 starting
-- **Last activity:** 2026-03-01 — Wave 1 complete (15-01, 15-02, 15-03)
+- **Phase:** 15 of 19 — Forum Customization (Complete)
+- **Plan:** 5/5 plans complete
+- **Status:** Phase complete
+- **Last activity:** 2026-03-02 — Phase 15 complete (all 5 plans, both waves)
 
 ## Plans
 
@@ -28,17 +28,17 @@ Phase 15 builds on the Phase 14 forum core with 8 requirements: 50+ customizatio
 | 15-01 | Customization engine — 55 options, CSS editor, widgets, fields     | 1    | ✅          | —               | ✅ Complete |
 | 15-02 | Plugin runtime + forum automod + warn/strike system                | 1    | ✅          | —               | ✅ Complete |
 | 15-03 | User groups admin UI + per-board permissions UI + templates        | 1    | ✅          | —               | ✅ Complete |
-| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS              | 2    | ✅          | 15-01,15-02,15-03 | —         |
-| 15-05 | Ranking integration + leaderboard + gamification bridge            | 2    | ✅          | 15-01,15-02,15-03 | —         |
+| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS              | 2    | ✅          | 15-01,15-02,15-03 | ✅ Complete |
+| 15-05 | Ranking integration + leaderboard + gamification bridge            | 2    | ✅          | 15-01,15-02,15-03 | ✅ Complete |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 74%       |
-| Phases complete    | 14 / 19   |
-| Requirements done  | 87 / 136  |
-| Current phase reqs | 0 / 8     |
+| Overall progress   | 79%       |
+| Phases complete    | 15 / 19   |
+| Requirements done  | 95 / 136  |
+| Current phase reqs | 8 / 8     |
 
 ## Phase Summary
 
@@ -58,7 +58,7 @@ Phase 15 builds on the Phase 14 forum core with 8 requirements: 50+ customizatio
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
 | 13  | Voice & Video           | **Complete** (2026-03-01) |
 | 14  | Forum Core              | **Complete** (2026-03-01) |
-| 15  | Forum Customization     | **Planned** (5 plans)     |
+| 15  | Forum Customization     | **Complete** (2026-03-02) |
 | 16  | Gamification            | Unblocked                 |
 | 17  | Monetization            | Blocked by 16             |
 | 18  | Rich Media & Polish     | Unblocked                 |
@@ -153,9 +153,9 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 
 ## Session Continuity
 
-Last session: 2026-03-01
-Stopped at: Plan 15-03 complete — 12/12 tasks, 1/5 plans done, Wave 1 in progress
-Resume file: .gsd/phases/15-forum-customization/15-03-SUMMARY.md
+Last session: 2026-03-02
+Stopped at: Phase 15 complete — all 5/5 plans done, 55 tasks total
+Resume file: .gsd/phases/15-forum-customization/15-05-SUMMARY.md
 
 ## Last Action
 
