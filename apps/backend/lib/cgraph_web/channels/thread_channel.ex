@@ -27,7 +27,7 @@ defmodule CGraphWeb.ThreadChannel do
 
     case Forums.get_thread(thread_id) do
       {:ok, thread} ->
-        case Forums.get_forum(thread.forum_id) do
+        case Forums.get_forum(thread.board.forum_id) do
           {:ok, forum} ->
             case Forums.authorize_action(user, forum, :view) do
               :ok ->
@@ -125,7 +125,7 @@ defmodule CGraphWeb.ThreadChannel do
   end
 
   @impl true
-  def handle_in("vote", %{"value" => value}, socket) when value in [1, -1, 0] do
+  def handle_in("vote", %{"value" => value}, socket) when value in [1, -1] do
     user = socket.assigns.current_user
     thread = socket.assigns.thread
     forum = socket.assigns.forum
@@ -159,6 +159,11 @@ defmodule CGraphWeb.ThreadChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: inspect(reason)}}, socket}
     end
+  end
+
+  @impl true
+  def handle_in("vote", %{"value" => 0}, socket) do
+    {:reply, {:error, %{reason: "invalid_value", message: "Vote value must be 1 or -1"}}, socket}
   end
 
   @impl true
@@ -199,7 +204,7 @@ defmodule CGraphWeb.ThreadChannel do
 
   @impl true
   def handle_in("vote_comment", %{"comment_id" => comment_id, "value" => value}, socket)
-      when value in [1, -1, 0] do
+      when value in [1, -1] do
     user = socket.assigns.current_user
     forum = socket.assigns.forum
 
@@ -374,7 +379,7 @@ defmodule CGraphWeb.ThreadChannel do
         }
       end),
       total_votes: poll.total_votes || 0,
-      ends_at: poll.ends_at
+      ends_at: poll.closes_at
     }
   end
 
