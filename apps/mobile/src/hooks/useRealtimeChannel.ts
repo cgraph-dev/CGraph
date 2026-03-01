@@ -280,7 +280,7 @@ export function useConversationChannel(conversationId: string) {
  * Hook for group channel real-time features.
  */
 export function useGroupChannel(groupId: string, channelId: string) {
-  const topic = `group:${groupId}:channel:${channelId}`;
+  const topic = `group:${channelId}`;
   
   return useRealtimeChannel(topic, {
     trackPresence: true,
