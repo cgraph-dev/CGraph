@@ -150,4 +150,30 @@ defmodule CGraphWeb.API.V1.RoleController do
       :ok
     end
   end
+
+  @doc """
+  Get effective permissions for a member in a channel.
+  GET /api/v1/groups/:group_id/channels/:channel_id/permissions/:member_id
+  """
+  @spec effective_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def effective_permissions(conn, %{"group_id" => group_id, "channel_id" => channel_id, "member_id" => member_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, group} <- Groups.get_group(group_id),
+         :ok <- Groups.authorize_action(user, group, :view),
+         {:ok, channel} <- Groups.get_channel(group, channel_id),
+         {:ok, member} <- Groups.get_member(group, member_id) do
+      # Preload roles on member if not already loaded
+      member = CGraph.Repo.preload(member, :roles)
+      effective = Groups.calculate_effective_permissions(member, group, channel)
+      permissions_map = CGraph.Groups.Role.permissions_map()
+
+      result =
+        Enum.into(permissions_map, %{}, fn {perm_name, bit} ->
+          {Atom.to_string(perm_name), Bitwise.band(effective, bit) != 0}
+        end)
+
+      json(conn, %{data: result})
+    end
+  end
 end

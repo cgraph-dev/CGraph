@@ -94,6 +94,8 @@ defmodule CGraph.Groups do
   defdelegate delete_role(role), to: Roles
   defdelegate reorder_roles(group, role_ids), to: Roles
   defdelegate calculate_permissions(member, group), to: Roles
+  defdelegate calculate_effective_permissions(member, group, channel), to: Roles
+  defdelegate has_effective_permission?(member, group, channel, perm), to: Roles
 
   # ============================================================================
   # Delegated: Invites

@@ -49,6 +49,7 @@ defmodule CGraphWeb.Router.MessagingRoutes do
             post "/typing", ChannelMessageController, :typing
             resources "/permissions", PermissionOverwriteController, only: [:index, :create, :update, :delete]
             resources "/pins", PinnedMessageController, only: [:index, :create, :delete]
+            get "/permissions/:member_id/effective", RoleController, :effective_permissions
           end
 
           # Channel reordering (outside nested resource to avoid :id requirement)

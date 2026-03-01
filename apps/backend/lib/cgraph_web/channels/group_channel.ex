@@ -29,11 +29,14 @@ defmodule CGraphWeb.GroupChannel do
     user = socket.assigns.current_user
 
     with {:ok, channel} <- Groups.get_channel(channel_id),
+         {:ok, group} <- Groups.get_group(channel.group_id),
          {:ok, member} <- get_channel_member(channel, user.id),
-         :ok <- verify_channel_access(member, channel) do
+         :ok <- verify_channel_access(member, group, channel) do
       socket = socket
         |> assign(:channel_id, channel_id)
         |> assign(:group_id, channel.group_id)
+        |> assign(:channel, channel)
+        |> assign(:group, group)
         |> assign(:member, member)
         |> assign(:rate_limit_messages, [])
       send(self(), :after_join)
@@ -79,9 +82,11 @@ defmodule CGraphWeb.GroupChannel do
     user = socket.assigns.current_user
     channel_id = socket.assigns.channel_id
     member = socket.assigns.member
+    group = socket.assigns.group
+    channel = socket.assigns.channel
 
     with {:ok, socket} <- check_rate_limit(socket),
-         :ok <- verify_send_permission(member) do
+         :ok <- verify_send_permission(member, group, channel) do
       handle_message_creation(socket, user, channel_id, member, params, content)
     else
       {:error, :rate_limited, socket} ->
@@ -170,9 +175,11 @@ defmodule CGraphWeb.GroupChannel do
   def handle_in("delete_message", %{"message_id" => message_id}, socket) do
     user = socket.assigns.current_user
     member = socket.assigns.member
+    group = socket.assigns.group
+    channel = socket.assigns.channel
 
     with {:ok, message} <- Messaging.get_message(message_id),
-         :ok <- verify_delete_permission(message, user, member) do
+         :ok <- verify_delete_permission(message, user, member, group, channel) do
       execute_message_deletion(socket, message, message_id)
     else
       {:error, :not_found} -> {:reply, {:error, %{reason: "not_found"}}, socket}
@@ -183,8 +190,10 @@ defmodule CGraphWeb.GroupChannel do
   @impl true
   def handle_in("pin_message", %{"message_id" => message_id}, socket) do
     member = socket.assigns.member
+    group = socket.assigns.group
+    channel = socket.assigns.channel
 
-    if Groups.can_manage_messages?(member) do
+    if Groups.has_effective_permission?(member, group, channel, :manage_messages) do
       case Groups.pin_message(message_id, socket.assigns.channel_id) do
         {:ok, _} ->
           broadcast!(socket, "message_pinned", %{message_id: message_id})
@@ -209,16 +218,16 @@ defmodule CGraphWeb.GroupChannel do
     end
   end
 
-  defp verify_channel_access(member, channel) do
-    if Groups.can_view_channel?(member, channel), do: :ok, else: {:error, :no_access}
+  defp verify_channel_access(member, group, channel) do
+    if Groups.has_effective_permission?(member, group, channel, :view_channels), do: :ok, else: {:error, :no_access}
   end
 
-  defp verify_send_permission(member) do
-    if Groups.can_send_messages?(member), do: :ok, else: {:error, :no_permission}
+  defp verify_send_permission(member, group, channel) do
+    if Groups.has_effective_permission?(member, group, channel, :send_messages), do: :ok, else: {:error, :no_permission}
   end
 
-  defp verify_delete_permission(message, user, member) do
-    can_delete = message.sender_id == user.id or Groups.can_manage_messages?(member)
+  defp verify_delete_permission(message, user, member, group, channel) do
+    can_delete = message.sender_id == user.id or Groups.has_effective_permission?(member, group, channel, :manage_messages)
     if can_delete, do: :ok, else: {:error, :no_permission}
   end
 
