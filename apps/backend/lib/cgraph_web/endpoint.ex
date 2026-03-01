@@ -28,7 +28,7 @@ defmodule CGraphWeb.Endpoint do
   socket "/socket", CGraphWeb.UserSocket,
     websocket: [
       connect_info: [:peer_data, :uri, :x_headers],
-      timeout: 45_000
+      timeout: 10_000
     ],
     longpoll: false
 

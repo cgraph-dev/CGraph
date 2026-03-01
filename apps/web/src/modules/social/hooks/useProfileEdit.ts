@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { toast } from '@/components/feedback/toast';
+import { useAuthStore } from '@/modules/auth/store';
 import type { UserProfileData } from '@/types/profile.types';
 
 const logger = createLogger('useProfileActions');
@@ -216,6 +217,14 @@ export function useProfileEdit(
 
         if (fields.bio !== undefined) {
           setEditedBio(fields.bio);
+        }
+
+        // Sync auth store so navbar/header reflect changes immediately
+        const authUpdate: Record<string, string> = {};
+        if (fields.display_name !== undefined) authUpdate.displayName = fields.display_name;
+        if (fields.bio !== undefined) authUpdate.bio = fields.bio;
+        if (Object.keys(authUpdate).length > 0) {
+          useAuthStore.getState().updateUser(authUpdate);
         }
 
         HapticFeedback.success();

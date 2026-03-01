@@ -91,7 +91,7 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
       params: { token },
       // Exponential backoff with equal jitter — prevents thundering herd at scale
       reconnectAfterMs: exponentialBackoffWithJitter(),
-      heartbeatIntervalMs: 30000,
+      heartbeatIntervalMs: 5000,
     });
 
     state.socket.onOpen(() => {

@@ -185,6 +185,9 @@ export function useProfileActions({
     try {
       await api.patch(`/api/v1/users/${profile.id}`, { bio: editedBio });
       setProfile({ ...profile, bio: editedBio });
+      // Sync auth store so navbar/header reflect changes
+      const { useAuthStore } = await import('@/modules/auth/store');
+      useAuthStore.getState().updateUser({ bio: editedBio });
       setEditMode(false);
       HapticFeedback.success();
       toast.success('Profile updated successfully!');
