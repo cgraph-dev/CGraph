@@ -86,7 +86,13 @@ defmodule CGraphWeb.Router.ForumRoutes do
           post "/custom-fields", ForumCustomizationController, :create_field
           put "/custom-fields/:id", ForumCustomizationController, :update_field
           delete "/custom-fields/:id", ForumCustomizationController, :delete_field
+          # Emoji Packs
+          get "/emoji-packs", CustomEmojiController, :list_packs
+          get "/emoji-packs/:id/export", CustomEmojiController, :export_pack
+          post "/emoji-packs/import", CustomEmojiController, :import_pack
 
+          # Post Icons
+          get "/boards/:board_id/post-icons", PostIconController, :board_icons
           # Forum theme CRUD (separate from user profile ThemeController)
           resources "/themes", ForumThemeCrudController, except: [:new, :edit] do
             post "/activate", ForumThemeCrudController, :activate
@@ -104,6 +110,9 @@ defmodule CGraphWeb.Router.ForumRoutes do
         # System permission templates
         get "/permission-templates", PermissionsController, :list_system_templates
         delete "/permission-templates/:id", PermissionsController, :delete_template
+
+        # Emoji Packs marketplace (global)
+        get "/emoji-packs/marketplace", CustomEmojiController, :marketplace
 
         # Boards -> Threads
         resources "/boards", BoardController, only: [] do

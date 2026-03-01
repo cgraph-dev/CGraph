@@ -13,7 +13,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   import Ecto.Query
 
-  alias CGraph.Forums.{CustomEmoji, EmojiCategory}
+  alias CGraph.Forums.{CustomEmoji, EmojiCategory, EmojiPack}
   alias CGraph.Repo
   alias CGraph.Storage
 
@@ -322,6 +322,121 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
       error ->
         error
     end
+  end
+
+  # ============================================================================
+  # Emoji Pack Endpoints
+  # ============================================================================
+
+  @doc """
+  Export an emoji pack as JSON bundle.
+
+  GET /api/v1/forums/:forum_id/emoji-packs/:id/export
+  """
+  @spec export_pack(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def export_pack(conn, %{"id" => pack_id}) do
+    case EmojiPack.export_pack(pack_id) do
+      {:ok, bundle} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> put_resp_header("content-disposition", ~s(attachment; filename="emoji-pack-#{pack_id}.json"))
+        |> json(bundle)
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
+  @doc """
+  Import an emoji pack from JSON bundle.
+
+  POST /api/v1/forums/:forum_id/emoji-packs/import
+  """
+  @spec import_pack(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def import_pack(conn, %{"forum_id" => forum_id, "bundle" => bundle}) when is_map(bundle) do
+    case EmojiPack.import_pack(forum_id, bundle) do
+      {:ok, pack} ->
+        conn
+        |> put_status(:created)
+        |> json(%{
+          data: %{
+            id: pack.id,
+            name: pack.name,
+            emoji_count: pack.emoji_count,
+            version: pack.version
+          }
+        })
+
+      {:error, :too_many_emojis} ->
+        conn |> put_status(:bad_request) |> json(%{error: %{message: "Pack exceeds 500 emoji limit"}})
+
+      {:error, :invalid_bundle} ->
+        conn |> put_status(:bad_request) |> json(%{error: %{message: "Invalid pack bundle format"}})
+
+      {:error, {:emoji_import_errors, count}} ->
+        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: "#{count} emojis failed to import"}})
+
+      {:error, _reason} ->
+        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: "Failed to import pack"}})
+    end
+  end
+
+  def import_pack(conn, _params) do
+    conn |> put_status(:bad_request) |> json(%{error: %{message: "Missing bundle data"}})
+  end
+
+  @doc """
+  Browse marketplace (public) packs.
+
+  GET /api/v1/emoji-packs/marketplace
+  """
+  @spec marketplace(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def marketplace(conn, _params) do
+    packs = EmojiPack.list_available_packs()
+
+    json(conn, %{
+      data: Enum.map(packs, fn p ->
+        %{
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          author: p.author,
+          version: p.version,
+          icon_url: p.icon_url,
+          emoji_count: p.emoji_count,
+          is_premium: p.is_premium
+        }
+      end)
+    })
+  end
+
+  @doc """
+  List emoji packs for a forum.
+
+  GET /api/v1/forums/:forum_id/emoji-packs
+  """
+  @spec list_packs(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def list_packs(conn, %{"forum_id" => forum_id}) do
+    packs = EmojiPack.list_forum_packs(forum_id)
+
+    json(conn, %{
+      data: Enum.map(packs, fn p ->
+        %{
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          author: p.author,
+          version: p.version,
+          icon_url: p.icon_url,
+          emoji_count: p.emoji_count,
+          is_premium: p.is_premium,
+          is_active: p.is_active,
+          emojis: Enum.map(p.emojis || [], fn e ->
+            %{id: e.id, shortcode: e.shortcode, image_url: e.image_url, is_animated: e.is_animated}
+          end)
+        }
+      end)
+    })
   end
 
   # ============================================================================
