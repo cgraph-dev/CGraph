@@ -21,6 +21,7 @@ import {
 } from 'livekit-client';
 import { LiveKitService } from '@/lib/webrtc/livekitService';
 import type { LiveKitParticipant } from '@/lib/webrtc/livekitService';
+import { decodeRoomKey } from '@/lib/webrtc/callEncryption';
 import { apiClient } from '@cgraph/api-client';
 
 // ---------------------------------------------------------------------------
@@ -55,6 +56,8 @@ export interface UseLiveKitRoomReturn {
   isVideoOn: boolean;
   /** Whether screen sharing is active */
   isScreenSharing: boolean;
+  /** Whether E2EE is enabled on this room */
+  isE2EEEnabled: boolean;
   /** The LiveKit Room instance (for advanced usage) */
   room: Room | null;
   /** Connect to the room */
@@ -97,6 +100,7 @@ export function useLiveKitRoom(
   const [isMuted, setIsMuted] = useState(!audioEnabled);
   const [isVideoOn, setIsVideoOn] = useState(videoEnabled);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [isE2EEEnabled, setIsE2EEEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [room, setRoom] = useState<Room | null>(null);
 
@@ -110,12 +114,19 @@ export function useLiveKitRoom(
   const fetchToken = useCallback(async (): Promise<{
     token: string;
     url: string;
+    e2ee_key?: string;
+    e2ee_enabled?: boolean;
   }> => {
     const body: Record<string, string> = { room_name: roomName };
     if (channelId) body.channel_id = channelId;
     if (groupId) body.group_id = groupId;
 
-    const response = await apiClient.post<{ token: string; url: string }>(
+    const response = await apiClient.post<{
+      token: string;
+      url: string;
+      e2ee_key?: string;
+      e2ee_enabled?: boolean;
+    }>(
       '/api/v1/livekit/token',
       body
     );
@@ -152,11 +163,23 @@ export function useLiveKitRoom(
       setError(null);
       setConnectionState(ConnectionState.Connecting);
 
-      const { token, url } = await fetchToken();
+      const { token, url, e2ee_key, e2ee_enabled } = await fetchToken();
       const lkRoom = await LiveKitService.connect(url, token);
 
       roomRef.current = lkRoom;
       setRoom(lkRoom);
+
+      // Enable E2EE if backend provided a key
+      if (e2ee_enabled && e2ee_key) {
+        try {
+          const roomKey = decodeRoomKey(e2ee_key);
+          await LiveKitService.enableE2EE(lkRoom, roomKey);
+          setIsE2EEEnabled(true);
+        } catch (e2eeErr) {
+          console.warn('[useLiveKitRoom] E2EE setup failed, continuing unencrypted:', e2eeErr);
+          setIsE2EEEnabled(false);
+        }
+      }
 
       // Publish local tracks
       await LiveKitService.publishLocalTracks(lkRoom, {
@@ -285,6 +308,7 @@ export function useLiveKitRoom(
     isMuted,
     isVideoOn,
     isScreenSharing,
+    isE2EEEnabled,
     room,
     connect,
     toggleMute,

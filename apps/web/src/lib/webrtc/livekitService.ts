@@ -22,6 +22,13 @@ import {
   type RoomOptions,
   VideoPresets,
 } from 'livekit-client';
+import {
+  setupE2EE,
+  rotateKey,
+  isEncrypted,
+  cleanupE2EE,
+  type E2EEState,
+} from './callEncryption';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -96,6 +103,30 @@ class LiveKitServiceImpl {
     this.rooms.set(room.name, room);
 
     return room;
+  }
+
+  /**
+   * Enable E2EE on a connected room with the provided key.
+   *
+   * @param room - Connected Room instance
+   * @param roomKey - Raw 256-bit key from backend
+   */
+  async enableE2EE(room: Room, roomKey: Uint8Array): Promise<void> {
+    await setupE2EE(room, roomKey);
+  }
+
+  /**
+   * Rotate the E2EE key for a room.
+   */
+  async rotateE2EEKey(room: Room, newKey: Uint8Array): Promise<void> {
+    await rotateKey(room, newKey);
+  }
+
+  /**
+   * Check if E2EE is active on a room.
+   */
+  isE2EEEnabled(room: Room): boolean {
+    return isEncrypted(room);
   }
 
   /**
@@ -231,6 +262,7 @@ class LiveKitServiceImpl {
    * Disconnect from a LiveKit room and clean up resources.
    */
   async disconnect(room: Room): Promise<void> {
+    cleanupE2EE(room);
     this.rooms.delete(room.name);
     await room.disconnect(true);
   }
