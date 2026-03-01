@@ -96,6 +96,11 @@ default** and modern customization.
 | **Customization**  | Theme system                  | ✅ Shipped |
 |                    | Custom CSS                    | ✅ Shipped |
 |                    | Seasonal events               | ✅ Shipped |
+| **Forums**         | Forum CRUD + boards           | ✅ Shipped |
+|                    | Threads with BBCode parsing   | ✅ Shipped |
+|                    | Polls + voting + reputation   | ✅ Shipped |
+|                    | Full-text search (tsvector)   | ✅ Shipped |
+|                    | Real-time board broadcasting  | ✅ Shipped |
 | **Platform**       | Web app                       | ✅ Shipped |
 |                    | Mobile (React Native)         | 🟡 Beta    |
 |                    | Landing page                  | ✅ Shipped |

@@ -10,35 +10,35 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 14 — Forum Core** — **Planning Complete**
+**Phase 14 — Forum Core** — **Complete**
 
-5 plans across 2 waves. 10 requirements: forum CRUD, boards, threads with BBCode, nested comments, polls, voting with reputation, real-time updates, full-text search. Infrastructure is ~80-85% built; plans focus on closing gaps (BBCode parser, poll API, full-text search, reputation propagation, mobile store, real-time broadcasting).
+All 5 plans executed across 2 waves. 10 requirements delivered: forum CRUD, boards, threads with BBCode, nested comments, polls, voting with reputation, real-time broadcasting, full-text search. ~26 commits, 64 integration tests.
 
 ## Position
 
-- **Phase:** 14 of 19 — Forum Core
-- **Plan:** 0/5 plans complete (planned)
-- **Status:** Planned — ready to execute
-- **Last activity:** 2026-03-01 — Phase 14 plans created
+- **Phase:** 14 of 19 — Forum Core (Complete)
+- **Plan:** 5/5 plans complete
+- **Status:** Complete — ready for Phase 15
+- **Last activity:** 2026-03-01 — Phase 14 executed
 
 ## Plans
 
 | Plan  | Objective                                                          | Wave | Autonomous | Depends On | Status      |
 | ----- | ------------------------------------------------------------------ | ---- | ---------- | ---------- | ----------- |
-| 14-01 | BBCode parser + poll API + attachment uploads                       | 1    | ✅          | —          | — Planned   |
-| 14-02 | Full-text search + reputation propagation                           | 1    | ✅          | —          | — Planned   |
-| 14-03 | Web forum wiring — search, categories, comments, store gaps         | 2    | ✅          | 14-01,14-02| — Planned   |
-| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows  | 2    | ✅          | 14-01,14-02| — Planned   |
-| 14-05 | Real-time broadcasting gaps + integration tests                     | 2    | ✅          | 14-01,14-02| — Planned   |
+| 14-01 | BBCode parser + poll API + attachment uploads                       | 1    | ✅          | —          | ✅ Complete |
+| 14-02 | Full-text search + reputation propagation                           | 1    | ✅          | —          | ✅ Complete |
+| 14-03 | Web forum wiring — search, categories, comments, store gaps         | 2    | ✅          | 14-01,14-02| ✅ Complete |
+| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows  | 2    | ✅          | 14-01,14-02| ✅ Complete |
+| 14-05 | Real-time broadcasting gaps + integration tests                     | 2    | ✅          | 14-01,14-02| ✅ Complete |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 68%       |
-| Phases complete    | 13 / 19   |
-| Requirements done  | 77 / 136  |
-| Current phase reqs | 0 / 10    |
+| Overall progress   | 74%       |
+| Phases complete    | 14 / 19   |
+| Requirements done  | 87 / 136  |
+| Current phase reqs | 10 / 10   |
 
 ## Phase Summary
 
@@ -57,9 +57,9 @@ Secure real-time communication that works end-to-end.
 | 11  | Groups & Channels       | **Complete** (2026-03-01) |
 | 12  | Roles & Moderation      | **Complete** (2026-03-01) |
 | 13  | Voice & Video           | **Complete** (2026-03-01) |
-| 14  | Forum Core              | **Planned** (5 plans)     |
-| 15  | Forum Customization     | Blocked by 14             |
-| 16  | Gamification            | Blocked by 14             |
+| 14  | Forum Core              | **Complete** (2026-03-01) |
+| 15  | Forum Customization     | Unblocked                 |
+| 16  | Gamification            | Unblocked                 |
 | 17  | Monetization            | Blocked by 16             |
 | 18  | Rich Media & Polish     | Unblocked                 |
 | 19  | Launch                  | Blocked by 15,17,18       |
@@ -69,9 +69,21 @@ Secure real-time communication that works end-to-end.
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 13 verified (66/66 UAT tests, 9/9 requirements)
+**Current focus:** Phase 14 complete (64 integration tests, 10/10 requirements)
 
 ## Accumulated Context
+
+### Recent Decisions (Phase 14 Execution)
+
+- **BBCode parser**: Regex-based tag processing with HTML escaping before tag expansion for XSS protection, 14 tag types supported
+- **Poll API**: PollController with nested routes under `/threads/:thread_id/poll`, inline poll creation inside existing `create_thread/3` transaction
+- **Full-text search**: PostgreSQL tsvector columns + GIN indexes + auto-update triggers, `to_tsquery/1` for safe user input, `ts_rank_cd` for relevance sorting
+- **Reputation propagation**: Self-vote prevention (voter != author), chain resolution (thread → board → forum) for forum_id lookup
+- **BoardChannel**: Board-level Phoenix channel for real-time thread events (new/updated/deleted), presence tracking
+- **Mobile forum store**: Zustand + forumService pattern matching existing mobile architecture
+- **BBCode renderer (mobile)**: Stack-based recursive parser with native RN Text/View/Image rendering, spoiler reveal via Pressable
+- **Integration tests**: 64 test cases covering all 10 requirements in `phase14_verification_test.exs`
+- **Board socket page wiring deferred**: `forum-board-view.tsx` is a re-export stub; `useBoardSocket` hook available for later integration
 
 ### Recent Decisions (Phase 13 Execution)
 
@@ -142,19 +154,20 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Phase 13 complete — all 4 plans executed, 9/9 requirements delivered
+Stopped at: Phase 14 complete — all 5 plans executed, 10/10 requirements delivered
 Resume file: None
 
 ## Last Action
 
-Phase 13 executed. All 4 plans complete:
-- 13-01: Mobile WebRTC wiring — react-native-webrtc, real RTCPeerConnection, call history REST API (5 commits)
-- 13-02: LiveKit SFU integration — JOSE JWT tokens, Twirp room management, hybrid P2P/SFU, web livekit-client + hooks + UI, Docker Compose (7 commits)
-- 13-03: Persistent voice channels — voice_channel_manager with Presence, voice state channel, channel list voice items, voice panel, mobile voice screen (6 commits)
-- 13-04: Call E2EE + mobile LiveKit — SFrame ExternalE2EEKeyProvider, per-room keys in ETS, encryption indicator, mobile @livekit/react-native, mobile group call screens (6 commits)
+Phase 14 executed. All 5 plans complete:
+- 14-01: BBCode parser + poll API + attachment uploads — BBCode.to_html/1 with XSS protection, PollController (show/create/vote/close/update), ThreadAttachment context+controller (6 commits)
+- 14-02: Full-text search + reputation propagation — tsvector migration with GIN indexes, search.ex rewrite with ts_rank_cd, forum_search endpoint, reputation propagation on votes (6 commits)
+- 14-03: Web forum wiring — search results page + components + route, useForumSearch hook with debounce, category CRUD, expanded createForum payload, real API fetchThreadPrefixes (8 commits)
+- 14-04: Mobile forum wiring — BBCode renderer (14 tags), Zustand forumStore + forumService, ForumSearchScreen, delete confirmation flows, inline poll creation, module exports fix (2 commits)
+- 14-05: Real-time broadcasting + integration tests — BoardChannel, useBoardSocket hook, post_edited handler, broadcasting in threads/posts/polls contexts, 64 integration tests (4 commits)
 
-9/9 requirements delivered: CALL-01 through CALL-08 + E2EE-07.
-Phase 14 (Forum Core) and Phase 18 (Rich Media & Polish) are now unblocked.
+10/10 requirements delivered: FORUM-01 through FORUM-06, FORUM-09, FORUM-10, SEARCH-03.
+Phases 15 (Forum Customization) and 16 (Gamification) are now unblocked.
 
 ---
 
