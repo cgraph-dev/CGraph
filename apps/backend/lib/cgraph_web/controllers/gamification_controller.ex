@@ -20,6 +20,20 @@ defmodule CGraphWeb.GamificationController do
   @max_leaderboard_limit 100
 
   @doc """
+  GET /api/v1/gamification/feature-gates
+  Get the user's feature gate status (unlocked/locked per feature).
+  """
+  @spec feature_gates(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def feature_gates(conn, _params) do
+    user = conn.assigns.current_user
+    gates = CGraph.Gamification.FeatureGates.get_user_gates(user.level)
+
+    conn
+    |> put_status(:ok)
+    |> json(%{data: gates})
+  end
+
+  @doc """
   GET /api/v1/gamification/stats
   Get current user's gamification stats.
   """
