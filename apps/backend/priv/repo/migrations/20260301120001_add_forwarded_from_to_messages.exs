@@ -3,7 +3,8 @@ defmodule CGraph.Repo.Migrations.AddForwardedFromToMessages do
 
   def change do
     alter table(:messages) do
-      add :forwarded_from_id, references(:messages, type: :binary_id, on_delete: :nilify_all)
+      # Cannot add FK reference to partitioned messages table — use plain column
+      add :forwarded_from_id, :binary_id
       add :forwarded_from_user_id, references(:users, type: :binary_id, on_delete: :nilify_all)
     end
 
