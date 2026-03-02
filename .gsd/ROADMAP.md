@@ -963,8 +963,8 @@ page, parity audit, and the two wallet auth methods deferred from core auth.
 
 | REQ-ID   | Requirement                                    |
 | -------- | ---------------------------------------------- |
-| AUTH-12  | Privy auth (embedded wallet + social login)    |
-| AUTH-13  | Ethereum wallet signature auth                 |
+| ~~AUTH-12~~ | ~~Privy auth~~ — **DESCOPED** (custom auth already complete) |
+| AUTH-13  | Ethereum wallet signature auth (SIWE + WalletConnect polish) |
 | INFRA-09 | Landing page reflects v1.0 features            |
 | INFRA-10 | App Store and Google Play submissions approved |
 
@@ -979,7 +979,7 @@ page, parity audit, and the two wallet auth methods deferred from core auth.
 
 | Plan  | Scope                                                                             | Wave | Status |
 | ----- | --------------------------------------------------------------------------------- | ---- | ------ |
-| 19-01 | Wallet Auth Completion — Privy embedded wallets + Ethereum signature SIWE polish  | 1    | —      |
+| 19-01 | Wallet Auth Polish — SIWE standard + WalletConnect multi-wallet (Privy descoped)  | 1    | —      |
 | 19-02 | Landing Page v1.0 Update — features, pricing, download links, showcase sections   | 1    | —      |
 | 19-03 | App Store & Play Store Submission — EAS config, metadata, screenshots, eas submit | 2    | —      |
 | 19-04 | Final QA — Web-mobile parity audit, version bump to 1.0.0, release tag            | 2    | —      |
@@ -992,7 +992,7 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 | Category   | Total   | P1  | P2  | P3  | P4  | P5  | P6  | P7  | P8  | P9  | P10 | P11 | P12 | P13 | P14 | P15 | P16 | P17 | P18 | P19 |
 | ---------- | ------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| AUTH (14)  | 14      | —   | 3   | 3   | —   | —   | —   | 1   | 3   | 1   | —   | —   | —   | —   | —   | —   | —   | —   | —   | 2   |
+| AUTH (13)  | 13      | —   | 3   | 3   | —   | —   | —   | 1   | 3   | 1   | —   | —   | —   | —   | —   | —   | —   | —   | —   | 1   |
 | MSG (22)   | 22      | —   | —   | —   | —   | 4   | 5   | —   | —   | —   | 5   | 3   | —   | —   | —   | —   | —   | —   | 5   | —   |
 | E2EE (9)   | 9       | —   | —   | —   | —   | —   | —   | 5   | —   | —   | —   | —   | 1   | 1   | —   | —   | —   | —   | 2   | —   |
 | FORUM (16) | 16      | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | 9   | 8   | —   | —   | —   | —   |
@@ -1005,12 +1005,12 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | MOD (7)    | 7       | —   | —   | —   | —   | —   | —   | —   | 1   | —   | —   | —   | 3   | —   | —   | —   | —   | —   | 3   | —   |
 | DESIGN (6) | 6       | —   | —   | —   | 3   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | 3   | —   |
 | INFRA (10) | 10      | 3   | —   | —   | 1   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | —   | 4   | 2   |
-| **TOTAL**  | **136** | 3   | 3   | 3   | 4   | 4   | 5   | 6   | 7   | 7   | 5   | 6   | 9   | 9   | 10  | 8   | 12  | 10  | 20  | 4   |
+| **TOTAL**  | **135** | 3   | 3   | 3   | 4   | 4   | 5   | 6   | 7   | 7   | 5   | 6   | 9   | 9   | 10  | 8   | 12  | 10  | 20  | 3   |
 
 > AUTH-14 counted under AUTH. CALL-08 and E2EE-07 are counted separately but delivered together.
 > FORUM-10 and SEARCH-03 are related but distinct REQ-IDs, both in Phase 14.
 
-**Orphan check: 0 unmapped requirements. 136/136 covered.**
+**Orphan check: 0 unmapped requirements. 135/135 covered. (AUTH-12 descoped — Privy unnecessary)**
 
 ---
 
@@ -1057,4 +1057,4 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ---
 
-_Roadmap: 19 phases · 136 requirements · 0 orphans · Generated: 2025-02-27_
+_Roadmap: 19 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-03_

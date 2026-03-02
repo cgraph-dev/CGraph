@@ -12,9 +12,9 @@ Secure real-time communication that works end-to-end.
 
 **Phase 19 — Launch** — **Planned (4 plans, 4 requirements)**
 
-Phase 19 is the final phase. Wallet auth completion (Privy embedded wallets + SIWE standard for
-Ethereum signature), landing page v1.0 update (pricing, new feature showcases, download links), App
-Store & Google Play submission, and final QA with web-mobile parity audit.
+Phase 19 is the final phase. Wallet auth polish (SIWE standard + WalletConnect multi-wallet — Privy
+DESCOPED), landing page v1.0 update (pricing, new feature showcases, download links), App Store &
+Google Play submission, and final QA with web-mobile parity audit.
 
 ## Position
 
@@ -27,7 +27,7 @@ Store & Google Play submission, and final QA with web-mobile parity audit.
 
 | Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status |
 | ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | ------ |
-| 19-01 | Wallet Auth — Privy embedded wallets + Ethereum SIWE polish          | 1    | ✅         | —                | Ready  |
+| 19-01 | Wallet Auth Polish — SIWE standard + WalletConnect multi-wallet       | 1    | ✅         | —                | Ready  |
 | 19-02 | Landing Page v1.0 — features, pricing, download, showcase sections   | 1    | ✅         | —                | Ready  |
 | 19-03 | App Store Submission — EAS config, metadata, screenshots, eas submit | 2    | ❌         | 19-01, 19-02     | Ready  |
 | 19-04 | Final QA — Parity audit, version bump 1.0.0, release tag             | 2    | ✅         | 19-01, 19-02, 03 | Ready  |
@@ -38,8 +38,8 @@ Store & Google Play submission, and final QA with web-mobile parity audit.
 | ------------------ | --------- |
 | Overall progress   | 95%       |
 | Phases complete    | 18 / 19   |
-| Requirements done  | 136 / 140 |
-| Current phase reqs | 0 / 4     |
+| Requirements done  | 136 / 139 |
+| Current phase reqs | 0 / 3     |
 
 ## Phase Summary
 
@@ -246,7 +246,7 @@ Resume file: .gsd/phases/19-launch/
 
 Phase 19 planned. 4 plans in 2 waves:
 
-- Wave 1 (parallel): 19-01 Wallet Auth (Privy + SIWE), 19-02 Landing Page v1.0 Update
+- Wave 1 (parallel): 19-01 Wallet Auth Polish (SIWE + WalletConnect), 19-02 Landing Page v1.0 Update
 - Wave 2 (sequential): 19-03 App Store Submission (NOT autonomous — requires Apple/Google accounts),
   19-04 Final QA + v1.0.0 Tag
 - 17-01 (Complete): Stripe Subscription Hardening — webhook idempotency, tier features, premium gate
@@ -259,8 +259,12 @@ Phase 19 planned. 4 plans in 2 waves:
   earnings ledger, payouts, creator dashboard, analytics, content gates, Connect webhooks, 10
   commits
 
-Next: Phase 19 (Launch — App Store, landing page, wallet auth, final QA) or verify Phase 17.
+Next: Execute Phase 19 (Launch — wallet auth polish, landing page, App Store, final QA).
+
+Note: AUTH-12 (Privy) DESCOPED — CGraph already has complete custom auth (OAuth, wallet EIP-191,
+JWT sessions, 2FA). Adding Privy would introduce vendor lock-in, cost ($99-299/mo), two parallel
+auth systems, and incompatibility with E2EE identity chain. Plan 19-01 refocused on AUTH-13 polish.
 
 ---
 
-_Last updated: 2026-03-02 (Phase 17 complete)_
+_Last updated: 2026-03-03 (Phase 19 plan revised — Privy descoped)_
