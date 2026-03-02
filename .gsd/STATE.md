@@ -10,35 +10,35 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 15 — Forum Customization** — **Complete (5/5 plans)**
+**Phase 16 — Gamification** — **Complete (45 feat commits, 5/5 plans)**
 
-Phase 15 built on the Phase 14 forum core with 8 requirements delivered: 55 customization options with admin UI, plugin runtime with hook dispatch, forum automod with warning/strike system, user groups + per-board permissions, emoji pack import/export, per-board RSS feeds, and ranking/leaderboard integrated with gamification.
+Phase 16 activated the gamification system: XP event pipeline with daily caps, achievement triggers, quest rotation, progressive disclosure (level-gated features), leaderboard scoping, battle pass lifecycle, marketplace transactions, animated avatar borders (11 CSS keyframe types + Reanimated mobile), and title propagation throughout the app.
 
 ## Position
 
-- **Phase:** 15 of 19 — Forum Customization (Complete)
+- **Phase:** 16 of 19 — Gamification (Complete)
 - **Plan:** 5/5 plans complete
-- **Status:** Phase complete
-- **Last activity:** 2026-03-02 — Phase 15 complete (all 5 plans, both waves)
+- **Status:** All plans executed, phase complete
+- **Last activity:** 2026-03-02 — Phase 16 executed (45 commits, 5 plans, 2 waves)
 
 ## Plans
 
-| Plan  | Objective                                                          | Wave | Autonomous | Depends On      | Status      |
-| ----- | ------------------------------------------------------------------ | ---- | ---------- | --------------- | ----------- |
-| 15-01 | Customization engine — 55 options, CSS editor, widgets, fields     | 1    | ✅          | —               | ✅ Complete |
-| 15-02 | Plugin runtime + forum automod + warn/strike system                | 1    | ✅          | —               | ✅ Complete |
-| 15-03 | User groups admin UI + per-board permissions UI + templates        | 1    | ✅          | —               | ✅ Complete |
-| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS              | 2    | ✅          | 15-01,15-02,15-03 | ✅ Complete |
-| 15-05 | Ranking integration + leaderboard + gamification bridge            | 2    | ✅          | 15-01,15-02,15-03 | ✅ Complete |
+| Plan  | Objective                                                           | Wave | Autonomous | Depends On        | Status      |
+| ----- | ------------------------------------------------------------------- | ---- | ---------- | ----------------- | ----------- |
+| 16-01 | XP event pipeline — action triggers, daily caps, forum XP           | 1    | ✅          | —                 | ✅ Complete (12 commits) |
+| 16-02 | Achievement triggers + quest rotation engine                        | 1    | ✅          | —                 | ✅ Complete (9 commits)  |
+| 16-03 | Progressive disclosure — level-gated features                       | 1    | ✅          | —                 | ✅ Complete (8 commits)  |
+| 16-04 | Leaderboard scoping + battle pass lifecycle + marketplace wiring    | 2    | ✅          | 16-01,16-02,16-03 | ✅ Complete (7 commits)  |
+| 16-05 | Cosmetics rendering + animated borders + title propagation          | 2    | ✅          | 16-01,16-03       | ✅ Complete (9 commits)  |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 79%       |
-| Phases complete    | 15 / 19   |
-| Requirements done  | 95 / 136  |
-| Current phase reqs | 8 / 8     |
+| Overall progress   | 88%       |
+| Phases complete    | 16 / 19   |
+| Requirements done  | 107 / 136 |
+| Current phase reqs | 12 / 12   |
 
 ## Phase Summary
 
@@ -59,8 +59,8 @@ Phase 15 built on the Phase 14 forum core with 8 requirements delivered: 55 cust
 | 13  | Voice & Video           | **Complete** (2026-03-01) |
 | 14  | Forum Core              | **Complete** (2026-03-01) |
 | 15  | Forum Customization     | **Complete** (2026-03-02) |
-| 16  | Gamification            | Unblocked                 |
-| 17  | Monetization            | Blocked by 16             |
+| 16  | Gamification            | **Complete** (2026-03-02) |
+| 17  | Monetization            | Unblocked                 |
 | 18  | Rich Media & Polish     | Unblocked                 |
 | 19  | Launch                  | Blocked by 15,17,18       |
 
@@ -154,19 +154,19 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Phase 15 complete — all 5/5 plans done, 55 tasks total
-Resume file: .gsd/phases/15-forum-customization/15-05-SUMMARY.md
+Stopped at: Phase 16 complete — 45 feat commits, 5/5 plans done
+Resume file: .gsd/phases/16-gamification/
 
 ## Last Action
 
-Phase 15 planned. Discovery complete (HIGH confidence). 5 plans in 2 waves:
-- 15-01 (Wave 1): Customization engine — 55 enumerated options, CSS editor, widget configurator, custom fields, badge manager, karma names, rank images (FORUM-07)
-- 15-02 (Wave 1): Plugin execution runtime + forum-level automod + warning/strike system (FORUM-08, FORUM-11)
-- 15-03 (Wave 1): User groups admin UI + per-board permissions UI + permission templates (FORUM-15, FORUM-12)
-- 15-04 (Wave 2): Emoji pack import/export + post icon selector + per-board RSS + mobile RSS (FORUM-13, FORUM-14)
-- 15-05 (Wave 2): Ranking/gamification bridge + Oban scheduler + rank images + full leaderboard pages (FORUM-16)
+Phase 16 complete. 45 feat commits across 5 plans in 2 waves:
+- 16-01 (12 commits): XP event pipeline — XpConfig, DailyCap, XpEventHandler, messaging/forum/friend XP wiring, scoped leaderboard, gamification channel, web+mobile XP toasts
+- 16-02 (9 commits): Achievement triggers + quest rotation — 40 achievements, 23 quest templates seeded, AchievementTriggers, QuestTemplates, QuestRotationWorker (Oban cron), quest objective tracking, web+mobile notifications
+- 16-03 (8 commits): Progressive disclosure — FeatureGates (15 features), LevelGatePlug (403 protection), web LevelGate + useLevelGate, sidebar lock badges, unlock celebrations, mobile level gate
+- 16-04 (7 commits): Leaderboard scoping + battle pass + marketplace — scope UI (global/group/board), EventLifecycleWorker, battle pass XP progression, atomic marketplace purchase, web BP/marketplace UI, mobile hub
+- 16-05 (9 commits): Cosmetics — 11 animated CSS border keyframes (GPU-only), AnimatedBorder + BorderRenderer, Avatar integration, border preview modal, InlineTitle (rarity gradients), title propagation to messages+forums, mobile Reanimated borders, mobile InlineTitle
 
-Key finding: Backend is 85-90% complete across all 8 requirements. Primary work is frontend admin UIs (web + mobile) and integration glue.
+Next: Phase 17 (Monetization) — Stripe, mobile IAP, creator payouts.
 
 ---
 

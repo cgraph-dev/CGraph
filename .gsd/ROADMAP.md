@@ -27,8 +27,8 @@
 | 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12 ✅                       |
 | 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                       |
 | 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14 ✅ Complete (2026-03-02) |
-| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14                         |
-| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16                         |
+| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14 ✅ Complete (2026-03-02) |
+| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅                       |
 | 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13                   |
 | 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                   |
 
@@ -786,9 +786,13 @@ The existing gamification backend has contexts for XP, achievements, quests, sho
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                       | Wave | Depends On        | Status      |
+| ----- | --------------------------------------------------------------------------- | ---- | ----------------- | ----------- |
+| 16-01 | XP event pipeline — action triggers, daily caps, forum XP (GAME-01,10)     | 1    | —                 | Not Started |
+| 16-02 | Achievement triggers + quest rotation engine (GAME-02,03)                   | 1    | —                 | Not Started |
+| 16-03 | Progressive disclosure — level-gated features (GAME-09)                     | 1    | —                 | Not Started |
+| 16-04 | Leaderboard scoping + battle pass lifecycle + marketplace (GAME-04,05,06,08)| 2    | 16-01,16-02,16-03 | Not Started |
+| 16-05 | Cosmetics rendering + animated borders + title propagation (GAME-07,11,12)  | 2    | 16-01,16-03       | Not Started |
 
 ---
 
@@ -983,7 +987,7 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 13    | Voice & Video           | Blocked by 12            | 0%       |
 | 14    | Forum Core              | Blocked by 12            | 0%       |
 | 15    | Forum Customization     | Blocked by 14            | 0%       |
-| 16    | Gamification            | Blocked by 14            | 0%       |
+| 16    | Gamification            | ✅ Complete              | 100%     |
 | 17    | Monetization            | Blocked by 16            | 0%       |
 | 18    | Rich Media & Polish     | Blocked by 7,13          | 0%       |
 | 19    | Launch                  | Blocked by 15,17,18      | 0%       |
