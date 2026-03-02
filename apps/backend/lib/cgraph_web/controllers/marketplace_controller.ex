@@ -234,7 +234,7 @@ defmodule CGraphWeb.MarketplaceController do
 
   @doc """
   POST /api/v1/marketplace/:id/buy
-  Purchase a marketplace listing.
+  Purchase a marketplace listing (atomic transaction).
   """
   @spec buy(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def buy(conn, %{"id" => listing_id}) do
@@ -245,53 +245,39 @@ defmodule CGraphWeb.MarketplaceController do
         {:error, :not_found}
 
       listing ->
-        listing = Repo.preload(listing, :seller)
+        case CGraph.Gamification.Marketplace.purchase_listing(listing, user.id) do
+          {:ok, result} ->
+            updated_listing = Repo.preload(result.listing, [:seller, :buyer])
 
-        cond do
-          listing.listing_status != "active" ->
+            conn
+            |> put_status(:ok)
+            |> json(%{
+              success: true,
+              listing: serialize_listing(updated_listing),
+              paid: result.paid,
+              fee: result.fee,
+              sellerReceived: result.seller_received
+            })
+
+          {:error, :insufficient_funds} ->
+            conn
+            |> put_status(:bad_request)
+            |> json(%{error: "Insufficient funds for this purchase"})
+
+          {:error, :listing_unavailable} ->
             conn
             |> put_status(:bad_request)
             |> json(%{error: "Listing is no longer available"})
 
-          listing.seller_id == user.id ->
+          {:error, :cannot_buy_own_listing} ->
             conn
             |> put_status(:bad_request)
             |> json(%{error: "Cannot buy your own listing"})
 
-          true ->
-            # Deduct buyer's currency
-            case Gamification.deduct_currency(user.id, listing.price, String.to_existing_atom(listing.currency_type || "coins")) do
-              {:ok, _} ->
-                # Calculate seller proceeds
-                fee = MarketplaceItem.calculate_fee(listing)
-                proceeds = MarketplaceItem.calculate_proceeds(listing)
-
-                # Credit seller
-                Gamification.add_currency(listing.seller_id, proceeds, String.to_existing_atom(listing.currency_type || "coins"))
-
-                # Transfer item ownership
-                transfer_item(listing, user.id)
-
-                # Update listing
-                {:ok, updated} = listing
-                |> MarketplaceItem.purchase_changeset(user.id)
-                |> Repo.update()
-
-                conn
-                |> put_status(:ok)
-                |> json(%{
-                  success: true,
-                  listing: serialize_listing(Repo.preload(updated, [:seller, :buyer])),
-                  paid: listing.price,
-                  fee: fee,
-                  sellerReceived: proceeds
-                })
-
-              {:error, _} ->
-                conn
-                |> put_status(:bad_request)
-                |> json(%{error: "Insufficient #{listing.currency_type}"})
-            end
+          {:error, reason} ->
+            conn
+            |> put_status(:bad_request)
+            |> json(%{error: "Purchase failed: #{inspect(reason)}"})
         end
     end
   end
