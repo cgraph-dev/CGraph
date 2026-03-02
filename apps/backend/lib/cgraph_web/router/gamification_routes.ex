@@ -25,6 +25,7 @@ defmodule CGraphWeb.Router.GamificationRoutes do
 
         # Leaderboards
         get "/gamification/leaderboard/:category", GamificationController, :leaderboard
+        get "/gamification/leaderboard/:scope/:scope_id/:category", GamificationController, :scoped_leaderboard
 
         # Streaks
         get "/gamification/streak", GamificationController, :streak_info

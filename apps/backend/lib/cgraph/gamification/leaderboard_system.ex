@@ -92,6 +92,40 @@ defmodule CGraph.Gamification.LeaderboardSystem do
     end)
   end
 
+  @doc """
+  Get a scoped leaderboard (e.g. per-board) with cursor-based pagination.
+
+  Uses Redis sorted sets scoped by `scope:scope_id:category`.
+
+  ## Options
+  - `:limit` — max entries (default 100)
+  - `:cursor` — opaque cursor for pagination
+  """
+  @spec get_scoped_leaderboard(String.t(), String.t(), String.t(), keyword()) :: {list(), map()}
+  def get_scoped_leaderboard(scope, scope_id, category, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 100)
+    cursor = Keyword.get(opts, :cursor)
+    cursor_data = decode_cursor(cursor)
+    rank_start = if cursor_data, do: cursor_data.rank, else: 1
+
+    redis_offset = rank_start - 1
+
+    case Leaderboard.get_scoped_top(
+           String.to_existing_atom(scope),
+           scope_id,
+           category,
+           limit + 1,
+           redis_offset
+         ) do
+      {:ok, entries} when entries != [] ->
+        finalize(entries, limit, rank_start)
+
+      _ ->
+        # No Redis data available — return empty
+        {[], %{has_more: false, next_cursor: nil, limit: limit}}
+    end
+  end
+
   # ============================================================================
   # Private
   # ============================================================================

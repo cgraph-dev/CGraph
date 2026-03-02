@@ -268,4 +268,36 @@ defmodule CGraphWeb.GamificationController do
       progress_percent: Gamification.level_progress(current_xp)
     })
   end
+
+  @doc """
+  GET /api/v1/gamification/leaderboard/:scope/:scope_id/:category
+  Get a scoped leaderboard (e.g. per-board XP).
+
+  ## Parameters
+
+  - `scope` - Scope type (e.g. "board")
+  - `scope_id` - The scoped entity ID
+  - `category` - Leaderboard category (e.g. "xp")
+  - `limit` - Max entries (1-100, default 100)
+  - `cursor` - Cursor for pagination
+  """
+  @spec scoped_leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def scoped_leaderboard(conn, %{"scope" => scope, "scope_id" => scope_id, "category" => category} = params) do
+    limit = parse_int(params["limit"], 100, min: 1, max: @max_leaderboard_limit)
+    cursor = params["cursor"]
+
+    alias CGraph.Gamification.LeaderboardSystem
+
+    {entries, meta} = LeaderboardSystem.get_scoped_leaderboard(scope, scope_id, category, limit: limit, cursor: cursor)
+
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      data: entries,
+      scope: scope,
+      scope_id: scope_id,
+      category: category,
+      meta: meta
+    })
+  end
 end

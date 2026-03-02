@@ -257,6 +257,80 @@ defmodule CGraph.Gamification.Leaderboard do
   defp parse_score(score) when is_float(score), do: round(score)
   defp parse_score(_), do: 0
 
+  # ====================== SCOPED LEADERBOARDS ======================
+
+  @doc """
+  Push scores to scoped (per-board, per-group) leaderboards.
+  Key format: leaderboard:{scope}:{scope_id}:{category}
+
+  Called by XpEventHandler after forum XP is awarded.
+
+  ## Examples
+
+      sync_scoped_scores(user, :board, board_id, [:xp])
+  """
+  @spec sync_scoped_scores(map(), atom(), String.t(), [atom() | String.t()]) :: :ok | :error
+  def sync_scoped_scores(%{id: user_id} = user, scope, scope_id, categories) do
+    commands =
+      categories
+      |> Enum.map(fn cat ->
+        score = get_score_for_category(user, cat)
+        ["ZADD", scoped_key(scope, scope_id, cat), to_string(score), user_id]
+      end)
+
+    # Also cache user data for rendering (reuses global key)
+    user_data = encode_user_data(user)
+    commands = commands ++ [["SET", user_key(user_id), user_data, "EX", "86400"]]
+
+    case Redis.pipeline(commands) do
+      {:ok, _results} -> :ok
+      {:error, reason} ->
+        require Logger
+        Logger.warning("Scoped leaderboard sync failed",
+          user_id: user_id,
+          scope: scope,
+          scope_id: scope_id,
+          reason: inspect(reason)
+        )
+        :error
+    end
+  end
+
+  @doc """
+  Get scoped leaderboard entries with cursor pagination support.
+  Returns list of maps similar to get_top/3.
+  """
+  @spec get_scoped_top(atom(), String.t(), String.t(), non_neg_integer(), non_neg_integer()) ::
+          {:ok, [map()]} | {:fallback, []}
+  def get_scoped_top(scope, scope_id, category, limit \\ 100, offset \\ 0) do
+    redis_key = scoped_key(scope, scope_id, category)
+
+    case Redis.zrevrange(redis_key, offset, offset + limit - 1, withscores: true) do
+      {:ok, nil} ->
+        {:fallback, []}
+
+      {:ok, results} when is_list(results) ->
+        entries = parse_zrevrange_results(results, offset)
+        entries_with_data = hydrate_entries(entries)
+        {:ok, entries_with_data}
+
+      {:error, _} ->
+        {:fallback, []}
+    end
+  end
+
+  @doc "Get count of users in a scoped leaderboard."
+  @spec scoped_count(atom(), String.t(), String.t()) :: {:ok, non_neg_integer()} | {:error, :unavailable}
+  def scoped_count(scope, scope_id, category) do
+    case Redis.zcard(scoped_key(scope, scope_id, category)) do
+      {:ok, count} -> {:ok, count}
+      {:error, _} -> {:error, :unavailable}
+    end
+  end
+
+  defp scoped_key(scope, scope_id, category),
+    do: "#{@key_prefix}:#{scope}:#{scope_id}:#{category}"
+
   defp hydrate_entries(entries) do
     user_ids = Enum.map(entries, & &1.user_id)
 
