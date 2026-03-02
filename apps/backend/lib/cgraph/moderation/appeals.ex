@@ -64,15 +64,29 @@ defmodule CGraph.Moderation.Appeals do
 
       status = if attrs[:approved], do: :approved, else: :denied
 
-      appeal
-      |> Ecto.Changeset.change(%{
-        status: status,
-        reviewer_id: reviewer.id,
-        reviewer_notes: attrs[:notes],
-        reviewed_at: DateTime.utc_now() |> DateTime.truncate(:second)
-      })
-      |> Repo.update()
-      |> maybe_lift_restriction(status)
+      result =
+        appeal
+        |> Ecto.Changeset.change(%{
+          status: status,
+          reviewer_id: reviewer.id,
+          reviewer_notes: attrs[:notes],
+          reviewed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+        |> Repo.update()
+        |> maybe_lift_restriction(status)
+
+      # Send email notification for appeal outcome
+      case result do
+        {:ok, updated_appeal} ->
+          %{appeal_id: updated_appeal.id, outcome: Atom.to_string(status)}
+          |> CGraph.Workers.AppealNotificationWorker.new()
+          |> Oban.insert()
+
+          {:ok, updated_appeal}
+
+        error ->
+          error
+      end
     end
   end
 
