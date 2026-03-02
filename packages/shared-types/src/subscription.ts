@@ -55,3 +55,49 @@ export interface PortalSession {
   success: boolean;
   portalUrl: string;
 }
+
+// ---------------------------------------------------------------------------
+// IAP Types (cross-platform sync)
+// ---------------------------------------------------------------------------
+
+/** IAP platform identifier */
+export type IAPPlatform = 'apple' | 'google';
+
+/** IAP receipt validation status */
+export type IAPValidationStatus = 'valid' | 'expired' | 'refunded' | 'pending';
+
+/** IAP receipt record from backend */
+export interface IAPReceipt {
+  platform: IAPPlatform;
+  productId: string;
+  validationStatus: IAPValidationStatus;
+  expiresAt: string | null;
+}
+
+/** Response from POST /api/v1/iap/validate */
+export interface IAPValidateResponse {
+  success: boolean;
+  data?: {
+    platform: IAPPlatform;
+    product_id: string;
+    validation_status: IAPValidationStatus;
+    expires_at: string | null;
+  };
+  error?: string;
+}
+
+/** Response from POST /api/v1/iap/restore */
+export interface IAPRestoreResponse {
+  success: boolean;
+  data?: {
+    restored_count: number;
+    receipts: IAPReceipt[];
+  };
+  error?: string;
+}
+
+/** Extended subscription status including IAP provider info */
+export interface SubscriptionStatusWithIAP extends SubscriptionStatus {
+  iapProvider: IAPPlatform | null;
+  iapTransactionId: string | null;
+}
