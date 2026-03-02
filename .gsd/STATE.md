@@ -10,26 +10,26 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 16 — Gamification** — **Complete (45 feat commits, 5/5 plans)**
+**Phase 18 — Rich Media & Polish** — **Planned (5 plans, 1 wave, 20 requirements)**
 
-Phase 16 activated the gamification system: XP event pipeline with daily caps, achievement triggers, quest rotation, progressive disclosure (level-gated features), leaderboard scoping, battle pass lifecycle, marketplace transactions, animated avatar borders (11 CSS keyframe types + Reanimated mobile), and title propagation throughout the app.
+Phase 18 hardens and polishes CGraph: rich media messaging (voice, files, GIFs, scheduled messages) with E2EE, search & discovery (Meilisearch, quick switcher, explore), UI polish (animations, skeletons, component library), infrastructure scale (10K WebSocket, load testing, feature flags, rate limiting), and moderation safety (AI auto-action, dashboard metrics, appeals).
 
 ## Position
 
-- **Phase:** 16 of 19 — Gamification (Complete)
-- **Plan:** 5/5 plans complete
-- **Status:** All plans executed, phase complete
-- **Last activity:** 2026-03-02 — Phase 16 executed (45 commits, 5 plans, 2 waves)
+- **Phase:** 18 of 19 — Rich Media & Polish (Planned)
+- **Plan:** 0/5 plans executed
+- **Status:** Planning complete, ready for execution
+- **Last activity:** 2026-03-02 — Phase 18 planned (5 plans, 1 wave)
 
 ## Plans
 
 | Plan  | Objective                                                           | Wave | Autonomous | Depends On        | Status      |
 | ----- | ------------------------------------------------------------------- | ---- | ---------- | ----------------- | ----------- |
-| 16-01 | XP event pipeline — action triggers, daily caps, forum XP           | 1    | ✅          | —                 | ✅ Complete (12 commits) |
-| 16-02 | Achievement triggers + quest rotation engine                        | 1    | ✅          | —                 | ✅ Complete (9 commits)  |
-| 16-03 | Progressive disclosure — level-gated features                       | 1    | ✅          | —                 | ✅ Complete (8 commits)  |
-| 16-04 | Leaderboard scoping + battle pass lifecycle + marketplace wiring    | 2    | ✅          | 16-01,16-02,16-03 | ✅ Complete (7 commits)  |
-| 16-05 | Cosmetics rendering + animated borders + title propagation          | 2    | ✅          | 16-01,16-03       | ✅ Complete (9 commits)  |
+| 18-01 | Rich media messaging + E2EE (voice, files, GIFs, scheduled)        | 1    | ✅          | —                 | Not started |
+| 18-02 | Search & discovery (Meilisearch, quick switcher, explore)           | 1    | ✅          | —                 | Not started |
+| 18-03 | UI polish & component library (animations, skeletons, Storybook)   | 1    | ✅          | —                 | Not started |
+| 18-04 | Infrastructure scale & hardening (10K WS, load test, FF, rate limit)| 1    | ✅          | —                 | Not started |
+| 18-05 | Moderation & safety hardening (AI auto-action, dashboard, appeals)  | 1    | ✅          | —                 | Not started |
 
 ## Progress
 
@@ -38,7 +38,7 @@ Phase 16 activated the gamification system: XP event pipeline with daily caps, a
 | Overall progress   | 88%       |
 | Phases complete    | 16 / 19   |
 | Requirements done  | 107 / 136 |
-| Current phase reqs | 12 / 12   |
+| Current phase reqs | 0 / 20    |
 
 ## Phase Summary
 
@@ -60,8 +60,8 @@ Phase 16 activated the gamification system: XP event pipeline with daily caps, a
 | 14  | Forum Core              | **Complete** (2026-03-01) |
 | 15  | Forum Customization     | **Complete** (2026-03-02) |
 | 16  | Gamification            | **Complete** (2026-03-02) |
-| 17  | Monetization            | Unblocked                 |
-| 18  | Rich Media & Polish     | Unblocked                 |
+| 17  | Monetization            | Planned (4 plans)         |
+| 18  | Rich Media & Polish     | Planned (5 plans)         |
 | 19  | Launch                  | Blocked by 15,17,18       |
 
 ## Project Reference
@@ -69,7 +69,7 @@ Phase 16 activated the gamification system: XP event pipeline with daily caps, a
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 15 planned (5 plans, 2 waves, 8 requirements)
+**Current focus:** Phase 18 planned (5 plans, 1 wave, 20 requirements)
 
 ## Accumulated Context
 
@@ -154,20 +154,20 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Phase 16 complete — 45 feat commits, 5/5 plans done
-Resume file: .gsd/phases/16-gamification/
+Stopped at: Phase 18 planned — 5 plans, 1 wave
+Resume file: .gsd/phases/18-rich-media-polish/
 
 ## Last Action
 
-Phase 16 complete. 45 feat commits across 5 plans in 2 waves:
-- 16-01 (12 commits): XP event pipeline — XpConfig, DailyCap, XpEventHandler, messaging/forum/friend XP wiring, scoped leaderboard, gamification channel, web+mobile XP toasts
-- 16-02 (9 commits): Achievement triggers + quest rotation — 40 achievements, 23 quest templates seeded, AchievementTriggers, QuestTemplates, QuestRotationWorker (Oban cron), quest objective tracking, web+mobile notifications
-- 16-03 (8 commits): Progressive disclosure — FeatureGates (15 features), LevelGatePlug (403 protection), web LevelGate + useLevelGate, sidebar lock badges, unlock celebrations, mobile level gate
-- 16-04 (7 commits): Leaderboard scoping + battle pass + marketplace — scope UI (global/group/board), EventLifecycleWorker, battle pass XP progression, atomic marketplace purchase, web BP/marketplace UI, mobile hub
-- 16-05 (9 commits): Cosmetics — 11 animated CSS border keyframes (GPU-only), AnimatedBorder + BorderRenderer, Avatar integration, border preview modal, InlineTitle (rarity gradients), title propagation to messages+forums, mobile Reanimated borders, mobile InlineTitle
+Phase 18 planned. 5 plans in 1 wave covering 20 requirements (MSG, E2EE, SEARCH, DESIGN, INFRA, MOD):
+- 18-01 (Wave 1): Rich media messaging + E2EE — R2 storage wiring, file encryption crypto layer, voice/file E2EE, file/image UI, GIF picker, scheduled messages CRUD + UI
+- 18-02 (Wave 1): Search & discovery — Meilisearch message indexing, in-conversation search panel, quick switcher verification, explore backend aggregation + frontend
+- 18-03 (Wave 1): UI polish & component library — animation tokens, page transitions, skeleton loading audit, empty states, Storybook 15→30+ stories, mobile polish, COMPONENTS.md
+- 18-04 (Wave 1): Infrastructure scale & hardening — feature flag admin API + frontend SDK, rate limiting audit + per-tier, WebSocket backpressure, 10K WS load test, realistic traffic + rich media tests
+- 18-05 (Wave 1): Moderation & safety hardening — moderation audit log, AI auto-action pipeline, extended stats, dashboard metrics UI, bulk actions, appeal email notifications
 
-Next: Phase 17 (Monetization) — Stripe, mobile IAP, creator payouts.
+Next: Execute Phase 18 plans.
 
 ---
 
-_Last updated: 2026-03-01_
+_Last updated: 2026-03-02_

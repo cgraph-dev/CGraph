@@ -883,9 +883,13 @@ media completes messaging.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                              | Status      |
+| ----- | ------------------------------------------------------------------ | ----------- |
+| 18-01 | Rich media messaging + E2EE (MSG-10, MSG-11, MSG-12, MSG-15, E2EE-05, E2EE-06) | Not started |
+| 18-02 | Search & discovery (MSG-20, SEARCH-01, SEARCH-04, SEARCH-05)      | Not started |
+| 18-03 | UI polish & component library (DESIGN-03, DESIGN-04, DESIGN-06)   | Not started |
+| 18-04 | Infrastructure scale & hardening (INFRA-01, INFRA-04, INFRA-06, INFRA-07) | Not started |
+| 18-05 | Moderation & safety hardening (MOD-05, MOD-06, MOD-07)            | Not started |
 
 ---
 
@@ -988,8 +992,8 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 14    | Forum Core              | Blocked by 12            | 0%       |
 | 15    | Forum Customization     | Blocked by 14            | 0%       |
 | 16    | Gamification            | ✅ Complete              | 100%     |
-| 17    | Monetization            | Blocked by 16            | 0%       |
-| 18    | Rich Media & Polish     | Blocked by 7,13          | 0%       |
+| 17    | Monetization            | Planned (4 plans)        | 0%       |
+| 18    | Rich Media & Polish     | Planned (5 plans)        | 0%       |
 | 19    | Launch                  | Blocked by 15,17,18      | 0%       |
 
 ---
