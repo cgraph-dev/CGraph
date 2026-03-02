@@ -19,6 +19,7 @@ defmodule CGraph.Gamification.XpEventHandler do
 
   alias CGraph.Gamification
   alias CGraph.Gamification.{AchievementTriggers, DailyCap, XpConfig}
+  alias CGraph.Gamification.Events.Participation, as: EventParticipation
 
   require Logger
 
@@ -126,6 +127,9 @@ defmodule CGraph.Gamification.XpEventHandler do
         async_quest_progress(user.id, action_type)
         async_achievement_triggers(user.id, action_type)
 
+        # Award event XP for active event participation
+        async_event_xp_progression(user.id, effective_xp)
+
         # Scoped (per-board) leaderboard update for forum actions
         board_id = Keyword.get(opts, :board_id)
 
@@ -230,6 +234,30 @@ defmodule CGraph.Gamification.XpEventHandler do
   defp async_achievement_triggers(user_id, action_type) do
     Task.start(fn ->
       AchievementTriggers.check_all(user_id, action_type)
+    end)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Event XP progression (fire-and-forget)
+  # ---------------------------------------------------------------------------
+
+  defp async_event_xp_progression(user_id, xp_amount) do
+    Task.start(fn ->
+      # Find all active events the user participates in and add event XP
+      active_events = CGraph.Gamification.EventSystem.list_active_events()
+
+      Enum.each(active_events, fn event ->
+        case EventParticipation.add_event_xp(user_id, event.id, xp_amount) do
+          {:ok, _progress} -> :ok
+          {:error, :not_found} -> :ok  # User not participating
+          {:error, reason} ->
+            Logger.warning("Event XP progression failed",
+              user_id: user_id,
+              event_id: event.id,
+              reason: inspect(reason)
+            )
+        end
+      end)
     end)
   end
 

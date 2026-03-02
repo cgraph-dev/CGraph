@@ -88,6 +88,70 @@ defmodule CGraph.Gamification.Events.Participation do
     end
   end
 
+  @doc """
+  Add XP to user's event progress with tier threshold checking.
+
+  Awards event XP, checks for battle pass tier advancement, and
+  unlocks tier rewards when thresholds are crossed.
+  """
+  @spec add_event_xp(String.t(), String.t(), integer()) ::
+          {:ok, UserEventProgress.t()} | {:error, term()}
+  def add_event_xp(user_id, event_id, xp_amount) do
+    case get_user_progress(user_id, event_id) do
+      {:ok, progress} ->
+        old_xp = progress.battle_pass_xp || 0
+        new_xp = old_xp + xp_amount
+        old_tier = progress.battle_pass_tier || 0
+        new_tier = calculate_tier_from_xp(new_xp)
+
+        new_points = (progress.event_points || 0) + xp_amount
+        new_lb_points = (progress.leaderboard_points || 0) + xp_amount
+
+        changes = %{
+          battle_pass_xp: new_xp,
+          battle_pass_tier: max(old_tier, new_tier),
+          event_points: new_points,
+          leaderboard_points: new_lb_points,
+          last_activity_at: DateTime.truncate(DateTime.utc_now(), :second)
+        }
+
+        case progress |> Ecto.Changeset.change(changes) |> Repo.update() do
+          {:ok, updated} ->
+            # If tier advanced, broadcast and award tier rewards
+            if new_tier > old_tier do
+              broadcast_tier_advance(user_id, event_id, old_tier, new_tier, progress.has_battle_pass)
+            end
+
+            {:ok, updated}
+
+          error ->
+            error
+        end
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
+  @xp_per_tier 1000
+
+  defp calculate_tier_from_xp(xp), do: div(xp, @xp_per_tier)
+
+  defp broadcast_tier_advance(user_id, event_id, old_tier, new_tier, has_battle_pass) do
+    Task.start(fn ->
+      Phoenix.PubSub.broadcast(
+        CGraph.PubSub,
+        "gamification:#{user_id}",
+        {:battle_pass_tier_up, %{
+          event_id: event_id,
+          old_tier: old_tier,
+          new_tier: new_tier,
+          has_premium: has_battle_pass || false
+        }}
+      )
+    end)
+  end
+
   # ============================================================================
   # Leaderboards
   # ============================================================================

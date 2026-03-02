@@ -134,7 +134,7 @@ defmodule CGraph.Gamification.EventSystem do
     {entries_with_rank, page_info}
   end
 
-  @doc "Purchase battle pass."
+  @doc "Purchase battle pass with retroactive premium reward unlocking."
   @spec purchase_battle_pass(binary(), binary()) :: {:ok, map()} | {:error, atom()}
   def purchase_battle_pass(user_id, event_id) do
     with event when not is_nil(event) <- Repo.get(SeasonalEvent, event_id),
@@ -143,7 +143,22 @@ defmodule CGraph.Gamification.EventSystem do
          false <- progress.has_battle_pass,
          {:ok, _} <- CGraph.Gamification.deduct_currency(user_id, event.battle_pass_cost, :gems) do
       {:ok, updated} = progress |> UserEventProgress.purchase_battle_pass_changeset() |> Repo.update()
-      {:ok, %{success: true, has_battle_pass: true, tier: updated.battle_pass_tier}}
+
+      # Calculate retroactive premium rewards for tiers already reached
+      retroactive_rewards = get_retroactive_premium_rewards(event, updated.battle_pass_tier || 0)
+
+      # Broadcast battle pass purchase
+      Phoenix.PubSub.broadcast(
+        CGraph.PubSub,
+        "gamification:#{user_id}",
+        {:battle_pass_purchased, %{
+          event_id: event_id,
+          tier: updated.battle_pass_tier,
+          retroactive_rewards: length(retroactive_rewards)
+        }}
+      )
+
+      {:ok, %{success: true, has_battle_pass: true, tier: updated.battle_pass_tier, retroactive_rewards: retroactive_rewards}}
     else
       nil -> {:error, :not_found}
       false -> {:error, :no_battle_pass_available}
@@ -200,6 +215,16 @@ defmodule CGraph.Gamification.EventSystem do
     xp_per_tier = 1000
     tier = div(current_xp, xp_per_tier)
     (tier + 1) * xp_per_tier - current_xp
+  end
+
+  defp get_retroactive_premium_rewards(event, current_tier) do
+    tiers = event.battle_pass_tiers || []
+
+    0..min(current_tier, length(tiers) - 1)
+    |> Enum.flat_map(fn idx ->
+      tier_data = Enum.at(tiers, idx) || %{}
+      tier_data["premium_rewards"] || []
+    end)
   end
 
   defp get_available_tier_rewards(progress, event) do
