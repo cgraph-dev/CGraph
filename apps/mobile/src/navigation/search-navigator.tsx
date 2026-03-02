@@ -6,6 +6,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchStackParamList } from '../types';
 import SearchScreen from '../screens/search/search-screen';
+import ExploreScreen from '../screens/explore/explore-screen';
 
 const Stack = createNativeStackNavigator<SearchStackParamList>();
 
@@ -20,6 +21,7 @@ export default function SearchNavigator() {
       }}
     >
       <Stack.Screen name="SearchMain" component={SearchScreen} />
+      <Stack.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
     </Stack.Navigator>
   );
 }

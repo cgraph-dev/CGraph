@@ -409,6 +409,7 @@ export type FriendsStackParamList = {
 export type SearchStackParamList = {
   SearchMain: undefined;
   SearchResults: { query: string; category?: string };
+  Explore: undefined;
 };
 
 export type GroupsStackParamList = {
