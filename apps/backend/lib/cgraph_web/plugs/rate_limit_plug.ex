@@ -130,7 +130,7 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   # ---------------------------------------------------------------------------
 
   defp check_rate_limit(conn, identifier, opts) do
-    rate_limit_opts = build_rate_limit_opts(opts)
+    rate_limit_opts = build_rate_limit_opts(conn, opts)
 
     case RateLimiter.check(identifier, opts.scope, rate_limit_opts) do
       :ok ->
@@ -142,11 +142,57 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
     end
   end
 
-  defp build_rate_limit_opts(opts) do
-    []
-    |> maybe_add_opt(:limit, opts.limit)
-    |> maybe_add_opt(:window, opts.window)
-    |> maybe_add_opt(:cost, opts.cost)
+  defp build_rate_limit_opts(conn, opts) do
+    base_opts =
+      []
+      |> maybe_add_opt(:limit, opts.limit)
+      |> maybe_add_opt(:window, opts.window)
+      |> maybe_add_opt(:cost, opts.cost)
+
+    # Apply per-tier multiplier: premium=2x, enterprise=5x
+    apply_tier_multiplier(conn, base_opts)
+  end
+
+  @doc """
+  Apply subscription tier rate limit multiplier.
+
+  Premium users get 2x the base rate limit.
+  Enterprise users get 5x the base rate limit.
+  Free users get the default 1x limit.
+  """
+  defp apply_tier_multiplier(conn, opts) do
+    multiplier = get_tier_multiplier(conn)
+
+    case Keyword.get(opts, :limit) do
+      nil ->
+        # No explicit limit override — let RateLimiter apply scope defaults
+        # We inject multiplied scope default via the :tier_multiplier opt
+        Keyword.put(opts, :tier_multiplier, multiplier)
+
+      limit when is_integer(limit) and multiplier > 1.0 ->
+        Keyword.put(opts, :limit, round(limit * multiplier))
+
+      _limit ->
+        opts
+    end
+  end
+
+  defp get_tier_multiplier(conn) do
+    case get_subscription_tier(conn) do
+      "premium" -> 2.0
+      "enterprise" -> 5.0
+      :premium -> 2.0
+      :enterprise -> 5.0
+      _ -> 1.0
+    end
+  end
+
+  defp get_subscription_tier(conn) do
+    case conn.assigns do
+      %{current_user: %{subscription_tier: tier}} when not is_nil(tier) -> tier
+      %{current_user: %{tier: tier}} when not is_nil(tier) -> tier
+      _ -> nil
+    end
   end
 
   defp maybe_add_opt(list, _key, nil), do: list
@@ -221,10 +267,13 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
 
   defp add_rate_limit_headers(conn, identifier, opts) do
     status = RateLimiter.status(identifier, opts.scope)
+    multiplier = get_tier_multiplier(conn)
+    effective_limit = if multiplier > 1.0, do: round(status.limit * multiplier), else: status.limit
 
     conn
-    |> put_resp_header("x-ratelimit-limit", to_string(status.limit))
+    |> put_resp_header("x-ratelimit-limit", to_string(effective_limit))
     |> put_resp_header("x-ratelimit-remaining", to_string(status.remaining))
+    |> put_resp_header("x-ratelimit-tier", to_string(get_subscription_tier(conn) || "free"))
     |> maybe_add_reset_header(status)
   end
 
