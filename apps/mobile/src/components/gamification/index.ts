@@ -36,5 +36,9 @@ export type { Quest, QuestType, QuestStatus, QuestReward } from './quest-panel';
 export { default as StreakDisplay } from './streak-display';
 export type { StreakDisplayProps } from './streak-display';
 
+// Level gate (progressive disclosure)
+export { default as LevelGate, useLevelGate } from './level-gate';
+export type { LevelGateProps, LevelGateResult } from './level-gate';
+
 // Titles and badges
 export { default as TitleBadge } from './title-badge';
