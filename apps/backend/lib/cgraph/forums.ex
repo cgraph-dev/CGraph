@@ -37,6 +37,7 @@ defmodule CGraph.Forums do
 
   defdelegate list_forums(opts \\ []), to: CGraph.Forums.Core
   defdelegate list_forums_for_user(user, opts \\ []), to: CGraph.Forums.Core
+  defdelegate list_public_forums(opts \\ []), to: CGraph.Forums.Core
   defdelegate add_membership_status(forum, user), to: CGraph.Forums.Core
   defdelegate forum_subscribed?(user, forum), to: CGraph.Forums.Core
   defdelegate forum_member?(user, forum), to: CGraph.Forums.Core

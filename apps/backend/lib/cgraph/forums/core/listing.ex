@@ -95,6 +95,48 @@ defmodule CGraph.Forums.Core.Listing do
     end
   end
 
+  @doc """
+  List public forums for the explore/discovery page.
+
+  Returns public forums filtered by optional category, query, and sort.
+  Does not require a user context — intended for unauthenticated explore endpoints.
+  """
+  @spec list_public_forums(keyword()) :: {[struct()], map()}
+  def list_public_forums(opts \\ []) do
+    category = Keyword.get(opts, :category)
+    query_str = Keyword.get(opts, :query)
+    sort = Keyword.get(opts, :sort, :popular)
+    limit = Keyword.get(opts, :limit, 20)
+
+    base = from f in Forum,
+      where: not_deleted(f),
+      where: f.is_public == true,
+      preload: [:owner]
+
+    base = if category && category != "",
+      do: from(f in base, where: f.category == ^category),
+      else: base
+
+    base = if query_str && query_str != "",
+      do: from(f in base, where: ilike(f.name, ^"%%#{query_str}%%")),
+      else: base
+
+    sorted = case sort do
+      :newest -> from f in base, order_by: [desc: f.inserted_at]
+      :alphabetical -> from f in base, order_by: [asc: f.name]
+      _ -> from f in base, order_by: [desc: f.member_count]
+    end
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      %{limit: limit},
+      sort_field: :member_count,
+      sort_direction: :desc,
+      default_limit: limit
+    )
+
+    CGraph.Pagination.paginate(sorted, pagination_opts)
+  end
+
   @doc "Get a single forum by ID."
   @spec get_forum(binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_forum(id) do

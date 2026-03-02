@@ -60,6 +60,9 @@ defmodule CGraphWeb.Router.PublicRoutes do
         get "/forums/:id/ancestors", ForumHierarchyController, :ancestors
         get "/forums/:id/breadcrumbs", ForumHierarchyController, :breadcrumbs
 
+        # Community Explore — unified discovery of groups + forums
+        get "/explore", ExploreController, :index
+
         # Public user customizations (read-only)
         get "/users/:id/customizations", CustomizationController, :show
       end

@@ -24,6 +24,10 @@ defmodule CGraph.Forums.Core do
   @spec list_forums_for_user(struct() | nil, keyword()) :: {[struct()], map()}
   def list_forums_for_user(user, opts \\ []), do: Listing.list_forums_for_user(user, opts)
 
+  @doc "List public forums for the explore/discovery page."
+  @spec list_public_forums(keyword()) :: {[struct()], map()}
+  def list_public_forums(opts \\ []), do: Listing.list_public_forums(opts)
+
   defdelegate add_membership_status(forum, user), to: Listing
   defdelegate forum_subscribed?(user, forum), to: Listing
   defdelegate forum_member?(user, forum), to: Listing
