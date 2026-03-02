@@ -19,5 +19,14 @@ export * from './feedback';
 // Animated state components (Empty, Error)
 export { AnimatedEmptyState, AnimatedErrorState } from './animated-empty-state';
 
+// Error fallback for error boundaries
+export { ErrorFallback } from './error-fallback';
+
+// Page transition wrapper
+export { PageTransition } from './page-transition';
+
+// Page skeleton wrapper
+export { PageSkeleton } from './page-skeleton';
+
 // Avatar lightbox (zoom-to-fullscreen)
 export { AvatarLightbox } from './avatar-lightbox';
