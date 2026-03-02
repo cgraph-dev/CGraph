@@ -1,0 +1,479 @@
+/**
+ * Animated Avatar Border Keyframes
+ *
+ * GPU-composited CSS animations for 11 animated border types.
+ * Types `none` and `static` require no CSS (handled in React).
+ *
+ * Performance rules:
+ * - ONLY transform, opacity, filter (GPU-composited)
+ * - NEVER width/height/margin/padding/top/left
+ * - contain: layout style on animated containers
+ * - will-change: transform on active animations
+ *
+ * @module avatar-border/animated-border.css
+ */
+
+/* ── Base Container ─────────────────────────────────────────────────── */
+
+.avatar-border {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  contain: layout style;
+  border-radius: 50%;
+  --border-color: #6366f1;
+  --border-color-secondary: #8b5cf6;
+  --border-color-accent: #a855f7;
+  --border-width: 3px;
+  --border-size: 80px;
+}
+
+.avatar-border--animated {
+  will-change: transform;
+}
+
+/* ── 1. Pulse ───────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+.avatar-border--pulse {
+  animation: avatar-border-pulse 2s ease-in-out infinite;
+}
+
+.avatar-border--pulse::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-width) * -0.5);
+  border-radius: 50%;
+  border: var(--border-width) solid var(--border-color);
+  opacity: 0.6;
+  animation: avatar-border-pulse-ring 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes avatar-border-pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
+/* ── 2. Rotate ──────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.avatar-border--rotate {
+  background: conic-gradient(
+    from 0deg,
+    var(--border-color),
+    var(--border-color-secondary),
+    var(--border-color-accent),
+    var(--border-color)
+  );
+  padding: var(--border-width);
+  animation: avatar-border-rotate 3s linear infinite;
+}
+
+.avatar-border--rotate > .avatar-border__inner {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* ── 3. Shimmer ─────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-shimmer {
+  0% {
+    transform: translateX(-100%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(0deg);
+  }
+}
+
+.avatar-border--shimmer {
+  overflow: hidden;
+}
+
+.avatar-border--shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border-color) 25%,
+    var(--border-color-secondary) 50%,
+    var(--border-color) 75%,
+    transparent 100%
+  );
+  opacity: 0.7;
+  animation: avatar-border-shimmer 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── 4. Wave ────────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-wave {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: scale(1.03) rotate(2deg);
+  }
+  50% {
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(15deg);
+  }
+  75% {
+    transform: scale(1.03) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.avatar-border--wave {
+  animation: avatar-border-wave 3s ease-in-out infinite;
+}
+
+/* ── 5. Breathe ─────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-breathe {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.04);
+    filter: brightness(1.2);
+  }
+  60% {
+    transform: scale(0.98);
+    filter: brightness(0.9);
+  }
+}
+
+.avatar-border--breathe {
+  animation: avatar-border-breathe 4s ease-in-out infinite;
+}
+
+/* ── 6. Spin ────────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-spin-outer {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes avatar-border-spin-inner {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.avatar-border--spin::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-width) * -0.5);
+  border-radius: 50%;
+  border: var(--border-width) solid transparent;
+  border-top-color: var(--border-color);
+  border-right-color: var(--border-color-secondary);
+  animation: avatar-border-spin-outer 1.5s linear infinite;
+  pointer-events: none;
+}
+
+.avatar-border--spin::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-width) * 0.5);
+  border-radius: 50%;
+  border: calc(var(--border-width) * 0.5) solid transparent;
+  border-bottom-color: var(--border-color-accent);
+  border-left-color: var(--border-color);
+  animation: avatar-border-spin-inner 2s linear infinite;
+  pointer-events: none;
+}
+
+/* ── 7. Rainbow ─────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-rainbow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.avatar-border--rainbow {
+  background: conic-gradient(
+    from 0deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3,
+    #ff0000
+  );
+  padding: var(--border-width);
+  animation: avatar-border-rainbow 4s linear infinite;
+}
+
+.avatar-border--rainbow > .avatar-border__inner {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* ── 8. Particles ───────────────────────────────────────────────────── */
+
+@keyframes avatar-border-particle-orbit {
+  0% {
+    transform: rotate(0deg) translateX(calc(var(--border-size) * 0.55)) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(180deg) translateX(calc(var(--border-size) * 0.55)) rotate(-180deg) scale(0.6);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(360deg) translateX(calc(var(--border-size) * 0.55)) rotate(-360deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes avatar-border-particle-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-6px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+.avatar-border--particles .avatar-border__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border-color);
+  animation: avatar-border-particle-orbit 3s linear infinite;
+  pointer-events: none;
+}
+
+.avatar-border--particles .avatar-border__particle:nth-child(2) {
+  animation-delay: -0.5s;
+  background: var(--border-color-secondary);
+}
+
+.avatar-border--particles .avatar-border__particle:nth-child(3) {
+  animation-delay: -1s;
+  background: var(--border-color-accent);
+}
+
+.avatar-border--particles .avatar-border__particle:nth-child(4) {
+  animation-delay: -1.5s;
+  animation-duration: 3.5s;
+}
+
+.avatar-border--particles .avatar-border__particle:nth-child(5) {
+  animation-delay: -2s;
+  animation-duration: 2.5s;
+  background: var(--border-color-secondary);
+}
+
+.avatar-border--particles .avatar-border__particle:nth-child(6) {
+  animation-delay: -2.5s;
+  animation-duration: 4s;
+  background: var(--border-color-accent);
+}
+
+/* ── 9. Glow ────────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px var(--border-color)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--border-color)) drop-shadow(0 0 24px var(--border-color-secondary)) brightness(1.1);
+  }
+}
+
+.avatar-border--glow {
+  animation: avatar-border-glow 2.5s ease-in-out infinite;
+}
+
+/* ── 10. Flow ───────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-flow {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  33% {
+    transform: rotate(5deg) scale(1.02);
+    filter: hue-rotate(30deg) brightness(1.1);
+  }
+  66% {
+    transform: rotate(-3deg) scale(0.99);
+    filter: hue-rotate(-15deg) brightness(0.95);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+}
+
+.avatar-border--flow {
+  background: linear-gradient(
+    135deg,
+    var(--border-color) 0%,
+    var(--border-color-secondary) 50%,
+    var(--border-color-accent) 100%
+  );
+  padding: var(--border-width);
+  animation: avatar-border-flow 5s ease-in-out infinite;
+}
+
+.avatar-border--flow > .avatar-border__inner {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* ── 11. Spark ──────────────────────────────────────────────────────── */
+
+@keyframes avatar-border-spark {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  10% {
+    transform: scale(1.08);
+    filter: brightness(1.5);
+    opacity: 0.9;
+  }
+  20% {
+    transform: scale(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  90% {
+    transform: scale(1.04);
+    filter: brightness(1.3);
+    opacity: 0.95;
+  }
+}
+
+.avatar-border--spark {
+  animation: avatar-border-spark 3s ease-in-out infinite;
+}
+
+.avatar-border--spark::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-width) * -1);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 20%,
+    var(--border-color) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  animation: avatar-border-spark-flash 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes avatar-border-spark-flash {
+  0%, 15%, 100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  5% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+  10% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+  85% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  90% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+  95% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-border--pulse,
+  .avatar-border--rotate,
+  .avatar-border--shimmer,
+  .avatar-border--shimmer::before,
+  .avatar-border--wave,
+  .avatar-border--breathe,
+  .avatar-border--spin::before,
+  .avatar-border--spin::after,
+  .avatar-border--rainbow,
+  .avatar-border--particles .avatar-border__particle,
+  .avatar-border--glow,
+  .avatar-border--flow,
+  .avatar-border--spark,
+  .avatar-border--spark::before,
+  .avatar-border--pulse::after {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .avatar-border--animated {
+    will-change: auto;
+  }
+}
