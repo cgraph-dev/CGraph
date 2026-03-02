@@ -176,14 +176,20 @@ defmodule CGraphWeb.StripeWebhookController do
   defp handle_event(%Stripe.Event{type: "checkout.session.completed", data: %{object: session}}) do
     Logger.info("Checkout session completed", session_id: session.id)
 
-    with {:ok, user} <- find_user_by_metadata(session.metadata),
-         subscription_id when not is_nil(subscription_id) <- session.subscription do
+    # Distinguish coin purchases from subscription checkouts via metadata
+    case session.metadata do
+      %{"type" => "coin_purchase"} ->
+        CGraph.Shop.CoinCheckout.fulfill_purchase(session.id)
 
-      # Link the subscription to the user
-      Subscriptions.link_stripe_customer(user, %{
-        stripe_customer_id: session.customer,
-        stripe_subscription_id: subscription_id
-      })
+      _ ->
+        # Subscription checkout flow
+        with {:ok, user} <- find_user_by_metadata(session.metadata),
+             subscription_id when not is_nil(subscription_id) <- session.subscription do
+          Subscriptions.link_stripe_customer(user, %{
+            stripe_customer_id: session.customer,
+            stripe_subscription_id: subscription_id
+          })
+        end
     end
   end
 
