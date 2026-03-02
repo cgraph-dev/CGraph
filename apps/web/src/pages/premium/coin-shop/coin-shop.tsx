@@ -2,10 +2,10 @@
  * CoinShop page - main component for purchasing coins and shop items
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { CurrencyDollarIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { CurrencyDollarIcon, ShoppingBagIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { Button } from '@/components';
 import { COIN_BUNDLES, SHOP_ITEMS } from './constants';
@@ -22,8 +22,10 @@ import { AmbientParticles } from './ambient-particles';
  */
 export default function CoinShop() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   useAuthStore(); // Ensure user is authenticated
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     coinBalance,
@@ -36,6 +38,21 @@ export default function CoinShop() {
     handleClaimDailyBonus,
   } = useCoinShop();
 
+  // Handle checkout return from Stripe
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      setShowSuccess(true);
+      // Clean up URL params
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('success');
+      newParams.delete('purchase_id');
+      setSearchParams(newParams, { replace: true });
+      // Auto-dismiss after 5 seconds
+      const timer = setTimeout(() => setShowSuccess(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, setSearchParams]);
+
   // Filter items by category
   const filteredItems =
     activeCategory === 'all'
@@ -47,6 +64,32 @@ export default function CoinShop() {
       <AmbientParticles />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
+        {/* Checkout Success Banner */}
+        <AnimatePresence>
+          {showSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-6 flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 p-4"
+            >
+              <CheckCircleIcon className="h-6 w-6 flex-shrink-0 text-green-400" />
+              <div>
+                <p className="font-semibold text-green-300">Purchase Successful!</p>
+                <p className="text-sm text-green-400/80">
+                  Your coins have been added to your balance. Enjoy shopping!
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSuccess(false)}
+                className="ml-auto text-green-400/60 hover:text-green-400"
+              >
+                ✕
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
