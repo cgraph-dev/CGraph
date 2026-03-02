@@ -2,7 +2,7 @@
  * Billing and subscription settings panel.
  * @module
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';
 import { usePremiumStore } from '@/modules/premium/store';
@@ -11,6 +11,7 @@ import { safeRedirect } from '@/lib/security';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';
+import { billingService, type InvoiceRecord } from '@/services/billing';
 
 /**
  * unknown for the settings module.
@@ -23,6 +24,11 @@ export function BillingSettingsPanel() {
   const { currentTier, expiresAt, cancelAtPeriodEnd, status: subStatus } = usePremiumStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
+
+  useEffect(() => {
+    billingService.getInvoices().then(setInvoices).catch(() => {});
+  }, []);
 
   const handleUpgrade = async () => {
     setIsLoading(true);
@@ -174,6 +180,62 @@ export function BillingSettingsPanel() {
           </li>
         </ul>
       </GlassCard>
+
+      {/* Invoice History */}
+      {invoices.length > 0 && (
+        <GlassCard variant="crystal" className="mt-6 p-6">
+          <h3 className="mb-4 font-medium text-white">Invoice History</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-700 text-left text-gray-400">
+                  <th className="pb-2 pr-4">Date</th>
+                  <th className="pb-2 pr-4">Amount</th>
+                  <th className="pb-2 pr-4">Status</th>
+                  <th className="pb-2">Invoice</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-b border-gray-700/50">
+                    <td className="py-2 pr-4 text-gray-300">
+                      {new Date(invoice.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-2 pr-4 text-white">
+                      ${(invoice.amount / 100).toFixed(2)} {invoice.currency.toUpperCase()}
+                    </td>
+                    <td className="py-2 pr-4">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                          invoice.status === 'paid'
+                            ? 'bg-green-500/20 text-green-400'
+                            : invoice.status === 'open'
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-gray-500/20 text-gray-400'
+                        }`}
+                      >
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="py-2">
+                      {invoice.pdfUrl && (
+                        <a
+                          href={invoice.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-400 hover:text-indigo-300"
+                        >
+                          Download PDF
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
+      )}
     </motion.div>
   );
 }

@@ -136,10 +136,26 @@ export const billingService = {
    */
   async getInvoices(): Promise<InvoiceRecord[]> {
     try {
-      const response = await api.get<{ data: InvoiceRecord[] }>('/premium/invoices');
-      return response.data.data ?? [];
+      const response = await api.get<{ data: { invoices: InvoiceRecord[] } }>('/billing/invoices');
+      return response.data.data?.invoices ?? [];
     } catch {
       return [];
+    }
+  },
+
+  /**
+   * Update subscription plan (upgrade/downgrade)
+   *
+   * @param planId - The plan to switch to
+   * @param yearly - Whether to use yearly billing
+   */
+  async updatePlan(planId: PlanId, yearly = false): Promise<void> {
+    const response = await api.post<{ data: { checkout_url: string } }>('/billing/update-plan', {
+      plan_id: planId,
+      yearly,
+    });
+    if (response.data.data?.checkout_url) {
+      safeRedirect(response.data.data.checkout_url);
     }
   },
 
