@@ -22,6 +22,7 @@ defmodule CGraphWeb.StripeWebhookController do
   alias CGraph.Accounts
   alias CGraph.Subscriptions
   alias CGraph.Subscriptions.Idempotency
+  alias CGraph.Creators
 
   @doc """
   Main webhook endpoint. Verifies signature and dispatches to handlers.
@@ -116,33 +117,11 @@ defmodule CGraphWeb.StripeWebhookController do
     end
   end
 
-  defp handle_event(%Stripe.Event{type: "customer.subscription.deleted", data: %{object: subscription}}) do
-    Logger.info("Processing subscription.deleted", subscription_id: subscription.id)
+  # NOTE: customer.subscription.deleted is handled below in Connect Event Handlers
+  # with metadata-based routing (paid_forum vs regular subscriptions)
 
-    with {:ok, user} <- find_user_by_stripe_subscription(subscription.id),
-         {:ok, _user} <- Subscriptions.cancel_subscription(user) do
-      Logger.info("Subscription cancelled", user_id: user.id)
-    else
-      {:error, reason} ->
-        Logger.error("Failed to process subscription.deleted", reason: inspect(reason))
-    end
-  end
-
-  defp handle_event(%Stripe.Event{type: "invoice.payment_succeeded", data: %{object: invoice}}) do
-    Logger.info("Payment succeeded", invoice_id: invoice.id)
-
-    if invoice.subscription do
-      with {:ok, user} <- find_user_by_stripe_subscription(invoice.subscription) do
-        # Extend subscription period
-        Subscriptions.record_payment(user, %{
-          invoice_id: invoice.id,
-          amount: invoice.amount_paid,
-          currency: invoice.currency,
-          paid_at: DateTime.from_unix!(invoice.status_transitions.paid_at || System.system_time(:second))
-        })
-      end
-    end
-  end
+  # NOTE: invoice.payment_succeeded is handled below in Connect Event Handlers
+  # with metadata-based routing (paid_forum vs regular invoices)
 
   defp handle_event(%Stripe.Event{type: "invoice.payment_failed", data: %{object: invoice}}) do
     Logger.warning("Payment failed", invoice_id: invoice.id)
@@ -193,6 +172,98 @@ defmodule CGraphWeb.StripeWebhookController do
     end
   end
 
+  # ===========================================================================
+  # Connect Event Handlers (Creator Monetization — 17-04)
+  # ===========================================================================
+
+  defp handle_event(%Stripe.Event{type: "account.updated", data: %{object: account}, account: connect_id}) do
+    Logger.info("Processing Connect account.updated", account_id: connect_id || account.id)
+
+    account_id = connect_id || account.id
+
+    status = %{
+      charges_enabled: Map.get(account, :charges_enabled, false),
+      payouts_enabled: Map.get(account, :payouts_enabled, false)
+    }
+
+    Creators.handle_account_updated(account_id, status)
+  end
+
+  defp handle_event(%Stripe.Event{
+    type: "invoice.payment_succeeded",
+    data: %{object: invoice}
+  }) when is_map_key(invoice, :metadata) do
+    case Map.get(invoice.metadata || %{}, "type") do
+      "paid_forum" ->
+        Logger.info("Processing paid forum invoice", invoice_id: invoice.id)
+
+        creator_id = Map.get(invoice.metadata, "creator_id")
+        forum_id = Map.get(invoice.metadata, "forum_id")
+        subscriber_id = Map.get(invoice.metadata, "subscriber_id")
+
+        if creator_id do
+          Creators.record_earning(creator_id, %{
+            amount_cents: invoice.amount_paid || 0,
+            forum_id: forum_id,
+            subscriber_id: subscriber_id,
+            payment_intent_id: invoice.payment_intent,
+            currency: invoice.currency || "usd",
+            period_start: safe_from_unix(Map.get(invoice, :period_start)),
+            period_end: safe_from_unix(Map.get(invoice, :period_end))
+          })
+        else
+          Logger.warning("paid_forum invoice without creator_id", invoice_id: invoice.id)
+        end
+
+      _ ->
+        # Regular invoice (platform subscriptions) — delegate to existing handler
+        handle_regular_invoice_succeeded(invoice)
+    end
+  end
+
+  defp handle_event(%Stripe.Event{
+    type: "customer.subscription.deleted",
+    data: %{object: subscription}
+  }) when is_map_key(subscription, :metadata) do
+    case Map.get(subscription.metadata || %{}, "type") do
+      "paid_forum" ->
+        Logger.info("Processing paid forum subscription deletion", subscription_id: subscription.id)
+
+        Creators.update_subscription_status(subscription.id, %{
+          status: "expired",
+          canceled_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+
+      _ ->
+        # Regular subscription deletion
+        with {:ok, user} <- find_user_by_stripe_subscription(subscription.id),
+             {:ok, _user} <- Subscriptions.cancel_subscription(user) do
+          Logger.info("Subscription cancelled", user_id: user.id)
+        else
+          {:error, reason} ->
+            Logger.error("Failed to process subscription.deleted", reason: inspect(reason))
+        end
+    end
+  end
+
+  defp handle_event(%Stripe.Event{type: "transfer.paid", data: %{object: transfer}}) do
+    Logger.info("Transfer completed", transfer_id: transfer.id)
+
+    Creators.update_payout_status(transfer.id, "completed", %{
+      completed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+    })
+  end
+
+  defp handle_event(%Stripe.Event{type: "transfer.failed", data: %{object: transfer}}) do
+    Logger.warning("Transfer failed", transfer_id: transfer.id)
+
+    failure_reason = Map.get(transfer, :failure_message) || "Transfer failed"
+
+    Creators.update_payout_status(transfer.id, "failed", %{
+      failure_reason: failure_reason
+    })
+  end
+
   defp handle_event(%Stripe.Event{type: type}) do
     Logger.debug("Unhandled Stripe event type", event_type: type)
     :ok
@@ -201,6 +272,23 @@ defmodule CGraphWeb.StripeWebhookController do
   # ===========================================================================
   # Helper Functions
   # ===========================================================================
+
+  defp safe_from_unix(nil), do: nil
+  defp safe_from_unix(ts) when is_integer(ts), do: DateTime.from_unix!(ts) |> DateTime.truncate(:second)
+  defp safe_from_unix(_), do: nil
+
+  defp handle_regular_invoice_succeeded(invoice) do
+    if invoice.subscription do
+      with {:ok, user} <- find_user_by_stripe_subscription(invoice.subscription) do
+        Subscriptions.record_payment(user, %{
+          invoice_id: invoice.id,
+          amount: invoice.amount_paid,
+          currency: invoice.currency,
+          paid_at: DateTime.from_unix!(invoice.status_transitions.paid_at || System.system_time(:second))
+        })
+      end
+    end
+  end
 
   defp get_stripe_signature(conn) do
     case get_req_header(conn, "stripe-signature") do
