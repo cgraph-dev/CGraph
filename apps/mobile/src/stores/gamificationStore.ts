@@ -102,6 +102,25 @@ interface GamificationState {
     level_progress: number;
   }) => void;
   handleCoinsAwarded: (data: { amount: number; balance: number }) => void;
+  handleAchievementUnlocked: (data: {
+    achievementId: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: string;
+    xpReward: number;
+    coinReward: number;
+  }) => void;
+  handleQuestCompleted: (data: {
+    user_quest_id: string;
+    quest_id: string;
+    quest_title: string;
+    xp_reward: number;
+    coin_reward: number;
+  }) => void;
+  handleNewQuestsAvailable: (data: {
+    type: 'daily' | 'weekly' | 'monthly';
+  }) => void;
   reset: () => void;
 }
 
@@ -262,6 +281,45 @@ export const useGamificationStore = create<GamificationState>()(
 
       handleCoinsAwarded: (data: { amount: number; balance: number }) => {
         set({ coins: data.balance });
+      },
+
+      handleAchievementUnlocked: (data: {
+        achievementId: string;
+        title: string;
+        description: string;
+        icon: string;
+        rarity: string;
+        xpReward: number;
+        coinReward: number;
+      }) => {
+        const current = get();
+        set({ achievementsUnlocked: current.achievementsUnlocked + 1 });
+        const updated = current.achievements.map((a) =>
+          a.id === data.achievementId
+            ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() }
+            : a
+        );
+        set({ achievements: updated });
+      },
+
+      handleQuestCompleted: (data: {
+        user_quest_id: string;
+        quest_id: string;
+        quest_title: string;
+        xp_reward: number;
+        coin_reward: number;
+      }) => {
+        const current = get();
+        const updated = current.activeQuests.map((q) =>
+          q.id === data.user_quest_id || q.id === data.quest_id
+            ? { ...q, completed: true }
+            : q
+        );
+        set({ activeQuests: updated });
+      },
+
+      handleNewQuestsAvailable: () => {
+        get().fetchQuests();
       },
     }),
     {
