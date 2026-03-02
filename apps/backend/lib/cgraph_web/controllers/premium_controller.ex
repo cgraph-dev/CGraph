@@ -7,6 +7,7 @@ defmodule CGraphWeb.PremiumController do
   require Logger
 
   alias CGraph.Repo
+  alias CGraph.Subscriptions.TierFeatures
 
   action_fallback CGraphWeb.FallbackController
 
@@ -354,47 +355,7 @@ defmodule CGraphWeb.PremiumController do
     DateTime.compare(DateTime.utc_now(), expires_at) == :lt
   end
 
-  defp get_tier_features("free") do
-    %{
-      xp_multiplier: 1.0,
-      coin_bonus: 0,
-      custom_themes: false,
-      exclusive_badges: false,
-      exclusive_effects: false,
-      priority_support: false,
-      early_access: false,
-      custom_banner: false,
-      daily_limits: true
-    }
+  defp get_tier_features(tier) do
+    TierFeatures.features_for_tier(tier)
   end
-
-  defp get_tier_features("premium") do
-    %{
-      xp_multiplier: 2.0,
-      coin_bonus: 20,
-      custom_themes: true,
-      exclusive_badges: true,
-      exclusive_effects: true,
-      priority_support: true,
-      early_access: true,
-      custom_banner: true,
-      daily_limits: false
-    }
-  end
-
-  defp get_tier_features("enterprise") do
-    %{
-      xp_multiplier: 3.0,
-      coin_bonus: 50,
-      custom_themes: true,
-      exclusive_badges: true,
-      exclusive_effects: true,
-      priority_support: true,
-      early_access: true,
-      custom_banner: true,
-      daily_limits: false
-    }
-  end
-
-  defp get_tier_features(_), do: get_tier_features("free")
 end
