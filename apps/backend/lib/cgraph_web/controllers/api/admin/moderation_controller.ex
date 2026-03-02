@@ -189,15 +189,37 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   Get moderation statistics.
   """
   @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def stats(conn, _params) do
-    stats = %{
-      pending_reports: Moderation.pending_report_counts(),
-      today_reviewed: Moderation.reports_reviewed_today(),
-      average_response_time: Moderation.average_response_time(),
-      active_restrictions: Moderation.active_restriction_count()
-    }
+  def stats(conn, params) do
+    days = to_integer(params["days"], 30)
+    stats = CGraph.Moderation.Stats.comprehensive_stats(days)
 
-    render_data(conn, stats)
+    render_data(conn, %{
+      reports_today: stats.reports_today,
+      avg_response_time: stats.avg_response_time,
+      active_restrictions: stats.active_restrictions,
+      resolution_rate: stats.resolution_rate,
+      reports_by_category: stats.reports_by_category,
+      reports_trend: Enum.map(stats.reports_trend, fn item ->
+        %{date: item.date, count: item.count}
+      end),
+      moderator_leaderboard: Enum.map(stats.moderator_leaderboard, fn mod ->
+        %{
+          reviewer_id: mod.reviewer_id,
+          username: mod[:username],
+          display_name: mod[:display_name],
+          actions_count: mod.actions_count,
+          last_action: mod.last_action
+        }
+      end),
+      ai_stats: Enum.map(stats.ai_stats, fn item ->
+        %{
+          ai_action: item.ai_action,
+          auto_actioned: item.auto_actioned,
+          count: item.count
+        }
+      end),
+      appeals_stats: stats.appeals_stats
+    })
   end
 
   # ---------------------------------------------------------------------------
