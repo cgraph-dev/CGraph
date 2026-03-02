@@ -257,8 +257,10 @@ defmodule CGraphWeb.Router.UserRoutes do
         # Billing & Payments (Stripe Integration)
         get "/billing/plans", CGraphWeb.Api.PaymentController, :plans
         get "/billing/status", CGraphWeb.Api.PaymentController, :billing_status
+        get "/billing/invoices", CGraphWeb.Api.PaymentController, :invoices
         post "/billing/checkout", CGraphWeb.Api.PaymentController, :create_checkout
         post "/billing/portal", CGraphWeb.Api.PaymentController, :create_portal
+        post "/billing/update-plan", CGraphWeb.Api.PaymentController, :update_plan
 
         # Forum Subscriptions
         get "/forum/subscriptions", CGraphWeb.API.SubscriptionController, :index

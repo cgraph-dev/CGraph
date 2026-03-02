@@ -154,4 +154,90 @@ defmodule CGraphWeb.Api.PaymentController do
 
     render_data(conn, %{plans: plans})
   end
+
+  @doc """
+  Returns paginated invoice history from Stripe for the current user.
+
+  GET /api/v1/billing/invoices
+  Query params: limit (default 10), starting_after (cursor for pagination)
+  """
+  @spec invoices(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def invoices(conn, params) do
+    user = Guardian.Plug.current_resource(conn)
+    limit = params |> Map.get("limit", "10") |> to_integer(10)
+    starting_after = Map.get(params, "starting_after")
+
+    if is_nil(user.stripe_customer_id) do
+      render_data(conn, %{invoices: [], has_more: false})
+    else
+      stripe_params =
+        %{customer: user.stripe_customer_id, limit: min(limit, 50)}
+        |> maybe_put(:starting_after, starting_after)
+
+      case Stripe.Invoice.list(stripe_params) do
+        {:ok, %{data: stripe_invoices, has_more: has_more}} ->
+          invoices =
+            Enum.map(stripe_invoices, fn inv ->
+              %{
+                id: inv.id,
+                amount_due: inv.amount_due,
+                currency: inv.currency || "usd",
+                status: inv.status,
+                created: inv.created |> DateTime.from_unix!() |> DateTime.to_iso8601(),
+                hosted_invoice_url: inv.hosted_invoice_url,
+                invoice_pdf: inv.invoice_pdf,
+                description: inv.description
+              }
+            end)
+
+          render_data(conn, %{invoices: invoices, has_more: has_more})
+
+        {:error, _reason} ->
+          render_data(conn, %{invoices: [], has_more: false})
+      end
+    end
+  end
+
+  @doc """
+  Initiates a plan change (upgrade/downgrade).
+
+  POST /api/v1/billing/update-plan
+  Body: {"plan_id": "premium", "yearly": false}
+  """
+  @spec update_plan(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def update_plan(conn, %{"plan_id" => plan_id} = params) do
+    user = Guardian.Plug.current_resource(conn)
+    yearly = Map.get(params, "yearly", false)
+
+    case Subscriptions.create_checkout_session(user, plan_id, yearly: yearly) do
+      {:ok, url} ->
+        render_data(conn, %{checkout_url: url})
+
+      {:error, message} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: message})
+    end
+  end
+
+  def update_plan(conn, _params) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{error: "Missing required parameter: plan_id"})
+  end
+
+  # Private helpers
+
+  defp to_integer(val, default) when is_binary(val) do
+    case Integer.parse(val) do
+      {n, _} -> n
+      :error -> default
+    end
+  end
+
+  defp to_integer(val, _default) when is_integer(val), do: val
+  defp to_integer(_, default), do: default
+
+  defp maybe_put(map, _key, nil), do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 end
