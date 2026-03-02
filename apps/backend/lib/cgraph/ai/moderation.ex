@@ -16,8 +16,23 @@ defmodule CGraph.AI.Moderation do
       action: :allow | :flag | :block
     }
   """
-  @spec check(String.t(), keyword()) :: map()
+  @spec check(String.t(), keyword()) :: {:ok, map()}
   def check(content, opts \\ []) do
+    case Keyword.get(opts, :content_type, "text") do
+      "image" ->
+        # TODO: Integrate vision model (OpenAI GPT-4V / Claude) for image analysis
+        # For now, allow all images and analyze alt-text/captions if provided
+        case Keyword.get(opts, :alt_text) do
+          nil -> {:ok, %{safe: true, categories: [], confidence: 1.0, action: :allow}}
+          alt_text -> do_check(alt_text, opts)
+        end
+
+      _ ->
+        do_check(content, opts)
+    end
+  end
+
+  defp do_check(content, opts) do
     if CGraph.AI.llm_available?() do
       llm_moderate(content, opts)
     else
