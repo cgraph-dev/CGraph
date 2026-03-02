@@ -140,6 +140,30 @@ export function createSeasonalActions(set: SetFn, get: GetFn) {
       }
     },
 
+    claimEventReward: async (
+      eventId: string,
+      tier: number,
+      rewardType: 'free' | 'premium'
+    ): Promise<{ success: boolean; reward?: EventReward }> => {
+      set({ isClaiming: true });
+      try {
+        const response = await api.post(`/api/v1/events/${eventId}/claim-tier-reward`, {
+          tier,
+          reward_type: rewardType,
+        });
+        if (response.data?.success) {
+          set({ currentProgress: response.data.progress });
+          return { success: true, reward: response.data.reward };
+        }
+        return { success: false };
+      } catch (error: unknown) {
+        logger.error('Failed to claim event tier reward:', error);
+        return { success: false };
+      } finally {
+        set({ isClaiming: false });
+      }
+    },
+
     fetchLeaderboard: async (eventId: string, limit = 50, offset = 0) => {
       try {
         const response = await api.get(`/api/v1/events/${eventId}/leaderboard`, {
