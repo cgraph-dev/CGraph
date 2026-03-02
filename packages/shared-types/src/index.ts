@@ -12,3 +12,4 @@ export * from './forum-user-groups';
 export * from './gamification';
 export * from './subscription';
 export * from './billing';
+export * from './creator';
