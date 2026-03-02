@@ -139,6 +139,11 @@ defmodule CGraph.Forums.Forum do
     # Customization engine — 55 options stored as JSONB
     field :customization_options, :map, default: %{}
 
+    # Monetization (Phase 17 — creator paid forum subscriptions)
+    field :monetization_enabled, :boolean, default: false
+    field :subscription_price_cents, :integer
+    field :subscription_currency, :string, default: "usd"
+
     timestamps()
   end
 
