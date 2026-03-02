@@ -7,6 +7,7 @@
  * @module modules/forums/components/customization-center
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -196,7 +197,7 @@ export function CustomizationCenter({ forumId }: CustomizationCenterProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal.ms / 1000 }}
             >
               {displayOptions && (
                 <CategoryEditor

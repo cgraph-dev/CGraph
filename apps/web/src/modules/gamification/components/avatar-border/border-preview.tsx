@@ -10,6 +10,7 @@
  * @module avatar-border/border-preview
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -138,7 +139,7 @@ export const BorderPreview = memo(function BorderPreview({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', duration: 0.4 }}
+            transition={{ type: 'spring', duration: durations.smooth.ms / 1000 }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}

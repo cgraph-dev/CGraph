@@ -8,6 +8,7 @@
  * @module modules/gamification/components/level-gate/feature-unlock-toast
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -132,7 +133,7 @@ export function FeatureUnlockToast({
                     scale: [0.8, 1.2, 0.6],
                   }}
                   transition={{
-                    duration: 1.5 + Math.random(),
+                    duration: durations.ambient.ms / 1000 + Math.random(),
                     repeat: Infinity,
                     delay: Math.random() * 0.5,
                   }}

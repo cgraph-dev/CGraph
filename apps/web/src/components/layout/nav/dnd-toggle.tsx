@@ -2,6 +2,7 @@
  * DND Quick Toggle — Nav bar button with duration dropdown.
  * @module components/layout/nav/dnd-toggle
  */
+import { durations } from '@cgraph/animation-constants';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MoonIcon } from '@heroicons/react/24/outline';
@@ -163,7 +164,7 @@ export function DndToggle() {
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durations.fast.ms / 1000 }}
             className="absolute right-0 top-full z-50 mt-2 w-56"
           >
             <GlassCard variant="default" className="overflow-hidden p-1">

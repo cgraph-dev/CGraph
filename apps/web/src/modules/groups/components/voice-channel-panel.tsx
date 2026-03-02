@@ -8,6 +8,7 @@
  * @module modules/groups/components/voice-channel-panel
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -95,7 +96,7 @@ export function VoiceChannelPanel() {
                   {member.isSpeaking && (
                     <motion.div
                       animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 0.6, repeat: Infinity }}
+                      transition={{ duration: durations.dramatic.ms / 1000, repeat: Infinity }}
                       className="h-2 w-2 rounded-full bg-green-400"
                     />
                   )}

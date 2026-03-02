@@ -5,6 +5,7 @@
  * @module modules/gamification/components/events/battle-pass-tiers
  */
 
+import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -101,7 +102,7 @@ export function BattlePassTiers({
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: durations.extended.ms / 1000, ease: 'easeOut' }}
             className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
           />
           <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80">
