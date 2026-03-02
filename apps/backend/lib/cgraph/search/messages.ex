@@ -65,14 +65,24 @@ defmodule CGraph.Search.Messages do
       base
     end
 
-    before_date = Keyword.get(opts, :before)
-    after_date = Keyword.get(opts, :after)
+    before_date = Keyword.get(opts, :before) |> maybe_parse_datetime()
+    after_date = Keyword.get(opts, :after) |> maybe_parse_datetime()
 
     filters = if before_date, do: "#{filters} AND inserted_at < #{DateTime.to_unix(before_date)}", else: filters
     filters = if after_date, do: "#{filters} AND inserted_at > #{DateTime.to_unix(after_date)}", else: filters
 
     filters
   end
+
+  defp maybe_parse_datetime(nil), do: nil
+  defp maybe_parse_datetime(%DateTime{} = dt), do: dt
+  defp maybe_parse_datetime(str) when is_binary(str) do
+    case DateTime.from_iso8601(str) do
+      {:ok, dt, _offset} -> dt
+      _ -> nil
+    end
+  end
+  defp maybe_parse_datetime(_), do: nil
 
   defp valid_uuid?(id) when is_binary(id), do: Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, id)
   defp valid_uuid?(_), do: false

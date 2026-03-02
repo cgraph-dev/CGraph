@@ -102,8 +102,11 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
 
     sort_dir = if sort == :name, do: :asc, else: :desc
 
+    # Strip :sort from params to prevent Pagination from using it as a column name
+    pagination_params = opts |> Keyword.delete(:sort) |> Enum.into(%{})
+
     pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
+      pagination_params,
       sort_field: sort_field,
       sort_direction: sort_dir,
       default_limit: 20
