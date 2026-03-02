@@ -21,6 +21,7 @@ defmodule CGraph.Gamification do
     CoinTransaction,
     CurrencySystem,
     EventSystem,
+    FeatureGates,
     Leaderboard,
     LeaderboardSystem,
     QuestSystem,
@@ -29,6 +30,14 @@ defmodule CGraph.Gamification do
   }
 
   alias CGraph.Repo
+
+  # ==================== FEATURE GATES (delegated) ====================
+
+  defdelegate feature_requirements(), to: FeatureGates
+  defdelegate required_level(feature), to: FeatureGates
+  defdelegate feature_unlocked?(user_level, feature), to: FeatureGates, as: :unlocked?
+  defdelegate get_user_gates(user_level), to: FeatureGates
+  defdelegate newly_unlocked_features(old_level, new_level), to: FeatureGates
 
   # ==================== ACHIEVEMENTS (delegated) ====================
 
