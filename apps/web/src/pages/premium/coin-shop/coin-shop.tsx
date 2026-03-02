@@ -51,6 +51,7 @@ export default function CoinShop() {
       const timer = setTimeout(() => setShowSuccess(false), 5000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [searchParams, setSearchParams]);
 
   // Filter items by category

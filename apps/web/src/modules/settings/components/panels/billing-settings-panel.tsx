@@ -21,7 +21,7 @@ import { billingService, type InvoiceRecord } from '@/services/billing';
  */
 export function BillingSettingsPanel() {
   const { user } = useAuthStore();
-  const { currentTier, expiresAt, cancelAtPeriodEnd, status: subStatus } = usePremiumStore();
+  const { currentTier, expiresAt, cancelAtPeriodEnd } = usePremiumStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
