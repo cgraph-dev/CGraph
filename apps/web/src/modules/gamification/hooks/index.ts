@@ -5,3 +5,5 @@
  */
 
 export { useGamificationSocket } from './useGamificationSocket';
+export { useLevelGate, getNewlyUnlockedFeatures } from './useLevelGate';
+export type { LevelGateResult } from './useLevelGate';

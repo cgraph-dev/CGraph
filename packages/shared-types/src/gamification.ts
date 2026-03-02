@@ -182,3 +182,74 @@ export interface CapReachedEvent {
   dailyUsed: number;
   dailyLimit: number;
 }
+
+// ── Feature Gate Types (Progressive Disclosure) ────────────────────────
+
+/** All feature gate keys matching backend FeatureGates module. */
+export type FeatureGateKey =
+  | 'xp_system'
+  | 'streaks'
+  | 'achievements'
+  | 'quests'
+  | 'daily_rewards'
+  | 'leaderboard'
+  | 'shop'
+  | 'cosmetics'
+  | 'titles'
+  | 'animated_borders'
+  | 'marketplace'
+  | 'battle_pass'
+  | 'events'
+  | 'trading'
+  | 'prestige';
+
+/**
+ * Feature → required level map.
+ * Must stay in sync with backend CGraph.Gamification.FeatureGates.
+ */
+export const FEATURE_REQUIREMENTS: Record<FeatureGateKey, number> = {
+  xp_system: 1,
+  streaks: 1,
+  achievements: 1,
+  quests: 3,
+  daily_rewards: 3,
+  leaderboard: 5,
+  shop: 8,
+  cosmetics: 10,
+  titles: 12,
+  animated_borders: 15,
+  marketplace: 15,
+  battle_pass: 18,
+  events: 20,
+  trading: 20,
+  prestige: 25,
+};
+
+/** Status of a single feature gate for a user. */
+export interface FeatureGateStatus {
+  unlocked: boolean;
+  required_level: number;
+  current_level: number;
+}
+
+/** Full feature gates response from GET /gamification/feature-gates. */
+export type FeatureGatesMap = Record<FeatureGateKey, FeatureGateStatus>;
+
+/** Human-readable display names for feature gates. */
+export const FEATURE_DISPLAY_NAMES: Record<FeatureGateKey, string> = {
+  xp_system: 'XP System',
+  streaks: 'Streaks',
+  achievements: 'Achievements',
+  quests: 'Quests',
+  daily_rewards: 'Daily Rewards',
+  leaderboard: 'Leaderboard',
+  shop: 'Shop',
+  cosmetics: 'Cosmetics',
+  titles: 'Titles',
+  animated_borders: 'Animated Borders',
+  marketplace: 'Marketplace',
+  battle_pass: 'Battle Pass',
+  events: 'Events',
+  trading: 'Trading',
+  prestige: 'Prestige',
+};
