@@ -7,7 +7,7 @@
  * Shows recent items by default.
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tweens, springs } from '@/lib/animation-presets';
 import {
@@ -17,12 +17,15 @@ import {
   HashtagIcon,
   UserIcon,
   Cog6ToothIcon,
+  NewspaperIcon,
+  PlusCircleIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
 interface QuickSwitcherItem {
   id: string;
-  type: 'conversation' | 'group' | 'channel' | 'friend' | 'settings';
+  type: 'conversation' | 'group' | 'channel' | 'friend' | 'settings' | 'forum' | 'action';
   name: string;
   subtitle?: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -35,6 +38,8 @@ const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>
   channel: HashtagIcon,
   friend: UserIcon,
   settings: Cog6ToothIcon,
+  forum: NewspaperIcon,
+  action: PlusCircleIcon,
 };
 
 const SETTINGS_PAGES: QuickSwitcherItem[] = [
@@ -44,6 +49,24 @@ const SETTINGS_PAGES: QuickSwitcherItem[] = [
   { id: 'settings-privacy', type: 'settings', name: 'Privacy & Security', path: '/settings/privacy', icon: Cog6ToothIcon },
   { id: 'settings-customization', type: 'settings', name: 'Customization', path: '/settings/customization', icon: Cog6ToothIcon },
 ];
+
+const QUICK_ACTIONS: QuickSwitcherItem[] = [
+  { id: 'action-new-dm', type: 'action', name: 'New Message', subtitle: 'Start a conversation', path: '/messages?new=true', icon: ChatBubbleLeftRightIcon },
+  { id: 'action-new-group', type: 'action', name: 'Create Group', subtitle: 'Start a new group', path: '/groups/create', icon: UserGroupIcon },
+  { id: 'action-explore', type: 'action', name: 'Explore Communities', subtitle: 'Discover groups & forums', path: '/explore', icon: GlobeAltIcon },
+];
+
+const CATEGORY_ORDER: QuickSwitcherItem['type'][] = ['conversation', 'channel', 'group', 'forum', 'friend', 'action', 'settings'];
+
+const CATEGORY_LABELS: Record<string, string> = {
+  conversation: 'Conversations',
+  channel: 'Channels',
+  group: 'Groups',
+  forum: 'Forums',
+  friend: 'Friends',
+  action: 'Actions',
+  settings: 'Settings',
+};
 
 interface QuickSwitcherProps {
   isOpen: boolean;
@@ -64,7 +87,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const allItems = useMemo(() => [...items, ...SETTINGS_PAGES], [items]);
+  const allItems = useMemo(() => [...items, ...SETTINGS_PAGES, ...QUICK_ACTIONS], [items]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) {
@@ -177,43 +200,58 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
             <kbd className="rounded bg-dark-700 px-2 py-0.5 text-xs text-gray-500">ESC</kbd>
           </div>
 
-          {/* Results */}
+          {/* Results with category headers */}
           <div ref={listRef} className="max-h-80 overflow-y-auto p-2">
             {filtered.length === 0 ? (
               <div className="py-8 text-center text-sm text-gray-500">
                 No results for &ldquo;{query}&rdquo;
               </div>
             ) : (
-              filtered.map((item, index) => {
-                const Icon = item.icon || ICON_MAP[item.type] || Cog6ToothIcon;
-                const isSelected = index === selectedIndex;
-                return (
-                  <motion.button
-                    key={item.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...tweens.fast, delay: index * 0.03 }}
-                    onClick={() => handleSelect(item)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                      isSelected
-                        ? 'bg-primary-600/20 text-white'
-                        : 'text-gray-300 hover:bg-dark-700'
-                    }`}
-                  >
-                    <Icon className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary-400' : 'text-gray-500'}`} />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{highlightMatch(item.name, query)}</div>
-                      {item.subtitle && (
-                        <div className="truncate text-xs text-gray-500">{item.subtitle}</div>
+              (() => {
+                let lastCategory = '';
+                let flatIndex = -1;
+                return filtered.map((item) => {
+                  flatIndex++;
+                  const currentFlatIndex = flatIndex;
+                  const Icon = item.icon || ICON_MAP[item.type] || Cog6ToothIcon;
+                  const isSelected = currentFlatIndex === selectedIndex;
+                  const showHeader = item.type !== lastCategory;
+                  lastCategory = item.type;
+
+                  return (
+                    <React.Fragment key={item.id}>
+                      {showHeader && (
+                        <div className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                          {CATEGORY_LABELS[item.type] || item.type}
+                        </div>
                       )}
-                    </div>
-                    <span className="shrink-0 rounded bg-dark-700 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">
-                      {item.type}
-                    </span>
-                  </motion.button>
-                );
-              })
+                      <motion.button
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ ...tweens.fast, delay: currentFlatIndex * 0.03 }}
+                        onClick={() => handleSelect(item)}
+                        onMouseEnter={() => setSelectedIndex(currentFlatIndex)}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
+                          isSelected
+                            ? 'bg-primary-600/20 text-white'
+                            : 'text-gray-300 hover:bg-dark-700'
+                        }`}
+                      >
+                        <Icon className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary-400' : 'text-gray-500'}`} />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-medium">{highlightMatch(item.name, query)}</div>
+                          {item.subtitle && (
+                            <div className="truncate text-xs text-gray-500">{item.subtitle}</div>
+                          )}
+                        </div>
+                        <span className="shrink-0 rounded bg-dark-700 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">
+                          {item.type}
+                        </span>
+                      </motion.button>
+                    </React.Fragment>
+                  );
+                });
+              })()
             )}
           </div>
 

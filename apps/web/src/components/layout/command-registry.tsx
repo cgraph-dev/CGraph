@@ -19,6 +19,7 @@ import {
   ArrowRightOnRectangleIcon,
   HashtagIcon,
   AtSymbolIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 
 /** Command category type */
@@ -114,6 +115,15 @@ export function buildCommands(
       label: 'Go to Premium',
       icon: <SparklesIcon className="h-5 w-5" />,
       action: go('/premium'),
+      category: 'navigation',
+    },
+    {
+      id: 'explore',
+      label: 'Explore Communities',
+      description: 'Discover groups and forums',
+      icon: <GlobeAltIcon className="h-5 w-5" />,
+      shortcut: 'G E',
+      action: go('/explore'),
       category: 'navigation',
     },
 
