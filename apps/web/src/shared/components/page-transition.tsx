@@ -3,21 +3,22 @@
  *
  * Provides subtle fade + slide transitions on route changes.
  * Wraps page content with AnimatePresence-driven motion.
+ * Uses shared animation tokens from @cgraph/animation-constants.
  *
  * @module shared/components/PageTransition
  */
 
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { tweens } from '@/lib/animation-presets';
+import { transitions } from '@cgraph/animation-constants';
 
 const PAGE_VARIANTS = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
+  initial: transitions.pageEnter.initial,
+  animate: transitions.pageEnter.animate,
+  exit: transitions.pageEnter.exit,
 };
 
-const PAGE_TRANSITION = tweens.fast;
+const PAGE_TRANSITION = transitions.pageEnter.transition;
 
 interface PageTransitionProps {
   readonly children: React.ReactNode;
