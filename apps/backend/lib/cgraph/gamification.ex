@@ -18,6 +18,7 @@ defmodule CGraph.Gamification do
 
   alias CGraph.Gamification.{
     AchievementSystem,
+    AchievementTriggers,
     CoinTransaction,
     CurrencySystem,
     EventSystem,
@@ -47,6 +48,7 @@ defmodule CGraph.Gamification do
   defdelegate increment_achievement_progress(user_id, slug, increment \\ 1), to: AchievementSystem
   defdelegate try_unlock_achievement(user_id, achievement_id), to: AchievementSystem
   defdelegate unlock_achievement_by_slug(user, slug), to: AchievementSystem
+  defdelegate check_achievement_triggers(user_id, action_type), to: AchievementTriggers, as: :check_all
 
   # ==================== QUESTS (delegated) ====================
 

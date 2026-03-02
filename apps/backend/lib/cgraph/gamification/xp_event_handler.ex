@@ -18,7 +18,7 @@ defmodule CGraph.Gamification.XpEventHandler do
   """
 
   alias CGraph.Gamification
-  alias CGraph.Gamification.{DailyCap, XpConfig}
+  alias CGraph.Gamification.{AchievementTriggers, DailyCap, XpConfig}
 
   require Logger
 
@@ -79,8 +79,9 @@ defmodule CGraph.Gamification.XpEventHandler do
           award_and_broadcast(user, action_type, effective_xp, config, opts)
 
         {:error, :daily_cap_reached} ->
-          # Still count for quest progress even when capped
+          # Still count for quest progress and achievement checks even when capped
           async_quest_progress(user.id, action_type)
+          async_achievement_triggers(user.id, action_type)
           async_broadcast_cap_reached(user.id, action_type)
           {:ok, %{user: user, xp_awarded: 0, level_up: false, cap_reached: true}}
 
@@ -123,6 +124,7 @@ defmodule CGraph.Gamification.XpEventHandler do
         end)
 
         async_quest_progress(user.id, action_type)
+        async_achievement_triggers(user.id, action_type)
 
         # Scoped (per-board) leaderboard update for forum actions
         board_id = Keyword.get(opts, :board_id)
@@ -222,6 +224,12 @@ defmodule CGraph.Gamification.XpEventHandler do
   defp async_quest_progress(user_id, action_type) do
     Task.start(fn ->
       Gamification.update_quest_progress(user_id, action_type, 1)
+    end)
+  end
+
+  defp async_achievement_triggers(user_id, action_type) do
+    Task.start(fn ->
+      AchievementTriggers.check_all(user_id, action_type)
     end)
   end
 
