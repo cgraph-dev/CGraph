@@ -82,7 +82,15 @@ defmodule CGraph.Creators.ConnectOnboarding do
   """
   @spec check_account_status(String.t()) :: {:ok, map()} | {:error, any()}
   def check_account_status(connect_account_id) do
-    case Stripe.Account.retrieve(connect_account_id) do
+    # Use raw request to GET /v1/accounts/{id} since Stripe.Account.retrieve/2
+    # only fetches the platform's own account (GET /v1/account)
+    result =
+      Stripe.Request.new_request([])
+      |> Stripe.Request.put_endpoint("accounts/#{connect_account_id}")
+      |> Stripe.Request.put_method(:get)
+      |> Stripe.Request.make_request()
+
+    case result do
       {:ok, account} ->
         {:ok, %{
           charges_enabled: account.charges_enabled,

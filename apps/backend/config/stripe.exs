@@ -7,9 +7,10 @@
 import Config
 
 # Stripe API Configuration (dev/test defaults — overridden in runtime.exs for prod)
+# In dev, read from env vars if available, otherwise use placeholders
 config :stripity_stripe,
-  api_key: "sk_test_placeholder",
-  signing_secret: "whsec_test_placeholder",
+  api_key: System.get_env("STRIPE_SECRET_KEY") || "sk_test_placeholder",
+  signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET") || "whsec_test_placeholder",
   hackney_opts: [
     recv_timeout: 30_000,
     connect_timeout: 10_000
@@ -19,8 +20,8 @@ config :stripity_stripe,
 config :cgraph, CGraph.Subscriptions,
   # Stripe Price IDs for each tier (set in runtime.exs for prod)
   stripe_price_ids: %{
-    premium: nil,
-    enterprise: nil
+    premium: System.get_env("STRIPE_PRICE_PREMIUM"),
+    enterprise: System.get_env("STRIPE_PRICE_ENTERPRISE")
   },
 
   # URLs for Stripe Checkout redirects
