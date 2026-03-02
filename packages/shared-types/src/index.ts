@@ -9,3 +9,4 @@ export * from './forum-customization';
 export * from './forum-leaderboard';
 export * from './forum-permissions';
 export * from './forum-user-groups';
+export * from './gamification';
