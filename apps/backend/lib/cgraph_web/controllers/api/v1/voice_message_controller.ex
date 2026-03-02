@@ -60,6 +60,9 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
     case VoiceMessage.process(user, upload, opts) do
       {:ok, voice_message} ->
+        # If E2EE metadata provided, store encryption fields (E2EE-06)
+        voice_message = maybe_store_encryption_metadata(voice_message, params)
+
         # If conversation or channel specified, create message with voice attachment
         voice_message = maybe_attach_to_message(voice_message, user, params)
 
@@ -130,6 +133,9 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
   @doc """
   Get waveform data for audio visualization.
+
+  If the voice message has encrypted metadata (E2EE-06), returns the encrypted
+  waveform data + IV + key so the client can decrypt locally.
   """
   @spec waveform(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def waveform(conn, %{"id" => id}) do
@@ -141,7 +147,18 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
       voice_message ->
         if can_access?(user, voice_message) do
-          render_data(conn, %{waveform: VoiceMessage.waveform(voice_message)})
+          if voice_message.is_metadata_encrypted do
+            render_data(conn, %{
+              encrypted: true,
+              encrypted_waveform: voice_message.encrypted_waveform,
+              waveform_iv: voice_message.waveform_iv,
+              encrypted_duration: voice_message.encrypted_duration,
+              duration_iv: voice_message.duration_iv,
+              metadata_encrypted_key: voice_message.metadata_encrypted_key
+            })
+          else
+            render_data(conn, %{waveform: VoiceMessage.waveform(voice_message)})
+          end
         else
           {:error, :forbidden}
         end
@@ -162,6 +179,28 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
       _user ->
         conn
+    end
+  end
+
+  defp maybe_store_encryption_metadata(voice_message, params) do
+    encryption_params = %{
+      "encrypted_waveform" => params["encrypted_waveform"],
+      "encrypted_duration" => params["encrypted_duration"],
+      "waveform_iv" => params["waveform_iv"],
+      "duration_iv" => params["duration_iv"],
+      "metadata_encrypted_key" => params["metadata_encrypted_key"],
+      "is_metadata_encrypted" => params["is_metadata_encrypted"]
+    }
+
+    if encryption_params["is_metadata_encrypted"] == true or encryption_params["is_metadata_encrypted"] == "true" do
+      case voice_message
+           |> VoiceMessage.encryption_changeset(encryption_params)
+           |> Repo.update() do
+        {:ok, updated} -> updated
+        {:error, _} -> voice_message
+      end
+    else
+      voice_message
     end
   end
 
