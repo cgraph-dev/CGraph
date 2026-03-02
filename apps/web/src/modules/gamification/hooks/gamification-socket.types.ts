@@ -94,6 +94,27 @@ export interface CapReachedEvent {
   daily_limit: number;
 }
 
+// ==================== QUEST EVENT TYPES ====================
+
+export interface QuestCompletedEvent {
+  user_quest_id: string;
+  quest_id: string;
+  quest_title: string;
+  xp_reward: number;
+  coin_reward: number;
+}
+
+export interface QuestClaimedEvent {
+  quest_id: string;
+  xp: number;
+  coins: number;
+}
+
+export interface NewQuestsAvailableEvent {
+  type: 'daily' | 'weekly' | 'monthly';
+  timestamp: string;
+}
+
 // ==================== STATE ====================
 
 export interface GamificationState {

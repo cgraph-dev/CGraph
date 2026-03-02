@@ -80,6 +80,7 @@ defmodule CGraphWeb.GamificationChannel do
 
     # Subscribe to user-specific gamification pubsub topics
     Phoenix.PubSub.subscribe(CGraph.PubSub, "gamification:#{user.id}")
+    Phoenix.PubSub.subscribe(CGraph.PubSub, "gamification:lobby")
     Phoenix.PubSub.subscribe(CGraph.PubSub, "events:global")
     Phoenix.PubSub.subscribe(CGraph.PubSub, "marketplace:global")
 
@@ -160,6 +161,24 @@ defmodule CGraphWeb.GamificationChannel do
     else
       {:noreply, socket}
     end
+  end
+
+  # Handle quest completion broadcasts
+  def handle_info({:quest_completed, data}, socket) do
+    push(socket, "quest_completed", data)
+    {:noreply, socket}
+  end
+
+  # Handle quest reward claim broadcasts
+  def handle_info({:quest_claimed, data}, socket) do
+    push(socket, "quest_claimed", data)
+    {:noreply, socket}
+  end
+
+  # Handle new quest availability broadcasts (from lobby topic)
+  def handle_info({:new_quests_available, data}, socket) do
+    push(socket, "new_quests_available", data)
+    {:noreply, socket}
   end
 
   # Handle prestige broadcasts

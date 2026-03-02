@@ -29,6 +29,9 @@ export type {
   XPAwardedEvent,
   CoinsAwardedEvent,
   CapReachedEvent,
+  QuestCompletedEvent,
+  QuestClaimedEvent,
+  NewQuestsAvailableEvent,
   GamificationState,
   GamificationSocketStore,
 } from './gamification-socket.types';
@@ -38,6 +41,9 @@ import type {
   XPAwardedEvent,
   CoinsAwardedEvent,
   CapReachedEvent,
+  QuestCompletedEvent,
+  QuestClaimedEvent,
+  NewQuestsAvailableEvent,
   AchievementUnlockEvent,
   CosmeticUnlockEvent,
   PrestigeUpdateEvent,
@@ -231,6 +237,30 @@ export function useCapReached(callback: (data: CapReachedEvent) => void) {
   useGamificationEvent('cap_reached', callback);
 }
 
+// ==================== QUEST NOTIFICATION HOOKS ====================
+
+/**
+ * Hook for quest completion events.
+ * Fires when a quest's objectives are all met (before claiming).
+ */
+export function useQuestCompleted(callback: (data: QuestCompletedEvent) => void) {
+  useGamificationEvent('quest_completed', callback);
+}
+
+/**
+ * Hook for quest reward claim events.
+ */
+export function useQuestClaimed(callback: (data: QuestClaimedEvent) => void) {
+  useGamificationEvent('quest_claimed', callback);
+}
+
+/**
+ * Hook for new quest availability (daily/weekly rotation).
+ */
+export function useNewQuestsAvailable(callback: (data: NewQuestsAvailableEvent) => void) {
+  useGamificationEvent('new_quests_available', callback);
+}
+
 /**
  * unknown for the gamification module.
  */
@@ -263,7 +293,7 @@ export function useMarketplaceNotifications(
  */
 export function useGamificationToasts() {
   const showToast = useCallback(
-    (type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event', data: unknown) => {
+    (type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event' | 'quest_complete' | 'new_quests', data: unknown) => {
       window.dispatchEvent(
         new CustomEvent('gamification:toast', {
           detail: { type, data },
@@ -296,6 +326,14 @@ export function useGamificationToasts() {
 
   useEventMilestone((data) => {
     showToast('event', data);
+  });
+
+  useQuestCompleted((data) => {
+    showToast('quest_complete', data);
+  });
+
+  useNewQuestsAvailable((data) => {
+    showToast('new_quests', data);
   });
 }
 
