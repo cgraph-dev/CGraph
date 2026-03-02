@@ -28,7 +28,7 @@
 | 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                       |
 | 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14 ✅ Complete (2026-03-02) |
 | 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14 ✅ Complete (2026-03-02) |
-| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅                       |
+| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅ Complete (2026-03-02) |
 | 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13 ✅ Complete (2026-03-02) |
 | 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                   |
 
@@ -831,9 +831,14 @@ double-charges.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                        | Status      |
+| ----- | ---------------------------------------------------------------------------- | ----------- |
+| 17-01 | Stripe Subscription Hardening (PAY-01, PAY-03, PAY-10)                       | **Complete** |
+| 17-02 | Mobile IAP + Cross-Platform Sync (PAY-02)                                    | **Complete** |
+| 17-03 | Virtual Currency Purchase + Billing Portal (PAY-04, PAY-05)                  | **Complete** |
+| 17-04 | Creator Monetization — Stripe Connect, Paid Forums, Payouts (PAY-06–09)      | **Complete** |
+
+**Completed:** 2026-03-02 | **Commits:** 38 | **Plans:** 4/4
 
 ---
 
@@ -883,13 +888,13 @@ media completes messaging.
 
 ### Plans
 
-| Plan  | Scope                                                              | Status      |
-| ----- | ------------------------------------------------------------------ | ----------- |
-| 18-01 | Rich media messaging + E2EE (MSG-10, MSG-11, MSG-12, MSG-15, E2EE-05, E2EE-06) | Not started |
-| 18-02 | Search & discovery (MSG-20, SEARCH-01, SEARCH-04, SEARCH-05)      | Not started |
-| 18-03 | UI polish & component library (DESIGN-03, DESIGN-04, DESIGN-06)   | Not started |
-| 18-04 | Infrastructure scale & hardening (INFRA-01, INFRA-04, INFRA-06, INFRA-07) | Not started |
-| 18-05 | Moderation & safety hardening (MOD-05, MOD-06, MOD-07)            | Not started |
+| Plan  | Scope                                                              | Status       |
+| ----- | ------------------------------------------------------------------ | ------------ |
+| 18-01 | Rich media messaging + E2EE (MSG-10, MSG-11, MSG-12, MSG-15, E2EE-05, E2EE-06) | **Complete** |
+| 18-02 | Search & discovery (MSG-20, SEARCH-01, SEARCH-04, SEARCH-05)      | **Complete** |
+| 18-03 | UI polish & component library (DESIGN-03, DESIGN-04, DESIGN-06)   | **Complete** |
+| 18-04 | Infrastructure scale & hardening (INFRA-01, INFRA-04, INFRA-06, INFRA-07) | **Complete** |
+| 18-05 | Moderation & safety hardening (MOD-05, MOD-06, MOD-07)            | **Complete** |
 
 ---
 

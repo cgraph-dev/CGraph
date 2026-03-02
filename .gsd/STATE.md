@@ -10,35 +10,34 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 18 — Rich Media & Polish** — **Complete (46 commits, 5 plans, 20 requirements)**
+**Phase 17 — Monetization** — **Complete (38 commits, 4 plans, 10 requirements)**
 
-Phase 18 hardened and polished CGraph: rich media messaging (voice, files, GIFs, scheduled messages) with E2EE, search & discovery (Meilisearch, quick switcher, explore), UI polish (animations, skeletons, component library), infrastructure scale (10K WebSocket, load testing, feature flags, rate limiting), and moderation safety (AI auto-action, dashboard metrics, appeals). All 20 requirements delivered across 46 commits.
+Phase 17 built the full monetization stack: Stripe subscription hardening (webhook idempotency, tier features, premium gates), mobile IAP (Apple App Store + Google Play receipt validation, cross-platform sync), virtual currency purchase (coin bundles, Stripe Checkout payment mode, coin shop), billing portal (invoice history, plan management), and creator monetization (Stripe Connect onboarding, paid forum subscriptions with 15% platform fee, earnings ledger, payouts, analytics dashboard, content gates).
 
 ## Position
 
-- **Phase:** 18 of 19 — Rich Media & Polish (**Complete**)
-- **Plan:** 5/5 plans executed (46 commits)
-- **Status:** Phase complete
-- **Last activity:** 2026-03-02 — Phase 18 executed (46 commits)
+- **Phase:** 18 of 19 — All phases through 18 **Complete**, Phase 17 done (executed out of order after 18)
+- **Plan:** 4/4 plans executed (38 commits)
+- **Status:** Phase 17 complete — Phase 19 (Launch) unblocked
+- **Last activity:** 2026-03-02 — Phase 17 executed (38 commits)
 
 ## Plans
 
 | Plan  | Objective                                                           | Wave | Autonomous | Depends On        | Status      |
 | ----- | ------------------------------------------------------------------- | ---- | ---------- | ----------------- | ----------- |
-| 18-01 | Rich media messaging + E2EE (voice, files, GIFs, scheduled)        | 1    | ✅          | —                 | **Complete** |
-| 18-02 | Search & discovery (Meilisearch, quick switcher, explore)           | 1    | ✅          | —                 | **Complete** |
-| 18-03 | UI polish & component library (animations, skeletons, Storybook)   | 1    | ✅          | —                 | **Complete** |
-| 18-04 | Infrastructure scale & hardening (10K WS, load test, FF, rate limit)| 1    | ✅          | —                 | **Complete** |
-| 18-05 | Moderation & safety hardening (AI auto-action, dashboard, appeals)  | 1    | ✅          | —                 | **Complete** |
+| 17-01 | Stripe Subscription Hardening (idempotency, tiers, premium gates)   | 1    | ✅          | —                 | **Complete** |
+| 17-02 | Mobile IAP + Cross-Platform Sync (Apple/Google receipt validation)   | 1    | ✅          | —                 | **Complete** |
+| 17-03 | Virtual Currency Purchase + Billing Portal (coin shop, invoices)     | 1    | ✅          | —                 | **Complete** |
+| 17-04 | Creator Monetization (Stripe Connect, paid forums, payouts, analytics)| 2   | ✅          | 17-01, 17-03      | **Complete** |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 94%       |
-| Phases complete    | 17 / 19   |
-| Requirements done  | 127 / 136 |
-| Current phase reqs | 20 / 20   |
+| Overall progress   | 99%       |
+| Phases complete    | 18 / 19   |
+| Requirements done  | 136 / 136 |
+| Current phase reqs | 10 / 10   |
 
 ## Phase Summary
 
@@ -60,18 +59,33 @@ Phase 18 hardened and polished CGraph: rich media messaging (voice, files, GIFs,
 | 14  | Forum Core              | **Complete** (2026-03-01) |
 | 15  | Forum Customization     | **Complete** (2026-03-02) |
 | 16  | Gamification            | **Complete** (2026-03-02) |
-| 17  | Monetization            | Planned (4 plans)         |
+| 17  | Monetization            | **Complete** (2026-03-02) |
 | 18  | Rich Media & Polish     | **Complete** (2026-03-02) |
-| 19  | Launch                  | Blocked by 17             |
+| 19  | Launch                  | Ready                     |
 
 ## Project Reference
 
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 18 complete (46 commits, 20 requirements). Next: Phase 17 (Monetization) or Phase 19 (Launch, blocked by 17).
+**Current focus:** Phase 17 complete (38 commits, 10 requirements). All 18 phases complete. Phase 19 (Launch) unblocked and ready.
 
 ## Accumulated Context
+
+### Recent Decisions (Phase 17 Execution)
+
+- **Webhook idempotency**: webhook_events table + Idempotency.process_once/2 for all Stripe event processing
+- **Tier feature extraction**: TierFeatures single source of truth for tier capabilities (max_file_size, can_schedule, etc.)
+- **Premium gate plug**: PremiumGatePlug returns 403 for insufficient tier, follows LevelGatePlug pattern
+- **IAP receipt validation**: Apple App Store Server API v2 + Google Play Developer API v3, platform dispatch
+- **Cross-platform sync**: Mobile IAP purchases sync to backend, premium status unified across platforms
+- **Coin bundles as config**: Static backend config (not DB) for coin bundles — deploy-time changes, fast reads
+- **Stripe Checkout payment mode**: mode:payment for one-time coin purchases (not subscription)
+- **Invoice passthrough**: Proxy Stripe invoice API to frontend (Stripe is source of truth, not local DB)
+- **Stripe Connect Express**: Platform model with application_fee_percent (15%) on paid forum subscriptions
+- **Content gates**: Paid forum threads show title + teaser (200 chars) for non-subscribers, full content for subscribers
+- **Creator payouts**: Manual Stripe Transfer creation, $10 minimum payout threshold
+- **Earnings ledger**: creator_earnings table tracks gross/platform_fee/net per payment
 
 ### Recent Decisions (Phase 18 Execution)
 
@@ -178,20 +192,19 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Phase 18 executed — 46 commits, 5 plans complete, 20 requirements delivered
-Resume file: .gsd/phases/18-rich-media-polish/
+Stopped at: Phase 17 executed — 38 commits, 4 plans complete, 10 requirements delivered
+Resume file: .gsd/phases/17-monetization/
 
 ## Last Action
 
-Phase 18 executed. 5 plans in 1 wave, 46 commits, 20 requirements delivered:
-- 18-01 (Complete): Rich media messaging + E2EE — R2 storage, file encryption, voice/file E2EE, file/image UI, GIF picker, scheduled messages CRUD + UI, 22 integration tests
-- 18-02 (Complete): Search & discovery — Meilisearch indexing, in-conversation search, quick switcher, explore backend + frontend + mobile, 10 integration tests, 2 bug fixes
-- 18-03 (Complete): UI polish & component library — animation tokens, page transitions, 6 skeletons, 7 empty states, 31 Storybook stories, 4 mobile animations, COMPONENTS.md
-- 18-04 (Complete): Infrastructure scale & hardening — feature flag admin API + SDK, rate limiting per-tier, WebSocket backpressure (15K), 3 k6 load tests, SCALE_RESULTS.md
-- 18-05 (Complete): Moderation & safety — audit log, AI auto-action pipeline, extended stats, dashboard metrics, bulk actions, appeal emails + mobile screen, 15 integration tests
+Phase 17 executed. 4 plans in 2 waves, 38 commits, 10 requirements delivered:
+- 17-01 (Complete): Stripe Subscription Hardening — webhook idempotency, tier features, premium gate plug, user schema extension, checkout return page, 10 commits
+- 17-02 (Complete): Mobile IAP + Cross-Platform Sync — receipt validation, IAP controller, mobile IAP service, subscription management screen, 8 commits
+- 17-03 (Complete): Virtual Currency Purchase + Billing Portal — coin bundles, coin checkout, coin shop controller, PaymentController invoices, billing UI, 10 commits
+- 17-04 (Complete): Creator Monetization — Stripe Connect onboarding, paid forum subscriptions, earnings ledger, payouts, creator dashboard, analytics, content gates, Connect webhooks, 10 commits
 
-Next: Phase 17 (Monetization — 4 plans already planned) or verify Phase 18.
+Next: Phase 19 (Launch — App Store, landing page, wallet auth, final QA) or verify Phase 17.
 
 ---
 
-_Last updated: 2026-03-02 (Phase 18 complete)_
+_Last updated: 2026-03-02 (Phase 17 complete)_
