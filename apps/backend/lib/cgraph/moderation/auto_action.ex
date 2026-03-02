@@ -21,7 +21,6 @@ defmodule CGraph.Moderation.AutoAction do
   alias CGraph.Accounts.User
   alias CGraph.Repo
 
-  import Ecto.Query, warn: false
   import Ecto.Query
 
   require Logger
