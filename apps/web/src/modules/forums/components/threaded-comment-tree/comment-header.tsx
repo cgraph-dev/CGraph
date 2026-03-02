@@ -6,6 +6,7 @@
 
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { UserStars } from '@/modules/gamification/components/user-stars';
+import { InlineTitle } from '@/modules/gamification/components/title-badge';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { formatTimeAgo } from '@/lib/utils';
 import type { CommentTreeNode } from './types';
@@ -49,6 +50,12 @@ export function CommentHeader({
           <span className="font-medium text-white">
             {comment.author.displayName || comment.author.username}
           </span>
+          {(comment.author as Record<string, unknown>).equippedTitleId && (
+            <InlineTitle
+              title={(comment.author as Record<string, unknown>).equippedTitleId as string}
+              size="xs"
+            />
+          )}
           {comment.author.reputation !== undefined && (
             <UserStars postCount={comment.author.reputation} size="xs" compact />
           )}

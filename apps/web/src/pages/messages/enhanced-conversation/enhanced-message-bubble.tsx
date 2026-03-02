@@ -21,6 +21,7 @@ import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/advanced-vo
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
+import { InlineTitle } from '@/modules/gamification/components/title-badge';
 import type { EnhancedMessageBubbleProps } from './types';
 
 const logger = createLogger('EnhancedMessageBubble');
@@ -191,6 +192,20 @@ export function EnhancedMessageBubble({
               hover3D
               className={`px-4 py-3 ${isOwn ? 'rounded-br-sm' : 'rounded-bl-sm'}`}
             >
+              {/* Sender name + equipped title (for received messages) */}
+              {!isOwn && showAvatar && message.sender && (
+                <div className="mb-1 flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-primary-300">
+                    {message.sender.displayName || message.sender.username}
+                  </span>
+                  {(message.sender as Record<string, unknown>).equippedTitleId && (
+                    <InlineTitle
+                      title={(message.sender as Record<string, unknown>).equippedTitleId as string}
+                      size="xs"
+                    />
+                  )}
+                </div>
+              )}
               {/* Text content */}
               {message.content &&
                 message.messageType !== 'voice' &&
