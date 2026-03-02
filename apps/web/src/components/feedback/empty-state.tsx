@@ -245,4 +245,137 @@ export function EmptyNotifications() {
   );
 }
 
+/**
+ * Empty Channels — no channels in the group yet.
+ */
+export function EmptyChannels({ onCreateChannel }: { onCreateChannel?: () => void }) {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+          />
+        </svg>
+      }
+      title="No channels"
+      description="Create a channel to start organizing conversations."
+      action={onCreateChannel ? { label: 'Create Channel', onClick: onCreateChannel } : undefined}
+    />
+  );
+}
+
+/**
+ * Empty Scheduled Messages — no pending scheduled messages.
+ */
+export function EmptyScheduledMessages() {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      }
+      title="No scheduled messages"
+      description="Schedule messages to send them at a later time."
+    />
+  );
+}
+
+/**
+ * Empty Explore — no communities to discover.
+ */
+export function EmptyExplore() {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      }
+      title="No communities yet"
+      description="Communities will appear here as they're created. Check back soon!"
+    />
+  );
+}
+
+/**
+ * Empty Voice Messages — no voice messages.
+ */
+export function EmptyVoiceMessages() {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+          />
+        </svg>
+      }
+      title="No voice messages"
+      description="Send or receive voice messages to see them here."
+    />
+  );
+}
+
+/**
+ * Empty File Attachments — no files shared.
+ */
+export function EmptyFileAttachments() {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+          />
+        </svg>
+      }
+      title="No files shared"
+      description="Files shared in conversations will appear here."
+    />
+  );
+}
+
+/**
+ * Empty Moderation Queue — all clear.
+ */
+export function EmptyModerationQueue() {
+  return (
+    <EmptyState
+      icon={
+        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          />
+        </svg>
+      }
+      title="Queue clear!"
+      description="No items need moderation. Nice work keeping the community safe."
+    />
+  );
+}
+
 export default EmptyState;
