@@ -57,6 +57,9 @@ config :cgraph, Oban, testing: :inline
 # Bypass level gates in test so existing tests aren't blocked by Phase 16 feature gates
 config :cgraph, bypass_level_gates: true
 
+# Bypass premium tier gates in test so existing tests aren't blocked by Phase 17 premium gates
+config :cgraph, bypass_premium_gates: true
+
 # Tell the app we're in :test env (used by Encryption, Chaos, etc.)
 config :cgraph, env: :test
 

@@ -37,6 +37,15 @@ defmodule CGraphWeb.Router.GamificationRoutes do
         plug CGraphWeb.Plugs.LevelGatePlug, feature: :prestige
       end
 
+      # ── Premium tier gate pipelines for monetization ─────────────
+      pipeline :premium_gate do
+        plug CGraphWeb.Plugs.PremiumGatePlug, min_tier: "premium"
+      end
+
+      pipeline :enterprise_gate do
+        plug CGraphWeb.Plugs.PremiumGatePlug, min_tier: "enterprise"
+      end
+
       # Gamification API routes (authenticated)
       scope "/api/v1", CGraphWeb do
         pipe_through [:api, :api_auth]
