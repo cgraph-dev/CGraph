@@ -10,35 +10,35 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Phase 18 — Rich Media & Polish** — **Planned (5 plans, 1 wave, 20 requirements)**
+**Phase 18 — Rich Media & Polish** — **Complete (46 commits, 5 plans, 20 requirements)**
 
-Phase 18 hardens and polishes CGraph: rich media messaging (voice, files, GIFs, scheduled messages) with E2EE, search & discovery (Meilisearch, quick switcher, explore), UI polish (animations, skeletons, component library), infrastructure scale (10K WebSocket, load testing, feature flags, rate limiting), and moderation safety (AI auto-action, dashboard metrics, appeals).
+Phase 18 hardened and polished CGraph: rich media messaging (voice, files, GIFs, scheduled messages) with E2EE, search & discovery (Meilisearch, quick switcher, explore), UI polish (animations, skeletons, component library), infrastructure scale (10K WebSocket, load testing, feature flags, rate limiting), and moderation safety (AI auto-action, dashboard metrics, appeals). All 20 requirements delivered across 46 commits.
 
 ## Position
 
-- **Phase:** 18 of 19 — Rich Media & Polish (Planned)
-- **Plan:** 0/5 plans executed
-- **Status:** Planning complete, ready for execution
-- **Last activity:** 2026-03-02 — Phase 18 planned (5 plans, 1 wave)
+- **Phase:** 18 of 19 — Rich Media & Polish (**Complete**)
+- **Plan:** 5/5 plans executed (46 commits)
+- **Status:** Phase complete
+- **Last activity:** 2026-03-02 — Phase 18 executed (46 commits)
 
 ## Plans
 
 | Plan  | Objective                                                           | Wave | Autonomous | Depends On        | Status      |
 | ----- | ------------------------------------------------------------------- | ---- | ---------- | ----------------- | ----------- |
-| 18-01 | Rich media messaging + E2EE (voice, files, GIFs, scheduled)        | 1    | ✅          | —                 | Not started |
-| 18-02 | Search & discovery (Meilisearch, quick switcher, explore)           | 1    | ✅          | —                 | Not started |
-| 18-03 | UI polish & component library (animations, skeletons, Storybook)   | 1    | ✅          | —                 | Not started |
-| 18-04 | Infrastructure scale & hardening (10K WS, load test, FF, rate limit)| 1    | ✅          | —                 | Not started |
-| 18-05 | Moderation & safety hardening (AI auto-action, dashboard, appeals)  | 1    | ✅          | —                 | Not started |
+| 18-01 | Rich media messaging + E2EE (voice, files, GIFs, scheduled)        | 1    | ✅          | —                 | **Complete** |
+| 18-02 | Search & discovery (Meilisearch, quick switcher, explore)           | 1    | ✅          | —                 | **Complete** |
+| 18-03 | UI polish & component library (animations, skeletons, Storybook)   | 1    | ✅          | —                 | **Complete** |
+| 18-04 | Infrastructure scale & hardening (10K WS, load test, FF, rate limit)| 1    | ✅          | —                 | **Complete** |
+| 18-05 | Moderation & safety hardening (AI auto-action, dashboard, appeals)  | 1    | ✅          | —                 | **Complete** |
 
 ## Progress
 
 | Metric             | Value     |
 | ------------------ | --------- |
-| Overall progress   | 88%       |
-| Phases complete    | 16 / 19   |
-| Requirements done  | 107 / 136 |
-| Current phase reqs | 0 / 20    |
+| Overall progress   | 94%       |
+| Phases complete    | 17 / 19   |
+| Requirements done  | 127 / 136 |
+| Current phase reqs | 20 / 20   |
 
 ## Phase Summary
 
@@ -61,17 +61,41 @@ Phase 18 hardens and polishes CGraph: rich media messaging (voice, files, GIFs, 
 | 15  | Forum Customization     | **Complete** (2026-03-02) |
 | 16  | Gamification            | **Complete** (2026-03-02) |
 | 17  | Monetization            | Planned (4 plans)         |
-| 18  | Rich Media & Polish     | Planned (5 plans)         |
-| 19  | Launch                  | Blocked by 15,17,18       |
+| 18  | Rich Media & Polish     | **Complete** (2026-03-02) |
+| 19  | Launch                  | Blocked by 17             |
 
 ## Project Reference
 
 See: .gsd/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Secure real-time communication that works end-to-end
-**Current focus:** Phase 18 planned (5 plans, 1 wave, 20 requirements)
+**Current focus:** Phase 18 complete (46 commits, 20 requirements). Next: Phase 17 (Monetization) or Phase 19 (Launch, blocked by 17).
 
 ## Accumulated Context
+
+### Recent Decisions (Phase 18 Execution)
+
+- **R2 storage wiring**: Cloudflare R2 client module with presigned upload/download URLs, bucket config in runtime.exs
+- **File encryption**: AES-256-GCM file encryption layer wrapping R2 uploads, key derivation via HKDF-SHA256 from E2EE session keys
+- **Voice/file E2EE**: Extended existing E2EE pipeline to cover voice messages and file attachments (encrypt-before-upload, decrypt-after-download)
+- **GIF picker**: Tenor API integration with search/trending endpoints, GIF message type in schema
+- **Scheduled messages**: Full CRUD backend (ScheduledMessage schema, Oban worker for send-at), UI on web + mobile with date/time pickers
+- **Meilisearch indexing**: Message indexing pipeline via Oban job on message insert/update, conversation-scoped search
+- **Quick switcher**: Cmd+K command palette with fuzzy search across conversations, channels, users
+- **Explore feature**: Backend `list_public_forums/1` aggregation endpoint, frontend explore screens (web + mobile), fixed DateTime parsing + pagination bugs
+- **Animation tokens**: Centralized transitions.ts token file, ErrorFallback + usePageTransition hook for page transitions
+- **Skeleton components**: 6 skeleton loading components (conversation list, message list, profile, channel, settings, search results)
+- **Empty states**: 7 empty state components with illustrations and CTAs
+- **Storybook expansion**: 31 total stories (16 new), covering skeletons, empty states, and existing components
+- **Mobile polish**: 4 Reanimated-based animation components, COMPONENTS.md catalog document
+- **Feature flags admin**: REST API for flag CRUD + history, frontend SDK (useFeatureFlag hook), admin panel UI
+- **Rate limiting**: Per-tier rate limits (premium 2x, enterprise 5x base), audit of all endpoints
+- **WebSocket backpressure**: ConnectionMonitor module, 15K max connections with graceful degradation
+- **k6 load tests**: 3 test scenarios (10K WebSocket connections, realistic traffic mix, rich media upload), SCALE_RESULTS.md
+- **Moderation audit log**: Structured audit log schema with action/actor/target/metadata, queryable API
+- **AI auto-action pipeline**: Automated moderation with configurable thresholds, escalation rules
+- **Moderation dashboard**: Extended stats endpoints, metrics UI with charts, bulk batch_review actions
+- **Appeal system**: Email notifications via Orchestrator pattern, mobile appeal submission screen, 15 integration tests
 
 ### Recent Decisions (Phase 14 Execution)
 
@@ -154,20 +178,20 @@ See: .gsd/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Phase 18 planned — 5 plans, 1 wave
+Stopped at: Phase 18 executed — 46 commits, 5 plans complete, 20 requirements delivered
 Resume file: .gsd/phases/18-rich-media-polish/
 
 ## Last Action
 
-Phase 18 planned. 5 plans in 1 wave covering 20 requirements (MSG, E2EE, SEARCH, DESIGN, INFRA, MOD):
-- 18-01 (Wave 1): Rich media messaging + E2EE — R2 storage wiring, file encryption crypto layer, voice/file E2EE, file/image UI, GIF picker, scheduled messages CRUD + UI
-- 18-02 (Wave 1): Search & discovery — Meilisearch message indexing, in-conversation search panel, quick switcher verification, explore backend aggregation + frontend
-- 18-03 (Wave 1): UI polish & component library — animation tokens, page transitions, skeleton loading audit, empty states, Storybook 15→30+ stories, mobile polish, COMPONENTS.md
-- 18-04 (Wave 1): Infrastructure scale & hardening — feature flag admin API + frontend SDK, rate limiting audit + per-tier, WebSocket backpressure, 10K WS load test, realistic traffic + rich media tests
-- 18-05 (Wave 1): Moderation & safety hardening — moderation audit log, AI auto-action pipeline, extended stats, dashboard metrics UI, bulk actions, appeal email notifications
+Phase 18 executed. 5 plans in 1 wave, 46 commits, 20 requirements delivered:
+- 18-01 (Complete): Rich media messaging + E2EE — R2 storage, file encryption, voice/file E2EE, file/image UI, GIF picker, scheduled messages CRUD + UI, 22 integration tests
+- 18-02 (Complete): Search & discovery — Meilisearch indexing, in-conversation search, quick switcher, explore backend + frontend + mobile, 10 integration tests, 2 bug fixes
+- 18-03 (Complete): UI polish & component library — animation tokens, page transitions, 6 skeletons, 7 empty states, 31 Storybook stories, 4 mobile animations, COMPONENTS.md
+- 18-04 (Complete): Infrastructure scale & hardening — feature flag admin API + SDK, rate limiting per-tier, WebSocket backpressure (15K), 3 k6 load tests, SCALE_RESULTS.md
+- 18-05 (Complete): Moderation & safety — audit log, AI auto-action pipeline, extended stats, dashboard metrics, bulk actions, appeal emails + mobile screen, 15 integration tests
 
-Next: Execute Phase 18 plans.
+Next: Phase 17 (Monetization — 4 plans already planned) or verify Phase 18.
 
 ---
 
-_Last updated: 2026-03-02_
+_Last updated: 2026-03-02 (Phase 18 complete)_
