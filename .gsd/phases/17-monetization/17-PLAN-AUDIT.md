@@ -1,7 +1,7 @@
 # Phase 17 — Plan vs Codebase Audit Report (Re-Audit)
 
 > Re-audited: 2026-03-02 | Plans: 17-01 through 17-04 | Prior: 12 issues found and fixed **Re-audit
-> result: 5 new issues (2 critical, 1 moderate, 2 minor) + 12 prior issues verified resolved**
+> result: 5 new issues found → ALL 5 NOW RESOLVED**
 
 ---
 
@@ -138,12 +138,12 @@ These bugs exist in the current codebase and are **correctly documented** in 17-
 
 ---
 
-## Action Items
+## Action Items — ALL RESOLVED
 
-| Priority | Issue                            | Fix                                                       | Plan File |
-| -------- | -------------------------------- | --------------------------------------------------------- | --------- |
-| **P0**   | C5 — Migration column conflict   | Remove user column ALTERs from 17-04 task 1               | 17-04     |
-| **P1**   | C6 — Shop route path             | Add explicit `post "/purchase-coins"` route in shop scope | 17-03     |
-| **P1**   | M5 — Duplicate invoice endpoints | Remove/differentiate 17-01 task 8 invoice endpoint        | 17-01     |
-| **P2**   | m5 — IAP library API mismatch    | Use `react-native-iap` APIs in code sample                | 17-02     |
-| **P2**   | m6 — Store barrel                | Add re-export or document import path                     | 17-01     |
+| Priority | Issue                            | Fix Applied                                                                  | Plan File | Status |
+| -------- | -------------------------------- | ---------------------------------------------------------------------------- | --------- | ------ |
+| **P0**   | C5 — Migration column conflict   | Removed user column ALTERs from 17-04 task 1 (already in 17-01 task 0)       | 17-04     | ✅     |
+| **P1**   | C6 — Shop route path             | Added explicit `post "/purchase-coins"` route spec in shop scope             | 17-03     | ✅     |
+| **P1**   | M5 — Duplicate invoice endpoints | Replaced 17-01 task 8 with enriched status endpoint; invoices on PaymentCtrl | 17-01     | ✅     |
+| **P2**   | m5 — IAP library API mismatch    | Rewrote code sample to use `react-native-iap` APIs exclusively               | 17-02     | ✅     |
+| **P2**   | m6 — Store barrel                | Added `usePremiumStore` re-export instruction for `stores/index.ts`          | 17-01     | ✅     |
