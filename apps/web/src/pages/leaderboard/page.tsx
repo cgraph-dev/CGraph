@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { UserGroupIcon, ChartBarIcon, ClockIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, ChartBarIcon, ClockIcon, BoltIcon, GlobeAltIcon, UserCircleIcon, ViewColumnsIcon } from '@heroicons/react/24/outline';
 
 import { GlassCard } from '@/shared/components/ui';
 import { useAuthStore } from '@/modules/auth/store';
@@ -27,6 +27,15 @@ import {
   Pagination,
 } from './sections';
 
+/** Scope for leaderboard: global, group, or board */
+export type LeaderboardScope = 'global' | 'group' | 'board';
+
+const SCOPE_OPTIONS: { id: LeaderboardScope; label: string; icon: React.ReactNode }[] = [
+  { id: 'global', label: 'Global', icon: <GlobeAltIcon className="h-4 w-4" /> },
+  { id: 'group', label: 'This Group', icon: <UserCircleIcon className="h-4 w-4" /> },
+  { id: 'board', label: 'This Board', icon: <ViewColumnsIcon className="h-4 w-4" /> },
+];
+
 /**
  * Leaderboard Page — route-level page component.
  */
@@ -34,6 +43,8 @@ export default function LeaderboardPage() {
   const { user } = useAuthStore();
   const [category, setCategory] = useState<LeaderboardCategory>('xp');
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('weekly');
+  const [scope, setScope] = useState<LeaderboardScope>('global');
+  const [scopeId, setScopeId] = useState<string | undefined>(undefined);
   const [leaderboard, setLeaderboard] = useState<LeaderboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -64,14 +75,16 @@ export default function LeaderboardPage() {
       }
 
       try {
-        const response = await api.get('/api/v1/leaderboard', {
-          params: {
-            category,
-            period: timePeriod,
-            page,
-            page_size: PAGE_SIZE,
-          },
-        });
+        const params: Record<string, string | number> = {
+          category,
+          period: timePeriod,
+          page,
+          page_size: PAGE_SIZE,
+          scope,
+        };
+        if (scopeId) params.scope_id = scopeId;
+
+        const response = await api.get('/api/v1/leaderboard', { params });
 
         setLeaderboard(response.data);
         if (page === 1) {
@@ -91,7 +104,7 @@ export default function LeaderboardPage() {
         setIsRefreshing(false);
       }
     },
-    [category, timePeriod, page, user]
+    [category, timePeriod, page, user, scope, scopeId]
   );
 
   useEffect(() => {
@@ -122,6 +135,12 @@ export default function LeaderboardPage() {
     setPage(1);
   };
 
+  const handleScopeChange = (newScope: LeaderboardScope) => {
+    setScope(newScope);
+    if (newScope === 'global') setScopeId(undefined);
+    setPage(1);
+  };
+
   return (
     <div className="relative flex h-full max-h-screen flex-1 flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Background Effects */}
@@ -131,6 +150,24 @@ export default function LeaderboardPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
           <LeaderboardHeader />
+
+          {/* Scope Selector Tabs */}
+          <div className="mb-4 flex items-center gap-2">
+            {SCOPE_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => handleScopeChange(opt.id)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  scope === opt.id
+                    ? 'bg-primary-500/20 text-primary-400 ring-1 ring-primary-500/30'
+                    : 'text-gray-400 hover:bg-dark-700/50 hover:text-white'
+                }`}
+              >
+                {opt.icon}
+                {opt.label}
+              </button>
+            ))}
+          </div>
 
           <CategoryTabs category={category} onCategoryChange={handleCategoryChange} />
 

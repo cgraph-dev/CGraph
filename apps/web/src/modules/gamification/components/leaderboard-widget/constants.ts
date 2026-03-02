@@ -18,6 +18,15 @@ export const RANK_COLORS: Record<number, string> = {
 };
 
 /**
+ * Medal emoji icons for top 3 ranks
+ */
+export const MEDAL_ICONS: Record<number, string> = {
+  1: '🥇',
+  2: '🥈',
+  3: '🥉',
+};
+
+/**
  * Available leaderboard types
  */
 export const LEADERBOARD_TYPES: LeaderboardTypeOption[] = [

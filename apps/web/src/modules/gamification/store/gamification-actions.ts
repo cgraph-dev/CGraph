@@ -296,6 +296,59 @@ export function createHandleCoinsAwarded(set: StoreSet, get: StoreGet) {
 // ── Streak / Daily Login (original) ────────────────────────────────────
 
 /**
+ * Fetch scoped leaderboard data by scope, category, and period.
+ */
+export function createFetchScopedLeaderboard(_set: StoreSet, _get: StoreGet) {
+  return async (
+    scope: 'global' | 'group' | 'board',
+    scopeId: string | undefined,
+    category: string,
+    period: string
+  ): Promise<{
+    entries: Array<{
+      rank: number;
+      userId: string;
+      username: string;
+      displayName?: string;
+      avatarUrl?: string;
+      score: number;
+      level: number;
+      equippedTitle?: string;
+      avatarBorderId?: string | null;
+    }>;
+    totalCount: number;
+    userRank: { rank: number; score: number } | null;
+  }> => {
+    try {
+      const params: Record<string, string> = { category, period, scope };
+      if (scopeId) params.scope_id = scopeId;
+
+      const response = await api.get('/api/v1/leaderboard', { params });
+      return response.data ?? { entries: [], totalCount: 0, userRank: null };
+    } catch (error: unknown) {
+      logger.warn('Failed to fetch scoped leaderboard:', error);
+      return { entries: [], totalCount: 0, userRank: null };
+    }
+  };
+}
+
+/**
+ * Handle rank_changed socket event for real-time leaderboard updates.
+ */
+export function createHandleRankChanged(_set: StoreSet, _get: StoreGet) {
+  return (data: {
+    category: string;
+    old_rank: number;
+    new_rank: number;
+    scope?: string;
+  }): void => {
+    logger.debug(
+      `Rank changed in ${data.category}: ${data.old_rank} -> ${data.new_rank}${data.scope ? ` (${data.scope})` : ''}`
+    );
+  };
+}
+
+/**
  * Check daily login and update streak.
  */
 export function createCheckDailyLogin(set: StoreSet, get: StoreGet) {

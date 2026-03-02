@@ -9,7 +9,7 @@ import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/24/outli
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { RANK_COLORS } from './constants';
+import { RANK_COLORS, MEDAL_ICONS } from './constants';
 import { getRankChange, formatScore, getScoreLabel } from './utils';
 import type { LeaderboardEntryProps, LeaderboardEntry } from './types';
 
@@ -48,7 +48,9 @@ export function LeaderboardEntryRow({
       {/* Rank */}
       <div className="w-8 flex-shrink-0 text-center">
         {isTop3 ? (
-          <TrophyIconSolid className="mx-auto h-6 w-6" style={{ color: RANK_COLORS[entry.rank] }} />
+          <span className="mx-auto text-xl" title={`Rank #${entry.rank}`}>
+            {MEDAL_ICONS[entry.rank] ?? ''}
+          </span>
         ) : (
           <span className="text-lg font-bold text-gray-400">#{entry.rank}</span>
         )}
@@ -82,6 +84,11 @@ export function LeaderboardEntryRow({
           {entry.isCurrentUser && (
             <span className="rounded bg-primary-500/30 px-1.5 py-0.5 text-xs text-primary-400">
               You
+            </span>
+          )}
+          {(entry as LeaderboardEntry & { equippedTitle?: string }).equippedTitle && (
+            <span className="rounded bg-yellow-500/20 px-1.5 py-0.5 text-xs text-yellow-400">
+              {(entry as LeaderboardEntry & { equippedTitle?: string }).equippedTitle}
             </span>
           )}
         </div>
