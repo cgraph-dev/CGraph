@@ -83,7 +83,7 @@ defmodule CGraph.Forums.CommentsTest do
       {comments, meta} = Comments.list_comments(post)
 
       assert length(comments) >= 2
-      assert Map.has_key?(meta, :total)
+      assert Map.has_key?(meta, :has_next_page)
     end
 
     test "supports pagination", %{user: user, post: post} do

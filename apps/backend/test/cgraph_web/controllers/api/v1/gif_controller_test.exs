@@ -20,8 +20,8 @@ defmodule CGraphWeb.API.V1.GifControllerTest do
       conn = get(conn, ~p"/api/v1/gifs/search?q=happy")
 
       assert response = json_response(conn, 200)
-      assert Map.has_key?(response, "gifs")
-      assert is_list(response["gifs"])
+      assert Map.has_key?(response["data"], "gifs")
+      assert is_list(response["data"]["gifs"])
     end
 
     test "accepts limit param", %{conn: conn} do
@@ -52,8 +52,8 @@ defmodule CGraphWeb.API.V1.GifControllerTest do
       conn = get(conn, ~p"/api/v1/gifs/trending")
 
       assert response = json_response(conn, 200)
-      assert Map.has_key?(response, "gifs")
-      assert is_list(response["gifs"])
+      assert Map.has_key?(response["data"], "gifs")
+      assert is_list(response["data"]["gifs"])
     end
 
     test "accepts limit param", %{conn: conn} do

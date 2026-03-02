@@ -9,7 +9,7 @@ defmodule CGraph.Groups.Operations do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Groups.{AuditLog, Channels, Group, Members, Roles}
+  alias CGraph.Groups.{AuditLog, Channels, Group, Members, Role, Roles}
   alias CGraph.Messaging.Message
   alias CGraph.Repo
 
@@ -34,14 +34,14 @@ defmodule CGraph.Groups.Operations do
             "name" => "Admin",
             "color" => "#FF0000",
             "position" => 1,
-            "is_admin" => true
+            "permissions" => Role.permissions_map()[:administrator]
           })
 
-          {:ok, _member_role} = Roles.create_role(group, %{
+          {:ok, member_role} = Roles.create_role(group, %{
             "name" => "Member",
             "color" => "#808080",
             "position" => 0,
-            "is_default" => true
+            "permissions" => Role.default_permissions()
           })
 
           {:ok, _member} = Members.add_member(group, user, [admin_role.id])

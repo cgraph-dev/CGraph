@@ -72,7 +72,7 @@ defmodule CGraph.Forums.ReputationTest do
       voter: voter,
       forum: forum
     } do
-      {:ok, post} = Forums.create_post(owner, forum, %{
+      {:ok, post} = Forums.create_post(forum, owner, %{
         title: "Reputation test post",
         content: "Testing reputation propagation",
         post_type: "text"
@@ -87,7 +87,7 @@ defmodule CGraph.Forums.ReputationTest do
     end
 
     test "self-voting does not affect reputation", %{owner: owner, forum: forum} do
-      {:ok, post} = Forums.create_post(owner, forum, %{
+      {:ok, post} = Forums.create_post(forum, owner, %{
         title: "Self vote test",
         content: "Should not earn reputation",
         post_type: "text"

@@ -170,14 +170,16 @@ defmodule CgraphWeb.API.V1.AuthControllerTest do
         |> put_req_header("authorization", "Bearer #{access_token}")
         |> post(~p"/api/v1/auth/logout")
 
-      assert json_response(logout_conn, 200)["message"] =~ "Logged out"
+      assert json_response(logout_conn, 200)["data"]["message"] =~ "Logged out"
     end
   end
 
   describe "POST /api/v1/auth/verify-email" do
     test "returns error with invalid token", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/auth/verify-email", %{token: "invalid_token"})
-      assert json_response(conn, 400)["error"] =~ "Invalid"
+      # render_error returns %{error: "Invalid verification token"}
+      response = json_response(conn, 400)
+      assert is_binary(response["error"]) and response["error"] =~ "Invalid"
     end
   end
 
@@ -191,7 +193,7 @@ defmodule CgraphWeb.API.V1.AuthControllerTest do
       # Request verification email
       resend_conn = post(authed_conn, ~p"/api/v1/auth/resend-verification")
 
-      assert json_response(resend_conn, 200)["message"] =~ "Verification"
+      assert json_response(resend_conn, 200)["data"]["message"] =~ "Verification"
     end
   end
 end

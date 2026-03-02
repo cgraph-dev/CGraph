@@ -121,7 +121,7 @@ defmodule CGraph.Forums.PostsTest do
       {posts, meta} = Posts.list_posts(forum)
 
       assert length(posts) >= 2
-      assert Map.has_key?(meta, :total)
+      assert Map.has_key?(meta, :has_next_page)
     end
 
     test "supports pagination", %{user: user, forum: forum} do
@@ -151,7 +151,7 @@ defmodule CGraph.Forums.PostsTest do
       {:ok, _} = Posts.create_post(forum, user, %{"title" => "Post", "content" => "C"})
 
       {_posts, meta} = Posts.list_posts(forum, sort: "top")
-      assert meta.page == 1
+      assert meta.per_page > 0
     end
   end
 

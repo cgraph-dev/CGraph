@@ -19,22 +19,25 @@ defmodule CgraphWeb.API.V1.UploadControllerTest do
 
     test "rejects upload without file", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/uploads", %{})
-      assert response = json_response(conn, 422) || json_response(conn, 400)
+      # Controller returns 422 for missing file
+      assert response = json_response(conn, 422)
       assert response
     end
 
     test "rejects oversized file", %{conn: conn} do
-      # Create a fake upload struct that exceeds size limits
+      # Create a fake upload with valid JPEG magic bytes
+      jpeg_bytes = <<0xFF, 0xD8, 0xFF, 0xE0>> <> String.duplicate(<<0>>, 96)
+      tmp_path = Path.join(System.tmp_dir!(), "test_large_file_#{System.unique_integer([:positive])}")
+      File.write!(tmp_path, jpeg_bytes)
+
       upload = %Plug.Upload{
-        path: "/tmp/test_large_file",
-        filename: "large.bin",
-        content_type: "application/octet-stream"
+        path: tmp_path,
+        filename: "large.jpg",
+        content_type: "image/jpeg"
       }
 
-      # Write a small file (actual size check happens server-side)
-      File.write!("/tmp/test_large_file", String.duplicate("x", 100))
-
-      conn = post(conn, ~p"/api/v1/uploads", %{file: upload, context: "avatar"})
+      # Use string keys for params to ensure proper multipart handling
+      conn = post(conn, ~p"/api/v1/uploads", %{"file" => upload, "context" => "avatar"})
       # Should either accept the small file or validate — either way should not crash
       assert conn.status in [200, 201, 400, 413, 422]
     after

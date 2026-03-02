@@ -97,7 +97,7 @@ defmodule CGraph.Forums.Threads do
           author_id: user.id,
           title: attrs["title"] || attrs[:title],
           content: attrs["content"] || attrs[:content],
-          post_icon_id: attrs["post_icon_id"] || attrs[:post_icon_id]
+          icon_id: attrs["post_icon_id"] || attrs[:post_icon_id] || attrs["icon_id"] || attrs[:icon_id]
         })
         |> Repo.insert()
 

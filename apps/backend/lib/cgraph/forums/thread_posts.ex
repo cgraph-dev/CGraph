@@ -106,16 +106,11 @@ defmodule CGraph.Forums.ThreadPosts do
   """
   @spec update_thread_post(ThreadPost.t(), map(), Ecto.UUID.t()) :: {:ok, ThreadPost.t()} | {:error, Ecto.Changeset.t()}
   def update_thread_post(%ThreadPost{} = post, attrs, editor_id) do
-    attrs = Map.merge(attrs, %{
-      is_edited: true,
-      edit_count: (post.edit_count || 0) + 1,
-      edited_at: DateTime.truncate(DateTime.utc_now(), :second),
-      edited_by_id: editor_id
-    })
+    attrs = Map.put(attrs, :edited_by_id, editor_id)
 
     result =
       post
-      |> ThreadPost.changeset(attrs)
+      |> ThreadPost.edit_changeset(attrs)
       |> Repo.update()
 
     case result do

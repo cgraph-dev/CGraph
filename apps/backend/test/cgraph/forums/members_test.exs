@@ -175,14 +175,14 @@ defmodule CGraph.Forums.MembersTest do
       # Owner is automatically a member
       {members, meta} = Members.list_members(forum.id)
       assert is_list(members)
-      assert Map.has_key?(meta, :page)
+      assert Map.has_key?(meta, :has_next_page)
       assert Map.has_key?(meta, :per_page)
     end
 
     test "supports pagination options", %{forum: forum} do
-      {_members, meta} = Members.list_members(forum.id, page: 2, per_page: 10)
-      assert meta.page == 2
+      {_members, meta} = Members.list_members(forum.id, per_page: 10)
       assert meta.per_page == 10
+      assert is_boolean(meta.has_next_page)
     end
   end
 end

@@ -68,7 +68,7 @@ defmodule CGraph.Search do
 
     base_query = from(p in Post,
       where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
-      preload: [:user, :forum]
+      preload: [:author, :forum]
     )
     |> maybe_filter_by_forum(forum_id)
     |> apply_time_range(time_range)

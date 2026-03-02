@@ -162,14 +162,19 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
                      current_password new_password private_key seed_phrase)
 
   defp sanitize_params(params) when is_map(params) do
-    params
-    |> Map.drop(@sensitive_keys)
-    |> Map.new(fn
-      {k, v} when is_binary(v) and byte_size(v) > 200 ->
-        {k, String.slice(v, 0, 200) <> "...[truncated]"}
-      {k, v} when is_map(v) -> {k, sanitize_params(v)}
-      pair -> pair
-    end)
+    # Skip structs like Plug.Upload — log them as metadata only
+    if Map.has_key?(params, :__struct__) do
+      "[#{inspect(params.__struct__)}]"
+    else
+      params
+      |> Map.drop(@sensitive_keys)
+      |> Map.new(fn
+        {k, v} when is_binary(v) and byte_size(v) > 200 ->
+          {k, String.slice(v, 0, 200) <> "...[truncated]"}
+        {k, v} when is_map(v) -> {k, sanitize_params(v)}
+        pair -> pair
+      end)
+    end
   end
   defp sanitize_params(params), do: params
 

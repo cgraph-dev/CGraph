@@ -6,9 +6,9 @@ defmodule CgraphWeb.HealthControllerTest do
       conn = get(conn, ~p"/health")
 
       response = json_response(conn, 200)
-      # Accept either "healthy" or "ok" as valid status values
-      assert response["service"] == "cgraph-api"
-      assert response["status"] in ["healthy", "ok"]
+      # render_data wraps in %{data: ...}
+      assert response["data"]["service"] == "cgraph-api"
+      assert response["data"]["status"] in ["healthy", "ok"]
     end
   end
 
@@ -25,12 +25,10 @@ defmodule CgraphWeb.HealthControllerTest do
     test "returns status of each service", %{conn: conn} do
       conn = get(conn, ~p"/ready")
 
-      assert %{
-        "checks" => %{
-          "database" => _db_status,
-          "redis" => _redis_status
-        }
-      } = json_response(conn, 200)
+      response = json_response(conn, 200)
+      assert is_map(response["checks"])
+      assert Map.has_key?(response["checks"], "database")
+      assert Map.has_key?(response["checks"], "redis")
     end
   end
 end

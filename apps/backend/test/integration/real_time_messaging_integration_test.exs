@@ -265,7 +265,11 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       channels = CGraph.Groups.list_channels(group)
       channel = List.first(channels)
 
-      {:ok, _} = CGraph.Groups.add_member(group, member)
+      # Find the Member role and add member with it (Discord-standard: members need roles for permissions)
+      roles = CGraph.Groups.list_roles(group)
+      member_role = Enum.find(roles, fn r -> r.name == "Member" end)
+      role_ids = if member_role, do: [member_role.id], else: []
+      {:ok, _} = CGraph.Groups.add_member(group, member, role_ids)
 
       {:ok, owner: owner, member: member, group: group, channel: channel}
     end

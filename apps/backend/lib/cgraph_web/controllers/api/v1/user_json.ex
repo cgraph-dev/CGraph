@@ -30,6 +30,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
   @doc "Renders a user's public profile as JSON."
   @spec profile(map()) :: map()
   def profile(%{user: user}) do
+    %{data: user_data(user)}
   end
 
   @spec private_profile(map()) :: map()

@@ -91,7 +91,7 @@ defmodule CGraph.Forums.ThreadPost do
     |> validate_length(:content, min: 1, max: 50_000)
     |> put_change(:is_edited, true)
     |> put_change(:edited_at, DateTime.truncate(DateTime.utc_now(), :second))
-    |> update_change(:edit_count, &((&1 || 0) + 1))
+    |> put_change(:edit_count, (post.edit_count || 0) + 1)
     |> maybe_render_html()
   end
 

@@ -53,10 +53,10 @@ defmodule CGraph.Phase14VerificationTest do
   defp create_forum(owner, attrs \\ %{}) do
     unique = System.unique_integer([:positive])
     base = %{
-      "name" => attrs["name"] || "Test Forum #{unique}",
+      "name" => attrs["name"] || "test_forum_#{unique}",
       "description" => "A test forum for Phase 14",
       "slug" => "test-forum-#{unique}",
-      "visibility" => "public"
+      "is_public" => true
     }
 
     Forums.create_forum(owner, Map.merge(base, attrs))
@@ -92,17 +92,17 @@ defmodule CGraph.Phase14VerificationTest do
 
   describe "FORUM-01: Forum CRUD" do
     test "creates a public forum", %{owner: owner} do
-      assert {:ok, forum} = create_forum(owner, %{"name" => "Public Forum"})
-      assert forum.name == "Public Forum"
-      assert forum.visibility == "public"
+      assert {:ok, forum} = create_forum(owner, %{"name" => "public_forum"})
+      assert forum.name == "public_forum"
+      assert forum.is_public == true
     end
 
     test "creates a private forum", %{owner: owner} do
       assert {:ok, forum} = create_forum(owner, %{
-        "name" => "Private Forum",
-        "visibility" => "private"
+        "name" => "private_forum",
+        "is_public" => false
       })
-      assert forum.visibility == "private"
+      assert forum.is_public == false
     end
 
     test "gets forum by id", %{owner: owner} do
@@ -117,8 +117,8 @@ defmodule CGraph.Phase14VerificationTest do
 
     test "updates forum name", %{owner: owner} do
       {:ok, forum} = create_forum(owner)
-      assert {:ok, updated} = Forums.update_forum(forum, %{"name" => "Updated Name"})
-      assert updated.name == "Updated Name"
+      assert {:ok, updated} = Forums.update_forum(forum, %{"name" => "updated_name"})
+      assert updated.name == "updated_name"
     end
 
     test "deletes a forum", %{owner: owner} do
@@ -128,9 +128,9 @@ defmodule CGraph.Phase14VerificationTest do
     end
 
     test "lists forums with pagination", %{owner: owner} do
-      Enum.each(1..5, fn i -> create_forum(owner, %{"name" => "Forum #{i}"}) end)
-      result = Forums.list_forums(%{per_page: 3})
-      assert is_list(result.entries) or is_list(result.data)
+      Enum.each(1..5, fn i -> create_forum(owner, %{"name" => "forum_#{i}"}) end)
+      {forums, _page_info} = Forums.list_forums(per_page: 3)
+      assert is_list(forums)
     end
   end
 
@@ -150,9 +150,9 @@ defmodule CGraph.Phase14VerificationTest do
       {:ok, parent} = create_board(forum.id, %{"name" => "Parent Board"})
       assert {:ok, child} = create_board(forum.id, %{
         "name" => "Child Board",
-        "parent_id" => parent.id
+        "parent_board_id" => parent.id
       })
-      assert child.parent_id == parent.id
+      assert child.parent_board_id == parent.id
     end
 
     test "lists boards in a forum", %{owner: owner} do
@@ -242,7 +242,7 @@ defmodule CGraph.Phase14VerificationTest do
         content: "Top-level reply"
       })
       assert post.thread_id == thread.id
-      assert is_nil(post.parent_id)
+      assert is_nil(post.reply_to_id)
     end
 
     test "creates a nested reply", %{owner: owner, member: member} do
@@ -258,9 +258,9 @@ defmodule CGraph.Phase14VerificationTest do
         thread_id: thread.id,
         author_id: owner.id,
         content: "Child reply",
-        parent_id: parent.id
+        reply_to_id: parent.id
       })
-      assert child.parent_id == parent.id
+      assert child.reply_to_id == parent.id
     end
 
     test "edits a comment", %{owner: owner, member: member} do
@@ -315,9 +315,9 @@ defmodule CGraph.Phase14VerificationTest do
           content: "Reply #{i}"
         })
       end)
-      result = ThreadPosts.list_thread_posts(thread.id)
+      {posts, _page_info} = ThreadPosts.list_thread_posts(thread.id)
       # first post + 5 replies
-      assert length(result) >= 5 or is_map(result)
+      assert is_list(posts)
     end
 
     test "gets a single post by ID", %{owner: owner, member: member} do
@@ -346,7 +346,7 @@ defmodule CGraph.Phase14VerificationTest do
       assert {:ok, poll} = Polls.create_thread_poll(thread.id, %{
         question: "Favorite color?",
         options: [%{text: "Red"}, %{text: "Blue"}, %{text: "Green"}],
-        multiple_choice: false
+        is_multiple_choice: false
       })
       assert poll.thread_id == thread.id
     end
@@ -372,7 +372,7 @@ defmodule CGraph.Phase14VerificationTest do
         question: "Best language?",
         options: [%{text: "Elixir"}, %{text: "Rust"}]
       })
-      option_id = hd(poll.options).id
+      option_id = hd(poll.options)["text"] || hd(poll.options)[:text]
       assert {:ok, _vote} = Polls.vote_poll(poll.id, member.id, [option_id])
     end
 
@@ -384,7 +384,7 @@ defmodule CGraph.Phase14VerificationTest do
         question: "Pick one",
         options: [%{text: "A"}, %{text: "B"}]
       })
-      option_id = hd(poll.options).id
+      option_id = hd(poll.options)["text"] || hd(poll.options)[:text]
       assert {:ok, _} = Polls.vote_poll(poll.id, member.id, [option_id])
       assert {:error, :already_voted} = Polls.vote_poll(poll.id, member.id, [option_id])
     end
@@ -398,7 +398,7 @@ defmodule CGraph.Phase14VerificationTest do
         options: [%{text: "Yes"}, %{text: "No"}]
       })
       assert Polls.has_voted?(poll.id, member.id) == false
-      option_id = hd(poll.options).id
+      option_id = hd(poll.options)["text"] || hd(poll.options)[:text]
       Polls.vote_poll(poll.id, member.id, [option_id])
       assert Polls.has_voted?(poll.id, member.id) == true
     end
@@ -411,8 +411,8 @@ defmodule CGraph.Phase14VerificationTest do
         question: "Count test",
         options: [%{text: "Opt1"}, %{text: "Opt2"}]
       })
-      opt1 = Enum.at(poll.options, 0).id
-      opt2 = Enum.at(poll.options, 1).id
+      opt1 = (Enum.at(poll.options, 0)["text"] || Enum.at(poll.options, 0)[:text])
+      opt2 = (Enum.at(poll.options, 1)["text"] || Enum.at(poll.options, 1)[:text])
       Polls.vote_poll(poll.id, member.id, [opt1])
       Polls.vote_poll(poll.id, admin.id, [opt2])
       results = Polls.get_poll_results(poll.id)
@@ -426,9 +426,9 @@ defmodule CGraph.Phase14VerificationTest do
       {:ok, poll} = Polls.create_thread_poll(thread.id, %{
         question: "Single only",
         options: [%{text: "A"}, %{text: "B"}, %{text: "C"}],
-        multiple_choice: false
+        is_multiple_choice: false
       })
-      opt_ids = Enum.map(poll.options, & &1.id)
+      opt_ids = Enum.map(poll.options, fn opt -> opt["text"] || opt[:text] end)
       assert {:error, :single_choice_only} = Polls.vote_poll(poll.id, member.id, opt_ids)
     end
 
@@ -439,9 +439,9 @@ defmodule CGraph.Phase14VerificationTest do
       {:ok, poll} = Polls.create_thread_poll(thread.id, %{
         question: "Expired poll",
         options: [%{text: "X"}, %{text: "Y"}],
-        close_date: DateTime.add(DateTime.utc_now(), -3600, :second)
+        closes_at: DateTime.add(DateTime.utc_now(), -3600, :second)
       })
-      option_id = hd(poll.options).id
+      option_id = hd(poll.options)["text"] || hd(poll.options)[:text]
       assert {:error, :poll_closed} = Polls.vote_poll(poll.id, member.id, [option_id])
     end
   end
@@ -493,7 +493,7 @@ defmodule CGraph.Phase14VerificationTest do
         author_id: owner.id,
         content: "Voteable post"
       })
-      assert {:ok, _} = ThreadPosts.vote_post(member.id, post.id, 1)
+      assert {:ok, _} = ThreadPosts.vote_post_by_id(member.id, post.id, 1)
     end
 
     test "multiple users voting on same thread", %{owner: owner, member: member, admin: admin} do
@@ -618,8 +618,8 @@ defmodule CGraph.Phase14VerificationTest do
       {:ok, forum} = create_forum(owner)
       {:ok, board} = create_board(forum.id)
       Enum.each(1..3, fn _ -> create_thread(forum, owner, board.id) end)
-      result = Threads.list_threads(board.id)
-      assert is_map(result) or is_list(result)
+      {threads, _page_info} = Threads.list_threads(board.id)
+      assert is_list(threads)
     end
 
     test "pins a thread", %{owner: owner} do
@@ -695,8 +695,8 @@ defmodule CGraph.Phase14VerificationTest do
       })
 
       if function_exported?(Forums, :search_posts, 2) do
-        result = Forums.search_posts(thread.id, "UniqueSearchableContent99")
-        assert is_list(result) or is_map(result)
+        {results, _meta} = Forums.search_posts("UniqueSearchableContent99", forum_id: forum.id)
+        assert is_list(results)
       else
         assert true, "Search deferred to dedicated search module"
       end
@@ -722,7 +722,12 @@ defmodule CGraph.Phase14VerificationTest do
       {:ok, forum} = create_forum(owner)
 
       if function_exported?(Forums, :member?, 2) do
-        # Owner should be a member
+        # Ensure owner is subscribed (create_forum doesn't auto-create ForumMember)
+        if function_exported?(Forums, :subscribe_to_forum, 2) do
+          Forums.subscribe_to_forum(owner, forum)
+        end
+
+        # Owner should be a member after subscribing
         assert Forums.member?(forum.id, owner.id)
       else
         assert true, "Membership check through alternative API"

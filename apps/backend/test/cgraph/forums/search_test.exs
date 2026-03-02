@@ -46,7 +46,7 @@ defmodule CGraph.Forums.SearchTest do
   describe "search_posts/2" do
     test "returns tuple of {posts, meta}", %{owner: owner, forum: forum} do
       # Create a post first
-      {:ok, _post} = Forums.create_post(owner, forum, %{
+      {:ok, _post} = Forums.create_post(forum, owner, %{
         title: "Elixir GenServer patterns",
         content: "Using GenServer for state management",
         post_type: "text"
@@ -59,7 +59,7 @@ defmodule CGraph.Forums.SearchTest do
     end
 
     test "filters by forum_id", %{owner: owner, forum: forum} do
-      {:ok, _post} = Forums.create_post(owner, forum, %{
+      {:ok, _post} = Forums.create_post(forum, owner, %{
         title: "Searchable post title",
         content: "Some searchable content here",
         post_type: "text"

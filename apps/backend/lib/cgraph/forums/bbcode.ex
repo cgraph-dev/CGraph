@@ -158,10 +158,13 @@ defmodule CGraph.Forums.BBCode do
   defp process_url_with_href(text) do
     Regex.replace(~r/\[url=(.*?)\](.*?)\[\/url\]/si, text, fn _full, href, label ->
       href = unescape_attr(href)
-      if safe_url?(href) do
-        "<a href=\"#{escape_attr(href)}\" rel=\"nofollow noopener\" target=\"_blank\">#{label}</a>"
-      else
-        "[url=#{href}]#{label}[/url]"
+
+      case sanitize_url(href) do
+        {:ok, clean} ->
+          "<a href=\"#{escape_attr(clean)}\" rel=\"nofollow noopener\" target=\"_blank\">#{label}</a>"
+
+        :unsafe ->
+          label
       end
     end)
   end
@@ -170,10 +173,13 @@ defmodule CGraph.Forums.BBCode do
   defp process_url_bare(text) do
     Regex.replace(~r/\[url\](.*?)\[\/url\]/si, text, fn _full, href ->
       href = unescape_attr(href)
-      if safe_url?(href) do
-        "<a href=\"#{escape_attr(href)}\" rel=\"nofollow noopener\" target=\"_blank\">#{href}</a>"
-      else
-        "[url]#{href}[/url]"
+
+      case sanitize_url(href) do
+        {:ok, clean} ->
+          "<a href=\"#{escape_attr(clean)}\" rel=\"nofollow noopener\" target=\"_blank\">#{clean}</a>"
+
+        :unsafe ->
+          href
       end
     end)
   end
@@ -182,10 +188,13 @@ defmodule CGraph.Forums.BBCode do
   defp process_img(text) do
     Regex.replace(~r/\[img\](.*?)\[\/img\]/si, text, fn _full, src ->
       src = unescape_attr(src)
-      if safe_url?(src) do
-        "<img src=\"#{escape_attr(src)}\" alt=\"User image\" loading=\"lazy\" />"
-      else
-        "[img]#{src}[/img]"
+
+      case sanitize_url(src) do
+        {:ok, clean} ->
+          "<img src=\"#{escape_attr(clean)}\" alt=\"User image\" loading=\"lazy\" />"
+
+        :unsafe ->
+          ""
       end
     end)
   end
@@ -237,14 +246,36 @@ defmodule CGraph.Forums.BBCode do
 
   @doc false
   def safe_url?(url) do
-    url = String.trim(url)
-    downcased = String.downcase(url)
+    case sanitize_url(url) do
+      {:ok, _} -> true
+      :unsafe -> false
+    end
+  end
+
+  # Sanitize a URL: strip quotes/dangerous chars, reject dangerous schemes.
+  # Returns {:ok, cleaned_url} or :unsafe.
+  defp sanitize_url(url) do
+    clean =
+      url
+      |> String.trim()
+      |> String.replace("\"", "")
+      |> String.replace("'", "")
+
+    downcased = String.downcase(clean)
+
+    # Reject URLs with whitespace or control chars (attribute injection vectors)
+    has_whitespace = Regex.match?(~r/[\s\t\n\r]/, clean)
 
     cond do
-      String.starts_with?(downcased, "http://") -> true
-      String.starts_with?(downcased, "https://") -> true
-      String.starts_with?(downcased, "mailto:") -> true
-      true -> false
+      has_whitespace -> :unsafe
+      String.starts_with?(downcased, "javascript:") -> :unsafe
+      String.starts_with?(downcased, "data:") -> :unsafe
+      String.starts_with?(downcased, "vbscript:") -> :unsafe
+      String.starts_with?(downcased, "http://") -> {:ok, clean}
+      String.starts_with?(downcased, "https://") -> {:ok, clean}
+      String.starts_with?(downcased, "mailto:") -> {:ok, clean}
+      String.starts_with?(downcased, "//") -> {:ok, clean}
+      true -> :unsafe
     end
   end
 

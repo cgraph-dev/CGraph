@@ -53,8 +53,8 @@ defmodule CGraph.Forums.FeedsTest do
       {posts, meta} = Feeds.list_public_feed()
 
       assert is_list(posts)
-      assert Map.has_key?(meta, :page)
-      assert Map.has_key?(meta, :total)
+      assert Map.has_key?(meta, :has_next_page)
+      assert Map.has_key?(meta, :per_page)
     end
 
     test "supports pagination", %{user1: user1, public_forum: public_forum} do
@@ -79,21 +79,24 @@ defmodule CGraph.Forums.FeedsTest do
 
       {posts, _meta} = Feeds.list_public_feed(sort: "new")
 
-      # Newest should be first
-      if length(posts) >= 2 do
-        first_post = List.first(posts)
-        assert first_post.title == "Post 2"
+      # Verify our posts exist and newer one comes first among them
+      our_posts = Enum.filter(posts, fn p -> p.title in ["Post 1", "Post 2"] end)
+      if length(our_posts) >= 2 do
+        titles = Enum.map(our_posts, & &1.title)
+        post2_idx = Enum.find_index(titles, &(&1 == "Post 2"))
+        post1_idx = Enum.find_index(titles, &(&1 == "Post 1"))
+        assert post2_idx < post1_idx, "Post 2 (newer) should come before Post 1 in new sort"
       end
     end
 
     test "supports sorting by top", %{user1: _user1, public_forum: _public_forum} do
       {_posts, meta} = Feeds.list_public_feed(sort: "top")
-      assert meta.page == 1
+      assert meta.per_page > 0
     end
 
     test "supports time range filtering", %{user1: _user1, public_forum: _public_forum} do
       {_posts, meta} = Feeds.list_public_feed(sort: "top", time_range: "day")
-      assert meta.page == 1
+      assert meta.per_page > 0
     end
   end
 
@@ -102,14 +105,14 @@ defmodule CGraph.Forums.FeedsTest do
       {posts, meta} = Feeds.list_home_feed(nil, [])
 
       assert posts == []
-      assert meta.total == 0
+      assert meta.has_next_page == false
     end
 
     test "returns public feed for user with no subscriptions", %{user2: user2} do
       {posts, meta} = Feeds.list_home_feed(user2, [])
 
       assert is_list(posts)
-      assert Map.has_key?(meta, :total)
+      assert Map.has_key?(meta, :has_next_page)
     end
 
     test "returns posts from subscribed forums", %{user1: user1, user2: user2, public_forum: public_forum} do
@@ -154,14 +157,14 @@ defmodule CGraph.Forums.FeedsTest do
       {posts, meta} = Feeds.list_popular_feed()
 
       assert is_list(posts)
-      assert Map.has_key?(meta, :total)
+      assert Map.has_key?(meta, :has_next_page)
     end
 
     test "supports pagination", %{user1: _user1, public_forum: _public_forum} do
-      {_posts, meta} = Feeds.list_popular_feed(page: 2, per_page: 5)
+      {_posts, meta} = Feeds.list_popular_feed(per_page: 5)
 
-      assert meta.page == 2
       assert meta.per_page == 5
+      assert is_boolean(meta.has_next_page)
     end
 
     test "returns posts from last 24 hours", %{user1: user1, public_forum: public_forum} do
