@@ -12,6 +12,7 @@ import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import { AVATAR_BORDERS } from '@/data/avatar-borders';
 import { tweens, loop } from '@/lib/animation-presets';
+import { BorderRenderer, type AvatarBorderData } from '@/modules/gamification/components/avatar-border';
 
 interface ThemedAvatarProps {
   src?: string | null;
@@ -21,6 +22,8 @@ interface ThemedAvatarProps {
   userTheme?: Partial<UserTheme>; // For displaying other users' avatars with their theme
   avatarBorderId?: string | null;
   avatarBorderConfig?: AvatarBorderConfig;
+  /** Gamification equipped border (animated CSS borders) */
+  equippedBorder?: AvatarBorderData | null;
   onClick?: () => void;
   style?: React.CSSProperties;
 }
@@ -70,6 +73,7 @@ export function ThemedAvatar({
   userTheme,
   avatarBorderId,
   avatarBorderConfig,
+  equippedBorder,
   onClick,
   style,
 }: ThemedAvatarProps) {
@@ -86,6 +90,26 @@ export function ThemedAvatar({
   const resolvedBorder: AvatarBorderConfig | undefined =
     avatarBorderConfig ||
     (avatarBorderId ? AVATAR_BORDERS.find((border) => border.id === avatarBorderId) : undefined);
+
+  // Gamification equipped border (CSS animated borders) — highest priority
+  if (equippedBorder) {
+    return (
+      <div className={className} style={style} onClick={onClick}>
+        <BorderRenderer border={equippedBorder} size={sizePxMap[size]} borderWidth={borderWidth}>
+          <img
+            src={src || '/default-avatar.png'}
+            alt={alt}
+            className="h-full w-full rounded-full object-cover"
+            style={{ width: sizePxMap[size] - borderWidth * 2, height: sizePxMap[size] - borderWidth * 2 }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/default-avatar.png';
+            }}
+          />
+        </BorderRenderer>
+      </div>
+    );
+  }
 
   if (resolvedBorder) {
     return (
