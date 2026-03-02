@@ -110,6 +110,8 @@ defmodule CGraphWeb.Router.GamificationRoutes do
           get "/", ShopController, :index
           get "/categories", ShopController, :categories
           get "/purchases", ShopController, :purchases
+          get "/bundles", CoinShopController, :bundles
+          post "/purchase-coins", CoinShopController, :checkout
           get "/:id", ShopController, :show
           post "/:id/purchase", ShopController, :purchase
         end
