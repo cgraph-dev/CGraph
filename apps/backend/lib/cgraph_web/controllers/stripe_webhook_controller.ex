@@ -21,6 +21,7 @@ defmodule CGraphWeb.StripeWebhookController do
 
   alias CGraph.Accounts
   alias CGraph.Subscriptions
+  alias CGraph.Subscriptions.Idempotency
 
   @doc """
   Main webhook endpoint. Verifies signature and dispatches to handlers.
@@ -41,8 +42,18 @@ defmodule CGraphWeb.StripeWebhookController do
 
       case verify_webhook(payload, signature) do
         {:ok, event} ->
-          handle_event(event)
-          json(conn, %{data: %{received: true}})
+          case Idempotency.process_once(event, &handle_event/1) do
+            {:ok, _result} ->
+              conn |> put_status(:ok) |> json(%{received: true})
+
+            {:already_processed, event_id} ->
+              Logger.info("webhook_duplicate_skipped", event_id: event_id)
+              conn |> put_status(:ok) |> json(%{received: true, duplicate: true})
+
+            {:error, reason} ->
+              Logger.error("webhook_processing_failed", error: inspect(reason))
+              conn |> put_status(:ok) |> json(%{received: true, error: true})
+          end
 
         {:error, reason} ->
           Logger.warning("Stripe webhook verification failed", reason: inspect(reason))
@@ -138,12 +149,26 @@ defmodule CGraphWeb.StripeWebhookController do
 
     if invoice.subscription do
       with {:ok, user} <- find_user_by_stripe_subscription(invoice.subscription) do
+        # Set 72-hour grace period
+        grace_until = DateTime.utc_now() |> DateTime.add(72 * 3600, :second) |> DateTime.truncate(:second)
+
+        user
+        |> CGraph.Accounts.User.subscription_changeset(%{subscription_grace_until: grace_until})
+        |> CGraph.Repo.update()
+
         # Notify user of failed payment
         Subscriptions.record_payment_failure(user, %{
           invoice_id: invoice.id,
           amount: invoice.amount_due,
           attempt_count: invoice.attempt_count
         })
+
+        # Broadcast to user's channel for real-time notification
+        Phoenix.PubSub.broadcast(
+          CGraph.PubSub,
+          "user:#{user.id}",
+          {:payment_failed, %{invoice_id: invoice.id, grace_until: grace_until}}
+        )
       end
     end
   end
