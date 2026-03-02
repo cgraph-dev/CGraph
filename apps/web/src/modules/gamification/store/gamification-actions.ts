@@ -258,6 +258,44 @@ export function createUnlockLoreEntry(_set: StoreSet, _get: StoreGet) {
 // ── Streak / Daily Login ───────────────────────────────────────────────
 
 /**
+ * Handle incoming XP awarded socket event.
+ * Updates store state with server-authoritative XP/level data.
+ */
+export function createHandleXPAwarded(set: StoreSet, _get: StoreGet) {
+  return (data: {
+    amount: number;
+    source: string;
+    total_xp: number;
+    level: number;
+    level_up: boolean;
+    level_progress: number;
+  }): void => {
+    set({
+      totalXP: data.total_xp,
+      level: data.level,
+    });
+
+    logger.debug(
+      `+${data.amount} XP from ${data.source} | Total: ${data.total_xp} | Level: ${data.level}${data.level_up ? ' LEVEL UP!' : ''}`
+    );
+  };
+}
+
+/**
+ * Handle incoming coins awarded socket event.
+ */
+export function createHandleCoinsAwarded(set: StoreSet, get: StoreGet) {
+  return (data: { amount: number; balance: number }): void => {
+    // Use server balance if provided, otherwise increment
+    const newCoins = data.balance ?? (get() as Record<string, unknown> as { coins?: number }).coins ?? 0;
+    set({ xp: get().totalXP } as Partial<GamificationState>);
+    logger.debug(`+${data.amount} coins | Balance: ${newCoins}`);
+  };
+}
+
+// ── Streak / Daily Login (original) ────────────────────────────────────
+
+/**
  * Check daily login and update streak.
  */
 export function createCheckDailyLogin(set: StoreSet, get: StoreGet) {

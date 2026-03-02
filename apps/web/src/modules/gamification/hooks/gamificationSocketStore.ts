@@ -23,6 +23,9 @@ const SOCKET_URL = import.meta.env.VITE_WS_URL || 'wss://cgraph-backend.fly.dev/
 const CHANNEL_EVENTS = [
   'initial_state',
   'xp_gained',
+  'xp_awarded',
+  'coins_awarded',
+  'cap_reached',
   'level_up',
   'achievement_unlocked',
   'cosmetic_unlocked',
@@ -145,6 +148,27 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
         if (event === 'initial_state') {
           set((state) => ({
             state: handleInitialState(payload, state.state),
+          }));
+        }
+
+        // Update local state from xp_awarded events
+        if (event === 'xp_awarded') {
+          set((s) => ({
+            state: {
+              ...s.state,
+              xp: payload.total_xp != null ? Number(payload.total_xp) : s.state.xp,
+              level: payload.level != null ? Number(payload.level) : s.state.level,
+            },
+          }));
+        }
+
+        // Update coins from coins_awarded events
+        if (event === 'coins_awarded') {
+          set((s) => ({
+            state: {
+              ...s.state,
+              coins: payload.balance != null ? Number(payload.balance) : s.state.coins,
+            },
           }));
         }
 

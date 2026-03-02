@@ -64,6 +64,36 @@ export interface MarketplaceNotificationEvent {
   data: Record<string, unknown>;
 }
 
+// ==================== XP PIPELINE EVENT TYPES ====================
+
+export interface XPAwardedEvent {
+  amount: number;
+  source: string;
+  total_xp: number;
+  level: number;
+  level_up: boolean;
+  level_progress: number;
+  daily_cap_status: {
+    source: string;
+    used: number;
+    limit: number;
+    remaining: number;
+    diminishing_active: boolean;
+  };
+}
+
+export interface CoinsAwardedEvent {
+  amount: number;
+  type: string;
+  balance: number;
+}
+
+export interface CapReachedEvent {
+  source: string;
+  daily_used: number;
+  daily_limit: number;
+}
+
 // ==================== STATE ====================
 
 export interface GamificationState {

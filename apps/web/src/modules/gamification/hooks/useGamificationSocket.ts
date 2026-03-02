@@ -24,12 +24,18 @@ export type {
   PrestigeUpdateEvent,
   EventProgressEvent,
   MarketplaceNotificationEvent,
+  XPAwardedEvent,
+  CoinsAwardedEvent,
+  CapReachedEvent,
   GamificationState,
   GamificationSocketStore,
 } from './gamification-socket.types';
 
 import type {
   XPGainEvent,
+  XPAwardedEvent,
+  CoinsAwardedEvent,
+  CapReachedEvent,
   AchievementUnlockEvent,
   CosmeticUnlockEvent,
   PrestigeUpdateEvent,
@@ -197,6 +203,30 @@ export function useEventAnnouncements(callbacks: {
   useGamificationEvent('event_started', callbacks.onStart || (() => {}));
   useGamificationEvent('event_ending_soon', callbacks.onEndingSoon || (() => {}));
   useGamificationEvent('event_ended', callbacks.onEnd || (() => {}));
+}
+
+// ==================== NEW XP PIPELINE HOOKS ====================
+
+/**
+ * Hook for XP awarded events from the XpEventHandler pipeline.
+ * Richer payload than xp_gained — includes daily cap and level progress.
+ */
+export function useXPAwarded(callback: (data: XPAwardedEvent) => void) {
+  useGamificationEvent('xp_awarded', callback);
+}
+
+/**
+ * Hook for coin award events.
+ */
+export function useCoinsAwarded(callback: (data: CoinsAwardedEvent) => void) {
+  useGamificationEvent('coins_awarded', callback);
+}
+
+/**
+ * Hook for daily cap reached events.
+ */
+export function useCapReached(callback: (data: CapReachedEvent) => void) {
+  useGamificationEvent('cap_reached', callback);
 }
 
 /**
