@@ -4,6 +4,7 @@
  * Empty state displays for different GIF picker views.
  */
 
+import { AnimatedEmptyState } from '@/shared/components';
 import { HeartIcon, ClockIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 interface EmptyStateProps {
@@ -11,37 +12,35 @@ interface EmptyStateProps {
 }
 
 /**
- * unknown for the chat module.
- */
-/**
- * Empty State — fallback UI for empty data states.
+ * Animated Empty State — fallback for GIF picker tabs.
  */
 export function EmptyState({ type }: EmptyStateProps) {
   if (type === 'favorites') {
     return (
-      <>
-        <HeartIcon className="mb-2 h-12 w-12" />
-        <p className="text-sm">No favorite GIFs yet</p>
-        <p className="text-xs">Click the heart on any GIF to save it</p>
-      </>
+      <AnimatedEmptyState
+        title="No favorite GIFs yet"
+        description="Click the heart on any GIF to save it"
+        icon={<HeartIcon className="h-20 w-20 text-gray-500" />}
+      />
     );
   }
 
   if (type === 'recent') {
     return (
-      <>
-        <ClockIcon className="mb-2 h-12 w-12" />
-        <p className="text-sm">No recent GIFs</p>
-        <p className="text-xs">GIFs you use will appear here</p>
-      </>
+      <AnimatedEmptyState
+        title="No recent GIFs"
+        description="GIFs you use will appear here"
+        icon={<ClockIcon className="h-20 w-20 text-gray-500" />}
+      />
     );
   }
 
   return (
-    <>
-      <MagnifyingGlassIcon className="mb-2 h-12 w-12" />
-      <p className="text-sm">No GIFs found</p>
-      <p className="text-xs">Try a different search term</p>
-    </>
+    <AnimatedEmptyState
+      title="No GIFs found"
+      description="Try a different search term"
+      variant="search"
+      icon={<MagnifyingGlassIcon className="h-20 w-20 text-gray-500" />}
+    />
   );
 }

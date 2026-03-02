@@ -15,6 +15,7 @@ import { ModerationTrends } from '@/modules/moderation/components/moderation-tre
 import { ModeratorLeaderboard } from '@/modules/moderation/components/moderator-leaderboard';
 import { AIModrationStats } from '@/modules/moderation/components/ai-moderation-stats';
 import { AppealsStats } from '@/modules/moderation/components/appeals-stats';
+import { AnimatedEmptyState, AnimatedErrorState } from '@/shared/components';
 import { api } from '@/lib/api';
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -107,17 +108,43 @@ export function ModerationDashboard() {
 
   if (error || !stats) {
     return (
-      <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-8 text-center">
-        <p className="text-sm text-red-400">{error || 'No data available'}</p>
-        <button
-          onClick={() => {
-            setLoading(true);
-            fetchStats();
-          }}
-          className="mt-2 text-sm text-primary-400 hover:text-primary-300"
-        >
-          Retry
-        </button>
+      <AnimatedErrorState
+        title="Failed to load moderation data"
+        description={error || 'No data available. The moderation stats API may be unreachable.'}
+        onRetry={() => {
+          setLoading(true);
+          fetchStats();
+        }}
+      />
+    );
+  }
+
+  // Check if stats are effectively empty (no activity)
+  const hasActivity = stats.reports_today > 0
+    || stats.active_restrictions > 0
+    || (stats.reports_trend && stats.reports_trend.length > 0)
+    || (stats.moderator_leaderboard && stats.moderator_leaderboard.length > 0);
+
+  if (!hasActivity) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-white">Moderation Dashboard</h1>
+          <button
+            onClick={() => {
+              setLoading(true);
+              fetchStats();
+            }}
+            className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-gray-400 hover:bg-dark-600 hover:text-white"
+          >
+            Refresh
+          </button>
+        </div>
+        <AnimatedEmptyState
+          title="No moderation activity"
+          description="No reports, restrictions, or moderation actions recorded yet. Activity will appear here once users start interacting."
+          variant="inbox"
+        />
       </div>
     );
   }

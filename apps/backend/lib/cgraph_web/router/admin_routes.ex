@@ -54,6 +54,10 @@ defmodule CGraphWeb.Router.AdminRoutes do
       scope "/api/admin", CGraphWeb.API.Admin do
         pipe_through [:api, :api_admin]
 
+        # Feature Flags Management
+        resources "/feature-flags", FeatureFlagController, except: [:new, :edit]
+        get "/feature-flags/:id/history", FeatureFlagController, :history
+
         # Moderation queue
         get "/reports", ModerationController, :list_reports
         post "/reports/batch-review", ModerationController, :batch_review
