@@ -10,27 +10,27 @@
 
 ## Phase Overview
 
-| #   | Phase                   | Goal                                               | Reqs | Depends On                       |
-| --- | ----------------------- | -------------------------------------------------- | ---- | -------------------------------- |
-| 1   | Infrastructure Baseline | Monorepo builds, versions aligned, routes healthy  | 3    | — ✅ Complete (2026-02-27)       |
-| 2   | Auth Core               | Register, verify, login, token refresh — all work  | 4    | Phase 1 ✅ Complete (2026-02-28) |
-| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28) |
-| 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28) |
-| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28) |
-| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28) |
-| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28) |
-| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01) |
-| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01) |
-| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Complete** (2026-03-01) |
-| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5 ✅ Complete (2026-03-01)  |
-| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11 ✅ Complete (2026-03-01) |
-| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12 ✅                       |
-| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                       |
-| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14 ✅ Complete (2026-03-02) |
-| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14 ✅ Complete (2026-03-02) |
-| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅ Complete (2026-03-02) |
+| #   | Phase                   | Goal                                               | Reqs | Depends On                              |
+| --- | ----------------------- | -------------------------------------------------- | ---- | --------------------------------------- |
+| 1   | Infrastructure Baseline | Monorepo builds, versions aligned, routes healthy  | 3    | — ✅ Complete (2026-02-27)              |
+| 2   | Auth Core               | Register, verify, login, token refresh — all work  | 4    | Phase 1 ✅ Complete (2026-02-28)        |
+| 3   | Auth Advanced           | OAuth, 2FA, session management complete            | 3    | Phase 2 ✅ Complete (2026-02-28)        |
+| 4   | Design System & Mobile  | Professional visuals, mobile builds pass           | 4    | Phase 1 ✅ Complete (2026-02-28)        |
+| 5   | Message Transport       | Real-time 1:1 messaging with indicators & receipts | 4    | Phase 2 ✅ Complete (2026-02-28)        |
+| 6   | Message Features & Sync | Edit, delete, reply, react, cross-device sync      | 5    | Phase 5 ✅ Complete (2026-02-28)        |
+| 7   | E2EE & Mobile Security  | End-to-end encryption + biometric auth             | 6    | Phase 5 ✅ Complete (2026-02-28)        |
+| 8   | Social & Profiles       | Onboarding, profiles, presence, user search        | 7    | Phase 2 ✅ Complete (2026-03-01)        |
+| 9   | Notifications & Safety  | Push, notification center, DND, account deletion   | 7    | Phase 8 ✅ — **Complete** (2026-03-01)  |
+| 10  | Message Extras          | Forward, pin, bookmark, link preview, disappearing | 5    | Phase 6 ✅ — **Complete** (2026-03-01)  |
+| 11  | Groups & Channels       | Group creation, channels, invites, group messaging | 7    | Phase 5 ✅ Complete (2026-03-01)        |
+| 12  | Roles & Moderation      | Permissions, moderation tools, group E2EE          | 9    | Phase 11 ✅ Complete (2026-03-01)       |
+| 13  | Voice & Video           | 1:1 and group calls, screen share, call E2EE       | 9    | Phase 12 ✅                             |
+| 14  | Forum Core              | Boards, threads, posts, polls, real-time updates   | 9    | Phase 12 ✅                             |
+| 15  | Forum Customization     | 50+ options, plugins, advanced features            | 8    | Phase 14 ✅ Complete (2026-03-02)       |
+| 16  | Gamification            | XP, quests, battle pass, shop, cosmetics           | 12   | Phase 14 ✅ Complete (2026-03-02)       |
+| 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅ Complete (2026-03-02)       |
 | 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13 ✅ Complete (2026-03-02) |
-| 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                   |
+| 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                          |
 
 **Dependency Graph:**
 
@@ -349,8 +349,8 @@ Plans:
 - [x] 07-07-PLAN.md — Multi-device key sync backend (cross-signing + sync API)
 - [x] 07-08-PLAN.md — Multi-device key sync client + device management UI
 
-| Plan  | Scope                                                            | Wave | Status |
-| ----- | ---------------------------------------------------------------- | ---- | ------ |
+| Plan  | Scope                                                            | Wave | Status                   |
+| ----- | ---------------------------------------------------------------- | ---- | ------------------------ |
 | 07-01 | Web PQXDH + Triple Ratchet enable + auto-bootstrap               | 1    | ✅ Complete (2026-02-28) |
 | 07-02 | Mobile PQ-bridge wiring + auto-bootstrap                         | 1    | ✅ Complete (2026-02-28) |
 | 07-03 | Biometric auth gate + E2EE key protection                        | 1    | ✅ Complete (2026-02-28) |
@@ -397,7 +397,8 @@ that must exist before scaling users.
 
 **Plans:** 7 plans in 1 wave (all parallel — independent vertical slices)
 
-- [x] 08-01-PLAN.md — User search UI (web + mobile) wired to existing Meilisearch backend (SEARCH-02)
+- [x] 08-01-PLAN.md — User search UI (web + mobile) wired to existing Meilisearch backend
+      (SEARCH-02)
 - [x] 08-02-PLAN.md — Contacts presence list with online/offline indicators (NOTIF-05)
 - [x] 08-03-PLAN.md — Custom status persistence + expiry via Oban (NOTIF-06)
 - [x] 08-04-PLAN.md — Profile edit with avatar cropping on web + mobile (AUTH-10)
@@ -405,15 +406,15 @@ that must exist before scaling users.
 - [x] 08-06-PLAN.md — Block enforcement across messaging, presence, profile, search (MOD-03)
 - [x] 08-07-PLAN.md — QR code login protocol: backend + web + mobile (AUTH-11)
 
-| Plan  | Scope                                                    | Wave | Depends | Status |
-| ----- | -------------------------------------------------------- | ---- | ------- | ------ |
-| 08-01 | User search UI (web + mobile) — SEARCH-02                | 1    | —       | ✅ Done |
-| 08-02 | Contacts presence list with indicators — NOTIF-05        | 1    | —       | ✅ Done |
-| 08-03 | Custom status persistence + expiry — NOTIF-06            | 1    | —       | ✅ Done |
-| 08-04 | Profile edit with avatar crop — AUTH-10                   | 1    | —       | ✅ Done |
-| 08-05 | Onboarding wizard: find friends + community — AUTH-09    | 2    | 03      | ✅ Done |
-| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03  | 2    | 03      | ✅ Done |
-| 08-07 | QR code login protocol (full stack) — AUTH-11            | 1    | —       | ✅ Done |
+| Plan  | Scope                                                   | Wave | Depends | Status  |
+| ----- | ------------------------------------------------------- | ---- | ------- | ------- |
+| 08-01 | User search UI (web + mobile) — SEARCH-02               | 1    | —       | ✅ Done |
+| 08-02 | Contacts presence list with indicators — NOTIF-05       | 1    | —       | ✅ Done |
+| 08-03 | Custom status persistence + expiry — NOTIF-06           | 1    | —       | ✅ Done |
+| 08-04 | Profile edit with avatar crop — AUTH-10                 | 1    | —       | ✅ Done |
+| 08-05 | Onboarding wizard: find friends + community — AUTH-09   | 2    | 03      | ✅ Done |
+| 08-06 | Block enforcement (messaging/presence/profile) — MOD-03 | 2    | 03      | ✅ Done |
+| 08-07 | QR code login protocol (full stack) — AUTH-11           | 1    | —       | ✅ Done |
 
 ---
 
@@ -449,9 +450,15 @@ users.
 
 ### Discovery Findings
 
-- **NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-08, AUTH-08 are FULLY IMPLEMENTED** — backend services (PushService, ExpoClient, APNsClient, FCMClient, WebPushClient), frontend hooks (usePushNotifications, web-push service worker), notification center (full page + stores + API), email digest workers, and account deletion (soft → hard delete, data export, GDPR UI) all exist and are substantive.
-- **NOTIF-04 needs per-conversation/channel preferences** — global toggles exist but no per-target mute/mode.
-- **NOTIF-07 needs schedule UI + timezone** — backend `quiet_hours` fields exist but no UI, and logic uses UTC only.
+- **NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-08, AUTH-08 are FULLY IMPLEMENTED** — backend services
+  (PushService, ExpoClient, APNsClient, FCMClient, WebPushClient), frontend hooks
+  (usePushNotifications, web-push service worker), notification center (full page + stores + API),
+  email digest workers, and account deletion (soft → hard delete, data export, GDPR UI) all exist
+  and are substantive.
+- **NOTIF-04 needs per-conversation/channel preferences** — global toggles exist but no per-target
+  mute/mode.
+- **NOTIF-07 needs schedule UI + timezone** — backend `quiet_hours` fields exist but no UI, and
+  logic uses UTC only.
 
 ### Plans
 
@@ -496,19 +503,29 @@ metadata make shared URLs useful. Disappearing messages add privacy options beyo
 
 ### Discovery Findings
 
-- **MSG-13 (Pin) is FULLY IMPLEMENTED** — backend schema (`is_pinned`, `pinned_at`, `pinned_by`), dedicated `channel_pinned_messages` table, controllers with authorization, web pin in action menu + pinned-messages-panel, mobile pinned-messages-bar + action menu toggle.
-- **MSG-14 (Bookmark) is FULLY IMPLEMENTED** — `saved_messages` table/schema/context/controller, web saved-messages page (187 lines), mobile saved-messages-screen (342 lines). **Gap:** No "Save" button in message action menus on either platform.
-- **MSG-17 (Disappearing) is FULLY IMPLEMENTED** — `expires_at` on messages, `message_ttl` on conversations, Oban cron worker, web toggle. **Gap:** No mobile toggle, no timer indicator on messages.
-- **MSG-08 (Forward) is PARTIAL** — Web has forward modal (276 lines) + handler, but uses client-side re-send (no server tracking). Mobile has no forward UI. No `forwarded_from` schema field.
-- **MSG-16 (Link Preview) is PARTIAL** — `link_preview :map` field on messages, web component (82 lines), mobile component (149 lines), validation. **Gap:** No server-side OG metadata fetching — clients must send preview data.
+- **MSG-13 (Pin) is FULLY IMPLEMENTED** — backend schema (`is_pinned`, `pinned_at`, `pinned_by`),
+  dedicated `channel_pinned_messages` table, controllers with authorization, web pin in action
+  menu + pinned-messages-panel, mobile pinned-messages-bar + action menu toggle.
+- **MSG-14 (Bookmark) is FULLY IMPLEMENTED** — `saved_messages` table/schema/context/controller, web
+  saved-messages page (187 lines), mobile saved-messages-screen (342 lines). **Gap:** No "Save"
+  button in message action menus on either platform.
+- **MSG-17 (Disappearing) is FULLY IMPLEMENTED** — `expires_at` on messages, `message_ttl` on
+  conversations, Oban cron worker, web toggle. **Gap:** No mobile toggle, no timer indicator on
+  messages.
+- **MSG-08 (Forward) is PARTIAL** — Web has forward modal (276 lines) + handler, but uses
+  client-side re-send (no server tracking). Mobile has no forward UI. No `forwarded_from` schema
+  field.
+- **MSG-16 (Link Preview) is PARTIAL** — `link_preview :map` field on messages, web component (82
+  lines), mobile component (149 lines), validation. **Gap:** No server-side OG metadata fetching —
+  clients must send preview data.
 
 ### Plans
 
-| Plan  | Scope                                                              | Wave | Status     |
-| ----- | ------------------------------------------------------------------ | ---- | ---------- |
-| 10-01 | Message forwarding full stack — backend API + mobile UI (MSG-08)   | 1    | ✅ Complete |
-| 10-02 | Server-side link preview engine with OG metadata (MSG-16)          | 1    | ✅ Complete |
-| 10-03 | Extras polish — save buttons, mobile disappearing, shared types    | 2    | ✅ Complete |
+| Plan  | Scope                                                            | Wave | Status      |
+| ----- | ---------------------------------------------------------------- | ---- | ----------- |
+| 10-01 | Message forwarding full stack — backend API + mobile UI (MSG-08) | 1    | ✅ Complete |
+| 10-02 | Server-side link preview engine with OG metadata (MSG-16)        | 1    | ✅ Complete |
+| 10-03 | Extras polish — save buttons, mobile disappearing, shared types  | 2    | ✅ Complete |
 
 ---
 
@@ -545,11 +562,11 @@ forums, voice channels, and gamification all build on.
 
 ### Plans
 
-| Plan  | Scope                                                           | Wave | Status      |
-| ----- | --------------------------------------------------------------- | ---- | ----------- |
-| 11-01 | WebSocket topic alignment + group channel messaging E2E         | 1    | ✅ Complete  |
-| 11-02 | Group CRUD, channels, and invites E2E wiring                    | 1    | ✅ Complete  |
-| 11-03 | Explore page for group discovery + channel message threads      | 2    | ✅ Complete  |
+| Plan  | Scope                                                      | Wave | Status      |
+| ----- | ---------------------------------------------------------- | ---- | ----------- |
+| 11-01 | WebSocket topic alignment + group channel messaging E2E    | 1    | ✅ Complete |
+| 11-02 | Group CRUD, channels, and invites E2E wiring               | 1    | ✅ Complete |
+| 11-03 | Explore page for group discovery + channel message threads | 2    | ✅ Complete |
 
 ---
 
@@ -590,12 +607,12 @@ This must be correct before forums and gamification layer on top.
 
 ### Plans
 
-| Plan  | Scope                                                              | Wave | Status   |
-| ----- | ------------------------------------------------------------------ | ---- | -------- |
-| 12-01 | Roles & permissions hardening — effective permissions + overrides   | 1    | Complete |
-| 12-02 | Ban/kick + content reporting — group moderation pipeline            | 1    | Complete |
-| 12-03 | Automod enforcement pipeline — runtime message filtering            | 2    | Complete |
-| 12-04 | Custom emoji permissions + group E2EE key distribution              | 2    | Complete |
+| Plan  | Scope                                                             | Wave | Status   |
+| ----- | ----------------------------------------------------------------- | ---- | -------- |
+| 12-01 | Roles & permissions hardening — effective permissions + overrides | 1    | Complete |
+| 12-02 | Ban/kick + content reporting — group moderation pipeline          | 1    | Complete |
+| 12-03 | Automod enforcement pipeline — runtime message filtering          | 2    | Complete |
+| 12-04 | Custom emoji permissions + group E2EE key distribution            | 2    | Complete |
 
 ---
 
@@ -673,25 +690,43 @@ it all together with real-time Phoenix Channel updates and full-text search.
 
 ### Discovery Findings
 
-- **FORUM-01 (Forum CRUD):** ~95% complete — Forum schema (444L), Core context (95L + sub-modules), ForumController (399L), hierarchy controller, full routes. Gap: no backend admin-specific bulk operations.
-- **FORUM-02 (Boards/Categories):** ~90% complete — Board schema (103L) with sub-board nesting, Category schema (48L), Boards context (103L), Categories context (85L), BoardController (119L), routes. Gap: category CRUD not in web store, board reorder endpoint not routed.
-- **FORUM-03 (Threads/BBCode/Attachments):** ~70% complete — Thread schema (162L), ThreadPost schema (127L), ThreadAttachment schema (110L), full context functions. **Gap: BBCode parser is a STUB** (only html_escape + newline→br). No attachment upload controller/routes.
-- **FORUM-04 (Posts/Comments/Nested Discussion):** ~90% complete — Two parallel systems: reddit-style (Post 207L + Comment 133L) and MyBB-style (ThreadPost 127L). Full contexts with nested comment support (depth max 10). Gap: no editComment/deleteComment store actions on web, no markBestAnswer.
-- **FORUM-05 (Polls):** ~85% complete — ThreadPoll schema (81L), PollVote schema (33L), Polls context (110L) with create/vote/results. **Gap: No PollController or routes** — polls unreachable via HTTP.
-- **FORUM-06 (Voting/Reputation):** ~80% complete — Vote system fully implemented (voting.ex 148L, forum_voting.ex 225L, ranking_engine.ex 253L). **Gap: votes update entity score but NEVER update ForumMember.reputation fields**.
-- **FORUM-09 (Real-time):** ~85% complete — ForumChannel (220L) + ThreadChannel (406L). Web hooks fully wired. Gap: no BoardChannel, no poll vote broadcast, no post edit broadcast.
-- **FORUM-10/SEARCH-03 (Full-text Search):** ~40% complete — search.ex (63L) uses ILIKE only on reddit-style Posts. **Gap: No tsvector/GIN indexes, no Thread/ThreadPost search, no relevance ranking**. Web search component has full UI but no store action. Mobile search hits old endpoint.
-- **Overall:** 64+ backend files (~7,500L schemas + contexts), 8 controllers (~2,200L), 2 channels (626L), web store (60+ actions, ~43,000L total), mobile 10 screens + 5 components (~5,000L). ~80-85% built.
+- **FORUM-01 (Forum CRUD):** ~95% complete — Forum schema (444L), Core context (95L + sub-modules),
+  ForumController (399L), hierarchy controller, full routes. Gap: no backend admin-specific bulk
+  operations.
+- **FORUM-02 (Boards/Categories):** ~90% complete — Board schema (103L) with sub-board nesting,
+  Category schema (48L), Boards context (103L), Categories context (85L), BoardController (119L),
+  routes. Gap: category CRUD not in web store, board reorder endpoint not routed.
+- **FORUM-03 (Threads/BBCode/Attachments):** ~70% complete — Thread schema (162L), ThreadPost schema
+  (127L), ThreadAttachment schema (110L), full context functions. **Gap: BBCode parser is a STUB**
+  (only html_escape + newline→br). No attachment upload controller/routes.
+- **FORUM-04 (Posts/Comments/Nested Discussion):** ~90% complete — Two parallel systems:
+  reddit-style (Post 207L + Comment 133L) and MyBB-style (ThreadPost 127L). Full contexts with
+  nested comment support (depth max 10). Gap: no editComment/deleteComment store actions on web, no
+  markBestAnswer.
+- **FORUM-05 (Polls):** ~85% complete — ThreadPoll schema (81L), PollVote schema (33L), Polls
+  context (110L) with create/vote/results. **Gap: No PollController or routes** — polls unreachable
+  via HTTP.
+- **FORUM-06 (Voting/Reputation):** ~80% complete — Vote system fully implemented (voting.ex 148L,
+  forum_voting.ex 225L, ranking_engine.ex 253L). **Gap: votes update entity score but NEVER update
+  ForumMember.reputation fields**.
+- **FORUM-09 (Real-time):** ~85% complete — ForumChannel (220L) + ThreadChannel (406L). Web hooks
+  fully wired. Gap: no BoardChannel, no poll vote broadcast, no post edit broadcast.
+- **FORUM-10/SEARCH-03 (Full-text Search):** ~40% complete — search.ex (63L) uses ILIKE only on
+  reddit-style Posts. **Gap: No tsvector/GIN indexes, no Thread/ThreadPost search, no relevance
+  ranking**. Web search component has full UI but no store action. Mobile search hits old endpoint.
+- **Overall:** 64+ backend files (~7,500L schemas + contexts), 8 controllers (~2,200L), 2 channels
+  (626L), web store (60+ actions, ~43,000L total), mobile 10 screens + 5 components (~5,000L).
+  ~80-85% built.
 
 ### Plans
 
-| Plan  | Scope                                                                    | Wave | Depends   | Status |
-| ----- | ------------------------------------------------------------------------ | ---- | --------- | ------ |
-| 14-01 | BBCode parser + poll API + attachment uploads (FORUM-03, FORUM-05)       | 1    | —         | —      |
-| 14-02 | Full-text search + reputation propagation (FORUM-10, SEARCH-03, FORUM-06)| 1    | —         | —      |
-| 14-03 | Web forum wiring — search, categories, comments, store gaps              | 2    | 14-01, 02 | —      |
-| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows       | 2    | 14-01, 02 | —      |
-| 14-05 | Real-time broadcasting gaps + integration tests (FORUM-09, ALL)          | 2    | 14-01, 02 | —      |
+| Plan  | Scope                                                                     | Wave | Depends   | Status |
+| ----- | ------------------------------------------------------------------------- | ---- | --------- | ------ |
+| 14-01 | BBCode parser + poll API + attachment uploads (FORUM-03, FORUM-05)        | 1    | —         | —      |
+| 14-02 | Full-text search + reputation propagation (FORUM-10, SEARCH-03, FORUM-06) | 1    | —         | —      |
+| 14-03 | Web forum wiring — search, categories, comments, store gaps               | 2    | 14-01, 02 | —      |
+| 14-04 | Mobile forum wiring — BBCode renderer, search, store, delete flows        | 2    | 14-01, 02 | —      |
+| 14-05 | Real-time broadcasting gaps + integration tests (FORUM-09, ALL)           | 2    | 14-01, 02 | —      |
 
 ---
 
@@ -728,24 +763,40 @@ names, rank images. This is what makes CGraph forums competitive with MyBB/XenFo
 
 ### Discovery Findings
 
-- **FORUM-07 (50+ Options) ~55%** — Backend: `ForumTheme` (96L), `Forum` has custom_css/sidebar/header fields, `ThemeController` (159L). Web: theme store (200L) with 3 presets, theme provider. **Gaps:** No CSS editor, no widget configurator, no custom fields, no badge manager, no karma names, no rank images. ~20 of 50 options missing.
-- **FORUM-08 (Plugins) ~70%** — Backend: `ForumPlugin` (107L) with 18 hooks, `Plugins` context (268L), controller+routes. Web: marketplace page+store. **Gap:** No plugin execution runtime (hooks defined but never dispatched), no conflict detection.
-- **FORUM-11 (Moderation) ~70%** — Backend: `moderation.ex` (213L), reports, bans, moderators. Web: 8-slice moderation store, automod settings. **Gap:** Automod is group-level not forum-level, no warning/strike system, mobile is groups-only.
-- **FORUM-12 (Permissions) ~60%** — Backend: `BoardPermission` (285L), `PermissionTemplate` (241L), `PermissionsController` (470L). Web: forum-level panel only. **Gap:** No board-level permissions UI, no template management pages, no mobile.
-- **FORUM-13 (Emoji/Icons) ~65%** — Backend: `CustomEmoji` (262L), `EmojiPack` (72L), `PostIcon` (155L), controller (445L). **Gap:** No pack import/export, no post icon selector in thread creation, mobile basic.
-- **FORUM-14 (RSS) ~60%** — Backend: `rss.ex` (170L), `RssController` (480L). Web: RSS button+feeds page. **Gap:** No per-board RSS, no mobile RSS, thin tests.
-- **FORUM-15 (User Groups) ~45%** — Backend complete (90%): `ForumUserGroup` (213L), `MemberSecondaryGroup` (209L), `GroupAutoRule` (323L), `SecondaryGroupsController` (447L). **Gap:** Zero web admin UI, zero mobile.
-- **FORUM-16 (Ranking) ~65%** — Backend: `RankingEngine` (253L), `Leaderboard` (71L), `LeaderboardController` (181L). **Gap:** No gamification bridge, no Oban cron, no custom karma names, no rank images, forum leaderboard page is 15-line stub.
+- **FORUM-07 (50+ Options) ~55%** — Backend: `ForumTheme` (96L), `Forum` has
+  custom_css/sidebar/header fields, `ThemeController` (159L). Web: theme store (200L) with 3
+  presets, theme provider. **Gaps:** No CSS editor, no widget configurator, no custom fields, no
+  badge manager, no karma names, no rank images. ~20 of 50 options missing.
+- **FORUM-08 (Plugins) ~70%** — Backend: `ForumPlugin` (107L) with 18 hooks, `Plugins` context
+  (268L), controller+routes. Web: marketplace page+store. **Gap:** No plugin execution runtime
+  (hooks defined but never dispatched), no conflict detection.
+- **FORUM-11 (Moderation) ~70%** — Backend: `moderation.ex` (213L), reports, bans, moderators. Web:
+  8-slice moderation store, automod settings. **Gap:** Automod is group-level not forum-level, no
+  warning/strike system, mobile is groups-only.
+- **FORUM-12 (Permissions) ~60%** — Backend: `BoardPermission` (285L), `PermissionTemplate` (241L),
+  `PermissionsController` (470L). Web: forum-level panel only. **Gap:** No board-level permissions
+  UI, no template management pages, no mobile.
+- **FORUM-13 (Emoji/Icons) ~65%** — Backend: `CustomEmoji` (262L), `EmojiPack` (72L), `PostIcon`
+  (155L), controller (445L). **Gap:** No pack import/export, no post icon selector in thread
+  creation, mobile basic.
+- **FORUM-14 (RSS) ~60%** — Backend: `rss.ex` (170L), `RssController` (480L). Web: RSS button+feeds
+  page. **Gap:** No per-board RSS, no mobile RSS, thin tests.
+- **FORUM-15 (User Groups) ~45%** — Backend complete (90%): `ForumUserGroup` (213L),
+  `MemberSecondaryGroup` (209L), `GroupAutoRule` (323L), `SecondaryGroupsController` (447L).
+  **Gap:** Zero web admin UI, zero mobile.
+- **FORUM-16 (Ranking) ~65%** — Backend: `RankingEngine` (253L), `Leaderboard` (71L),
+  `LeaderboardController` (181L). **Gap:** No gamification bridge, no Oban cron, no custom karma
+  names, no rank images, forum leaderboard page is 15-line stub.
 
 ### Plans
 
-| Plan  | Scope                                                                    | Wave | Depends         | Status |
-| ----- | ------------------------------------------------------------------------ | ---- | --------------- | ------ |
-| 15-01 | Customization engine — 55 options, CSS editor, widgets, custom fields    | 1    | —               | —      |
-| 15-02 | Plugin execution runtime + forum automod + warn/strike system            | 1    | —               | —      |
-| 15-03 | User groups admin UI + per-board permissions UI + templates              | 1    | —               | —      |
-| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS                    | 2    | 15-01, 02, 03   | —      |
-| 15-05 | Ranking integration + leaderboard + gamification bridge + rank images    | 2    | 15-01, 02, 03   | —      |
+| Plan  | Scope                                                                 | Wave | Depends       | Status |
+| ----- | --------------------------------------------------------------------- | ---- | ------------- | ------ |
+| 15-01 | Customization engine — 55 options, CSS editor, widgets, custom fields | 1    | —             | —      |
+| 15-02 | Plugin execution runtime + forum automod + warn/strike system         | 1    | —             | —      |
+| 15-03 | User groups admin UI + per-board permissions UI + templates           | 1    | —             | —      |
+| 15-04 | Emoji packs + post icons + per-board RSS + mobile RSS                 | 2    | 15-01, 02, 03 | —      |
+| 15-05 | Ranking integration + leaderboard + gamification bridge + rank images | 2    | 15-01, 02, 03 | —      |
 
 ---
 
@@ -786,13 +837,13 @@ The existing gamification backend has contexts for XP, achievements, quests, sho
 
 ### Plans
 
-| Plan  | Scope                                                                       | Wave | Depends On        | Status      |
-| ----- | --------------------------------------------------------------------------- | ---- | ----------------- | ----------- |
-| 16-01 | XP event pipeline — action triggers, daily caps, forum XP (GAME-01,10)     | 1    | —                 | Not Started |
-| 16-02 | Achievement triggers + quest rotation engine (GAME-02,03)                   | 1    | —                 | Not Started |
-| 16-03 | Progressive disclosure — level-gated features (GAME-09)                     | 1    | —                 | Not Started |
-| 16-04 | Leaderboard scoping + battle pass lifecycle + marketplace (GAME-04,05,06,08)| 2    | 16-01,16-02,16-03 | Not Started |
-| 16-05 | Cosmetics rendering + animated borders + title propagation (GAME-07,11,12)  | 2    | 16-01,16-03       | Not Started |
+| Plan  | Scope                                                                        | Wave | Depends On        | Status      |
+| ----- | ---------------------------------------------------------------------------- | ---- | ----------------- | ----------- |
+| 16-01 | XP event pipeline — action triggers, daily caps, forum XP (GAME-01,10)       | 1    | —                 | Not Started |
+| 16-02 | Achievement triggers + quest rotation engine (GAME-02,03)                    | 1    | —                 | Not Started |
+| 16-03 | Progressive disclosure — level-gated features (GAME-09)                      | 1    | —                 | Not Started |
+| 16-04 | Leaderboard scoping + battle pass lifecycle + marketplace (GAME-04,05,06,08) | 2    | 16-01,16-02,16-03 | Not Started |
+| 16-05 | Cosmetics rendering + animated borders + title propagation (GAME-07,11,12)   | 2    | 16-01,16-03       | Not Started |
 
 ---
 
@@ -831,12 +882,12 @@ double-charges.
 
 ### Plans
 
-| Plan  | Scope                                                                        | Status      |
-| ----- | ---------------------------------------------------------------------------- | ----------- |
-| 17-01 | Stripe Subscription Hardening (PAY-01, PAY-03, PAY-10)                       | **Complete** |
-| 17-02 | Mobile IAP + Cross-Platform Sync (PAY-02)                                    | **Complete** |
-| 17-03 | Virtual Currency Purchase + Billing Portal (PAY-04, PAY-05)                  | **Complete** |
-| 17-04 | Creator Monetization — Stripe Connect, Paid Forums, Payouts (PAY-06–09)      | **Complete** |
+| Plan  | Scope                                                                   | Status       |
+| ----- | ----------------------------------------------------------------------- | ------------ |
+| 17-01 | Stripe Subscription Hardening (PAY-01, PAY-03, PAY-10)                  | **Complete** |
+| 17-02 | Mobile IAP + Cross-Platform Sync (PAY-02)                               | **Complete** |
+| 17-03 | Virtual Currency Purchase + Billing Portal (PAY-04, PAY-05)             | **Complete** |
+| 17-04 | Creator Monetization — Stripe Connect, Paid Forums, Payouts (PAY-06–09) | **Complete** |
 
 **Completed:** 2026-03-02 | **Commits:** 38 | **Plans:** 4/4
 
@@ -888,13 +939,13 @@ media completes messaging.
 
 ### Plans
 
-| Plan  | Scope                                                              | Status       |
-| ----- | ------------------------------------------------------------------ | ------------ |
+| Plan  | Scope                                                                          | Status       |
+| ----- | ------------------------------------------------------------------------------ | ------------ |
 | 18-01 | Rich media messaging + E2EE (MSG-10, MSG-11, MSG-12, MSG-15, E2EE-05, E2EE-06) | **Complete** |
-| 18-02 | Search & discovery (MSG-20, SEARCH-01, SEARCH-04, SEARCH-05)      | **Complete** |
-| 18-03 | UI polish & component library (DESIGN-03, DESIGN-04, DESIGN-06)   | **Complete** |
-| 18-04 | Infrastructure scale & hardening (INFRA-01, INFRA-04, INFRA-06, INFRA-07) | **Complete** |
-| 18-05 | Moderation & safety hardening (MOD-05, MOD-06, MOD-07)            | **Complete** |
+| 18-02 | Search & discovery (MSG-20, SEARCH-01, SEARCH-04, SEARCH-05)                   | **Complete** |
+| 18-03 | UI polish & component library (DESIGN-03, DESIGN-04, DESIGN-06)                | **Complete** |
+| 18-04 | Infrastructure scale & hardening (INFRA-01, INFRA-04, INFRA-06, INFRA-07)      | **Complete** |
+| 18-05 | Moderation & safety hardening (MOD-05, MOD-06, MOD-07)                         | **Complete** |
 
 ---
 
@@ -926,9 +977,12 @@ page, parity audit, and the two wallet auth methods deferred from core auth.
 
 ### Plans
 
-| Plan | Scope | Status |
-| ---- | ----- | ------ |
-| TBD  | TBD   | —      |
+| Plan  | Scope                                                                             | Wave | Status |
+| ----- | --------------------------------------------------------------------------------- | ---- | ------ |
+| 19-01 | Wallet Auth Completion — Privy embedded wallets + Ethereum signature SIWE polish  | 1    | —      |
+| 19-02 | Landing Page v1.0 Update — features, pricing, download links, showcase sections   | 1    | —      |
+| 19-03 | App Store & Play Store Submission — EAS config, metadata, screenshots, eas submit | 2    | —      |
+| 19-04 | Final QA — Web-mobile parity audit, version bump to 1.0.0, release tag            | 2    | —      |
 
 ---
 
