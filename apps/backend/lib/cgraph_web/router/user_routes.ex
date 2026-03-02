@@ -127,6 +127,9 @@ defmodule CGraphWeb.Router.UserRoutes do
         get "/gifs/search", GifController, :search
         get "/gifs/trending", GifController, :trending
 
+        # Scheduled Messages (MSG-15)
+        resources "/messages/scheduled", ScheduledMessageController, only: [:index, :create, :update, :delete]
+
         # Friends
         get "/friends/requests", FriendController, :requests
         get "/friends/sent", FriendController, :sent
