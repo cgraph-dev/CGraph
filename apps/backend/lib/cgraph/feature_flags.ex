@@ -262,6 +262,26 @@ defmodule CGraph.FeatureFlags do
   end
 
   @doc """
+  Get the change history for a feature flag.
+
+  Returns a list of audit entries in reverse chronological order.
+  """
+  @spec get_history(atom()) :: [map()]
+  def get_history(flag_name) do
+    flag_name = Store.normalize_flag_name(flag_name)
+    GenServer.call(__MODULE__, {:get_history, flag_name})
+  end
+
+  @doc """
+  Record a history entry for a feature flag change.
+  """
+  @spec record_history(atom(), map()) :: :ok
+  def record_history(flag_name, entry) do
+    flag_name = Store.normalize_flag_name(flag_name)
+    GenServer.cast(__MODULE__, {:record_history, flag_name, entry})
+  end
+
+  @doc """
   Clear the flag cache (force reload from database).
   """
   @spec clear_cache() :: :ok
@@ -286,7 +306,8 @@ defmodule CGraph.FeatureFlags do
     # Initialize with default flags
     state = %{
       flags: @default_flags,
-      overrides: %{}
+      overrides: %{},
+      history: %{}
     }
 
     # Schedule periodic sync with database
@@ -351,6 +372,21 @@ defmodule CGraph.FeatureFlags do
     Logger.info("Feature flag deleted", flag: flag_name)
 
     {:reply, :ok, %{state | overrides: overrides}}
+  end
+
+  @impl true
+  def handle_call({:get_history, flag_name}, _from, state) do
+    entries = Map.get(state.history, flag_name, [])
+    {:reply, entries, state}
+  end
+
+  @impl true
+  def handle_cast({:record_history, flag_name, entry}, state) do
+    current = Map.get(state.history, flag_name, [])
+    # Prepend (newest first), cap at 100 entries per flag
+    updated = Enum.take([entry | current], 100)
+    history = Map.put(state.history, flag_name, updated)
+    {:noreply, %{state | history: history}}
   end
 
   @doc "Handles generic messages."
