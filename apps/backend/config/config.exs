@@ -97,7 +97,13 @@ config :cgraph, Oban,
        # Update forum rankings hourly
        {"0 * * * *", CGraph.Workers.RankingUpdateWorker},
        # Reset weekly forum scores every Monday at 00:00 UTC
-       {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}}
+       {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}},
+       # Generate fresh daily quests at midnight UTC
+       {"0 0 * * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "daily"}},
+       # Generate fresh weekly quests on Monday at midnight UTC
+       {"0 0 * * 1", CGraph.Gamification.QuestRotationWorker, args: %{type: "weekly"}},
+       # Generate monthly quests on the 1st at midnight UTC
+       {"0 0 1 * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "monthly"}}
      ]}
   ],
   queues: [
@@ -122,7 +128,8 @@ config :cgraph, Oban,
     media: 3,
     sync: 5,
     link_previews: 5,
-    rankings: 5
+    rankings: 5,
+    gamification: 5
   ]
 
 # Swoosh mailer configuration
