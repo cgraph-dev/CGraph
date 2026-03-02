@@ -14,8 +14,9 @@ import {
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { DURATIONS } from '@cgraph/animation-constants';
+import { durations } from '@cgraph/animation-constants';
 import { useAuthStore } from '@/stores';
+import { useGamificationStore } from '@/stores';
 import { AnimationColors, SpringPresets, HapticFeedback } from '@/lib/animations/animation-engine';
 import {
   LevelProgressProps,
@@ -39,17 +40,18 @@ export default function LevelProgress({
   onPress,
 }: LevelProgressProps) {
   const { user } = useAuthStore();
+  const { level: storeLevel, xp: storeXP, streak: storeStreak } = useGamificationStore();
   const [expanded, setExpanded] = useState(false);
   const [xpNotifications, setXpNotifications] = useState<XPGainNotification[]>([]);
 
   const progressAnim = useRef(new Animated.Value(0)).current;
   const expandAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const prevXP = useRef(user?.xp || 0);
+  const prevXP = useRef(storeXP || 0);
 
-  const level = user?.level || 1;
-  const currentXP = user?.xp || 0;
-  const streak = user?.streak || 0;
+  const level = storeLevel || 1;
+  const currentXP = storeXP || 0;
+  const streak = storeStreak || 0;
   const xpForCurrent = calculateXPForLevel(level);
   const xpForNext = calculateXPForLevel(level + 1);
   const xpInLevel = currentXP - xpForCurrent;
@@ -75,7 +77,7 @@ export default function LevelProgress({
       HapticFeedback.light();
       // Pulse animation
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.1, duration: DURATIONS.fast, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.1, duration: durations.fast.ms, useNativeDriver: true }),
         Animated.spring(pulseAnim, { toValue: 1, ...SpringPresets.bouncy, useNativeDriver: true }),
       ]).start();
       // Auto-remove notification
@@ -114,9 +116,9 @@ export default function LevelProgress({
   const expandHeight = expandAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 120] });
 
   const levelColor = useMemo(() => {
-    if (level >= 50) return AnimationColors.legendary;
-    if (level >= 30) return AnimationColors.epic;
-    if (level >= 15) return AnimationColors.rare;
+    if (level >= 50) return AnimationColors.amberLight;
+    if (level >= 30) return AnimationColors.purple;
+    if (level >= 15) return AnimationColors.info;
     return AnimationColors.primary;
   }, [level]);
 
@@ -124,7 +126,7 @@ export default function LevelProgress({
     return (
       <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
         <View style={styles.compactContainer}>
-          <LevelBadge level={level} color={levelColor} size="small" />
+          <LevelBadge level={level} size="small" />
           <View style={styles.compactProgress}>
             <View style={styles.compactTrack}>
               <Animated.View
@@ -134,7 +136,7 @@ export default function LevelProgress({
           </View>
           <Text style={styles.compactXP}>{xpInLevel}/{xpNeeded}</Text>
           {showXPGain && xpNotifications.map((n) => (
-            <FloatingXPBadge key={n.id} amount={n.amount} />
+            <FloatingXPBadge key={n.id} amount={n.amount} onComplete={() => setXpNotifications((prev) => prev.filter((x) => x.id !== n.id))} />
           ))}
         </View>
       </TouchableOpacity>
@@ -146,7 +148,7 @@ export default function LevelProgress({
       <Animated.View style={[styles.container, { transform: [{ scale: pulseAnim }] }]}>
         <BlurView intensity={40} tint="dark" style={styles.blurWrap}>
           <View style={styles.mainRow}>
-            <LevelBadge level={level} color={levelColor} size="medium" />
+            <LevelBadge level={level} size="medium" />
             <View style={styles.progressSection}>
               <View style={styles.labelRow}>
                 <Text style={styles.levelLabel}>Level {level}</Text>
@@ -166,7 +168,7 @@ export default function LevelProgress({
               </View>
             </View>
             {showStreak && streak > 0 && (
-              <StreakIndicator streak={streak} color={getStreakColor(streak)} multiplier={streakMultiplier} />
+              <StreakIndicator streak={streak} />
             )}
           </View>
 
@@ -184,7 +186,7 @@ export default function LevelProgress({
 
         {/* Floating XP badges */}
         {showXPGain && xpNotifications.map((n) => (
-          <FloatingXPBadge key={n.id} amount={n.amount} />
+          <FloatingXPBadge key={n.id} amount={n.amount} onComplete={() => setXpNotifications((prev) => prev.filter((x) => x.id !== n.id))} />
         ))}
       </Animated.View>
     </TouchableOpacity>

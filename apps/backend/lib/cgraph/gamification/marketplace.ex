@@ -211,9 +211,23 @@ defmodule CGraph.Gamification.Marketplace do
   @transaction_fee_percent 5
   defp calculate_transaction_fee(price), do: max(1, div(price * @transaction_fee_percent, 100))
 
-  defp transfer_item_ownership(_listing, _buyer_id) do
-    # Ownership transfer handled by the cosmetics system
-    :ok
+  defp transfer_item_ownership(listing, buyer_id) do
+    case listing.item_type do
+      "avatar_border" ->
+        from(ub in CGraph.Gamification.UserAvatarBorder,
+          where: ub.user_id == ^listing.seller_id and ub.border_id == ^listing.item_id
+        )
+        |> Repo.update_all(set: [user_id: buyer_id, is_equipped: false])
+
+      "profile_theme" ->
+        from(ut in CGraph.Gamification.UserProfileTheme,
+          where: ut.user_id == ^listing.seller_id and ut.theme_id == ^listing.item_id
+        )
+        |> Repo.update_all(set: [user_id: buyer_id, is_active: false])
+
+      _ ->
+        :ok
+    end
   end
 
   defp record_price_history(item_type, item_id, price, sold_at) do

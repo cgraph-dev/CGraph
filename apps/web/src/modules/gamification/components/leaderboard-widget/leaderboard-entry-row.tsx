@@ -6,7 +6,6 @@
 
 import { motion } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/24/outline';
-import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { RANK_COLORS, MEDAL_ICONS } from './constants';

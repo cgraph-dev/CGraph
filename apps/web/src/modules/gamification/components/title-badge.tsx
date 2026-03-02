@@ -12,6 +12,6 @@
  * - types.ts - Type definitions
  */
 
-export { TitleBadge, ProfileTitleDisplay, TitleBadgeTooltip, default } from './title-badge/index';
+export { TitleBadge, ProfileTitleDisplay, TitleBadgeTooltip, InlineTitle, default } from './title-badge/index';
 
-export type { TitleAnimationType, TitleBadgeProps, ProfileTitleDisplayProps } from './title-badge/index';
+export type { TitleAnimationType, TitleBadgeProps, ProfileTitleDisplayProps, InlineTitleProps, InlineTitleData } from './title-badge/index';

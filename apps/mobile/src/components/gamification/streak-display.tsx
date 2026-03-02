@@ -48,7 +48,7 @@ export function StreakDisplay({
   longestStreak,
   todayCompleted,
   weekProgress = [],
-  _nextMilestone,
+  nextMilestone: _nextMilestone,
   variant = 'default',
   onClaim,
 }: StreakDisplayProps): React.ReactElement {

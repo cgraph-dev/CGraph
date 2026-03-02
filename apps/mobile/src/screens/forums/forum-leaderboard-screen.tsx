@@ -238,7 +238,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
 
       {/* Tab bar */}
       {!forumId && (
-        <AnimatedTabBar activeTab={activeTab} onTabChange={handleTabChange} colors={colors} />
+        <AnimatedTabBar activeTab={activeTab} onTabChange={handleTabChange} colors={colors as unknown as Record<string, string>} />
       )}
 
       <FlatList<LeaderboardItem>
@@ -256,7 +256,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
                  
                 : handleContributorPress(item as TopContributor)
             }
-            colors={colors}
+            colors={colors as unknown as Record<string, string>}
           />
         )}
         ListHeaderComponent={

@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { TitleBadge } from '@/components/gamification';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { RARITY_COLORS, UserTitle } from './types';
+import { type UserTitle, RARITY_COLORS } from './types';
 import { styles } from './styles';
 
 interface TitleCardProps {

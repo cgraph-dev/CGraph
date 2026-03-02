@@ -8,12 +8,15 @@
 // =============================================================================
 
 export interface LevelProgressProps {
-  level: number;
-  currentXP: number;
-  totalXP: number;
-  loginStreak: number;
+  level?: number;
+  currentXP?: number;
+  totalXP?: number;
+  loginStreak?: number;
   variant?: 'compact' | 'expanded';
+  compact?: boolean;
   showStreak?: boolean;
+  showXPGain?: boolean;
+  onLevelUp?: (level: number) => void;
   onPress?: () => void;
   className?: string;
 }
@@ -21,7 +24,7 @@ export interface LevelProgressProps {
 export interface XPGainNotification {
   id: string;
   amount: number;
-  source: string;
+  timestamp: number;
 }
 
 // =============================================================================

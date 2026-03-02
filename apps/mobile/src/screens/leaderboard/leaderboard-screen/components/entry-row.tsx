@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimationColors } from '@/lib/animations/animation-engine';
-import type { CategoryConfig, LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
+import { type CategoryConfig, type LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
 import { RankChangeIndicator } from './rank-change-indicator';
 
 export interface EntryRowProps {

@@ -287,7 +287,7 @@ export function createHandleXPAwarded(set: StoreSet, _get: StoreGet) {
 export function createHandleCoinsAwarded(set: StoreSet, get: StoreGet) {
   return (data: { amount: number; balance: number }): void => {
     // Use server balance if provided, otherwise increment
-    const newCoins = data.balance ?? (get() as Record<string, unknown> as { coins?: number }).coins ?? 0;
+    const newCoins = data.balance ?? (get() as unknown as { coins?: number }).coins ?? 0;
     set({ xp: get().totalXP } as Partial<GamificationState>);
     logger.debug(`+${data.amount} coins | Balance: ${newCoins}`);
   };

@@ -25,7 +25,7 @@ export default function QuestsScreen() {
   const {
     activeQuests, dailyQuests, weeklyQuests,
     refreshQuests, acceptQuest, claimQuestRewards,
-    isLoading, _stats,
+    isLoading, stats,
   } = useGamification();
 
   const [activeTab, setActiveTab] = useState<QuestTab>('active');
@@ -107,7 +107,7 @@ export default function QuestsScreen() {
             onPress={() => { HapticFeedback.light(); setActiveTab(tab.id); }}
           >
             <Ionicons
-              name={tab.icon as string}
+              name={tab.icon as keyof typeof Ionicons.glyphMap}
               size={18}
               color={activeTab === tab.id ? '#8b5cf6' : '#6b7280'}
             />

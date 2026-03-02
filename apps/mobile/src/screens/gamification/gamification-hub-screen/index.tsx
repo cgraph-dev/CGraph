@@ -29,7 +29,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import type { ParamListBase, useNavigation } from '@react-navigation/native';
+import { type ParamListBase, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LevelProgress, TitleBadge } from '@/components/gamification';
 import { useGamification } from '@/hooks/useGamification';

@@ -52,6 +52,15 @@ defmodule CGraphWeb.Plugs.LevelGatePlug do
   """
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, feature: feature) do
+    # Allow bypass in test environment via application config
+    if Application.get_env(:cgraph, :bypass_level_gates, false) do
+      conn
+    else
+      do_gate(conn, feature)
+    end
+  end
+
+  defp do_gate(conn, feature) do
     user = conn.assigns[:current_user]
 
     cond do

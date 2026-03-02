@@ -9,7 +9,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { AchievementWithProgress, RARITY_COLORS } from './types';
+import { type AchievementWithProgress, RARITY_COLORS } from './types';
 import { styles } from './styles';
 
 interface AchievementCardProps {

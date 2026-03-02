@@ -9,7 +9,7 @@
  * @module modules/gamification/components/xp-toast
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useXPAwarded, useCapReached } from '../../hooks/useGamificationSocket';
 import type { XPAwardedEvent, CapReachedEvent } from '../../hooks/gamification-socket.types';
 
@@ -132,6 +132,7 @@ function XPToastItem({
       const removeTimer = setTimeout(() => onRemove(toast.id), 300);
       return () => clearTimeout(removeTimer);
     }
+    return undefined;
   }, [phase, toast.id, onRemove]);
 
   const phaseStyle =
@@ -195,6 +196,7 @@ function CapReachedToast({ onRemove }: { onRemove: () => void }) {
       const t = setTimeout(onRemove, 300);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [phase, onRemove]);
 
   const phaseStyle =

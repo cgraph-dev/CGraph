@@ -207,7 +207,7 @@ export default function LevelGate({
         style={[
           styles.overlay,
           {
-            backgroundColor: colors.surface ?? colors.background,
+            backgroundColor: colors.surface,
             opacity: showPreview ? opacityAnim : 1,
             transform: [{ scale: scaleAnim }],
           },
@@ -245,7 +245,7 @@ export default function LevelGate({
         <Text
           style={[
             styles.featureName,
-            { color: colors.textSecondary ?? colors.text },
+            { color: colors.textSecondary },
           ]}
         >
           {featureName}
@@ -272,7 +272,7 @@ export default function LevelGate({
           <Text
             style={[
               styles.progressText,
-              { color: colors.textSecondary ?? colors.text },
+              { color: colors.textSecondary },
             ]}
           >
             Level {currentLevel} / {requiredLevel}

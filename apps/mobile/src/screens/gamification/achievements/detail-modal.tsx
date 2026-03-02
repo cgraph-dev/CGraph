@@ -9,7 +9,7 @@ import { View, Text, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import type { AchievementWithProgress, RARITY_COLORS } from './types';
+import { type AchievementWithProgress, RARITY_COLORS } from './types';
 import { styles } from './styles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

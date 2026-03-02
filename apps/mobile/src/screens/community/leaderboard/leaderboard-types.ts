@@ -38,6 +38,10 @@ export const TIME_PERIODS: { key: TimePeriod; label: string }[] = [
   { key: 'alltime', label: 'All Time' },
 ];
 
+export function getCategoryColor(category: LeaderboardCategory): string {
+  return CATEGORIES.find(c => c.key === category)?.color ?? '#ec4899';
+}
+
 export const formatKarma = (karma: number): string => {
   if (karma >= 1000000) return `${(karma / 1000000).toFixed(1)}M`;
   if (karma >= 1000) return `${(karma / 1000).toFixed(1)}K`;

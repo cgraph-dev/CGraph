@@ -328,7 +328,7 @@ export const useGamificationStore = create<GamificationState>()(
             `/api/v1/leaderboard?${new URLSearchParams(params).toString()}`
           );
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json() as { entries?: Record<string, unknown>[] };
             set({
               scopedLeaderboard: (data.entries || []).map((e: Record<string, unknown>) => ({
                 rank: e.rank as number,
@@ -351,7 +351,7 @@ export const useGamificationStore = create<GamificationState>()(
             headers: { 'Content-Type': 'application/json' },
           });
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json() as { success?: boolean };
             if (data.success) {
               set({ hasBattlePass: true });
               return { success: true };
@@ -370,7 +370,7 @@ export const useGamificationStore = create<GamificationState>()(
             headers: { 'Content-Type': 'application/json' },
           });
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json() as { success?: boolean };
             return { success: data.success ?? false };
           }
           return { success: false };
@@ -395,7 +395,7 @@ export const useGamificationStore = create<GamificationState>()(
             }),
           });
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json() as { success?: boolean };
             return { success: data.success ?? false };
           }
           return { success: false };

@@ -103,7 +103,7 @@ export const BorderPreview = memo(function BorderPreview({
   className,
 }: BorderPreviewProps) {
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const rarityStyle = RARITY_STYLES[border.rarity] ?? RARITY_STYLES.common;
+  const rarityStyle = RARITY_STYLES[border.rarity] ?? RARITY_STYLES['common']!;
   const canAfford = (border.coinPrice ?? 0) <= coinBalance;
 
   const handlePurchase = async () => {

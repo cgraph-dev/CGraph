@@ -16,9 +16,9 @@ import { useNavigation } from '@react-navigation/native';
 import { TitleBadge } from '@/components/gamification';
 import { useGamification } from '@/hooks/useGamification';
 import { useGamificationStore } from '@/stores/gamificationStore';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { RARITIES, RARITY_COLORS, TABS, TitleRarity, TitleTab, UserTitle, transformTitle } from './types';
+import { type TitleRarity, type TitleTab, type UserTitle, RARITIES, RARITY_COLORS, TABS, transformTitle } from './types';
 import { TitleCard } from './title-card';
 import { styles } from './styles';
 

@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { CategoryConfig, LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
+import { type CategoryConfig, type LeaderboardEntry, RANK_CONFIGS, formatValue } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

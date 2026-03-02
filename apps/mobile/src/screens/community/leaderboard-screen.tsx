@@ -142,7 +142,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
         users={users}
         podiumAnims={podiumAnims}
         categoryColor={catColor}
-        colors={colors as unknown as Record<string, string>}
+        colors={colors as unknown as { text: string; [key: string]: string }}
       />
       <Text style={[styles.listHeader, { color: colors.text }]}>Rankings</Text>
     </Animated.View>

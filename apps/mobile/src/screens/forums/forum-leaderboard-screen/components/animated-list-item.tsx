@@ -38,7 +38,7 @@ interface ListItemProps {
   index: number;
   type: LeaderboardType;
   onPress: () => void;
-  colors: ReturnType<typeof useTheme>['colors'];
+  colors: Record<string, string>;
 }
 
 // =============================================================================
@@ -65,7 +65,7 @@ const getRankChange = (current: number, previous?: number) => {
 /**
  *
  */
-export function AnimatedListItem({ item, index, type, onPress, _colors }: ListItemProps) {
+export function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps) {
   // Entry animations
   const entryAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;

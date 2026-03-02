@@ -49,7 +49,7 @@ const RARITY_COLORS: Record<string, { primary: string; secondary: string; accent
   unique: { primary: '#f472b6', secondary: '#a855f7', accent: '#6366f1' },
 };
 
-const DEFAULT_COLORS = RARITY_COLORS.common;
+const DEFAULT_COLORS = RARITY_COLORS['common']!;
 
 /** Normalize animation type string to our typed enum. */
 function resolveAnimationType(raw?: string): BorderAnimationType {

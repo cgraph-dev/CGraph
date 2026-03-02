@@ -198,7 +198,7 @@ export function EnhancedMessageBubble({
                   <span className="text-xs font-medium text-primary-300">
                     {message.sender.displayName || message.sender.username}
                   </span>
-                  {(message.sender as Record<string, unknown>).equippedTitleId && (
+                  {!!(message.sender as Record<string, unknown>).equippedTitleId && (
                     <InlineTitle
                       title={(message.sender as Record<string, unknown>).equippedTitleId as string}
                       size="xs"

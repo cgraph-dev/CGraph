@@ -50,7 +50,7 @@ export function CommentHeader({
           <span className="font-medium text-white">
             {comment.author.displayName || comment.author.username}
           </span>
-          {(comment.author as Record<string, unknown>).equippedTitleId && (
+          {!!(comment.author as Record<string, unknown>).equippedTitleId && (
             <InlineTitle
               title={(comment.author as Record<string, unknown>).equippedTitleId as string}
               size="xs"

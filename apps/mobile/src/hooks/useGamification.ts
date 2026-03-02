@@ -93,7 +93,7 @@ export function useGamification(): UseGamificationReturn {
   const refreshStats = useCallback(
     async (force = false) => {
       if (!force && isCacheValid(cacheRef.current.stats)) {
-        setState((prev) => ({ ...prev, stats: cacheRef.current.stats?.data }));
+        setState((prev) => ({ ...prev, stats: cacheRef.current.stats?.data ?? null }));
         return;
       }
 
@@ -170,10 +170,10 @@ export function useGamification(): UseGamificationReturn {
   }, [isCacheValid]);
 
   const refreshLeaderboard = useCallback(
-    async (category: 'xp' | 'level' | 'coins' | 'streak' | 'messages' | 'posts') => {
+    async (category: string) => {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
       try {
-        const leaderboard = await gamificationService.getLeaderboard(category);
+        const leaderboard = await gamificationService.getLeaderboard(category as 'xp' | 'level' | 'coins' | 'streak' | 'messages' | 'posts');
         cacheRef.current.leaderboard = { data: leaderboard, timestamp: Date.now() };
         setState((prev) => ({ ...prev, leaderboard, isLoading: false }));
       } catch (error: unknown) {
@@ -189,7 +189,7 @@ export function useGamification(): UseGamificationReturn {
 
   const refreshXpHistory = useCallback(async () => {
     if (isCacheValid(cacheRef.current.xpHistory)) {
-      setState((prev) => ({ ...prev, xpHistory: cacheRef.current.xpHistory?.data }));
+      setState((prev) => ({ ...prev, xpHistory: cacheRef.current.xpHistory?.data ?? [] }));
       return;
     }
 

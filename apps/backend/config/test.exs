@@ -54,6 +54,9 @@ config :cgraph, skip_partitioning: true
 # Oban testing mode
 config :cgraph, Oban, testing: :inline
 
+# Bypass level gates in test so existing tests aren't blocked by Phase 16 feature gates
+config :cgraph, bypass_level_gates: true
+
 # Tell the app we're in :test env (used by Encryption, Chaos, etc.)
 config :cgraph, env: :test
 

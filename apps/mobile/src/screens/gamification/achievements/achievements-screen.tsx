@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useGamification } from '@/hooks/useGamification';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
-import type { AchievementCategory, AchievementRarity, AchievementWithProgress, CATEGORIES, RARITIES, RARITY_COLORS } from './types';
+import { type AchievementCategory, type AchievementRarity, type AchievementWithProgress, CATEGORIES, RARITIES, RARITY_COLORS } from './types';
 import { AchievementCard } from './achievement-card';
 import { DetailModal } from './detail-modal';
 import { styles } from './styles';
