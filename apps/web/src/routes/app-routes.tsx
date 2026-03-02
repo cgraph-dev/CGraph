@@ -21,6 +21,8 @@ import {
   Groups,
   GroupChannel,
   ExploreGroups,
+  // Explore (unified)
+  ExplorePage,
   // Profile & Community
   UserProfile,
   UserLeaderboard,
@@ -80,6 +82,9 @@ export function AppRoutes() {
           <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
         </Route>
         <Route path="groups/explore" element={<ExploreGroups />} />
+
+        {/* Explore — unified community discovery */}
+        <Route path="explore" element={<ExplorePage />} />
 
         {/* Forums */}
         {ForumRoutes()}
