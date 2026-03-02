@@ -4,4 +4,4 @@
  */
 
 export { LevelGate } from './level-gate';
-export { FeatureUnlockToast } from './feature-unlock-toast';
+export { FeatureUnlockToast, FeatureUnlockToastManager } from './feature-unlock-toast';

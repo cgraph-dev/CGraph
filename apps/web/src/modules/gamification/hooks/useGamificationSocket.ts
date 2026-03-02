@@ -15,6 +15,8 @@
  */
 
 import { useEffect, useCallback, useRef } from 'react';
+import { getNewlyUnlockedFeatures } from './useLevelGate';
+import type { FeatureGateKey } from '@cgraph/shared-types';
 
 // Re-export types for consumers that import from this file
 export type {
@@ -295,6 +297,38 @@ export function useGamificationToasts() {
   useEventMilestone((data) => {
     showToast('event', data);
   });
+}
+
+// ==================== FEATURE UNLOCK DETECTION ====================
+
+/**
+ * Hook that detects newly unlocked features on level-up events
+ * and dispatches feature unlock toast events.
+ *
+ * Listens for `level_up` socket events, computes which features
+ * were unlocked between oldLevel and newLevel, and fires a custom
+ * DOM event for the FeatureUnlockToastManager to consume.
+ */
+export function useFeatureUnlockDetection() {
+  useLevelUp(
+    useCallback((data: { oldLevel: number; newLevel: number; rewards: unknown[] }) => {
+      const unlocked = getNewlyUnlockedFeatures(data.oldLevel, data.newLevel);
+
+      if (unlocked.length > 0) {
+        window.dispatchEvent(
+          new CustomEvent<{ features: FeatureGateKey[]; level: number }>(
+            'gamification:features-unlocked',
+            {
+              detail: {
+                features: unlocked,
+                level: data.newLevel,
+              },
+            },
+          ),
+        );
+      }
+    }, []),
+  );
 }
 
 export default useGamificationSocket;
