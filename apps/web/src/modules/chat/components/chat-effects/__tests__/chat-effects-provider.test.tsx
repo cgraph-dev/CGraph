@@ -1,5 +1,4 @@
 /** @module ChatEffectsProvider tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
@@ -246,7 +245,7 @@ describe('ChatEffectsProvider', () => {
       return <div data-testid="effect">{ctx.effect}</div>;
     }
     render(
-      <ChatEffectsProvider effectOverride={'bounce' as 'fade'}>
+      <ChatEffectsProvider effectOverride={'bounce' as 'fade-in'}>
         <Consumer />
       </ChatEffectsProvider>
     );

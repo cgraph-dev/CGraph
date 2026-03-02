@@ -24,13 +24,23 @@ import { CommentHeader } from '../comment-header';
 describe('CommentHeader', () => {
   const baseComment = {
     id: 'c1',
+    postId: 'p1',
     authorId: 'u1',
+    parentId: null,
     content: 'Test comment',
+    upvotes: 3,
+    downvotes: 0,
     score: 5,
+    myVote: null,
+    userVote: null,
     currentVote: null,
+    isCollapsed: false,
+    depth: 0,
     createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
     children: [],
     author: {
+      id: 'u1',
       username: 'testuser',
       displayName: 'Test User',
       avatarUrl: '/avatar.png',

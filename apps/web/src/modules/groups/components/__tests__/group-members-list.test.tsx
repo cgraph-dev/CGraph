@@ -4,7 +4,6 @@
  *   role sections, search, and context menu.
  * @module groups/components/__tests__/MemberList
  */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';

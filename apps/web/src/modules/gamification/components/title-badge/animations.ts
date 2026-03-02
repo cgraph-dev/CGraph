@@ -10,6 +10,8 @@
  * - Premium: lightning, nature, glitch, neon_flicker, inferno, blizzard, storm, divine, shadow
  */
 
+import { durations } from '@cgraph/animation-constants';
+
 // ==================== BASIC ANIMATIONS ====================
 
 export const shimmerAnimation = {

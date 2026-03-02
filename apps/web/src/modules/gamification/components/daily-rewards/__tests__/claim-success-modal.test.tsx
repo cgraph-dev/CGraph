@@ -27,7 +27,6 @@ describe('ClaimSuccessModal', () => {
     day: 1,
     xp: 50,
     coins: 10,
-    special: null,
   };
 
   it('renders Reward Claimed heading when reward exists', () => {

@@ -10,7 +10,6 @@
 
 import {
   Room,
-  RoomEvent,
   type E2EEOptions,
   type ExternalE2EEKeyProvider,
 } from 'livekit-client';

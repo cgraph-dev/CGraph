@@ -4,7 +4,6 @@
  *   upload with thumbnails, progress, and error display.
  * @module forums/components/__tests__/AttachmentUploader
  */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';

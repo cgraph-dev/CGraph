@@ -27,7 +27,6 @@ import {
   rotateKey,
   isEncrypted,
   cleanupE2EE,
-  type E2EEState,
 } from './callEncryption';
 
 // ---------------------------------------------------------------------------

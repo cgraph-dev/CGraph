@@ -16,6 +16,21 @@ import type { Room } from 'livekit-client';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
+/** Payload shape for voice channel events from Phoenix */
+interface VoiceEventPayload {
+  user_id: string;
+  username?: string;
+  display_name?: string;
+  avatar_url?: string;
+  self_mute?: boolean;
+  self_deafen?: boolean;
+  video?: boolean;
+  token?: string;
+  url?: string;
+  room_name?: string;
+  members?: Array<Record<string, unknown>>;
+}
+
 export interface UseVoiceChannelReturn {
   /** Currently connected channel ID */
   currentChannelId: string | null;
@@ -92,7 +107,8 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
       const channel = socket.channel(`voice:${channelId}`, {});
 
       // Set up event handlers
-      channel.on('voice_member_joined', (payload) => {
+      channel.on('voice_member_joined', (_payload) => {
+        const payload = _payload as VoiceEventPayload;
         addChannelMember(channelId, {
           userId: payload.user_id,
           username: payload.username,
@@ -104,11 +120,13 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
         });
       });
 
-      channel.on('voice_member_left', (payload) => {
+      channel.on('voice_member_left', (_payload) => {
+        const payload = _payload as VoiceEventPayload;
         removeChannelMember(channelId, payload.user_id);
       });
 
-      channel.on('voice_state_update', (payload) => {
+      channel.on('voice_state_update', (_payload) => {
+        const payload = _payload as VoiceEventPayload;
         updateMemberState(channelId, payload.user_id, {
           selfMute: payload.self_mute,
           selfDeafen: payload.self_deafen,
@@ -116,7 +134,8 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
         });
       });
 
-      channel.on('presence_state', (payload) => {
+      channel.on('presence_state', (_payload) => {
+        const payload = _payload as VoiceEventPayload;
         if (payload.members) {
           const members = (payload.members as Array<Record<string, unknown>>).map((m) => ({
             userId: m.user_id as string,

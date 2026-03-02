@@ -4,6 +4,8 @@
  * @module pages/auth/verify-email/animations
  */
 
+import { durations } from '@cgraph/animation-constants';
+
 export const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {

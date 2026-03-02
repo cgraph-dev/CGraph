@@ -56,6 +56,7 @@ const defaultProps = {
   onToggleInfoPanel: vi.fn(),
   onToggleSettings: vi.fn(),
   onToggleE2EETester: vi.fn(),
+  onVerifyIdentity: vi.fn(),
   showScheduledList: false,
   showInfoPanel: false,
   showSettings: false,

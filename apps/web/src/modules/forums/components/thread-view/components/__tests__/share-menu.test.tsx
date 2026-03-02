@@ -1,5 +1,4 @@
 /** @module ShareMenu tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
@@ -238,7 +237,7 @@ describe('ShareMenu', () => {
     render(<ShareMenu isOpen postTitle="My Post" onClose={onClose} />);
     fireEvent.click(screen.getByText('Share on Twitter'));
     expect(openSpy).toHaveBeenCalled();
-    const url = openSpy.mock.calls[0][0] as string;
+    const url = openSpy.mock.calls[0]![0] as string;
     expect(url).toContain('twitter.com/intent/tweet');
     expect(url).toContain(encodeURIComponent('My Post'));
     openSpy.mockRestore();

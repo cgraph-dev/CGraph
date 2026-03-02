@@ -47,7 +47,6 @@ describe('CompactView', () => {
       day: 3,
       xp: 75,
       coins: 15,
-      special: null,
     },
     timeUntilClaim: '12:30:00',
     isClaiming: false,

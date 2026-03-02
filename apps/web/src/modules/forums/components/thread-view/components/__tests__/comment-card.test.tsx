@@ -210,12 +210,23 @@ import { CommentCard } from '../comment-card';
 
 const makeComment = (overrides = {}) => ({
   id: 'c1',
+  postId: 'p1',
+  authorId: 'u1',
+  parentId: null,
   content: 'This is a comment',
+  upvotes: 3,
+  downvotes: 0,
   score: 5,
+  myVote: null,
   userVote: null as 1 | -1 | null,
+  isCollapsed: false,
+  depth: 0,
+  children: [],
   isBestAnswer: false,
   createdAt: '2025-01-01T00:00:00Z',
+  updatedAt: '2025-01-01T00:00:00Z',
   author: {
+    id: 'u1',
     username: 'alice',
     displayName: 'Alice',
     avatarUrl: 'https://example.com/alice.png',
@@ -272,7 +283,7 @@ describe('CommentCard (thread-view)', () => {
     render(<CommentCard comment={makeComment()} index={0} onVote={onVote} />);
     const upvoteButtons = screen.getAllByRole('button');
     // First button is upvote
-    fireEvent.click(upvoteButtons[0]);
+    fireEvent.click(upvoteButtons[0]!);
     expect(onVote).toHaveBeenCalledWith('c1', 1, null);
   });
 

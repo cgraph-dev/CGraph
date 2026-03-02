@@ -26,6 +26,12 @@ describe('ChannelItem', () => {
     name: 'general',
     type: 'text' as const,
     position: 0,
+    topic: null,
+    categoryId: null,
+    isNsfw: false,
+    slowModeSeconds: 0,
+    unreadCount: 0,
+    lastMessageAt: null,
   };
 
   const renderWithRouter = (props: Record<string, unknown> = {}) =>

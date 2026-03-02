@@ -5,6 +5,7 @@ const defaultColors = {
   primary: '#6366f1',
   secondary: '#8b5cf6',
   glow: '#a78bfa',
+  name: '',
 };
 
 describe('profile-card-utils', () => {

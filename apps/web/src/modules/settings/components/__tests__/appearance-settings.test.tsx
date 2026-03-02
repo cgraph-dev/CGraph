@@ -4,7 +4,6 @@
  *   theme customization panel with visual theme picker, font scaling, etc.
  * @module settings/components/__tests__/AppearanceSettingsEnhanced
  */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';

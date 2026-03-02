@@ -17,6 +17,7 @@ vi.mock('@/shared/components/ui', () => ({
 }));
 
 import { LayoutTab } from '../layout-tab';
+import type { ChatBubbleConfig } from '@/stores/theme';
 
 describe('LayoutTab', () => {
   const defaultStyle = {
@@ -30,7 +31,7 @@ describe('LayoutTab', () => {
     background: '#1a1a2e',
     sentColor: '#6366f1',
     receivedColor: '#1e1e3f',
-  };
+  } as unknown as ChatBubbleConfig;
 
   const defaultProps = {
     style: defaultStyle,

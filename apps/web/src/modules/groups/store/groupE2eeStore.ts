@@ -170,7 +170,7 @@ export const useGroupE2eeStore = create<GroupE2eeState>()(
               chainIndex: keyPair!.chainIndex,
             },
           },
-        }));
+        } as Partial<GroupE2eeState>));
 
         return encrypted;
       },

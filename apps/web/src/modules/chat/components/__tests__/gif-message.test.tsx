@@ -13,6 +13,7 @@ vi.mock('@heroicons/react/24/outline', () => ({
 }));
 
 import { GifMessage } from '../gif-message';
+import type { Message } from '@/modules/chat/store';
 
 describe('GifMessage', () => {
   const baseMessage = {
@@ -26,7 +27,7 @@ describe('GifMessage', () => {
       gifUrl: 'https://example.com/gif.gif',
       gifTitle: 'Funny GIF',
     },
-  };
+  } as unknown as Message;
 
   it('renders GIF image when gifUrl exists', () => {
     render(<GifMessage message={baseMessage} isOwnMessage={false} />);
@@ -40,7 +41,7 @@ describe('GifMessage', () => {
   });
 
   it('shows error when GIF data missing', () => {
-    const noGifMsg = { ...baseMessage, metadata: {} };
+    const noGifMsg = { ...baseMessage, metadata: {} } as unknown as Message;
     render(<GifMessage message={noGifMsg} isOwnMessage={false} />);
     expect(screen.getByText(/GIF data missing/i)).toBeInTheDocument();
   });

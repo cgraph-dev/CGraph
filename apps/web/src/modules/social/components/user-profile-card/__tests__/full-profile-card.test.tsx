@@ -1,6 +1,7 @@
 /** @module full-profile-card tests */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import type { ProfileCardUser } from '../../profile-card/types';
 
 vi.mock('react-router-dom', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,27 +60,26 @@ vi.mock('@/components/theme/themed-avatar', () => ({
 import { FullProfileCard } from '../full-profile-card';
 
 describe('FullProfileCard', () => {
-  const mockUser = {
+  const mockUser: ProfileCardUser = {
     id: 'u1',
     username: 'testuser',
     displayName: 'Test User',
     avatarUrl: '/avatar.png',
     bio: 'Hello world',
-    status: 'online',
     isOnline: true,
-    joinedAt: '2024-01-01T00:00:00Z',
     friendCount: 42,
     postCount: 100,
     level: 10,
     karma: 1500,
     xp: 5000,
+    xpToNextLevel: 10000,
     streak: 7,
-    avatarBorderId: null,
-    equippedTitle: null,
-    pronouns: null,
-    badges: [],
+    avatarBorderId: undefined,
+    equippedTitle: undefined,
+    pronouns: undefined,
+    equippedBadges: [],
     mutualFriends: [],
-    sharedForums: [],
+    forumsInCommon: [],
   };
 
   it('renders user display name', () => {

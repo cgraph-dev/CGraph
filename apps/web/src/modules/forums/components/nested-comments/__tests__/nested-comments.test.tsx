@@ -1,5 +1,4 @@
 /** @module NestedComments tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
@@ -195,28 +194,38 @@ vi.mock('./utils', () => ({
 
 import NestedComments from '../nested-comments';
 
-const makeComment = (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const makeComment: any = (
   id: string,
   content: string,
   replies: ReturnType<typeof makeComment>[] = []
 ) => ({
   id,
+  postId: 'p1',
   content,
   score: 0,
   userVote: null,
   isBestAnswer: false,
+  isEdited: false,
   createdAt: '2025-01-01',
+  updatedAt: '2025-01-01',
+  parentId: null,
+  depth: 0,
   authorId: `author-${id}`,
   replies,
   author: {
+    id: `author-${id}`,
     username: `user-${id}`,
     displayName: `User ${id}`,
     avatarUrl: null,
     avatarBorderId: null,
+    karma: 0,
+    isVerified: false,
   },
 });
 
 const defaultProps = {
+  postId: 'p1',
   comments: [] as ReturnType<typeof makeComment>[],
   isAuthorOfPost: false,
   canMarkBestAnswer: false,

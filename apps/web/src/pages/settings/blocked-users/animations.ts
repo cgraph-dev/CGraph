@@ -2,6 +2,8 @@
  * Animation variants for Blocked Users module
  */
 
+import { durations } from '@cgraph/animation-constants';
+
 export const containerVariants = {
   hidden: { opacity: 0 },
   visible: {

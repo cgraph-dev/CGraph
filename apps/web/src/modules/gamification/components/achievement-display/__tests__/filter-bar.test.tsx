@@ -35,7 +35,7 @@ describe('FilterBar', () => {
   const defaultProps = {
     searchQuery: '',
     selectedCategory: 'all' as const,
-    sortBy: 'name' as const,
+    sortBy: 'rarity' as const,
     showFilters: false,
     primaryColor: '#6366f1',
     onSearchChange: vi.fn(),

@@ -1,5 +1,4 @@
 /** @module PostContent tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
@@ -230,22 +229,42 @@ import { PostContent } from '../post-content';
 
 const makePost = (overrides = {}) => ({
   id: 'p1',
+  forumId: 'f1',
+  authorId: 'u1',
   title: 'Test Post Title',
   content: '<p>Post body content</p>',
+  postType: 'text' as const,
+  linkUrl: null,
+  mediaUrls: [],
   isPinned: false,
   isLocked: false,
+  isNsfw: false,
+  upvotes: 10,
+  downvotes: 0,
+  score: 10,
+  hotScore: 10,
+  commentCount: 5,
+  myVote: null,
+  category: null,
   prefix: null,
   views: 100,
-  commentCount: 5,
   rating: 4.5,
   createdAt: '2025-01-01',
+  updatedAt: '2025-01-01',
   author: {
+    id: 'u1',
     username: 'alice',
     displayName: 'Alice',
     avatarUrl: 'https://example.com/a.png',
     reputation: 50,
     avatarBorderId: null,
     avatar_border_id: null,
+  },
+  forum: {
+    id: 'f1',
+    name: 'Test Forum',
+    slug: 'test-forum',
+    iconUrl: null,
   },
   ...overrides,
 });

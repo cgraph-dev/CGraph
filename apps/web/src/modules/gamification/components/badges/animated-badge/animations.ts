@@ -2,6 +2,8 @@
  * Animation variants for rarity-based effects
  */
 
+import { durations } from '@cgraph/animation-constants';
+
 // Common: Subtle shimmer across the badge
 export const shimmerAnimation = {
   backgroundPosition: ['200% 0%', '-200% 0%'],

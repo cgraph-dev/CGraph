@@ -24,9 +24,10 @@ describe('CategorySection', () => {
   const mockCategory = {
     id: 'cat1',
     name: 'TEXT CHANNELS',
+    position: 0,
     channels: [
-      { id: 'ch1', name: 'general', type: 'text' as const, position: 0 },
-      { id: 'ch2', name: 'random', type: 'text' as const, position: 1 },
+      { id: 'ch1', name: 'general', type: 'text' as const, position: 0, topic: null, categoryId: 'cat1', isNsfw: false, slowModeSeconds: 0, unreadCount: 0, lastMessageAt: null },
+      { id: 'ch2', name: 'random', type: 'text' as const, position: 1, topic: null, categoryId: 'cat1', isNsfw: false, slowModeSeconds: 0, unreadCount: 0, lastMessageAt: null },
     ],
   };
 

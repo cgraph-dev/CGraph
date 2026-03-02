@@ -8,7 +8,6 @@ import { useAuthStore } from '@/modules/auth/store';
 import { socketLogger as logger } from '../logger';
 import { connectSocket, disconnectSocket, type SocketManagerState } from './connectionLifecycle';
 import {
-  sendTyping as sendTypingImpl,
   sendTypingDebounced as sendTypingDebouncedImpl,
   sendReaction as sendReactionImpl,
   peekConversationsPresence as peekPresenceImpl,
@@ -74,6 +73,7 @@ export class SocketManager {
     threadCallbacks: new Map(),
     sessionId: null,
     lastSequence: 0,
+    reconnectAttempts: 0,
   };
   private statusListeners = new Set<(cId: string, uId: string, online: boolean) => void>();
   private readonly JOIN_DEBOUNCE_MS = 1000;

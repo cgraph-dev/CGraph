@@ -79,10 +79,10 @@ export function ConversationNotificationSettings({
         const res = await api.get<{ data: { preference: NotificationPreference } }>(
           `/api/v1/notification-preferences/${targetType}/${conversationId}`
         );
-        const pref = res.data?.data?.preference ?? res.data?.preference;
+        const pref = res.data?.data?.preference ?? (res.data as unknown as { preference: NotificationPreference })?.preference;
         if (pref) {
           setCurrentMode((pref.mode as NotificationMode) || 'all');
-          setMutedUntil(pref.mutedUntil ?? pref.muted_until ?? null);
+          setMutedUntil(pref.mutedUntil ?? null);
         }
       } catch {
         // Default to "all" if no preference found

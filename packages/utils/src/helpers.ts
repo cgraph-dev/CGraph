@@ -153,7 +153,7 @@ export function deepEqual(a: unknown, b: unknown): boolean {
 
   if (typeof a === 'object') {
     const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
+    const bKeys = Object.keys(b as Record<string, unknown>);
 
     if (aKeys.length !== bKeys.length) return false;
 

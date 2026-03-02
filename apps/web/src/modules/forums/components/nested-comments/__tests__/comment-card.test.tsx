@@ -216,21 +216,30 @@ vi.mock('../best-answer-badge', () => ({
 }));
 
 import { CommentCard } from '../comment-card';
+import type { CommentCardProps } from '../types';
 
 const makeComment = (overrides = {}) => ({
   id: 'c1',
+  postId: 'p1',
+  authorId: 'other-user',
+  parentId: null,
   content: 'Test comment content',
   score: 3,
   userVote: null,
   isBestAnswer: false,
+  isEdited: false,
   createdAt: '2025-01-01',
-  authorId: 'other-user',
+  updatedAt: '2025-01-01',
+  depth: 0,
   replies: [],
   author: {
+    id: 'other-user',
     username: 'alice',
     displayName: 'Alice',
     avatarUrl: null,
     avatarBorderId: null,
+    karma: 0,
+    isVerified: false,
   },
   ...overrides,
 });
@@ -258,7 +267,7 @@ const defaultProps = {
   onMarkBestAnswer: vi.fn(),
   sortedComments: (c: unknown[]) => c,
   renderComment: (c: { id: string }) => <div key={c.id} data-testid={`reply-${c.id}`} />,
-};
+} as unknown as CommentCardProps;
 
 describe('nested-comments CommentCard', () => {
   beforeEach(() => {

@@ -1,5 +1,4 @@
 /** @module ConversationModals tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
@@ -277,6 +276,8 @@ const baseProps = {
   otherParticipantAvatar: undefined,
   showInfoPanel: false,
   setShowInfoPanel: vi.fn(),
+  showSafetyNumber: false,
+  setShowSafetyNumber: vi.fn(),
   otherParticipant: {
     user: { id: 'u2', username: 'alice', displayName: 'Alice' },
   },

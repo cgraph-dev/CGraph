@@ -49,17 +49,17 @@ describe('normalizeTiers', () => {
       { level: 2, xpRequired: 100, freeRewards: [], premiumRewards: [] },
     ];
     const normalized = normalizeTiers(tiers as never[]);
-    expect(normalized[0].id).toBe(1);
-    expect(normalized[1].id).toBe(2);
+    expect(normalized[0]!.id).toBe(1);
+    expect(normalized[1]!.id).toBe(2);
   });
 
   it('provides default rewards when none exist', () => {
     const tiers = [{ level: 1, xpRequired: 0, freeRewards: [], premiumRewards: [] }];
     const normalized = normalizeTiers(tiers as never[]);
-    expect(normalized[0].freeReward).toBeDefined();
-    expect(normalized[0].freeReward.icon).toBe('🎁');
-    expect(normalized[0].premiumReward).toBeDefined();
-    expect(normalized[0].premiumReward.icon).toBe('⭐');
+    expect(normalized[0]!.freeReward).toBeDefined();
+    expect(normalized[0]!.freeReward.icon).toBe('🎁');
+    expect(normalized[0]!.premiumReward).toBeDefined();
+    expect(normalized[0]!.premiumReward.icon).toBe('⭐');
   });
 
   it('uses reward type icon when rewards exist', () => {
@@ -72,7 +72,7 @@ describe('normalizeTiers', () => {
       },
     ];
     const normalized = normalizeTiers(tiers as never[]);
-    expect(normalized[0].freeReward.icon).toBe('🪙');
-    expect(normalized[0].premiumReward.icon).toBe('💎');
+    expect(normalized[0]!.freeReward.icon).toBe('🪙');
+    expect(normalized[0]!.premiumReward.icon).toBe('💎');
   });
 });

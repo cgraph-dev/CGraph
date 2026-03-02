@@ -11,7 +11,6 @@
 import { useRef, useEffect } from 'react';
 import {
   Track,
-  type RemoteTrackPublication,
   type RemoteParticipant,
   type LocalParticipant,
 } from 'livekit-client';

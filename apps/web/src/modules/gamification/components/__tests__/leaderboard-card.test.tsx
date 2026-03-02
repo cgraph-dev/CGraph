@@ -247,7 +247,7 @@ function makeEntry(rank: number, username: string, score: number, userId = `user
     userId,
     username,
     displayName: username,
-    avatarUrl: null,
+    avatarUrl: undefined as string | undefined,
     level: rank * 5,
     score,
   };

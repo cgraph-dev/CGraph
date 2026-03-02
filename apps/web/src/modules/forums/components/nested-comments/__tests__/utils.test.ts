@@ -34,9 +34,9 @@ describe('sortComments', () => {
       makeComment({ id: '3', score: 20 }),
     ];
     const sorted = sortComments(comments as never[], 'best');
-    expect(sorted[0].id).toBe('2'); // best answer first
-    expect(sorted[1].id).toBe('3'); // highest score
-    expect(sorted[2].id).toBe('1'); // lowest score
+    expect(sorted[0]!.id).toBe('2'); // best answer first
+    expect(sorted[1]!.id).toBe('3'); // highest score
+    expect(sorted[2]!.id).toBe('1'); // lowest score
   });
 
   it('sorts by "new" - newest first', () => {
@@ -46,9 +46,9 @@ describe('sortComments', () => {
       makeComment({ id: '3', createdAt: '2025-03-01T00:00:00Z' }),
     ];
     const sorted = sortComments(comments as never[], 'new');
-    expect(sorted[0].id).toBe('2');
-    expect(sorted[1].id).toBe('3');
-    expect(sorted[2].id).toBe('1');
+    expect(sorted[0]!.id).toBe('2');
+    expect(sorted[1]!.id).toBe('3');
+    expect(sorted[2]!.id).toBe('1');
   });
 
   it('sorts by "old" - oldest first', () => {
@@ -57,8 +57,8 @@ describe('sortComments', () => {
       makeComment({ id: '2', createdAt: '2025-01-01T00:00:00Z' }),
     ];
     const sorted = sortComments(comments as never[], 'old');
-    expect(sorted[0].id).toBe('2');
-    expect(sorted[1].id).toBe('1');
+    expect(sorted[0]!.id).toBe('2');
+    expect(sorted[1]!.id).toBe('1');
   });
 
   it('sorts by "controversial"', () => {

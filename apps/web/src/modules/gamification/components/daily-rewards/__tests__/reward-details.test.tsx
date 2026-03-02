@@ -38,7 +38,6 @@ describe('RewardDetails', () => {
       day: 1,
       xp: 50,
       coins: 10,
-      special: null,
     },
     canClaim: true,
     isClaiming: false,

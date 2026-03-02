@@ -107,7 +107,7 @@ const createUIStub = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const comp = (name: string) => (props: Record<string, unknown> & { ref?: any }) => {
     const { children, ref, ...rest } = props;
-    return createElement('div', { ...rest, ref, 'data-testid': `ui-${name}` }, children);
+    return createElement('div', { ...rest, ref, 'data-testid': `ui-${name}` } as any, children as any);
   };
   const toastFn = Object.assign(() => {}, {
     success: () => {},

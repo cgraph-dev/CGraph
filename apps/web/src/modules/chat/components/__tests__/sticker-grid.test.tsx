@@ -1,6 +1,5 @@
 /** @module StickerGrid tests */
 
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 

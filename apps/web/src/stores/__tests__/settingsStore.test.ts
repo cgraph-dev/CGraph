@@ -37,6 +37,7 @@ describe('Settings Store', () => {
           quietHoursEnabled: false,
           quietHoursStart: null,
           quietHoursEnd: null,
+          dndUntil: null,
         },
         privacy: {
           showOnlineStatus: true,

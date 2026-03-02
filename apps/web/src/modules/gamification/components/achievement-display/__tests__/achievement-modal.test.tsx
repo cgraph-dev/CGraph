@@ -38,10 +38,12 @@ describe('AchievementModal', () => {
     id: 'a1',
     name: 'First Post',
     description: 'Create your first post',
-    icon: '📝',
+    iconUrl: '📝',
     rarity: 'rare' as const,
     category: 'social' as const,
     xpReward: 100,
+    coinReward: 0,
+    requirements: [],
   };
 
   const defaultProps = {

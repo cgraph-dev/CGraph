@@ -1,5 +1,4 @@
 /** @module ContentSortFilter tests */
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
@@ -205,8 +204,9 @@ vi.mock('@/modules/search/components/advanced-search/constants', () => ({
 }));
 
 import { ContentSortFilter } from '../content-sort-filter';
+import type { AdvancedSearchFilters } from '../types';
 
-const defaultFilters = {
+const defaultFilters: AdvancedSearchFilters = {
   keywords: '',
   author: '',
   dateRange: 'any' as const,
@@ -257,7 +257,7 @@ describe('ContentSortFilter', () => {
   it('calls updateFilter when sort by is changed', () => {
     render(<ContentSortFilter filters={defaultFilters} updateFilter={updateFilter} />);
     const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'date' } });
+    fireEvent.change(selects[0]!, { target: { value: 'date' } });
     expect(updateFilter).toHaveBeenCalledWith('sortBy', 'date');
   });
 
@@ -270,7 +270,7 @@ describe('ContentSortFilter', () => {
   it('calls updateFilter when sort order is changed', () => {
     render(<ContentSortFilter filters={defaultFilters} updateFilter={updateFilter} />);
     const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[1], { target: { value: 'asc' } });
+    fireEvent.change(selects[1]!, { target: { value: 'asc' } });
     expect(updateFilter).toHaveBeenCalledWith('sortOrder', 'asc');
   });
 

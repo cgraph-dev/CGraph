@@ -47,6 +47,7 @@ function makeState(overrides?: Partial<SocketManagerState>): SocketManagerState 
     threadCallbacks: new Map(),
     sessionId: null,
     lastSequence: 0,
+    reconnectAttempts: 0,
     ...overrides,
   };
 }

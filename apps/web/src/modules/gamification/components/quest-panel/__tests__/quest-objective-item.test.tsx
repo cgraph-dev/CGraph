@@ -14,6 +14,7 @@ describe('QuestObjectiveItem', () => {
   const completedObjective = {
     id: 'o1',
     description: 'Send 10 messages',
+    type: 'count' as const,
     currentValue: 10,
     targetValue: 10,
     completed: true,
@@ -22,6 +23,7 @@ describe('QuestObjectiveItem', () => {
   const incompleteObjective = {
     id: 'o2',
     description: 'Join 3 groups',
+    type: 'count' as const,
     currentValue: 1,
     targetValue: 3,
     completed: false,

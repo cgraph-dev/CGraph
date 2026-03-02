@@ -42,7 +42,7 @@ export default function ExploreGroups() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<string>('popular');
   const [joiningId, setJoiningId] = useState<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Initial fetch
   useEffect(() => {

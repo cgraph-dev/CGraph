@@ -49,6 +49,7 @@ const DEFAULT_SETTINGS: UserSettings = {
     quietHoursEnabled: false,
     quietHoursStart: null,
     quietHoursEnd: null,
+    dndUntil: null,
   },
   privacy: {
     showOnlineStatus: true,

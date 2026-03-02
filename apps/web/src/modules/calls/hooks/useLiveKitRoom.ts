@@ -13,16 +13,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Room,
   RoomEvent,
-  Track,
   ConnectionState,
   type RemoteParticipant,
-  type RemoteTrackPublication,
-  type LocalTrackPublication,
 } from 'livekit-client';
 import { LiveKitService } from '@/lib/webrtc/livekitService';
 import type { LiveKitParticipant } from '@/lib/webrtc/livekitService';
 import { decodeRoomKey } from '@/lib/webrtc/callEncryption';
-import { apiClient } from '@cgraph/api-client';
+import { api as apiClient } from '@/lib/api';
 
 // ---------------------------------------------------------------------------
 // Types

@@ -8,9 +8,9 @@ describe('calculateMetrics', () => {
 
   it('calculates min and max prices', () => {
     const data = [
-      { price: 10, timestamp: '2025-01-01' },
-      { price: 50, timestamp: '2025-01-02' },
-      { price: 30, timestamp: '2025-01-03' },
+      { price: 10, timestamp: new Date('2025-01-01') },
+      { price: 50, timestamp: new Date('2025-01-02') },
+      { price: 30, timestamp: new Date('2025-01-03') },
     ];
     const metrics = calculateMetrics(data);
     expect(metrics).not.toBeNull();
@@ -20,8 +20,8 @@ describe('calculateMetrics', () => {
 
   it('calculates positive change', () => {
     const data = [
-      { price: 100, timestamp: '2025-01-01' },
-      { price: 150, timestamp: '2025-01-02' },
+      { price: 100, timestamp: new Date('2025-01-01') },
+      { price: 150, timestamp: new Date('2025-01-02') },
     ];
     const metrics = calculateMetrics(data);
     expect(metrics!.isPositive).toBe(true);
@@ -30,8 +30,8 @@ describe('calculateMetrics', () => {
 
   it('calculates negative change', () => {
     const data = [
-      { price: 100, timestamp: '2025-01-01' },
-      { price: 80, timestamp: '2025-01-02' },
+      { price: 100, timestamp: new Date('2025-01-01') },
+      { price: 80, timestamp: new Date('2025-01-02') },
     ];
     const metrics = calculateMetrics(data);
     expect(metrics!.isPositive).toBe(false);
@@ -39,7 +39,7 @@ describe('calculateMetrics', () => {
   });
 
   it('handles single data point', () => {
-    const data = [{ price: 42, timestamp: '2025-01-01' }];
+    const data = [{ price: 42, timestamp: new Date('2025-01-01') }];
     const metrics = calculateMetrics(data);
     expect(metrics).not.toBeNull();
     expect(metrics!.min).toBe(42);
@@ -49,8 +49,8 @@ describe('calculateMetrics', () => {
 
   it('sets range to 1 when min equals max', () => {
     const data = [
-      { price: 50, timestamp: '2025-01-01' },
-      { price: 50, timestamp: '2025-01-02' },
+      { price: 50, timestamp: new Date('2025-01-01') },
+      { price: 50, timestamp: new Date('2025-01-02') },
     ];
     const metrics = calculateMetrics(data);
     expect(metrics!.range).toBe(1);
@@ -58,9 +58,9 @@ describe('calculateMetrics', () => {
 
   it('tracks latest and first values', () => {
     const data = [
-      { price: 10, timestamp: '2025-01-01' },
-      { price: 20, timestamp: '2025-01-02' },
-      { price: 30, timestamp: '2025-01-03' },
+      { price: 10, timestamp: new Date('2025-01-01') },
+      { price: 20, timestamp: new Date('2025-01-02') },
+      { price: 30, timestamp: new Date('2025-01-03') },
     ];
     const metrics = calculateMetrics(data);
     expect(metrics!.first).toBe(10);

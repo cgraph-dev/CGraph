@@ -67,7 +67,6 @@ export function useConversationActions(
   const [showScheduledList, setShowScheduledList] = useState(false);
 
   // Get store functions
-  const sendMessage = useChatStore((state) => state.sendMessage);
   const scheduleMessage = useChatStore((state) => state.scheduleMessage);
   const rescheduleMessage = useChatStore((state) => state.rescheduleMessage);
 

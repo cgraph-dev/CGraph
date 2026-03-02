@@ -8,6 +8,7 @@ vi.mock('date-fns', () => ({
 }));
 
 import { ScheduledMessageCard } from '../scheduled-message-card';
+import type { Message } from '@/modules/chat/store';
 
 const scheduledMsg = {
   id: 'msg-1',
@@ -17,7 +18,7 @@ const scheduledMsg = {
   createdAt: '2026-02-24T12:00:00Z',
   conversationId: 'conv-1',
   scheduledAt: '2026-02-24T15:00:00Z',
-};
+} as unknown as Message;
 
 describe('ScheduledMessageCard', () => {
   const defaultProps = {

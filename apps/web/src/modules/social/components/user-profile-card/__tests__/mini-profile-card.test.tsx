@@ -1,6 +1,7 @@
 /** @module mini-profile-card tests */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import type { ProfileCardUser } from '../../profile-card/types';
 
 vi.mock('@/modules/auth/store', () => ({
   useAuthStore: () => ({ user: { id: 'current-user' } }),
@@ -44,15 +45,18 @@ vi.mock('@/components/theme/themed-avatar', () => ({
 import { MiniProfileCard } from '../mini-profile-card';
 
 describe('MiniProfileCard', () => {
-  const mockUser = {
+  const mockUser: ProfileCardUser = {
     id: 'u1',
     username: 'miniuser',
     displayName: 'Mini User',
     avatarUrl: '/mini.png',
-    status: 'online',
     isOnline: true,
     level: 5,
-    avatarBorderId: null,
+    xp: 0,
+    xpToNextLevel: 1000,
+    karma: 0,
+    streak: 0,
+    avatarBorderId: undefined,
   };
 
   it('renders display name', () => {

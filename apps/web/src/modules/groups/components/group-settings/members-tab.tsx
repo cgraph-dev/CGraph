@@ -33,6 +33,7 @@ export function MembersTab({ groupId }: MembersTabProps) {
     action: 'none',
   });
   const [banDuration, setBanDuration] = useState('permanent');
+  const [reason, setReason] = useState('');
   const [availableRoles, setAvailableRoles] = useState<GroupRole[]>([]);
   const [roleModalMemberId, setRoleModalMemberId] = useState<string | null>(null);
   const [selectedRoleIds, setSelectedRoleIds] = useState<Set<string>>(new Set());
@@ -245,7 +246,9 @@ export function MembersTab({ groupId }: MembersTabProps) {
         action={confirmAction.action}
         memberId={confirmAction.memberId}
         banDuration={banDuration}
+        reason={reason}
         onBanDurationChange={setBanDuration}
+        onReasonChange={setReason}
         onConfirm={handleConfirmAction}
         onClose={() => setConfirmAction({ memberId: '', action: 'none' })}
       />
