@@ -77,6 +77,30 @@ defmodule CGraph.Accounts.Friends.Requests do
           # Notify the requester
           Notifications.notify_friend_accepted(requesting_user_id, accepting_user_id)
 
+          # Award XP to both users for adding a friend (fire-and-forget)
+          Task.start(fn ->
+            acceptor = Repo.get(CGraph.Accounts.User, accepting_user_id)
+            requester = Repo.get(CGraph.Accounts.User, requesting_user_id)
+
+            if acceptor do
+              CGraph.Gamification.XpEventHandler.handle_action(
+                acceptor,
+                :friend_added,
+                reference_type: "friendship",
+                reference_id: requesting_user_id
+              )
+            end
+
+            if requester do
+              CGraph.Gamification.XpEventHandler.handle_action(
+                requester,
+                :friend_added,
+                reference_type: "friendship",
+                reference_id: accepting_user_id
+              )
+            end
+          end)
+
           :ok
         end)
     end
