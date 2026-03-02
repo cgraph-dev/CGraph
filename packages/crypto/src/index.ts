@@ -82,6 +82,12 @@ export type {
 export { encryptAES, decryptAES, generateAESKey } from './aes';
 
 // ---------------------------------------------------------------------------
+// File Encryption (AES-256-GCM for binary data)
+// ---------------------------------------------------------------------------
+export { encryptFile, decryptFile, encryptFileWithMetadata } from './file-encryption';
+export type { EncryptedFile, DecryptedFile } from './file-encryption';
+
+// ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
 export {
