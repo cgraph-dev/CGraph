@@ -8,3 +8,4 @@ export { useUserSearch, useGroupSearch, useForumSearch } from './useCategorySear
 export { useSearchSuggestions } from './useSearchSuggestions';
 export { useSearchFilters } from './useSearchFilters';
 export { useGlobalSearch } from './useGlobalSearch';
+export { useConversationSearch } from './useConversationSearch';
