@@ -42,3 +42,7 @@ export type { LevelGateProps, LevelGateResult } from './level-gate';
 
 // Titles and badges
 export { default as TitleBadge } from './title-badge';
+
+// Title display (inline username titles)
+export { default as InlineTitle } from './inline-title';
+export type { InlineTitleProps, TitleData, TitleRarity } from './inline-title';
