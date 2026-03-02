@@ -384,8 +384,8 @@ defmodule CGraphWeb.PremiumController do
 
   defp get_tier_features("enterprise") do
     %{
-      xp_multiplier: 2.5,
-      coin_bonus: 30,
+      xp_multiplier: 3.0,
+      coin_bonus: 50,
       custom_themes: true,
       exclusive_badges: true,
       exclusive_effects: true,

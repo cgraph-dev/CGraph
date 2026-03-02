@@ -105,9 +105,25 @@ defmodule CGraph.Accounts.User.AuthStrategies do
       :subscription_tier,
       :subscription_expires_at,
       :stripe_customer_id,
-      :is_premium
+      :stripe_subscription_id,
+      :cancel_at_period_end,
+      :subscription_grace_until,
+      :is_premium,
+      :iap_provider,
+      :iap_transaction_id
     ])
     |> validate_inclusion(:subscription_tier, ~w(free premium enterprise))
+  end
+
+  @doc """
+  Changeset for creator monetization fields.
+  Used by Creator context for Stripe Connect onboarding.
+  """
+  @spec creator_changeset(User.t(), map()) :: Ecto.Changeset.t()
+  def creator_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:stripe_connect_id, :creator_status, :creator_onboarded_at])
+    |> validate_inclusion(:creator_status, ~w(none pending active suspended))
   end
 
   # ---------------------------------------------------------------------------

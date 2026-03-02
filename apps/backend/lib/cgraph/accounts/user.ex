@@ -137,6 +137,18 @@ defmodule CGraph.Accounts.User do
 
     # Stripe integration
     field :stripe_customer_id, :string
+    field :stripe_subscription_id, :string
+    field :cancel_at_period_end, :boolean, default: false
+    field :subscription_grace_until, :utc_datetime
+
+    # IAP fields (for 17-02)
+    field :iap_provider, :string
+    field :iap_transaction_id, :string
+
+    # Creator monetization (for 17-04)
+    field :stripe_connect_id, :string
+    field :creator_status, :string, default: "none"
+    field :creator_onboarded_at, :utc_datetime
 
     # Associations
     has_many :sessions, CGraph.Accounts.Session
@@ -159,6 +171,7 @@ defmodule CGraph.Accounts.User do
   defdelegate wallet_registration_changeset(user, attrs), to: AuthStrategies
   defdelegate wallet_pin_registration_changeset(user, attrs), to: AuthStrategies
   defdelegate subscription_changeset(user, attrs), to: AuthStrategies
+  defdelegate creator_changeset(user, attrs), to: AuthStrategies
 
   defdelegate valid_password?(user, password), to: Helpers
   defdelegate format_user_id(user), to: Helpers
