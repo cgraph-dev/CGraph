@@ -56,6 +56,7 @@ defmodule CGraphWeb.Router.AdminRoutes do
 
         # Moderation queue
         get "/reports", ModerationController, :list_reports
+        post "/reports/batch-review", ModerationController, :batch_review
         get "/reports/:id", ModerationController, :show_report
         post "/reports/:id/review", ModerationController, :review_report
 

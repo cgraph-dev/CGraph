@@ -2,12 +2,15 @@
  * ModerationQueue — Displays the moderation review queue
  *
  * Shows pending items (threads, posts, comments) that need
- * moderator review, with approve/reject actions and filtering.
+ * moderator review, with approve/reject actions, filtering,
+ * and bulk moderation capabilities.
  *
  * @module modules/moderation/components/ModerationQueue
  */
 
-import { useCallback, useEffect, useState, memo } from 'react';
+import { useCallback, useEffect, useState, useMemo, memo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 import { useModerationStore } from '../store';
 import type { ModerationQueueItem } from '../store/moderationStore.types';
 
@@ -30,19 +33,32 @@ const STATUS_LABELS: Record<ModerationQueueItem['status'], string> = {
 
 interface QueueItemCardProps {
   item: ModerationQueueItem;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
 }
 
 const QueueItemCard = memo(function QueueItemCard({
   item,
+  isSelected,
+  onToggleSelect,
   onApprove,
   onReject,
 }: QueueItemCardProps) {
   return (
-    <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+    <div className={`rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 bg-gray-800/50'} p-4`}>
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
+          {item.status === 'pending' && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(item.id)}
+              className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+              aria-label={`Select report ${item.id}`}
+            />
+          )}
           <span
             className={`rounded px-2 py-0.5 text-xs font-medium ${PRIORITY_COLORS[item.priority]}`}
           >
@@ -116,6 +132,10 @@ export function ModerationQueue() {
   } = useModerationStore();
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('pending');
   const [priorityFilter, setPriorityFilter] = useState<FilterPriority>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBatchConfirm, setShowBatchConfirm] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     void fetchModerationQueue({
@@ -130,6 +150,64 @@ export function ModerationQueue() {
     (id: string) => void rejectQueueItem(id, 'Rejected by moderator'),
     [rejectQueueItem]
   );
+
+  // Bulk selection handlers
+  const pendingItems = useMemo(
+    () => queue.filter((item) => item.status === 'pending'),
+    [queue]
+  );
+
+  const handleToggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === pendingItems.length) {
+        return new Set();
+      }
+      return new Set(pendingItems.map((item) => item.id));
+    });
+  }, [pendingItems]);
+
+  // Batch review mutation
+  const batchReviewMutation = useMutation({
+    mutationFn: async ({ action, notes }: { action: string; notes?: string }) => {
+      const response = await api.post('/api/admin/reports/batch-review', {
+        report_ids: Array.from(selectedIds),
+        action,
+        notes: notes ?? `Batch ${action} by moderator`,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      setShowBatchConfirm(null);
+      void fetchModerationQueue({
+        status: statusFilter,
+        priority: priorityFilter === 'all' ? undefined : priorityFilter,
+      });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'moderation'] });
+    },
+  });
+
+  const handleBatchAction = useCallback((action: string) => {
+    setShowBatchConfirm(action);
+  }, []);
+
+  const confirmBatchAction = useCallback(() => {
+    if (showBatchConfirm) {
+      batchReviewMutation.mutate({ action: showBatchConfirm });
+    }
+  }, [showBatchConfirm, batchReviewMutation]);
 
   const filteredQueue =
     priorityFilter === 'all' ? queue : queue.filter((item) => item.priority === priorityFilter);
@@ -146,8 +224,19 @@ export function ModerationQueue() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2">
+      {/* Filters + Select All */}
+      <div className="flex items-center gap-2">
+        {pendingItems.length > 0 && statusFilter === 'pending' && (
+          <label className="flex items-center gap-1.5 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={selectedIds.size === pendingItems.length && pendingItems.length > 0}
+              onChange={handleSelectAll}
+              className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+            />
+            Select all
+          </label>
+        )}
         <select
           value={statusFilter}
            
@@ -171,6 +260,73 @@ export function ModerationQueue() {
         </select>
       </div>
 
+      {/* Floating bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="sticky top-0 z-10 flex items-center gap-3 rounded-lg border border-blue-500/30 bg-blue-900/80 px-4 py-3 backdrop-blur-sm">
+          <span className="text-sm font-medium text-blue-200">
+            {selectedIds.size} selected
+          </span>
+          <div className="ml-auto flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleBatchAction('dismiss')}
+              disabled={batchReviewMutation.isPending}
+              className="rounded bg-gray-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-500 disabled:opacity-50"
+            >
+              Dismiss
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBatchAction('warn')}
+              disabled={batchReviewMutation.isPending}
+              className="rounded bg-yellow-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-yellow-500 disabled:opacity-50"
+            >
+              Warn
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBatchAction('approve')}
+              disabled={batchReviewMutation.isPending}
+              className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Batch confirm dialog */}
+      {showBatchConfirm && (
+        <div className="rounded-lg border border-yellow-500/30 bg-yellow-900/30 p-4">
+          <p className="mb-3 text-sm text-yellow-200">
+            Are you sure you want to <strong>{showBatchConfirm}</strong>{' '}
+            {selectedIds.size} report{selectedIds.size > 1 ? 's' : ''}?
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={confirmBatchAction}
+              disabled={batchReviewMutation.isPending}
+              className="rounded bg-yellow-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-yellow-500 disabled:opacity-50"
+            >
+              {batchReviewMutation.isPending ? 'Processing…' : 'Confirm'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowBatchConfirm(null)}
+              className="rounded bg-gray-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-500"
+            >
+              Cancel
+            </button>
+          </div>
+          {batchReviewMutation.isError && (
+            <p className="mt-2 text-xs text-red-400">
+              Batch action failed. Please try again.
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Queue list */}
       {isLoadingQueue && <div className="py-8 text-center text-gray-500">Loading queue…</div>}
 
@@ -186,6 +342,8 @@ export function ModerationQueue() {
             <QueueItemCard
               key={item.id}
               item={item}
+              isSelected={selectedIds.has(item.id)}
+              onToggleSelect={handleToggleSelect}
               onApprove={handleApprove}
               onReject={handleReject}
             />

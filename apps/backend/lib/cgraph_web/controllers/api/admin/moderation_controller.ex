@@ -130,6 +130,48 @@ defmodule CGraphWeb.API.Admin.ModerationController do
     end
   end
 
+  @doc """
+  Batch review multiple reports at once.
+
+  ## Request Body
+
+  ```json
+  {
+    "report_ids": ["id1", "id2", ...],
+    "action": "dismiss",
+    "notes": "Bulk dismiss — spam wave"
+  }
+  ```
+  """
+  @spec batch_review(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def batch_review(conn, %{"report_ids" => ids} = params) when is_list(ids) do
+    reviewer = conn.assigns.current_user
+
+    attrs = %{
+      action: normalize_atom(params["action"]),
+      notes: params["notes"],
+      duration_hours: params["duration_hours"],
+      notify_reporter: params["notify_reporter"] == true
+    }
+
+    case Moderation.batch_review(reviewer, ids, attrs) do
+      {:ok, result} ->
+        render_data(conn, %{
+          succeeded: result.succeeded,
+          failed: result.failed,
+          details: result.details,
+          message: "Batch review completed: #{result.succeeded} succeeded, #{result.failed} failed"
+        })
+
+      {:error, reason} ->
+        render_error(conn, :unprocessable_entity, "Batch review failed: #{inspect(reason)}")
+    end
+  end
+
+  def batch_review(conn, _params) do
+    render_error(conn, :bad_request, "report_ids must be a list")
+  end
+
   # ---------------------------------------------------------------------------
   # Appeals
   # ---------------------------------------------------------------------------

@@ -49,6 +49,7 @@ defmodule CGraph.Moderation do
   defdelegate create_report(reporter, attrs), to: CGraph.Moderation.Reports
   defdelegate get_user_report(user_id, report_id), to: CGraph.Moderation.Reports
   defdelegate pending_report_counts, to: CGraph.Moderation.Reports
+  defdelegate batch_review(reviewer, report_ids, params), to: CGraph.Moderation.Reports
 
   @doc "Lists moderation reports."
   @spec list_reports(keyword()) :: [map()]

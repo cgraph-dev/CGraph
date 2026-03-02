@@ -164,6 +164,51 @@ defmodule CGraph.Moderation.Reports do
   end
 
   # ---------------------------------------------------------------------------
+  # Bulk Actions
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Batch review multiple reports in a single transaction.
+
+  ## Parameters
+
+  - `reviewer` - Admin/moderator User struct performing the review
+  - `report_ids` - List of report IDs to review
+  - `params` - Review parameters (action, notes, etc.)
+
+  ## Returns
+
+  - `{:ok, %{succeeded: N, failed: N, details: [...]}}` on success
+  - `{:error, reason}` on transaction failure
+  """
+  @spec batch_review(User.t(), [String.t()], map()) :: {:ok, map()} | {:error, term()}
+  def batch_review(%User{} = reviewer, report_ids, params) when is_list(report_ids) do
+    alias CGraph.Moderation.Enforcement
+
+    Repo.transaction(fn ->
+      results =
+        Enum.map(report_ids, fn id ->
+          case Enforcement.review_report(reviewer, id, params) do
+            {:ok, report} -> {:ok, id, report}
+            {:error, reason} -> {:error, id, reason}
+          end
+        end)
+
+      {successes, failures} = Enum.split_with(results, &match?({:ok, _, _}, &1))
+
+      %{
+        succeeded: length(successes),
+        failed: length(failures),
+        details:
+          Enum.map(results, fn
+            {:ok, id, _report} -> %{id: id, status: "ok"}
+            {:error, id, reason} -> %{id: id, status: "error", reason: inspect(reason)}
+          end)
+      }
+    end)
+  end
+
+  # ---------------------------------------------------------------------------
   # Private Helpers
   # ---------------------------------------------------------------------------
 
