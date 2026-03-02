@@ -152,13 +152,34 @@ if config_env() == :prod do
     url: [host: host, port: 443, scheme: "https"],
     http: [
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: port
+      port: port,
+      # Tuned for 10K+ concurrent WebSocket connections
+      transport_options: [
+        num_acceptors: 100,
+        max_connections: 15_000,
+        socket_opts: [
+          {:backlog, 2048},
+          {:nodelay, true}
+        ]
+      ]
     ],
     secret_key_base: secret_key_base,
     live_view: [
       signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT") ||
         raise "environment variable LIVE_VIEW_SIGNING_SALT is missing (required for multi-instance LiveView)"
     ]
+
+  # WebSocket connection backpressure — configurable per node
+  # Gracefully rejects new connections with close code 1013 when at capacity
+  max_ws = String.to_integer(System.get_env("MAX_WS_CONNECTIONS") || "10000")
+  ws_threshold = case Float.parse(System.get_env("WS_CAPACITY_THRESHOLD") || "0.9") do
+    {t, _} -> t
+    :error -> 0.9
+  end
+
+  config :cgraph, CGraph.Cluster.ConnectionMonitor,
+    max_connections: max_ws,
+    capacity_threshold: ws_threshold
 
   # Session signing_salt is a key derivation namespace, NOT a secret.
   # The compile-time default "cgraph_session_v1" is fine — actual security
