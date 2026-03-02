@@ -13,11 +13,12 @@ defmodule CGraphWeb.PremiumController do
 
   @doc """
   GET /api/v1/premium/status
-  Get current subscription status.
+  Get current subscription status — returns enriched fields for store sync.
   """
   @spec status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def status(conn, _params) do
     user = conn.assigns.current_user
+    features = TierFeatures.features_for_tier(user.subscription_tier)
 
     conn
     |> put_status(:ok)
@@ -25,7 +26,9 @@ defmodule CGraphWeb.PremiumController do
       tier: user.subscription_tier,
       expires_at: user.subscription_expires_at,
       is_active: subscription_active?(user),
-      features: get_tier_features(user.subscription_tier)
+      cancel_at_period_end: user.cancel_at_period_end || false,
+      grace_until: user.subscription_grace_until,
+      features: features
     })
   end
 
