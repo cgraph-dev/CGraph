@@ -23,6 +23,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
 import api from '../../../../lib/api';
@@ -59,6 +60,9 @@ const TRENDING_CATEGORIES = [
   { label: '😭 Cry', query: 'crying sad' },
 ];
 
+const RECENTLY_USED_KEY = 'cgraph_recent_gifs';
+const MAX_RECENT_GIFS = 20;
+
 /** Generate sample GIFs when API is unavailable */
 function generateSampleGifs(query: string): GifResult[] {
   const seed = query || 'trending';
@@ -80,9 +84,30 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
   const { colors } = useThemeStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState<GifResult[]>([]);
+  const [recentGifs, setRecentGifs] = useState<GifResult[]>([]);
+  const [showRecent, setShowRecent] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<TextInput>(null);
+
+  // Load recently used GIFs from AsyncStorage
+  useEffect(() => {
+    AsyncStorage.getItem(RECENTLY_USED_KEY).then((data) => {
+      if (data) {
+        try {
+          setRecentGifs(JSON.parse(data));
+        } catch {
+          // ignore parse errors
+        }
+      }
+    });
+  }, [visible]);
+
+  const addToRecent = useCallback(async (gif: GifResult) => {
+    const updated = [gif, ...recentGifs.filter((g) => g.id !== gif.id)].slice(0, MAX_RECENT_GIFS);
+    setRecentGifs(updated);
+    await AsyncStorage.setItem(RECENTLY_USED_KEY, JSON.stringify(updated));
+  }, [recentGifs]);
 
   const fetchGifs = useCallback(async (query: string) => {
     setLoading(true);
@@ -138,10 +163,11 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
 
   const handleGifPress = useCallback(
     (gif: GifResult) => {
+      addToRecent(gif);
       onSelect(gif);
       onClose();
     },
-    [onSelect, onClose]
+    [onSelect, onClose, addToRecent]
   );
 
   const renderGif = useCallback(
