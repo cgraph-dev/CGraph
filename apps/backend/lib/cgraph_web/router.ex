@@ -33,6 +33,7 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.AdminRoutes
   import CGraphWeb.Router.AIRoutes
   import CGraphWeb.Router.SyncRoutes
+  import CGraphWeb.Router.CreatorRoutes
 
   # ============================================================================
   # Pipelines
@@ -126,6 +127,7 @@ defmodule CGraphWeb.Router do
   messaging_routes()
   forum_routes()
   gamification_routes()
+  creator_routes()
   admin_routes()
   ai_routes()
   sync_routes()
