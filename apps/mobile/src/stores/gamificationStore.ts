@@ -81,6 +81,29 @@ interface GamificationState {
   currentTitle: string | null;
   equippedTitleId: string | null;
 
+  // Leaderboard
+  scopedLeaderboard: Array<{
+    rank: number;
+    userId: string;
+    username: string;
+    score: number;
+    isCurrentUser?: boolean;
+  }>;
+
+  // Event / Battle Pass
+  activeEventId: string | null;
+  battlePassTier: number;
+  battlePassXP: number;
+  hasBattlePass: boolean;
+
+  // Marketplace
+  marketplaceListings: Array<{
+    id: string;
+    itemName: string;
+    price: number;
+    sellerName: string;
+  }>;
+
   // Loading
   isLoading: boolean;
   isLoadingAchievements: boolean;
@@ -93,6 +116,14 @@ interface GamificationState {
   claimDailyStreak: () => Promise<{ coins: number; streak: number } | null>;
   equipTitle: (titleId: string) => Promise<void>;
   unequipTitle: () => Promise<void>;
+  fetchScopedLeaderboard: (scope: string, scopeId?: string, category?: string) => Promise<void>;
+  purchaseBattlePass: (eventId: string) => Promise<{ success: boolean }>;
+  purchaseMarketplaceListing: (listingId: string) => Promise<{ success: boolean }>;
+  createMarketplaceListing: (params: {
+    itemType: string;
+    itemId: string;
+    price: number;
+  }) => Promise<{ success: boolean }>;
   handleXPAwarded: (data: {
     amount: number;
     source: string;
@@ -121,6 +152,7 @@ interface GamificationState {
   handleNewQuestsAvailable: (data: {
     type: 'daily' | 'weekly' | 'monthly';
   }) => void;
+  handleLevelGateError: () => void;
   reset: () => void;
 }
 
@@ -144,6 +176,27 @@ const INITIAL_STATE = {
   currentTitle: null as string | null,
    
   equippedTitleId: null as string | null,
+
+  scopedLeaderboard: [] as Array<{
+    rank: number;
+    userId: string;
+    username: string;
+    score: number;
+    isCurrentUser?: boolean;
+  }>,
+
+  activeEventId: null as string | null,
+  battlePassTier: 0,
+  battlePassXP: 0,
+  hasBattlePass: false,
+
+  marketplaceListings: [] as Array<{
+    id: string;
+    itemName: string;
+    price: number;
+    sellerName: string;
+  }>,
+
   isLoading: false,
   isLoadingAchievements: false,
   isLoadingQuests: false,
@@ -259,6 +312,101 @@ export const useGamificationStore = create<GamificationState>()(
         } catch {
           // silently fail
         }
+      },
+
+      fetchScopedLeaderboard: async (scope: string, scopeId?: string, category = 'xp') => {
+        try {
+          const { getGamificationStats: _unused, ...apis } = await import('../services/gamificationService');
+          void _unused;
+          void apis;
+          // Use a direct API call for scoped leaderboard
+          const params: Record<string, string> = { scope, category };
+          if (scopeId) params.scope_id = scopeId;
+
+          // Fetch via fetch API since the service may not have this endpoint yet
+          const response = await fetch(
+            `/api/v1/leaderboard?${new URLSearchParams(params).toString()}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            set({
+              scopedLeaderboard: (data.entries || []).map((e: Record<string, unknown>) => ({
+                rank: e.rank as number,
+                userId: e.userId as string,
+                username: e.username as string,
+                score: e.value as number ?? e.score as number ?? 0,
+                isCurrentUser: e.isCurrentUser as boolean ?? false,
+              })),
+            });
+          }
+        } catch {
+          // silently fail
+        }
+      },
+
+      purchaseBattlePass: async (eventId: string) => {
+        try {
+          const response = await fetch(`/api/v1/events/${eventId}/battle-pass/purchase`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              set({ hasBattlePass: true });
+              return { success: true };
+            }
+          }
+          return { success: false };
+        } catch {
+          return { success: false };
+        }
+      },
+
+      purchaseMarketplaceListing: async (listingId: string) => {
+        try {
+          const response = await fetch(`/api/v1/marketplace/${listingId}/buy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            return { success: data.success ?? false };
+          }
+          return { success: false };
+        } catch {
+          return { success: false };
+        }
+      },
+
+      createMarketplaceListing: async (params: {
+        itemType: string;
+        itemId: string;
+        price: number;
+      }) => {
+        try {
+          const response = await fetch('/api/v1/marketplace', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              item_type: params.itemType,
+              item_id: params.itemId,
+              price: params.price,
+            }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            return { success: data.success ?? false };
+          }
+          return { success: false };
+        } catch {
+          return { success: false };
+        }
+      },
+
+      handleLevelGateError: () => {
+        // Handle 403 from LevelGatePlug — show level gate UI
+        // This is called when mobile receives a 403 with level_required
       },
 
       reset: () => set(INITIAL_STATE),

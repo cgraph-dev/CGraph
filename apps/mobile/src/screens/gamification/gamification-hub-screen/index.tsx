@@ -17,7 +17,7 @@
  * @since v0.9.0
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -53,6 +53,18 @@ export default function GamificationHubScreen() {
     canClaimStreak,
     isLoading,
   } = useGamification();
+
+  const [leaderboardScope, setLeaderboardScope] = useState<'global' | 'group' | 'board'>('global');
+  const [miniLeaderboard, setMiniLeaderboard] = useState<
+    Array<{ rank: number; username: string; score: number; isCurrentUser?: boolean }>
+  >([]);
+  const [activeEvent, setActiveEvent] = useState<{
+    id: string;
+    name: string;
+    endsAt: string;
+    battlePassTier: number;
+    battlePassXP: number;
+  } | null>(null);
 
   // Initial load
   useEffect(() => {
@@ -227,7 +239,100 @@ export default function GamificationHubScreen() {
           />
         </View>
 
-        {/* Quick Links */}
+        {/* Mini Leaderboard Widget */}
+        <View style={styles.miniLeaderboard}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Leaderboard</Text>
+            <TouchableOpacity onPress={() => navigateTo('Leaderboard')}>
+              <Text style={styles.seeAllText}>Full View</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Scope Toggle */}
+          <View style={styles.scopeToggle}>
+            {(['global', 'group', 'board'] as const).map((s) => (
+              <TouchableOpacity
+                key={s}
+                onPress={() => {
+                  HapticFeedback.light();
+                  setLeaderboardScope(s);
+                }}
+                style={[
+                  styles.scopeButton,
+                  leaderboardScope === s && styles.scopeButtonActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.scopeButtonText,
+                    leaderboardScope === s && styles.scopeButtonTextActive,
+                  ]}
+                >
+                  {s === 'global' ? 'Global' : s === 'group' ? 'Group' : 'Board'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Mini Leaderboard Entries */}
+          {miniLeaderboard.slice(0, 5).map((entry) => (
+            <View
+              key={entry.rank}
+              style={[
+                styles.miniLeaderboardEntry,
+                entry.isCurrentUser && styles.miniLeaderboardEntryCurrent,
+              ]}
+            >
+              <Text style={styles.miniLeaderboardRank}>
+                {entry.rank <= 3
+                  ? ['🥇', '🥈', '🥉'][entry.rank - 1]
+                  : `#${entry.rank}`}
+              </Text>
+              <Text style={styles.miniLeaderboardName} numberOfLines={1}>
+                {entry.username}
+              </Text>
+              <Text style={styles.miniLeaderboardScore}>
+                {entry.score.toLocaleString()}
+              </Text>
+            </View>
+          ))}
+          {miniLeaderboard.length === 0 && (
+            <Text style={styles.emptyText}>No leaderboard data yet</Text>
+          )}
+        </View>
+
+        {/* Active Event Banner */}
+        {activeEvent && (
+          <TouchableOpacity
+            style={styles.eventBanner}
+            onPress={() => navigateTo('Events')}
+          >
+            <LinearGradient colors={['#8b5cf620', '#ec489920']} style={styles.eventBannerGradient}>
+              <View style={styles.eventBannerContent}>
+                <View style={styles.eventBannerInfo}>
+                  <Text style={styles.eventBannerEmoji}>🎉</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.eventBannerTitle}>{activeEvent.name}</Text>
+                    <Text style={styles.eventBannerSub}>
+                      Tier {activeEvent.battlePassTier} &middot; {activeEvent.battlePassXP.toLocaleString()} XP
+                    </Text>
+                  </View>
+                </View>
+                {/* Battle Pass Progress Mini Bar */}
+                <View style={styles.eventProgressBar}>
+                  <View
+                    style={[
+                      styles.eventProgressFill,
+                      { width: `${Math.min(100, (activeEvent.battlePassXP % 1000) / 10)}%` },
+                    ]}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+
+        {/* Quick Actions */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickLinks}>
           <QuickLink
@@ -466,5 +571,111 @@ const styles = StyleSheet.create({
   quickLinks: {
     gap: 12,
     marginBottom: 24,
+  },
+  // Mini Leaderboard
+  miniLeaderboard: {
+    marginBottom: 20,
+  },
+  scopeToggle: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  scopeButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: '#1f293740',
+    borderWidth: 1,
+    borderColor: '#ffffff10',
+  },
+  scopeButtonActive: {
+    backgroundColor: '#8b5cf620',
+    borderColor: '#8b5cf640',
+  },
+  scopeButtonText: {
+    fontSize: 13,
+    color: '#9ca3af',
+    fontWeight: '500',
+  },
+  scopeButtonTextActive: {
+    color: '#8b5cf6',
+  },
+  miniLeaderboardEntry: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    gap: 12,
+    borderRadius: 8,
+  },
+  miniLeaderboardEntryCurrent: {
+    backgroundColor: '#8b5cf610',
+  },
+  miniLeaderboardRank: {
+    fontSize: 16,
+    width: 32,
+    textAlign: 'center',
+    color: '#9ca3af',
+  },
+  miniLeaderboardName: {
+    flex: 1,
+    fontSize: 14,
+    color: '#fff',
+  },
+  miniLeaderboardScore: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#8b5cf6',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#6b7280',
+    fontSize: 13,
+    paddingVertical: 12,
+  },
+  // Event Banner
+  eventBanner: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  eventBannerGradient: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#8b5cf630',
+  },
+  eventBannerContent: {
+    gap: 10,
+  },
+  eventBannerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  eventBannerEmoji: {
+    fontSize: 28,
+  },
+  eventBannerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  eventBannerSub: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 2,
+  },
+  eventProgressBar: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#1f2937',
+    overflow: 'hidden',
+  },
+  eventProgressFill: {
+    height: '100%',
+    borderRadius: 3,
+    backgroundColor: '#8b5cf6',
   },
 });
