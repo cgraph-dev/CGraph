@@ -8,6 +8,23 @@ defmodule CGraph.Gamification.QuestSystem do
   alias CGraph.Gamification.{Quest, UserQuest}
   alias CGraph.Repo
 
+  require Logger
+
+  # Maps XP pipeline action atoms to quest objective type strings.
+  # A single XP action can progress multiple quest objective types.
+  @action_to_objective_types %{
+    message: ["message_sent"],
+    forum_thread_created: ["forum_thread"],
+    forum_post_created: ["forum_post"],
+    forum_upvote_received: ["forum_upvote_received"],
+    friend_added: ["friend_added"],
+    group_joined: ["group_message_sent"],
+    voice_minute: ["voice_joined"],
+    reaction_sent: ["reaction_added"],
+    profile_updated: [],
+    daily_login: ["login_streak"]
+  }
+
   @doc "List available quests, optionally filtered by type."
   @spec list_available_quests(keyword()) :: [Quest.t()]
   def list_available_quests(opts \\ []) do
@@ -61,8 +78,11 @@ defmodule CGraph.Gamification.QuestSystem do
   end
 
   @doc "Update quest progress for a user based on objective type."
-  @spec update_quest_progress(String.t(), String.t(), non_neg_integer()) :: :ok
+  @spec update_quest_progress(String.t(), atom() | String.t(), non_neg_integer()) :: :ok
   def update_quest_progress(user_id, objective_type, increment \\ 1) do
+    # Normalize objective types: XP action atoms → quest objective strings
+    objective_strings = resolve_objective_types(objective_type)
+
     user_quests =
       from(uq in UserQuest,
         where: uq.user_id == ^user_id and uq.completed == false,
@@ -73,7 +93,7 @@ defmodule CGraph.Gamification.QuestSystem do
     for uq <- user_quests do
       objectives = get_in(uq.quest.objectives, ["objectives"]) || []
       matching = Enum.filter(objectives, fn obj ->
-        obj["id"] == objective_type or obj["type"] == objective_type
+        obj["id"] in objective_strings or obj["type"] in objective_strings
       end)
 
       for obj <- matching do
@@ -93,7 +113,12 @@ defmodule CGraph.Gamification.QuestSystem do
           %{progress: new_progress}
         end
 
-        uq |> Ecto.Changeset.change(changes) |> Repo.update()
+        {:ok, updated} = uq |> Ecto.Changeset.change(changes) |> Repo.update()
+
+        # Broadcast quest completion for notification
+        if all_complete and not uq.completed do
+          broadcast_quest_completed(user_id, updated)
+        end
       end
     end
 
@@ -128,12 +153,59 @@ defmodule CGraph.Gamification.QuestSystem do
               description: "Completed: #{quest.title}", reference_type: "quest", reference_id: quest.id)
           end
 
+          # Trigger quest-related achievement checks
+          Task.start(fn ->
+            CGraph.Gamification.AchievementTriggers.check_all(user_id, :quest_completed)
+          end)
+
+          # Broadcast quest claimed event
+          Phoenix.PubSub.broadcast(
+            CGraph.PubSub,
+            "gamification:#{user_id}",
+            {:quest_claimed, %{quest_id: quest.id, xp: quest.xp_reward, coins: quest.coin_reward}}
+          )
+
           %{xp: quest.xp_reward, coins: quest.coin_reward}
         end)
     end
   end
 
   # Private helpers
+
+  # Resolves an XP action type atom/string to the quest objective type strings it maps to.
+  defp resolve_objective_types(objective_type) when is_atom(objective_type) do
+    case Map.get(@action_to_objective_types, objective_type) do
+      nil ->
+        # Fall back to stringified atom
+        [Atom.to_string(objective_type)]
+
+      types ->
+        # Include direct string conversion as fallback
+        types ++ [Atom.to_string(objective_type)]
+    end
+    |> Enum.uniq()
+  end
+
+  defp resolve_objective_types(objective_type) when is_binary(objective_type) do
+    [objective_type]
+  end
+
+  defp broadcast_quest_completed(user_id, user_quest) do
+    Phoenix.PubSub.broadcast(
+      CGraph.PubSub,
+      "gamification:#{user_id}",
+      {:quest_completed, %{
+        user_quest_id: user_quest.id,
+        quest_id: user_quest.quest_id,
+        quest_title: user_quest.quest.title,
+        xp_reward: user_quest.quest.xp_reward,
+        coin_reward: user_quest.quest.coin_reward
+      }}
+    )
+  rescue
+    error ->
+      Logger.warning("QuestSystem: broadcast failed", error: inspect(error))
+  end
 
   defp calculate_quest_expiry(quest) do
     now = DateTime.utc_now()
