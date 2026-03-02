@@ -10,11 +10,37 @@ import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 import { tweens, loop, springs, staggerConfigs } from '@/lib/animation-presets';
+import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
+import type { FeatureGateKey } from '@cgraph/shared-types';
+
+/**
+ * Lock badge overlay for level-gated nav items.
+ * Shows a small lock icon with tooltip when the feature is locked.
+ */
+function NavItemGateBadge({ feature }: { feature: FeatureGateKey }) {
+  const { unlocked, requiredLevel } = useLevelGate(feature);
+
+  if (unlocked) return null;
+
+  return (
+    <motion.div
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      className="absolute -right-1 -top-1 z-30 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg"
+      title={`Unlock at Level ${requiredLevel}`}
+      style={{
+        boxShadow: '0 0 8px rgba(139, 92, 246, 0.5)',
+      }}
+    >
+      <LockClosedIcon className="h-2.5 w-2.5 text-white" />
+    </motion.div>
+  );
+}
 
 interface SidebarProps {
   user: User | null;
@@ -201,6 +227,11 @@ export default function Sidebar({
                         boxShadow: '0 0 10px rgba(16, 185, 129, 0.8)',
                       }}
                     />
+                  )}
+
+                  {/* Level gate lock badge */}
+                  {'featureGate' in item && item.featureGate && (
+                    <NavItemGateBadge feature={item.featureGate as FeatureGateKey} />
                   )}
                 </motion.div>
               </NavLink>
