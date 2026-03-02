@@ -53,6 +53,9 @@ export function VoiceMessagePlayer({
     waveformData || generatePlaceholderWaveform(50)
   );
   const [isLoading, setIsLoading] = useState(!waveformData);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+
+  const SPEED_OPTIONS = [1, 1.5, 2] as const;
 
   // Fetch waveform data if not provided
   useEffect(() => {
@@ -193,6 +196,21 @@ export function VoiceMessagePlayer({
     document.body.removeChild(link);
   }, [audioUrl, messageId]);
 
+  const cyclePlaybackSpeed = useCallback(() => {
+    setPlaybackSpeed((prev) => {
+      const currentIndex = SPEED_OPTIONS.indexOf(prev as (typeof SPEED_OPTIONS)[number]);
+      const nextIndex = (currentIndex + 1) % SPEED_OPTIONS.length;
+      const newSpeed = SPEED_OPTIONS[nextIndex];
+
+      const audio = audioRef.current;
+      if (audio) {
+        audio.playbackRate = newSpeed;
+      }
+
+      return newSpeed;
+    });
+  }, []);
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -231,6 +249,16 @@ export function VoiceMessagePlayer({
           <span>{formatTime(audioDuration)}</span>
         </div>
       </div>
+
+      {/* Speed Control */}
+      <button
+        onClick={cyclePlaybackSpeed}
+        className="flex h-7 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gray-200 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        aria-label={`Playback speed: ${playbackSpeed}x`}
+        title={`Playback speed: ${playbackSpeed}x`}
+      >
+        {playbackSpeed}x
+      </button>
 
       {/* Download Button */}
       {showDownload && (
