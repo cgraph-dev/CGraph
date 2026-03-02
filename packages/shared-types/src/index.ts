@@ -11,3 +11,4 @@ export * from './forum-permissions';
 export * from './forum-user-groups';
 export * from './gamification';
 export * from './subscription';
+export * from './billing';
