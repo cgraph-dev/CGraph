@@ -22,6 +22,7 @@ import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import GlassCard from '../../components/ui/glass-card';
 import { useAuthStore, useThemeStore } from '@/stores';
 import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payment';
+import { iapService, type IAPProduct } from '../../features/premium/services/iap-service';
 import { PremiumTier, BillingCycle, PREMIUM_TIERS } from './premium/premium-types';
 import { BillingToggle } from './premium/billing-toggle';
 import { TierCard } from './premium/tier-card';
@@ -39,6 +40,7 @@ function PremiumScreen(): React.ReactElement | null {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [_isLoading, setIsLoading] = useState(true);
   const [_isPurchasing, setIsPurchasing] = useState(false);
+  const [iapProducts, setIapProducts] = useState<IAPProduct[]>([]);
 
   useEffect(() => {
     const initializePayments = async () => {
@@ -46,6 +48,15 @@ function PremiumScreen(): React.ReactElement | null {
         await paymentService.initialize();
         const status = await paymentService.getSubscriptionStatus();
         setSubscriptionStatus(status);
+
+        // Initialize native IAP and load real store prices
+        try {
+          await iapService.initialize();
+          const products = await iapService.loadProducts();
+          setIapProducts(products);
+        } catch (iapErr) {
+          console.warn('[PremiumScreen] IAP init failed (expected in simulator):', iapErr);
+        }
       } catch (error) {
         console.error('[PremiumScreen] Error fetching subscription:', error);
       } finally {
@@ -53,6 +64,10 @@ function PremiumScreen(): React.ReactElement | null {
       }
     };
     initializePayments();
+
+    return () => {
+      iapService.destroy();
+    };
   }, []);
 
   const currentTier = subscriptionStatus?.tier || 'free';
@@ -89,20 +104,38 @@ function PremiumScreen(): React.ReactElement | null {
           onPress: async () => {
             setIsPurchasing(true);
             try {
-              const productId =
+              // Use native IAP for subscription purchases on mobile
+              const iapSku =
                 tier.id === 'premium'
-                  ? billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_YEARLY : PRODUCT_IDS.PREMIUM_MONTHLY
-                  : billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY;
+                  ? billingCycle === 'yearly' ? 'com.cgraph.premium.yearly' : 'com.cgraph.premium.monthly'
+                  : billingCycle === 'yearly' ? 'com.cgraph.enterprise.yearly' : 'com.cgraph.enterprise.monthly';
 
-              const purchase = await paymentService.purchaseProduct(productId);
-              if (purchase) {
-                const status = await paymentService.getSubscriptionStatus();
-                setSubscriptionStatus(status);
-                if (purchase.purchaseState === 'purchased') {
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                  Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
-                } else if (purchase.purchaseState === 'pending') {
-                  Alert.alert('Processing', 'Your purchase is being processed. It may take a few moments.');
+              const hasIAP = iapProducts.length > 0;
+              if (hasIAP) {
+                await iapService.purchaseSubscription(iapSku, {
+                  onSuccess: async () => {
+                    const status = await paymentService.getSubscriptionStatus();
+                    setSubscriptionStatus(status);
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                  },
+                });
+              } else {
+                // Fallback to REST-based purchase (simulator / web)
+                const productId =
+                  tier.id === 'premium'
+                    ? billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_YEARLY : PRODUCT_IDS.PREMIUM_MONTHLY
+                    : billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY;
+                const purchase = await paymentService.purchaseProduct(productId);
+                if (purchase) {
+                  const status = await paymentService.getSubscriptionStatus();
+                  setSubscriptionStatus(status);
+                  if (purchase.purchaseState === 'purchased') {
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                  } else if (purchase.purchaseState === 'pending') {
+                    Alert.alert('Processing', 'Your purchase is being processed. It may take a few moments.');
+                  }
                 }
               }
             } catch (error: unknown) {

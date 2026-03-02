@@ -8,7 +8,9 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
+import { Linking, Platform } from 'react-native';
 import paymentService, { SubscriptionStatus, Product } from '../../../lib/payment';
+import { iapService, type IAPProduct } from '../services/iap-service';
 import api from '../../../lib/api';
 import { TIER_FEATURES } from '../services';
 
@@ -156,6 +158,99 @@ export function useSubscription() {
     subscribe,
     cancel,
     restore,
+  };
+}
+
+/**
+ * Hook for IAP-specific subscription actions.
+ * Provides purchaseViaIAP, restoreIAP, and manageNativeSubscription.
+ */
+export function useIAPSubscription() {
+  const [iapProducts, setIapProducts] = useState<IAPProduct[]>([]);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await iapService.initialize();
+        const products = await iapService.loadProducts();
+        setIapProducts(products);
+      } catch (err) {
+        console.warn('[useIAPSubscription] IAP init failed:', err);
+      }
+    };
+    init();
+
+    return () => {
+      iapService.destroy();
+    };
+  }, []);
+
+  const purchaseViaIAP = useCallback(async (productId: string) => {
+    setIsPurchasing(true);
+    setError(null);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+    try {
+      await iapService.purchaseSubscription(productId, {
+        onSuccess: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          setIsPurchasing(false);
+        },
+        onError: (err) => {
+          setError(err.message || 'Purchase failed');
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          setIsPurchasing(false);
+        },
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'IAP purchase failed';
+      setError(message);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setIsPurchasing(false);
+    }
+  }, []);
+
+  const restoreIAP = useCallback(async () => {
+    setIsRestoring(true);
+    setError(null);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      const result = await iapService.restorePurchases();
+      if (result.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      return result.success;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Restore failed';
+      setError(message);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return false;
+    } finally {
+      setIsRestoring(false);
+    }
+  }, []);
+
+  const manageNativeSubscription = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (Platform.OS === 'ios') {
+      Linking.openURL('https://apps.apple.com/account/subscriptions');
+    } else {
+      Linking.openURL('https://play.google.com/store/account/subscriptions');
+    }
+  }, []);
+
+  return {
+    iapProducts,
+    isPurchasing,
+    isRestoring,
+    error,
+    purchaseViaIAP,
+    restoreIAP,
+    manageNativeSubscription,
   };
 }
 
