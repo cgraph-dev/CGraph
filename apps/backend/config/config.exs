@@ -103,7 +103,9 @@ config :cgraph, Oban,
        # Generate fresh weekly quests on Monday at midnight UTC
        {"0 0 * * 1", CGraph.Gamification.QuestRotationWorker, args: %{type: "weekly"}},
        # Generate monthly quests on the 1st at midnight UTC
-       {"0 0 1 * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "monthly"}}
+       {"0 0 1 * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "monthly"}},
+       # Check event lifecycle every 15 minutes (auto-activate/end events)
+       {"*/15 * * * *", CGraph.Gamification.EventLifecycleWorker, args: %{action: "check_lifecycle"}}
      ]}
   ],
   queues: [
