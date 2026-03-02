@@ -123,7 +123,9 @@ defmodule CGraph.Gamification.AchievementSystem do
 
   @doc "Check level achievements (called on level up)."
   @spec check_level_achievements(map(), integer()) :: :ok
-  def check_level_achievements(_user, _level), do: :ok
+  def check_level_achievements(user, level) do
+    CGraph.Gamification.AchievementTriggers.check_level_achievements(user, level)
+  end
 
   @doc "Check streak achievements."
   @spec check_streak_achievements(map(), integer()) :: list()
