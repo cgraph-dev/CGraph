@@ -86,7 +86,7 @@ defmodule CGraphWeb.GamificationChannel do
     {:noreply, socket}
   end
 
-  # Handle XP gain broadcasts
+  # Handle XP gain broadcasts (legacy)
   @impl true
   def handle_info({:xp_gained, data}, socket) do
     if check_rate_limit(socket, :xp_gain) do
@@ -95,6 +95,45 @@ defmodule CGraphWeb.GamificationChannel do
     else
       {:noreply, socket}
     end
+  end
+
+  # Handle XP awarded broadcasts from XpEventHandler pipeline
+  # Richer payload than :xp_gained — includes daily cap status and level progress
+  def handle_info({:xp_awarded, data}, socket) do
+    if check_rate_limit(socket, :xp_gain) do
+      push(socket, "xp_awarded", %{
+        amount: data.amount,
+        source: data.source,
+        total_xp: data.total_xp,
+        level: data.level,
+        level_up: data.level_up,
+        level_progress: data.level_progress,
+        daily_cap_status: data.daily_cap_status
+      })
+      {:noreply, update_rate_limit(socket, :xp_gain)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  # Handle coins awarded broadcasts
+  def handle_info({:coins_awarded, data}, socket) do
+    push(socket, "coins_awarded", %{
+      amount: data.amount,
+      type: data.type,
+      balance: data.balance
+    })
+    {:noreply, socket}
+  end
+
+  # Handle daily cap reached broadcasts
+  def handle_info({:cap_reached, data}, socket) do
+    push(socket, "cap_reached", %{
+      source: data.source,
+      daily_used: data.daily_used,
+      daily_limit: data.daily_limit
+    })
+    {:noreply, socket}
   end
 
   # Handle level up broadcasts
