@@ -76,7 +76,19 @@ defmodule CGraphWeb.API.V1.UploadJSON do
       # Metadata
       is_public: Map.get(file, :is_public, false),
       checksum: Map.get(file, :checksum),
-      created_at: file.inserted_at
+      created_at: file.inserted_at,
+      # E2EE encryption metadata (E2EE-05)
+      is_encrypted: Map.get(file, :is_encrypted, false),
+      encryption: if Map.get(file, :is_encrypted, false) do
+        %{
+          encrypted_key: Map.get(file, :encrypted_key),
+          encryption_iv: Map.get(file, :encryption_iv),
+          key_algorithm: Map.get(file, :key_algorithm),
+          sender_device_id: Map.get(file, :sender_device_id)
+        }
+      else
+        nil
+      end
     }
   end
 

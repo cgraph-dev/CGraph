@@ -6,7 +6,9 @@ import {
   DocumentIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
+import { encryptFileForUpload } from '@/lib/crypto/file-encryption';
 
 interface TierLimits {
   max_file_size_bytes: number;
@@ -83,7 +85,7 @@ export default function FileUpload({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     if (!files) return;
     setError(null);
 
@@ -105,6 +107,30 @@ export default function FileUpload({
     if (validFiles.length > 0) {
       setPreviews((prev) => (multiple ? [...prev, ...newPreviews] : newPreviews));
       setUploadProgress(0);
+
+      // E2EE: encrypt files before upload if conversation is encrypted
+      let filesToUpload = validFiles;
+      if (isEncrypted && conversationId) {
+        try {
+          const encryptedFiles = await Promise.all(
+            validFiles.map(async (file) => {
+              const { encryptedBlob, metadata } = await encryptFileForUpload(file, conversationId);
+              // Attach encryption metadata to the blob for the upload handler
+              const encryptedFile = new File([encryptedBlob], file.name, {
+                type: 'application/octet-stream',
+              });
+              Object.defineProperty(encryptedFile, 'encryptionMetadata', { value: metadata });
+              return encryptedFile;
+            })
+          );
+          filesToUpload = encryptedFiles;
+        } catch (err) {
+          setError('Failed to encrypt file. Please try again.');
+          setUploadProgress(null);
+          return;
+        }
+      }
+
       // Simulate upload progress (actual progress comes from presigned URL PUT)
       const interval = setInterval(() => {
         setUploadProgress((prev) => {
@@ -113,7 +139,7 @@ export default function FileUpload({
           return prev;
         });
       }, 200);
-      onUpload(validFiles);
+      onUpload(filesToUpload);
       setTimeout(() => {
         setUploadProgress(100);
         setTimeout(() => setUploadProgress(null), 1000);

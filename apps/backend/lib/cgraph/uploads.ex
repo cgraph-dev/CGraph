@@ -76,6 +76,14 @@ defmodule CGraph.Uploads do
       field :checksum, :string
       field :is_public, :boolean, default: false
       field :context, :string
+
+      # E2EE encryption metadata (E2EE-05)
+      field :encrypted_key, :string
+      field :encryption_iv, :string
+      field :key_algorithm, :string, default: "aes-256-gcm"
+      field :sender_device_id, :string
+      field :is_encrypted, :boolean, default: false
+
       belongs_to :user, CGraph.Accounts.User, type: :binary_id
 
       timestamps()
@@ -89,6 +97,15 @@ defmodule CGraph.Uploads do
                       :thumbnail_url, :width, :height, :duration, :checksum,
                       :is_public, :context, :user_id])
       |> validate_required([:filename, :content_type, :size, :url, :user_id])
+    end
+
+    @doc "Changeset for adding encryption metadata to an existing upload."
+    @spec encryption_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
+    def encryption_changeset(file, attrs) do
+      file
+      |> cast(attrs, [:encrypted_key, :encryption_iv, :key_algorithm, :sender_device_id, :is_encrypted])
+      |> validate_required([:encrypted_key, :encryption_iv])
+      |> validate_inclusion(:key_algorithm, ["aes-256-gcm"])
     end
   end
 
@@ -322,6 +339,19 @@ defmodule CGraph.Uploads do
       user_id: user.id,
       inserted_at: DateTime.utc_now()
     }}
+  end
+
+  @doc """
+  Update encryption metadata on an existing upload record.
+
+  Called after confirming a presigned upload when the client provides
+  E2EE encryption metadata (encrypted_key, iv, algorithm, device_id).
+  """
+  @spec update_encryption_metadata(UploadedFile.t(), map()) :: {:ok, UploadedFile.t()} | {:error, Ecto.Changeset.t()}
+  def update_encryption_metadata(file, attrs) do
+    file
+    |> UploadedFile.encryption_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """

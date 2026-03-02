@@ -155,10 +155,28 @@ defmodule CGraphWeb.API.V1.UploadController do
   POST /api/v1/uploads/confirm
   """
   @spec confirm(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def confirm(conn, %{"upload_id" => upload_id, "key" => key}) do
+  def confirm(conn, %{"upload_id" => upload_id, "key" => key} = params) do
     user = conn.assigns.current_user
 
     with {:ok, file} <- Uploads.confirm_presigned_upload(user, upload_id, key) do
+      # If encryption metadata is provided, store it on the upload record
+      encryption_params = Map.get(params, "encryption", %{})
+
+      if encryption_params != %{} do
+        alias CGraph.Uploads.EncryptionMetadata
+
+        changeset = EncryptionMetadata.changeset(%EncryptionMetadata{}, encryption_params)
+
+        if changeset.valid? do
+          encryption_attrs =
+            encryption_params
+            |> Map.take(~w(encrypted_key encryption_iv key_algorithm sender_device_id))
+            |> Map.put("is_encrypted", true)
+
+          Uploads.update_encryption_metadata(file, encryption_attrs)
+        end
+      end
+
       render(conn, :show, file: file)
     end
   end
