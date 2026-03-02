@@ -93,6 +93,15 @@ interface GamificationState {
   claimDailyStreak: () => Promise<{ coins: number; streak: number } | null>;
   equipTitle: (titleId: string) => Promise<void>;
   unequipTitle: () => Promise<void>;
+  handleXPAwarded: (data: {
+    amount: number;
+    source: string;
+    total_xp: number;
+    level: number;
+    level_up: boolean;
+    level_progress: number;
+  }) => void;
+  handleCoinsAwarded: (data: { amount: number; balance: number }) => void;
   reset: () => void;
 }
 
@@ -234,6 +243,26 @@ export const useGamificationStore = create<GamificationState>()(
       },
 
       reset: () => set(INITIAL_STATE),
+
+      // Socket event handlers for real-time XP updates
+      handleXPAwarded: (data: {
+        amount: number;
+        source: string;
+        total_xp: number;
+        level: number;
+        level_up: boolean;
+        level_progress: number;
+      }) => {
+        set({
+          xp: data.total_xp,
+          level: data.level,
+          levelProgress: data.level_progress,
+        });
+      },
+
+      handleCoinsAwarded: (data: { amount: number; balance: number }) => {
+        set({ coins: data.balance });
+      },
     }),
     {
       name: 'cgraph-gamification',

@@ -24,6 +24,10 @@ export type { Achievement, AchievementRarity } from './achievement-notification'
 export { default as LevelProgress } from './level-progress';
 export { default as LevelUpModal } from './level-up-modal';
 
+// XP Toast
+export { default as XPToast, useXPToastQueue } from './xp-toast';
+export type { XPToastData, XPToastType } from './xp-toast';
+
 // Quest system
 export { default as QuestPanel } from './quest-panel';
 export type { Quest, QuestType, QuestStatus, QuestReward } from './quest-panel';
