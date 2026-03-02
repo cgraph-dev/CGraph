@@ -25,6 +25,14 @@ defmodule CGraphWeb.Router.HealthRoutes do
         post "/stripe", StripeWebhookController, :webhook
       end
 
+      # IAP server-to-server notifications (no auth — verified by platform signature)
+      scope "/api/v1/iap", CGraphWeb do
+        pipe_through :api
+
+        post "/notifications/apple", IAPController, :apple_notification
+        post "/notifications/google", IAPController, :google_notification
+      end
+
       # Telemetry endpoints (relaxed rate limiting, minimal auth)
       scope "/api/v1/telemetry", CGraphWeb.API.V1 do
         pipe_through :api_relaxed

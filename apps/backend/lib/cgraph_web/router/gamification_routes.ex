@@ -88,6 +88,10 @@ defmodule CGraphWeb.Router.GamificationRoutes do
         post "/premium/subscribe", PremiumController, :subscribe
         post "/premium/cancel", PremiumController, :cancel
 
+        # IAP validation (authenticated — mobile sends receipt after native purchase)
+        post "/iap/validate", IAPController, :validate
+        post "/iap/restore", IAPController, :restore
+
         # ── Level-gated: Quests (level 3) ─────────────────────────
         scope "/quests" do
           pipe_through [:level_gate_quests]
