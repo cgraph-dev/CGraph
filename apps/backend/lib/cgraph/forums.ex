@@ -82,7 +82,27 @@ defmodule CGraph.Forums do
   # ============================================================================
 
   defdelegate list_posts(forum, opts \\ []), to: CGraph.Forums.Posts
-  defdelegate create_post(forum, user, attrs), to: CGraph.Forums.Posts
+
+  @doc "Create a forum post and trigger XP pipeline."
+  @spec create_post(struct(), struct(), map()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
+  def create_post(forum, user, attrs) do
+    case CGraph.Forums.Posts.create_post(forum, user, attrs) do
+      {:ok, post} ->
+        Task.start(fn ->
+          CGraph.Gamification.XpEventHandler.handle_action(
+            user,
+            :forum_post_created,
+            reference_type: "post",
+            reference_id: post.id,
+            board_id: Map.get(forum, :board_id) || Map.get(forum, :id)
+          )
+        end)
+        {:ok, post}
+
+      error ->
+        error
+    end
+  end
   defdelegate update_post(post, attrs), to: CGraph.Forums.Posts
   defdelegate delete_post(post), to: CGraph.Forums.Posts
   defdelegate pin_post(post), to: CGraph.Forums.Posts
@@ -270,7 +290,28 @@ defmodule CGraph.Forums do
 
   defdelegate list_threads(board_id, opts \\ []), to: CGraph.Forums.Threads
   defdelegate get_thread(id), to: CGraph.Forums.Threads
-  defdelegate create_thread(forum, user, attrs), to: CGraph.Forums.Threads
+
+  @doc "Create a thread and trigger XP pipeline."
+  @spec create_thread(struct(), struct(), map()) :: {:ok, term()} | {:error, term()}
+  def create_thread(forum, user, attrs) do
+    case CGraph.Forums.Threads.create_thread(forum, user, attrs) do
+      {:ok, thread} ->
+        Task.start(fn ->
+          board_id = thread.board_id
+          CGraph.Gamification.XpEventHandler.handle_action(
+            user,
+            :forum_thread_created,
+            reference_type: "thread",
+            reference_id: thread.id,
+            board_id: board_id
+          )
+        end)
+        {:ok, thread}
+
+      error ->
+        error
+    end
+  end
 
   @doc "Create a thread from a single attrs map (used by controllers)."
   @spec create_thread(map()) :: {:ok, term()} | {:error, Ecto.Changeset.t()}
