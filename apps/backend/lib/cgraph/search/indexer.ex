@@ -272,11 +272,22 @@ defmodule CGraph.Search.Indexer do
 
   def prepare_document(:messages, message) do
     # Only index non-encrypted message metadata
-    if message.encrypted do
+    sender_name = case message do
+      %{sender: %{display_name: name}} when is_binary(name) -> name
+      %{sender: %{username: name}} when is_binary(name) -> name
+      %{user: %{display_name: name}} when is_binary(name) -> name
+      %{user: %{username: name}} when is_binary(name) -> name
+      _ -> nil
+    end
+
+    if Map.get(message, :encrypted, false) do
       %{
         "id" => to_string(message.id),
         "conversation_id" => to_string(message.conversation_id),
         "sender_id" => to_string(message.user_id),
+        "sender_name" => sender_name || "",
+        "type" => Map.get(message, :type, "text"),
+        "has_attachment" => Map.get(message, :has_attachment, false),
         "created_at" => format_datetime(message.inserted_at),
         "content" => ""  # Don't index encrypted content
       }
@@ -286,6 +297,9 @@ defmodule CGraph.Search.Indexer do
         "content" => truncate_content(message.content, 2000),
         "conversation_id" => to_string(message.conversation_id),
         "sender_id" => to_string(message.user_id),
+        "sender_name" => sender_name || "",
+        "type" => Map.get(message, :type, "text"),
+        "has_attachment" => Map.get(message, :has_attachment, false),
         "created_at" => format_datetime(message.inserted_at)
       }
     end

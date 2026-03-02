@@ -116,8 +116,8 @@ defmodule CGraph.Search.Engine do
     },
     messages: %{
       primary_key: "id",
-      searchable_attributes: ["content"],
-      filterable_attributes: ["conversation_id", "sender_id", "created_at"],
+      searchable_attributes: ["content", "sender_name"],
+      filterable_attributes: ["conversation_id", "sender_id", "type", "created_at", "has_attachment"],
       sortable_attributes: ["created_at"],
       ranking_rules: ["words", "typo", "proximity", "sort"]
     },
