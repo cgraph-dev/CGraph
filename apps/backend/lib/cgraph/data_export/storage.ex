@@ -121,13 +121,24 @@ defmodule CGraph.DataExport.Storage do
   end
 
   @doc """
-  Upload an export to S3 (stub implementation).
+  Upload an export to Cloudflare R2 via ExAws S3-compatible API.
+
+  Expects a map with :key, :body, and :content_type fields.
+  Returns {:ok, key} on success or {:error, reason} on failure.
   """
-  @spec upload_to_s3(map()) :: :ok
-  def upload_to_s3(_export) do
-    # S3 upload implementation would go here
-    # Using ExAws.S3 for production
-    :ok
+  @spec upload_to_s3(map()) :: {:ok, String.t()} | {:error, term()}
+  def upload_to_s3(data) do
+    bucket = Application.get_env(:cgraph, :r2_bucket, "cgraph-exports")
+
+    ExAws.S3.put_object(bucket, data.key, data.body, [
+      {:content_type, data.content_type},
+      {:acl, :private}
+    ])
+    |> ExAws.request()
+    |> case do
+      {:ok, _} -> {:ok, data.key}
+      {:error, reason} -> {:error, {:s3_upload_failed, reason}}
+    end
   end
 
   # ---------------------------------------------------------------------------

@@ -295,6 +295,22 @@ defmodule CGraph.Uploads do
   end
 
   @doc """
+  Verify connectivity to Cloudflare R2 storage.
+
+  Uses HEAD bucket request to confirm credentials and bucket are reachable.
+  Returns :ok on success or {:error, {:r2_unreachable, reason}} on failure.
+  """
+  @spec verify_r2_connectivity() :: :ok | {:error, term()}
+  def verify_r2_connectivity do
+    bucket = Application.get_env(:cgraph, :upload_bucket, "cgraph-uploads")
+
+    case ExAws.S3.head_bucket(bucket) |> ExAws.request() do
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, {:r2_unreachable, reason}}
+    end
+  end
+
+  @doc """
   Confirm a presigned upload completed.
   """
   @spec confirm_presigned_upload(map(), String.t(), String.t()) :: {:ok, UploadedFile.t()}
