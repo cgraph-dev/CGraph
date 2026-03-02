@@ -22,3 +22,5 @@ export { VideoPlayerModal } from './video-player-modal';
 export { PinnedMessagesBar } from './pinned-messages-bar';
 export { ChatInputArea } from './chat-input-area';
 export { MessageBubble } from './message-bubble';
+export { ScheduleMessageModal } from './schedule-message-modal';
+export { ScheduledMessagesList } from './scheduled-messages-list';
