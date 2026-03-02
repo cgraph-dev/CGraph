@@ -130,10 +130,25 @@ defmodule CGraph.Messaging.CoreMessages do
       |> Map.put("sender_id", user.id)
       |> Map.put("conversation_id", conversation.id)
 
-    case check_idempotency(conversation.id, message_attrs) do
-      {:ok, existing_message} -> {:ok, existing_message}
-      :not_found -> do_create_message(conversation, message_attrs)
+    result =
+      case check_idempotency(conversation.id, message_attrs) do
+        {:ok, existing_message} -> {:ok, existing_message}
+        :not_found -> do_create_message(conversation, message_attrs)
+      end
+
+    # Trigger XP pipeline for successful user messages (fire-and-forget)
+    with {:ok, message} <- result do
+      Task.start(fn ->
+        CGraph.Gamification.XpEventHandler.handle_action(
+          user,
+          :message,
+          reference_type: "message",
+          reference_id: message.id
+        )
+      end)
     end
+
+    result
   end
 
   @doc "Send a message (alias for create_message with conversation first)."
