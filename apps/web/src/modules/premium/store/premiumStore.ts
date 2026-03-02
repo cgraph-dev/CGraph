@@ -10,6 +10,28 @@ import { safeLocalStorage } from '@/lib/safeStorage';
 import { billingService } from '@/services/billing';
 import type { SubscriptionTier, PurchaseHistory } from './types';
 
+export interface Invoice {
+  id: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'open' | 'void' | 'uncollectible';
+  createdAt: string;
+  pdfUrl: string | null;
+}
+
+export interface TierFeatures {
+  xpMultiplier: number;
+  coinBonus: number;
+  customThemes: boolean;
+  exclusiveBadges: boolean;
+  exclusiveEffects: boolean;
+  prioritySupport: boolean;
+  dailyLimits: boolean;
+  maxFileSizeMb: number;
+  maxGroupsOwned: number;
+  customBanner: boolean;
+}
+
 export interface PremiumState {
   // Subscription
   isSubscribed: boolean;
@@ -17,6 +39,9 @@ export interface PremiumState {
   subscribedAt: string | null;
   expiresAt: string | null;
   status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | 'none';
+  cancelAtPeriodEnd: boolean;
+  graceUntil: string | null;
+  features: TierFeatures | null;
 
   // Coins
   coinBalance: number;
@@ -24,13 +49,22 @@ export interface PremiumState {
   // Purchase history
   purchaseHistory: PurchaseHistory[];
 
+  // Invoices
+  invoices: Invoice[];
+
+  // Portal
+  portalUrl: string | null;
+
   // Loading
   isLoading: boolean;
 
   // Actions
   fetchBillingStatus: () => Promise<void>;
+  fetchInvoices: () => Promise<void>;
   setSubscription: (tier: SubscriptionTier, expiresAt: string) => void;
   cancelSubscription: () => void;
+  openBillingPortal: () => Promise<void>;
+  subscribe: (tier: SubscriptionTier) => Promise<void>;
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
   addPurchase: (purchase: PurchaseHistory) => void;
@@ -50,8 +84,13 @@ export const usePremiumStore = create<PremiumState>()(
       subscribedAt: null,
       expiresAt: null,
       status: 'none',
+      cancelAtPeriodEnd: false,
+      graceUntil: null,
+      features: null,
       coinBalance: 0,
       purchaseHistory: [],
+      invoices: [],
+      portalUrl: null,
       isLoading: false,
 
       // Sync from backend billing API
@@ -59,19 +98,38 @@ export const usePremiumStore = create<PremiumState>()(
         set({ isLoading: true });
         try {
           const billing = await billingService.getStatus();
-          // type assertion: billing tier from API maps to SubscriptionTier enum
-           
           const tier = (billing.tier === 'free' ? null : billing.tier) as SubscriptionTier | null;
           set({
             isSubscribed: billing.status === 'active' || billing.status === 'trialing',
             currentTier: tier,
             expiresAt: billing.currentPeriodEnd,
             status: billing.status,
+            cancelAtPeriodEnd: billing.cancelAtPeriodEnd ?? false,
             isLoading: false,
           });
         } catch {
           set({ isLoading: false });
         }
+      },
+
+      // Fetch invoice history
+      fetchInvoices: async () => {
+        try {
+          const invoices = await billingService.getInvoices();
+          set({ invoices });
+        } catch {
+          // Silently fail — invoices are non-critical
+        }
+      },
+
+      // Subscribe to a tier via Stripe Checkout redirect
+      subscribe: async (tier: SubscriptionTier) => {
+        await billingService.redirectToCheckout(tier as any);
+      },
+
+      // Open Stripe Billing Portal
+      openBillingPortal: async () => {
+        await billingService.redirectToPortal();
       },
 
       // Actions
@@ -90,6 +148,7 @@ export const usePremiumStore = create<PremiumState>()(
           currentTier: null,
           subscribedAt: null,
           expiresAt: null,
+          cancelAtPeriodEnd: false,
         });
       },
 
@@ -134,8 +193,13 @@ export const usePremiumStore = create<PremiumState>()(
     subscribedAt: null,
     expiresAt: null,
     status: 'none',
+    cancelAtPeriodEnd: false,
+    graceUntil: null,
+    features: null,
     coinBalance: 0,
     purchaseHistory: [],
+    invoices: [],
+    portalUrl: null,
     isLoading: false,
   }),
 }),

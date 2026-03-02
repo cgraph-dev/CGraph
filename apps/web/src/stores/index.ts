@@ -98,3 +98,8 @@ export { useNotificationStore } from '../modules/social/store';
 export { useSearchStore } from '../modules/search/store';
 export { usePluginStore } from '../modules/settings/store';
 export { useCalendarStore } from '../modules/settings/store';
+
+// ============================================================================
+// Premium Domain (Subscription, Billing)
+// ============================================================================
+export { usePremiumStore } from '../modules/premium/store';

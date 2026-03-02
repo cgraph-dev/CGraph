@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';
+import { usePremiumStore } from '@/modules/premium/store';
 import { api } from '@/lib/api';
 import { safeRedirect } from '@/lib/security';
 import { toast } from '@/shared/components/ui';
@@ -19,12 +20,13 @@ import { tweens } from '@/lib/animation-presets';
  */
 export function BillingSettingsPanel() {
   const { user } = useAuthStore();
+  const { currentTier, expiresAt, cancelAtPeriodEnd, status: subStatus } = usePremiumStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const handleUpgrade = async () => {
     setIsLoading(true);
     try {
-      // Redirect to Stripe checkout or show upgrade modal
       const response = await api.post('/api/v1/billing/checkout');
       if (response.data?.checkout_url) {
         safeRedirect(response.data.checkout_url);
@@ -37,6 +39,21 @@ export function BillingSettingsPanel() {
       setIsLoading(false);
     }
   };
+
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    try {
+      await api.post('/api/v1/premium/cancel');
+      toast.success('Subscription will cancel at end of billing period');
+      usePremiumStore.getState().fetchBillingStatus();
+    } catch {
+      toast.error('Failed to cancel subscription');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const tierLabel = currentTier || (user?.isPremium ? 'premium' : 'free');
 
   return (
     <motion.div
@@ -58,29 +75,53 @@ export function BillingSettingsPanel() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-2xl font-bold text-white">
-              {user?.isPremium ? (
+              {tierLabel === 'premium' || tierLabel === 'enterprise' ? (
                 <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                  ✨ Premium
+                  ✨ {tierLabel.charAt(0).toUpperCase() + tierLabel.slice(1)}
                 </span>
               ) : (
                 'Free'
               )}
             </p>
             <p className="text-gray-400">
-              {user?.isPremium ? 'All features unlocked' : 'Basic features included'}
+              {tierLabel !== 'free' ? 'All features unlocked' : 'Basic features included'}
             </p>
+            {expiresAt && (
+              <p className="mt-1 text-xs text-gray-500">
+                {cancelAtPeriodEnd ? 'Cancels' : 'Renews'} on{' '}
+                {new Date(expiresAt).toLocaleDateString()}
+              </p>
+            )}
+            {cancelAtPeriodEnd && (
+              <p className="mt-1 text-xs text-yellow-400">
+                Subscription will end at the current billing period
+              </p>
+            )}
           </div>
-          {!user?.isPremium && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleUpgrade}
-              disabled={isLoading}
-              className="rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-4 py-2 font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-purple-700 disabled:opacity-50"
-            >
-              {isLoading ? 'Loading...' : 'Upgrade to Premium'}
-            </motion.button>
-          )}
+          <div className="flex flex-col gap-2">
+            {tierLabel === 'free' && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleUpgrade}
+                disabled={isLoading}
+                className="rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-4 py-2 font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-purple-700 disabled:opacity-50"
+              >
+                {isLoading ? 'Loading...' : 'Upgrade to Premium'}
+              </motion.button>
+            )}
+            {tierLabel !== 'free' && !cancelAtPeriodEnd && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleCancel}
+                disabled={isCancelling}
+                className="rounded-lg border border-red-500/50 px-4 py-2 text-sm font-medium text-red-400 transition-all hover:bg-red-500/10 disabled:opacity-50"
+              >
+                {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+              </motion.button>
+            )}
+          </div>
         </div>
       </GlassCard>
 

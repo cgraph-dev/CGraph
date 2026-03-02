@@ -50,6 +50,18 @@ export interface PortalSession {
 }
 
 /**
+ * Invoice from Stripe
+ */
+export interface InvoiceRecord {
+  id: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'open' | 'void' | 'uncollectible';
+  createdAt: string;
+  pdfUrl: string | null;
+}
+
+/**
  * Billing API service
  */
 export const billingService = {
@@ -117,6 +129,26 @@ export const billingService = {
   async redirectToPortal(): Promise<void> {
     const session = await this.createPortal();
     safeRedirect(session.url);
+  },
+
+  /**
+   * Get invoice history
+   */
+  async getInvoices(): Promise<InvoiceRecord[]> {
+    try {
+      const response = await api.get<{ data: InvoiceRecord[] }>('/premium/invoices');
+      return response.data.data ?? [];
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Cancel subscription
+   */
+  async cancelSubscription(): Promise<{ success: boolean; message: string }> {
+    const response = await api.post<{ success: boolean; message: string }>('/premium/cancel');
+    return response.data;
   },
 };
 

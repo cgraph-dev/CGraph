@@ -10,12 +10,13 @@
  */
 
 import { useState, useEffect } from 'react';
-import { CreditCard, ExternalLink, Check, Loader2, AlertCircle } from 'lucide-react';
+import { CreditCard, ExternalLink, Check, Loader2, AlertCircle, FileText } from 'lucide-react';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('BillingSettings');
-import { billingService, type BillingStatus } from '@/services/billing';
+import { billingService, type BillingStatus, type InvoiceRecord } from '@/services/billing';
 import { PLANS, type PlanId } from '@/lib/stripe';
+import { usePremiumStore } from '@/modules/premium/store';
 
 interface BillingSettingsProps {
   className?: string;
@@ -34,9 +35,12 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
   const [portalLoading, setPortalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
+  const fetchBillingStatus = usePremiumStore((s) => s.fetchBillingStatus);
 
   useEffect(() => {
     loadBillingStatus();
+    loadInvoices();
   }, []);
 
   async function loadBillingStatus() {
@@ -44,11 +48,22 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       setLoading(true);
       const data = await billingService.getStatus();
       setStatus(data);
+      // Sync to Zustand store
+      fetchBillingStatus();
     } catch (err) {
       setError('Failed to load billing information');
       logger.error('Billing status error:', err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadInvoices() {
+    try {
+      const data = await billingService.getInvoices();
+      setInvoices(data);
+    } catch {
+      // Invoices are non-critical
     }
   }
 
@@ -242,6 +257,66 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
           );
         })}
       </div>
+
+      {/* Invoice History */}
+      {invoices.length > 0 && (
+        <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+          <h4 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
+            <FileText className="h-5 w-5 text-indigo-400" />
+            Invoice History
+          </h4>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-700 text-left text-gray-400">
+                  <th className="pb-2 pr-4">Date</th>
+                  <th className="pb-2 pr-4">Amount</th>
+                  <th className="pb-2 pr-4">Status</th>
+                  <th className="pb-2">Invoice</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-b border-gray-700/50">
+                    <td className="py-2 pr-4 text-gray-300">
+                      {new Date(invoice.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-2 pr-4 text-white">
+                      {(invoice.amount / 100).toFixed(2)} {invoice.currency.toUpperCase()}
+                    </td>
+                    <td className="py-2 pr-4">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                          invoice.status === 'paid'
+                            ? 'bg-green-500/20 text-green-400'
+                            : invoice.status === 'open'
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-gray-500/20 text-gray-400'
+                        }`}
+                      >
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="py-2">
+                      {invoice.pdfUrl && (
+                        <a
+                          href={invoice.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300"
+                        >
+                          <FileText className="h-3 w-3" />
+                          PDF
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* FAQ Section */}
       <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
