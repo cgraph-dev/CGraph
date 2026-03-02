@@ -5,6 +5,20 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
+import AnimatedBorder, { type BorderAnimationType } from './gamification/animated-border';
+
+/** Equipped border data from the gamification system. */
+export interface EquippedBorderData {
+  id: string;
+  animationType?: string;
+  animation_type?: string;
+  primaryColor?: string;
+  primary_color?: string;
+  secondaryColor?: string;
+  secondary_color?: string;
+  accentColor?: string;
+  accent_color?: string;
+}
 
 interface AvatarProps {
   /** Image URL or null for initials */
@@ -17,6 +31,8 @@ interface AvatarProps {
   status?: 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
   /** Show status indicator */
   showStatus?: boolean;
+  /** Gamification equipped border */
+  equippedBorder?: EquippedBorderData | null;
   /** Additional styles */
   style?: ViewStyle;
 }
@@ -76,6 +92,7 @@ export default function Avatar({
   size = 'md',
   status,
   showStatus = true,
+  equippedBorder,
   style,
 }: AvatarProps) {
   const { colors } = useThemeStore();
@@ -99,9 +116,14 @@ export default function Avatar({
       ? source
       : null;
 
-  return (
+  // Resolve equipped border animation type
+  const borderAnimationType: BorderAnimationType =
+    (equippedBorder?.animationType ?? equippedBorder?.animation_type ?? 'none') as BorderAnimationType;
+  const hasBorder = equippedBorder != null && borderAnimationType !== 'none';
+
+  const avatarContent = (
     <View
-      style={[styles.container, { width: sizeValue, height: sizeValue }, style]}
+      style={[styles.container, { width: sizeValue, height: sizeValue }, !hasBorder ? style : undefined]}
       accessible={true}
       accessibilityLabel={name ? `${name} avatar` : 'User avatar'}
       accessibilityRole="image"
@@ -150,6 +172,23 @@ export default function Avatar({
       )}
     </View>
   );
+
+  if (hasBorder) {
+    return (
+      <AnimatedBorder
+        animationType={borderAnimationType}
+        borderColor={equippedBorder?.primaryColor ?? equippedBorder?.primary_color}
+        borderColorSecondary={equippedBorder?.secondaryColor ?? equippedBorder?.secondary_color}
+        borderColorAccent={equippedBorder?.accentColor ?? equippedBorder?.accent_color}
+        size={sizeValue + 6}
+        borderWidth={3}
+      >
+        {avatarContent}
+      </AnimatedBorder>
+    );
+  }
+
+  return avatarContent;
 }
 
 const styles = StyleSheet.create({
