@@ -102,9 +102,7 @@ export function PresenceStatusSelector({
         }`}
       >
         <span className={`h-2.5 w-2.5 rounded-full shadow-sm ${currentOption.dotClass}`} />
-        {!compact && (
-          <span className="text-sm text-gray-300">{currentOption.label}</span>
-        )}
+        {!compact && <span className="text-sm text-gray-300">{currentOption.label}</span>}
       </button>
 
       <AnimatePresence>
@@ -112,11 +110,11 @@ export function PresenceStatusSelector({
           <>
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, y: -5, scale: 0.95 }}
+              initial={{ opacity: 0, y: 5, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -5, scale: 0.95 }}
+              exit={{ opacity: 0, y: 5, scale: 0.95 }}
               transition={springs.snappy}
-              className="absolute left-0 top-full z-50 mt-1 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
+              className="absolute bottom-full left-0 z-50 mb-1 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
             >
               <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Set Status
@@ -134,9 +132,7 @@ export function PresenceStatusSelector({
                     <div className="text-sm font-medium text-white">{option.label}</div>
                     <div className="text-xs text-gray-500">{option.description}</div>
                   </div>
-                  {status === option.value && (
-                    <span className="text-xs text-primary-400">✓</span>
-                  )}
+                  {status === option.value && <span className="text-xs text-primary-400">✓</span>}
                 </button>
               ))}
             </motion.div>

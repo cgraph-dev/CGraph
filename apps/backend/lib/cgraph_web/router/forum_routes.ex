@@ -43,6 +43,10 @@ defmodule CGraphWeb.Router.ForumRoutes do
           get "/vote", ForumController, :get_vote
           delete "/vote", ForumController, :remove_vote
 
+          # Forum notification subscribe/unsubscribe
+          post "/subscribe", ForumController, :subscribe
+          delete "/subscribe", ForumController, :unsubscribe
+
           # Forum permissions
           get "/permissions", PermissionsController, :forum_permissions
           put "/permissions", PermissionsController, :update_forum_permissions
