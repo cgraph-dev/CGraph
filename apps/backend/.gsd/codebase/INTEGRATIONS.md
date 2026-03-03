@@ -221,6 +221,7 @@
   > **Note**: Not in `.env.example`.
 - **Module root**:
   [`apps/backend/lib/cgraph/notifications/push_service/`](apps/backend/lib/cgraph/notifications/push_service/)
+- **Coordinator**: `push_service.ex` — top-level push notification coordinator module
 - **Mobile integration**: `expo-notifications ~0.32.16`
   ([`apps/mobile/package.json`](apps/mobile/package.json))
 
@@ -235,6 +236,7 @@
 
 - **Platform dispatch**: `platform_senders.ex` — routes to correct provider per device token
 - **Token management**: `token_management.ex` — device token CRUD and cleanup
+- **Circuit breakers**: `circuit_breakers.ex` — circuit breaker integration for push providers
 
 ### In-App Notifications
 
@@ -248,7 +250,7 @@
 
 ### Cloudflare R2 (S3-compatible Object Storage)
 
-- **Libraries**: `ex_aws ~> 2.5`, `ex_aws_s3 ~> 2.5`
+- **Libraries**: `ex_aws ~> 2.5`, `ex_aws_s3 ~> 2.5`, `sweet_xml ~> 0.7`
   ([`apps/backend/mix.exs`](apps/backend/mix.exs))
 - **Bucket**: `cgraph-uploads`
   ([`infrastructure/terraform/pages.tf`](infrastructure/terraform/pages.tf))
@@ -304,6 +306,11 @@
 | `voice_state_channel.ex`  | Voice state tracking             |
 | `backpressure.ex`         | Channel backpressure management  |
 | `socket_security.ex`      | WebSocket security module        |
+
+**Socket security sub-modules** (`socket_security/` directory):
+- `connection.ex` — Connection-level security
+- `rate_limiting.ex` — Channel rate limiting
+- `validation.ex` — Channel validation
 
 ### Collaborative Editing (Yjs)
 

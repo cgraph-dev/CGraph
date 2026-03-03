@@ -146,10 +146,23 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **ErrorReporter**  | `CGraph.ErrorReporter`  | Error reporting with adapters (logger, webhook)                                                                                     |
 | **BatchProcessor** | `CGraph.BatchProcessor` | Async batch processing with progress tracking                                                                                       |
 | **Crypto**         | `CGraph.Crypto`         | Hashing, encryption, E2EE (key generation, distribution, sync)                                                                      |
+| **ApiVersioning**  | `CGraph.ApiVersioning`  | API version management and negotiation                                                                                              |
+| **HealthCheck**    | `CGraph.HealthCheck`    | Application health checks (DB, Redis, services)                                                                                     |
+| **Idempotency**    | `CGraph.Idempotency`    | Idempotent request handling (key deduplication)                                                                                     |
+| **Metrics**        | `CGraph.Metrics`        | Application-level Prometheus metrics                                                                                                |
+| **RateLimiter**    | `CGraph.RateLimiter`    | Distributed rate limiting (Redis + ETS fallback)                                                                                    |
+| **Redis**          | `CGraph.Redis`          | Redis client wrapper and operations                                                                                                 |
+| **Repo**           | `CGraph.Repo`           | Repository extensions and health checks                                                                                             |
+| **Security**       | `CGraph.Security`       | JWT key rotation, token blacklist, account lockout, abuse detection                                                                 |
+| **Supervisors**    | —                       | OTP supervisors: CacheSupervisor, SecuritySupervisor, WorkerSupervisor                                                              |
+| **Telemetry**      | `CGraph.Telemetry`      | Application telemetry, slow query reporting, JSON formatter                                                                         |
+| **Tracing**        | `CGraph.Tracing`        | OpenTelemetry tracing integration                                                                                                   |
+| **Uploads**        | `CGraph.Uploads`        | File upload management (Waffle integration)                                                                                         |
+| **Workers**        | —                       | Oban background job workers (29 files)                                                                                              |
 
 > **Standalone facade modules** (exist as `lib/cgraph/<name>.ex` without matching directories):
-> `explore.ex`, `marketplace.ex`, `themes.ex`, `release.ex`, `guardian.ex`, `circuit_breaker.ex`,
-> `pagination.ex`, `snowflake.ex`, `read_repo.ex`
+> `application.ex`, `explore.ex`, `marketplace.ex`, `themes.ex`, `release.ex`, `guardian.ex`,
+> `circuit_breaker.ex`, `pagination.ex`, `snowflake.ex`, `read_repo.ex`
 
 ### 2.3 Web Layer (`lib/cgraph_web/`)
 
@@ -178,8 +191,10 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `:api_admin` — admin pipeline with RequireAuth + RequireAdmin plugs (audit-logged)
 - `:browser` — HTML pipeline for Phoenix LiveDashboard
 
-**Controllers:** Versioned under `controllers/api/v1/` — over 100 controller/JSON view pairs
-organized by resource (auth, users, messages, groups, forums, gamification, creators, etc.)
+**Controllers:** Versioned under `controllers/api/v1/` — ~124 controller and JSON view files
+organized by resource (auth, users, messages, groups, forums, gamification, creators, etc.).
+Sub-controller split files: `custom_emoji_controller/favorites_actions.ex`,
+`forum_controller/voting_actions.ex`.
 
 Additional controllers at `controllers/api/` level:
 - `PaymentController` — Stripe Checkout sessions, customer portal, subscription status
@@ -191,8 +206,8 @@ Controllers at `controllers/api/admin/` level:
 - `ModerationController` — moderation admin operations
 
 Controllers at `controllers/admin/` level:
-- `EventsController` — admin events management
-- `MarketplaceController` — admin marketplace management
+- `EventsController` — admin events management (+ `events_helpers.ex`)
+- `MarketplaceController` — admin marketplace management (+ `marketplace_controller/settings_actions.ex`)
 
 Controllers at root `controllers/` level:
 - `CoinShopController` — coin bundle listings, one-time coin purchase checkout
@@ -212,6 +227,9 @@ Controllers at root `controllers/` level:
 - `StripeWebhookController` — handles both platform and Connect webhook events
 - `TitleController` — title operations
 - `WalletAuthController` — wallet auth operations
+
+Root-level JSON views: `changeset_json`, `coins_json`, `customization_json`, `error_json`,
+`gamification_json`, `quest_json`, `shop_json`, `title_json`
 
 **Plug middleware stack (~30 plugs):**
 
@@ -265,7 +283,7 @@ Controllers at root `controllers/` level:
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (notable workers):
+**Oban** job processing system with 29 workers in `lib/cgraph/workers/` (notable workers):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -288,8 +306,9 @@ Controllers at root `controllers/` level:
 - `ModerationWorker` — moderation task processing
 - `RankingUpdateWorker` — ranking/leaderboard updates
 - `StatusExpiryWorker` — status expiration handling
-- Worker orchestrator: `base.ex` (multi-step jobs), `batch.ex` (batch orchestration),
-  `pipeline.ex` (pipeline orchestration)
+- Worker orchestrator: `orchestrator.ex` (top-level), `orchestrator/batch.ex` (batch orchestration),
+  `orchestrator/pipeline.ex` (pipeline orchestration)
+- Worker base: `base.ex` (multi-step job foundation)
 
 ---
 
@@ -344,7 +363,8 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 
-**Socket security:** Dedicated `SocketSecurity` module for channel-level authorization.
+**Socket security:** Dedicated `SocketSecurity` module for channel-level authorization, with
+sub-modules in `socket_security/`: `connection.ex`, `rate_limiting.ex`, `validation.ex`.
 
 ### 3.3 PubSub
 
@@ -407,7 +427,7 @@ Client                        Backend
 - `CGraph.Repo` — Primary write repository
 - `CGraph.ReadRepo` — Read replica (falls back to primary)
 
-**Schema highlights (from 90+ migrations):**
+**Schema highlights (from 118 migrations):**
 
 - `users` — Core user table with random UID, wallet fields, OAuth fields, deactivation
 - `sessions` — Session tracking

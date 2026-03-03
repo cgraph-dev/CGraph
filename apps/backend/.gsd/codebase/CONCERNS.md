@@ -153,9 +153,9 @@ The entire `CGraph.Creators` context module (9 files, ~900 LOC) has **zero dedic
 | ----------------------------- | ---- | --------- | ----------- |
 | `creators.ex` (facade)        | 40   | —         | **MISSING** |
 | `connect_onboarding.ex`       | 138  | —         | **MISSING** |
-| `paid_subscription.ex`        | 165  | —         | **MISSING** |
-| `earnings.ex`                 | 204  | —         | **MISSING** |
-| `payout.ex`                   | 130  | —         | **MISSING** |
+| `paid_subscription.ex`        | 178  | —         | **MISSING** |
+| `earnings.ex`                 | 203  | —         | **MISSING** |
+| `payout.ex`                   | 141  | —         | **MISSING** |
 | `content_gate.ex`             | 107  | —         | **MISSING** |
 | `creator_earning.ex` (schema) | 50   | —         | **MISSING** |
 | `creator_payout.ex` (schema)  | 48   | —         | **MISSING** |
@@ -231,7 +231,7 @@ consumers at 6 call sites:
 
 - Line 30: `detail: inspect(reason)` — leaks Stripe API error structs
 - Line 74: `detail: inspect(reason)` — leaks onboarding link errors
-- Line 102: `json(%{error: %{message: inspect(reason)}})` — leaks monetization config errors
+- Line 102: `json(%{error: %{details: inspect(changeset.errors)}})` — leaks Ecto changeset errors
 - Line 131: `json(%{error: %{message: inspect(reason)}})` — leaks subscription errors
 - Line 153: `json(%{error: %{message: inspect(reason)}})` — leaks cancellation errors
 - Line 192: `json(%{error: %{message: inspect(reason)}})` — leaks payout errors
@@ -271,14 +271,14 @@ recovery path.
 
 #### 4.0.7 `System.get_env` at Compile Time in CoinBundles (NEW, P1)
 
-`lib/cgraph/shop/coin_bundles.ex` lines ~33-57: `System.get_env("STRIPE_PRICE_COINS_*")` is called
+`lib/cgraph/shop/coin_bundles.ex` lines ~33-62: `System.get_env("STRIPE_PRICE_COINS_*")` is called
 inside the module attribute `@bundles`, which evaluates at **compile time**. In Docker deployments
 where environment variables are injected at runtime, all Stripe price IDs will be `nil`. Should use
 `Application.get_env/3` or runtime config instead.
 
 #### 4.0.8 IAP Credential Fallbacks to Empty Strings (NEW, P2)
 
-`lib/cgraph/subscriptions/iap_validator.ex` lines ~387-393: `apple_jwt_token` and
+`lib/cgraph/subscriptions/iap_validator.ex` lines ~467-476: `apple_jwt_token` and
 `google_access_token` default to empty string `""` when unconfigured. API calls to Apple/Google
 fail opaquely with unhelpful error messages rather than failing fast at startup. No startup
 validation ensures these credentials are present when IAP features are enabled.

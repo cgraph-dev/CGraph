@@ -61,15 +61,31 @@ Source: [`apps/backend/mix.exs`](apps/backend/mix.exs)
 | **HTTP/Network** | `hackney` | `~> 1.20` | HTTP client (ExAws) |
 | **HTTP/Network** | `req` | `~> 0.5` | HTTP client (AI/LLM) |
 | **HTTP/Network** | `fuse` | `~> 2.5` | Circuit breaker |
-| **HTTP/Network** | `hammer` | — | Rate limiting |
 | **Storage/Upload** | `waffle` | `~> 1.1` | File upload management |
-| **Storage/Upload** | `waffle_ecto` | `~> 0.0` | Waffle Ecto integration |
+| **Storage/Upload** | `waffle_ecto` | `~> 0.0.12` | Waffle Ecto integration |
+| **Storage/Upload** | `sweet_xml` | `~> 0.7` | XML parsing (ExAws S3) |
 | **Storage/Upload** | `ex_aws` | `~> 2.5` | AWS SDK (S3/R2) |
 | **Storage/Upload** | `ex_aws_s3` | `~> 2.5` | S3 operations |
 | **Payments** | `stripity_stripe` | `~> 3.2` | Stripe API client |
 | **Email** | `swoosh` | `~> 1.20` | Email sending |
 | **Utilities** | `timex` | `~> 3.7` | Date/time utilities |
 | **Dev/Test** | `floki` | `~> 0.37` | HTML parsing (test) |
+| **Auth/Security** | `argon2_elixir` | `~> 4.1` | Password hashing (Argon2) |
+| **Auth/Security** | `guardian_phoenix` | `~> 2.0` | Guardian Phoenix integration |
+| **Auth/Security** | `jose` | `~> 1.11` | JWT/JWS library |
+| **Core** | `phoenix_ecto` | `~> 4.6` | Phoenix-Ecto integration |
+| **Core** | `phoenix_html` | `~> 4.2` | HTML helpers |
+| **Core** | `gettext` | `~> 0.26` | Internationalization (i18n) |
+| **Observability** | `sentry` | `~> 11.0` | Error tracking |
+| **Observability** | `opentelemetry` | `~> 1.5` | Distributed tracing core |
+| **Observability** | `opentelemetry_api` | `~> 1.4` | OpenTelemetry API |
+| **Observability** | `opentelemetry_exporter` | `~> 1.8` | OTLP exporter |
+| **Observability** | `opentelemetry_phoenix` | `~> 1.2` | Phoenix instrumentation |
+| **Observability** | `opentelemetry_ecto` | `~> 1.2` | Ecto instrumentation |
+| **Observability** | `opentelemetry_oban` | `~> 1.1` | Oban instrumentation |
+| **Observability** | `telemetry_metrics` | `~> 1.1` | Telemetry metrics |
+| **Observability** | `telemetry_poller` | `~> 1.1` | Telemetry polling |
+| **Observability** | `telemetry_metrics_prometheus_core` | `~> 1.2` | Prometheus metrics |
 | **Dev/Test** | `phoenix_live_reload` | `~> 1.6` | Live reload (dev) |
 
 ### Web App — React/Vite (`apps/web/`)

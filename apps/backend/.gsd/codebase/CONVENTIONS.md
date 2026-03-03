@@ -767,6 +767,10 @@ lib/cgraph/
 > alongside the directory (e.g., `lib/cgraph/accounts.ex` alongside `lib/cgraph/accounts/`).
 > However, **Creators** places its facade **inside** the directory at
 > `lib/cgraph/creators/creators.ex`. Follow the peer-file pattern for new contexts.
+>
+> **Missing facades**: Two major contexts have **no facade file at all**:
+> `notifications` and `subscriptions`. Their modules are accessed directly via
+> sub-module paths (e.g., `CGraph.Notifications.Delivery`, `CGraph.Subscriptions.TierLimits`).
 
 **Facade + Delegation Pattern** (introduced by `Creators` context):
 
@@ -915,6 +919,10 @@ end
 Route modules are then imported into the main `Router` via `import` + macro call.
 API routes follow REST under `/api/v1/{resource}`.
 
+**All 11 route modules**: `admin_routes`, `ai_routes`, `auth_routes`, `creator_routes`,
+`forum_routes`, `gamification_routes`, `health_routes`, `messaging_routes`, `public_routes`,
+`sync_routes`, `user_routes`.
+
 **Router Pipelines:**
 
 | Pipeline           | Purpose                                              |
@@ -1022,6 +1030,15 @@ end
 Functions receive assigns maps and return plain data structures (maps/lists) that Phoenix
 automatically encodes to JSON.
 
+**Sub-controller split files**: Larger controllers extract specific action groups into sub-modules
+within a child directory:
+- `custom_emoji_controller/favorites_actions.ex`
+- `forum_controller/voting_actions.ex`
+- `cosmetics_controller/serializers.ex`
+- `events_controller/helpers.ex` (root level)
+- `marketplace_controller/helpers.ex` (root level)
+- `admin/marketplace_controller/settings_actions.ex`
+
 ### 15.10 Plug Pipeline Architecture
 
 Custom plug middleware stack used across router pipelines:
@@ -1040,6 +1057,25 @@ Custom plug middleware stack used across router pipelines:
 | `AuditLogPlug`         | Logs admin/sensitive actions to audit trail             |
 | `LevelGatePlug`        | Gates features behind gamification level requirements  |
 | `PremiumGatePlug`      | Gates features behind premium subscription status      |
+| `AuthPipeline`         | Guardian JWT authentication pipeline                   |
+| `AuthErrorHandler`     | Authentication error handling                          |
+| `OptionalAuthPipeline` | Optional auth for public + auth routes                 |
+| `UserAuth`             | User authentication utilities                          |
+| `CurrentUser`          | Assigns current user to connection                     |
+| `Common`               | Common plug utilities                                  |
+| `Cors`                 | CORS configuration (Corsica)                           |
+| `CorrelationId`        | Distributed tracing correlation IDs                    |
+| `EtagPlug`             | HTTP ETag caching (available, not in pipelines)        |
+| `GeoRouter`            | Geo-based routing                                      |
+| `RateLimiter`          | Rate limiter (v1)                                      |
+| `RateLimitPlug`        | Generic rate limit plug                                |
+| `RawBodyPlug`          | Raw body preservation (webhook signature verification) |
+| `RequestContextPlug`   | Request context propagation                            |
+| `TraceContext`         | Trace context propagation                              |
+| `TracingPlug`          | OpenTelemetry tracing integration                      |
+| `TwoFactorRateLimiter` | 2FA-specific rate limiting                             |
+
+**Total: 29 plug modules** in `lib/cgraph_web/plugs/`.
 
 ### 15.11 Code Quality Tools
 
@@ -1116,6 +1152,8 @@ end
 | Validation        | Zod 3.24                                           |
 | Animation         | Framer Motion 12, GSAP                             |
 | Backend           | Elixir 1.17, Phoenix, PostgreSQL 16, Redis 7, Stripe |
+| Backend i18n      | `gettext ~> 0.26` for Elixir internationalization    |
+| Backend JWT       | `guardian ~> 2.4` + `jose ~> 1.11` for JWT/JWS       |
 | Realtime          | Phoenix Channels (WebSocket)                       |
 | E2EE              | Signal Protocol-inspired (custom `@cgraph/crypto`) |
 | Build             | Vite (web/landing), Metro (mobile), Turborepo      |

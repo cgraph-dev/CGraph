@@ -837,6 +837,9 @@ end
 
 ### 8.5 Backend Test File Organization
 
+**Total backend test files: ~191** (excluding `test/support/`). Coverage tool: `ExCoveralls ~> 0.18`
+(configured via `test_coverage: [tool: ExCoveralls]` in `mix.exs`). Run with `mix coveralls`.
+
 ```
 test/
 ├── test_helper.exs
@@ -864,7 +867,7 @@ test/
 │   ├── channels/               # Channel tests (6 files)
 │   │   ├── chat_channel_test.exs
 │   │   └── ...
-│   └── plugs/
+│   └── plugs/                  # Plug tests (1 file: cookie_auth_test.exs)
 └── integration/
 ```
 
@@ -875,7 +878,7 @@ The following recently-added modules do **not yet have corresponding test files:
 | Module                                          | Expected Test Location                                |
 | ----------------------------------------------- | ----------------------------------------------------- |
 | `CGraph.Creators.*` (9 modules)                 | `test/cgraph/creators_test.exs`                        |
-| `CGraphWeb.API.V1.CreatorController` (242 lines)| `test/cgraph_web/controllers/creator_controller_test.exs` |
+| `CGraphWeb.API.V1.CreatorController` (242 lines)| `test/cgraph_web/controllers/api/v1/creator_controller_test.exs` |
 | `CGraphWeb.CoinShopController`                  | `test/cgraph_web/controllers/coin_shop_controller_test.exs` |
 | `CGraphWeb.GamificationChannel` (expanded)      | `test/cgraph_web/channels/gamification_channel_test.exs` |
 | `CGraphWeb.IapController`                       | `test/cgraph_web/controllers/iap_controller_test.exs`  |

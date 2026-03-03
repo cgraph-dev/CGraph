@@ -98,7 +98,10 @@ apps/backend/
 │   │   │   │   └── username_controller.ex
 │   │   │   ├── admin/             # Admin dashboard controllers
 │   │   │   │   ├── events_controller.ex
-│   │   │   │   └── marketplace_controller.ex
+│   │   │   │   ├── events_helpers.ex       # Admin events helper functions
+│   │   │   │   ├── marketplace_controller.ex
+│   │   │   │   └── marketplace_controller/  # Marketplace sub-modules
+│   │   │   │       └── settings_actions.ex # Marketplace settings actions
 │   │   │   ├── fallback_controller.ex  # Standardized error responses
 │   │   │   ├── changeset_json.ex      # Ecto changeset error rendering
 │   │   │   ├── coin_shop_controller.ex # Coin bundle listings, checkout
@@ -106,20 +109,30 @@ apps/backend/
 │   │   │   ├── cosmetics_controller.ex # Cosmetics management
 │   │   │   ├── error_json.ex          # Error JSON views
 │   │   │   ├── events_controller.ex   # Events operations
+│   │   │   ├── events_controller/     # Events sub-modules
+│   │   │   │   └── helpers.ex         # Events controller helpers
 │   │   │   ├── friend_controller.ex   # Friend operations
 │   │   │   ├── gamification_controller.ex # Gamification operations
+│   │   │   ├── gamification_json.ex   # Gamification JSON view
 │   │   │   ├── health_controller.ex   # Health check endpoint
 │   │   │   ├── iap_controller.ex      # In-app purchase operations
 │   │   │   ├── marketplace_controller.ex # Marketplace operations
+│   │   │   ├── marketplace_controller/ # Marketplace sub-modules
+│   │   │   │   └── helpers.ex         # Marketplace controller helpers
 │   │   │   ├── metrics_controller.ex  # Metrics endpoints
 │   │   │   ├── premium_controller.ex  # Premium feature operations
 │   │   │   ├── prestige_controller.ex # Prestige system operations
 │   │   │   ├── quest_controller.ex    # Quest operations
+│   │   │   ├── quest_json.ex          # Quest JSON view
 │   │   │   ├── settings_controller.ex # Settings operations
 │   │   │   ├── shop_controller.ex     # Shop operations
+│   │   │   ├── shop_json.ex           # Shop JSON view
 │   │   │   ├── stripe_webhook_controller.ex # Stripe webhook handler
 │   │   │   ├── title_controller.ex    # Title operations
-│   │   │   └── wallet_auth_controller.ex # Wallet auth operations
+│   │   │   ├── title_json.ex          # Title JSON view
+│   │   │   ├── wallet_auth_controller.ex # Wallet auth operations
+│   │   │   ├── coins_json.ex          # Coins JSON view
+│   │   │   └── customization_json.ex  # Customization JSON view
 │   │   ├── channels/
 │   │   │   ├── user_socket.ex          # WebSocket entry point (JWT auth)
 │   │   │   ├── conversation_channel.ex # DM/group chat real-time
@@ -141,6 +154,9 @@ apps/backend/
 │   │   │   ├── backpressure.ex         # Message flood prevention
 │   │   │   ├── socket_security.ex      # Top-level socket security module
 │   │   │   └── socket_security/        # Channel-level authorization
+│   │   │       ├── connection.ex       # Connection-level security
+│   │   │       ├── rate_limiting.ex    # Channel rate limiting
+│   │   │       └── validation.ex       # Channel validation
 │   │   ├── plugs/                      # ~30 plug modules
 │   │   │   ├── # Auth
 │   │   │   ├── auth_pipeline.ex        # Guardian JWT pipeline
@@ -185,11 +201,16 @@ apps/backend/
 │   │   │   ├── input_validation.ex     # Request input validation
 │   │   │   └── response.ex            # Standardized API responses
 │   │   ├── error_tracker/             # Error tracking integration
+│   │   │   ├── context.ex             # Error tracking context
+│   │   │   └── extractor.ex           # Error data extraction
 │   │   ├── helpers/                   # Controller helpers
 │   │   │   ├── controller_helpers.ex  # Controller utility functions
 │   │   │   └── param_parser.ex        # Parameter parsing utilities
-│   │   ├── templates/                 # HTML templates (email, admin)
+│   │   ├── templates/                 # HTML templates (email)
+│   │   │   └── email/                 # Email templates
 │   │   ├── telemetry/                 # Web telemetry events
+│   │   │   ├── handlers.ex            # Telemetry event handlers
+│   │   │   └── metrics.ex             # Web telemetry metrics
 │   │   ├── validation/                # Request validation (8 modules)
 │   │   │   ├── auth_params.ex         # Auth parameter validation
 │   │   │   ├── conversation_params.ex # Conversation parameter validation
@@ -419,7 +440,8 @@ apps/backend/
 │   │   │   ├── messages.ex           # Message search
 │   │   │   └── users.ex             # User search
 │   │   │
-│   │   ├── workers/                   # Oban background workers (28 workers)
+│   │   ├── workers/                   # Oban background workers (29 files)
+│   │   │   ├── base.ex                    # Worker base module
 │   │   │   ├── appeal_notification_worker.ex
 │   │   │   ├── cleanup_link_preview_cache.ex
 │   │   │   ├── cleanup_worker.ex
@@ -445,8 +467,8 @@ apps/backend/
 │   │   │   ├── send_push_notification.ex
 │   │   │   ├── status_expiry_worker.ex
 │   │   │   ├── webhook_delivery_worker.ex
+│   │   │   ├── orchestrator.ex            # Worker orchestrator (top-level)
 │   │   │   └── orchestrator/          # Multi-step job orchestrator
-│   │   │       ├── base.ex            # Orchestrator base
 │   │   │       ├── batch.ex           # Batch job orchestration
 │   │   │       └── pipeline.ex        # Pipeline job orchestration
 │   │   │
@@ -494,7 +516,6 @@ apps/backend/
 │   │   ├── uploads/                   # File upload management
 │   │   ├── redis/                     # Redis wrapper
 │   │   ├── rate_limiter/              # Rate limiting
-│   │   ├── guardian/                  # Guardian JWT config
 │   │   ├── permissions/               # RBAC permission checking
 │   │   ├── feature_flags/             # Runtime feature toggles
 │   │   ├── telemetry/                 # Application telemetry
@@ -535,10 +556,12 @@ apps/backend/
 │   │       └── healthcheck.ex         # Database health checks
 │   │
 │   └── mix/                           # Custom Mix tasks
+│       └── tasks/
+│           └── search.reindex.ex      # MeiliSearch reindex task
 │
 ├── priv/
 │   ├── repo/
-│   │   ├── migrations/                # 90+ Ecto migrations (2024-12 to 2026-03)
+│   │   ├── migrations/                # 118 Ecto migrations (2024-12 to 2026-03)
 │   │   │   ├── 20241201000001_create_users.exs
 │   │   │   ├── 20241201000003_create_conversations_and_messages.exs
 │   │   │   ├── 20241201000004_create_groups.exs
@@ -549,7 +572,7 @@ apps/backend/
 │   │   │   ├── 20260220120000_create_collaboration_documents.exs
 │   │   │   ├── 20260302600005_add_creator_monetization.exs  # Creator tables: earnings, payouts, paid_forum_subscriptions
 │   │   │   ├── *_seed_remaining_achievements_and_quests.exs  # Gamification seed data
-│   │   │   └── ... (90+ migration files total)
+│   │   │   └── ... (118 migration files total)
 │   │   ├── seeds.exs                  # Database seed script
 │   │   └── seeds/                     # Seed data modules
 │   └── static/                        # Static assets served by Phoenix
@@ -1298,7 +1321,7 @@ scripts/
 
 | Path                                           | Description              |
 | ---------------------------------------------- | ------------------------ |
-| `apps/backend/priv/repo/migrations/`           | 90+ Ecto migration files |
+| `apps/backend/priv/repo/migrations/`           | 118 Ecto migration files |
 | `apps/backend/lib/cgraph/accounts/user.ex`     | User schema              |
 | `apps/backend/lib/cgraph/messaging/message.ex` | Message schema           |
 | `apps/backend/lib/cgraph/groups/group.ex`      | Group schema             |
