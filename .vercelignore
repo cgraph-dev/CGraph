@@ -1,5 +1,8 @@
 # Vercel ignore file - only upload what's needed for web app build
 
+# Prevent Vercel Turbo auto-detection (we use vercel.json config directly)
+turbo.json
+
 # Ignore backend and mobile apps
 apps/backend/
 apps/mobile/
