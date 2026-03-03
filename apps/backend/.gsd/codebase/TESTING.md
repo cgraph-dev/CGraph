@@ -760,7 +760,7 @@ users = build_list(5, :user)
 message = insert(:message, sender: insert(:user))
 ```
 
-Factory is in `test/support/factory.ex` (~786 lines) with factories for all domain entities:
+Factory is in `test/support/factory.ex` (785 lines) with factories for all domain entities:
 users, admins, forums, threads, posts, messages, achievements, quests, avatar borders,
 user ownership records, etc.
 
@@ -837,7 +837,7 @@ end
 
 ### 8.5 Backend Test File Organization
 
-**Total backend test files: ~191** (excluding `test/support/`). Coverage tool: `ExCoveralls ~> 0.18`
+**Total backend test files: 190** (excluding `test/support/`). Coverage tool: `ExCoveralls ~> 0.18`
 (configured via `test_coverage: [tool: ExCoveralls]` in `mix.exs`). Run with `mix coveralls`.
 
 ```
@@ -847,7 +847,7 @@ test/
 │   ├── data_case.ex            # DB test case (sandbox)
 │   ├── conn_case.ex            # HTTP test case
 │   ├── channel_case.ex         # WebSocket test case
-│   ├── factory.ex              # ExMachina factories (~786 lines)
+│   ├── factory.ex              # ExMachina factories (785 lines)
 │   ├── fixtures.ex             # Test fixtures
 │   └── aliases.ex              # Common aliases
 ├── cgraph/                     # Context tests (92 test files)

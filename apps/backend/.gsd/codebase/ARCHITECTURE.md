@@ -1,6 +1,6 @@
 # CGraph Architecture
 
-> Generated: 2026-03-04 | Version: 0.9.48 | Last updated: arch context (creators, SIWE, monetization)
+> Generated: 2026-03-04 | Version: 1.0.0 | Last updated: arch context (creators, SIWE, monetization)
 
 ## 1. Overall System Architecture
 
@@ -231,7 +231,7 @@ Controllers at root `controllers/` level:
 Root-level JSON views: `changeset_json`, `coins_json`, `customization_json`, `error_json`,
 `gamification_json`, `quest_json`, `shop_json`, `title_json`
 
-**Plug middleware stack (~30 plugs):**
+**Plug middleware stack (29 plugs):**
 
 *Auth:*
 - `AuthPipeline` — Guardian JWT pipeline

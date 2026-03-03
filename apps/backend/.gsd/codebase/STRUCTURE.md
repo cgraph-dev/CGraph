@@ -1,6 +1,6 @@
 # CGraph Directory Structure
 
-> Generated: 2026-03-04 | Version: 0.9.48 | Last updated: arch context (creators, SIWE, monetization)
+> Generated: 2026-03-04 | Version: 1.0.0 | Last updated: arch context (creators, SIWE, monetization)
 
 ## 1. Top-Level Layout
 
@@ -157,7 +157,7 @@ apps/backend/
 │   │   │       ├── connection.ex       # Connection-level security
 │   │   │       ├── rate_limiting.ex    # Channel rate limiting
 │   │   │       └── validation.ex       # Channel validation
-│   │   ├── plugs/                      # ~30 plug modules
+│   │   ├── plugs/                      # 29 plug modules
 │   │   │   ├── # Auth
 │   │   │   ├── auth_pipeline.ex        # Guardian JWT pipeline
 │   │   │   ├── auth_error_handler.ex   # Authentication error handling
