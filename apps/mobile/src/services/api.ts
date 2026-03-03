@@ -69,6 +69,14 @@ export const authApi = {
   },
 
   /**
+   * Request a wallet auth challenge (SIWE message).
+   */
+  async walletChallenge(data: { wallet_address: string }) {
+    const response = await api.post('/api/v1/auth/wallet/challenge', data);
+    return response.data as { message: string; nonce: string };
+  },
+
+  /**
    * Login with wallet (Web3)
    */
   async walletLogin(data: {
@@ -76,7 +84,7 @@ export const authApi = {
     signature: string;
     message: string;
   }) {
-    const response = await api.post('/api/v1/auth/wallet', data);
+    const response = await api.post('/api/v1/auth/wallet/verify', data);
     return response.data;
   },
 };

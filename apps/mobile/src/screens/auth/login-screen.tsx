@@ -20,6 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore, useThemeStore } from '@/stores';
+import { useWalletConnect } from '@/lib/wallet';
 import { AuthStackParamList } from '../../types';
 import { OAuthButtonGroup, AuthDivider } from '../../components/o-auth-buttons';
 import { MatrixAuthBackground } from '../../components/matrix';
@@ -32,6 +33,7 @@ type Props = {
 export default function LoginScreen({ navigation }: Props) {
   const { _colors } = useThemeStore();
   const { login } = useAuthStore();
+  const { connect: connectWallet } = useWalletConnect();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -365,6 +367,23 @@ export default function LoginScreen({ navigation }: Props) {
                       }
                     }}
                   />
+
+                  {/* Wallet Connect Button */}
+                  <TouchableOpacity
+                    style={styles.walletButton}
+                    onPress={connectWallet}
+                    activeOpacity={0.8}
+                  >
+                    <LinearGradient
+                      colors={['rgba(99, 102, 241, 0.2)', 'rgba(139, 92, 246, 0.15)']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.walletButtonGradient}
+                    >
+                      <Text style={styles.walletButtonIcon}>⬡</Text>
+                      <Text style={styles.walletButtonText}>Connect Wallet</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
                 </Animated.View>
               </View>
             </LinearGradient>
@@ -531,5 +550,27 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(16, 185, 129, 0.5)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 5,
+  },
+  walletButton: {
+    marginTop: 16,
+  },
+  walletButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    gap: 10,
+  },
+  walletButtonIcon: {
+    fontSize: 18,
+    color: '#8b5cf6',
+  },
+  walletButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#c4b5fd',
   },
 });
