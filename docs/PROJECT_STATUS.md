@@ -1,10 +1,9 @@
 # CGraph Project Status
 
-> **Version: 0.9.48** | Last Updated: Session 55 (Feb 24, 2026)
+> **Version: 1.0.0** | Released: July 24, 2025
 >
-> **⚠️ Scores re-calibrated in Session 36 after verification audit, updated Session 40 after Tiers
-> 1-10 code-quality sprints, updated Session 55 after TypeScript error elimination (429 → 0) and
-> backend config fixes. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
+> **🚀 v1.0.0 Launch Complete — All 19 phases delivered. 142 features across web and mobile.
+> See [CHANGELOG.md](../CHANGELOG.md) for full release notes and [PARITY_AUDIT.md](PARITY_AUDIT.md) for feature parity details.**
 
 ---
 
