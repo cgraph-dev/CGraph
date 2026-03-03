@@ -4,6 +4,123 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [1.0.0] - 2025-07-24
+
+### 🚀 CGraph v1.0.0 — First Public Release
+
+End-to-end encrypted messaging platform with forums, voice/video calls, gamification, creator monetization, and wallet authentication. 19 development phases completed across web (React), mobile (React Native/Expo), and backend (Elixir/Phoenix).
+
+### Platform
+
+- **Backend:** Elixir/Phoenix on Fly.io, PostgreSQL, Redis, Meilisearch
+- **Web:** React + TypeScript + Vite + Zustand — `web.cgraph.org`
+- **Mobile:** React Native + Expo (iOS & Android) — EAS build pipeline
+- **Landing:** React + Vite + GSAP + Framer Motion — `cgraph.org`
+- **Shared Packages:** 6 packages (@cgraph/crypto, shared-types, socket, utils, animation-constants, api-client)
+
+### Security & Encryption (Phases 2-3, 7)
+
+- End-to-end encryption with PQXDH key exchange + Triple Ratchet protocol
+- ML-KEM-768 post-quantum cryptography
+- Email/password + OAuth (Google, GitHub, Apple) + TOTP 2FA with recovery codes
+- JWT access + refresh token rotation
+- Session management with list/revoke
+- Certificate pinning (mobile), biometric auth gate (mobile)
+- AI-powered content moderation and spam detection
+- Rate limiting on all auth endpoints
+
+### Messaging (Phases 5-6, 10)
+
+- Real-time WebSocket transport via Phoenix channels
+- Circuit breaker reconnection with exponential backoff
+- Message editing, deletion, reactions, reply threads
+- Read receipts, typing indicators, presence tracking
+- Offline message queue with sync on reconnect
+- File attachments, image sharing, GIF search, voice messages
+- Link previews, message pinning, scheduled messages, disappearing messages
+- Full-text search (Meilisearch + PostgreSQL fallback)
+
+### Groups & Moderation (Phases 11-12)
+
+- Group creation with channels, categories, and announcements
+- Link-based group invites
+- Custom roles with role hierarchy and granular permissions
+- Moderation actions: mute, kick, ban, slow mode
+- Mod log / audit trail
+- Auto-moderation rules
+
+### Voice & Video (Phase 13)
+
+- 1:1 and group voice/video calls
+- LiveKit SFU for group calls
+- Call E2EE, quality indicators, call controls
+- Screen sharing (web), picture-in-picture (mobile)
+
+### Forums (Phases 14-15)
+
+- Thread posting with replies, upvotes/downvotes, polls
+- Rich text editor (web), markdown toolbar (mobile)
+- Thread categories, tags, pinning, locking, search
+- Forum theming, custom CSS (web), custom emojis
+- Forum branding, layout options, widget system, welcome screens
+- 50+ customization options
+
+### Gamification (Phase 16)
+
+- XP system with level progression
+- Achievements/badges, daily/weekly quests
+- Battle pass (seasonal), cosmetic shop
+- Leaderboards, streak tracking, XP notifications
+
+### Monetization (Phase 17)
+
+- Stripe checkout with premium tiers (Free/Premium $14.99/Enterprise $29.99)
+- Subscription management and billing history
+- Creator monetization via Stripe Connect
+- In-app purchases (iOS/Android)
+- Feature gating by subscription tier
+- Creator revenue dashboard
+
+### Rich Media & Polish (Phase 18)
+
+- Image optimization, video thumbnails, audio waveforms
+- Media gallery per conversation
+- Performance: virtualized lists, lazy loading
+- Accessibility: ARIA labels (web), accessibilityLabel (mobile)
+- Error boundaries, loading skeletons
+- 7 themes with dark/light/system mode
+
+### Launch (Phase 19)
+
+- **Wallet Authentication:** SIWE (EIP-4361) standard with multi-wallet support
+  - Web: MetaMask, WalletConnect QR, Coinbase Wallet (via wagmi)
+  - Mobile: Deep-link to wallet apps
+  - Backend: Full SIWE message generation, parsing, and verification
+  - Backward compatible with legacy EIP-191 signatures
+- **Landing Page v1.0:** Updated hero, pricing section, voice/video showcase, download CTA
+- **App Store Prep:** iOS/Android store descriptions, keywords, review notes, EAS build workflow
+- **Version Bump:** All 11 packages bumped to 1.0.0
+- **Parity Audit:** 142 features verified — 0 critical gaps, 7 low-severity partial implementations
+
+### Infrastructure
+
+- Monorepo: Turborepo + pnpm workspaces
+- CI/CD: GitHub Actions (deploy.yml, release.yml, ci.yml, release-mobile.yml)
+- Observability: Grafana, Prometheus, Loki, Tempo
+- Docker: dev compose, LiveKit compose, observability stack
+- Terraform: infrastructure as code
+- PgBouncer: connection pooling
+
+### Statistics
+
+- **19 phases** completed
+- **142 features** audited across web and mobile
+- **11 packages** at v1.0.0
+- **0 critical TypeScript errors**
+- **0 critical parity gaps**
+
+---
+
 ## [0.9.33] - 2026-02-21
 
 **SESSION 55: ZERO TypeScript Errors — Full Type System Cleanup + Backend Config Fixes**
