@@ -11,10 +11,17 @@
 
 import React, { type ReactNode, useCallback, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import Constants from 'expo-constants';
 import { useE2EEStore, usePreKeyReplenishment as usePreKeyReplenishmentStore } from './store/e2eeStore';
 import { useAuthStore } from '@/stores';
 import type { EncryptedMessage } from './e2ee';
 import { e2eeLogger as logger } from '../logger';
+
+/**
+ * Expo Go lacks native crypto modules (react-native-quick-crypto, crypto.subtle).
+ * E2EE key generation is impossible without them — skip bootstrap entirely.
+ */
+const isExpoGo = Constants.appOwnership === 'expo';
 
 // Re-export the E2EEContextType for backward compatibility
 interface E2EEContextType {
@@ -65,6 +72,15 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
    * Runs as a background task — does not block render.
    */
   const checkAndBootstrap = useCallback(async () => {
+    // Expo Go has no native crypto — skip E2EE entirely (log once)
+    if (isExpoGo) {
+      if (!hasAttemptedRef.current) {
+        hasAttemptedRef.current = true;
+        logger.log('E2EE disabled in Expo Go (no native crypto). Use a dev build for E2EE.');
+      }
+      return;
+    }
+
     try {
       await checkStatus();
 

@@ -100,7 +100,16 @@ export function useCoinShop() {
 
               const purchase = await paymentService.purchaseProduct(productId);
 
-              if (purchase && purchase.purchaseState === 'purchased') {
+              if (!purchase) {
+                // Product not available (e.g. dev/Expo Go — no App Store connection)
+                Alert.alert(
+                  'Not Available',
+                  'In-app purchases require a production build with App Store Connect configured.'
+                );
+                return;
+              }
+
+              if (purchase.purchaseState === 'purchased') {
                 const coinsRes = await api.get('/api/v1/coins');
                 setUserCoins(coinsRes.data.balance || userCoins + totalCoins);
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

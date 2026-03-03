@@ -281,6 +281,10 @@ class PaymentService {
 
     const product = this.products.get(productId);
     if (!product) {
+      if (__DEV__) {
+        console.warn(`[PaymentService] Product '${productId}' not found. IAP products require App Store Connect / Google Play Console setup.`);
+        return null;
+      }
       throw new Error(`Product not found: ${productId}`);
     }
 

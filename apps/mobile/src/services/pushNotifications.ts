@@ -107,13 +107,11 @@ export async function getExpoPushToken(): Promise<string | null> {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!projectId || !uuidRegex.test(projectId)) {
       if (!hasLoggedProjectIdWarning) {
-        console.warn(
-          '[Push] No valid EAS project ID found. Push notifications disabled in development.'
-        );
-        console.warn(
-          '[Push] To enable push notifications, run: npx expo login && eas project:init'
-        );
         hasLoggedProjectIdWarning = true;
+        if (__DEV__) {
+          // eslint-disable-next-line no-console
+          console.log('[Push] No EAS project ID — push disabled in dev. Run: eas project:init');
+        }
       }
       return null;
     }
