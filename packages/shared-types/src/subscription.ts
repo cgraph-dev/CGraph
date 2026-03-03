@@ -34,8 +34,8 @@ export interface TierFeatures {
   customBanner: boolean;
 }
 
-/** Stripe invoice record */
-export interface Invoice {
+/** Stripe invoice record (legacy subscription shape — prefer billing.Invoice) */
+export interface SubscriptionInvoice {
   id: string;
   amount: number;
   currency: string;
@@ -43,6 +43,11 @@ export interface Invoice {
   createdAt: string;
   pdfUrl: string | null;
 }
+
+/**
+ * @deprecated Use `Invoice` from `./billing` instead.
+ */
+export type Invoice = SubscriptionInvoice;
 
 /** Stripe Checkout session response */
 export interface CheckoutSession {

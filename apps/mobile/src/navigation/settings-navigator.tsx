@@ -18,7 +18,7 @@ import PrivacyScreen from '../screens/settings/privacy-screen';
 import HolographicDemoScreen from '../screens/settings/holographic-demo-screen';
 import ProfileVisibilityScreen from '../screens/settings/profile-visibility-screen';
 import RSSFeedsScreen from '../screens/settings/rss-feeds-screen';
-import CustomEmojiScreen from '../screens/settings/custom-emoji-screen';
+import CustomEmojiScreen from '../screens/settings/custom-emoji/custom-emoji-screen';
 import { PremiumScreen, CoinShopScreen } from '../screens/premium';
 import { CalendarScreen } from '../screens/calendar';
 import { LeaderboardScreen } from '../screens/leaderboard';

@@ -154,12 +154,12 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port,
       # Tuned for 10K+ concurrent WebSocket connections
-      transport_options: [
+      thousand_island_options: [
         num_acceptors: 100,
-        max_connections: 15_000,
-        socket_opts: [
-          {:backlog, 2048},
-          {:nodelay, true}
+        num_connections: 15_000,
+        transport_options: [
+          backlog: 2048,
+          nodelay: true
         ]
       ]
     ],

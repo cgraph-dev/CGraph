@@ -150,6 +150,7 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
 
       // 401 handling with refresh
       const isRefreshRequest = cfg?.url === refresh?.endpoint;
+      const isAuthRequest = cfg?.url?.includes('/auth/login') || cfg?.url?.includes('/auth/register');
 
       // Helper to generate fresh idempotency key for retry
       const regenerateIdempotencyKey = (config: InternalAxiosRequestConfig) => {
@@ -169,6 +170,7 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
         cfg &&
         !cfg._retry &&
         !isRefreshRequest &&
+        !isAuthRequest &&
         getRefreshToken &&
         setTokens
       ) {

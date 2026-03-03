@@ -83,9 +83,8 @@ export async function encryptFileForUpload(
   const buffer = await file.arrayBuffer();
   const { ciphertext, iv, fileKey } = await encryptFile(buffer);
 
-  // Wrap file key with session ratchet key
-  const session = await sessionManager.getSession(conversationId);
-  if (!session) {
+  // Verify session exists for this conversation
+  if (!sessionManager.hasSession(conversationId)) {
     throw new Error(`No E2EE session found for conversation ${conversationId}`);
   }
 

@@ -1,12 +1,9 @@
 /** FileUpload — file upload component with drag-and-drop, preview, tier limits, and E2EE support. */
-import { useState, useRef, useCallback, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import {
   PhotoIcon,
   XMarkIcon,
   DocumentIcon,
-  ArrowDownTrayIcon,
-  ArrowUpTrayIcon,
-  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 import { encryptFileForUpload } from '@/lib/crypto/file-encryption';
 

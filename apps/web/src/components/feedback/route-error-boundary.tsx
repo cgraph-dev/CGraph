@@ -98,9 +98,9 @@ export class RouteErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <ErrorFallback
-          error={this.state.error}
-          onRetry={this.handleRetry}
-          context={this.props.routeName}
+          error={this.state.error!}
+          resetErrorBoundary={this.handleRetry}
+          componentName={this.props.routeName}
         />
       );
     }

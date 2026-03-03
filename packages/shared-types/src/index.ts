@@ -10,6 +10,6 @@ export * from './forum-leaderboard';
 export * from './forum-permissions';
 export * from './forum-user-groups';
 export * from './gamification';
-export * from './subscription';
+export { type SubscriptionTier, type SubscriptionStatus, type TierFeatures, type SubscriptionInvoice, type CheckoutSession, type PortalSession, type IAPPlatform, type IAPValidationStatus, type IAPReceipt, type IAPValidateResponse, type IAPRestoreResponse, type SubscriptionStatusWithIAP } from './subscription';
 export * from './billing';
 export * from './creator';

@@ -2,7 +2,6 @@
  * Storybook stories for the SearchBar component.
  * @module modules/search/components/search-bar.stories
  */
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 /** Standalone search bar mock for story isolation */

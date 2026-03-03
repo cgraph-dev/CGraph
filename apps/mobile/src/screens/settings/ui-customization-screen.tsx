@@ -19,7 +19,6 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, Share, StyleSheet } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCustomizationStore } from '@/stores';
 import useCustomizationStore, {
   useIsDirty,
   useCanUndo,

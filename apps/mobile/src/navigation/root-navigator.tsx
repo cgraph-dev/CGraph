@@ -16,7 +16,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  *
  */
 export default function RootNavigator() {
-  const { isLoading, isAuthenticated } = useAuthStore();
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   
   if (isLoading) {
     return <LoadingScreen />;

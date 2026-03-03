@@ -39,7 +39,7 @@ export function usePageTransition(): UsePageTransitionResult {
   const location = useLocation();
   const [phase, setPhase] = useState<TransitionPhase>('idle');
   const prevKeyRef = useRef(location.key);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const completeTransition = useCallback(() => {
     setPhase('idle');

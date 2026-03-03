@@ -38,6 +38,7 @@ export function CheckoutReturn() {
     } else {
       // Unknown status — redirect immediately
       navigate('/settings/billing', { replace: true });
+      return undefined;
     }
   }, [searchParams, navigate, fetchBillingStatus]);
 

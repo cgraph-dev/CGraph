@@ -56,8 +56,6 @@ const QUICK_ACTIONS: QuickSwitcherItem[] = [
   { id: 'action-explore', type: 'action', name: 'Explore Communities', subtitle: 'Discover groups & forums', path: '/explore', icon: GlobeAltIcon },
 ];
 
-const CATEGORY_ORDER: QuickSwitcherItem['type'][] = ['conversation', 'channel', 'group', 'forum', 'friend', 'action', 'settings'];
-
 const CATEGORY_LABELS: Record<string, string> = {
   conversation: 'Conversations',
   channel: 'Channels',

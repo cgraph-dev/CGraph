@@ -58,7 +58,22 @@ defmodule CGraph.Gamification.LeaderboardSystem do
 
   @doc "Get XP leaderboard (simple version)."
   @spec get_xp_leaderboard(pos_integer()) :: list()
-  def get_xp_leaderboard(_limit \\ 10), do: []
+  def get_xp_leaderboard(limit \\ 10) do
+    from(u in User,
+      where: u.is_active == true,
+      order_by: [desc: u.xp],
+      limit: ^limit,
+      select: %{
+        user_id: u.id,
+        username: u.username,
+        display_name: u.display_name,
+        avatar_url: u.avatar_url,
+        xp: u.xp,
+        level: u.level
+      }
+    )
+    |> ReadRepo.all()
+  end
 
   @doc """
   Get forum-specific leaderboard using unified scoring (forum karma + XP).

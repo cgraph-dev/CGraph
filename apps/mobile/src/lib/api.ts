@@ -69,6 +69,9 @@ const api = createHttpClient({
   onLogout: async () => {
     await SecureStore.deleteItemAsync('cgraph_auth_token');
     await SecureStore.deleteItemAsync('cgraph_refresh_token');
+    // Sync Zustand store so RootNavigator shows auth screens
+    const { useAuthStore } = require('@/stores');
+    useAuthStore.getState().reset();
   },
   refresh: {
     endpoint: '/api/v1/auth/refresh',

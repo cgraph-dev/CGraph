@@ -106,3 +106,4 @@ temp/
 docs/PrivateFolder/
 .vercel
 .env*.local
+.env.stripe

@@ -8,7 +8,7 @@ import { FlatList, TextInput, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { Message } from '../../../types';
 import type { GifResult } from '../components/gif-picker-modal';
-import { createLogger } from '../../../lib/logger';
+import { createLogger } from '../../../../lib/logger';
 import {
   useMediaViewer,
   useMessageActions,

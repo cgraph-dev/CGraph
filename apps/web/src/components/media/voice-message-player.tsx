@@ -200,7 +200,7 @@ export function VoiceMessagePlayer({
     setPlaybackSpeed((prev) => {
       const currentIndex = SPEED_OPTIONS.indexOf(prev as (typeof SPEED_OPTIONS)[number]);
       const nextIndex = (currentIndex + 1) % SPEED_OPTIONS.length;
-      const newSpeed = SPEED_OPTIONS[nextIndex];
+      const newSpeed = SPEED_OPTIONS[nextIndex] ?? 1;
 
       const audio = audioRef.current;
       if (audio) {

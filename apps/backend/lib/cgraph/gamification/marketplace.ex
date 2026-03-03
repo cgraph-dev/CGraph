@@ -318,7 +318,23 @@ defmodule CGraph.Gamification.Marketplace do
   def get_listing_with_moderation_data(id), do: get_listing(id)
   @doc "Retrieves the selling history for a seller."
   @spec get_seller_history(String.t()) :: list()
-  def get_seller_history(_seller_id), do: []
+  def get_seller_history(seller_id) do
+    from(m in MarketplaceItem,
+      where: m.seller_id == ^seller_id and m.listing_status == "sold",
+      order_by: [desc: m.sold_at],
+      limit: 50,
+      select: %{
+        id: m.id,
+        item_type: m.item_type,
+        item_id: m.item_id,
+        price: m.price,
+        currency_type: m.currency_type,
+        buyer_id: m.buyer_id,
+        sold_at: m.sold_at
+      }
+    )
+    |> Repo.all()
+  end
   @doc "Finds listings similar to the given one."
   @spec find_similar_listings(term()) :: list()
   def find_similar_listings(_listing), do: []

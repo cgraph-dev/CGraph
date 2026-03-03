@@ -61,7 +61,7 @@ const STATUS_COLORS: Record<string, string> = {
 const MINIMUM_PAYOUT_CENTS = 1000; // $10
 
 export const EarningsPage: React.FC = () => {
-  const [earnings, setEarnings] = useState<Earning[]>([]);
+  const [_earnings, _setEarnings] = useState<Earning[]>([]);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(true);

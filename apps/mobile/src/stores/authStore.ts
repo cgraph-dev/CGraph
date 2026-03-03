@@ -162,14 +162,15 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
   },
 
   login: async (identifier: string, password: string) => {
-    set({ isLoading: true });
+    // NOTE: Do NOT set global isLoading here — LoginScreen has its own local
+    // loading state. Setting global isLoading causes RootNavigator to unmount
+    // AuthNavigator mid-flight, losing error feedback and causing a loading loop.
     try {
       const response = await api.post('/api/v1/auth/login', { identifier, password });
       const data = response.data?.data || response.data;
 
       // Handle 2FA-required response
       if (data?.status === '2fa_required' && data?.two_factor_token) {
-        set({ isLoading: false });
         return {
           twoFactorRequired: true as const,
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -184,7 +185,6 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       set({
         user,
         token: tokens.access_token,
-        isLoading: false,
         isAuthenticated: true,
       });
 
@@ -192,7 +192,6 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       const socketManager = await getSocketManager();
       socketManager.connect().catch(() => {});
     } catch (error) {
-      set({ isLoading: false });
       throw error;
     }
   },

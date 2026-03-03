@@ -2,7 +2,6 @@
  * Storybook stories for the Dropdown component.
  * @module components/navigation/dropdown.stories
  */
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Dropdown, { DropdownItem, DropdownDivider } from './dropdown';
 

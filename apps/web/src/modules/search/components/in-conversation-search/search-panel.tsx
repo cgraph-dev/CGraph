@@ -10,7 +10,7 @@
  * @module modules/search/components/in-conversation-search/search-panel
  */
 
-import React, { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets';

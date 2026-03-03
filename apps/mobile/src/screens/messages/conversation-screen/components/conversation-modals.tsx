@@ -5,15 +5,15 @@
  */
 import React from 'react';
 import { Animated } from 'react-native';
-import { AttachmentPicker } from '../../../components';
+import { AttachmentPicker } from '../../../../components';
 import {
   MessageActionsMenu,
   ReactionPickerModal,
   AttachmentPreviewModal,
   ImageViewerModal,
   VideoPlayerModal,
-} from './components';
-import type { GifPickerModal } from './components/gif-picker-modal';
+} from '.';
+import type { GifPickerModal } from './gif-picker-modal';
 import type { Message } from '../../../types';
 
 interface ConversationModalsProps {

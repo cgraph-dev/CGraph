@@ -8,7 +8,6 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   MagnifyingGlassIcon,
   GlobeAltIcon,
@@ -27,19 +26,10 @@ const SORT_OPTIONS = [
 
 type SortOption = (typeof SORT_OPTIONS)[number]['value'];
 
-interface ExploreResponse {
-  data: {
-    communities: Community[];
-    categories: string[];
-    total: number;
-  };
-}
-
 /**
  * Unified Explore page for discovering communities (groups + forums).
  */
 export default function ExplorePage() {
-  const navigate = useNavigate();
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -50,7 +40,7 @@ export default function ExplorePage() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   const fetchCommunities = useCallback(
@@ -117,7 +107,7 @@ export default function ExplorePage() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        if (entries[0]?.isIntersecting && hasMore && !isLoading) {
           fetchCommunities(false);
         }
       },

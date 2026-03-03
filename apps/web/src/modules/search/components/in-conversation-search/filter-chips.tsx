@@ -6,7 +6,7 @@
  * @module modules/search/components/in-conversation-search/filter-chips
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   UserIcon,
   CalendarDaysIcon,

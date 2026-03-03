@@ -215,7 +215,7 @@ export const PayoutPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {payouts.map((payout) => {
-                  const statusCfg = STATUS_CONFIG[payout.status] ?? STATUS_CONFIG.pending;
+                  const statusCfg = (STATUS_CONFIG[payout.status] ?? STATUS_CONFIG.pending)!;
                   return (
                     <tr key={payout.id}>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
