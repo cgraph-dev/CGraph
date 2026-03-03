@@ -1,0 +1,167 @@
+name: Documentation Freshness Check
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9am UTC
+    - cron: '0 9 * * 1'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  doc-freshness:
+    name: Check Documentation Freshness
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for git log
+
+      - name: Check for stale documentation
+        id: stale-check
+        run: |
+          echo "# Documentation Freshness Report" > freshness-report.md
+          echo "" >> freshness-report.md
+          echo "Generated: $(date -u +"%Y-%m-%d %H:%M UTC")" >> freshness-report.md
+          echo "" >> freshness-report.md
+
+          STALE_DAYS=90
+          STALE_COUNT=0
+          WARNING_COUNT=0
+
+          echo "## Stale Documents (>$STALE_DAYS days)" >> freshness-report.md
+          echo "" >> freshness-report.md
+          echo "| File | Last Modified | Days Stale |" >> freshness-report.md
+          echo "|------|---------------|------------|" >> freshness-report.md
+
+          # Check all markdown files in docs/
+          for file in $(find docs -name "*.md" -type f); do
+            LAST_MODIFIED=$(git log -1 --format="%ci" -- "$file" 2>/dev/null | cut -d' ' -f1)
+            if [ -n "$LAST_MODIFIED" ]; then
+              DAYS_AGO=$(( ($(date +%s) - $(date -d "$LAST_MODIFIED" +%s)) / 86400 ))
+              if [ $DAYS_AGO -gt $STALE_DAYS ]; then
+                echo "| $file | $LAST_MODIFIED | $DAYS_AGO |" >> freshness-report.md
+                STALE_COUNT=$((STALE_COUNT + 1))
+              elif [ $DAYS_AGO -gt 60 ]; then
+                WARNING_COUNT=$((WARNING_COUNT + 1))
+              fi
+            fi
+          done
+
+          # Check root markdown files
+          for file in *.md; do
+            if [ -f "$file" ]; then
+              LAST_MODIFIED=$(git log -1 --format="%ci" -- "$file" 2>/dev/null | cut -d' ' -f1)
+              if [ -n "$LAST_MODIFIED" ]; then
+                DAYS_AGO=$(( ($(date +%s) - $(date -d "$LAST_MODIFIED" +%s)) / 86400 ))
+                if [ $DAYS_AGO -gt $STALE_DAYS ]; then
+                  echo "| $file | $LAST_MODIFIED | $DAYS_AGO |" >> freshness-report.md
+                  STALE_COUNT=$((STALE_COUNT + 1))
+                elif [ $DAYS_AGO -gt 60 ]; then
+                  WARNING_COUNT=$((WARNING_COUNT + 1))
+                fi
+              fi
+            fi
+          done
+
+          if [ $STALE_COUNT -eq 0 ]; then
+            echo "| ✅ No stale documents found | - | - |" >> freshness-report.md
+          fi
+
+          echo "" >> freshness-report.md
+          echo "## Summary" >> freshness-report.md
+          echo "" >> freshness-report.md
+          echo "- **Stale (>90 days):** $STALE_COUNT" >> freshness-report.md
+          echo "- **Warning (>60 days):** $WARNING_COUNT" >> freshness-report.md
+          echo "" >> freshness-report.md
+
+          # Set outputs
+          echo "stale_count=$STALE_COUNT" >> $GITHUB_OUTPUT
+          echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
+
+          cat freshness-report.md
+
+      - name: Upload freshness report
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-freshness-report
+          path: freshness-report.md
+
+      - name: Create issue for stale docs
+        if: steps.stale-check.outputs.stale_count > 0 && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('freshness-report.md', 'utf8');
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'documentation,stale',
+              state: 'open'
+            });
+
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📚 Stale Documentation Review Needed',
+                body: report,
+                labels: ['documentation', 'stale', 'good first issue']
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: report
+              });
+            }
+
+  version-sync:
+    name: Check Version Consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version consistency
+        run: |
+          # Get version from package.json
+          PKG_VERSION=$(jq -r '.version' package.json)
+          echo "Package version: $PKG_VERSION"
+
+          # Check docs for version references
+          MISMATCHES=0
+
+          for file in docs/README.md docs/PROJECT_STATUS.md docs/CURRENT_STATE_DASHBOARD.md; do
+            if [ -f "$file" ]; then
+              if grep -q "Version.*[0-9]\+\.[0-9]\+\.[0-9]\+" "$file"; then
+                DOC_VERSION=$(grep -oP "Version[:\s]+\K[0-9]+\.[0-9]+\.[0-9]+" "$file" | head -1)
+                if [ "$DOC_VERSION" != "$PKG_VERSION" ]; then
+                  echo "::warning file=$file::Version mismatch: $DOC_VERSION (expected $PKG_VERSION)"
+                  MISMATCHES=$((MISMATCHES + 1))
+                else
+                  echo "✅ $file: $DOC_VERSION"
+                fi
+              fi
+            fi
+          done
+
+          if [ $MISMATCHES -gt 0 ]; then
+            echo "::error::Found $MISMATCHES version mismatches in documentation"
+            exit 1
+          fi
+
+          echo "✅ All version references are consistent"

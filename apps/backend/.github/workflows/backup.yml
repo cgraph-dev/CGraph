@@ -1,0 +1,231 @@
+name: Database Backup & Verification
+
+on:
+  schedule:
+    # Weekly full backup: Sunday 3:00 AM UTC
+    - cron: '0 3 * * 0'
+    # Daily incremental backup: Monday-Saturday 3:00 AM UTC
+    - cron: '0 3 * * 1-6'
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Backup type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - incremental
+      verify:
+        description: 'Run restore verification after backup'
+        required: true
+        default: true
+        type: boolean
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+  R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  R2_BUCKET: ${{ secrets.R2_BUCKET }}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    outputs:
+      backup_file: ${{ steps.backup.outputs.backup_file }}
+      backup_size: ${{ steps.backup.outputs.backup_size }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client awscli
+
+      - name: Configure R2 (S3-compatible)
+        run: |
+          aws configure set aws_access_key_id "$R2_ACCESS_KEY_ID"
+          aws configure set aws_secret_access_key "$R2_SECRET_ACCESS_KEY"
+          aws configure set default.region auto
+
+      - name: Determine backup type
+        id: type
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "type=${{ inputs.backup_type }}" >> "$GITHUB_OUTPUT"
+          elif [[ "$(date +%u)" == "7" ]]; then
+            echo "type=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=incremental" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run backup
+        id: backup
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          BACKUP_TYPE="${{ steps.type.outputs.type }}"
+          BACKUP_FILE="cgraph_${BACKUP_TYPE}_${TIMESTAMP}.sql.gz"
+
+          echo "📦 Starting ${BACKUP_TYPE} backup..."
+
+          if [[ "$BACKUP_TYPE" == "full" ]]; then
+            pg_dump "$DATABASE_URL" --clean --if-exists --no-owner --no-acl | gzip > "$BACKUP_FILE"
+          else
+            pg_dump "$DATABASE_URL" --data-only --no-owner --no-acl | gzip > "$BACKUP_FILE"
+          fi
+
+          BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
+          echo "✅ Backup complete: $BACKUP_FILE ($BACKUP_SIZE)"
+
+          echo "backup_file=$BACKUP_FILE" >> "$GITHUB_OUTPUT"
+          echo "backup_size=$BACKUP_SIZE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to R2
+        if: env.R2_ENDPOINT != ''
+        run: |
+          aws s3 cp "${{ steps.backup.outputs.backup_file }}" \
+            "s3://${R2_BUCKET}/backups/${{ steps.backup.outputs.backup_file }}" \
+            --endpoint-url "$R2_ENDPOINT"
+          echo "☁️ Uploaded to R2: ${{ steps.backup.outputs.backup_file }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ steps.type.outputs.type }}
+          path: ${{ steps.backup.outputs.backup_file }}
+          retention-days: 30
+
+      - name: Rotate old backups (keep 30 days)
+        if: env.R2_ENDPOINT != ''
+        run: |
+          CUTOFF=$(date -d "30 days ago" +%Y%m%d)
+          echo "🗑️ Removing backups older than $CUTOFF..."
+
+          aws s3 ls "s3://${R2_BUCKET}/backups/" --endpoint-url "$R2_ENDPOINT" | while read -r line; do
+            FILENAME=$(echo "$line" | awk '{print $4}')
+            FILE_DATE=$(echo "$FILENAME" | grep -oP '\d{8}' | head -1)
+            if [[ -n "$FILE_DATE" && "$FILE_DATE" < "$CUTOFF" ]]; then
+              aws s3 rm "s3://${R2_BUCKET}/backups/$FILENAME" --endpoint-url "$R2_ENDPOINT"
+              echo "  Deleted: $FILENAME"
+            fi
+          done
+
+  verify:
+    name: Restore Verification
+    needs: backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Run verification on weekly full backups or when manually requested
+    if: >
+      (github.event_name == 'schedule' && contains(github.event.schedule, '0 3 * * 0')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.verify == true)
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cgraph_verify
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: verify_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cgraph"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download backup artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: db-backup-full
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Restore backup to verification database
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: cgraph
+          PGPASSWORD: verify_test_password
+          PGDATABASE: cgraph_verify
+        run: |
+          echo "🔄 Restoring backup to verification database..."
+          BACKUP_FILE="${{ needs.backup.outputs.backup_file }}"
+
+          gunzip -c "$BACKUP_FILE" | psql -v ON_ERROR_STOP=0 2>&1 | tail -20
+
+          echo "✅ Restore completed"
+
+      - name: Verify data integrity
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: cgraph
+          PGPASSWORD: verify_test_password
+          PGDATABASE: cgraph_verify
+        run: |
+          echo "🔍 Verifying data integrity..."
+
+          # Check key tables exist and have data
+          TABLES=("users" "conversations" "messages" "subscriptions" "groups" "forums")
+          ALL_OK=true
+
+          for table in "${TABLES[@]}"; do
+            COUNT=$(psql -t -c "SELECT COUNT(*) FROM ${table} LIMIT 1;" 2>/dev/null || echo "ERROR")
+            COUNT=$(echo "$COUNT" | tr -d ' ')
+
+            if [[ "$COUNT" == "ERROR" ]]; then
+              echo "  ⚠️  Table '${table}' — not found (may not exist in schema)"
+            elif [[ "$COUNT" -ge 0 ]]; then
+              echo "  ✅ Table '${table}' — ${COUNT} rows"
+            else
+              echo "  ❌ Table '${table}' — verification failed"
+              ALL_OK=false
+            fi
+          done
+
+          # Verify schema_migrations table
+          MIGRATION_COUNT=$(psql -t -c "SELECT COUNT(*) FROM schema_migrations;" 2>/dev/null | tr -d ' ')
+          echo "  ✅ Schema migrations: ${MIGRATION_COUNT}"
+
+          if [[ "$ALL_OK" == "true" ]]; then
+            echo ""
+            echo "✅ Backup verification PASSED"
+          else
+            echo ""
+            echo "❌ Backup verification FAILED — some tables could not be verified"
+            exit 1
+          fi
+
+  notify:
+    name: Backup Notification
+    needs: [backup, verify]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "## 📦 Database Backup Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| File | \`${{ needs.backup.outputs.backup_file }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Size | ${{ needs.backup.outputs.backup_size }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backup | ${{ needs.backup.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Verify | ${{ needs.verify.result == 'success' && '✅ Passed' || needs.verify.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY

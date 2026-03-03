@@ -1,0 +1,206 @@
+name: Performance Benchmark
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/backend/**'
+      - 'apps/web/**'
+  schedule:
+    - cron: '0 6 * * 1' # Every Monday at 6 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # ============================================
+  # Backend Benchmarks (Elixir)
+  # ============================================
+  backend-benchmark:
+    name: Backend Performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: cgraph_dev_password
+          POSTGRES_DB: cgraph_bench
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.17.3'
+          otp-version: '27.1.2'
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/backend/deps
+            apps/backend/_build
+          key: ${{ runner.os }}-bench-mix-${{ hashFiles('apps/backend/mix.lock') }}
+
+      - name: Install dependencies
+        working-directory: apps/backend
+        run: mix deps.get
+
+      - name: Setup database
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_bench
+        run: |
+          mix ecto.create
+          mix ecto.migrate
+
+      - name: Run benchmarks
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_bench
+          REDIS_URL: redis://localhost:6379
+        run: |
+          mix run priv/bench/run_benchmarks.exs || echo "No benchmarks configured"
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-benchmarks
+          path: apps/backend/priv/bench/results
+        if: always()
+
+  # ============================================
+  # Frontend Bundle Analysis
+  # ============================================
+  frontend-bundle:
+    name: Frontend Bundle Size
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm run build --filter=@cgraph/web
+
+      - name: Analyze bundle size
+        run: |
+          echo "## 📦 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Calculate total bundle size
+          TOTAL_SIZE=$(du -sh apps/web/dist | cut -f1)
+          echo "**Total bundle size:** $TOTAL_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # List largest files
+          echo "### Largest assets:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          find apps/web/dist -type f -exec ls -lh {} \; | sort -k5 -rh | head -20 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check bundle size limit
+        run: |
+          MAX_SIZE_KB=2048  # 2MB limit for initial bundle
+          JS_SIZE=$(find apps/web/dist -name "*.js" -exec du -k {} + | awk '{total += $1} END {print total}')
+
+          echo "JavaScript bundle size: ${JS_SIZE}KB (limit: ${MAX_SIZE_KB}KB)"
+
+          if [ "$JS_SIZE" -gt "$MAX_SIZE_KB" ]; then
+            echo "::error::JavaScript bundle size ($JS_SIZE KB) exceeds limit ($MAX_SIZE_KB KB)"
+            exit 1
+          fi
+
+  # ============================================
+  # Lighthouse Performance Audit
+  # ============================================
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm run build --filter=@cgraph/web
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configPath: '.github/lighthouserc.json'
+
+      - name: Format Lighthouse Score
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+
+            let comment = '## 🔦 Lighthouse Results\n\n';
+            comment += '| Category | Score |\n|----------|-------|\n';
+
+            const latest = results[results.length - 1];
+            if (latest && latest.summary) {
+              Object.entries(latest.summary).forEach(([key, value]) => {
+                const score = Math.round(value * 100);
+                const emoji = score >= 90 ? '🟢' : score >= 50 ? '🟡' : '🔴';
+                comment += `| ${key} | ${emoji} ${score} |\n`;
+              });
+            }
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+        continue-on-error: true

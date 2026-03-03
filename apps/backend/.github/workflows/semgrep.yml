@@ -1,0 +1,109 @@
+name: Semgrep SAST
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run daily at 2 AM UTC for comprehensive scanning
+    - cron: '0 2 * * *'
+
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep:
+    name: Semgrep Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan
+        run: |
+          semgrep scan \
+            --config auto \
+            --config p/security-audit \
+            --config p/secrets \
+            --config p/typescript \
+            --config p/react \
+            --config p/nodejs \
+            --config p/owasp-top-ten \
+            --config p/cwe-top-25 \
+            --sarif \
+            --sarif-output=semgrep-results.sarif \
+            --error \
+            --exclude='**/node_modules/**' \
+            --exclude='**/_build/**' \
+            --exclude='**/deps/**' \
+            --exclude='**/dist/**' \
+            --exclude='**/build/**' \
+            --exclude='**/*.min.js' \
+            --exclude='**/pnpm-lock.yaml' \
+            --max-target-bytes=2000000
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep-results.sarif
+        if: always()
+
+      - name: Upload Semgrep artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep-results.sarif
+          retention-days: 30
+        if: always()
+
+  # Focused scan for high-severity issues only (faster, for PRs)
+  semgrep-quick:
+    name: Semgrep Quick Scan (High Severity)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'pull_request'
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run quick Semgrep scan
+        run: |
+          semgrep scan \
+            --config p/security-audit \
+            --config p/secrets \
+            --severity ERROR \
+            --error \
+            --exclude='**/node_modules/**' \
+            --exclude='**/_build/**' \
+            --exclude='**/deps/**' \
+            --json \
+            --json-output=semgrep-quick.json \
+            --max-target-bytes=2000000
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Check for critical findings
+        run: |
+          if [ -f semgrep-quick.json ]; then
+            FINDINGS=$(cat semgrep-quick.json | grep -c '"severity": "ERROR"' || echo "0")
+            echo "Found $FINDINGS critical security issues"
+            if [ "$FINDINGS" -gt 0 ]; then
+              echo "::error::Critical security issues detected. Please review semgrep-quick.json"
+              exit 1
+            fi
+          fi

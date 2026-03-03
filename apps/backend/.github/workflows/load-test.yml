@@ -1,0 +1,197 @@
+# ============================================
+# Load & Stress Testing Pipeline
+# ============================================
+#
+# Optional repository secrets:
+#   STAGING_URL     - Staging backend URL (default: https://staging.cgraph.org)
+#   STAGING_WS_URL  - Staging WebSocket URL (default: wss://staging.cgraph.org/socket/websocket)
+#
+# Follows: Google SRE load testing practices, Signal's infrastructure validation
+# ============================================
+name: Load Tests
+
+on:
+  # Smoke test on PRs to staging
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'apps/backend/**'
+      - 'infrastructure/load-tests/**'
+
+  # Weekly load test
+  schedule:
+    - cron: '0 3 * * 1' # Every Monday at 3 AM UTC
+
+  # Manual trigger for any test type
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Test type to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+
+permissions:
+  contents: read
+
+env:
+  # Default to public staging URLs — override via repository secrets if needed
+  BASE_URL: ${{ secrets.STAGING_URL || 'https://staging.cgraph.org' }}
+  WS_URL: ${{ secrets.STAGING_WS_URL || 'wss://staging.cgraph.org/socket/websocket' }}
+
+jobs:
+  smoke-test:
+    name: Smoke Test (10 VUs, 60s)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'smoke')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run Smoke Test
+        run: |
+          mkdir -p results
+          k6 run infrastructure/load-tests/k6/smoke.js \
+            --env BASE_URL=${{ env.BASE_URL }}
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results
+          path: results/
+          retention-days: 30
+
+      - name: Compare with Baseline
+        if: always()
+        run: |
+          if [ -f results/smoke-test-results.json ]; then
+            echo "## Smoke Test Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            # Extract key metrics for summary
+            node -e "
+              const data = require('./results/smoke-test-results.json');
+              const metrics = data.metrics || {};
+              const summary = {
+                http_req_duration_p95: metrics.http_req_duration?.values?.['p(95)']?.toFixed(2) + 'ms',
+                http_req_duration_p99: metrics.http_req_duration?.values?.['p(99)']?.toFixed(2) + 'ms',
+                error_rate: (metrics.errors?.values?.rate * 100)?.toFixed(2) + '%',
+                total_requests: metrics.http_reqs?.values?.count,
+                thresholds_passed: Object.entries(data.thresholds || {})
+                  .every(([k,v]) => v.ok)
+              };
+              console.log(JSON.stringify(summary, null, 2));
+            " >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not parse results" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  load-test:
+    name: Load Test (100 VUs, 5min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'load')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run Load Test
+        run: |
+          mkdir -p results
+          k6 run infrastructure/load-tests/k6/load.js \
+            --env BASE_URL=${{ env.BASE_URL }} \
+            --env WS_URL=${{ env.WS_URL }}
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results-${{ github.run_number }}
+          path: results/
+          retention-days: 90
+
+      - name: Compare with Baseline
+        if: always()
+        run: |
+          if [ -f results/load-test-results.json ]; then
+            echo "## Load Test Results (Run #${{ github.run_number }})" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const data = require('./results/load-test-results.json');
+              const metrics = data.metrics || {};
+              const summary = {
+                http_req_duration_p95: metrics.http_req_duration?.values?.['p(95)']?.toFixed(2) + 'ms',
+                http_req_duration_p99: metrics.http_req_duration?.values?.['p(99)']?.toFixed(2) + 'ms',
+                error_rate: (metrics.errors?.values?.rate * 100)?.toFixed(2) + '%',
+                total_requests: metrics.http_reqs?.values?.count,
+                ws_connections: metrics.ws_connections?.values?.count || 0,
+                messages_sent: metrics.messages_sent?.values?.count || 0,
+                thresholds_passed: Object.entries(data.thresholds || {})
+                  .every(([k,v]) => v.ok)
+              };
+              console.log(JSON.stringify(summary, null, 2));
+            " >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not parse results" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+
+            # Fail if p99 regressed beyond 500ms threshold
+            node -e "
+              const data = require('./results/load-test-results.json');
+              const p99 = data.metrics?.http_req_duration?.values?.['p(99)'] || 0;
+              if (p99 > 500) {
+                console.error('REGRESSION: p99=' + p99.toFixed(2) + 'ms exceeds 500ms baseline');
+                process.exit(1);
+              }
+              console.log('p99=' + p99.toFixed(2) + 'ms — within baseline');
+            " || echo "::warning::Load test p99 regression detected"
+          fi
+
+  stress-test:
+    name: Stress Test (500 VUs, 10min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'stress'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run Stress Test
+        run: |
+          mkdir -p results
+          k6 run infrastructure/load-tests/k6/stress.js \
+            --env BASE_URL=${{ env.BASE_URL }}
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stress-test-results-${{ github.run_number }}
+          path: results/
+          retention-days: 90

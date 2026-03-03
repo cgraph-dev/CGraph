@@ -1,0 +1,209 @@
+# ============================================
+# Production Deployment Pipeline
+# ============================================
+#
+# Required repository secrets:
+#   FLY_API_TOKEN          - Fly.io deploy token
+#
+# Required environment secrets (production):
+#   VITE_API_URL           - Backend API endpoint for web build
+#   VITE_WS_URL            - WebSocket endpoint for web build
+#   CLOUDFLARE_API_TOKEN   - Cloudflare Pages deploy token
+#   CLOUDFLARE_ACCOUNT_ID  - Cloudflare account identifier
+#   EXPO_TOKEN             - Expo/EAS build token for mobile
+#
+# Optional environment secrets (production):
+#   BACKEND_HEALTH_URL     - Post-deploy health check URL (skipped if unset)
+#   WEB_SMOKE_URL          - Post-deploy web smoke check URL (skipped if unset)
+#
+# Follows: Google SRE canary deploys, Discord's gated promotion, Signal's least-privilege
+# ============================================
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  PNPM_VERSION: '10'
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # ============================================
+  # Gate: Only deploy if CI passed
+  # ============================================
+  ci-gate:
+    name: CI Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - run: echo "CI passed — deploying"
+
+  # ============================================
+  # Deploy Backend to Fly.io
+  # ============================================
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [ci-gate]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io (Canary)
+        working-directory: apps/backend
+        run: |
+          # Deploy with canary strategy — Meta pattern:
+          # Roll to 1 machine first, health-check, then promote to all
+          flyctl deploy --remote-only --strategy canary \
+            --wait-timeout 120
+
+  # ============================================
+  # Deploy Web to Cloudflare Pages
+  # ============================================
+  deploy-web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [ci-gate]
+    environment: production
+    env:
+      VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          missing=0
+          for secret_name in VITE_API_URL VITE_WS_URL CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            if [ -z "${!secret_name}" ]; then
+              echo "::error::Required secret $secret_name is not set"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error::Missing required web deploy secrets. Configure them in Settings > Environments > production."
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm run build --filter=@cgraph/web
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          VITE_WS_URL: ${{ env.VITE_WS_URL }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: cgraph-web
+          directory: apps/web/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================
+  # Build Mobile (EAS Build)
+  # ============================================
+  build-mobile:
+    name: Build Mobile Apps
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [ci-gate]
+    environment: production
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::Required secret EXPO_TOKEN is not set. Configure it in Settings > Environments > production."
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Setup Expo CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ env.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build iOS and Android
+        working-directory: apps/mobile
+        run: eas build --platform all --non-interactive
+
+  smoke-checks:
+    name: Post-Deploy Smoke Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [deploy-backend, deploy-web]
+    env:
+      BACKEND_HEALTH_URL: ${{ secrets.BACKEND_HEALTH_URL }}
+      WEB_SMOKE_URL: ${{ secrets.WEB_SMOKE_URL }}
+    steps:
+      - name: Backend health
+        run: |
+          if [ -n "$BACKEND_HEALTH_URL" ]; then
+            echo "Checking backend health at $BACKEND_HEALTH_URL"
+            curl -f --max-time 10 "$BACKEND_HEALTH_URL"
+          else
+            echo "BACKEND_HEALTH_URL not set, skipping"
+          fi
+
+      - name: Web smoke
+        run: |
+          if [ -n "$WEB_SMOKE_URL" ]; then
+            echo "Checking web at $WEB_SMOKE_URL"
+            curl -f --max-time 10 "$WEB_SMOKE_URL"
+          else
+            echo "WEB_SMOKE_URL not set, skipping"
+          fi

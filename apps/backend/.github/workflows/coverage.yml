@@ -1,0 +1,294 @@
+name: Coverage Report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  NODE_VERSION: '22.x'
+  PNPM_VERSION: '10'
+  ELIXIR_VERSION: '1.17.3'
+  OTP_VERSION: '27.1.2'
+
+jobs:
+  # ============================================
+  # Collect Coverage from All Apps
+  # ============================================
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: cgraph_dev_password
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---- Frontend Setup ----
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ---- Backend Setup ----
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Cache Elixir deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/backend/deps
+            apps/backend/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('apps/backend/mix.lock') }}
+
+      - name: Install Elixir dependencies
+        working-directory: apps/backend
+        run: mix deps.get
+
+      # ---- Run Tests with Coverage ----
+      - name: Test Web App
+        run: pnpm run test --filter=@cgraph/web -- --run --coverage
+        continue-on-error: true
+
+      - name: Test Landing
+        run: pnpm run test --filter=@cgraph/landing -- --run --coverage
+        continue-on-error: true
+
+      - name: Test Backend
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cgraph_test
+        run: mix test --cover --export-coverage default
+        continue-on-error: true
+
+      # ---- Coverage Report ----
+      - name: Generate Coverage Summary
+        id: coverage
+        run: |
+          echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Web coverage
+          if [ -f apps/web/coverage/coverage-summary.json ]; then
+            WEB_LINES=$(jq -r '.total.lines.pct' apps/web/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            WEB_BRANCH=$(jq -r '.total.branches.pct' apps/web/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            echo "| App | Lines | Branches | Target |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Web | ${WEB_LINES}% | ${WEB_BRANCH}% | 65% |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Web coverage not available" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Landing coverage
+          if [ -f apps/landing/coverage/coverage-summary.json ]; then
+            LAND_LINES=$(jq -r '.total.lines.pct' apps/landing/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            LAND_BRANCH=$(jq -r '.total.branches.pct' apps/landing/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            echo "| Landing | ${LAND_LINES}% | ${LAND_BRANCH}% | 50% |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Backend coverage
+          if [ -d apps/backend/cover ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Backend coverage available in artifacts (target: 75%)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Web Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-coverage
+          path: apps/web/coverage
+        if: always()
+
+      - name: Upload Backend Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: apps/backend/cover
+        if: always()
+
+      # ---- Codecov Upload ----
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: |
+            apps/web/coverage/lcov.info,
+            apps/backend/cover/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # ---- PR Comment ----
+      - name: Coverage Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## 📊 Coverage Report\n\n';
+
+            try {
+              const webCoverage = JSON.parse(
+                fs.readFileSync('apps/web/coverage/coverage-summary.json', 'utf8')
+              );
+              const lines = webCoverage.total.lines.pct;
+              const branches = webCoverage.total.branches.pct;
+              const functions = webCoverage.total.functions.pct;
+              
+              const getEmoji = (pct, target) => pct >= target ? '✅' : pct >= target * 0.8 ? '⚠️' : '❌';
+              
+              body += '### Web App\n\n';
+              body += '| Metric | Coverage | Target | Status |\n';
+              body += '|--------|----------|--------|--------|\n';
+              body += `| Lines | ${lines.toFixed(1)}% | 65% | ${getEmoji(lines, 65)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 65% | ${getEmoji(branches, 65)} |\n`;
+              body += `| Functions | ${functions.toFixed(1)}% | 65% | ${getEmoji(functions, 65)} |\n`;
+            } catch (e) {
+              body += '⚠️ Web coverage data not available\n';
+            }
+
+            try {
+              const landCoverage = JSON.parse(
+                fs.readFileSync('apps/landing/coverage/coverage-summary.json', 'utf8')
+              );
+              const lines = landCoverage.total.lines.pct;
+              const branches = landCoverage.total.branches.pct;
+              
+              const getEmoji = (pct, target) => pct >= target ? '✅' : pct >= target * 0.8 ? '⚠️' : '❌';
+              
+              body += '\n### Landing App\n\n';
+              body += '| Metric | Coverage | Target | Status |\n';
+              body += '|--------|----------|--------|--------|\n';
+              body += `| Lines | ${lines.toFixed(1)}% | 50% | ${getEmoji(lines, 50)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 50% | ${getEmoji(branches, 50)} |\n`;
+            } catch (e) {
+              // Landing coverage may not be available
+            }
+
+            body += '\n### Backend\n\nBackend target: 75% (Elixir mix test --cover)\n';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # ============================================
+  # Enforce Coverage Thresholds
+  # ============================================
+  coverage-gate:
+    name: Coverage Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: coverage
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: cgraph_dev_password
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Coverage Thresholds
+        run: |
+          echo "=== Checking Web App Coverage Thresholds ==="
+          pnpm run test --filter=@cgraph/web -- --run --coverage || {
+            echo "❌ Web coverage below thresholds!"
+            echo "Required: 65% lines, 65% branches, 65% functions"
+            exit 1
+          }
+
+          echo ""
+          echo "=== Checking Landing App Coverage Thresholds ==="
+          pnpm run test --filter=@cgraph/landing -- --run --coverage || {
+            echo "❌ Landing coverage below thresholds!"
+            exit 1
+          }
+
+      - name: Check Backend Coverage Thresholds
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Backend Coverage Gate
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_test
+        run: |
+          mix deps.get
+          mix test --cover --export-coverage default 2>&1 | tee /tmp/mix_test_output.txt
+
+          # Extract coverage percentage from mix test output
+          # mix test --cover prints "Coverage: XX.X%"
+          COVERAGE=$(grep -oP 'Coverage:\s+\K[\d.]+' /tmp/mix_test_output.txt || echo "0")
+          echo "Backend coverage: ${COVERAGE}%"
+
+          # Enforce 75% minimum for backend
+          if [ "$(echo "$COVERAGE < 75" | bc -l 2>/dev/null || echo 1)" = "1" ]; then
+            # bc not available, use awk
+            PASS=$(echo "$COVERAGE" | awk '{print ($1 >= 75) ? "yes" : "no"}')
+            if [ "$PASS" = "no" ]; then
+              echo "❌ Backend coverage ${COVERAGE}% is below 75% threshold!"
+              exit 1
+            fi
+          fi
+          echo "✅ Backend coverage ${COVERAGE}% meets 75% threshold"

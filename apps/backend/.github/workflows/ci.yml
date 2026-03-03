@@ -1,0 +1,605 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ELIXIR_VERSION: '1.17.3'
+  OTP_VERSION: '27.1.2'
+  NODE_VERSION: '22.x'
+  PNPM_VERSION: '10'
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+jobs:
+  # ============================================
+  # PR Size Check
+  # ============================================
+  pr-size:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR size
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ADDITIONS=$(gh pr view ${{ github.event.pull_request.number }} --json additions -q '.additions')
+          DELETIONS=$(gh pr view ${{ github.event.pull_request.number }} --json deletions -q '.deletions')
+          TOTAL=$((ADDITIONS + DELETIONS))
+
+          echo "PR size: +$ADDITIONS -$DELETIONS ($TOTAL total lines changed)"
+
+          if [ "$TOTAL" -gt 1000 ]; then
+            echo "::warning::Large PR ($TOTAL lines changed) — consider splitting into smaller PRs for easier review"
+          elif [ "$TOTAL" -gt 400 ]; then
+            echo "::notice::Medium PR ($TOTAL lines changed) — review carefully"
+          else
+            echo "PR size is manageable ($TOTAL lines changed)"
+          fi
+
+  # ============================================
+  # File Size Compliance Check
+  # ============================================
+  file-size:
+    name: File Size Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check TSX components under 300 lines
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 300 ]; then
+              echo "::error file=${f}::${f} has ${lines} lines (limit: 300)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/web/src -name '*.tsx' -not -path '*/__tests__/*' -not -path '*/*.test.*' -not -path '*/*.stories.*' -not -path '*/__dev__/*')
+          if [ "$violations" -gt 0 ]; then
+            echo "❌ ${violations} TSX file(s) exceed 300 lines"
+            exit 1
+          fi
+          echo "✅ All TSX components under 300 lines"
+
+      - name: Check Mobile TSX components under 300 lines
+        continue-on-error: true  # Ratchet: 130 files over limit — track & reduce
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 300 ]; then
+              echo "::warning file=${f}::${f} has ${lines} lines (limit: 300)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/mobile/src -name '*.tsx' -not -path '*/__tests__/*' -not -path '*/*.test.*' -not -path '*/*.stories.*')
+          echo "📊 ${violations} Mobile TSX file(s) exceed 300 lines"
+
+      - name: Check Elixir contexts/controllers under 500 lines
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 500 ]; then
+              echo "::error file=${f}::${f} has ${lines} lines (limit: 500)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/backend/lib -name '*.ex' -not -path '*/test/*')
+          if [ "$violations" -gt 0 ]; then
+            echo "❌ ${violations} Elixir file(s) exceed 500 lines"
+            exit 1
+          fi
+          echo "✅ All Elixir files under 500 lines"
+
+  # ============================================
+  # Lint & Format Check
+  # ============================================
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+      - name: Check formatting
+        run: pnpm run format:check
+
+  # ============================================
+  # TypeScript Type Checking
+  # ============================================
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript check
+        run: pnpm run typecheck
+
+  # ============================================
+  # Backend Tests (Elixir/Phoenix)
+  # ============================================
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: cgraph_dev_password
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/backend/deps
+            apps/backend/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('apps/backend/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+
+      - name: Install dependencies
+        working-directory: apps/backend
+        run: mix deps.get
+
+      - name: Check formatting
+        working-directory: apps/backend
+        run: mix format --check-formatted
+
+      - name: Run Credo
+        working-directory: apps/backend
+        run: mix credo --strict
+
+      - name: Compile (warnings as errors)
+        working-directory: apps/backend
+        run: mix compile --warnings-as-errors
+
+      - name: Run tests
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_test
+          REDIS_URL: redis://localhost:6379
+        run: mix test --cover --export-coverage default
+
+      - name: Run Dialyzer
+        working-directory: apps/backend
+        run: mix dialyzer
+
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-cover
+          path: apps/backend/cover
+        if: always()
+
+  # ============================================
+  # Packages Tests (shared workspace packages)
+  # ============================================
+  packages-test:
+    name: Packages Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test api-client
+        run: pnpm --filter @cgraph/api-client run test -- --run
+
+      - name: Typecheck api-client
+        run: pnpm --filter @cgraph/api-client exec tsc --noEmit
+
+      - name: Test crypto
+        run: pnpm --filter @cgraph/crypto run test -- --run
+
+      - name: Typecheck crypto
+        run: pnpm --filter @cgraph/crypto run typecheck
+
+      - name: Test utils
+        run: pnpm --filter @cgraph/utils run test -- --run
+
+      - name: Typecheck utils
+        run: pnpm --filter @cgraph/utils exec tsc --noEmit
+
+      - name: Test socket
+        run: pnpm --filter @cgraph/socket run test -- --run
+
+      - name: Typecheck socket
+        run: pnpm --filter @cgraph/socket run typecheck
+
+  # ============================================
+  # Frontend Tests (React/TypeScript)
+  # ============================================
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm run test --filter=@cgraph/web -- --run --coverage
+
+      - name: Build
+        run: pnpm run build --filter=@cgraph/web
+
+      - name: Upload web coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-cover
+          path: apps/web/coverage
+        if: always()
+
+  # ============================================
+  # Mobile Tests (React Native/Expo)
+  # ============================================
+  mobile-test:
+    name: Mobile Lint / Typecheck / Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (mobile)
+        run: pnpm --filter @cgraph/mobile run lint
+
+      - name: Typecheck (mobile)
+        run: pnpm --filter @cgraph/mobile run typecheck
+
+      - name: Tests (mobile)
+        run: pnpm --filter @cgraph/mobile run test:ci
+
+      - name: Upload mobile coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-cover
+          path: apps/mobile/coverage
+        if: always()
+
+  # ============================================
+  # Docker Image Builds (backend & web)
+  # ============================================
+  docker-build:
+    name: Build Images (backend/web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        run: docker build -f apps/backend/Dockerfile -t cgraph-backend:ci apps/backend
+
+      - name: Build web image
+        run: docker build -f apps/web/Dockerfile -t cgraph-web:ci apps/web
+        if: hashFiles('apps/web/Dockerfile') != ''
+
+  # ============================================
+  # Coverage Summary (reports combined)
+  # ============================================
+  coverage-report:
+    name: Coverage Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [backend-test, frontend-test, mobile-test]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-cover
+          path: cover/backend
+
+      - name: Download web coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: web-cover
+          path: cover/web
+
+      - name: Download mobile coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: mobile-cover
+          path: cover/mobile
+
+      - name: Check coverage thresholds
+        run: |
+          echo "Coverage Report Summary"
+          echo "======================"
+          echo "Backend: cover/backend"
+          echo "Web: cover/web"
+          echo "Mobile: cover/mobile"
+          # Enforce minimum 40% line coverage — hard fail (aligned with vitest thresholds in vite.config.ts)
+          # Ratchet approach: raise this as test coverage grows
+          if [ -f cover/web/coverage-summary.json ]; then
+            WEB_PCT=$(cat cover/web/coverage-summary.json | jq -r '.total.lines.pct // 0')
+            echo "Web coverage: ${WEB_PCT}%"
+            if (( $(echo "$WEB_PCT < 40" | bc -l) )); then
+              echo "::error::Web coverage ${WEB_PCT}% is below 40% threshold"
+              exit 1
+            fi
+          fi
+
+      - name: Upload combined coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-coverage
+          path: cover
+        if: always()
+
+  # ============================================
+  # Security Scan
+  # ============================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Secrets scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          # --no-git scans only the current file snapshot (not full git history).
+          # TODO: Add a scheduled workflow to scan full git history periodically.
+          args: detect --source . --no-git --exit-code 1
+
+      - name: Lint Dockerfile (backend)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: apps/backend/Dockerfile
+
+      - name: Lint Dockerfile (web)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: apps/web/Dockerfile
+        if: hashFiles('apps/web/Dockerfile') != ''
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Install Elixir deps
+        working-directory: apps/backend
+        run: mix deps.get
+
+      - name: Run Sobelow security scan
+        working-directory: apps/backend
+        run: mix sobelow --config
+
+      - name: Run mix_audit (Hex vulnerability scan)
+        working-directory: apps/backend
+        run: mix deps.audit
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run pnpm audit
+        run: pnpm audit --audit-level=high
+        # Block deploys for high/critical vulnerabilities
+
+      - name: Generate SBOM (Syft)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Scan dependencies (Grype)
+        uses: anchore/scan-action@v4
+        with:
+          sbom: sbom.spdx.json
+          fail-build: true
+          severity-cutoff: high
+        # Block deploys for high+ severity vulnerabilities
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            sbom.spdx.json
+            results.sarif
+          if-no-files-found: ignore
+        if: always()
+
+  # ============================================
+  # Quality Gate (required status check)
+  # ============================================
+  # This job gates PRs — configure as a required status check in GitHub branch protection.
+  # All CI jobs must pass before merging is allowed.
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - lint
+      - typecheck
+      - packages-test
+      - backend-test
+      - frontend-test
+      - mobile-test
+      - docker-build
+      - coverage-report
+      - security
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          echo "Quality Gate — checking all CI jobs"
+          echo "===================================="
+          echo "lint:          ${{ needs.lint.result }}"
+          echo "typecheck:     ${{ needs.typecheck.result }}"
+          echo "packages-test: ${{ needs.packages-test.result }}"
+          echo "backend-test:  ${{ needs.backend-test.result }}"
+          echo "frontend-test: ${{ needs.frontend-test.result }}"
+          echo "mobile-test:   ${{ needs.mobile-test.result }}"
+          echo "docker-build:  ${{ needs.docker-build.result }}"
+          echo "coverage:      ${{ needs.coverage-report.result }}"
+          echo "security:      ${{ needs.security.result }}"
+          echo "===================================="
+
+          # Fail if any required job failed or was cancelled
+          if [[ "${{ needs.lint.result }}" == "failure" || \
+                "${{ needs.typecheck.result }}" == "failure" || \
+                "${{ needs.packages-test.result }}" == "failure" || \
+                "${{ needs.backend-test.result }}" == "failure" || \
+                "${{ needs.frontend-test.result }}" == "failure" || \
+                "${{ needs.mobile-test.result }}" == "failure" || \
+                "${{ needs.docker-build.result }}" == "failure" || \
+                "${{ needs.security.result }}" == "failure" ]]; then
+            echo "::error::Quality gate FAILED — one or more required jobs did not pass"
+            exit 1
+          fi
+
+          if [[ "${{ needs.lint.result }}" == "cancelled" || \
+                "${{ needs.typecheck.result }}" == "cancelled" || \
+                "${{ needs.packages-test.result }}" == "cancelled" || \
+                "${{ needs.backend-test.result }}" == "cancelled" || \
+                "${{ needs.frontend-test.result }}" == "cancelled" || \
+                "${{ needs.mobile-test.result }}" == "cancelled" ]]; then
+            echo "::error::Quality gate FAILED — one or more jobs were cancelled"
+            exit 1
+          fi
+
+          echo "Quality gate PASSED — all checks green"

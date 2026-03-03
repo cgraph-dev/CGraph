@@ -1,0 +1,113 @@
+name: Chaos Tests
+
+on:
+  # Weekly resilience test
+  schedule:
+    - cron: '0 4 * * 3' # Every Wednesday at 4 AM UTC
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Chaos scenario to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - kill-backend
+          - kill-redis
+          - kill-db
+          - network-delay
+
+permissions:
+  contents: read
+
+env:
+  ELIXIR_VERSION: '1.17.3'
+  OTP_VERSION: '27.1.2'
+
+jobs:
+  chaos-test:
+    name: Chaos Engineering (${{ github.event.inputs.scenario || 'all' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cgraph
+          POSTGRES_PASSWORD: cgraph_dev_password
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/backend/deps
+            apps/backend/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('apps/backend/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+
+      - name: Install dependencies
+        working-directory: apps/backend
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+
+      - name: Setup database
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_test
+          REDIS_URL: redis://localhost:6379
+        run: |
+          mix ecto.create
+          mix ecto.migrate
+
+      - name: Run chaos tests
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://cgraph:cgraph_dev_password@localhost:5432/cgraph_test
+          REDIS_URL: redis://localhost:6379
+          CHAOS_SCENARIO: ${{ github.event.inputs.scenario || 'all' }}
+        run: |
+          mix test test/cgraph/chaos_test.exs --trace
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chaos-test-results-${{ github.run_id }}
+          path: apps/backend/test/reports/
+          retention-days: 30

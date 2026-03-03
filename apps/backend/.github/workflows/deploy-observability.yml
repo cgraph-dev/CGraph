@@ -1,0 +1,173 @@
+# ============================================
+# Deploy Observability Stack
+# ============================================
+#
+# Required repository secrets:
+#   FLY_API_TOKEN              - Fly.io deploy token
+#
+# Required environment secrets (production):
+#   GRAFANA_CLOUD_REMOTE_WRITE_URL - Grafana Cloud Prometheus remote write endpoint
+#   GRAFANA_CLOUD_USERNAME         - Grafana Cloud stack username
+#   GRAFANA_CLOUD_API_KEY          - Grafana Cloud API key
+#   SLACK_WEBHOOK_URL              - Slack incoming webhook for deploy notifications
+#   PAGERDUTY_SERVICE_KEY          - PagerDuty integration key for alerts
+#
+# Follows: Google SRE deployment practices, Signal's least-privilege model
+# ============================================
+name: Deploy Observability
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'verify'
+        type: choice
+        options:
+          - verify
+          - deploy-secrets
+          - deploy-full
+
+  push:
+    branches: [main]
+    paths:
+      - 'infrastructure/alertmanager/**'
+      - 'infrastructure/prometheus/**'
+      - 'infrastructure/grafana/**'
+      - 'apps/backend/fly.toml'
+      - 'apps/backend/fly.iad.toml'
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+jobs:
+  verify-metrics:
+    name: Verify Metrics Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Check metrics endpoint (fra)
+        run: |
+          echo "## Observability Health Check" >> $GITHUB_STEP_SUMMARY
+
+          # Check /metrics returns Prometheus text
+          STATUS=$(flyctl ssh console -a cgraph-backend -C "curl -s -o /dev/null -w '%{http_code}' http://localhost:4000/metrics" 2>/dev/null || echo "unreachable")
+
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Metrics endpoint (fra): HTTP $STATUS" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Metrics endpoint (fra): HTTP $STATUS" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check metrics endpoint (iad)
+        continue-on-error: true
+        run: |
+          STATUS=$(flyctl ssh console -a cgraph-backend-iad -C "curl -s -o /dev/null -w '%{http_code}' http://localhost:4000/metrics" 2>/dev/null || echo "unreachable")
+
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Metrics endpoint (iad): HTTP $STATUS" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Metrics endpoint (iad): HTTP $STATUS" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  deploy-secrets:
+    name: Deploy Observability Secrets
+    runs-on: ubuntu-latest
+    needs: verify-metrics
+    if: github.event.inputs.action == 'deploy-secrets' || github.event.inputs.action == 'deploy-full'
+    timeout-minutes: 10
+    environment: production
+    env:
+      GRAFANA_CLOUD_REMOTE_WRITE_URL: ${{ secrets.GRAFANA_CLOUD_REMOTE_WRITE_URL }}
+      GRAFANA_CLOUD_USERNAME: ${{ secrets.GRAFANA_CLOUD_USERNAME }}
+      GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      PAGERDUTY_SERVICE_KEY: ${{ secrets.PAGERDUTY_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          missing=0
+          for secret_name in GRAFANA_CLOUD_REMOTE_WRITE_URL GRAFANA_CLOUD_USERNAME GRAFANA_CLOUD_API_KEY; do
+            if [ -z "${!secret_name}" ]; then
+              echo "::error::Required secret $secret_name is not set"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error::Missing required Grafana Cloud secrets. Configure them in Settings > Environments > production."
+            exit 1
+          fi
+          echo "All required secrets validated"
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Set Grafana Cloud secrets (fra)
+        run: |
+          flyctl secrets set -a cgraph-backend \
+            GRAFANA_CLOUD_REMOTE_WRITE_URL="${GRAFANA_CLOUD_REMOTE_WRITE_URL}" \
+            GRAFANA_CLOUD_USERNAME="${GRAFANA_CLOUD_USERNAME}" \
+            GRAFANA_CLOUD_API_KEY="${GRAFANA_CLOUD_API_KEY}" \
+            SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL}" \
+            PAGERDUTY_SERVICE_KEY="${PAGERDUTY_SERVICE_KEY}" \
+            --stage
+          echo "✅ Grafana Cloud secrets staged for cgraph-backend (fra)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Set Grafana Cloud secrets (iad)
+        run: |
+          flyctl secrets set -a cgraph-backend-iad \
+            GRAFANA_CLOUD_REMOTE_WRITE_URL="${GRAFANA_CLOUD_REMOTE_WRITE_URL}" \
+            GRAFANA_CLOUD_USERNAME="${GRAFANA_CLOUD_USERNAME}" \
+            GRAFANA_CLOUD_API_KEY="${GRAFANA_CLOUD_API_KEY}" \
+            --stage
+          echo "✅ Grafana Cloud secrets staged for cgraph-backend-iad" >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    name: Deploy Backend with Metrics
+    runs-on: ubuntu-latest
+    needs: deploy-secrets
+    if: github.event.inputs.action == 'deploy-full'
+    timeout-minutes: 15
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy fra (primary)
+        working-directory: apps/backend
+        run: |
+          flyctl deploy --remote-only --strategy canary --wait-timeout 120
+          echo "✅ Deployed cgraph-backend (fra) with [metrics] config" >> $GITHUB_STEP_SUMMARY
+
+      - name: Deploy iad (secondary)
+        working-directory: apps/backend
+        run: |
+          flyctl deploy -c fly.iad.toml --remote-only --strategy canary --wait-timeout 120
+          echo "✅ Deployed cgraph-backend-iad with [metrics] config" >> $GITHUB_STEP_SUMMARY
+
+      - name: Verify metrics post-deploy
+        run: |
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' "https://cgraph-backend.fly.dev/metrics" || echo "000")
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Post-deploy metrics verification passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Post-deploy metrics returned HTTP $STATUS (may need auth)" >> $GITHUB_STEP_SUMMARY
+          fi

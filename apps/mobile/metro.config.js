@@ -21,6 +21,19 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Fix pnpm monorepo entry point: Expo Go requests "expo/AppEntry" which
+// has `import App from '../../App'` — that relative path only works with
+// flat node_modules. Redirect to our project's index.js instead.
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === 'expo/AppEntry' || moduleName.endsWith('expo/AppEntry.js')) {
+    return {
+      filePath: path.resolve(projectRoot, 'index.js'),
+      type: 'sourceFile',
+    };
+  }
+  return context.resolveRequest(context, moduleName, platform);
+};
+
 // Transformer settings optimized for new architecture
 config.transformer = {
   ...config.transformer,
