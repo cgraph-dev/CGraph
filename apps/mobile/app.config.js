@@ -19,10 +19,9 @@ const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
  */
 const getApiUrl = () => {
   if (IS_DEV) {
-    // For Expo Go on physical device, use your machine's LAN IP
-    // Auto-detected or configured via environment variable
-    const LAN_IP = process.env.API_HOST || '192.168.1.129';
-    return process.env.API_URL || `http://${LAN_IP}:4000`;
+    // Point to production API for testing with real accounts
+    // To use local backend instead, set API_URL=http://<LAN_IP>:4000
+    return process.env.API_URL || 'https://cgraph-backend.fly.dev';
   }
 
   if (IS_PREVIEW) {
@@ -37,8 +36,9 @@ const getApiUrl = () => {
  */
 const getWsUrl = () => {
   if (IS_DEV) {
-    const LAN_IP = process.env.API_HOST || '192.168.1.129';
-    return process.env.WS_URL || `ws://${LAN_IP}:4000/socket`;
+    // Point to production WebSocket for testing with real accounts
+    // To use local backend instead, set WS_URL=ws://<LAN_IP>:4000/socket
+    return process.env.WS_URL || 'wss://cgraph-backend.fly.dev/socket';
   }
 
   if (IS_PREVIEW) {

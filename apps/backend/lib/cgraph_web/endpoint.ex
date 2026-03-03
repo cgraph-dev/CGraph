@@ -29,6 +29,10 @@ defmodule CGraphWeb.Endpoint do
     websocket: [
       connect_info: [:peer_data, :uri, :x_headers],
       timeout: 10_000,
+      # Mobile clients (React Native) don't send browser-like Origin headers.
+      # Origin-checking is unnecessary here — UserSocket.connect/3 already
+      # authenticates every connection via JWT token.
+      check_origin: false,
       # Connection backpressure: reject with 1013 when at capacity
       # See CGraph.Cluster.ConnectionMonitor for capacity management
       compress: true,

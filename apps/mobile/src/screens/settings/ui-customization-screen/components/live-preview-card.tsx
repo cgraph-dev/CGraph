@@ -13,34 +13,33 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCustomizationStore } from '@/stores';
 
 /**
- *
+ * Live preview of current theme customization.
  */
 export function LivePreviewCard() {
-  const { theme, getColor, getSpacing, getBorderRadius } = useCustomizationStore();
+  const { theme } = useCustomizationStore();
+  const { colors, spacing, borderRadius, effects } = theme;
 
   return (
     <View style={styles.previewSection}>
       <Text style={styles.previewTitle}>Live Preview</Text>
       <BlurView
-        intensity={theme.effects.blur.intensity}
+        intensity={effects.blur.intensity}
         tint="dark"
         style={[
           styles.previewCard,
           {
-            borderRadius: getBorderRadius('lg'),
-            padding: getSpacing('md'),
+            borderRadius: borderRadius.lg,
+            padding: spacing.scale.md,
           },
         ]}
       >
         <View style={styles.previewHeader}>
-          <View style={[styles.previewAvatar, { backgroundColor: getColor('primary.500') }]}>
+          <View style={[styles.previewAvatar, { backgroundColor: colors.primary[500] }]}>
             <Ionicons name="person" size={24} color="#fff" />
           </View>
           <View style={styles.previewInfo}>
-            <Text style={[styles.previewName, { color: getColor('text.primary') }]}>
-              Sample User
-            </Text>
-            <Text style={[styles.previewSubtext, { color: getColor('text.secondary') }]}>
+            <Text style={[styles.previewName, { color: colors.text.primary }]}>Sample User</Text>
+            <Text style={[styles.previewSubtext, { color: colors.text.secondary }]}>
               This is how your theme looks
             </Text>
           </View>
@@ -49,8 +48,8 @@ export function LivePreviewCard() {
           style={[
             styles.previewButton,
             {
-              backgroundColor: getColor('primary.500'),
-              borderRadius: getBorderRadius('md'),
+              backgroundColor: colors.primary[500],
+              borderRadius: borderRadius.md,
             },
           ]}
         >
@@ -60,8 +59,8 @@ export function LivePreviewCard() {
           style={[
             styles.previewButton,
             {
-              backgroundColor: getColor('secondary.500'),
-              borderRadius: getBorderRadius('md'),
+              backgroundColor: colors.secondary[500],
+              borderRadius: borderRadius.md,
             },
           ]}
         >
