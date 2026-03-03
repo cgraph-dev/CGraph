@@ -321,9 +321,13 @@ defmodule CGraphWeb.API.V1.AuthController do
   @spec wallet_challenge(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def wallet_challenge(conn, %{"wallet_address" => address}) do
     with {:ok, %{wallet_address: wallet_address}} <- AuthParams.validate_wallet_challenge(%{"wallet_address" => address}) do
+      domain = get_request_domain(conn)
+
       case Accounts.get_or_create_wallet_challenge(wallet_address) do
         {:ok, nonce} ->
-          message = "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
+          message =
+            CGraph.Accounts.WalletAuthentication.build_siwe_message(nonce, wallet_address, domain)
+
           render_data(conn, %{message: message, nonce: nonce})
 
         {:error, reason} ->
@@ -336,15 +340,26 @@ defmodule CGraphWeb.API.V1.AuthController do
     end
   end
 
+  defp get_request_domain(conn) do
+    origin = Plug.Conn.get_req_header(conn, "origin") |> List.first("")
+
+    case URI.parse(origin) do
+      %URI{host: host} when is_binary(host) and host != "" -> host
+      _ -> "web.cgraph.org"
+    end
+  end
+
   @doc """
   Verify wallet signature and authenticate.
   Sets HTTP-only cookies for web clients.
   """
   @spec wallet_verify(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def wallet_verify(conn, %{"wallet_address" => address, "signature" => signature}) do
+  def wallet_verify(conn, %{"wallet_address" => address, "signature" => signature} = params) do
+    message = Map.get(params, "message")
+
     with {:ok, %{wallet_address: wallet_address, signature: sig}} <-
            AuthParams.validate_wallet_verify(%{"wallet_address" => address, "signature" => signature}),
-         {:ok, user} <- Accounts.verify_wallet_signature(wallet_address, sig),
+         {:ok, user} <- Accounts.verify_wallet_signature(wallet_address, sig, message),
          {:ok, tokens} <- TokenManager.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn

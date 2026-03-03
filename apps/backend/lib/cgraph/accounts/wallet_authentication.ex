@@ -1,14 +1,31 @@
 defmodule CGraph.Accounts.WalletAuthentication do
   @moduledoc """
-  Wallet signature-based authentication (EIP-191 personal sign).
+  Wallet signature-based authentication with SIWE (EIP-4361) + EIP-191 personal sign.
 
-  Handles challenge nonce generation and Ethereum signature verification
-  for Web3 wallet login flows.
+  Handles challenge nonce generation using SIWE-formatted messages and
+  Ethereum signature verification for Web3 wallet login flows.
+
+  ## SIWE Message Format (EIP-4361)
+
+      web.cgraph.org wants you to sign in with your Ethereum account:
+      0x1234...abcd
+
+      Sign in to CGraph
+
+      URI: https://web.cgraph.org
+      Version: 1
+      Chain ID: 1
+      Nonce: <64-hex-chars>
+      Issued At: 2026-03-03T12:00:00Z
+      Expiration Time: 2026-03-03T12:05:00Z
   """
 
   alias CGraph.Accounts.User
   alias CGraph.Accounts.WalletChallenge
   alias CGraph.Repo
+
+  @siwe_expiration_seconds 300
+  @allowed_domains ["web.cgraph.org", "cgraph.org", "localhost"]
 
   @doc """
   Get or create a wallet authentication challenge nonce.
@@ -24,16 +41,72 @@ defmodule CGraph.Accounts.WalletAuthentication do
   end
 
   @doc """
+  Build a SIWE (EIP-4361) formatted message for wallet signing.
+
+  ## Parameters
+    - `nonce` - The challenge nonce
+    - `address` - The Ethereum wallet address (checksummed or lowercase)
+    - `domain` - The requesting domain (e.g., "web.cgraph.org")
+  """
+  @spec build_siwe_message(String.t(), String.t(), String.t()) :: String.t()
+  def build_siwe_message(nonce, address, domain \\ "web.cgraph.org") do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    expiration = DateTime.add(now, @siwe_expiration_seconds, :second)
+
+    """
+    #{domain} wants you to sign in with your Ethereum account:
+    #{address}
+
+    Sign in to CGraph
+
+    URI: https://#{domain}
+    Version: 1
+    Chain ID: 1
+    Nonce: #{nonce}
+    Issued At: #{DateTime.to_iso8601(now)}
+    Expiration Time: #{DateTime.to_iso8601(expiration)}\
+    """
+  end
+
+  @doc """
+  Parse a SIWE-formatted message into its component fields.
+
+  Returns a map with keys: `:domain`, `:address`, `:statement`, `:uri`,
+  `:version`, `:chain_id`, `:nonce`, `:issued_at`, `:expiration_time`.
+  """
+  @spec parse_siwe_message(String.t()) :: {:ok, map()} | {:error, :invalid_siwe_format}
+  def parse_siwe_message(message) do
+    lines = String.split(message, "\n")
+
+    with {:ok, domain} <- extract_domain(lines),
+         {:ok, address} <- extract_address(lines),
+         fields <- extract_siwe_fields(message) do
+      if map_size(fields) >= 4 do
+        {:ok,
+         Map.merge(fields, %{
+           domain: domain,
+           address: String.downcase(address)
+         })}
+      else
+        {:error, :invalid_siwe_format}
+      end
+    end
+  end
+
+  @doc """
   Verify a wallet signature and authenticate/register user.
+  Supports both SIWE (EIP-4361) and legacy message formats.
   Deletes the challenge nonce after successful verification to prevent replay attacks.
   """
-  @spec verify_wallet_signature(String.t(), String.t()) :: {:ok, User.t()} | {:error, atom() | String.t()}
-  def verify_wallet_signature(wallet_address, signature) do
+  @spec verify_wallet_signature(String.t(), String.t(), String.t()) ::
+          {:ok, User.t()} | {:error, atom() | String.t()}
+  def verify_wallet_signature(wallet_address, signature, message \\ nil) do
     normalized_address = String.downcase(wallet_address)
 
     with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
-         message <- build_sign_message(wallet_challenge.nonce),
-         :ok <- verify_signature(message, signature, normalized_address) do
+         sign_message <- message || build_legacy_sign_message(wallet_challenge.nonce),
+         :ok <- validate_message(sign_message, wallet_challenge.nonce, normalized_address),
+         :ok <- verify_eip191_signature(sign_message, signature, normalized_address) do
       # Delete the challenge to prevent replay attacks
       Repo.delete(wallet_challenge)
 
@@ -45,7 +118,101 @@ defmodule CGraph.Accounts.WalletAuthentication do
     end
   end
 
-  # Private helpers
+  # ── Message validation ──
+
+  defp validate_message(message, expected_nonce, expected_address) do
+    case parse_siwe_message(message) do
+      {:ok, fields} ->
+        validate_siwe_fields(fields, expected_nonce, expected_address)
+
+      {:error, :invalid_siwe_format} ->
+        # Legacy format: just verify it contains the nonce
+        if String.contains?(message, expected_nonce) do
+          :ok
+        else
+          {:error, :invalid_nonce}
+        end
+    end
+  end
+
+  defp validate_siwe_fields(fields, expected_nonce, expected_address) do
+    with :ok <- validate_nonce(fields, expected_nonce),
+         :ok <- validate_address(fields, expected_address),
+         :ok <- validate_domain(fields),
+         :ok <- validate_expiration(fields) do
+      :ok
+    end
+  end
+
+  defp validate_nonce(%{nonce: nonce}, expected_nonce) do
+    if nonce == expected_nonce, do: :ok, else: {:error, :invalid_nonce}
+  end
+
+  defp validate_address(%{address: address}, expected_address) do
+    if String.downcase(address) == String.downcase(expected_address),
+      do: :ok,
+      else: {:error, :address_mismatch}
+  end
+
+  defp validate_domain(%{domain: domain}) do
+    if domain in @allowed_domains, do: :ok, else: {:error, :invalid_domain}
+  end
+
+  defp validate_expiration(%{expiration_time: exp_str}) do
+    case DateTime.from_iso8601(exp_str) do
+      {:ok, expiration, _} ->
+        now = DateTime.utc_now()
+        if DateTime.compare(now, expiration) == :lt, do: :ok, else: {:error, :message_expired}
+
+      _ ->
+        {:error, :invalid_expiration}
+    end
+  end
+
+  defp validate_expiration(_fields), do: :ok
+
+  # ── SIWE parsing helpers ──
+
+  defp extract_domain([first_line | _]) do
+    case Regex.run(~r/^(.+) wants you to sign in/, first_line) do
+      [_, domain] -> {:ok, String.trim(domain)}
+      _ -> {:error, :invalid_siwe_format}
+    end
+  end
+
+  defp extract_domain(_), do: {:error, :invalid_siwe_format}
+
+  defp extract_address(lines) when length(lines) >= 2 do
+    address = Enum.at(lines, 1) |> String.trim()
+
+    if Regex.match?(~r/^0x[a-fA-F0-9]{40}$/, address) do
+      {:ok, address}
+    else
+      {:error, :invalid_siwe_format}
+    end
+  end
+
+  defp extract_address(_), do: {:error, :invalid_siwe_format}
+
+  defp extract_siwe_fields(message) do
+    field_patterns = [
+      {:uri, ~r/URI:\s*(.+)/},
+      {:version, ~r/Version:\s*(\d+)/},
+      {:chain_id, ~r/Chain ID:\s*(\d+)/},
+      {:nonce, ~r/Nonce:\s*([a-fA-F0-9]+)/},
+      {:issued_at, ~r/Issued At:\s*(.+)/},
+      {:expiration_time, ~r/Expiration Time:\s*(.+)/}
+    ]
+
+    Enum.reduce(field_patterns, %{}, fn {key, pattern}, acc ->
+      case Regex.run(pattern, message) do
+        [_, value] -> Map.put(acc, key, String.trim(value))
+        _ -> acc
+      end
+    end)
+  end
+
+  # ── Challenge management ──
 
   defp create_new_wallet_challenge(normalized_address) do
     nonce = generate_nonce()
@@ -83,11 +250,14 @@ defmodule CGraph.Accounts.WalletAuthentication do
     end
   end
 
-  defp build_sign_message(nonce) do
+  @doc false
+  defp build_legacy_sign_message(nonce) do
     "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
   end
 
-  defp verify_signature(message, signature, expected_address) do
+  # ── EIP-191 signature verification ──
+
+  defp verify_eip191_signature(message, signature, expected_address) do
     prefix = "\x19Ethereum Signed Message:\n#{byte_size(message)}"
     full_message = prefix <> message
     {:ok, hash} = ExKeccak.hash_256(full_message)
@@ -104,9 +274,11 @@ defmodule CGraph.Accounts.WalletAuthentication do
   end
 
   defp decode_signature("0x" <> hex), do: decode_signature(hex)
+
   defp decode_signature(hex) when byte_size(hex) == 130 do
     {:ok, Base.decode16!(hex, case: :mixed)}
   end
+
   defp decode_signature(_), do: {:error, :invalid_signature}
 
   defp recover_public_key(hash, sig_bytes) do

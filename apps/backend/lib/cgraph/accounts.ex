@@ -54,7 +54,7 @@ defmodule CGraph.Accounts do
   alias CGraph.Accounts.WalletAuthentication
 
   defdelegate get_or_create_wallet_challenge(wallet_address), to: WalletAuthentication
-  defdelegate verify_wallet_signature(wallet_address, signature), to: WalletAuthentication
+  defdelegate verify_wallet_signature(wallet_address, signature, message \\ nil), to: WalletAuthentication
 
   # ============================================================================
   # User Management (delegated to UserManagement)
