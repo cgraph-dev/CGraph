@@ -28,7 +28,8 @@ defmodule CGraphWeb.Endpoint do
   socket "/socket", CGraphWeb.UserSocket,
     websocket: [
       connect_info: [:peer_data, :uri, :x_headers],
-      timeout: 10_000,
+      # Must be > client heartbeatIntervalMs (30s). Default Phoenix is 60s.
+      timeout: 60_000,
       # Mobile clients (React Native) don't send browser-like Origin headers.
       # Origin-checking is unnecessary here — UserSocket.connect/3 already
       # authenticates every connection via JWT token.
