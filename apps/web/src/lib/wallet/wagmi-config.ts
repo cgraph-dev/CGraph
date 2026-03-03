@@ -7,7 +7,7 @@
  * @module lib/wallet/wagmi-config
  */
 
-import { createConfig, http } from 'wagmi';
+import { type Config, createConfig, http } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { injected, walletConnect, coinbaseWallet } from '@wagmi/connectors';
 
@@ -21,7 +21,7 @@ const WC_PROJECT_ID = import.meta.env.VITE_WC_PROJECT_ID ?? 'PLACEHOLDER_WC_PROJ
  * - `walletConnect` — QR code connection to 100+ mobile wallets
  * - `coinbaseWallet` — Coinbase Wallet (extension + mobile)
  */
-export const wagmiConfig = createConfig({
+export const wagmiConfig: Config = createConfig({
   chains: [mainnet],
   connectors: [
     injected({ shimDisconnect: true }),

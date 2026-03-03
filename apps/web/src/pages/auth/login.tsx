@@ -73,7 +73,6 @@ export default function Login() {
     handleVerifyTwoFactor,
     handleBackToCredentials,
     handleWalletConnect,
-    walletConnectors,
   } = useLoginForm();
 
   return (
