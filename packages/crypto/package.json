@@ -1,7 +1,7 @@
 {
   "name": "@cgraph/crypto",
   "private": true,
-  "version": "0.9.47",
+  "version": "1.0.0",
   "description": "Signal-grade E2EE for CGraph: Triple Ratchet (ECDH + ML-KEM-768), PQXDH, Double Ratchet, AES-256-GCM",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
