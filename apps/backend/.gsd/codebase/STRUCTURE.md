@@ -50,6 +50,11 @@ apps/backend/
 ├── Dockerfile                     # Production Docker build
 ├── fly.toml                       # Fly.io deployment config
 ├── fly.iad.toml                   # Fly.io IAD region config
+├── route-audit.md                 # API route audit documentation
+├── alloy/                         # Grafana Alloy telemetry config
+├── pgbouncer/                     # PgBouncer connection pooling config
+├── docs/
+│   └── API_CONTRACTS.md           # API contract documentation
 ├── config/
 │   ├── config.exs                 # Base config (all envs)
 │   ├── dev.exs                    # Development overrides
@@ -86,16 +91,35 @@ apps/backend/
 │   │   │   │   │   ├── ... (100+ controller/json pairs)
 │   │   │   │   │   └── web_push_controller.ex
 │   │   │   │   ├── admin/         # Admin-specific controllers
+│   │   │   │   │   ├── feature_flag_controller.ex
+│   │   │   │   │   └── moderation_controller.ex
 │   │   │   │   ├── payment_controller.ex
 │   │   │   │   ├── subscription_controller.ex
 │   │   │   │   └── username_controller.ex
 │   │   │   ├── admin/             # Admin dashboard controllers
+│   │   │   │   ├── events_controller.ex
+│   │   │   │   └── marketplace_controller.ex
 │   │   │   ├── fallback_controller.ex  # Standardized error responses
 │   │   │   ├── changeset_json.ex      # Ecto changeset error rendering
+│   │   │   ├── coin_shop_controller.ex # Coin bundle listings, checkout
+│   │   │   ├── coins_controller.ex    # Coin operations
+│   │   │   ├── cosmetics_controller.ex # Cosmetics management
 │   │   │   ├── error_json.ex          # Error JSON views
+│   │   │   ├── events_controller.ex   # Events operations
+│   │   │   ├── friend_controller.ex   # Friend operations
+│   │   │   ├── gamification_controller.ex # Gamification operations
 │   │   │   ├── health_controller.ex   # Health check endpoint
-│   │   │   ├── stripe_webhook_controller.ex
-│   │   │   └── ... (gamification, shop, cosmetics controllers)
+│   │   │   ├── iap_controller.ex      # In-app purchase operations
+│   │   │   ├── marketplace_controller.ex # Marketplace operations
+│   │   │   ├── metrics_controller.ex  # Metrics endpoints
+│   │   │   ├── premium_controller.ex  # Premium feature operations
+│   │   │   ├── prestige_controller.ex # Prestige system operations
+│   │   │   ├── quest_controller.ex    # Quest operations
+│   │   │   ├── settings_controller.ex # Settings operations
+│   │   │   ├── shop_controller.ex     # Shop operations
+│   │   │   ├── stripe_webhook_controller.ex # Stripe webhook handler
+│   │   │   ├── title_controller.ex    # Title operations
+│   │   │   └── wallet_auth_controller.ex # Wallet auth operations
 │   │   ├── channels/
 │   │   │   ├── user_socket.ex          # WebSocket entry point (JWT auth)
 │   │   │   ├── conversation_channel.ex # DM/group chat real-time
@@ -111,34 +135,70 @@ apps/backend/
 │   │   │   ├── events_channel.ex       # Seasonal events
 │   │   │   ├── ai_channel.ex           # Streaming AI responses
 │   │   │   ├── document_channel.ex     # Collaborative editing (Yjs)
+│   │   │   ├── board_channel.ex        # Board real-time updates
+│   │   │   ├── qr_auth_channel.ex      # QR code authentication flow
+│   │   │   ├── voice_state_channel.ex  # Voice state tracking
 │   │   │   ├── backpressure.ex         # Message flood prevention
 │   │   │   ├── socket_security.ex      # Top-level socket security module
 │   │   │   └── socket_security/        # Channel-level authorization
-│   │   ├── plugs/
+│   │   ├── plugs/                      # ~30 plug modules
+│   │   │   ├── # Auth
 │   │   │   ├── auth_pipeline.ex        # Guardian JWT pipeline
+│   │   │   ├── auth_error_handler.ex   # Authentication error handling
+│   │   │   ├── optional_auth_pipeline.ex # Optional auth (public + auth)
 │   │   │   ├── require_auth.ex         # Authentication guard
 │   │   │   ├── require_admin.ex        # Admin authorization guard
-│   │   │   ├── rate_limiter_v2.ex      # Sliding window rate limiter (tiered)
-│   │   │   ├── security_headers.ex     # HSTS, CSP, X-Frame-Options
+│   │   │   ├── user_auth.ex            # User authentication utilities
 │   │   │   ├── cookie_auth.ex          # Cookie-to-Bearer translation
-│   │   │   ├── api_version_plug.ex     # API versioning
-│   │   │   ├── idempotency_plug.ex     # Idempotent requests
-│   │   │   ├── audit_log_plug.ex       # Audit logging
-│   │   │   ├── request_tracing.ex      # Distributed tracing
-│   │   │   ├── correlation_id.ex       # Request correlation IDs
-│   │   │   ├── sentry_context.ex       # Sentry error context
-│   │   │   ├── etag_plug.ex            # HTTP ETag caching
+│   │   │   ├── current_user.ex         # Assigns current user to conn
+│   │   │   ├── # Security
+│   │   │   ├── security_headers.ex     # HSTS, CSP, X-Frame-Options
 │   │   │   ├── cors.ex                 # CORS configuration
-│   │   │   └── ... (current_user, geo_router, raw_body, etc.)
+│   │   │   ├── sentry_context.ex       # Sentry error context
+│   │   │   ├── raw_body_plug.ex        # Raw body preservation (webhook verification)
+│   │   │   ├── # Rate Limiting
+│   │   │   ├── rate_limiter.ex         # Rate limiter (v1)
+│   │   │   ├── rate_limiter_v2.ex      # Sliding window rate limiter (tiered)
+│   │   │   ├── rate_limit_plug.ex      # Generic rate limit plug
+│   │   │   ├── two_factor_rate_limiter.ex # 2FA-specific rate limiting
+│   │   │   ├── # Feature Gates
+│   │   │   ├── level_gate_plug.ex      # Level-based feature gating
+│   │   │   ├── premium_gate_plug.ex    # Premium tier feature gating
+│   │   │   ├── # Tracing
+│   │   │   ├── request_tracing.ex      # End-to-end request correlation
+│   │   │   ├── tracing_plug.ex         # OpenTelemetry tracing integration
+│   │   │   ├── trace_context.ex        # Trace context propagation
+│   │   │   ├── correlation_id.ex       # Request correlation IDs
+│   │   │   ├── # Other
+│   │   │   ├── api_version_plug.ex     # API versioning
+│   │   │   ├── audit_log_plug.ex       # Per-category audit logging
+│   │   │   ├── common.ex              # Common plug utilities
+│   │   │   ├── etag_plug.ex            # HTTP ETag caching
+│   │   │   ├── geo_router.ex           # Geo-based routing
+│   │   │   ├── idempotency_plug.ex     # Idempotent requests
+│   │   │   └── request_context_plug.ex # Request context propagation
 │   │   ├── api/
 │   │   │   ├── input_validation/       # Input validation modules
+│   │   │   │   ├── constraints.ex     # Input constraints
+│   │   │   │   ├── sanitization.ex    # Input sanitization
+│   │   │   │   └── type_coercion.ex   # Type coercion
 │   │   │   ├── input_validation.ex     # Request input validation
 │   │   │   └── response.ex            # Standardized API responses
 │   │   ├── error_tracker/             # Error tracking integration
-│   │   ├── helpers/                   # View helpers
+│   │   ├── helpers/                   # Controller helpers
+│   │   │   ├── controller_helpers.ex  # Controller utility functions
+│   │   │   └── param_parser.ex        # Parameter parsing utilities
 │   │   ├── templates/                 # HTML templates (email, admin)
 │   │   ├── telemetry/                 # Web telemetry events
-│   │   ├── validation/                # Request validation
+│   │   ├── validation/                # Request validation (8 modules)
+│   │   │   ├── auth_params.ex         # Auth parameter validation
+│   │   │   ├── conversation_params.ex # Conversation parameter validation
+│   │   │   ├── forum_params.ex        # Forum parameter validation
+│   │   │   ├── gamification_params.ex # Gamification parameter validation
+│   │   │   ├── message_params.ex      # Message parameter validation
+│   │   │   ├── subscription_params.ex # Subscription parameter validation
+│   │   │   ├── user_params.ex         # User parameter validation
+│   │   │   └── validation.ex          # Shared validation utilities
 │   │   ├── error_tracker.ex           # Error tracker module
 │   │   ├── gettext.ex                 # i18n
 │   │   ├── presence.ex               # Phoenix Presence module
@@ -264,6 +324,11 @@ apps/backend/
 │   │   │   └── ... (34 entries total — schemas, systems, events, repositories)
 │   │   ├── gamification.ex            # Gamification context facade
 │   │   │
+│   │   ├── shop/                      # Shop context (virtual currency store)
+│   │   │   ├── coin_bundles.ex        # Coin bundle definitions
+│   │   │   ├── coin_checkout.ex       # Coin checkout flow
+│   │   │   └── coin_purchase.ex       # Coin purchase processing
+│   │   │
 │   │   ├── notifications/             # Notifications context
 │   │   │   ├── notification.ex        # Schema
 │   │   │   ├── notifications.ex       # CRUD
@@ -354,19 +419,36 @@ apps/backend/
 │   │   │   ├── messages.ex           # Message search
 │   │   │   └── users.ex             # User search
 │   │   │
-│   │   ├── workers/                   # Oban background workers
+│   │   ├── workers/                   # Oban background workers (28 workers)
+│   │   │   ├── appeal_notification_worker.ex
+│   │   │   ├── cleanup_link_preview_cache.ex
+│   │   │   ├── cleanup_worker.ex
+│   │   │   ├── critical_alert_dispatcher.ex
+│   │   │   ├── database_backup.ex
+│   │   │   ├── dead_letter_worker.ex
+│   │   │   ├── delete_expired_messages.ex
+│   │   │   ├── email_digest_worker.ex
+│   │   │   ├── event_exporter.ex
+│   │   │   ├── event_reward_distributor.ex
+│   │   │   ├── fetch_link_preview.ex
+│   │   │   ├── hard_delete_user.ex    # GDPR hard delete
+│   │   │   ├── leaderboard_warm.ex
+│   │   │   ├── message_archival_worker.ex
+│   │   │   ├── moderation_worker.ex
+│   │   │   ├── notification_retry_worker.ex
 │   │   │   ├── notification_worker.ex
+│   │   │   ├── partition_manager.ex
+│   │   │   ├── ranking_update_worker.ex
 │   │   │   ├── scheduled_message_worker.ex
 │   │   │   ├── search_index_worker.ex
-│   │   │   ├── message_archival_worker.ex
-│   │   │   ├── leaderboard_warm.ex
-│   │   │   ├── event_reward_distributor.ex
-│   │   │   ├── cleanup_worker.ex
-│   │   │   ├── database_backup.ex
+│   │   │   ├── send_email_notification.ex
+│   │   │   ├── send_push_notification.ex
+│   │   │   ├── status_expiry_worker.ex
 │   │   │   ├── webhook_delivery_worker.ex
-│   │   │   ├── hard_delete_user.ex    # GDPR hard delete
-│   │   │   ├── orchestrator/          # Multi-step job orchestrator
-│   │   │   └── ... (email, push, dead letter, partition manager)
+│   │   │   └── orchestrator/          # Multi-step job orchestrator
+│   │   │       ├── base.ex            # Orchestrator base
+│   │   │       ├── batch.ex           # Batch job orchestration
+│   │   │       └── pipeline.ex        # Pipeline job orchestration
 │   │   │
 │   │   ├── supervisors/               # OTP supervisors
 │   │   │   ├── cache_supervisor.ex    # Cache service supervision
@@ -436,7 +518,14 @@ apps/backend/
 │   │   ├── request_context/           # Request context propagation
 │   │   ├── error_reporter/            # Error reporting utilities
 │   │   ├── health_check/              # Health check logic
-│   │   ├── ... (many contexts also have companion .ex facade files, e.g. accounts.ex, messaging.ex, etc.)
+│   │   ├── cluster/                   # Cluster context
+│   │   │   └── connection_monitor.ex  # Connection monitoring for distributed nodes
+│   │   ├── explore.ex                 # Explore system facade (standalone)
+│   │   ├── marketplace.ex             # Marketplace facade (standalone)
+│   │   ├── themes.ex                  # Themes facade (standalone)
+│   │   ├── release.ex                 # Release management facade (standalone)
+│   │   ├── guardian.ex                # Guardian JWT configuration (standalone)
+│   │   ├── ...                        # Context facade files: accounts.ex, messaging.ex, etc.
 │   │   ├── services/registry/         # Service registry
 │   │   ├── services/registry.ex       # Service registry module
 │   │   ├── performance/               # Performance monitoring

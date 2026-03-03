@@ -1,7 +1,7 @@
 # CGraph Codebase Concerns
 
 > **Generated**: February 26, 2026 | **Updated**: March 4, 2026 | **Source**: Full monorepo analysis
-> | **Codebase Version**: 0.9.47+ | **Composite Score**: 7.6/10
+> | **Codebase Version**: 0.9.47+ | **Composite Score**: 7.3/10
 
 ---
 
@@ -78,6 +78,22 @@ From `docs/THREAT_MODEL.md`:
 style attributes. This is documented as an accepted risk but remains a security trade-off. Migration
 path depends on upstream library support. (`docs/SECURITY_AUDIT_CHECKLIST.md` §4.4)
 
+### 1.9 Apple JWS Signature NOT Verified in IAP Flow (NEW, P0)
+
+`lib/cgraph_web/controllers/iap_controller.ex` line ~128 has the comment `# In production, verify
+Apple's JWS signature on signedPayload` but verification is **NOT implemented**.
+`decode_apple_notification/1` simply base64-decodes the payload without any signature check.
+Additionally, `lib/cgraph/subscriptions/iap_validator.ex` lines ~487-505 `decode_jws_payload/1`
+decodes JWS tokens without verifying Apple's signing key. An attacker can forge Apple
+Server-to-Server notifications to grant free premium subscriptions. **Critical security gap.**
+
+### 1.10 Google RTDN Pub/Sub Token NOT Verified (NEW, P0)
+
+`lib/cgraph_web/controllers/iap_controller.ex` line ~155 processes Google Real-Time Developer
+Notifications (RTDN) without verifying the Pub/Sub push authentication token. A comment states
+"must verify Google's OAuth token" but this is not implemented. Anyone who discovers the endpoint
+URL can forge subscription events (purchase, renewal, cancellation). **Critical security gap.**
+
 ---
 
 ## 2. Testing Gaps (Rule 9 — FAIL)
@@ -144,7 +160,7 @@ The entire `CGraph.Creators` context module (9 files, ~900 LOC) has **zero dedic
 | `creator_earning.ex` (schema) | 50   | —         | **MISSING** |
 | `creator_payout.ex` (schema)  | 48   | —         | **MISSING** |
 | `paid_forum_subscription.ex`  | 54   | —         | **MISSING** |
-| `creator_controller.ex`       | 243  | —         | **MISSING** |
+| `creator_controller.ex`       | 242  | —         | **MISSING** |
 
 Existing test files that partially cover payment/webhook flows:
 
@@ -197,30 +213,39 @@ row lock**:
 Two concurrent payout requests can both pass the `has_pending_payout?/1` check and both create
 Stripe Transfers, causing **double payouts**. The balance check and payout insert are not atomic.
 
-Contrast with `marketplace.ex` which correctly uses `Repo.transaction` + `FOR UPDATE` row locking.
+Contrast with `lib/cgraph/gamification/marketplace.ex` which correctly uses `Repo.transaction` + `FOR UPDATE` row locking.
 
 **Fix**: Wrap payout flow in `Repo.transaction` with `SELECT ... FOR UPDATE` on a creator lock row,
 or use an advisory lock on `creator_id`.
 
 #### 4.0.2 `Repo.get!` Raises 500 in Subscription Flow
 
-`lib/cgraph/creators/paid_subscription.ex:45` uses `Repo.get!(User, forum.owner_id)` which raises
+`lib/cgraph/creators/paid_subscription.ex:36` uses `Repo.get!(User, forum.owner_id)` which raises
 `Ecto.NoResultsError` (500 Internal Server Error) if the forum owner doesn't exist. Should use
 `Repo.get/2` with proper error handling.
 
-#### 4.0.3 `inspect(reason)` Leaks Internal Details in API Responses
+#### 4.0.3 `inspect(reason)` Leaks Internal Details in API Responses (Codebase-Wide, P2)
 
-Multiple endpoints in `lib/cgraph_web/controllers/api/v1/creator_controller.ex` return
-`inspect(reason)` directly to API consumers:
+`lib/cgraph_web/controllers/api/v1/creator_controller.ex` returns `inspect(reason)` directly to API
+consumers at 6 call sites:
 
-- Line 32: `detail: inspect(reason)` — leaks Stripe API error structs
-- Line 75: `detail: inspect(reason)` — leaks onboarding link errors
-- Line 138: `json(%{error: %{message: inspect(reason)}})` — leaks subscription errors
-- Line 150: `json(%{error: %{message: inspect(reason)}})` — leaks cancellation errors
+- Line 30: `detail: inspect(reason)` — leaks Stripe API error structs
+- Line 74: `detail: inspect(reason)` — leaks onboarding link errors
+- Line 102: `json(%{error: %{message: inspect(reason)}})` — leaks monetization config errors
+- Line 131: `json(%{error: %{message: inspect(reason)}})` — leaks subscription errors
+- Line 153: `json(%{error: %{message: inspect(reason)}})` — leaks cancellation errors
+- Line 192: `json(%{error: %{message: inspect(reason)}})` — leaks payout errors
+
+**This is a systemic codebase-wide issue affecting 25+ controllers**, not just creator_controller.
+Other affected controllers include: `coin_shop_controller`, `marketplace_controller`,
+`subscription_controller`, `e2ee_controller` (7 instances), `web_push_controller` (3 instances),
+`call_controller`, `theme_controller`, `user_controller`, `admin/feature_flag_controller`,
+`admin/moderation_controller`, `iap_controller`, and `voice_message_controller`.
 
 These can expose Stripe API keys, internal module paths, or Ecto error details to end users.
 
-**Fix**: Map errors to user-friendly messages; log `inspect(reason)` server-side only.
+**Fix**: Map errors to user-friendly messages; log `inspect(reason)` server-side only. Apply
+codebase-wide, not just in creator_controller.
 
 #### 4.0.4 Balance Calculation Not Atomic
 
@@ -229,6 +254,34 @@ paid out) outside a transaction. Under concurrent writes, this can return an inc
 
 **Fix**: Either combine into a single query (`SELECT SUM(earned) - SUM(paid)`) or wrap in
 `Repo.transaction` with appropriate isolation level.
+
+#### 4.0.5 `Repo.get!` in `creator_controller.ex:subscribe` (NEW, P1)
+
+`lib/cgraph_web/controllers/api/v1/creator_controller.ex` line ~111: `forum = Repo.get!(Forum,
+forum_id)` where `forum_id` comes from user-controlled URL params. Raises `Ecto.NoResultsError`
+(500 Internal Server Error) if the forum doesn't exist. No `action_fallback` is set on this
+controller.
+
+#### 4.0.6 `Repo.get!` in `coin_checkout.ex:do_fulfill` (NEW, P1)
+
+`lib/cgraph/shop/coin_checkout.ex` line ~143: `user = Repo.get!(User, purchase.user_id)` in the
+fulfillment path. If a user is deleted between purchase initiation and webhook fulfillment, this
+raises a 500 during a financial operation. The purchase remains stuck in pending state with no
+recovery path.
+
+#### 4.0.7 `System.get_env` at Compile Time in CoinBundles (NEW, P1)
+
+`lib/cgraph/shop/coin_bundles.ex` lines ~33-57: `System.get_env("STRIPE_PRICE_COINS_*")` is called
+inside the module attribute `@bundles`, which evaluates at **compile time**. In Docker deployments
+where environment variables are injected at runtime, all Stripe price IDs will be `nil`. Should use
+`Application.get_env/3` or runtime config instead.
+
+#### 4.0.8 IAP Credential Fallbacks to Empty Strings (NEW, P2)
+
+`lib/cgraph/subscriptions/iap_validator.ex` lines ~387-393: `apple_jwt_token` and
+`google_access_token` default to empty string `""` when unconfigured. API calls to Apple/Google
+fail opaquely with unhelpful error messages rather than failing fast at startup. No startup
+validation ensures these credentials are present when IAP features are enabled.
 
 ### 4.1 TODO/FIXME Comments in Code
 
@@ -306,7 +359,7 @@ Active `@deprecated` annotations across the codebase:
 
 ### 5.0 Creator Controller Approaching God-Controller Pattern (NEW)
 
-`lib/cgraph_web/controllers/api/v1/creator_controller.ex` is 243 lines handling 5 distinct
+`lib/cgraph_web/controllers/api/v1/creator_controller.ex` is 242 lines handling 5 distinct
 concerns: Connect onboarding (3 actions), forum monetization config (1), paid subscriptions (2),
 balance queries (1), and payouts (2). While just under the 250-line threshold, it mixes Stripe
 onboarding, subscription management, and financial payout logic in a single module.
@@ -368,6 +421,34 @@ Session 59 (→ 31 sub-files), but the majority remain (`docs/WORLD_CLASS_GAP_AN
 Most tasks in Waves 7-9 (Groups, Mobile, Backend features) are NOT STARTED — covering channel
 permissions, pinned messages, categories, custom status, DND mode, quick switcher, and mobile
 feature parity.
+
+### 5.9 `iap_validator.ex` Is 542 Lines (NEW, P2)
+
+`lib/cgraph/subscriptions/iap_validator.ex` is 542 lines combining Apple IAP validation, Google
+Play validation, notification handling, JWS decoding, and subscription management in a single
+module. Should be split into separate modules per provider (e.g., `AppleIapValidator`,
+`GoogleIapValidator`) with a shared interface.
+
+### 5.10 `e2ee_controller.ex` Is 686 Lines — Largest Controller (NEW, P2)
+
+`lib/cgraph_web/controllers/api/v1/e2ee_controller.ex` is 686 lines, making it the largest Elixir
+controller in the codebase. This significantly exceeds the 250-line threshold flagged for
+`creator_controller.ex` in §5.0. Should be split by concern (key management, session management,
+device management).
+
+### 5.11 Multiple 400-500+ Line Controllers Not Flagged (NEW, P2)
+
+Several other controllers exceed the threshold but were not previously flagged:
+
+| Controller                    | Lines |
+| ----------------------------- | ----- |
+| `custom_emoji_controller.ex`  | 560   |
+| `user_controller.ex`          | 552   |
+| `auth_controller.ex`          | 541   |
+| `rss_controller.ex`           | 487   |
+| `permissions_controller.ex`   | 470   |
+
+These should be reviewed for splitting along concern boundaries.
 
 ---
 
@@ -554,55 +635,77 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
    concurrent requests can cause double Stripe Transfers with real money loss
 6. **Remove `inspect(reason)` from API error responses** (NEW) — Leaks Stripe errors, internal
    module paths, and Ecto details to end users in creator/payment endpoints
+7. **Verify Apple JWS signatures in IAP flow** (NEW) — `iap_controller.ex` and `iap_validator.ex`
+   decode Apple S2S notifications without verifying JWS signatures; attacker can forge notifications
+   to grant free premium subscriptions
+8. **Verify Google RTDN Pub/Sub auth tokens** (NEW) — `iap_controller.ex` processes Google RTDN
+   notifications without verifying Pub/Sub push OAuth token; forged subscription events possible
 
 ### P1 — High Priority
 
-5. **Raise web test coverage** — 17.9% is the single biggest compliance failure; target 60%+
-6. **Deploy PgBouncer** — Database connection pooling needed before scaling
-7. **Activate MeiliSearch in production** — Search falls back to PostgreSQL ILIKE
-8. **Fix Elixir version mismatch** — Dockerfile 1.17.3 vs local 1.19.4
-9. **Complete audit logging** — Auth lifecycle, admin access, billing events not logged
-10. **Implement CRDT state compaction** — DocumentServer Yjs state grows unboundedly
-11. **Write Creator monetization tests** (NEW) — 9 context files + 1 controller with zero tests;
+9. **Raise web test coverage** — 17.9% is the single biggest compliance failure; target 60%+
+10. **Deploy PgBouncer** — Database connection pooling needed before scaling
+11. **Activate MeiliSearch in production** — Search falls back to PostgreSQL ILIKE
+12. **Fix Elixir version mismatch** — Dockerfile 1.17.3 vs local 1.19.4
+13. **Complete audit logging** — Auth lifecycle, admin access, billing events not logged
+14. **Implement CRDT state compaction** — DocumentServer Yjs state grows unboundedly
+15. **Write Creator monetization tests** (NEW) — 9 context files + 1 controller with zero tests;
     financial code handling real Stripe transfers/subscriptions is completely untested
-12. **Validate SIWE chain_id** (NEW) — Wallet auth accepts messages signed for any chain;
+16. **Validate SIWE chain_id** (NEW) — Wallet auth accepts messages signed for any chain;
     cross-chain replay possible if multi-chain support is added
-13. **Fix `Repo.get!` in subscription flow** (NEW) — Raises 500 if forum owner missing;
+17. **Fix `Repo.get!` in subscription flow** (NEW) — Raises 500 if forum owner missing;
     use `Repo.get/2` with proper error handling
-14. **Make balance calculation atomic** (NEW) — `Earnings.get_balance/1` runs two separate
+18. **Make balance calculation atomic** (NEW) — `Earnings.get_balance/1` runs two separate
     queries outside a transaction; can return inconsistent balance under concurrent writes
+19. **Fix `Repo.get!` in creator_controller subscribe** (NEW) — `Repo.get!(Forum, forum_id)` with
+    user-controlled param raises 500 if non-existent; no action_fallback set
+20. **Fix `Repo.get!` in coin_checkout fulfillment** (NEW) — `Repo.get!(User, purchase.user_id)`
+    crashes during financial webhook if user deleted; purchase stuck in pending
+21. **Fix compile-time `System.get_env` in CoinBundles** (NEW) — Module attribute evaluates
+    `System.get_env("STRIPE_PRICE_COINS_*")` at compile time; nil in Docker runtime-env deployments
 
 ### P2 — Medium Priority
 
-15. **Split 103 oversized mobile TSX files** — CI warns but doesn't block
-16. **Refactor 431 type assertion annotations** — Replace with type guards
-17. **Enable React Compiler** — Allows removal of 1,116 useMemo/useCallback hooks
-18. **Clean up deprecated files** — 10+ deprecated shims still in codebase
-19. **Implement anomaly detection** — Currently no system for detecting attack patterns
-20. **Automate key rotation** — Currently manual process
-21. **Wire mobile store facades** — Forums returns empty array, balance hardcoded to 0
-22. **Replace mock data with real API** — Progression customization uses placeholder data
-23. **Fix conditional hooks violation** —
+22. **Split 103 oversized mobile TSX files** — CI warns but doesn't block
+23. **Refactor 431 type assertion annotations** — Replace with type guards
+24. **Enable React Compiler** — Allows removal of 1,116 useMemo/useCallback hooks
+25. **Clean up deprecated files** — 10+ deprecated shims still in codebase
+26. **Implement anomaly detection** — Currently no system for detecting attack patterns
+27. **Automate key rotation** — Currently manual process
+28. **Wire mobile store facades** — Forums returns empty array, balance hardcoded to 0
+29. **Replace mock data with real API** — Progression customization uses placeholder data
+30. **Fix conditional hooks violation** —
     `apps/mobile/src/screens/forums/create-post-screen/components/post-type-selector.tsx` calls
     hooks conditionally
-24. **Conduct DR drill** — Disaster recovery procedures documented but never tested
-25. **Split CreatorController** (NEW) — 243-line controller mixing 5 concerns; split into
+31. **Conduct DR drill** — Disaster recovery procedures documented but never tested
+32. **Split CreatorController** (NEW) — 242-line controller mixing 5 concerns; split into
     `CreatorOnboardController`, `PaidForumController`, `CreatorPayoutController`
-26. **Move plan definitions to config** (NEW) — Hardcoded pricing in `PaymentController.plans/2`
-27. **Remove empty `@tier_mapping`** (NEW) — Dead code in `StripeWebhookController`
-28. **Expand Stripe webhook tests** (NEW) — Only 50 lines / 4 tests covering signature rejection;
+33. **Move plan definitions to config** (NEW) — Hardcoded pricing in `PaymentController.plans/2`
+34. **Remove empty `@tier_mapping`** (NEW) — Dead code in `StripeWebhookController`
+35. **Expand Stripe webhook tests** (NEW) — Only 50 lines / 4 tests covering signature rejection;
     event handler logic (subscription.created, payment_succeeded, transfer.paid, etc.) is untested
+36. **Fix codebase-wide `inspect(reason)` leak** (NEW) — 25+ controllers return `inspect(reason)`
+    to API consumers; systemic issue beyond creator_controller (see §4.0.3)
+37. **Split `iap_validator.ex`** (NEW) — 542-line module combining Apple + Google validation,
+    JWS decoding, and subscription management; split by provider
+38. **Split `e2ee_controller.ex`** (NEW) — 686-line controller, largest in codebase; exceeds
+    250-line threshold by 2.7×
+39. **Review 400-500+ line controllers** (NEW) — `custom_emoji_controller` (560),
+    `user_controller` (552), `auth_controller` (541), `rss_controller` (487),
+    `permissions_controller` (470) all exceed thresholds
+40. **Add IAP credential startup validation** (NEW) — `iap_validator.ex` defaults Apple/Google
+    credentials to empty strings; API calls fail opaquely instead of failing fast at boot
 
 ### P3 — Long Term
 
-29. **Implement sealed sender** — Metadata protection for privacy-conscious users
-30. **SIEM integration** — Centralized security log analysis
-31. **Bug bounty program** — Post-launch security incentives
-32. **SRI hashes for CDN scripts** — Supply chain attack mitigation
-33. **Transparency logs for key changes** — Auditability improvement
-34. **Complete Wave 4-9 tasks** — ~35 remaining wave tasks across scaling, testing, and features
-35. **Status page** — status.cgraph.org not live
-36. **Support ticketing system** — Not set up
+41. **Implement sealed sender** — Metadata protection for privacy-conscious users
+42. **SIEM integration** — Centralized security log analysis
+43. **Bug bounty program** — Post-launch security incentives
+44. **SRI hashes for CDN scripts** — Supply chain attack mitigation
+45. **Transparency logs for key changes** — Auditability improvement
+46. **Complete Wave 4-9 tasks** — ~35 remaining wave tasks across scaling, testing, and features
+47. **Status page** — status.cgraph.org not live
+48. **Support ticketing system** — Not set up
 
 ---
 
@@ -610,9 +713,9 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 
 | Category                     | Count  | Δ Since Last |
 | ---------------------------- | ------ | ----------- |
-| P0 Critical blockers         | 6      | +2          |
-| P1 High priority items       | 10     | +4          |
-| P2 Medium priority items     | 14     | +4          |
+| P0 Critical blockers         | 8      | +4          |
+| P1 High priority items       | 13     | +7          |
+| P2 Medium priority items     | 19     | +9          |
 | P3 Long-term items           | 8      | —           |
 | Active TODO comments in code | 9      | —           |
 | eslint-disable suppressions  | 400+   | —           |
@@ -625,6 +728,7 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 | Security reviews overdue     | 2      | —           |
 | SLOs not validated           | 6      | —           |
 | Financial race conditions    | 1      | NEW         |
+| Unverified IAP signatures    | 2      | NEW         |
 
 ---
 

@@ -130,6 +130,26 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **Storage**        | `CGraph.Storage`        | File uploads via Waffle → S3/R2                                                                                                     |
 | **Cache**          | `CGraph.Cache`          | 3-tier caching: L1 (ETS), L2 (Cachex), L3 (Redis), with stampede protection                                                         |
 | **Feature Flags**  | `CGraph.FeatureFlags`   | Runtime feature toggles                                                                                                             |
+| **Shop**           | `CGraph.Shop`           | Coin bundles, checkout, purchase (virtual currency store)                                                                           |
+| **Admin**          | `CGraph.Admin`          | Admin metrics and management                                                                                                        |
+| **Auth**           | `CGraph.Auth`           | Token management, QR login                                                                                                          |
+| **Events**         | `CGraph.Events`         | Typed event system                                                                                                                  |
+| **Cluster**        | `CGraph.Cluster`        | Connection monitoring for distributed nodes                                                                                         |
+| **Services**       | `CGraph.Services`       | Service registry with health checks                                                                                                 |
+| **Performance**    | `CGraph.Performance`    | Query optimizer, request coalescing, SLO monitoring                                                                                 |
+| **HTTP**           | `CGraph.HTTP`           | HTTP client middleware, service modules (Expo, Meilisearch, Stripe)                                                                 |
+| **Mailer**         | `CGraph.Mailer`         | Email builder, delivery, templates                                                                                                  |
+| **Jobs**           | `CGraph.Jobs`           | Job management, scheduling, workflows                                                                                               |
+| **Chaos**          | `CGraph.Chaos`          | Chaos engineering, fault injection, circuit breaker validation                                                                       |
+| **Query**          | `CGraph.Query`          | Soft delete query helpers                                                                                                           |
+| **RequestContext** | `CGraph.RequestContext`  | Request context propagation                                                                                                         |
+| **ErrorReporter**  | `CGraph.ErrorReporter`  | Error reporting with adapters (logger, webhook)                                                                                     |
+| **BatchProcessor** | `CGraph.BatchProcessor` | Async batch processing with progress tracking                                                                                       |
+| **Crypto**         | `CGraph.Crypto`         | Hashing, encryption, E2EE (key generation, distribution, sync)                                                                      |
+
+> **Standalone facade modules** (exist as `lib/cgraph/<name>.ex` without matching directories):
+> `explore.ex`, `marketplace.ex`, `themes.ex`, `release.ex`, `guardian.ex`, `circuit_breaker.ex`,
+> `pagination.ex`, `snowflake.ex`, `read_repo.ex`
 
 ### 2.3 Web Layer (`lib/cgraph_web/`)
 
@@ -163,26 +183,89 @@ organized by resource (auth, users, messages, groups, forums, gamification, crea
 
 Additional controllers at `controllers/api/` level:
 - `PaymentController` — Stripe Checkout sessions, customer portal, subscription status
+- `SubscriptionController` — subscription management
+- `UsernameController` — username operations
+
+Controllers at `controllers/api/admin/` level:
+- `FeatureFlagController` — feature flag management
+- `ModerationController` — moderation admin operations
+
+Controllers at `controllers/admin/` level:
+- `EventsController` — admin events management
+- `MarketplaceController` — admin marketplace management
+
+Controllers at root `controllers/` level:
 - `CoinShopController` — coin bundle listings, one-time coin purchase checkout
+- `CoinsController` — coin operations
+- `CosmeticsController` — cosmetics management
+- `EventsController` — events operations
+- `FriendController` — friend operations
+- `GamificationController` — gamification operations
+- `IapController` — in-app purchase operations
+- `MarketplaceController` — marketplace operations
+- `MetricsController` — metrics endpoints
+- `PremiumController` — premium feature operations
+- `PrestigeController` — prestige system operations
+- `QuestController` — quest operations
+- `SettingsController` — settings operations
+- `ShopController` — shop operations
 - `StripeWebhookController` — handles both platform and Connect webhook events
+- `TitleController` — title operations
+- `WalletAuthController` — wallet auth operations
 
-**Plug middleware stack:**
+**Plug middleware stack (~30 plugs):**
 
-- `SecurityHeaders` — HSTS, CSP, X-Frame-Options
+*Auth:*
+- `AuthPipeline` — Guardian JWT pipeline
+- `AuthErrorHandler` — Authentication error handling
+- `OptionalAuthPipeline` — Optional authentication (public + auth routes)
+- `RequireAuth` — Authentication guard
+- `RequireAdmin` — Admin authorization guard
+- `UserAuth` — User authentication utilities
 - `CookieAuth` — Cookie-to-Bearer translation for web clients
-- `RequestTracing` — End-to-end request correlation
-- `RateLimiterV2` — Sliding window algorithm with tiered limits (strict/standard/relaxed)
-- `ApiVersion` — API version negotiation
-- `IdempotencyPlug` — Idempotent request handling
+- `CurrentUser` — Assigns current user to connection
+
+*Security:*
+- `SecurityHeaders` — HSTS, CSP, X-Frame-Options
+- `Cors` — CORS configuration
 - `SentryContext` — Error tracking context
-- `AuditLogPlug` — Per-category audit logging
-- `RequireAuth` / `RequireAdmin` — Authorization enforcement
+- `RawBodyPlug` — Raw body preservation (webhook signature verification)
+
+*Rate Limiting:*
+- `RateLimiter` — Rate limiter (v1)
+- `RateLimiterV2` — Sliding window algorithm with tiered limits (strict/standard/relaxed)
+- `RateLimitPlug` — Generic rate limit plug
+- `TwoFactorRateLimiter` — 2FA-specific rate limiting
+
+*Feature Gates:*
+- `LevelGatePlug` — Level-based feature gating
+- `PremiumGatePlug` — Premium tier feature gating
+
+*Tracing:*
+- `RequestTracing` — End-to-end request correlation
+- `TracingPlug` — OpenTelemetry tracing integration
+- `TraceContext` — Trace context propagation
 - `CorrelationId` — Distributed tracing correlation
+
+*Other:*
+- `ApiVersion` — API version negotiation
+- `AuditLogPlug` — Per-category audit logging
+- `Common` — Common plug utilities
 - `EtagPlug` — HTTP ETag caching (available but not wired into pipelines)
+- `GeoRouter` — Geo-based routing
+- `IdempotencyPlug` — Idempotent request handling
+- `RequestContextPlug` — Request context propagation
+
+**Validation & Helpers:**
+
+- `lib/cgraph_web/validation/` — 8 param validation modules (auth, conversation, forum,
+  gamification, message, subscription, user params + shared validation)
+- `lib/cgraph_web/helpers/` — `controller_helpers.ex`, `param_parser.ex`
+- `lib/cgraph_web/api/input_validation/` — constraints, sanitization, type coercion
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 22 workers in `lib/cgraph/workers/` (notable workers):
+**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (notable workers):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -199,7 +282,14 @@ Additional controllers at `controllers/api/` level:
 - `CriticalAlertDispatcher` — high-priority alert delivery
 - `DeleteExpiredMessages` / `EmailDigestWorker` / `EventExporter` / `NotificationRetryWorker` /
   `PartitionManager`
-- Worker orchestrator (`base.ex`) for complex multi-step jobs
+- `AppealNotificationWorker` — appeal notification delivery
+- `CleanupLinkPreviewCache` — link preview cache cleanup
+- `FetchLinkPreview` — link preview fetching
+- `ModerationWorker` — moderation task processing
+- `RankingUpdateWorker` — ranking/leaderboard updates
+- `StatusExpiryWorker` — status expiration handling
+- Worker orchestrator: `base.ex` (multi-step jobs), `batch.ex` (batch orchestration),
+  `pipeline.ex` (pipeline orchestration)
 
 ---
 
@@ -248,6 +338,9 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 | `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
 | `AIChannel`           | `ai:*`           | Streaming AI responses                            |
 | `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |
+| `BoardChannel`        | `board:*`        | Board-level real-time updates                     |
+| `QrAuthChannel`       | `qr_auth:*`      | QR code authentication flow                       |
+| `VoiceStateChannel`   | `voice_state:*`  | Voice state tracking                              |
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 
@@ -364,7 +457,7 @@ indexes, security indexes, pagination indexes.
 ### 5.3 Connection Pooling
 
 - Ecto pool with configurable size (default 50 per instance)
-- PgBouncer available in `infrastructure/pgbouncer/` for connection multiplexing
+- PgBouncer available in `pgbouncer/` (at backend root) for connection multiplexing
 - `queue_target` / `queue_interval` tuning for high-concurrency
 
 ---

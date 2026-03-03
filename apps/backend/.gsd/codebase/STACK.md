@@ -42,6 +42,36 @@
 
 Source: [`apps/backend/mix.exs`](apps/backend/mix.exs)
 
+#### Backend Elixir Dependencies (Non-Framework)
+
+| Category | Dependency | Version | Purpose |
+| --- | --- | --- | --- |
+| **Core** | `jason` | `~> 1.4` | JSON encoding/decoding |
+| **Core** | `phoenix_pubsub` | `~> 2.1` | Real-time pub/sub |
+| **Core** | `dns_cluster` | `~> 0.1` | Erlang clustering |
+| **Web** | `corsica` | `~> 2.1` | CORS middleware |
+| **Web** | `slugify` | `~> 1.3` | URL slug generation |
+| **Web** | `html_sanitize_ex` | `~> 1.4` | XSS prevention |
+| **Auth/Security** | `assent` | `~> 0.2` | OAuth2 provider support |
+| **Auth/Security** | `nimble_totp` | `~> 1.0` | 2FA / TOTP |
+| **Auth/Security** | `ex_keccak` | `~> 0.7` | Web3 Keccak-256 hashing |
+| **Auth/Security** | `ex_secp256k1` | `~> 0.7` | Web3 ECDSA signatures |
+| **HTTP/Network** | `tesla` | `~> 1.15` | HTTP client with middleware |
+| **HTTP/Network** | `finch` | `~> 0.20` | HTTP client (Swoosh adapter) |
+| **HTTP/Network** | `hackney` | `~> 1.20` | HTTP client (ExAws) |
+| **HTTP/Network** | `req` | `~> 0.5` | HTTP client (AI/LLM) |
+| **HTTP/Network** | `fuse` | `~> 2.5` | Circuit breaker |
+| **HTTP/Network** | `hammer` | — | Rate limiting |
+| **Storage/Upload** | `waffle` | `~> 1.1` | File upload management |
+| **Storage/Upload** | `waffle_ecto` | `~> 0.0` | Waffle Ecto integration |
+| **Storage/Upload** | `ex_aws` | `~> 2.5` | AWS SDK (S3/R2) |
+| **Storage/Upload** | `ex_aws_s3` | `~> 2.5` | S3 operations |
+| **Payments** | `stripity_stripe` | `~> 3.2` | Stripe API client |
+| **Email** | `swoosh` | `~> 1.20` | Email sending |
+| **Utilities** | `timex` | `~> 3.7` | Date/time utilities |
+| **Dev/Test** | `floki` | `~> 0.37` | HTML parsing (test) |
+| **Dev/Test** | `phoenix_live_reload` | `~> 1.6` | Live reload (dev) |
+
 ### Web App — React/Vite (`apps/web/`)
 
 | Framework                | Version               | Purpose                      |
@@ -229,6 +259,9 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 | [`apps/backend/config/config.exs`](apps/backend/config/config.exs)                     | Elixir compile-time config                                             |
 | [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (457 lines)                              |
 | [`apps/backend/config/stripe.exs`](apps/backend/config/stripe.exs)                     | Stripe integration config                                              |
+| [`apps/backend/config/dev.exs`](apps/backend/config/dev.exs)                           | Development environment config                                         |
+| [`apps/backend/config/prod.exs`](apps/backend/config/prod.exs)                         | Production compile-time config                                         |
+| [`apps/backend/config/test.exs`](apps/backend/config/test.exs)                         | Test environment config                                                |
 | [`apps/backend/.tool-versions`](apps/backend/.tool-versions)                           | asdf versions: Erlang 28.3, Elixir 1.19.4-otp-28                       |
 | [`apps/backend/.credo.exs`](apps/backend/.credo.exs)                                   | Credo linter config                                                    |
 | [`apps/backend/.sobelow-conf`](apps/backend/.sobelow-conf)                             | Sobelow security scanner config                                        |
@@ -251,7 +284,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 | **DNS + CDN + WAF**      | **Cloudflare**               | [`infrastructure/terraform/`](infrastructure/terraform/)                                                         |
 | **Object Storage**       | **Cloudflare R2**            | [`infrastructure/terraform/pages.tf`](infrastructure/terraform/pages.tf) (bucket: `cgraph-uploads`)              |
 | **Database (managed)**   | **Supabase** (PostgreSQL)    | Env vars in [`apps/backend/.env.example`](apps/backend/.env.example)                                             |
-| **Connection Pooling**   | **PgBouncer** (sidecar)      | [`infrastructure/pgbouncer/`](infrastructure/pgbouncer/)                                                         |
+| **Connection Pooling**   | **PgBouncer** (sidecar)      | [`pgbouncer/`](pgbouncer/) (at backend root)                                                                     |
 | **Metrics/Monitoring**   | **Grafana Cloud**            | [`infrastructure/grafana/grafana-cloud-remote-write.yml`](infrastructure/grafana/grafana-cloud-remote-write.yml) |
 
 ### Fly.io Backend Config Highlights
@@ -261,7 +294,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 - **WebSocket optimized**: `auto_stop_machines = false`, hard limit 2000 connections
 - **BEAM tuning**: 2 schedulers, short busy-wait, time-stealing
 - **Health checks**: `/health` (liveness), `/ready` (readiness)
-- **Grafana Alloy** sidecar for metrics shipping
+- **Grafana Alloy** sidecar for metrics shipping ([`alloy/`](alloy/) — `config.alloy`, `start-with-app.sh`, `start.sh`)
 
 ### Docker
 

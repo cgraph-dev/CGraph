@@ -16,7 +16,7 @@
 - **Managed hosting**: **Supabase** (env vars: `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
   `SUPABASE_SERVICE_ROLE_KEY` in [`apps/backend/.env.example`](apps/backend/.env.example))
 - **Connection pooling**: **PgBouncer** sidecar in Docker container
-  ([`infrastructure/pgbouncer/pgbouncer.ini`](infrastructure/pgbouncer/pgbouncer.ini))
+  ([`pgbouncer/pgbouncer.ini`](pgbouncer/pgbouncer.ini))
 - **Read replica** support: `CGraph.ReadRepo` configured via `READ_REPLICA_DATABASE_URL`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
 - **Dev version**: PostgreSQL 16 Alpine ([`docker-compose.dev.yml`](docker-compose.dev.yml))
@@ -33,8 +33,8 @@
 ### MeiliSearch (Full-Text Search)
 
 - **Version**: `v1.12` ([`docker-compose.dev.yml`](docker-compose.dev.yml))
-- **Integration**: `CGraph.Search.Engine` module
-  ([`apps/backend/lib/cgraph/search/`](apps/backend/lib/cgraph/search/))
+- **Integration**: `CGraph.Search.SearchEngine.MeilisearchAdapter` module
+  ([`apps/backend/lib/cgraph/search/search_engine/meilisearch_adapter.ex`](apps/backend/lib/cgraph/search/search_engine/meilisearch_adapter.ex))
 - **Config**: `MEILISEARCH_URL`, `MEILISEARCH_API_KEY`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
 - **Fallback**: Gracefully degrades to PostgreSQL `ILIKE` queries when not configured
@@ -190,6 +190,13 @@
   | `transfer.paid` (Connect) | Marks creator payout as completed |
   | `transfer.failed` (Connect) | Marks creator payout as failed |
 
+### In-App Purchase (IAP) Validation
+
+- **Module**: [`lib/cgraph/subscriptions/iap_validator.ex`](lib/cgraph/subscriptions/iap_validator.ex)
+- **Controller**: [`lib/cgraph_web/controllers/iap_controller.ex`](lib/cgraph_web/controllers/iap_controller.ex)
+- **Providers**: Apple App Store (StoreKit 2), Google Play Billing
+- **Purpose**: Server-side receipt/transaction validation for iOS and Android in-app purchases
+
 ---
 
 ## 4. Email / Notification Services
@@ -207,15 +214,27 @@
   [`apps/backend/lib/cgraph/mailer/templates/`](apps/backend/lib/cgraph/mailer/templates/)
 - **Background jobs**: `CGraph.Workers.EmailDigestWorker` (daily at 8 AM UTC)
 
-### Push Notifications — Expo Push
+### Push Notifications (Multi-Provider)
 
 - **Env var**: `EXPO_ACCESS_TOKEN`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L350-L355))
   > **Note**: Not in `.env.example`.
-- **Module**:
+- **Module root**:
   [`apps/backend/lib/cgraph/notifications/push_service/`](apps/backend/lib/cgraph/notifications/push_service/)
 - **Mobile integration**: `expo-notifications ~0.32.16`
   ([`apps/mobile/package.json`](apps/mobile/package.json))
+
+#### Push Providers
+
+| Provider | Module | Notes |
+| --- | --- | --- |
+| **Expo Push** | `expo_client.ex` + [`lib/cgraph/http/services/expo.ex`](lib/cgraph/http/services/expo.ex) | Expo managed push |
+| **FCM (Firebase)** | `fcm_client.ex` (sub-modules: `auth`, `http`, `message_builder`) | Android / cross-platform |
+| **APNS (Apple)** | `apns_client.ex` | iOS native push |
+| **Web Push** | `web_push_client.ex` | Browser push notifications |
+
+- **Platform dispatch**: `platform_senders.ex` — routes to correct provider per device token
+- **Token management**: `token_management.ex` — device token CRUD and cleanup
 
 ### In-App Notifications
 
@@ -280,6 +299,9 @@
 | `marketplace_channel.ex`  | Marketplace features             |
 | `ai_channel.ex`           | AI feature channel               |
 | `user_channel.ex`         | User-specific events             |
+| `board_channel.ex`        | Board/kanban features            |
+| `qr_auth_channel.ex`      | QR code authentication           |
+| `voice_state_channel.ex`  | Voice state tracking             |
 | `backpressure.ex`         | Channel backpressure management  |
 | `socket_security.ex`      | WebSocket security module        |
 
@@ -298,6 +320,8 @@
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L360-L380))
 - **Env vars**: `WEBRTC_STUN_SERVERS`, `WEBRTC_TURN_URL`, `WEBRTC_TURN_USERNAME`,
   `WEBRTC_TURN_CREDENTIAL`, `WEBRTC_SFU_URL`
+- **SFU Provider**: **LiveKit** — [`lib/cgraph/webrtc/livekit.ex`](lib/cgraph/webrtc/livekit.ex),
+  [`lib/cgraph/webrtc/livekit_token.ex`](lib/cgraph/webrtc/livekit_token.ex)
 - **Default STUN**: `stun:stun.l.google.com:19302`
 
 ### Presence
@@ -374,6 +398,7 @@
 - **Production**: Grafana Cloud with remote write
   ([`infrastructure/grafana/grafana-cloud-remote-write.yml`](infrastructure/grafana/grafana-cloud-remote-write.yml))
 - **Alloy sidecar**: Grafana Alloy `v1.13.1` in backend Docker image for metrics shipping
+  ([`alloy/config.alloy`](alloy/config.alloy) at backend root)
 - **Custom dashboards**: [`infrastructure/grafana/dashboards/`](infrastructure/grafana/dashboards/)
 - **Alerts**: [`infrastructure/grafana/alerts/`](infrastructure/grafana/alerts/)
 
@@ -521,6 +546,11 @@
 
 - **Web**: `canvas-confetti ^1.9.4` ([`apps/web/package.json`](apps/web/package.json))
 
+### GIF Integration (Tenor/Giphy)
+
+- **Controller**: [`lib/cgraph_web/controllers/api/v1/gif_controller.ex`](lib/cgraph_web/controllers/api/v1/gif_controller.ex)
+- **Purpose**: GIF search and selection for chat messages
+
 ---
 
 ## 12. Security Infrastructure
@@ -627,10 +657,11 @@ Source: [`apps/mobile/package.json`](apps/mobile/package.json)
 ├──────────┬──────────┬──────────┬──────────┬────────────────┤
 │ Stripe   │ Resend   │ Sentry   │ Google   │ Cloudflare     │
 │ (billing │ (email)  │ (errors) │ (OAuth)  │ (CDN/DNS/R2)   │
-│  +Connect│          │          │          │                │
-│  +Coins) │          │          │          │                │
+│ +Connect │          │          │          │                │
+│ +Coins   │          │          │          │                │
+│  +IAP)   │          │          │          │                │
 ├──────────┼──────────┼──────────┼──────────┼────────────────┤
-│ Apple    │ Facebook │ TikTok   │ Discord  │ Grafana Cloud  │
+│ Apple    │ Facebook │ TikTok   │ Discord* │ Grafana Cloud  │
 │ (OAuth)  │ (OAuth)  │ (OAuth)  │ (OAuth)  │ (monitoring)   │
 ├──────────┴──────────┼──────────┼──────────┼────────────────┤
 │ Expo Push           │ Supabase │ Vercel   │ EAS Build      │
@@ -655,3 +686,5 @@ Source: [`apps/mobile/package.json`](apps/mobile/package.json)
     │ (CF Pages)   │  │ (iOS/Android)│  │ (Vercel)     │
     └──────────────┘  └──────────────┘  └──────────────┘
 ```
+
+\* Discord: `.env.example` placeholder only — not an active integration.

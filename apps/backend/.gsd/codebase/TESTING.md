@@ -734,8 +734,8 @@ Backend tests use three case templates:
 
 | Case Template        | Purpose                                  | Imports                                   |
 | -------------------- | ---------------------------------------- | ----------------------------------------- |
-| `Cgraph.DataCase`    | Context/model tests (DB access)          | `Repo`, `Ecto`, `Ecto.Changeset`, `Ecto.Query` |
-| `CgraphWeb.ConnCase` | Controller/API tests (HTTP requests)     | `Plug.Conn`, `Phoenix.ConnTest`, verified routes |
+| `CGraph.DataCase`    | Context/model tests (DB access)          | `Repo`, `Ecto`, `Ecto.Changeset`, `Ecto.Query` |
+| `CGraphWeb.ConnCase` | Controller/API tests (HTTP requests)     | `Plug.Conn`, `Phoenix.ConnTest`, verified routes |
 | `CGraphWeb.ChannelCase` | WebSocket channel tests               | `Phoenix.ChannelTest`                      |
 
 All cases use Ecto SQL Sandbox for test isolation with automatic transaction rollback.
@@ -768,8 +768,8 @@ user ownership records, etc.
 
 ```elixir
 # test/cgraph_web/controllers/wallet_auth_controller_test.exs
-defmodule CgraphWeb.WalletAuthControllerTest do
-  use CgraphWeb.ConnCase, async: false
+defmodule CGraphWeb.WalletAuthControllerTest do
+  use CGraphWeb.ConnCase, async: false
 
   alias CGraph.Accounts.WalletAuth
   import CgraphWeb.UserFixtures
@@ -792,7 +792,7 @@ end
 ```
 
 **Key patterns:**
-- `use CgraphWeb.ConnCase` provides `build_conn()` and `json_response/2`
+- `use CGraphWeb.ConnCase` provides `build_conn()` and `json_response/2`
 - `describe` blocks group by endpoint: `"POST /api/v1/..."`, `"GET /api/v1/..."`
 - `setup` block creates shared test data (fixtures or factory)
 - Auth via `put_req_header("authorization", "Bearer #{token}")`
@@ -847,7 +847,7 @@ test/
 │   ├── factory.ex              # ExMachina factories (~786 lines)
 │   ├── fixtures.ex             # Test fixtures
 │   └── aliases.ex              # Common aliases
-├── cgraph/                     # Context tests (~50+ test files)
+├── cgraph/                     # Context tests (92 test files)
 │   ├── accounts_test.exs
 │   ├── gamification_test.exs
 │   ├── forums_test.exs
@@ -855,7 +855,7 @@ test/
 │   ├── subscriptions_test.exs
 │   └── ...                     # auth/, chaos/, crypto/, forums/, etc.
 ├── cgraph_web/
-│   ├── controllers/            # Controller tests (~18 files)
+│   ├── controllers/            # Controller tests (82 files)
 │   │   ├── wallet_auth_controller_test.exs
 │   │   ├── gamification_controller_test.exs
 │   │   ├── shop_controller_test.exs
@@ -863,7 +863,6 @@ test/
 │   │   └── ...                 # admin/, api/ subdirs
 │   ├── channels/               # Channel tests (6 files)
 │   │   ├── chat_channel_test.exs
-│   │   ├── gamification_channel_test.exs  # (not yet present)
 │   │   └── ...
 │   └── plugs/
 └── integration/
@@ -877,12 +876,113 @@ The following recently-added modules do **not yet have corresponding test files:
 | ----------------------------------------------- | ----------------------------------------------------- |
 | `CGraph.Creators.*` (9 modules)                 | `test/cgraph/creators_test.exs`                        |
 | `CGraphWeb.API.V1.CreatorController` (242 lines)| `test/cgraph_web/controllers/creator_controller_test.exs` |
-| `CGraphWeb.Api.PaymentController`               | `test/cgraph_web/controllers/payment_controller_test.exs` |
 | `CGraphWeb.CoinShopController`                  | `test/cgraph_web/controllers/coin_shop_controller_test.exs` |
 | `CGraphWeb.GamificationChannel` (expanded)      | `test/cgraph_web/channels/gamification_channel_test.exs` |
+| `CGraphWeb.IapController`                       | `test/cgraph_web/controllers/iap_controller_test.exs`  |
+| `CGraphWeb.API.V1.CreatorAnalyticsController`   | `test/cgraph_web/controllers/api/v1/creator_analytics_controller_test.exs` |
+| `CGraph.Shop.CoinBundles`                       | `test/cgraph/shop/coin_bundles_test.exs`               |
+| `CGraph.Shop.CoinCheckout`                      | `test/cgraph/shop/coin_checkout_test.exs`              |
+| `CGraph.Shop.CoinPurchase`                      | `test/cgraph/shop/coin_purchase_test.exs`              |
+| `CGraph.Collaboration.Document`                 | `test/cgraph/collaboration/document_test.exs`          |
+| `CGraph.Collaboration.DocumentServer`           | `test/cgraph/collaboration/document_server_test.exs`   |
 
-The `factory.ex` also lacks factories for creator-monetization entities
-(`paid_forum_subscription`, `creator_earning`, `creator_payout`).
+The `factory.ex` also lacks factories for:
+- `paid_forum_subscription`
+- `creator_earning`
+- `creator_payout`
+- `coin_purchase`
+
+### 8.7 Integration Tests
+
+9 integration test files exist under `test/integration/`:
+
+| File                                        | Purpose                              |
+| ------------------------------------------- | ------------------------------------ |
+| `e2ee_messaging_integration_test.exs`       | End-to-end encrypted messaging flows |
+| `phase5_verification_test.exs`              | Phase 5 feature verification         |
+| `phase9_verification_test.exs`              | Phase 9 feature verification         |
+| `phase12_verification_test.exs`             | Phase 12 feature verification        |
+| `phase13_verification_test.exs`             | Phase 13 feature verification        |
+| `phase14_verification_test.exs`             | Phase 14 feature verification        |
+| `phase14_uat_test.exs`                      | Phase 14 UAT acceptance tests        |
+| `real_time_messaging_integration_test.exs`  | Real-time messaging integration      |
+| `voice_message_storage_integration_test.exs`| Voice message storage flows          |
+
+### 8.8 Nested Test Directory Structure
+
+`test/cgraph/` contains subdirectories for specialized test domains:
+
+```
+test/cgraph/
+├── auth/              # Authentication-specific tests
+├── chaos/             # Chaos engineering / resilience tests
+├── crypto/            # Cryptography tests
+├── forums/            # Forum domain tests
+├── messaging/         # Messaging domain tests
+├── moderation/        # Content moderation tests
+├── performance/       # Performance benchmark tests
+├── query/             # Query/filter tests
+├── services/          # Service layer tests
+├── subscriptions/     # Subscription domain tests
+├── webrtc/            # WebRTC signaling tests
+├── accounts_test.exs
+├── gamification_test.exs
+└── ...                # Other top-level context tests
+```
+
+### 8.9 Mox (Behaviour-Based Mocking)
+
+**Mox 1.2** is a test dependency for behaviour-based mocking:
+
+```elixir
+# In test_helper.exs
+Mox.defmock(CGraph.MockStripeClient, for: CGraph.StripeClientBehaviour)
+
+# In test files
+import Mox
+
+setup :verify_on_exit!
+
+test "processes payment" do
+  expect(CGraph.MockStripeClient, :create_charge, fn _params ->
+    {:ok, %{id: "ch_123"}}
+  end)
+
+  assert {:ok, _} = Payments.charge(user, amount)
+end
+```
+
+**Conventions:**
+- Define behaviours with `@callback` for any external service dependency
+- Mock modules are defined once in `test_helper.exs` or `test/support/`
+- Use `setup :verify_on_exit!` to ensure all expectations are fulfilled
+- Prefer `expect/3` (strict) over `stub/3` (lenient) for test precision
+
+### 8.10 Floki (HTML Parsing in Tests)
+
+**Floki** is a test dependency used for HTML response assertions:
+
+```elixir
+html = html_response(conn, 200)
+assert Floki.find(html, "h1") |> Floki.text() =~ "Welcome"
+assert Floki.find(html, ".error-message") == []
+```
+
+Useful for testing LiveView or HTML-rendered responses alongside JSON API tests.
+
+### 8.11 Async Test Guidance
+
+| Setting          | When to use                                        |
+| ---------------- | -------------------------------------------------- |
+| `async: true`    | No shared DB state, no channels, pure logic tests  |
+| `async: false`   | DB operations (Ecto sandbox), channel tests, tests sharing global state |
+
+**Rules of thumb:**
+- `CGraph.DataCase` tests that insert/read data: use `async: false` (or rely on sandbox checkout)
+- `CGraphWeb.ConnCase` controller tests with DB access: typically `async: false`
+- `CGraphWeb.ChannelCase` channel tests: always `async: false`
+- Pure logic tests with no side effects: prefer `async: true` for speed
+- When in doubt, use `async: false` — correctness over speed
 
 ---
 

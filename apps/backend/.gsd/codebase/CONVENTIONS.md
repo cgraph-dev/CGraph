@@ -752,13 +752,21 @@ lib/cgraph/
 ├── accounts/          # Sub-modules: User, WalletAuthentication, etc.
 ├── accounts.ex        # Facade — public API for the Accounts domain
 ├── creators/          # Sub-modules: ConnectOnboarding, Earnings, etc.
-├── creators.ex        # Facade — public API for the Creators domain
+│   └── creators.ex    # ⚠ Facade INSIDE directory (see note below)
 ├── gamification/      # Sub-modules: EventSystem, Cosmetics, Prestige, etc.
 ├── gamification.ex    # Facade — public API for Gamification domain
 ├── forums/
 ├── forums.ex
+├── shop/              # CoinBundles, CoinCheckout, CoinPurchase
+├── collaboration/     # Document, DocumentServer
+├── data_export/       # 5 export modules
 └── ...                # ~30+ context domains total
 ```
+
+> **Facade file location inconsistency**: Most contexts place the facade as a **peer file**
+> alongside the directory (e.g., `lib/cgraph/accounts.ex` alongside `lib/cgraph/accounts/`).
+> However, **Creators** places its facade **inside** the directory at
+> `lib/cgraph/creators/creators.ex`. Follow the peer-file pattern for new contexts.
 
 **Facade + Delegation Pattern** (introduced by `Creators` context):
 
@@ -859,7 +867,7 @@ end
 **Style B — `action_fallback` + `render_data` helper** (used by `PaymentController`, `CoinShopController`):
 
 ```elixir
-defmodule CGraphWeb.Api.PaymentController do
+defmodule CGraphWeb.API.PaymentController do
   use CGraphWeb, :controller
   import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
@@ -906,6 +914,16 @@ end
 
 Route modules are then imported into the main `Router` via `import` + macro call.
 API routes follow REST under `/api/v1/{resource}`.
+
+**Router Pipelines:**
+
+| Pipeline           | Purpose                                              |
+| ------------------ | ---------------------------------------------------- |
+| `:api`             | Base JSON pipeline (parses body, accepts JSON)       |
+| `:api_auth`        | Authenticated routes (adds Guardian + cookie auth)   |
+| `:api_auth_strict` | Strict auth with rate limiting (`:strict` tier)      |
+| `:api_relaxed`     | Relaxed rate limiting tier for high-traffic endpoints |
+| `:api_admin`       | Admin-only routes (RequireAdmin plug)                |
 
 ### 15.5 Channel Patterns
 
@@ -975,6 +993,116 @@ Logger.error("stripe_connect_account_failed",
 ```
 
 Log messages are snake_case event names for machine parseability.
+
+### 15.9 JSON View Pattern
+
+56+ JSON view files exist alongside controllers, following the `*_json.ex` naming convention:
+
+```
+lib/cgraph_web/controllers/
+├── auth_controller.ex
+├── auth_json.ex           # JSON rendering for auth responses
+├── user_controller.ex
+├── user_json.ex           # JSON rendering for user responses
+├── forum_controller.ex
+├── forum_json.ex          # JSON rendering for forum responses
+└── ...
+```
+
+**Standard view function signatures:**
+
+```elixir
+defmodule CGraphWeb.UserJSON do
+  def data(assigns), do: ...
+  def show(assigns), do: ...
+  def index(assigns), do: ...
+end
+```
+
+Functions receive assigns maps and return plain data structures (maps/lists) that Phoenix
+automatically encodes to JSON.
+
+### 15.10 Plug Pipeline Architecture
+
+Custom plug middleware stack used across router pipelines:
+
+| Plug                   | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `SecurityHeaders`      | Sets security-related HTTP response headers            |
+| `RateLimiterV2`        | Rate limiting with tiers: `:standard`, `:strict`, `:relaxed` |
+| `CookieAuth`           | Cookie-based authentication fallback                   |
+| `RequestTracing`       | Assigns request IDs for distributed tracing            |
+| `ApiVersion`           | API version negotiation                                |
+| `IdempotencyPlug`      | Idempotency key handling for safe retries              |
+| `SentryContext`        | Enriches Sentry error context with request metadata    |
+| `RequireAuth`          | Halts unauthenticated requests                         |
+| `RequireAdmin`         | Halts non-admin requests                               |
+| `AuditLogPlug`         | Logs admin/sensitive actions to audit trail             |
+| `LevelGatePlug`        | Gates features behind gamification level requirements  |
+| `PremiumGatePlug`      | Gates features behind premium subscription status      |
+
+### 15.11 Code Quality Tools
+
+The backend enforces code quality via four static analysis tools:
+
+| Tool                | Version | Purpose             | Command                |
+| ------------------- | ------- | ------------------- | ---------------------- |
+| **Credo**           | 1.7     | Linting / style     | `mix credo --strict`   |
+| **Dialyxir**        | 1.4     | Static type analysis| `mix dialyzer`         |
+| **Sobelow**         | 0.14    | Security scanning   | `mix sobelow`          |
+| **MixAudit**        | 2.1     | Deps vulnerability   | `mix deps.audit`       |
+
+All four run in CI (`backend-test` job) and must pass for the quality gate.
+
+### 15.12 Oban Background Jobs
+
+**Oban** is used for all background job processing. Workers extend `Oban.Worker`:
+
+```elixir
+defmodule CGraph.Workers.PayoutWorker do
+  use Oban.Worker,
+    queue: :payouts,
+    max_attempts: 3,
+    unique: [period: 300]
+
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"creator_id" => creator_id}}) do
+    # Process payout...
+    :ok
+  end
+end
+```
+
+**Conventions:**
+- Workers live under `lib/cgraph/workers/`
+- Each worker specifies `queue`, `max_attempts`, and optionally `unique`/`scheduled` options
+- Jobs return `:ok`, `{:ok, result}`, or `{:error, reason}`
+- Oban queues are configured in `config/config.exs`
+
+### 15.13 OpenTelemetry (Distributed Tracing)
+
+6 OTel packages provide distributed tracing across the backend:
+
+- `opentelemetry` / `opentelemetry_api` — core SDK and API
+- `opentelemetry_phoenix` — automatic Phoenix span instrumentation
+- `opentelemetry_ecto` — automatic Ecto query span instrumentation
+- `opentelemetry_oban` — automatic Oban job span instrumentation
+- `opentelemetry_exporter` — exports spans (OTLP protocol)
+
+**Conventions:**
+- Spans are automatically created for HTTP requests, DB queries, and Oban jobs
+- Context propagation happens automatically via `opentelemetry_process_propagator`
+- Custom spans use `OpenTelemetry.Tracer.with_span/2` for business-critical paths
+- Telemetry config lives in `config/runtime.exs`
+
+### 15.14 Mox (Behaviour-Based Mocking)
+
+**Mox 1.2** is used for test-only mocking via Elixir behaviours:
+
+- Define a `@callback`-annotated behaviour module
+- Configure `Mox.defmock(MockModule, for: BehaviourModule)` in `test_helper.exs`
+- Use `expect/3` and `stub/3` in tests to define mock return values
+- Mox enforces that only declared callbacks are mocked (compile-time safety)
 
 ---
 
