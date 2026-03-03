@@ -22,6 +22,7 @@ import App from './App';
 import ErrorBoundary from './components/error-boundary';
 import { ThemeProvider } from './contexts/theme-context';
 import { NotificationProvider } from './providers/notification-provider';
+import { WalletProvider } from './lib/wallet';
 import { logger } from './lib/logger';
 import './i18n'; // i18n initialization (must be before App)
 import './index.css';
@@ -149,7 +150,9 @@ try {
             <QueryClientProvider client={queryClient}>
               <BrowserRouter>
                 <NotificationProvider>
-                  <App />
+                  <WalletProvider>
+                    <App />
+                  </WalletProvider>
                 </NotificationProvider>
                 <Toaster
                   position="bottom-right"
