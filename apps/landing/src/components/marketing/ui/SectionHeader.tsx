@@ -4,7 +4,7 @@ import { GradientText } from './GradientText';
 
 export interface SectionHeaderProps {
   badge: string;
-  badgeVariant?: 'emerald' | 'purple' | 'cyan' | 'orange';
+  badgeVariant?: 'emerald' | 'purple' | 'cyan' | 'orange' | 'blue' | 'violet';
   title: string;
   titleAccent: string;
   titleAccentClass?: string;

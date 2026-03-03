@@ -44,38 +44,75 @@ export { WEB_APP_URL } from '@/constants';
 export const features: readonly FeatureData[] = [
   {
     icon: '🛡️',
-    title: 'Actually Encrypted',
+    title: 'End-to-End Encrypted',
     description:
-      'PQXDH + Triple Ratchet E2EE with zero-knowledge architecture. We literally cannot read your messages.',
+      'PQXDH + Triple Ratchet E2EE with ML-KEM-768 post-quantum security. We literally cannot read your messages.',
   },
   {
     icon: '⚡',
     title: 'Real-Time Forums',
     description:
-      'Forum threads with sub-200ms message delivery. Chat and long-form discussions in the same place.',
+      'Forum threads with sub-200ms delivery, 50+ customization options — chat and long-form discussions in one place.',
   },
   {
     icon: '⛓️',
-    title: 'Web3 Login',
-    description: 'Connect your wallet and build reputation through participation. No middle-men.',
+    title: 'Web3 / Wallet Login',
+    description:
+      'SIWE (EIP-4361) standard auth with WalletConnect v2. MetaMask, Coinbase, Rainbow — 100+ wallets supported.',
   },
   {
     icon: '👑',
     title: 'Gamified Communities',
     description:
-      'XP, levels, custom titles, animated borders. Active members get recognized, not just counted.',
+      'XP, levels, achievements, quests, battle pass, and a cosmetic shop. Active members get recognized.',
   },
   {
     icon: '📂',
     title: 'Encrypted File Sharing',
     description:
-      'Share files within E2EE conversations. Messages and attachments are encrypted with AES-256-GCM.',
+      'Share files within E2EE conversations. Attachments encrypted with AES-256-GCM at rest and in transit.',
   },
   {
-    icon: '🌟',
-    title: 'Chat + Forums in One',
+    icon: '📞',
+    title: 'Voice & Video Calls',
     description:
-      'Stop switching between Discord for chat and Reddit for discussions. Both live here.',
+      'Group calls with screen sharing, E2EE indicators, and voice channels — powered by LiveKit SFU.',
+  },
+  {
+    icon: '💰',
+    title: 'Creator Monetization',
+    description:
+      'Stripe Connect integration lets creators earn from paid forum subscriptions. 85% revenue share.',
+  },
+  {
+    icon: '⭐',
+    title: 'Premium Subscriptions',
+    description:
+      'Free, Premium ($14.99/mo), and Enterprise ($29.99/mo) tiers with tiered features and limits.',
+  },
+  {
+    icon: '⏰',
+    title: 'Scheduled Messages & Rich Media',
+    description:
+      'Schedule messages, send GIFs via Tenor, record voice messages, and embed rich media previews.',
+  },
+  {
+    icon: '🤖',
+    title: 'AI-Powered Moderation',
+    description:
+      'Automated content moderation pipeline with configurable actions, audit logging, and human escalation.',
+  },
+  {
+    icon: '📱',
+    title: 'Mobile-First',
+    description:
+      'Native iOS and Android apps built with React Native + Expo. Full parity with the web experience.',
+  },
+  {
+    icon: '🔍',
+    title: 'Real-Time Search',
+    description:
+      'Meilisearch for instant full-text search across messages, users, forums, and threads.',
   },
 ] as const;
 
@@ -130,16 +167,16 @@ export const securityFeatures: readonly SecurityFeatureData[] = [
     icon: '🌐',
     title: 'Web3 Authentication',
     description:
-      'Wallet-based sign-in supports decentralized identity flows for users who prefer key-based access.',
+      'SIWE (EIP-4361) wallet sign-in with WalletConnect v2 supports decentralized identity flows.',
     details:
-      'Challenge/response verification confirms wallet ownership without exposing private keys.',
+      'Challenge/response with SIWE standard verification confirms wallet ownership without exposing private keys.',
   },
   {
     icon: '⚡',
     title: 'Real-Time Secure',
     description:
       'Realtime channels are designed for low-latency messaging without weakening transport security.',
-    details: 'Secure WebSocket flows and auth checks protect session integrity at scale.',
+    details: 'Secure WebSocket flows with backpressure handling for 15K+ concurrent connections.',
   },
   {
     icon: '🔏',
@@ -147,6 +184,14 @@ export const securityFeatures: readonly SecurityFeatureData[] = [
     description:
       'All client-server traffic is encrypted in transit to prevent interception on hostile networks.',
     details: 'Strict HTTPS/TLS handling protects API, media, and session communication paths.',
+  },
+  {
+    icon: '🤖',
+    title: 'AI Content Moderation',
+    description:
+      'Automated moderation pipeline with configurable actions, real-time audit logging, and human escalation.',
+    details:
+      'Per-tier rate limiting, auto-action rules, and comprehensive audit trail for compliance.',
   },
   {
     icon: '✅',

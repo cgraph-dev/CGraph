@@ -26,6 +26,9 @@ import { Security } from '../components/marketing/sections/Security';
 import { GlobalBackground } from '../components/marketing/layout/GlobalBackground';
 import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
+import { PricingSection } from '../components/marketing/sections/Pricing';
+import { VoiceVideoShowcase } from '../components/marketing/sections/VoiceVideoShowcase';
+import { DownloadCTA } from '../components/marketing/sections/DownloadCTA';
 import { SectionHeader } from '../components/marketing/ui/SectionHeader';
 import SEO from '../components/SEO';
 
@@ -210,6 +213,9 @@ export default function LandingPage() {
         {/* Features */}
         <Features />
 
+        {/* Voice & Video Showcase (NEW — v1.0) */}
+        <VoiceVideoShowcase />
+
         {/* Customization Demo */}
         <section className="showcase-section zoom-section">
           <motion.div
@@ -253,8 +259,14 @@ export default function LandingPage() {
         {/* Security */}
         <Security />
 
-        {/* Value Proposition (replaces pricing) */}
+        {/* Pricing (NEW — v1.0) */}
+        <PricingSection />
+
+        {/* Value Proposition */}
         <ValueProposition />
+
+        {/* Download CTA (NEW — v1.0) */}
+        <DownloadCTA />
 
         {/* CTA */}
         <CTA prefersReduced={!!prefersReduced} />
