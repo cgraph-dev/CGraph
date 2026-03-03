@@ -9,7 +9,7 @@
  * - Invisible: Gray dot, appear offline to others
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { springs } from '@/lib/animation-presets';
@@ -75,6 +75,18 @@ export function PresenceStatusSelector({
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<PresenceStatus>(currentStatus);
   const [updating, setUpdating] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [menuPos, setMenuPos] = useState({ bottom: 0, left: 0 });
+
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setMenuPos({
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+      });
+    }
+  }, [isOpen]);
 
   const currentOption = STATUS_OPTIONS.find((o) => o.value === status) ?? STATUS_OPTIONS[0]!;
 
@@ -93,8 +105,9 @@ export function PresenceStatusSelector({
   };
 
   return (
-    <div className="relative">
+    <div>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         disabled={updating}
         className={`flex items-center gap-2 rounded-lg transition-colors hover:bg-dark-700 ${
@@ -114,7 +127,8 @@ export function PresenceStatusSelector({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 5, scale: 0.95 }}
               transition={springs.snappy}
-              className="absolute bottom-full left-0 z-50 mb-1 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
+              style={{ bottom: menuPos.bottom, left: menuPos.left }}
+              className="fixed z-50 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
             >
               <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Set Status
