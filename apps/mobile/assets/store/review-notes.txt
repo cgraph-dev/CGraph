@@ -1,0 +1,69 @@
+App Review Notes for CGraph v1.0.0
+===================================
+
+ABOUT THE APP:
+CGraph is an end-to-end encrypted messaging and community platform. All messages
+are encrypted on-device before transmission — the server stores only encrypted
+blobs and cannot read message content.
+
+TEST ACCOUNT:
+- Email: review@cgraph.org
+- Password: CGraphReview2026!
+- Note: This account has Premium tier access for testing all features.
+
+KEY FEATURES TO TEST:
+
+1. Messaging
+   - Send a message in any conversation
+   - Messages are E2EE (lock icon indicator)
+   - Try sending an image or file attachment
+
+2. Forums
+   - Browse existing forums from the home screen
+   - Create a thread and post a reply
+   - Forums support 50+ customization options
+
+3. Voice / Video Calls
+   - Start a call from any conversation
+   - Screen sharing is available via the toolbar
+   - E2EE indicator shows on all calls
+
+4. Gamification
+   - Check your XP and level in the profile tab
+   - View achievements and active quests
+   - Browse the cosmetic shop
+
+5. Wallet Authentication (OPTIONAL)
+   - Wallet login requires MetaMask or another Ethereum wallet
+   - This is an optional login method — email/password works normally
+   - Tap "Connect Wallet" on the login screen
+   - Sign the SIWE (EIP-4361) message in your wallet app
+
+IN-APP PURCHASES:
+- CGraph uses Stripe for web-based subscriptions only
+- No in-app purchases are processed through Apple/Google payment systems
+- Premium ($14.99/mo) and Enterprise ($29.99/mo) plans are available
+- Subscriptions are managed at https://web.cgraph.org/settings/billing
+
+CONTENT MODERATION:
+- AI-powered automated moderation pipeline
+- Human escalation workflow for flagged content
+- Comprehensive audit logging
+- Users can report content via the context menu on any message
+
+PRIVACY:
+- Privacy Policy: https://cgraph.org/privacy
+- Terms of Service: https://cgraph.org/terms
+- GDPR compliant with data export and account deletion
+
+REQUIRED PERMISSIONS:
+- Camera: For video calls and taking photos to share
+- Microphone: For voice/video calls and voice messages
+- Notifications: For message and call notifications
+- Photo Library: For sharing existing photos/files
+
+TECHNICAL DETAILS:
+- Built with React Native + Expo
+- Backend: Elixir/Phoenix
+- E2EE: PQXDH + Triple Ratchet (ML-KEM-768 post-quantum)
+- Voice/Video: LiveKit SFU

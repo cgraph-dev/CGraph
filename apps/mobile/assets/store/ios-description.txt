@@ -1,0 +1,56 @@
+CGraph — Secure Community Platform
+
+End-to-end encrypted messaging, community forums, voice & video calls, gamification, and Web3 wallet authentication — all in one app.
+
+CGraph is a next-generation community platform built for security-first communication. Whether you're messaging friends, managing a community forum, or hopping on a voice call, everything is protected by military-grade end-to-end encryption.
+
+KEY FEATURES:
+
+🔒 End-to-End Encrypted Messaging
+Every message is encrypted on your device before it's sent. We literally cannot read your messages. Powered by PQXDH + Triple Ratchet with post-quantum security (ML-KEM-768).
+
+💬 Real-Time Forums
+Create and customize community forums with 50+ settings. Threads, voting, pinning, moderation tools, and real-time delivery — all built in.
+
+📞 Voice & Video Calls
+Crystal-clear group calls with screen sharing. Up to 50 participants per call with E2EE indicators. Voice channels for always-on community audio.
+
+🎮 Gamification
+Earn XP for every interaction. Unlock achievements, complete quests, climb leaderboards, and customize your profile with animated borders, titles, and cosmetics from the shop.
+
+⛓️ Web3 / Wallet Login
+Sign in with your Ethereum wallet using the SIWE (EIP-4361) standard. MetaMask, WalletConnect, Coinbase Wallet — 100+ wallets supported.
+
+💰 Creator Monetization
+Earn money from your community with paid forum subscriptions via Stripe Connect. 85% revenue share for creators.
+
+📱 Cross-Platform
+Full feature parity across iOS, Android, and Web. Your conversations, forums, and settings sync seamlessly.
+
+🎨 Customization
+7 themes with dark/light/system mode. Custom avatar borders, animated titles, chat styles, and profile themes.
+
+🔍 Instant Search
+Find anything instantly with full-text search powered by Meilisearch. Search messages, users, forums, and threads in real-time.
+
+🤖 AI-Powered Moderation
+Automated content moderation with configurable actions, real-time audit logging, and human escalation workflows.
+
+⏰ Scheduled Messages & Rich Media
+Schedule messages for later delivery. Send GIFs, record voice messages, embed links with rich previews.
+
+⭐ Premium Plans
+Free tier available with all core features. Premium ($14.99/mo) and Enterprise ($29.99/mo) tiers unlock larger file uploads, unlimited forums, advanced search, custom themes, and more.
+
+PRIVACY & SECURITY:
+- Zero-knowledge architecture — we store encrypted blobs, never plaintext
+- Argon2id password hashing with memory-hard parameters
+- TOTP-based two-factor authentication
+- TLS everywhere for transport security
+- GDPR compliant with data export and deletion controls
+
+Built with Elixir/Phoenix (backend), React Native/Expo (mobile), and React (web).
+
+Learn more: https://cgraph.org
+Privacy Policy: https://cgraph.org/privacy
+Support: https://cgraph.org/contact
