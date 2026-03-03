@@ -20,6 +20,7 @@ import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { initErrorTracking } from './src/lib/error-tracking';
 import { initializeStores, useColorScheme, useIsAuthenticated } from './src/stores';
 import { useSettingsStore } from './src/stores/settingsStore';
+import { MobileWalletProvider } from './src/lib/wallet';
 
 // Initialize error tracking on module load
 initErrorTracking();
@@ -117,9 +118,11 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <ErrorBoundary name="Root" showRetry>
             <E2EEProvider>
-              <BiometricGate>
-                <AppContent />
-              </BiometricGate>
+              <MobileWalletProvider>
+                <BiometricGate>
+                  <AppContent />
+                </BiometricGate>
+              </MobileWalletProvider>
             </E2EEProvider>
           </ErrorBoundary>
         </QueryClientProvider>
