@@ -81,7 +81,7 @@ export interface AuthState {
   login: (email: string, password: string) => Promise<TwoFactorRequired | void>;
   verifyLoginTwoFactor: (twoFactorToken: string, code: string) => Promise<void>;
   getWalletChallenge: (walletAddress: string) => Promise<WalletChallenge>;
-  loginWithWallet: (walletAddress: string, signature: string) => Promise<void>;
+  loginWithWallet: (walletAddress: string, signature: string, message?: string) => Promise<void>;
   register: (email: string, username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;

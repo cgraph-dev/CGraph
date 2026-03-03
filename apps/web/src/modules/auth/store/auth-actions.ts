@@ -216,12 +216,13 @@ export function createGetWalletChallengeAction(set: Set, _get: Get) {
  * @returns The newly created instance.
  */
 export function createLoginWithWalletAction(set: Set, _get: Get) {
-  return async (walletAddress: string, signature: string) => {
+  return async (walletAddress: string, signature: string, message?: string) => {
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/api/v1/auth/wallet/verify', {
         wallet_address: walletAddress,
         signature,
+        ...(message ? { message } : {}),
       });
       const { user, tokens } = response.data;
       set({
