@@ -24,9 +24,12 @@
 
 - **@testing-library/react** — component testing (web)
 - **@testing-library/react-native** — component testing (mobile)
-- **@testing-library/jest-dom** — DOM assertion matchers
+- **@testing-library/jest-dom** — DOM assertion matchers (web, via `/vitest` entrypoint)
+- **@testing-library/user-event** — user interaction simulation (web, installed)
 - **MSW (Mock Service Worker)** — API mocking for unit/integration tests (web)
+- **@axe-core/playwright** — automated WCAG accessibility audits in E2E tests (web)
 - **Storybook** — component development and visual testing (web + mobile)
+- **ExMachina** — test data factory for Elixir/Ecto (backend)
 
 > **Note — Vitest Version Fragmentation**: Shared packages use different Vitest versions: `^1.0.0`
 > (crypto, utils, api-client), `^1.6.0` (socket), `^3.0.0` (animation-constants). `shared-types` has
@@ -55,8 +58,6 @@ apps/web/src/
 ├── test/
 │   ├── setup.ts              # Global Vitest setup (MSW, mocks, cleanup)
 │   ├── __mocks__/            # Module-level stubs (framer-motion, heroicons-outline, heroicons-solid, heroicons-20-solid)
-│   ├── mocks/                # (empty — MSW handlers in src/mocks/)
-│   ├── fixtures/             # Test data fixtures (currently empty)
 │   └── integration/
 │       ├── api.test.ts       # API client integration tests
 │       ├── app.test.tsx      # App-level integration tests
@@ -347,6 +348,128 @@ describe('isValidEmail', () => {
 ```
 
 **Pattern**: Pure function tests — no mocking, no DOM, simple input/output.
+
+### 3.6 Backend ExUnit Tests (Elixir)
+
+Backend tests live in `apps/backend/test/` and use **ExUnit** with Phoenix case templates.
+
+#### Test Support Modules
+
+```
+apps/backend/test/
+├── test_helper.exs           # ExUnit.start(), Ecto sandbox, module preloading
+├── support/
+│   ├── data_case.ex          # Case template for database tests (Ecto sandbox)
+│   ├── conn_case.ex          # Case template for controller/HTTP tests
+│   ├── channel_case.ex       # Case template for Phoenix channel tests
+│   ├── factory.ex            # ExMachina factory (786 lines, all domain entities)
+│   ├── fixtures.ex           # Legacy fixtures module (UserFixtures, etc.)
+│   └── aliases.ex            # Shared aliases
+├── cgraph/                   # Context/domain unit tests (~70 test files)
+│   ├── accounts_test.exs
+│   ├── messaging/
+│   ├── forums/
+│   ├── auth/
+│   ├── crypto/
+│   ├── performance/
+│   └── ...
+├── cgraph_web/               # Web layer tests
+│   ├── controllers/          # Controller tests (~20 files + admin/ + api/ subdirs)
+│   ├── channels/             # Channel tests
+│   └── plugs/                # Plug tests
+└── integration/              # Integration tests (E2EE, real-time messaging, etc.)
+```
+
+~190 test files total across the backend.
+
+#### Context/Domain Test Pattern
+
+```elixir
+# apps/backend/test/cgraph/accounts_test.exs
+defmodule CGraph.AccountsTest do
+  use Cgraph.DataCase, async: true
+
+  alias CGraph.Accounts
+  alias CGraph.Accounts.User
+
+  describe "users" do
+    @valid_attrs %{
+      username: "testuser",
+      email: "test@example.com",
+      password: "ValidPassword123!",
+      password_confirmation: "ValidPassword123!"
+    }
+
+    test "create_user/1 with valid data creates a user" do
+      assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
+      assert user.username == "testuser"
+      assert user.email == "test@example.com"
+    end
+
+    test "create_user/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(%{})
+    end
+  end
+end
+```
+
+**Key patterns:**
+
+- `use Cgraph.DataCase, async: true` — sets up Ecto sandbox for database isolation
+- `use CgraphWeb.ConnCase` — for controller tests (provides `conn` with `Phoenix.ConnTest`)
+- Module attributes `@valid_attrs` for reusable test data
+- Pattern matching on `{:ok, _}` / `{:error, _}` tuples
+- `errors_on/1` helper for changeset validation testing
+
+#### ExMachina Factory Pattern
+
+```elixir
+# apps/backend/test/support/factory.ex
+defmodule CGraph.Factory do
+  use ExMachina.Ecto, repo: CGraph.Repo
+
+  def user_factory do
+    %User{
+      email: sequence(:email, &"user#{&1}@example.com"),
+      username: sequence(:username, &"user_#{&1}"),
+      password_hash: Argon2.hash_pwd_salt("ValidPassword123!"),
+      # ... all required fields
+    }
+  end
+
+  def admin_factory do
+    build(:user, is_admin: true)
+  end
+end
+```
+
+- `build(:user)` — creates unsaved struct
+- `insert(:user)` — creates and inserts into DB
+- `build_list(5, :user)` — creates multiple
+- Factories exist for: users, conversations, messages, groups, forums, achievements, quests, etc.
+
+#### Test Isolation
+
+- **Ecto Sandbox** — every test runs inside a database transaction that rolls back on exit
+- `test_helper.exs` force-loads all application modules before tests to prevent race conditions
+- GenServers (HealthCheck, FeatureFlags, Events, etc.) are started in `test_helper.exs`
+
+#### Controller Test Pattern
+
+```elixir
+# apps/backend/test/cgraph_web/controllers/health_controller_test.exs
+defmodule CgraphWeb.HealthControllerTest do
+  use CgraphWeb.ConnCase, async: true
+
+  describe "GET /health" do
+    test "returns healthy status", %{conn: conn} do
+      conn = get(conn, ~p"/health")
+      response = json_response(conn, 200)
+      assert response["data"]["status"] in ["healthy", "ok"]
+    end
+  end
+end
+```
 
 ---
 
@@ -782,6 +905,10 @@ coverageReporters: ['text', 'lcov', 'html'],
 | `apps/backend`   | 60%    | ~82%             |
 | `apps/web`       | 60%    | ~20%             |
 | `apps/mobile`    | 60%    | ~25%             |
+
+> **Backend coverage tool**: `mix.exs` configures `test_coverage: [tool: ExCoveralls]`, so
+> `mix test --cover` uses ExCoveralls (not the built-in Cover). CI exports coverage via
+> `--export-coverage default` for artifact collection.
 
 **Ratchet approach**: CI thresholds are set just above current levels and raised incrementally. PRs
 must not decrease coverage.

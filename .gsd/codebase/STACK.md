@@ -293,6 +293,7 @@ Sources: [`apps/backend/Dockerfile`](apps/backend/Dockerfile),
 | [`chaos-test.yml`](.github/workflows/chaos-test.yml)                     | —                           | Chaos engineering tests                                                                                                       |
 | [`backup.yml`](.github/workflows/backup.yml)                             | —                           | Database backup automation                                                                                                    |
 | [`release.yml`](.github/workflows/release.yml)                           | —                           | Release management                                                                                                            |
+| [`release-mobile.yml`](.github/workflows/release-mobile.yml)             | —                           | Mobile app release (EAS Build + Submit)                                                                                       |
 | [`docs.yml`](.github/workflows/docs.yml)                                 | —                           | Documentation site build                                                                                                      |
 | [`docs-check.yml`](.github/workflows/docs-check.yml)                     | —                           | Docs validation                                                                                                               |
 

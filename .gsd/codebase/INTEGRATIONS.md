@@ -87,6 +87,10 @@
 - **Libraries**: `ex_keccak ~> 0.7`, `ex_secp256k1 ~> 0.7`
   ([`apps/backend/mix.exs`](apps/backend/mix.exs))
 - **Purpose**: Ethereum wallet signature verification for wallet-based login
+- **Web frontend**: `wagmi ^3.5.0`, `viem ^2.46.3`, `@wagmi/connectors 5.7.7`,
+  `@walletconnect/modal ^2.7.0` ([`apps/web/package.json`](apps/web/package.json))
+- **Pinned overrides**: `@wagmi/core: 2.16.4`, `@wagmi/connectors: 5.7.7`
+  ([`package.json`](package.json) pnpm overrides)
 
 ### Apple Sign In (Mobile)
 
@@ -225,6 +229,19 @@
 - **Env vars**: `WEBRTC_STUN_SERVERS`, `WEBRTC_TURN_URL`, `WEBRTC_TURN_USERNAME`,
   `WEBRTC_TURN_CREDENTIAL`, `WEBRTC_SFU_URL`
 - **Default STUN**: `stun:stun.l.google.com:19302`
+
+### LiveKit SFU (Group Calls)
+
+- **Backend config**: `CGraph.WebRTC.LiveKit` module
+  ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
+- **Web client**: `livekit-client ^2.9.0` ([`apps/web/package.json`](apps/web/package.json))
+- **Mobile client**: `@livekit/react-native ^2.4.1`, `@livekit/react-native-webrtc ^125.0.7`
+  ([`apps/mobile/package.json`](apps/mobile/package.json))
+- **Dev server**: `livekit/livekit-server:latest`
+  ([`infrastructure/docker-compose.livekit.yml`](infrastructure/docker-compose.livekit.yml))
+- **Env vars**: `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `LIVEKIT_URL`
+- **Default dev**: `ws://localhost:7880` (key: `devkey`, secret: `secret`)
+- **Purpose**: SFU for group calls with 3+ participants (peer-to-peer for 1:1)
 
 ### Presence
 
@@ -374,10 +391,20 @@
 ### Background Jobs
 
 - **Oban** `~> 2.20` — PostgreSQL-backed job queue
-- **Workers**: `ScheduledMessageWorker`, `EmailDigestWorker`, `MessageArchivalWorker`,
-  `CleanupWorker`
-- **Cron**: Every minute (scheduled messages), daily (cleanup, digests, archival)
-- **Plugins**: Pruner (7-day retention), Lifeline (rescue stalled jobs), Cron scheduler
+- **Workers (cron-scheduled)**:
+  - `ScheduledMessageWorker` — Process scheduled messages (every minute)
+  - `StatusExpiryWorker` — Clear expired custom statuses (every minute)
+  - `EmailDigestWorker` — Send email digests (daily 8 AM UTC)
+  - `MessageArchivalWorker` — Archive old messages (daily 3 AM UTC)
+  - `CleanupLinkPreviewCache` — Clean expired link preview cache (daily 4 AM UTC)
+  - `RankingUpdateWorker` — Update forum rankings (hourly) + weekly reset (Monday 00:00 UTC)
+  - `QuestRotationWorker` — Rotate quests (daily/weekly/monthly)
+  - `EventLifecycleWorker` — Check event lifecycle (every 15 min)
+- **Plugins**: Pruner (7-day retention), Lifeline (rescue stalled jobs after 30 min), Cron scheduler
+- **Queues** (24 total): `default`, `mailers`, `notifications`, `events`, `cleanup`,
+  `notification_retry`, `webhooks`, `exports`, `external_api`, `dead_letter`, `maintenance`,
+  `backups`, `push_notifications`, `email_notifications`, `archival`, `search`, `critical`,
+  `emails`, `media`, `sync`, `link_previews`, `rankings`, `gamification`
 
 ### Circuit Breaker
 
@@ -529,12 +556,20 @@
 | `expo-linking`                              | `~8.0.0`   | Deep linking             |
 | `expo-web-browser`                          | `~15.0.0`  | In-app browser           |
 | `expo-blur`                                 | `~15.0.8`  | Blur effects             |
-| `expo-linear-gradient`                      | `~15.0.0`  | Gradient views           |
+| `expo-linear-gradient`                      | `~15.0.8`  | Gradient views           |
 | `expo-splash-screen`                        | `~31.0.0`  | Splash screen            |
 | `expo-device`                               | `~8.0.0`   | Device info              |
 | `expo-constants`                            | `~18.0.13` | Expo constants           |
+| `expo-auth-session`                         | `~7.0.0`   | OAuth session handling   |
+| `expo-asset`                                | `~12.0.12` | Asset management         |
+| `expo-font`                                 | `~14.0.0`  | Custom font loading      |
+| `expo-status-bar`                           | `~3.0.0`   | Status bar control       |
 | `@react-native-community/netinfo`           | `^11.3.1`  | Network status           |
+| `@react-native-community/datetimepicker`    | `8.4.4`    | Date/time picker         |
+| `@react-native-community/slider`            | `5.0.1`    | Slider component         |
+| `@react-native-masked-view/masked-view`     | `0.3.2`    | Masked views             |
 | `@react-native-async-storage/async-storage` | `2.2.0`    | Persistent storage       |
+| `react-native-iap`                          | `^14.7.12` | In-app purchases         |
 
 Source: [`apps/mobile/package.json`](apps/mobile/package.json)
 

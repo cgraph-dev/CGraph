@@ -746,6 +746,7 @@ export { useChatStore } from '../modules/chat/store';
 | ----------------- | -------------------------------------------------- |
 | Frontend (Web)    | React 19, Vite, TypeScript 5.8, Tailwind CSS       |
 | Frontend (Mobile) | React Native 0.81, Expo SDK 54                     |
+| Routing (Web)     | React Router 7                                     |
 | State Management  | Zustand 5 + TanStack Query 5                       |
 | Validation        | Zod 3.24                                           |
 | Animation         | Framer Motion 12, GSAP                             |

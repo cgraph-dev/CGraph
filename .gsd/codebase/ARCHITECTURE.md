@@ -85,6 +85,7 @@ CGraph.Supervisor
 ├── OpenTelemetry                 (distributed tracing setup)
 ├── CGraph.CacheSupervisor        (Cachex instances: general, session, token caches)
 ├── CGraph.SecuritySupervisor     (JWT key rotation, token blacklist, account lockout)
+├── CGraph.Auth.TokenManager      (refresh token rotation, family tracking, theft detection)
 ├── CGraph.WorkerSupervisor       (Oban, Presence, WebRTC)
 ├── DocumentRegistry + DocumentSupervisor (real-time collaborative editing)
 ├── CGraph.Metrics                (in-app metrics collector)
@@ -143,6 +144,7 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `AdminRoutes` — admin dashboard, moderation, GDPR
 - `AIRoutes` — AI-powered features
 - `SyncRoutes` — offline data sync
+- `CreatorRoutes` — creator economy endpoints (earnings, payouts, onboarding)
 
 **Pipelines (plug chains):**
 
@@ -156,7 +158,13 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `:browser` — HTML pipeline for Phoenix LiveDashboard
 
 **Controllers:** Versioned under `controllers/api/v1/` — over 100 controller/JSON view pairs
-organized by resource (auth, users, messages, groups, forums, gamification, etc.)
+organized by resource (auth, users, messages, groups, forums, gamification, etc.). Additional
+top-level controllers outside `v1/` include: `coin_shop_controller`, `coins_controller`,
+`cosmetics_controller`, `events_controller`, `friend_controller`, `gamification_controller`,
+`iap_controller`, `marketplace_controller`, `metrics_controller`, `premium_controller`,
+`prestige_controller`, `quest_controller`, `settings_controller`, `shop_controller`,
+`title_controller`, `wallet_auth_controller`, plus `payment_controller`, `subscription_controller`,
+`username_controller` under `api/`.
 
 **Plug middleware stack:**
 
@@ -171,10 +179,19 @@ organized by resource (auth, users, messages, groups, forums, gamification, etc.
 - `RequireAuth` / `RequireAdmin` — Authorization enforcement
 - `CorrelationId` — Distributed tracing correlation
 - `EtagPlug` — HTTP ETag caching (available but not wired into pipelines)
+- `LevelGatePlug` — Level-gated feature access
+- `PremiumGatePlug` — Premium feature gating
+- `OptionalAuthPipeline` — Optional authentication for public endpoints with optional auth
+- `TwoFactorRateLimiter` — 2FA-specific rate limiting
+- `CurrentUser` — Current user assignment
+- `GeoRouter` — Geographic routing
+- `RawBodyPlug` — Raw body preservation (for webhook signature verification)
+- `RequestContextPlug` — Request context propagation
+- `TracingPlug` / `TraceContext` — OpenTelemetry tracing integration
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 22 workers in `lib/cgraph/workers/` (notable workers):
+**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (notable workers):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -191,6 +208,12 @@ organized by resource (auth, users, messages, groups, forums, gamification, etc.
 - `CriticalAlertDispatcher` — high-priority alert delivery
 - `DeleteExpiredMessages` / `EmailDigestWorker` / `EventExporter` / `NotificationRetryWorker` /
   `PartitionManager`
+- `AppealNotificationWorker` — moderation appeal notifications
+- `CleanupLinkPreviewCache` — link preview cache cleanup
+- `FetchLinkPreview` — link preview fetching
+- `ModerationWorker` — moderation task processing
+- `RankingUpdateWorker` — forum ranking updates
+- `StatusExpiryWorker` — user status expiry
 - Worker orchestrator (`base.ex`) for complex multi-step jobs
 
 ---
@@ -226,7 +249,7 @@ GET    /api/v1/users/:id/profile
 WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 
 | Channel               | Pattern          | Purpose                                           |
-| --------------------- | ---------------- | ------------------------------------------------- |
+| --------------------- | ---------------- | ------------------------------------------------- | --- | -------------- | --------- | ----------------------------- |
 | `ConversationChannel` | `conversation:*` | 1-on-1 and group chat messages, typing indicators |
 | `GroupChannel`        | `group:*`        | Group-level events, member updates                |
 | `UserChannel`         | `user:*`         | Per-user notifications, friend requests, presence |
@@ -239,7 +262,9 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 | `ForumChannel`        | `forum:*`        | Forum-level real-time updates                     |
 | `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
 | `AIChannel`           | `ai:*`           | Streaming AI responses                            |
-| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |
+| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |     | `BoardChannel` | `board:*` | Board-level real-time updates |
+| `QrAuthChannel`       | `qr_auth:*`      | QR code login authentication                      |
+| `VoiceStateChannel`   | `voice_state:*`  | Voice state tracking                              |
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 
@@ -276,6 +301,7 @@ Client                        Backend
 - **Web3 wallet** — Ethereum wallet auth (EIP-4361 Sign-In with Ethereum, ex_keccak + ex_secp256k1)
 - **2FA** — TOTP (nimble_totp) with backup/recovery codes
 - **Cookie auth** — `CookieAuth` plug translates httpOnly cookies to Bearer tokens for web clients
+- **QR code login** — `CGraph.Auth.QrLogin` for QR-based authentication with `QrAuthChannel`
 
 **Token management:**
 
@@ -389,8 +415,8 @@ src/modules/<feature>/
 └── index.ts       # Public barrel export
 ```
 
-**Feature modules:** `auth`, `chat`, `calls`, `forums`, `gamification`, `groups`, `moderation`,
-`premium`, `search`, `settings`, `social`, `admin`
+**Feature modules:** `admin`, `auth`, `calls`, `chat`, `forums`, `gamification`, `groups`,
+`moderation`, `premium`, `search`, `settings`, `social`
 
 ### 6.3 State Management
 
@@ -405,12 +431,15 @@ src/modules/<feature>/
   `useReferralStore`, `useMarketplaceStore`, `useAvatarBorderStore`
 - **Theme domain:** `useThemeStore`, `useForumThemeStore`, `useCustomizationStore`
 - **Utility domain:** `useNotificationStore`, `useSearchStore`, `usePluginStore`, `useCalendarStore`
+- **Feature flags:** `useFeatureFlagStore` (in `src/stores/featureFlagStore.ts`)
+- **Voice:** `useVoiceStateStore` (in `src/stores/voiceStateStore.ts`)
 
 ### 6.4 Routing
 
 React Router DOM v7 with:
 
-- **Route groups** under `src/routes/route-groups/` (dev, auth, forums, public, settings)
+- **Route groups** under `src/routes/route-groups/` (`auth-routes`, `dev-routes`, `forum-routes`,
+  `public-routes`, `settings-routes`)
 - **Lazy-loaded pages** via `React.lazy()` + `Suspense` (`src/routes/lazyPages.ts`)
 - **Route guards:** `ProtectedRoute`, `PublicRoute`, `AdminRoute`, `ProfileRedirectRoute`
   (`src/routes/guards.tsx`)
@@ -486,6 +515,14 @@ Each module has own `components/`, `hooks/`, `store/` etc.
 **Features** (`src/features/`) provide cross-cutting feature implementations: `auth`, `forums`,
 `gamification`, `groups`, `messaging`, `premium`
 
+**Stores** (`src/stores/`): `authStore`, `callStore`, `chatStore`, `customizationStore`,
+`featureFlagStore`, `forumStore`, `friendStore`, `gamificationStore`, `groupStore`,
+`marketplaceStore`, `notificationStore`, `settingsStore`, `themeStore`, `voiceStateStore`
+
+**Services** (`src/services/`): `api`, `callService`, `calendarService`, `forumService`,
+`friendsService`, `gamificationService`, `groupsService`, `notificationsService`, `premiumService`,
+`pushNotifications`, `referralService`, `searchService`, `settingsService`, `tierService`
+
 ### 7.4 Platform Abstraction
 
 `src/platform/` provides platform-specific implementations:
@@ -512,26 +549,29 @@ Signal Protocol-inspired with post-quantum extensions:
 | KEM                       | ML-KEM-768 (Kyber) post-quantum KEM            | `packages/crypto/src/kem.ts`           |
 | Symmetric                 | AES-256-GCM                                    | `packages/crypto/src/aes.ts`           |
 
+Also includes `file-encryption.ts` for file-level encryption.
+
 **Dependencies:** `@noble/hashes`, `@noble/post-quantum` (no native crypto dependencies)
 
 ### 8.2 Client Integration
 
 **Web:** `src/lib/crypto/` — Double Ratchet session manager, E2EE store (IndexedDB), secure storage
-with migration support **Mobile:** `src/lib/crypto/` — Same protocol, platform-specific secure
-storage (expo-secure-store)
+with migration support. Also includes `src/lib/wallet/` — WalletConnect integration (wagmi config,
+wallet connect provider). **Mobile:** `src/lib/crypto/` — Same protocol, platform-specific secure
+storage (expo-secure-store). Also includes `src/lib/wallet/` — WalletConnect integration.
 
 ---
 
 ## 9. Shared Packages
 
-| Package                       | Purpose                                                                       | Consumers   |
-| ----------------------------- | ----------------------------------------------------------------------------- | ----------- |
-| `@cgraph/shared-types`        | TypeScript interfaces for API, models, events, tiers                          | Web, Mobile |
-| `@cgraph/api-client`          | Resilient HTTP client with circuit breaker, retry, timeout                    | Web, Mobile |
-| `@cgraph/crypto`              | Signal Protocol E2EE (X3DH, PQXDH, Double/Triple Ratchet, AES-256-GCM)        | Web, Mobile |
-| `@cgraph/socket`              | Phoenix Channel client with typed channels (conversation, group, forum, user) | Web, Mobile |
-| `@cgraph/utils`               | Format, validation (Zod), permissions, HTTP client factory                    | Web, Mobile |
-| `@cgraph/animation-constants` | Cross-platform animation durations, easings, springs, stagger values          | Web, Mobile |
+| Package                       | Purpose                                                                                                                                                                                                                         | Consumers   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@cgraph/shared-types`        | TypeScript interfaces for API, auth, billing, creator, events, forum (customization, emoji, leaderboard, moderation, permissions, plugin, RSS, user-groups), gamification, messages, models, notifications, subscription, tiers | Web, Mobile |
+| `@cgraph/api-client`          | Resilient HTTP client with circuit breaker, retry, timeout                                                                                                                                                                      | Web, Mobile |
+| `@cgraph/crypto`              | Signal Protocol E2EE (X3DH, PQXDH, Double/Triple Ratchet, AES-256-GCM)                                                                                                                                                          | Web, Mobile |
+| `@cgraph/socket`              | Phoenix Channel client with typed channels (conversation, group, forum, user)                                                                                                                                                   | Web, Mobile |
+| `@cgraph/utils`               | Format, validation (Zod), permissions, HTTP client factory                                                                                                                                                                      | Web, Mobile |
+| `@cgraph/animation-constants` | Cross-platform animation durations, easings, springs, stagger values, transitions                                                                                                                                               | Web, Mobile |
 
 ---
 

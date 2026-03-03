@@ -72,7 +72,8 @@ apps/backend/
 │   │   │   ├── messaging_routes.ex # Conversations, messages, groups
 │   │   │   ├── public_routes.ex   # Public forums, tiers, RSS
 │   │   │   ├── sync_routes.ex     # Offline data sync
-│   │   │   └── user_routes.ex     # Profiles, settings, friends, notifications
+│   │   │   ├── user_routes.ex     # Profiles, settings, friends, notifications
+│   │   │   └── creator_routes.ex  # Creator economy endpoints
 │   │   ├── controllers/
 │   │   │   ├── api/
 │   │   │   │   ├── v1/            # Versioned API controllers (100+ files)
@@ -94,7 +95,23 @@ apps/backend/
 │   │   │   ├── error_json.ex          # Error JSON views
 │   │   │   ├── health_controller.ex   # Health check endpoint
 │   │   │   ├── stripe_webhook_controller.ex
-│   │   │   └── ... (gamification, shop, cosmetics controllers)
+│   │   │   ├── coin_shop_controller.ex    # Coin shop
+│   │   │   ├── coins_controller.ex / coins_json.ex  # Coins
+│   │   │   ├── cosmetics_controller.ex / cosmetics_controller/ # Cosmetics
+│   │   │   ├── customization_json.ex      # Customization views
+│   │   │   ├── events_controller.ex / events_controller/  # Events
+│   │   │   ├── friend_controller.ex       # Friend operations
+│   │   │   ├── gamification_controller.ex / gamification_json.ex
+│   │   │   ├── iap_controller.ex          # In-app purchases
+│   │   │   ├── marketplace_controller.ex / marketplace_controller/
+│   │   │   ├── metrics_controller.ex      # Metrics endpoint
+│   │   │   ├── premium_controller.ex      # Premium features
+│   │   │   ├── prestige_controller.ex     # Prestige system
+│   │   │   ├── quest_controller.ex / quest_json.ex
+│   │   │   ├── settings_controller.ex     # Settings
+│   │   │   ├── shop_controller.ex / shop_json.ex
+│   │   │   ├── title_controller.ex / title_json.ex
+│   │   │   └── wallet_auth_controller.ex  # Wallet authentication
 │   │   ├── channels/
 │   │   │   ├── user_socket.ex          # WebSocket entry point (JWT auth)
 │   │   │   ├── conversation_channel.ex # DM/group chat real-time
@@ -110,6 +127,9 @@ apps/backend/
 │   │   │   ├── events_channel.ex       # Seasonal events
 │   │   │   ├── ai_channel.ex           # Streaming AI responses
 │   │   │   ├── document_channel.ex     # Collaborative editing (Yjs)
+│   │   │   ├── board_channel.ex        # Board-level real-time updates
+│   │   │   ├── qr_auth_channel.ex      # QR code login authentication
+│   │   │   ├── voice_state_channel.ex  # Voice state tracking
 │   │   │   ├── backpressure.ex         # Message flood prevention
 │   │   │   ├── socket_security.ex      # Top-level socket security module
 │   │   │   └── socket_security/        # Channel-level authorization
@@ -128,7 +148,21 @@ apps/backend/
 │   │   │   ├── sentry_context.ex       # Sentry error context
 │   │   │   ├── etag_plug.ex            # HTTP ETag caching
 │   │   │   ├── cors.ex                 # CORS configuration
-│   │   │   └── ... (current_user, geo_router, raw_body, etc.)
+│   │   │   ├── current_user.ex         # Current user assignment
+│   │   │   ├── geo_router.ex           # Geographic routing
+│   │   │   ├── raw_body_plug.ex        # Raw body preservation (webhooks)
+│   │   │   ├── request_context_plug.ex # Request context propagation
+│   │   │   ├── level_gate_plug.ex      # Level-gated feature access
+│   │   │   ├── premium_gate_plug.ex    # Premium feature gating
+│   │   │   ├── optional_auth_pipeline.ex # Optional auth for public endpoints
+│   │   │   ├── two_factor_rate_limiter.ex # 2FA-specific rate limiting
+│   │   │   ├── auth_error_handler.ex   # Auth error handling
+│   │   │   ├── common.ex              # Common plug utilities
+│   │   │   ├── rate_limit_plug.ex      # Rate limit plug (legacy)
+│   │   │   ├── rate_limiter.ex         # Rate limiter (legacy)
+│   │   │   ├── trace_context.ex        # Trace context propagation
+│   │   │   ├── tracing_plug.ex         # OpenTelemetry tracing
+│   │   │   └── user_auth.ex            # User auth plug
 │   │   ├── api/
 │   │   │   ├── input_validation/       # Input validation modules
 │   │   │   ├── input_validation.ex     # Request input validation
@@ -297,7 +331,8 @@ apps/backend/
 │   │   │
 │   │   ├── auth/                      # Auth utilities
 │   │   │   ├── token_manager/        # JWT token lifecycle management
-│   │   │   └── token_manager.ex      # Token manager module
+│   │   │   ├── token_manager.ex      # Token manager module
+│   │   │   └── qr_login.ex           # QR code login authentication
 │   │   │
 │   │   ├── security/                  # Security context
 │   │   │   ├── abuse_detection.ex    # Abuse pattern detection
@@ -342,7 +377,7 @@ apps/backend/
 │   │   │   ├── messages.ex           # Message search
 │   │   │   └── users.ex             # User search
 │   │   │
-│   │   ├── workers/                   # Oban background workers
+│   │   ├── workers/                   # Oban background workers (28 workers)
 │   │   │   ├── notification_worker.ex
 │   │   │   ├── scheduled_message_worker.ex
 │   │   │   ├── search_index_worker.ex
@@ -353,8 +388,14 @@ apps/backend/
 │   │   │   ├── database_backup.ex
 │   │   │   ├── webhook_delivery_worker.ex
 │   │   │   ├── hard_delete_user.ex    # GDPR hard delete
+│   │   │   ├── appeal_notification_worker.ex # Appeal notifications
+│   │   │   ├── cleanup_link_preview_cache.ex # Link preview cache cleanup
+│   │   │   ├── fetch_link_preview.ex  # Link preview fetching
+│   │   │   ├── moderation_worker.ex   # Moderation task processing
+│   │   │   ├── ranking_update_worker.ex # Forum ranking updates
+│   │   │   ├── status_expiry_worker.ex # User status expiry
 │   │   │   ├── orchestrator/          # Multi-step job orchestrator
-│   │   │   └── ... (email, push, dead letter, partition manager)
+│   │   │   └── ... (email, push, dead letter, partition manager, critical alert)
 │   │   │
 │   │   ├── supervisors/               # OTP supervisors
 │   │   │   ├── cache_supervisor.ex    # Cache service supervision
@@ -424,6 +465,26 @@ apps/backend/
 │   │   ├── request_context/           # Request context propagation
 │   │   ├── error_reporter/            # Error reporting utilities
 │   │   ├── health_check/              # Health check logic
+│   │   ├── creators/                  # Creator economy context
+│   │   │   ├── creators.ex           # Creators facade
+│   │   │   ├── connect_onboarding.ex  # Creator onboarding
+│   │   │   ├── content_gate.ex       # Content gating
+│   │   │   ├── creator_earning.ex    # Creator earnings schema
+│   │   │   ├── creator_payout.ex     # Creator payouts schema
+│   │   │   ├── earnings.ex           # Earnings logic
+│   │   │   ├── paid_forum_subscription.ex # Paid forum subscriptions
+│   │   │   ├── paid_subscription.ex  # Paid subscriptions
+│   │   │   └── payout.ex             # Payout logic
+│   │   ├── shop/                      # Coin shop context
+│   │   │   ├── coin_bundles.ex       # Coin bundle definitions
+│   │   │   ├── coin_checkout.ex      # Coin checkout logic
+│   │   │   └── coin_purchase.ex      # Coin purchase processing
+│   │   ├── cluster/                   # Cluster management
+│   │   │   └── connection_monitor.ex  # Cluster connection monitoring
+│   │   ├── explore.ex                 # Explore/discovery feature
+│   │   ├── themes.ex                  # Theme management
+│   │   ├── marketplace.ex             # Marketplace facade
+│   │   ├── release.ex                 # Release tasks (migrations, seeds)
 │   │   ├── ... (many contexts also have companion .ex facade files, e.g. accounts.ex, messaging.ex, etc.)
 │   │   ├── services/registry/         # Service registry
 │   │   ├── services/registry.ex       # Service registry module
@@ -536,6 +597,8 @@ apps/web/
 │   │
 │   ├── stores/                        # ★ Unified store exports
 │   │   ├── index.ts                   # Re-exports all Zustand stores from modules
+│   │   ├── featureFlagStore.ts        # Feature flag store
+│   │   ├── voiceStateStore.ts         # Voice state store
 │   │   ├── __tests__/                 # Store tests
 │   │   └── theme/                     # Theme store
 │   │       ├── store.ts | themeStore.ts
@@ -559,6 +622,8 @@ apps/web/
 │   │   ├── calendar/                  # Calendar page
 │   │   ├── community/ | customize/ | leaderboard/ | members/
 │   │   ├── notifications/ | referrals/ | search/ | security/ | social/
+│   │   ├── creator/                   # Creator dashboard/analytics/earnings pages
+│   │   ├── explore/                   # Explore/discovery page
 │   │   └── not-found.tsx              # 404 page
 │   │
 │   ├── components/                    # Shared components
@@ -577,6 +642,7 @@ apps/web/
 │   │   ├── enhanced/                  # Enhanced/animated variants
 │   │   ├── feedback/                  # Feedback UI (spinners, progress, etc.)
 │   │   ├── bbcode-editor/            # BBCode rich text editor
+│   │   ├── forums/                    # Forum-specific components
 │   │   ├── three/                     # Three.js 3D components
 │   │   ├── shaders/                   # WebGL shaders
 │   │   ├── theme/                     # Theme-related components
@@ -623,6 +689,7 @@ apps/web/
 │   │   ├── useClickOutside.ts | useCopyToClipboard.ts
 │   │   ├── useAdaptiveInterval.ts | useAdaptiveMotion.ts
 │   │   ├── useNotification.ts | useToast.ts | useWindowSize.ts
+│   │   ├── useFeatureFlag.ts          # Feature flag hook
 │   │   └── useReducedMotion.ts
 │   │
 │   ├── lib/                           # Core libraries
@@ -692,6 +759,11 @@ apps/web/
 │   │   ├── queryKeys.ts              # TanStack Query key factory
 │   │   ├── oauth.ts                  # OAuth utility
 │   │   ├── stripe.tsx                # Stripe integration
+│   │   ├── wallet/                    # WalletConnect integration
+│   │   │   ├── index.ts
+│   │   │   ├── use-wallet-connect.ts  # WalletConnect hook
+│   │   │   ├── wagmi-config.ts       # Wagmi configuration
+│   │   │   └── wallet-connect-provider.tsx # WalletConnect provider
 │   │   └── store/ | store-helpers/    # Store utilities
 │   │
 │   ├── services/                      # Application services
@@ -764,6 +836,8 @@ apps/mobile/
 │   │   ├── notifications/             # Notification screens
 │   │   ├── social/ | community/ | admin/ | calendar/ | content/
 │   │   ├── customize/ | leaderboard/ | legal/ | moderation/ | referrals/ | security/
+│   │   ├── chat/                      # Chat screens (safety number)
+│   │   ├── explore/                   # Explore/discovery screen
 │   │   ├── account/                   # Account management
 │   │   └── loading-screen.tsx         # App loading screen
 │   │
@@ -798,6 +872,10 @@ apps/mobile/
 │   │   ├── gamificationStore.ts | groupStore.ts | marketplaceStore.ts
 │   │   ├── notificationStore.ts | settingsStore.ts | themeStore.ts
 │   │   ├── customizationStore.ts
+│   │   ├── featureFlagStore.ts        # Feature flag store
+│   │   ├── forumStore.ts              # Forum store
+│   │   ├── voiceStateStore.ts         # Voice state store
+│   │   ├── callStore.ts              # Call store
 │   │   └── index.ts                   # Unified exports
 │   │
 │   ├── components/                    # ★ Shared components (80+ components)
@@ -821,7 +899,9 @@ apps/mobile/
 │   │   ├── useGamification.ts | useGroups.ts | useFriendPresence.ts
 │   │   ├── usePushNotifications.ts | useNotifications.ts
 │   │   ├── useOfflineQueue.ts | useHaptics.ts | useBubbleCustomization.ts
-│   │   └── ... (23+ hooks)
+│   │   ├── useCalendar.ts | useContactsPresence.ts | useFeatureFlag.ts
+│   │   ├── useInterval.ts | usePremium.ts | useReferrals.ts | useSearch.ts
+│   │   └── ... (25+ hooks)
 │   │
 │   ├── services/                      # API services
 │   │   ├── api.ts                     # Base API client
@@ -829,6 +909,7 @@ apps/mobile/
 │   │   ├── calendarService.ts | notificationsService.ts | premiumService.ts
 │   │   ├── pushNotifications.ts | referralService.ts | searchService.ts
 │   │   ├── settingsService.ts | tierService.ts
+│   │   ├── callService.ts | forumService.ts
 │   │   └── index.ts
 │   │
 │   ├── lib/                           # Core libraries
@@ -855,6 +936,10 @@ apps/mobile/
 │   │   ├── oauth.ts                  # OAuth utilities
 │   │   ├── queryClient.ts            # TanStack Query client
 │   │   ├── payment.ts               # Payment utilities
+│   │   ├── wallet/                    # WalletConnect integration
+│   │   │   ├── index.ts
+│   │   │   ├── use-wallet-connect.ts  # WalletConnect hook
+│   │   │   └── wallet-connect-provider.tsx # WalletConnect provider
 │   │   ├── __tests__/                # Lib tests
 │   │   └── database/                  # Local database
 │   │
@@ -930,8 +1015,23 @@ apps/landing/
 src/
 ├── index.ts       # Main exports
 ├── api.ts         # API request/response types
-├── models.ts      # Domain model interfaces (User, Message, Group, etc.)
+├── auth.ts        # Auth types
+├── billing.ts     # Billing types
+├── creator.ts     # Creator economy types
 ├── events.ts      # Real-time event type definitions
+├── forum-customization.ts  # Forum customization types
+├── forum-emoji.ts          # Forum emoji types
+├── forum-leaderboard.ts    # Forum leaderboard types
+├── forum-moderation.ts     # Forum moderation types
+├── forum-permissions.ts    # Forum permissions types
+├── forum-plugin.ts         # Forum plugin types
+├── forum-rss.ts            # Forum RSS types
+├── forum-user-groups.ts    # Forum user group types
+├── gamification.ts         # Gamification types
+├── messages.ts             # Message types
+├── models.ts      # Domain model interfaces (User, Message, Group, etc.)
+├── notifications.ts  # Notification types
+├── subscription.ts   # Subscription types
 └── tiers.ts       # Subscription tier types
 ```
 
@@ -958,6 +1058,7 @@ src/
 ├── spqr.ts             # Sub-Protocol Quantum Resistance
 ├── scka.ts             # Session Continuity Key Agreement
 ├── kem.ts              # ML-KEM-768 (Kyber) KEM
+├── file-encryption.ts  # File-level encryption
 ├── stores.ts           # Key storage interfaces
 ├── types.ts            # Crypto type definitions
 ├── types-portable.ts   # Portable type definitions
@@ -1003,7 +1104,8 @@ src/
 ├── durations.ts   # Animation duration constants
 ├── easings.ts     # Easing function constants
 ├── springs.ts     # Spring physics constants
-└── stagger.ts     # Stagger timing constants
+├── stagger.ts     # Stagger timing constants
+└── transitions.ts # Transition constants
 ```
 
 ---
