@@ -109,6 +109,7 @@ export default function CallScreen({ navigation, route }: Props) {
   const [isE2EEEnabled, setIsE2EEEnabled] = useState(false);
   const [groupParticipants, setGroupParticipants] = useState<MobileLiveKitParticipant[]>([]);
   const [remoteStream, setRemoteStream] = useState<any>(null);
+  const [localStream, setLocalStream] = useState<any>(null);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const ringAnim = useRef(new Animated.Value(0)).current;
@@ -163,6 +164,15 @@ export default function CallScreen({ navigation, route }: Props) {
       },
     });
 
+    // Capture local stream from WebRTC manager state
+    const pollLocalStream = setInterval(() => {
+      const state = manager.getState();
+      if (state.localStream && !localStream) {
+        setLocalStream(state.localStream);
+        clearInterval(pollLocalStream);
+      }
+    }, 200);
+
     // Start or answer based on params
     if (_incoming && _roomId) {
       setCallStatus('connecting');
@@ -173,6 +183,7 @@ export default function CallScreen({ navigation, route }: Props) {
     }
 
     return () => {
+      clearInterval(pollLocalStream);
       // Cleanup handled by endCall
     };
   }, []);
@@ -572,12 +583,21 @@ export default function CallScreen({ navigation, route }: Props) {
                   </View>
                   {/* Local video (PiP) */}
                   <View style={styles.localVideo}>
-                    <LinearGradient
-                      colors={['#374151', '#1f2937']}
-                      style={styles.localVideoInner}
-                    >
-                      <Text style={styles.localVideoText}>You</Text>
-                    </LinearGradient>
+                    {localStream ? (
+                      <RTCView
+                        streamURL={localStream.toURL()}
+                        style={styles.localVideoInner}
+                        objectFit="cover"
+                        mirror={true}
+                      />
+                    ) : (
+                      <LinearGradient
+                        colors={['#374151', '#1f2937']}
+                        style={styles.localVideoInner}
+                      >
+                        <Text style={styles.localVideoText}>You</Text>
+                      </LinearGradient>
+                    )}
                   </View>
                 </View>
               ) : (
