@@ -143,6 +143,16 @@ defmodule CGraphWeb.GamificationChannel do
     {:noreply, socket}
   end
 
+  # Handle rank changed broadcasts for real-time leaderboard updates
+  def handle_info({:rank_changed, data}, socket) do
+    push(socket, "rank_changed", %{
+      category: data.category,
+      old_rank: data.old_rank,
+      new_rank: data.new_rank
+    })
+    {:noreply, socket}
+  end
+
   # Handle achievement unlock broadcasts
   def handle_info({:achievement_unlocked, data}, socket) do
     if check_rate_limit(socket, :achievement_unlock) do

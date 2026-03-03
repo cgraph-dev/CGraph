@@ -204,7 +204,34 @@ defmodule CGraph.Gamification do
     end)
     |> case do
       {:ok, {updated_user, level_up}} ->
+        # Get old rank before sync for rank_changed detection
+        old_xp_rank = case Leaderboard.get_rank(updated_user.id, "xp") do
+          {:ok, rank} -> rank
+          _ -> nil
+        end
+
         Leaderboard.sync_scores(updated_user, [:xp, :level])
+
+        # Broadcast rank_changed if rank improved
+        Task.start(fn ->
+          new_xp_rank = case Leaderboard.get_rank(updated_user.id, "xp") do
+            {:ok, rank} -> rank
+            _ -> nil
+          end
+
+          if old_xp_rank && new_xp_rank && new_xp_rank != old_xp_rank do
+            Phoenix.PubSub.broadcast(
+              CGraph.PubSub,
+              "gamification:#{updated_user.id}",
+              {:rank_changed, %{
+                category: "xp",
+                old_rank: old_xp_rank,
+                new_rank: new_xp_rank
+              }}
+            )
+          end
+        end)
+
         {:ok, {updated_user, level_up}}
 
       error ->
