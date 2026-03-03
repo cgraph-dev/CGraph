@@ -1,201 +1,171 @@
-# CGraph
+# CGraph Backend
 
 ## What This Is
 
-CGraph is an end-to-end encrypted messaging and community platform — Discord meets Telegram meets
-MyBB, with a custom triple-ratchet E2EE protocol, deep visual customization, gamification, and
-full-featured forums. It targets privacy-conscious users who want both secure communication and rich
-community features in a single app, across web and mobile with full parity.
+The Elixir/Phoenix API server powering CGraph — a secure real-time messaging and community platform.
+This backend serves REST JSON APIs, Phoenix Channels for real-time communication, and Oban background
+jobs. It handles 57 domain contexts spanning auth, messaging, groups, forums, gamification, creator
+monetization, E2EE key exchange, and more. **This GSD instance manages only `apps/backend/`** —
+frontend, mobile, and landing page work lives in a separate GSD instance at the monorepo root.
 
 ## Core Value
 
-**Secure real-time communication that works end-to-end** — if auth, messaging, E2EE, and real-time
-channels don't function reliably across web and mobile, nothing else matters.
+**Every API response is correct, secure, and fast** — if auth leaks tokens, payments double-charge,
+rate limiting is bypassable, or queries degrade under load, nothing else matters.
 
 ## Requirements
 
 ### Validated
 
-<!-- Shipped and confirmed valuable. Inferred from existing codebase at v0.9.47. -->
+<!-- Shipped and confirmed working. From v0.9.47 → v1.0.0 (19 phases, 142 requirements). -->
 
-- ✓ Monorepo architecture with shared packages — established
-- ✓ Phoenix backend with 27+ domain contexts — established
-- ✓ JWT auth with Guardian (access/refresh tokens, 2FA, OAuth) — established
-- ✓ Phoenix Channels real-time infrastructure — established
-- ✓ E2EE protocol (PQXDH + Triple Ratchet + ML-KEM-768) — implemented, unaudited
-- ✓ Web app (React 19 / Vite / Zustand / TanStack Query) — established
-- ✓ Mobile app (React Native 0.81 / Expo 54 / WatermelonDB) — established
-- ✓ Gamification system (XP, achievements, quests, battle pass, shop, marketplace) — established
-- ✓ Forums system (boards, threads, posts, polls, categories, RSS) — established
-- ✓ Groups/channels with roles, invites, bans, automod — established
-- ✓ Voice/video call signaling (WebRTC infrastructure) — established
-- ✓ Full-text search (MeiliSearch with PostgreSQL fallback) — established
-- ✓ Observability stack (Prometheus, Grafana, Loki, Tempo, OpenTelemetry) — established
-- ✓ Infrastructure-as-code (Fly.io, Terraform, Docker) — established
-- ✓ CI/CD pipeline (GitHub Actions) — established
-- ✓ Subscription/premium tier system — established
-- ✓ All package versions synced to 0.9.47 baseline — Phase 1
-- ✓ Backend routes audited (613 routes, zero 500s on critical path) — Phase 1
-- ✓ WebSocket reconnection with circuit breaker + session resumption + jitter — Phase 1
-- ✓ Register with email/password on web and mobile — Phase 2
-- ✓ Email verification on both platforms — Phase 2
-- ✓ Password reset via email link on both platforms — Phase 2
-- ✓ Token refresh mutex (concurrent request handling) — Phase 2
-- ✓ OAuth (Google, Apple) on both platforms — Phase 3
-- ✓ TOTP 2FA with recovery codes on both platforms — Phase 3
-- ✓ Session management with device revocation — Phase 3
-- ✓ Unified design token system with CSS variable theming (7 themes) — Phase 4
-- ✓ WCAG AA contrast ratios verified across all themes — Phase 4
-- ✓ Dark/light/system mode with persisted preference (web + mobile) — Phase 4
-- ✓ Mobile EAS build pipeline configured with convenience scripts — Phase 4
-- ✓ Send/receive 1:1 text messages in real-time (web + mobile) — Phase 5
-- ✓ Typing indicators with throttle, auto-clear, privacy gating — Phase 5
-- ✓ Read receipts with privacy opt-out on both platforms — Phase 5
-- ✓ Delivery receipts via msg_ack + DeliveryTracking pipeline — Phase 5
-- ✓ Message editing with full edit history (backend + web + mobile UI) — Phase 6
-- ✓ Soft-delete with "[This message was deleted]" placeholder — Phase 6
-- ✓ Reply/quote with thread context on both platforms — Phase 6
-- ✓ Emoji reactions in real-time on both platforms — Phase 6
-- ✓ Cross-device message sync via WatermelonDB bridge — Phase 6
+- ✓ Phoenix context-based DDD — 57 bounded contexts in `lib/cgraph/` — established
+- ✓ REST JSON API under `/api/v1/` with ~124 controller files — established
+- ✓ Phoenix Channels — 19 channel modules for real-time — established
+- ✓ Guardian JWT auth — access/refresh tokens, key rotation, token blacklist — established
+- ✓ Argon2 password hashing — established
+- ✓ OAuth 2.0 — Google, Apple, Facebook, TikTok via Assent — established
+- ✓ TOTP 2FA with recovery codes via nimble_totp — established
+- ✓ SIWE wallet auth — EIP-4361, nonce + domain binding, signature recovery — established
+- ✓ Session management with device revocation — established
+- ✓ 3-tier caching — L1 ETS → L2 Cachex → L3 Redis with stampede protection — established
+- ✓ Oban background jobs — 29 workers — established
+- ✓ Stripe integration — platform subscriptions, Connect creator monetization, coin shop — established
+- ✓ E2EE key exchange support — X3DH, PQXDH, Kyber prekeys — established
+- ✓ PostgreSQL with Ecto — primary + read replica, Snowflake IDs, 118 migrations — established
+- ✓ Fly.io deployment with DNS clustering — multi-region Erlang distribution — established
+- ✓ OpenTelemetry tracing — Phoenix, Ecto, Oban instrumented — established
+- ✓ Prometheus metrics — telemetry_metrics_prometheus_core — established
+- ✓ RateLimiterV2 — sliding window with tiered limits (strict/standard/relaxed) — established
+- ✓ InputValidation module — param validation before DB writes — established
+- ✓ AuditLogPlug — per-category audit logging on auth + admin routes — established
+- ✓ WebSocket reconnection — circuit breaker + session resumption + jitter — Phase 1
+- ✓ Route audit — 613 routes, zero 500s on critical path — Phase 1
+- ✓ Token lifecycle management — TokenManager with family tracking, rotation — Phase 2
+- ✓ Gamification system — XP, achievements, quests, battle pass, shop, marketplace, prestige — Phase 16
+- ✓ Creator monetization — Stripe Connect, paid forums, earnings ledger, payouts — Phase 17
+- ✓ Forums — boards, threads, posts, polls, categories, RSS, permissions, leaderboard — Phase 14–15
+- ✓ Groups/channels — roles, invites, bans, automod, channel categories — Phase 11–12
+- ✓ WebRTC signaling — voice/video calls, room management — Phase 13
+- ✓ Push notifications — Expo push service integration — Phase 9
+- ✓ Moderation system — reports, appeals, enforcement — Phase 12
+- ✓ Data export — GDPR pipeline (processor → formatter → delivery) — established
+- ✓ Collaborative editing — Yjs CRDT sync via DocumentServer — established
 
 ### Active
 
-<!-- Current scope. Building toward these for alpha launch. -->
+<!-- Backend hardening, performance, security, API completeness. -->
 
-**Foundation (v0.9.48)**
+**Security Hardening (P0)**
 
-- [ ] Startup token refresh — mobile `initialize()` should attempt refresh before clearing auth on
-      expired access token
-- [ ] httpClient mutex unit tests — concurrent-401 → single-refresh → queue-replay test coverage
-- [ ] Restore real-time messaging — Phoenix Channels connected, messages deliver reliably
+- [ ] Fix payout race condition — `Payout.request_payout/1` lacks Repo.transaction/FOR UPDATE; concurrent requests can double-pay via Stripe Transfer
+- [ ] Remove `inspect(reason)` from API errors — 25+ controllers leak Stripe errors, Ecto internals, module paths to end users
+- [ ] Verify Apple JWS signatures in IAP flow — `iap_controller.ex` + `iap_validator.ex` decode without signature check; forged S2S notifications grant free premium
+- [ ] Verify Google RTDN Pub/Sub auth tokens — `iap_controller.ex` processes RTDN without OAuth verification; forged subscription events possible
+- [ ] Validate SIWE chain_id — wallet auth accepts any chain; cross-chain replay if multi-chain is added
+- [ ] Complete audit logging — auth lifecycle, admin access, billing/payment events, creator payouts not logged
 
-**Core Messaging (v0.9.49)**
+**API Quality (P1)**
 
-- [ ] Friends system — add, accept, block, online status, all platforms
-- [ ] Groups and channels — create, join, message, manage roles, web-mobile parity
-- [ ] E2EE for 1:1 conversations — triple ratchet protocol fully operational
-- [ ] Voice and video calls — WebRTC calls working between web and mobile users
-- [ ] Push notifications — reliable delivery on mobile (Expo push + APNs/FCM)
-- [ ] Web-mobile feature parity — everything on web works on mobile
+- [ ] Fix all `Repo.get!` with user-controlled params — `creator_controller.ex:subscribe`, `paid_subscription.ex:36`, `coin_checkout.ex:143` raise 500 on missing records
+- [ ] Make `Earnings.get_balance/1` atomic — two separate queries outside transaction; inconsistent balance under concurrent writes
+- [ ] Fix compile-time `System.get_env` in CoinBundles — module attribute evaluates at compile time; nil in Docker runtime-env deployments
+- [ ] Remove empty `@tier_mapping` dead code — `StripeWebhookController` dead module attribute
+- [ ] Move plan definitions from PaymentController to config — hardcoded pricing in controller
+- [ ] Split oversized controllers — `e2ee_controller` (686 LOC), `custom_emoji_controller` (560), `user_controller` (552), `auth_controller` (541), `rss_controller` (487), `permissions_controller` (470)
+- [ ] Split `iap_validator.ex` (542 LOC) — separate Apple/Google validators with shared interface
 
-**Community (v0.9.6x)**
+**Performance & Scaling (P1)**
 
-- [ ] Full forums — MyBB-style with 50+ customization options per forum
-- [ ] Gamification integration — quests, achievements, XP, titles, avatar borders all functional
-- [ ] Premium/Stripe — payment processing, premium features, shop purchases
-- [ ] Forum monetization — forum owners can monetize their communities
-- [ ] Animated customizations — avatar borders, username effects, chat effects
-- [ ] Forum gamification tie-in — XP from forum participation, forum-specific leaderboards
+- [ ] Run load tests against staging — zero production-grade performance data; k6 scripts exist but untested
+- [ ] Deploy PgBouncer — connection pooling needed before scaling; config exists in `pgbouncer/`
+- [ ] Activate MeiliSearch in production — search currently falls back to PostgreSQL ILIKE
+- [ ] Fix auth p95 latency — 383ms in local dev vs 300ms SLO target
+- [ ] Implement CRDT state compaction — DocumentServer Yjs state grows unboundedly (TODO no-op)
+- [ ] Fix Elixir version mismatch — Dockerfile pins 1.17.3 vs local 1.19.4
 
-**Launch (v1.0.0)**
+**Test Coverage (P1)**
 
-- [ ] App Store submission — iOS and Android approved and published
-- [ ] 10K+ concurrent user support — load tested and validated
-- [ ] Full polish pass — animations, transitions, error states, loading states
-- [ ] Web-mobile parity audit — feature-by-feature verification
-- [ ] Landing page update — reflects v1.0 features and messaging
-- [ ] Stripe.com account setup and integration (web-first)
+- [ ] Write Creator monetization tests — 9 context files + 1 controller with zero tests; financial code is completely untested
+- [ ] Expand Stripe webhook tests — only 50 lines / 4 tests covering signature rejection; event handler logic untested
+- [ ] Establish backend coverage baseline — actual `mix coveralls` line coverage % unknown
+- [ ] Add IAP credential startup validation — `iap_validator.ex` defaults to empty strings; fails opaquely
 
 ### Out of Scope
 
-<!-- Explicit boundaries. Revisit after v1.0. -->
+<!-- Backend-only boundaries. -->
 
-- External security audit engagement — budget not allocated yet ($25K–$120K), defer to post-alpha
-- SIEM integration — unnecessary at alpha scale
-- Sealed sender (metadata protection) — complex, post-v1.0
-- Key backup/recovery UX — critical but blocked on audit decisions, post-v1.0
-- Desktop native app — web covers desktop, mobile covers phones, no Electron
-- Self-hosting support — single deployment target (Fly.io) for now
-- Database sharding — PostgreSQL handles alpha scale, shard post-100K users
-- AI features (smart replies, summarizer, moderation) — not differentiator for alpha
-- Collaborative document editing — nice-to-have, not alpha priority
-- Web3/wallet auth — niche, not needed for alpha audience
+- Frontend/mobile/landing page work — managed in separate GSD instance at monorepo root
+- External security audit engagement — budget not allocated ($25K–$120K); track separately
+- Database sharding — PostgreSQL handles current scale; revisit post-100K users
+- Sealed sender (metadata protection) — complex, post-hardening
+- Key backup/recovery UX — blocked on audit engagement decisions
+- AI features (smart replies, summarizer) — not differentiating at this stage
+- SIEM integration — unnecessary at current scale
+- Self-hosting support — single deployment target (Fly.io)
 
 ## Context
 
-**Current State (v0.9.47):** ~85% of code exists across all services. The codebase has 27+ backend
-domain contexts, 2,200+ web components, and a full mobile app skeleton. Most features have been
-_built_ but many are disconnected or regressed.
+**Current State (v1.0.0):** The backend is feature-complete with 786 `.ex` source files, 191 test
+files, and 118 database migrations across 57 domain contexts. All 19 phases of the original monorepo
+roadmap are complete. The backend serves, routes are healthy, and all major features are built.
 
-**Known Broken:**
+**What Needs Work:**
 
-- Auth flow — worked previously (web-to-mobile messaging was functional), now regressed
-- Real-time messaging — partially works, needs reconnection
-- Mobile — not recently touched, likely stale dependencies
-- Some backend routes return errors (unidentified which ones)
+- Security: 4 P0 vulnerabilities (payout race condition, Apple/Google IAP signature bypass, error info
+  leaks) identified in `.gsd/codebase/CONCERNS.md`
+- Financial code: Creator monetization (9 files, ~900 LOC) has zero dedicated tests
+- Performance: No load testing has been run; auth p95 exceeds SLO even in dev
+- API quality: `Repo.get!` with user-controlled params in payment/subscription flows
+- Code health: 6 controllers exceed 400+ lines; `iap_validator.ex` is 542 lines mixing two providers
 
 **Known Working:**
 
-- Backend starts and serves requests
-- Web app builds and loads
-- Database schema is extensive and migrated
-- Infrastructure config (Fly.io, Docker, Terraform) is in place
-- CI pipeline runs (lint, typecheck, test)
+- Backend starts, routes healthy (613 routes audited)
+- All auth flows (email, OAuth, 2FA, wallet, session management)
+- All real-time channels (19 channel modules)
+- All domain contexts respond to API requests
+- CI passes (Credo, Sobelow, Dialyzer, mix_audit, ExUnit)
+- Observability stack (Prometheus, OTel, Sentry)
 
-**Test Coverage:** Web is critically low at ~17.9% (399 test files for ~2,230 components). Backend
-and shared packages have better coverage. This is the biggest quality gap.
-
-**Codebase Documentation:** 7 verified docs in `.gsd/codebase/` (147 fixes across 12 verification
-rounds) — ARCHITECTURE, CONCERNS, CONVENTIONS, INTEGRATIONS, STACK, STRUCTURE, TESTING.
-
-**Prior Art:** v1.0.0 tag exists from Dec 31, 2025 but development continued on 0.9.x. That tag is
-effectively orphaned; the real v1.0 launch is the goal of this project.
+**Codebase Documentation:** 7 verified docs in `.gsd/codebase/` (verified across 3 audit passes,
+6,384 lines) — ARCHITECTURE, CONCERNS, CONVENTIONS, INTEGRATIONS, STACK, STRUCTURE, TESTING.
 
 ## Constraints
 
-- **Tech Stack**: Elixir/Phoenix backend, React 19 web, React Native/Expo mobile, pnpm/Turborepo
-  monorepo — no framework migrations
-- **Timeline**: 3+ months to v1.0, phased delivery (v0.9.48 → v0.9.5x → v0.9.6x → v1.0.0)
-- **Budget**: Fly.io hosting (current) + $1,000 Azure credit available for scaling
-- **Scale**: Must support 10,000+ concurrent users at launch (day one)
-- **Security**: E2EE must work in alpha — it's the primary differentiator
-- **Parity**: Web and mobile must have identical feature sets at v1.0
-- **Versioning**: All packages sync to 0.9.47 baseline, increment together
-- **Design**: Unified design token system with 7 themes, CSS variable theming, WCAG AA compliance —
-  single source of truth in `tokens.ts`, no external design tool dependency
-- **Quality**: "No inflation — only real working code that makes this project work and be easy to
-  scale from one to hundreds of millions of users"
+- **Tech stack**: Elixir ~> 1.17 / Phoenix ~> 1.8.3 / Bandit ~> 1.10 — no framework migrations
+- **Architecture**: Phoenix context-based DDD — business logic ONLY in `lib/cgraph/<context>/`, NEVER in controllers
+- **Repos**: `CGraph.Repo` for writes, `CGraph.ReadRepo` for reads, `CGraph.Cache` for all caching — no direct ETS/Redis outside Cache module
+- **Auth**: Guardian JWT + JOSE for tokens, Argon2 for ALL passwords (no exceptions), `CGraph.Security` for token lifecycle/blacklist/key rotation
+- **Encryption**: NEVER break `CGraph.Encryption` + `CGraph.Crypto` (E2EE pipeline — X3DH, PQXDH, Double/Triple Ratchet)
+- **Rate limiting**: NEVER bypass `RateLimiterV2` sliding window — bypass = security hole
+- **Audit**: `AuditLogPlug` MUST be on all auth + admin routes
+- **Validation**: `InputValidation` module MUST run before any DB write on public endpoints
+- **API contracts**: After ANY endpoint add/change → update `/CGraph/docs/API_CONTRACTS.md` immediately
+- **Shared types**: If response shape changes → update `packages/shared-types/src/` in same commit
+- **Scale**: Must support 10,000+ concurrent users
+- **Deployment**: Fly.io with DNS clustering; Dockerfile builds; `--no-verify` for backend-only commits (husky hooks at monorepo root)
+- **Quality**: "No inflation — only real working code"
 
 ## Key Decisions
 
-| Decision                                       | Rationale                                                                                                   | Outcome   |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------- |
-| Phased v0.9.48→v1.0.0 versioning               | Manage risk, ship incrementally, validate each phase                                                        | —         |
-| Sync all packages to v0.9.47                   | Eliminate version drift, single source of truth                                                             | ✓ Phase 1 |
-| Open alpha (anyone can sign up)                | Maximize early feedback, stress-test at scale                                                               | —         |
-| Stripe web-only initially                      | Simplest integration path, mobile payments add complexity                                                   | —         |
-| Copilot-proposed design system                 | No designer dependency, derive from existing palette                                                        | —         |
-| Fly.io as sole hosting target                  | Already configured, avoid multi-cloud complexity                                                            | —         |
-| Skip external security audit for alpha         | Budget constraint, focus on functional correctness first                                                    | —         |
-| Forums before v1.0                             | Core differentiator — community features in messaging app                                                   | —         |
-| E2EE required for alpha                        | Primary competitive advantage, must prove it works early                                                    | —         |
-| No AI features in alpha                        | Not differentiating, adds complexity without core value                                                     | —         |
-| Circuit breaker for WebSocket                  | Prevent infinite reconnect loops; mobile battery savings                                                    | ✓ Phase 1 |
-| Session resumption on reconnect                | Delta sync vs full resync; zero-loss reconnection goal                                                      | ✓ Phase 1 |
-| Orchestrator.enqueue for all emails            | Oban retry/dedup beats direct Mailer call; consistent pattern                                               | ✓ Phase 2 |
-| TokenManager over raw Guardian                 | Family tracking, rotation, theft detection not possible with plain Guardian                                 | ✓ Phase 2 |
-| 60-day session expiry (not 7-day)              | Matches existing SessionManagement config; avoid breaking sessions                                          | ✓ Phase 2 |
-| TDD for security-critical auth                 | Caught 2 integration bugs (JTI mismatch, broken family propagation)                                         | ✓ Phase 2 |
-| Shared password validation utils               | Identical rules on web + mobile; single source of truth pattern                                             | ✓ Phase 2 |
-| Cachex temp tokens for 2FA login               | Stateless JWT can't hold pending 2FA state; Cachex TTL auto-expires tokens                                  | ✓ Phase 3 |
-| 2FA gates email/password only                  | OAuth identity verification is sufficient; 2FA on OAuth would be redundant                                  | ✓ Phase 3 |
-| Session revocation cascades to tokens          | Without bridge, revoking session leaves JWT valid until expiry                                              | ✓ Phase 3 |
-| TDD for security-critical 2FA + bridge         | Caught integration gaps: 2FA wasn't gating login, sessions weren't revoking tokens                          | ✓ Phase 3 |
-| Single canonical token source (tokens.ts)      | Eliminates competing color systems; CSS variables enable instant theme switching without reload             | ✓ Phase 4 |
-| Unified ThemeProvider (merge two into one)     | Competing providers shared localStorage key but different data shapes; single provider eliminates conflicts | ✓ Phase 4 |
-| Tailwind wired to CSS variables with fallbacks | Token-driven Tailwind classes adapt to any theme; fallback hex values ensure graceful degradation           | ✓ Phase 4 |
-| Mobile/web intentional color divergence        | Mobile keeps emerald-green primary for platform branding; documented as deliberate, not drift               | ✓ Phase 4 |
-| EAS project ID env-driven (not hardcoded)      | Real UUID requires `eas init` with account; placeholder with clear docs avoids fake IDs in source           | ✓ Phase 4 |
-| Optimistic send + server replace pattern       | Instant UI feedback; replace optimistic message with server version on API success                          | ✓ Phase 5 |
-| Client-side privacy gating (not backend)        | Backend broadcasts all events; clients gate mark_read/typing based on local privacy settings               | ✓ Phase 5 |
-| msg_ack delivery pipeline (client → backend)    | Auto-ACK on receive → DeliveryTracking.mark_delivered → broadcast msg_delivered; no polling              | ✓ Phase 5 |
-| 3s typing throttle + 5s auto-stop + 6s clear   | Prevents typing event flood; three-layer defense: throttle, auto-stop, safety-net auto-clear               | ✓ Phase 5 |
-| Edit history via Ecto.Multi                      | Insert MessageEdit record alongside message update in single transaction                                   | ✓ Phase 6 |
-| Soft-delete preserves message row                 | Set deleted_at + show placeholder; never hard-delete for audit trail                                       | ✓ Phase 6 |
-| WatermelonDB as persistence layer only            | Zustand remains source of truth; WatermelonDB handles offline cache; fire-and-forget writes                | ✓ Phase 6 |
-| Read-path: WatermelonDB first, then API           | Instant offline load from local DB, then background API fetch to refresh; save back to WatermelonDB        | ✓ Phase 6 |
-| Mobile `_raw` property writes for WatermelonDB    | Avoids TS callback type mismatches with standard WatermelonDB create/update API                             | ✓ Phase 6 |
+| Decision | Rationale | Outcome |
+| --- | --- | --- |
+| Backend-only GSD instance | Frontend/mobile managed separately; backend has its own hardening roadmap | — |
+| Phoenix context-based DDD | Business logic in bounded contexts, not controllers; 57 contexts established | ✓ |
+| Guardian + TokenManager over raw JWT | Family tracking, rotation, theft detection not possible with plain Guardian | ✓ |
+| Cachex temp tokens for 2FA | Stateless JWT can't hold pending 2FA state; Cachex TTL auto-expires | ✓ |
+| Repo.transaction for financial ops | Payout race condition proves non-transactional financial code is unsafe | — |
+| Orchestrator.enqueue for all emails | Oban retry/dedup beats direct Mailer call; consistent pattern | ✓ |
+| RateLimiterV2 sliding window | Tiered limits (strict/standard/relaxed); Redis-backed with ETS fallback | ✓ |
+| Snowflake IDs for messages | Ordering guarantee; random UIDs for users (privacy) | ✓ |
+| Read replica pattern | CGraph.ReadRepo falls back to primary; separates read/write load | ✓ |
+| Bandit over Cowboy | Modern HTTP server; better HTTP/2 support | ✓ |
+| 3-tier cache (ETS → Cachex → Redis) | L1 microsecond / L2 millisecond / L3 distributed; stampede protection | ✓ |
+| Stripe Connect Express for creators | Funds flow directly to connected accounts; platform fee auto-deducted (15%) | ✓ |
 
 ---
+
+_Last updated: 2026-03-04 after `/gsd:new-project` — backend-only project initialization_
 
 _Last updated: 2026-02-28 after Phase 6 (Message Features & Sync)_
