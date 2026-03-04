@@ -14,28 +14,28 @@ Secure real-time communication that works end-to-end.
 
 ## Position
 
-- **Phase:** 20 of 25 — **Backend Safety Net** (Not started)
-- **Plan:** 0/2 plans executed in Phase 20
-- **Status:** 🔄 Planning complete, execution pending
-- **Last activity:** 2026-03-04 — Discovery + planning for phases 20–25
+- **Phase:** 20 of 25 — **Backend Safety Net** (Complete)
+- **Plan:** 2/2 plans executed in Phase 20
+- **Status:** ✅ Phase 20 complete — all security and API quality fixes deployed
+- **Last activity:** Phase 20 executed — security critical fixes + API crash fixes
 
 ## Plans
 
-| Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status      |
-| ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | ----------- |
-| 20-01 | Security Critical — Payout race, JWS/RTDN verify, SIWE chain_id     | 1    | ✅         | —                | Not started |
-| 20-02 | API Quality — inspect leaks, Repo.get!, CoinBundles, dead code       | 1    | ✅         | —                | Not started |
+| Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
+| ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
+| 20-01 | Security Critical — Payout race, JWS/RTDN verify, SIWE chain_id     | 1    | ✅         | —                | Complete  |
+| 20-02 | API Quality — inspect leaks, Repo.get!, CoinBundles, dead code       | 1    | ✅         | —                | Complete  |
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 79%         |
-| Phases complete    | 19 / 25     |
-| Requirements done  | 142 / ~191  |
-| Current phase reqs | 0 / 10      |
+| Overall progress   | 83%         |
+| Phases complete    | 20 / 25     |
+| Requirements done  | 152 / ~191  |
+| Current phase reqs | 10 / 10     |
 
-████████████████████████████████░░░░░░░░ 79%
+█████████████████████████████████░░░░░░░ 83%
 
 ## Phase Summary
 
@@ -60,7 +60,7 @@ Secure real-time communication that works end-to-end.
 | 17  | Monetization            | **Complete** (2026-03-02) |
 | 18  | Rich Media & Polish     | **Complete** (2026-03-02) |
 | 19  | Launch                  | **Complete** (2025-07-24) |
-| 20  | Backend Safety Net      | Not started               |
+| 20  | Backend Safety Net      | **Complete**              |
 | 21  | Web Wiring              | Not started               |
 | 22  | Mobile Wiring           | Not started               |
 | 23  | Creator & Payments      | Not started               |
@@ -69,17 +69,17 @@ Secure real-time communication that works end-to-end.
 
 ## Session Continuity
 
-Last session: 2026-03-04
-Stopped at: Planning complete — phases 20–25 defined with 11 plan files
-Resume file: `.gsd/ROADMAP.md` → Phase 20 (Backend Safety Net)
+Last session: current
+Stopped at: Phase 20 complete — ready for Phase 21 (Web Wiring)
+Resume file: `.gsd/ROADMAP.md` → Phase 21 (Web Wiring)
 
 ## Last Action
 
-Post-v1.0 hardening planning complete:
-- DISCOVERY.md: Full-stack wiring gap analysis (18 mobile gaps, 6+ web mock areas, 5 missing service layers)
-- ROADMAP.md: 6 phases (20–25) with 49 tasks across 11 plan files
-- Phase directories: 20-backend-safety through 25-infrastructure created with detailed PLAN.md files
+Phase 20 "Backend Safety Net" executed:
+- Plan 20-01: Payout race condition fixed (Repo.transaction + FOR UPDATE), Apple JWS + Google RTDN verification added to IAP controller, SIWE chain_id validation, audit logging across security paths
+- Plan 20-02: 30 inspect(reason) leaks replaced with ErrorHelpers, 11 Repo.get! fixed, CoinBundles moved to runtime config, dead @tier_mapping removed, Earnings balance query made atomic
+- Verification: 11/11 checks pass
 
 ---
 
-_Last updated: 2026-03-04 (post-v1.0 hardening planned)_
+_Last updated: current (phase 20 complete)_

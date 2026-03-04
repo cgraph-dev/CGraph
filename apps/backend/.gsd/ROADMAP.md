@@ -23,24 +23,24 @@
 
 ---
 
-## Phase 20 — Backend Safety Net
+## Phase 20 — Backend Safety Net ✅
 
 **Goal**: Fix every issue that would cause 500 errors, data loss, or security breaches when real
 users hit the APIs. No frontend work — pure backend hardening.
 
-**Plan 20-01: Security Critical Fixes**
-- [ ] Fix payout race condition with `Repo.transaction` + `FOR UPDATE` row lock
-- [ ] Verify Apple JWS signatures in IAP flow (`iap_controller.ex`)
-- [ ] Verify Google RTDN Pub/Sub auth tokens (`iap_controller.ex`)
-- [ ] Validate SIWE `chain_id` parameter (`wallet_authentication.ex`)
-- [ ] Complete audit logging for security-sensitive operations
+**Plan 20-01: Security Critical Fixes** ✅
+- [x] Fix payout race condition with `Repo.transaction` + `FOR UPDATE` row lock
+- [x] Verify Apple JWS signatures in IAP flow (`iap_controller.ex`)
+- [x] Verify Google RTDN Pub/Sub auth tokens (`iap_controller.ex`)
+- [x] Validate SIWE `chain_id` parameter (`wallet_authentication.ex`)
+- [x] Complete audit logging for security-sensitive operations
 
-**Plan 20-02: API Crash & Quality Fixes**
-- [ ] Replace `inspect(reason)` with safe error messages in 25+ controllers
-- [ ] Replace `Repo.get!` with `Repo.get` + error tuple in 3 locations
-- [ ] Make `Earnings.get_balance/1` atomic (single query, no read-then-write)
-- [ ] Fix compile-time `System.get_env` in `CoinBundles` → runtime config
-- [ ] Remove dead `@tier_mapping` code from `stripe_webhook_controller.ex`
+**Plan 20-02: API Crash & Quality Fixes** ✅
+- [x] Replace `inspect(reason)` with safe error messages in 14 controllers (30 replacements)
+- [x] Replace `Repo.get!` with `Repo.get` + error tuple in 11 locations
+- [x] Make `Earnings.get_balance/1` atomic (single query with subquery)
+- [x] Fix compile-time `System.get_env` in `CoinBundles` → runtime config
+- [x] Remove dead `@tier_mapping` code from `stripe_webhook_controller.ex`
 
 ---
 
@@ -137,15 +137,15 @@ web and mobile.
 ## Dependency Graph
 
 ```
-Phase 20 (Backend Safety)
-  ├─→ Phase 21 (Web Wiring)      ←─ needs safe APIs
-  ├─→ Phase 22 (Mobile Wiring)   ←─ needs safe APIs
-  └─→ Phase 23 (Creator/Pay)     ←─ needs payout race fix
+Phase 20 (Backend Safety) ✅ COMPLETE
+  ├─→ Phase 21 (Web Wiring)      ←─ READY (safe APIs available)
+  ├─→ Phase 22 (Mobile Wiring)   ←─ READY (safe APIs available)
+  └─→ Phase 23 (Creator/Pay)     ←─ READY (payout race fixed)
         └─→ Phase 24 (Tests)     ←─ needs features to exist
               └─→ Phase 25 (Infra) ←─ needs stable baseline
 ```
 
-Phases 21 and 22 can run in parallel after Phase 20.
+Phases 21 and 22 can run in parallel. Phase 23 is also unblocked.
 
 ---
 
@@ -158,4 +158,4 @@ Phases 21 and 22 can run in parallel after Phase 20.
 
 ---
 
-_Last updated: 2026-03-04 — phases 20–25 planned from DISCOVERY.md analysis_
+_Last updated: current — Phase 20 complete, phases 21-22 ready_
