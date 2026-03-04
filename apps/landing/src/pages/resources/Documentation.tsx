@@ -7,14 +7,21 @@
  * @since v0.9.2
  * @updated v0.9.14 - Professional rewrite with real technical data
  * @updated v0.9.15 - Enhanced visual design, API endpoint badges, quick nav
- * @updated v0.9.30 - Migrated to Liquid Glass design system
  */
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
-import { docCategories, apiOverview, securityTable, apiEndpointGroups } from '@/data/docs';
+import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
+import {
+  docCategories,
+  apiOverview,
+  securityTable,
+  apiEndpointGroups,
+  methodColors,
+  defaultMethodColor,
+} from '@/data/docs';
 
 export default function Documentation() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,13 +46,16 @@ export default function Documentation() {
       .replace(/^-|-$/g, '');
 
   return (
-    <LiquidGlassLayout
+    <MarketingLayout
       title="Documentation"
-      subtitle="Comprehensive guides and API reference"
-      maxWidth="max-w-6xl"
+      subtitle="Architecture, API references, security docs, and developer guides — pulled straight from our internal docs."
+      eyebrow="Developer Docs"
     >
       {/* Quick Nav */}
-      <section className="pb-4 pt-2">
+      <section
+        className="marketing-section marketing-section--dark"
+        style={{ paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
+      >
         <div className="mx-auto max-w-5xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -57,10 +67,13 @@ export default function Documentation() {
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200/60 bg-white/50 px-3 py-2 text-xs font-medium text-slate-600 backdrop-blur-sm transition-all hover:border-purple-300/60 hover:bg-white/80 hover:text-purple-700"
+                className="flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-xs font-medium text-gray-300 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
-                <span className="text-sm">{cat.icon}</span>
-                <span>{cat.title.split(' ')[0]}</span>
+                <NeonIcon symbol={cat.icon} size={14} title={cat.title} />
+                <span className="hidden sm:inline">{cat.title.split(' ')[0]}</span>
+                <span className="sm:hidden">
+                  <NeonIcon symbol={cat.icon} size={14} title={cat.title} />
+                </span>
               </a>
             ))}
           </motion.div>
@@ -68,7 +81,10 @@ export default function Documentation() {
       </section>
 
       {/* Search */}
-      <section className="py-6">
+      <section
+        className="marketing-section marketing-section--alt"
+        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+      >
         <div className="mx-auto max-w-xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -78,7 +94,8 @@ export default function Documentation() {
           >
             <div className="absolute inset-y-0 left-4 flex items-center">
               <svg
-                className="h-5 w-5 text-slate-400"
+                className="h-5 w-5"
+                style={{ color: 'var(--color-gray)' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -97,13 +114,13 @@ export default function Documentation() {
               aria-label="Search documentation"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200/60 bg-white/60 px-4 py-3 pl-12 text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-purple-300/70 focus:shadow-[0_0_0_3px_rgba(196,181,253,0.3)]"
+              className="contact-form__input w-full pl-12"
             />
             {searchQuery && (
               <div className="absolute inset-y-0 right-4 flex items-center">
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-slate-400 hover:text-slate-700"
+                  className="text-gray-500 hover:text-white"
                 >
                   Clear
                 </button>
@@ -114,7 +131,8 @@ export default function Documentation() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-3 text-center text-xs text-slate-500"
+            className="mt-3 text-center text-xs"
+            style={{ color: 'var(--color-gray)' }}
           >
             {filteredCategories.length} categories · {totalArticles} articles · Covers every aspect
             of the platform
@@ -123,42 +141,48 @@ export default function Documentation() {
       </section>
 
       {/* Status Notice */}
-      <section className="pb-6">
+      <section
+        className="marketing-section marketing-section--dark"
+        style={{ paddingTop: '0.5rem', paddingBottom: '1.5rem' }}
+      >
         <div className="mx-auto max-w-3xl px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-3 rounded-xl border border-purple-200/40 bg-purple-50/40 px-5 py-3 backdrop-blur-sm"
+            className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-5 py-3"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100/60">
-              <span className="text-base">📝</span>
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              style={{ background: 'rgba(16, 185, 129, 0.15)' }}
+            >
+              <NeonIcon symbol="📝" size={16} title="Documentation note" />
             </div>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
               These docs reflect our internal engineering documentation. Full public developer docs
               will ship with v1.0 at{' '}
-              <span className="font-semibold text-slate-900">docs.cgraph.org</span>.
+              <span className="font-semibold text-white">docs.cgraph.org</span>.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Documentation Categories */}
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 text-center">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Documentation Index</h2>
-              <p className="mt-3 text-slate-500">
+              <h2 className="marketing-section__title">Documentation Index</h2>
+              <p className="marketing-section__desc">
                 Guides organized by topic — from getting started to architecture deep-dives.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="marketing-grid marketing-grid--2">
             {filteredCategories.map((category, index) => (
               <motion.div
                 key={category.id}
@@ -167,51 +191,87 @@ export default function Documentation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
                 viewport={{ once: true }}
-                className="glass-surface overflow-hidden rounded-2xl p-6 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-card relative overflow-hidden"
+                style={{ padding: 0 }}
               >
-                <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-purple-200/30 bg-purple-50/60">
-                    <span className="text-2xl">{category.icon}</span>
+                {/* Top color accent */}
+                <div
+                  className="h-1 w-full"
+                  style={{
+                    background: `linear-gradient(90deg, ${category.color}, transparent)`,
+                  }}
+                />
+
+                <div className="p-6">
+                  <div className="mb-4 flex items-center gap-4">
+                    <div
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+                      style={{
+                        background: `${category.color}15`,
+                        border: `1px solid ${category.color}25`,
+                      }}
+                    >
+                      <NeonIcon
+                        symbol={category.icon}
+                        size={28}
+                        title={category.title}
+                        color={category.color}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{category.title}</h3>
+                      <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                        {category.articles.length} articles
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900">{category.title}</h3>
-                    <p className="text-sm text-slate-500">{category.articles.length} articles</p>
-                  </div>
-                </div>
-                <p className="mb-6 text-sm leading-relaxed text-slate-500">
-                  {category.description}
-                </p>
-                <div className="space-y-2">
-                  {category.articles
-                    .slice(0, expandedCategory === category.id ? undefined : 3)
-                    .map((article, i) => (
-                      <Link
-                        key={article.title}
-                        to={`/docs/${generateSlug(article.title)}`}
-                        className="flex items-center justify-between rounded-lg border border-slate-200/50 bg-white/40 px-3 py-2.5 no-underline transition-colors hover:bg-white/70"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className="flex h-5 w-5 items-center justify-center rounded bg-purple-50 text-[10px] font-bold text-purple-600">
-                            {i + 1}
-                          </span>
-                          <span className="text-sm text-slate-800">{article.title}</span>
-                        </div>
-                        <span className="shrink-0 text-xs text-slate-400">{article.time}</span>
-                      </Link>
-                    ))}
-                </div>
-                {category.articles.length > 3 && (
-                  <button
-                    onClick={() =>
-                      setExpandedCategory(expandedCategory === category.id ? null : category.id)
-                    }
-                    className="mt-4 flex items-center gap-1 text-sm font-medium text-glow-purple transition-colors hover:text-purple-700"
+                  <p
+                    className="mb-6 text-sm leading-relaxed"
+                    style={{ color: 'var(--color-gray)' }}
                   >
-                    {expandedCategory === category.id
-                      ? '← Show less'
-                      : `View all ${category.articles.length} articles →`}
-                  </button>
-                )}
+                    {category.description}
+                  </p>
+                  <div className="space-y-2">
+                    {category.articles
+                      .slice(0, expandedCategory === category.id ? undefined : 3)
+                      .map((article, i) => (
+                        <Link
+                          key={article.title}
+                          to={`/docs/${generateSlug(article.title)}`}
+                          className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 px-3 py-2.5 no-underline transition-colors hover:bg-white/10"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span
+                              className="flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold"
+                              style={{
+                                background: `${category.color}15`,
+                                color: category.color,
+                              }}
+                            >
+                              {i + 1}
+                            </span>
+                            <span className="text-sm text-white">{article.title}</span>
+                          </div>
+                          <span className="shrink-0 text-xs" style={{ color: 'var(--color-gray)' }}>
+                            {article.time}
+                          </span>
+                        </Link>
+                      ))}
+                  </div>
+                  {category.articles.length > 3 && (
+                    <button
+                      onClick={() =>
+                        setExpandedCategory(expandedCategory === category.id ? null : category.id)
+                      }
+                      className="mt-4 flex items-center gap-1 text-sm font-medium transition-colors hover:text-emerald-300"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
+                      {expandedCategory === category.id
+                        ? '← Show less'
+                        : `View all ${category.articles.length} articles →`}
+                    </button>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -219,16 +279,16 @@ export default function Documentation() {
       </section>
 
       {/* API Overview */}
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 text-center">
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">API at a Glance</h2>
-              <p className="mt-3 text-slate-500">
+              <h2 className="marketing-section__title">API at a Glance</h2>
+              <p className="marketing-section__desc">
                 RESTful API with WebSocket real-time events. Full OpenAPI spec coming with v1.0.
               </p>
             </motion.div>
@@ -240,23 +300,36 @@ export default function Documentation() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="glass-surface overflow-hidden rounded-xl shadow-glass"
+              className="marketing-card overflow-hidden"
+              style={{ padding: 0 }}
             >
-              <div className="flex items-center gap-3 border-b border-slate-200/50 bg-slate-50/80 px-5 py-3">
-                <span className="font-mono text-sm font-bold text-slate-900">
+              <div
+                className="flex items-center gap-3 px-5 py-3"
+                style={{
+                  background:
+                    'linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(139, 92, 246, 0.12))',
+                }}
+              >
+                <span className="font-mono text-sm font-bold text-white">
                   https://cgraph-backend.fly.dev/api/v1
                 </span>
-                <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
+                <span
+                  className="rounded-full px-2 py-0.5 text-xs font-medium"
+                  style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}
+                >
                   REST + WebSocket
                 </span>
               </div>
-              <div className="divide-y divide-slate-200/50">
+              <div className="divide-y divide-white/5">
                 {apiOverview.map((item) => (
                   <div key={item.label} className="flex items-start gap-4 px-5 py-3">
-                    <span className="w-28 shrink-0 text-sm font-semibold text-glow-purple">
+                    <span
+                      className="w-28 shrink-0 text-sm font-semibold"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
                       {item.label}
                     </span>
-                    <span className="text-sm text-slate-800">{item.value}</span>
+                    <span className="text-sm text-white">{item.value}</span>
                   </div>
                 ))}
               </div>
@@ -271,37 +344,28 @@ export default function Documentation() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.08 }}
-                  className="glass-surface rounded-xl p-5 shadow-glass"
+                  className="marketing-card"
+                  style={{ padding: '1.25rem' }}
                 >
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="text-lg">{group.icon}</span>
-                    <h4 className="text-sm font-bold text-slate-900">{group.group}</h4>
+                    <NeonIcon symbol={group.icon} size={18} title={group.group} />
+                    <h4 className="text-sm font-bold text-white">{group.group}</h4>
                   </div>
                   <div className="space-y-1.5">
                     {group.endpoints.map((ep) => {
-                      const badgeClass =
-                        ep.method === 'GET'
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : ep.method === 'POST'
-                            ? 'bg-blue-50 text-blue-700'
-                            : ep.method === 'PUT'
-                              ? 'bg-amber-50 text-amber-700'
-                              : ep.method === 'DELETE'
-                                ? 'bg-red-50 text-red-700'
-                                : ep.method === 'PATCH'
-                                  ? 'bg-purple-50 text-purple-700'
-                                  : 'bg-slate-50 text-slate-700';
+                      const mc = methodColors[ep.method] ?? defaultMethodColor;
                       return (
                         <div
                           key={`${ep.method}-${ep.path}`}
-                          className="flex items-center gap-2 rounded-md bg-slate-50/50 px-2.5 py-1.5"
+                          className="flex items-center gap-2 rounded-md bg-white/5 px-2.5 py-1.5"
                         >
                           <span
-                            className={`inline-flex w-12 shrink-0 items-center justify-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${badgeClass}`}
+                            className="inline-flex w-12 shrink-0 items-center justify-center rounded px-1.5 py-0.5 font-mono text-[10px] font-bold"
+                            style={{ background: mc.bg, color: mc.text }}
                           >
                             {ep.method}
                           </span>
-                          <span className="font-mono text-xs text-slate-700">{ep.path}</span>
+                          <span className="font-mono text-xs text-white">{ep.path}</span>
                         </div>
                       );
                     })}
@@ -314,16 +378,16 @@ export default function Documentation() {
       </section>
 
       {/* Security Reference */}
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 text-center">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Cryptographic Reference</h2>
-              <p className="mt-3 text-slate-500">
+              <h2 className="marketing-section__title">Cryptographic Reference</h2>
+              <p className="marketing-section__desc">
                 Every algorithm, every security level — no black boxes.
               </p>
             </motion.div>
@@ -334,25 +398,41 @@ export default function Documentation() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="glass-surface overflow-hidden rounded-xl shadow-glass"
+              className="marketing-card docs-crypto-table overflow-hidden"
+              style={{ padding: 0 }}
             >
               {/* Header */}
-              <div className="grid grid-cols-3 gap-4 border-b border-slate-200/50 bg-slate-50 px-5 py-3 text-xs font-bold uppercase tracking-wider text-glow-purple">
+              <div
+                className="docs-crypto-table__header grid grid-cols-3 gap-4 px-5 py-3 text-xs font-bold uppercase tracking-wider"
+                style={{
+                  color: 'var(--color-primary)',
+                  background:
+                    'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(248, 113, 113, 0.05))',
+                }}
+              >
                 <span>Component</span>
                 <span>Algorithm</span>
                 <span>Security</span>
               </div>
               {/* Rows */}
-              <div>
+              <div className="divide-y divide-white/5">
                 {securityTable.map((row) => (
                   <div
                     key={row.component}
-                    className="grid grid-cols-3 gap-4 border-b border-slate-200/50 px-5 py-3 text-sm transition-colors hover:bg-white/40"
+                    className="docs-crypto-table__row grid grid-cols-3 gap-4 px-5 py-3 text-sm transition-colors hover:bg-white/5"
                   >
-                    <span className="font-medium text-slate-900">{row.component}</span>
-                    <span className="font-mono text-xs text-slate-500">{row.algorithm}</span>
+                    <span className="font-medium text-white">{row.component}</span>
+                    <span className="font-mono text-xs" style={{ color: 'var(--color-gray)' }}>
+                      {row.algorithm}
+                    </span>
                     <span>
-                      <span className="inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                      <span
+                        className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                        style={{
+                          background: 'rgba(16, 185, 129, 0.1)',
+                          color: 'var(--color-primary)',
+                        }}
+                      >
                         {row.level}
                       </span>
                     </span>
@@ -374,10 +454,10 @@ export default function Documentation() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  className="flex items-center gap-2 rounded-full border border-slate-200/60 bg-white/50 px-4 py-2 text-xs backdrop-blur-sm"
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs"
                 >
-                  <span>{badge.icon}</span>
-                  <span className="text-slate-600">{badge.label}</span>
+                  <NeonIcon symbol={badge.icon} size={14} title={badge.label} />
+                  <span className="text-gray-300">{badge.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -386,22 +466,22 @@ export default function Documentation() {
       </section>
 
       {/* Architecture Decision Records */}
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 text-center">
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Architecture Decisions</h2>
-              <p className="mt-3 text-slate-500">
+              <h2 className="marketing-section__title">Architecture Decisions</h2>
+              <p className="marketing-section__desc">
                 Key ADRs documenting why we made critical technical choices.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="marketing-grid marketing-grid--3">
             {[
               {
                 id: 'ADR-001',
@@ -448,22 +528,32 @@ export default function Documentation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
-                className="glass-surface relative overflow-hidden rounded-2xl p-6 shadow-glass"
+                className="marketing-card relative overflow-hidden"
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-purple-600">{adr.id}</span>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                      adr.status === 'Completed'
-                        ? 'bg-emerald-50 text-emerald-700'
-                        : 'bg-purple-50 text-purple-700'
-                    }`}
+                    className="font-mono text-xs font-bold"
+                    style={{ color: 'var(--color-secondary)' }}
+                  >
+                    {adr.id}
+                  </span>
+                  <span
+                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                    style={{
+                      background:
+                        adr.status === 'Completed'
+                          ? 'rgba(16, 185, 129, 0.12)'
+                          : 'rgba(99, 102, 241, 0.12)',
+                      color: adr.status === 'Completed' ? '#34d399' : '#818cf8',
+                    }}
                   >
                     {adr.status}
                   </span>
                 </div>
-                <h3 className="mb-2 text-base font-bold text-slate-900">{adr.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-500">{adr.detail}</p>
+                <h3 className="mb-2 text-base font-bold text-white">{adr.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
+                  {adr.detail}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -471,16 +561,16 @@ export default function Documentation() {
       </section>
 
       {/* Tech Stack */}
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 text-center">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Tech Stack</h2>
-              <p className="mt-3 text-slate-500">The technologies powering CGraph.</p>
+              <h2 className="marketing-section__title">Tech Stack</h2>
+              <p className="marketing-section__desc">The technologies powering CGraph.</p>
             </motion.div>
           </div>
 
@@ -541,12 +631,20 @@ export default function Documentation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
                 viewport={{ once: true }}
-                className="glass-surface rounded-2xl p-6 text-center shadow-glass"
+                className="marketing-card text-center"
+                style={{ padding: '1.5rem 1rem' }}
               >
-                <div className="mb-3 text-3xl">{tech.icon}</div>
-                <h3 className="mb-1 text-sm font-bold text-slate-900">{tech.name}</h3>
-                <p className="mb-2 text-xs text-slate-500">{tech.desc}</p>
-                <span className="inline-block rounded-full bg-slate-100/60 px-2 py-0.5 font-mono text-[10px] text-slate-500">
+                <div className="mb-3 inline-flex">
+                  <NeonIcon symbol={tech.icon} size={30} title={tech.name} />
+                </div>
+                <h3 className="mb-1 text-sm font-bold text-white">{tech.name}</h3>
+                <p className="mb-2 text-xs" style={{ color: 'var(--color-gray)' }}>
+                  {tech.desc}
+                </p>
+                <span
+                  className="inline-block rounded-full px-2 py-0.5 font-mono text-[10px]"
+                  style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--color-gray)' }}
+                >
                   {tech.version}
                 </span>
               </motion.div>
@@ -556,18 +654,28 @@ export default function Documentation() {
       </section>
 
       {/* Need Help CTA */}
-      <section className="py-12">
+      <section className="marketing-section marketing-section--dark">
         <div className="mx-auto max-w-4xl px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="glass-surface relative overflow-hidden rounded-2xl p-12 text-center shadow-glass"
+            className="relative overflow-hidden rounded-2xl border border-white/10 text-center"
+            style={{
+              padding: '3rem',
+              background:
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(139, 92, 246, 0.08))',
+            }}
           >
-            <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-purple-200/20 opacity-60" />
+            <div
+              className="absolute -right-20 -top-20 h-56 w-56 rounded-full opacity-10"
+              style={{ background: 'var(--color-secondary)' }}
+            />
             <div className="relative">
-              <h2 className="mb-4 text-3xl font-bold text-slate-900">Questions or Feedback?</h2>
-              <p className="mx-auto mb-8 max-w-xl text-slate-500">
+              <h2 className="mb-4 font-zentry text-3xl font-bold text-white">
+                Questions or Feedback?
+              </h2>
+              <p className="mx-auto mb-8 max-w-xl" style={{ color: 'var(--color-gray)' }}>
                 Found an issue? Want to contribute? Reach out on GitHub or contact us directly.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -575,14 +683,11 @@ export default function Documentation() {
                   href="https://github.com/cgraph-dev/CGraph"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-6 py-3 font-medium text-white shadow-glass transition-colors hover:bg-purple-600"
+                  className="marketing-btn marketing-btn--primary"
                 >
                   GitHub Repository
                 </a>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200/60 bg-white/50 px-6 py-3 font-medium text-slate-700 shadow-glass backdrop-blur-sm transition-colors hover:bg-white/80"
-                >
+                <Link to="/contact" className="marketing-btn marketing-btn--secondary">
                   Contact Us
                 </Link>
               </div>
@@ -590,6 +695,6 @@ export default function Documentation() {
           </motion.div>
         </div>
       </section>
-    </LiquidGlassLayout>
+    </MarketingLayout>
   );
 }

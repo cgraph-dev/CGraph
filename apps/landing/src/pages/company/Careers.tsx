@@ -8,7 +8,8 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
+import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const benefits: Array<{
   icon: string;
@@ -51,26 +52,27 @@ const values = [
 
 export default function Careers() {
   return (
-    <LiquidGlassLayout
+    <MarketingLayout
       title="Join Our Team"
-      subtitle="Help us build the future of private communication"
+      subtitle="Help us build the future of customizable, community-driven communication"
+      eyebrow="Careers"
     >
       {/* Values Section */}
-      <section className="py-16">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="mb-12 text-center">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">What We Believe</h2>
-              <p className="text-lg text-slate-500">Our values guide everything we do</p>
+              <h2 className="marketing-section__title">What We Believe</h2>
+              <p className="marketing-section__desc">Our values guide everything we do</p>
             </motion.div>
           </div>
 
           <div
-            className="grid gap-6 sm:grid-cols-2"
+            className="marketing-grid marketing-grid--2"
             style={{ maxWidth: '48rem', margin: '0 auto' }}
           >
             {values.map((value, index) => (
@@ -80,10 +82,10 @@ export default function Careers() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="glass-surface rounded-2xl p-6 shadow-glass"
+                className="marketing-card"
               >
-                <h3 className="text-lg font-semibold text-slate-900">{value.title}</h3>
-                <p className="mt-2 text-slate-500">{value.description}</p>
+                <h3 className="marketing-card__title">{value.title}</h3>
+                <p className="marketing-card__desc">{value.description}</p>
               </motion.div>
             ))}
           </div>
@@ -92,23 +94,23 @@ export default function Careers() {
 
       {/* Benefits Section */}
       {benefits.length > 0 && (
-        <section className="py-16">
-          <div className="mx-auto max-w-5xl px-4">
-            <div className="mb-12 text-center">
+        <section className="marketing-section marketing-section--dark">
+          <div className="marketing-section__container">
+            <div className="marketing-section__header">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-3xl font-bold text-slate-900">Benefits & Perks</h2>
-                <p className="text-lg text-slate-500">
+                <h2 className="marketing-section__title">Benefits & Perks</h2>
+                <p className="marketing-section__desc">
                   We take care of our team so they can focus on great work
                 </p>
               </motion.div>
             </div>
 
             <div
-              className="grid gap-6 sm:grid-cols-2"
+              className="marketing-grid marketing-grid--2"
               style={{ maxWidth: '64rem', margin: '0 auto' }}
             >
               {benefits.map((benefit, index) => (
@@ -118,11 +120,13 @@ export default function Careers() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="glass-surface rounded-2xl p-6 shadow-glass"
+                  className="marketing-card"
                 >
-                  <span className="mb-3 block text-2xl">{benefit.icon}</span>
-                  <h3 className="text-lg font-semibold text-slate-900">{benefit.title}</h3>
-                  <p className="mt-2 text-slate-500">{benefit.description}</p>
+                  <span className="marketing-card__icon">
+                    <NeonIcon symbol={benefit.icon} size={34} title={benefit.title} />
+                  </span>
+                  <h3 className="marketing-card__title">{benefit.title}</h3>
+                  <p className="marketing-card__desc">{benefit.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -131,16 +135,16 @@ export default function Careers() {
       )}
 
       {/* Open Positions */}
-      <section className="py-16">
+      <section className="marketing-section marketing-section--alt">
         <div className="mx-auto max-w-4xl px-4">
-          <div className="mb-12 text-center">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Open Positions</h2>
-              <p className="text-lg text-slate-500">Find your next opportunity</p>
+              <h2 className="marketing-section__title">Open Positions</h2>
+              <p className="marketing-section__desc">Find your next opportunity</p>
             </motion.div>
           </div>
 
@@ -149,11 +153,13 @@ export default function Careers() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="glass-surface rounded-2xl p-6 text-center shadow-glass"
+              className="marketing-card text-center"
             >
-              <span className="mb-3 block text-2xl">🚀</span>
-              <h3 className="text-lg font-semibold text-slate-900">We're Just Getting Started</h3>
-              <p className="mt-2 text-slate-500">
+              <span className="marketing-card__icon">
+                <NeonIcon symbol="🚀" size={34} title="Launch" />
+              </span>
+              <h3 className="marketing-card__title">We're Just Getting Started</h3>
+              <p className="marketing-card__desc">
                 CGraph is currently a solo project in active development. While we don't have open
                 positions right now, we'd love to hear from passionate people who share our vision
                 for privacy-first communication.
@@ -168,36 +174,36 @@ export default function Careers() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="glass-surface group rounded-2xl border border-slate-200/50 p-6 shadow-glass transition-all hover:border-purple-500/50 hover:shadow-glass-lg"
+                  className="group rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-all hover:border-purple-500/50 hover:bg-gray-900"
                 >
                   <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{position.title}</h3>
+                      <h3 className="text-lg font-semibold text-white">{position.title}</h3>
                       <div className="mt-1 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs text-purple-600">
+                        <span className="rounded-full bg-purple-500/10 px-3 py-1 text-xs text-purple-400">
                           {position.department}
                         </span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
+                        <span className="rounded-full bg-gray-700 px-3 py-1 text-xs text-gray-300">
                           {position.location}
                         </span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
+                        <span className="rounded-full bg-gray-700 px-3 py-1 text-xs text-gray-300">
                           {position.type}
                         </span>
                       </div>
                     </div>
                     <a
                       href={`mailto:careers@cgraph.org?subject=Application: ${position.title}`}
-                      className="rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-glass transition-all hover:from-purple-600 hover:to-indigo-600"
+                      className="rounded-lg bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-500/25 transition-all hover:from-purple-600 hover:to-indigo-700 hover:shadow-purple-500/40"
                     >
                       Apply Now
                     </a>
                   </div>
 
-                  <p className="mb-4 text-slate-500">{position.description}</p>
+                  <p className="mb-4 text-gray-400">{position.description}</p>
 
                   <div>
-                    <h4 className="mb-2 text-sm font-medium text-slate-500">Requirements:</h4>
-                    <ul className="list-inside list-disc space-y-1 text-sm text-slate-500">
+                    <h4 className="mb-2 text-sm font-medium text-gray-300">Requirements:</h4>
+                    <ul className="list-inside list-disc space-y-1 text-sm text-gray-500">
                       {position.requirements.map((req, i) => (
                         <li key={i}>{req}</li>
                       ))}
@@ -211,16 +217,18 @@ export default function Careers() {
       </section>
 
       {/* Don't See Your Role */}
-      <section className="py-16">
+      <section className="marketing-section marketing-section--dark">
         <div className="mx-auto max-w-3xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass-surface rounded-2xl p-6 text-center shadow-glass"
+            className="marketing-card text-center"
           >
-            <h2 className="text-xl font-bold text-slate-900">Contribute to CGraph</h2>
-            <p className="mb-6 mt-2 text-slate-500">
+            <h2 className="marketing-card__title" style={{ fontSize: '1.5rem' }}>
+              Contribute to CGraph
+            </h2>
+            <p className="marketing-card__desc" style={{ marginBottom: '1.5rem' }}>
               CGraph is built with community in mind. While we're currently a solo project, we
               welcome contributions! Check out our GitHub, report bugs, suggest features, or help
               with documentation. Every contribution matters.
@@ -230,7 +238,7 @@ export default function Careers() {
                 href="https://github.com/cgraph-dev/CGraph"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-6 py-3 font-medium text-white shadow-glass transition-colors hover:bg-purple-600"
+                className="marketing-btn marketing-btn--primary"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
@@ -243,7 +251,7 @@ export default function Careers() {
               </a>
               <a
                 href="mailto:careers@cgraph.org?subject=General Application"
-                className="glass-surface inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium text-slate-700 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-btn marketing-btn--secondary"
               >
                 Send Application
               </a>
@@ -253,13 +261,20 @@ export default function Careers() {
       </section>
 
       {/* Company Links */}
-      <section className="px-8 py-8">
+      <section
+        className="marketing-section marketing-section--alt"
+        style={{ padding: '3rem 2rem' }}
+      >
         <div className="mx-auto max-w-7xl px-4 text-center">
-          <Link to="/about" className="text-glow-purple hover:underline">
+          <Link
+            to="/about"
+            className="hover:text-emerald-400"
+            style={{ color: 'var(--color-gray)' }}
+          >
             Learn more about CGraph →
           </Link>
         </div>
       </section>
-    </LiquidGlassLayout>
+    </MarketingLayout>
   );
 }

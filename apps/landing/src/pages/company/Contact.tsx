@@ -8,7 +8,8 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
+import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const contactMethods = [
   {
@@ -101,26 +102,26 @@ export default function Contact() {
   };
 
   return (
-    <LiquidGlassLayout
+    <MarketingLayout
       title="Contact Us"
-      subtitle="We'd love to hear from you"
-      maxWidth="max-w-5xl"
+      subtitle="We'd love to hear from you. Get in touch with our team."
+      eyebrow="Get In Touch"
     >
       {/* Contact Methods */}
-      <section className="py-16">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="mb-12 text-center">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Reach Out Directly</h2>
-              <p className="mt-3 text-lg text-slate-500">Choose the best channel for your needs</p>
+              <h2 className="marketing-section__title">Reach Out Directly</h2>
+              <p className="marketing-section__desc">Choose the best channel for your needs</p>
             </motion.div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="marketing-grid marketing-grid--3">
             {contactMethods.map((method, index) => (
               <motion.a
                 key={method.title}
@@ -129,13 +130,17 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="glass-surface rounded-xl p-5 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-card"
                 style={{ textDecoration: 'none' }}
               >
-                <span className="mb-3 block text-3xl">{method.icon}</span>
-                <h3 className="text-lg font-semibold text-slate-900">{method.title}</h3>
-                <p className="mt-1 text-sm text-slate-500">{method.description}</p>
-                <span className="mt-3 block text-sm font-medium text-purple-600">
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={method.icon} size={34} title={method.title} />
+                </span>
+                <h3 className="marketing-card__title">{method.title}</h3>
+                <p className="marketing-card__desc">{method.description}</p>
+                <span
+                  style={{ color: 'var(--color-primary)', marginTop: '0.75rem', display: 'block' }}
+                >
                   {method.contact}
                 </span>
               </motion.a>
@@ -145,16 +150,16 @@ export default function Contact() {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16">
+      <section className="marketing-section marketing-section--dark">
         <div className="mx-auto max-w-3xl px-4">
-          <div className="mb-12 text-center">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Send Us a Message</h2>
-              <p className="mt-3 text-lg text-slate-500">
+              <h2 className="marketing-section__title">Send Us a Message</h2>
+              <p className="marketing-section__desc">
                 Fill out the form below and we'll get back to you
               </p>
             </motion.div>
@@ -167,10 +172,18 @@ export default function Contact() {
             transition={{ delay: 0.1 }}
           >
             {submitStatus === 'success' ? (
-              <div className="glass-surface rounded-2xl border border-purple-200 bg-purple-50/50 p-6 text-center shadow-glass">
-                <span className="mb-3 block text-3xl">✅</span>
-                <h3 className="text-lg font-semibold text-slate-900">Message Sent!</h3>
-                <p className="mt-1 text-sm text-slate-500">
+              <div
+                className="marketing-card text-center"
+                style={{
+                  borderColor: 'rgba(16, 185, 129, 0.3)',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                }}
+              >
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol="✅" size={34} title="Message sent" />
+                </span>
+                <h3 className="marketing-card__title">Message Sent!</h3>
+                <p className="marketing-card__desc">
                   Thank you for reaching out. We'll get back to you within 24-48 hours.
                 </p>
                 <button
@@ -178,22 +191,16 @@ export default function Contact() {
                     setSubmitStatus('idle');
                     setFormData({ name: '', email: '', subject: 'general', message: '' });
                   }}
-                  className="mt-6 text-sm font-medium text-purple-600 transition-colors hover:text-purple-700"
+                  style={{ color: 'var(--color-primary)', marginTop: '1.5rem' }}
                 >
                   Send another message
                 </button>
               </div>
             ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="glass-surface space-y-5 rounded-2xl p-6 shadow-glass"
-              >
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-1.5 block text-sm font-medium text-slate-700"
-                    >
+              <form onSubmit={handleSubmit} className="contact-form">
+                <div className="marketing-grid marketing-grid--2">
+                  <div className="contact-form__group">
+                    <label htmlFor="name" className="contact-form__label">
                       Your Name
                     </label>
                     <input
@@ -202,15 +209,12 @@ export default function Contact() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      className="w-full rounded-xl border border-slate-200/60 bg-white/60 px-4 py-3 text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-purple-300/70 focus:shadow-[0_0_0_3px_rgba(196,181,253,0.3)]"
+                      className="contact-form__input"
                       placeholder="John Doe"
                     />
                   </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-1.5 block text-sm font-medium text-slate-700"
-                    >
+                  <div className="contact-form__group">
+                    <label htmlFor="email" className="contact-form__label">
                       Email Address
                     </label>
                     <input
@@ -219,24 +223,21 @@ export default function Contact() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
-                      className="w-full rounded-xl border border-slate-200/60 bg-white/60 px-4 py-3 text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-purple-300/70 focus:shadow-[0_0_0_3px_rgba(196,181,253,0.3)]"
+                      className="contact-form__input"
                       placeholder="you@example.com"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="mb-1.5 block text-sm font-medium text-slate-700"
-                  >
+                <div className="contact-form__group">
+                  <label htmlFor="subject" className="contact-form__label">
                     Subject
                   </label>
                   <select
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full cursor-pointer rounded-xl border border-slate-200/60 bg-white/60 px-4 py-3 text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-purple-300/70 focus:shadow-[0_0_0_3px_rgba(196,181,253,0.3)]"
+                    className="contact-form__input"
                   >
                     <option value="general">General Inquiry</option>
                     <option value="support">Technical Support</option>
@@ -246,11 +247,8 @@ export default function Contact() {
                   </select>
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-1.5 block text-sm font-medium text-slate-700"
-                  >
+                <div className="contact-form__group">
+                  <label htmlFor="message" className="contact-form__label">
                     Message
                   </label>
                   <textarea
@@ -258,8 +256,7 @@ export default function Contact() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required
-                    rows={5}
-                    className="w-full rounded-xl border border-slate-200/60 bg-white/60 px-4 py-3 text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-purple-300/70 focus:shadow-[0_0_0_3px_rgba(196,181,253,0.3)]"
+                    className="contact-form__textarea"
                     placeholder="Tell us how we can help..."
                   />
                 </div>
@@ -267,7 +264,8 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-xl bg-purple-500 px-6 py-3 font-medium text-white shadow-glass transition-colors hover:bg-purple-600 disabled:opacity-50"
+                  className="marketing-btn marketing-btn--primary"
+                  style={{ width: '100%' }}
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
@@ -278,15 +276,15 @@ export default function Contact() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16">
+      <section className="marketing-section marketing-section--alt">
         <div className="mx-auto max-w-3xl px-4">
-          <div className="mb-12 text-center">
+          <div className="marketing-section__header">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-slate-900">Frequently Asked Questions</h2>
+              <h2 className="marketing-section__title">Frequently Asked Questions</h2>
             </motion.div>
           </div>
 
@@ -298,10 +296,10 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="glass-surface rounded-2xl p-6 shadow-glass"
+                className="marketing-card"
               >
-                <h3 className="text-lg font-semibold text-slate-900">{faq.question}</h3>
-                <p className="mt-2 text-sm text-slate-500">{faq.answer}</p>
+                <h3 className="marketing-card__title">{faq.question}</h3>
+                <p className="marketing-card__desc">{faq.answer}</p>
               </motion.div>
             ))}
           </div>
@@ -309,22 +307,24 @@ export default function Contact() {
       </section>
 
       {/* Community Section */}
-      <section className="py-16">
-        <div className="mx-auto max-w-5xl px-4">
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="text-3xl font-bold text-slate-900">Join Our Community</h2>
-            <p className="mb-8 mt-3 text-lg text-slate-500">Connect with other CGraph users</p>
+            <h2 className="marketing-section__title">Join Our Community</h2>
+            <p className="marketing-section__desc" style={{ marginBottom: '2rem' }}>
+              Connect with other CGraph users
+            </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a
                 href="https://web.cgraph.org/forum"
                 rel="noopener noreferrer"
-                className="glass-surface inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-slate-700 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-btn marketing-btn--secondary"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -340,7 +340,7 @@ export default function Contact() {
                 href="https://twitter.com/cgraph"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-surface inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-slate-700 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-btn marketing-btn--secondary"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
@@ -351,6 +351,6 @@ export default function Contact() {
           </motion.div>
         </div>
       </section>
-    </LiquidGlassLayout>
+    </MarketingLayout>
   );
 }

@@ -9,7 +9,7 @@
 
 import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
+import { MarketingLayout } from '@/components/marketing';
 
 // Privacy Policy content sections
 const sections = [
@@ -280,102 +280,122 @@ const sections = [
 
 export default function PrivacyPolicy() {
   return (
-    <LiquidGlassLayout
+    <MarketingLayout
       title="Privacy Policy"
       subtitle="Last updated: February 10, 2026 • Version 2.0"
+      eyebrow="Your Data, Your Rights"
     >
-      {/* Introduction */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="glass-surface mb-12 rounded-2xl p-6 shadow-glass"
-      >
-        <p className="text-lg leading-relaxed text-slate-500">
-          CGraph ("we", "us", "our"), a company registered in Georgia, is committed to protecting
-          your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
-          your information when you use our mobile application and web platform (collectively, the
-          "Service"). This policy applies to users worldwide and complies with the EU General Data
-          Protection Regulation (GDPR), California Consumer Privacy Act (CCPA/CPRA), Canada's
-          Personal Information Protection and Electronic Documents Act (PIPEDA), Brazil's Lei Geral
-          de Proteção de Dados (LGPD), and other applicable data protection laws.
-        </p>
-      </motion.div>
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* Introduction */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
+          >
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              CGraph ("we", "us", "our"), a company registered in Georgia, is committed to
+              protecting your privacy. This Privacy Policy explains how we collect, use, disclose,
+              and safeguard your information when you use our mobile application and web platform
+              (collectively, the "Service"). This policy applies to users worldwide and complies
+              with the EU General Data Protection Regulation (GDPR), California Consumer Privacy Act
+              (CCPA/CPRA), Canada's Personal Information Protection and Electronic Documents Act
+              (PIPEDA), Brazil's Lei Geral de Proteção de Dados (LGPD), and other applicable data
+              protection laws.
+            </p>
+          </motion.div>
 
-      {/* Table of Contents */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="mb-12"
-      >
-        <h2 className="mb-4 text-xl font-semibold text-slate-900">Table of Contents</h2>
-        <nav className="grid gap-2 sm:grid-cols-2">
+          {/* Table of Contents */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-12"
+          >
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
+            <nav className="grid gap-2 sm:grid-cols-2">
+              {sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </motion.div>
+
+          {/* Sections */}
           {sections.map((section) => (
-            <a
+            <motion.section
               key={section.id}
-              href={`#${section.id}`}
-              className="text-slate-500 transition-colors hover:text-glow-purple"
+              id={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-12 scroll-mt-24"
             >
-              {section.title}
-            </a>
+              <h2
+                className="mb-6 font-zentry text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
+                }}
+              />
+            </motion.section>
           ))}
-        </nav>
-      </motion.div>
 
-      {/* Sections */}
-      {sections.map((section) => (
-        <motion.section
-          key={section.id}
-          id={section.id}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-12 scroll-mt-24"
-        >
-          <h2 className="mb-6 text-2xl font-bold text-slate-900">{section.title}</h2>
-          <div
-            className="prose prose-slate prose-headings:text-slate-900 prose-a:text-glow-purple max-w-none"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
-            }}
-          />
-        </motion.section>
-      ))}
-
-      {/* Related Links */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="glass-surface rounded-2xl p-6 shadow-glass"
-      >
-        <h3 className="mb-4 text-xl font-semibold text-slate-900">Related Documents</h3>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <a
-            href="/terms"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
+          {/* Related Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="marketing-card"
           >
-            <h4 className="font-medium text-slate-900">Terms of Service</h4>
-            <p className="mt-1 text-sm text-slate-500">Rules for using CGraph</p>
-          </a>
-          <a
-            href="/cookies"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
-          >
-            <h4 className="font-medium text-slate-900">Cookie Policy</h4>
-            <p className="mt-1 text-sm text-slate-500">How we use cookies</p>
-          </a>
-          <a
-            href="/gdpr"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
-          >
-            <h4 className="font-medium text-slate-900">GDPR Compliance</h4>
-            <p className="mt-1 text-sm text-slate-500">Your data rights</p>
-          </a>
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/terms" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Terms of Service
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Rules for using CGraph
+                </p>
+              </a>
+              <a href="/cookies" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Cookie Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we use cookies
+                </p>
+              </a>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
+              </a>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </LiquidGlassLayout>
+      </section>
+    </MarketingLayout>
   );
 }

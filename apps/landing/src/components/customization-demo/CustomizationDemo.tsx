@@ -12,6 +12,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedBorder, TiltCard } from './effects';
+import { GradientText } from '../marketing/ui/GradientText';
 import { fadeInUp, staggerContainer } from './animations';
 
 // Import all types and components from submodule
@@ -95,9 +96,9 @@ export function CustomizationDemo() {
           </span>
           <h2 className="section-header__title mb-4 text-white">
             Make It{' '}
-            <span className="title-fx--air bg-gradient-to-r from-emerald-400 to-purple-500 bg-clip-text text-transparent">
+            <GradientText variant="emerald-purple" animated className="title-fx--air">
               Yours
-            </span>
+            </GradientText>
           </h2>
           <p className="mx-auto max-w-2xl text-xl text-gray-400">
             Create your unique identity with animated avatar borders, custom chat bubbles, and

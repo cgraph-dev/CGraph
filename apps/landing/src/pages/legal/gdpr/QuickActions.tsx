@@ -8,7 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Download, Upload, Trash2 } from 'lucide-react';
+import { NeonIcon } from '@/components/marketing/ui';
 
 export default function QuickActions() {
   return (
@@ -16,28 +16,47 @@ export default function QuickActions() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="mb-12 grid gap-4 sm:grid-cols-3"
+      className="marketing-grid marketing-grid--3"
+      style={{ marginBottom: '3rem' }}
     >
-      <div className="glass-surface rounded-2xl border border-emerald-200/50 bg-emerald-50 p-6 text-center shadow-glass">
-        <span className="mb-3 inline-flex">
-          <Download className="h-8 w-8 text-emerald-600" />
+      <div
+        className="marketing-card text-center"
+        style={{
+          borderColor: 'rgba(16, 185, 129, 0.3)',
+          background: 'rgba(16, 185, 129, 0.1)',
+        }}
+      >
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="📥" size={34} title="Download data" />
         </span>
-        <h3 className="text-base font-semibold text-slate-900">Download Data</h3>
-        <p className="mt-1 text-sm text-slate-500">Settings → Privacy → Download</p>
+        <h3 className="marketing-card__title">Download Data</h3>
+        <p className="marketing-card__desc">Settings → Privacy → Download</p>
       </div>
-      <div className="glass-surface rounded-2xl border border-violet-200/50 bg-violet-50 p-6 text-center shadow-glass">
-        <span className="mb-3 inline-flex">
-          <Upload className="h-8 w-8 text-violet-600" />
+      <div
+        className="marketing-card text-center"
+        style={{
+          borderColor: 'rgba(139, 92, 246, 0.3)',
+          background: 'rgba(139, 92, 246, 0.1)',
+        }}
+      >
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="📤" size={34} title="Export data" />
         </span>
-        <h3 className="text-base font-semibold text-slate-900">Export Data</h3>
-        <p className="mt-1 text-sm text-slate-500">Settings → Privacy → Export</p>
+        <h3 className="marketing-card__title">Export Data</h3>
+        <p className="marketing-card__desc">Settings → Privacy → Export</p>
       </div>
-      <div className="glass-surface rounded-2xl border border-red-200/50 bg-red-50 p-6 text-center shadow-glass">
-        <span className="mb-3 inline-flex">
-          <Trash2 className="h-8 w-8 text-red-500" />
+      <div
+        className="marketing-card text-center"
+        style={{
+          borderColor: 'rgba(239, 68, 68, 0.3)',
+          background: 'rgba(239, 68, 68, 0.1)',
+        }}
+      >
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="🗑️" size={34} title="Delete account" />
         </span>
-        <h3 className="text-base font-semibold text-slate-900">Delete Account</h3>
-        <p className="mt-1 text-sm text-slate-500">Settings → Account → Delete</p>
+        <h3 className="marketing-card__title">Delete Account</h3>
+        <p className="marketing-card__desc">Settings → Account → Delete</p>
       </div>
     </motion.div>
   );

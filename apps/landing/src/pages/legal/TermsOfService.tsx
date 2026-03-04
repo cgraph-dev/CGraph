@@ -9,7 +9,7 @@
 
 import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
+import { MarketingLayout } from '@/components/marketing';
 
 const sections = [
   {
@@ -470,101 +470,121 @@ const sections = [
 
 export default function TermsOfService() {
   return (
-    <LiquidGlassLayout
+    <MarketingLayout
       title="Terms of Service"
       subtitle="Last updated: February 10, 2026 • Version 2.0"
+      eyebrow="Service Agreement"
     >
-      {/* Introduction */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="glass-surface mb-12 rounded-2xl p-6 shadow-glass"
-      >
-        <p className="text-lg leading-relaxed text-slate-500">
-          Welcome to CGraph! CGraph is a company registered in Georgia, founded in 2026. These Terms
-          of Service ("Terms") govern your access to and use of CGraph's mobile applications,
-          websites, and services (collectively, the "Service"). By accessing or using the Service,
-          you agree to be bound by these Terms. These Terms are designed to comply with applicable
-          laws worldwide, including but not limited to the laws of Georgia, the European Union, the
-          United States, Canada, Brazil, and other jurisdictions where our users are located.
-        </p>
-      </motion.div>
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* Introduction */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
+          >
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              Welcome to CGraph! CGraph is a company registered in Georgia, founded in 2026. These
+              Terms of Service ("Terms") govern your access to and use of CGraph's mobile
+              applications, websites, and services (collectively, the "Service"). By accessing or
+              using the Service, you agree to be bound by these Terms. These Terms are designed to
+              comply with applicable laws worldwide, including but not limited to the laws of
+              Georgia, the European Union, the United States, Canada, Brazil, and other
+              jurisdictions where our users are located.
+            </p>
+          </motion.div>
 
-      {/* Table of Contents */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="mb-12"
-      >
-        <h2 className="mb-4 text-xl font-semibold text-slate-900">Table of Contents</h2>
-        <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Table of Contents */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-12"
+          >
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
+            <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </motion.div>
+
+          {/* Sections */}
           {sections.map((section) => (
-            <a
+            <motion.section
               key={section.id}
-              href={`#${section.id}`}
-              className="text-slate-500 transition-colors hover:text-glow-purple"
+              id={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="mb-12 scroll-mt-24"
             >
-              {section.title}
-            </a>
+              <h2
+                className="mb-6 font-zentry text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
+                }}
+              />
+            </motion.section>
           ))}
-        </nav>
-      </motion.div>
 
-      {/* Sections */}
-      {sections.map((section) => (
-        <motion.section
-          key={section.id}
-          id={section.id}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 scroll-mt-24"
-        >
-          <h2 className="mb-6 text-2xl font-bold text-slate-900">{section.title}</h2>
-          <div
-            className="prose prose-slate prose-headings:text-slate-900 prose-a:text-glow-purple max-w-none"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
-            }}
-          />
-        </motion.section>
-      ))}
-
-      {/* Related Links */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="glass-surface rounded-2xl p-6 shadow-glass"
-      >
-        <h3 className="mb-4 text-xl font-semibold text-slate-900">Related Documents</h3>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <a
-            href="/privacy"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
+          {/* Related Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="marketing-card"
           >
-            <h4 className="font-medium text-slate-900">Privacy Policy</h4>
-            <p className="mt-1 text-sm text-slate-500">How we handle your data</p>
-          </a>
-          <a
-            href="/cookies"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
-          >
-            <h4 className="font-medium text-slate-900">Cookie Policy</h4>
-            <p className="mt-1 text-sm text-slate-500">How we use cookies</p>
-          </a>
-          <a
-            href="/gdpr"
-            className="glass-surface rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
-          >
-            <h4 className="font-medium text-slate-900">GDPR Compliance</h4>
-            <p className="mt-1 text-sm text-slate-500">Your data rights</p>
-          </a>
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/privacy" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Privacy Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we handle your data
+                </p>
+              </a>
+              <a href="/cookies" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Cookie Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we use cookies
+                </p>
+              </a>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
+              </a>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </LiquidGlassLayout>
+      </section>
+    </MarketingLayout>
   );
 }

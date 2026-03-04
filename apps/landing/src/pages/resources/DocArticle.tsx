@@ -10,7 +10,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
-import { LiquidGlassLayout } from '@/components/liquid-glass';
+import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 import SEO from '@/components/SEO';
 import { docArticles } from '@/data/docs';
 
@@ -24,18 +25,19 @@ export default function DocArticle() {
 
   if (!article) {
     return (
-      <LiquidGlassLayout
+      <MarketingLayout
         title="Article Not Found"
         subtitle="The documentation article you're looking for doesn't exist."
+        eyebrow="404"
       >
-        <section className="py-20">
+        <section className="marketing-section marketing-section--alt">
           <div className="mx-auto max-w-4xl px-4 text-center">
-            <Link to="/docs" className="text-glow-purple hover:underline">
+            <Link to="/docs" className="marketing-btn marketing-btn--primary">
               ← Back to Documentation
             </Link>
           </div>
         </section>
-      </LiquidGlassLayout>
+      </MarketingLayout>
     );
   }
 
@@ -47,29 +49,33 @@ export default function DocArticle() {
   const nextArticle = nextSlug ? docArticles[nextSlug] : null;
 
   return (
-    <LiquidGlassLayout title={article.title} subtitle={article.category}>
+    <MarketingLayout
+      title={article.title}
+      subtitle={`${article.category} · ${article.readTime}`}
+      eyebrow="Documentation"
+    >
       <SEO
         title={`${article.title} — Docs`}
         description={`${article.category} documentation — ${article.readTime} read.`}
         path={`/docs/${slug}`}
         type="article"
       />
-
-      <section className="py-10">
+      <section className="marketing-section marketing-section--alt">
         <div className="mx-auto max-w-4xl px-4">
           {/* Breadcrumb */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 flex items-center gap-2 text-sm text-slate-500"
+            className="mb-8 flex items-center gap-2 text-sm"
+            style={{ color: 'var(--color-gray)' }}
           >
-            <Link to="/docs" className="text-glow-purple hover:underline">
+            <Link to="/docs" className="transition-colors hover:text-emerald-400">
               Documentation
             </Link>
             <span>›</span>
-            <span className="text-purple-700">{article.category}</span>
+            <span style={{ color: article.categoryColor }}>{article.category}</span>
             <span>›</span>
-            <span className="text-slate-900">{article.title}</span>
+            <span className="text-white">{article.title}</span>
           </motion.div>
 
           {/* Article Meta */}
@@ -79,14 +85,33 @@ export default function DocArticle() {
             transition={{ delay: 0.1 }}
             className="mb-8 flex items-center gap-3"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-lg">
-              {article.categoryIcon}
+            <span
+              className="flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{
+                background: `${article.categoryColor}15`,
+                border: `1px solid ${article.categoryColor}25`,
+              }}
+            >
+              <NeonIcon
+                symbol={article.categoryIcon}
+                size={22}
+                color={article.categoryColor}
+                title={article.category}
+              />
             </span>
             <div>
-              <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700">
+              <span
+                className="rounded-full px-3 py-1 text-xs font-semibold"
+                style={{
+                  background: `${article.categoryColor}15`,
+                  color: article.categoryColor,
+                }}
+              >
                 {article.category}
               </span>
-              <span className="ml-3 text-sm text-slate-500">{article.readTime}</span>
+              <span className="ml-3 text-sm" style={{ color: 'var(--color-gray)' }}>
+                {article.readTime}
+              </span>
             </div>
           </motion.div>
 
@@ -95,26 +120,28 @@ export default function DocArticle() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="prose prose-slate prose-headings:text-slate-900 prose-a:text-glow-purple max-w-none"
+            className="legal-content"
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(article.content, { USE_PROFILES: { html: true } }),
             }}
           />
 
-          {/* Previous / Next Navigation */}
+          {/* Navigation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mt-12 grid gap-4 border-t border-slate-200 pt-8 sm:grid-cols-2"
+            className="mt-12 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2"
           >
             {prevArticle && prevSlug ? (
               <Link
                 to={`/docs/${prevSlug}`}
-                className="glass-surface group rounded-xl p-4 shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-card group p-4 transition-colors hover:border-emerald-500/30"
               >
-                <span className="text-xs text-slate-500">← Previous</span>
-                <h4 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-glow-purple">
+                <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                  ← Previous
+                </span>
+                <h4 className="mt-1 text-sm font-semibold text-white group-hover:text-emerald-300">
                   {prevArticle.title}
                 </h4>
               </Link>
@@ -124,10 +151,12 @@ export default function DocArticle() {
             {nextArticle && nextSlug ? (
               <Link
                 to={`/docs/${nextSlug}`}
-                className="glass-surface group rounded-xl p-4 text-right shadow-glass transition-shadow hover:shadow-glass-lg"
+                className="marketing-card group p-4 text-right transition-colors hover:border-emerald-500/30"
               >
-                <span className="text-xs text-slate-500">Next →</span>
-                <h4 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-glow-purple">
+                <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                  Next →
+                </span>
+                <h4 className="mt-1 text-sm font-semibold text-white group-hover:text-emerald-300">
                   {nextArticle.title}
                 </h4>
               </Link>
@@ -145,13 +174,14 @@ export default function DocArticle() {
           >
             <Link
               to="/docs"
-              className="inline-flex items-center gap-2 text-sm text-glow-purple hover:underline"
+              className="inline-flex items-center gap-2 text-sm transition-colors hover:text-emerald-400"
+              style={{ color: 'var(--color-gray)' }}
             >
               ← Back to all documentation
             </Link>
           </motion.div>
         </div>
       </section>
-    </LiquidGlassLayout>
+    </MarketingLayout>
   );
 }

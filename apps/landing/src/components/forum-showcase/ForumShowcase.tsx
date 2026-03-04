@@ -14,6 +14,8 @@ import { AnimatedBorder } from '../customization-demo/effects';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
 import { ForumNeonIcon } from './ForumNeonIcon';
 
+import { GradientText } from '../marketing/ui/GradientText';
+
 export function ForumShowcase() {
   const [categories, setCategories] = useState<ForumCategory[]>(initialCategories);
   const [draggingBoardId] = useState<string | null>(null);
@@ -63,9 +65,9 @@ export function ForumShowcase() {
           </span>
           <h2 className="section-header__title mb-4 text-white">
             Build Your Community,{' '}
-            <span className="title-fx--air bg-gradient-to-r from-emerald-400 to-purple-500 bg-clip-text text-transparent">
+            <GradientText variant="emerald-purple" animated className="title-fx--air">
               Your Way
-            </span>
+            </GradientText>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
             The first forum platform with true drag-and-drop organization. Arrange boards,
