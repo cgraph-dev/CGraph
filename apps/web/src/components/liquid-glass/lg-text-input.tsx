@@ -8,6 +8,7 @@
  */
 import { type InputHTMLAttributes, type ReactNode, useState, useId, type Ref } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { durationsSec } from '@/lib/animation-presets';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';
@@ -143,7 +144,7 @@ export function LGTextInput({
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durationsSec.fast }}
             role="alert"
           >
             {error}

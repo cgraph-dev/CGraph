@@ -5,6 +5,7 @@
 import { ReactNode, useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { durationsSec } from '@/lib/animation-presets';
 
 interface TooltipProps {
   children: ReactNode;
@@ -108,7 +109,7 @@ export default function Tooltip({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durationsSec.fast }}
               className={`pointer-events-none fixed z-[100] rounded bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-lg ${getTransformClass()}`}
               style={{
                 left: coords.x,

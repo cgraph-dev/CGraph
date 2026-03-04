@@ -15,7 +15,7 @@ import { NotificationActions } from '@/shared/components/notification-actions';
 import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constants';
 import type { NotificationItemProps } from './types';
 import { stagger } from '@cgraph/animation-constants';
-import { tweens, loop, springs } from '@/lib/animation-presets';
+import { tweens, loop, springs, durationsSec } from '@/lib/animation-presets';
 
 /**
  * unknown for the notifications module.
@@ -38,7 +38,7 @@ export function NotificationItem({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.2,
+        duration: durationsSec.normal,
         delay: Math.min(index ?? 0, 10) * stagger.fast.staggerChildren,
       }}
     >

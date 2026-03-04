@@ -8,6 +8,7 @@ import { ReactNode, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { durationsSec } from '@/lib/animation-presets';
 
 export interface DialogProps {
   open: boolean;
@@ -54,7 +55,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
             initial={reducedMotion ? undefined : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
+            transition={reducedMotion ? { duration: 0 } : { duration: durationsSec.normal }}
             onClick={() => onOpenChange(false)}
           />
           <motion.div
