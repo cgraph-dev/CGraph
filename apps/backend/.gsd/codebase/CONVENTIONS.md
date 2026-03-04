@@ -760,7 +760,7 @@ lib/cgraph/
 ├── shop/              # CoinBundles, CoinCheckout, CoinPurchase
 ├── collaboration/     # Document, DocumentServer
 ├── data_export/       # 5 export modules
-└── ...                # ~57 context domains total
+└── ...                # 57 context domains total
 ```
 
 > **Facade file location inconsistency**: Most contexts place the facade as a **peer file**
@@ -1004,7 +1004,7 @@ Log messages are snake_case event names for machine parseability.
 
 ### 15.9 JSON View Pattern
 
-56+ JSON view files exist alongside controllers, following the `*_json.ex` naming convention:
+56 JSON view files exist alongside controllers, following the `*_json.ex` naming convention:
 
 ```
 lib/cgraph_web/controllers/

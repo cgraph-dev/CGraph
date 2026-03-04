@@ -55,8 +55,6 @@ apps/web/src/
 ├── test/
 │   ├── setup.ts              # Global Vitest setup (MSW, mocks, cleanup)
 │   ├── __mocks__/            # Module-level stubs (framer-motion, heroicons-outline, heroicons-solid, heroicons-20-solid)
-│   ├── mocks/                # (empty — MSW handlers in src/mocks/)
-│   ├── fixtures/             # Test data fixtures (currently empty)
 │   └── integration/
 │       ├── api.test.ts       # API client integration tests
 │       ├── app.test.tsx      # App-level integration tests
