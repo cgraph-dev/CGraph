@@ -14,14 +14,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { LiquidGlassLayout } from '@/components/liquid-glass';
-import {
-  docCategories,
-  apiOverview,
-  securityTable,
-  apiEndpointGroups,
-  methodColors,
-  defaultMethodColor,
-} from '@/data/docs';
+import { docCategories, apiOverview, securityTable, apiEndpointGroups } from '@/data/docs';
 
 export default function Documentation() {
   const [searchQuery, setSearchQuery] = useState('');

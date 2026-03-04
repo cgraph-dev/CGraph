@@ -6,7 +6,6 @@
 import { motion } from 'framer-motion';
 import { features } from './constants';
 import { ForumNeonIcon } from './ForumNeonIcon';
-import { LandingButton } from '../marketing/ui/LandingButton';
 import { WEB_APP_URL } from '@/constants';
 
 export function FeaturesSidebar() {
@@ -47,22 +46,20 @@ export function FeaturesSidebar() {
       >
         <h4 className="mb-2 font-semibold text-white">Ready to build your community?</h4>
         <p className="mb-4 text-sm text-gray-400">Create your first forum in minutes</p>
-        <LandingButton
-          variant="primary"
+        <a
           href={`${WEB_APP_URL}/register`}
-          icon={
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          }
+          className="relative inline-flex items-center justify-center gap-2 rounded-full border border-emerald-500/30 bg-black/20 px-8 py-3 text-base font-bold tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/60 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] active:scale-95"
         >
           Get Started Free
-        </LandingButton>
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </a>
       </motion.div>
     </motion.div>
   );

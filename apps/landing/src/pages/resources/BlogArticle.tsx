@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { LiquidGlassLayout } from '@/components/liquid-glass';
 import SEO from '@/components/SEO';
-import { blogArticles, categoryColors, articleSlugs } from '@/data/blog';
+import { blogArticles, articleSlugs } from '@/data/blog';
 
 export default function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
@@ -42,11 +42,6 @@ export default function BlogArticle() {
       </LiquidGlassLayout>
     );
   }
-
-  const catColor = categoryColors[article.category] ?? {
-    bg: 'rgba(99, 102, 241, 0.12)',
-    text: '#818cf8',
-  };
 
   // Find previous/next articles
   const currentIndex = (articleSlugs as readonly string[]).indexOf(slug!);
