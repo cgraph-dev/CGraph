@@ -1,0 +1,62 @@
+/* ============================================================================
+ * CGraph Liquid Glass Design System — CSS Custom Properties
+ * Pearl-white light mode with iridescent pastel edge glows.
+ * ============================================================================ */
+
+:root {
+  /* ── Surface ─────────────────────────────────────────────────────────────── */
+  --lg-bg: 250 250 252;                    /* pearl-white page background     */
+  --lg-surface: 255 255 255;               /* card / panel fill (≥ 72 % α)    */
+  --lg-surface-alpha: 0.72;                /* default glass translucency      */
+  --lg-surface-hover-alpha: 0.82;          /* hover state                     */
+  --lg-blur: 20px;                         /* backdrop-filter blur radius     */
+  --lg-saturate: 1.6;                      /* backdrop-filter saturate        */
+  --lg-radius: 20px;                       /* border-radius — large panels    */
+  --lg-radius-sm: 12px;                    /* border-radius — small elements  */
+  --lg-radius-xs: 8px;                     /* border-radius — chips / badges  */
+
+  /* ── Iridescent Edge Glow (pastel palette) ───────────────────────────────── */
+  --lg-glow-blue: 147 197 253;            /* pastel blue   — #93C5FD         */
+  --lg-glow-purple: 196 181 253;          /* pastel purple — #C4B5FD         */
+  --lg-glow-pink: 249 168 212;            /* pastel pink   — #F9A8D4         */
+  --lg-glow-green: 134 239 172;           /* pastel green  — #86EFAC         */
+
+  /* ── Text ────────────────────────────────────────────────────────────────── */
+  --lg-text: 15 23 42;                     /* slate-900                       */
+  --lg-text-secondary: 71 85 105;          /* slate-600                       */
+  --lg-text-muted: 148 163 184;            /* slate-400                       */
+  --lg-text-on-accent: 255 255 255;        /* white text on accent fills      */
+
+  /* ── Borders ─────────────────────────────────────────────────────────────── */
+  --lg-border: 226 232 240;               /* slate-200                       */
+  --lg-border-alpha: 0.6;
+  --lg-border-iridescent: linear-gradient(
+    135deg,
+    rgb(var(--lg-glow-blue)),
+    rgb(var(--lg-glow-purple)),
+    rgb(var(--lg-glow-pink)),
+    rgb(var(--lg-glow-green))
+  );
+
+  /* ── Accent Button Glows ─────────────────────────────────────────────────── */
+  --lg-btn-red: 239 68 68;                /* rose-500                        */
+  --lg-btn-blue: 59 130 246;              /* blue-500                        */
+  --lg-btn-neutral: 100 116 139;          /* slate-500                       */
+
+  /* ── Shadows ─────────────────────────────────────────────────────────────── */
+  --lg-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --lg-shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --lg-shadow-lg: 0 8px 30px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+  --lg-shadow-xl: 0 20px 40px rgba(0,0,0,0.10), 0 8px 16px rgba(0,0,0,0.06);
+
+  /* ── Spring Physics Presets ──────────────────────────────────────────────── */
+  --lg-spring-bounce: 0.35;
+  --lg-spring-duration: 0.5;
+  --lg-spring-stiffness: 260;
+  --lg-spring-damping: 20;
+
+  /* ── Transitions ─────────────────────────────────────────────────────────── */
+  --lg-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --lg-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --lg-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
