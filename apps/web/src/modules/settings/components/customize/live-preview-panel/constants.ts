@@ -2,7 +2,7 @@
  * Constants for LivePreviewPanel module
  */
 
-import type { MockBadge } from './types';
+import type { PreviewBadge } from './types';
 
 // Animation speed multipliers
 export const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', number> = {
@@ -11,8 +11,8 @@ export const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', num
   fast: 0.5,
 };
 
-// Mock badges for preview
-export const MOCK_BADGES: MockBadge[] = [
+// Sample badges for preview display
+export const PREVIEW_BADGES: PreviewBadge[] = [
   { emoji: '🛡️', color: '#f59e0b' },
   { emoji: '⚔️', color: '#8b5cf6' },
   { emoji: '👑', color: '#ec4899' },

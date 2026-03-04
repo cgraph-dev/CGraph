@@ -5,7 +5,7 @@
  * See ./progression-customization/ for the individual components:
  *
  * - types.ts - Type definitions (Achievement, Quest, etc.)
- * - mock-data.ts - Mock data for development
+ * - mock-data.ts - Deprecated (data now from API)
  * - categories.ts - Category configuration
  * - StatsOverview.tsx - Level/XP/Streak display
  * - AchievementsSection.tsx - Achievements grid

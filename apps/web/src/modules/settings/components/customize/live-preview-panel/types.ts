@@ -24,7 +24,7 @@ export interface ParticleStyle {
   shape: 'circle' | 'square';
 }
 
-export interface MockBadge {
+export interface PreviewBadge {
   emoji: string;
   color: string;
 }

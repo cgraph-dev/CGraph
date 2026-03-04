@@ -12,7 +12,7 @@ import type {
 } from '@/modules/settings/store/customization';
 import { springs, tweens, loop, loopWithDelay } from '@/lib/animation-presets';
 import { GlowText, FireText } from '@/shared/components/ui';
-import { MOCK_BADGES } from './constants';
+import { PREVIEW_BADGES } from './constants';
 import type { ThemeColors } from './types';
 
 interface ProfileContentProps {
@@ -104,7 +104,7 @@ export function ProfileContent({
       {/* Badges */}
       {settings.showBadges && (
         <div className="mt-3 flex gap-2">
-          {MOCK_BADGES.map((badge, i) => (
+          {PREVIEW_BADGES.map((badge, i) => (
             <motion.div
               key={i}
               className="relative flex h-8 w-8 items-center justify-center rounded-lg text-sm"

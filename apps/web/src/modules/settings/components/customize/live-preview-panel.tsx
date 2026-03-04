@@ -15,11 +15,11 @@ export {
   type ChatBubbleProps,
   type ParticleData,
   type ParticleStyle,
-  type MockBadge,
+  type PreviewBadge,
   type ThemeColors,
   // Constants
   ANIMATION_SPEED_MULTIPLIERS,
-  MOCK_BADGES,
+  PREVIEW_BADGES,
   PARTICLE_COLORS,
   LEGENDARY_TITLE_IDS,
   // Components

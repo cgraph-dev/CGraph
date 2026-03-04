@@ -1,7 +1,7 @@
 /**
  * Constants for IdentityCustomization module
  *
- * NOTE: MOCK_BORDERS, MOCK_TITLES, MOCK_BADGES have been removed.
+ * NOTE: Mock border, title, and badge data has been removed.
  * Border, title, and badge data is now fetched from the backend API:
  * - GET /api/v1/cosmetics/borders
  * - GET /api/v1/cosmetics/titles

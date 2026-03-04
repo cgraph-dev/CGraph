@@ -6,12 +6,12 @@
  */
 
 // Types
-export type { ChatBubbleProps, ParticleData, ParticleStyle, MockBadge, ThemeColors } from './types';
+export type { ChatBubbleProps, ParticleData, ParticleStyle, PreviewBadge, ThemeColors } from './types';
 
 // Constants
 export {
   ANIMATION_SPEED_MULTIPLIERS,
-  MOCK_BADGES,
+  PREVIEW_BADGES,
   PARTICLE_COLORS,
   LEGENDARY_TITLE_IDS,
 } from './constants';
