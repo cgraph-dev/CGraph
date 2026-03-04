@@ -14,9 +14,9 @@ import {
   type ProfileThemeConfig,
   type ProfileThemeCategory,
 } from '@/data/profileThemes';
+import { fetchThemes } from '@/modules/gamification/store/gamification-queries';
 
 import type { ThemeCategory, Theme } from './types';
-import { MOCK_THEMES } from './constants';
 
 /**
  * unknown for the customize module.
@@ -51,6 +51,27 @@ export function useThemeCustomization() {
   );
   const [useNewProfileThemes, setUseNewProfileThemes] = useState(true);
 
+  // Themes fetched from API
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [isLoadingThemes, setIsLoadingThemes] = useState(true);
+
+  // Fetch themes from API
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingThemes(true);
+    fetchThemes()
+      .then((data) => {
+        if (!cancelled) setThemes(data);
+      })
+      .catch(() => {
+        // Error logged in fetch function
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingThemes(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   // Get profile themes from new data file
   const newProfileThemes = useMemo(() => {
     if (profileThemeCategory === 'all') {
@@ -75,8 +96,8 @@ export function useThemeCustomization() {
     app: appTheme,
   };
 
-  // Filter themes by category and search (for legacy themes)
-  const filteredThemes = MOCK_THEMES.filter((theme) => {
+  // Filter themes by category and search (from API data)
+  const filteredThemes = themes.filter((theme) => {
     const matchesCategory = theme.category === activeCategory;
     const matchesSearch =
       theme.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -229,5 +250,6 @@ export function useThemeCustomization() {
     isThemeActive,
     isThemePreviewing,
     handleApplyNewProfileTheme,
+    isLoadingThemes,
   };
 }
