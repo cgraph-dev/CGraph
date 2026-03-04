@@ -88,7 +88,7 @@ export function AccountSettings() {
       toast.success('Username changed successfully');
     } catch (error: unknown) {
       const errorMessage =
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: narrowing unknown error from catch
         (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
           ?.message || 'Failed to change username';
       toast.error(errorMessage);
@@ -103,20 +103,28 @@ export function AccountSettings() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={tweens.standard}
+      className="space-y-6"
     >
-      <h1 className="mb-6 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-        Account Settings
-      </h1>
+      <div>
+        <h1 className="mb-1 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+          Account Settings
+        </h1>
+        <p className="text-sm text-white/40">Manage your profile, username, and personal details</p>
+      </div>
 
       <UserIdBadge user={user} />
       <AvatarSection user={user} />
 
       {/* Username with 14-day cooldown */}
-      <GlassCard variant="default" className="mb-6 p-6">
-        <label className="mb-2 block text-sm font-medium text-gray-300">
+      <GlassCard variant="default" className="relative mb-6 overflow-hidden p-6">
+        {/* Section accent */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
+        <label className="mb-3 flex items-center gap-2 text-sm font-semibold text-white/70">
           Username
           {!canChangeUsername && nextChangeDate && (
-            <span className="ml-2 text-xs text-amber-400">(Can change after {nextChangeDate})</span>
+            <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-medium text-amber-400 ring-1 ring-amber-500/20">
+              Locked until {nextChangeDate}
+            </span>
           )}
         </label>
         <div className="flex gap-3">
@@ -126,10 +134,10 @@ export function AccountSettings() {
             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
             disabled={!canChangeUsername}
             placeholder={user?.username || 'Choose a username'}
-            className={`flex-1 rounded-lg border bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+            className={`flex-1 rounded-xl border bg-dark-800/60 px-4 py-3 text-white placeholder-gray-500 shadow-inner shadow-black/20 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
               canChangeUsername
-                ? 'border-dark-600'
-                : 'cursor-not-allowed border-dark-600/50 text-gray-500'
+                ? 'border-white/[0.08] focus:border-primary-500/40'
+                : 'cursor-not-allowed border-white/[0.04] text-gray-500'
             }`}
           />
           {canChangeUsername && username !== user?.username && username.length >= 3 && (
@@ -141,13 +149,13 @@ export function AccountSettings() {
                 HapticFeedback.medium();
               }}
               disabled={isChangingUsername}
-              className="rounded-lg bg-primary-600 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/20 disabled:opacity-50"
+              className="rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 px-5 py-3 text-sm font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:shadow-primary-500/30 disabled:opacity-50"
             >
               {isChangingUsername ? 'Saving...' : 'Change'}
             </motion.button>
           )}
         </div>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-white/30">
           {canChangeUsername
             ? 'Username can be changed every 14 days. Letters, numbers, and underscores only.'
             : `You changed your username recently. Next change available on ${nextChangeDate}.`}

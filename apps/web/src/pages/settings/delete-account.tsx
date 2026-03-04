@@ -47,7 +47,7 @@ export function DeleteAccount() {
       logout();
     } catch (err: unknown) {
       const errMsg =
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: narrowing unknown error from catch
         (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
           ?.message || 'Failed to delete account. Please check your password.';
       setError(errMsg);
@@ -58,18 +58,25 @@ export function DeleteAccount() {
 
   return (
     <motion.div {...entranceVariants.fadeUp} className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">{t('delete_account.title')}</h1>
+      <div>
+        <h1 className="mb-1 bg-gradient-to-r from-red-400 to-red-300 bg-clip-text text-2xl font-bold text-transparent">
+          {t('delete_account.title')}
+        </h1>
+        <p className="text-sm text-white/40">This action is permanent and cannot be undone</p>
+      </div>
 
-      <GlassCard className="border border-red-500/20 p-6">
+      <GlassCard className="relative overflow-hidden border border-red-500/20 p-6">
+        {/* Danger accent */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
         <div className="flex items-start gap-4">
-          <div className="rounded-lg bg-red-500/10 p-3">
+          <div className="rounded-xl bg-red-500/[0.06] p-3 ring-1 ring-red-500/20">
             <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-red-400">{t('delete_account.danger_zone')}</h2>
-            <p className="mt-1 text-sm text-gray-400">
-              {t('delete_account.permanent_warning')}
-            </p>
+            <h2 className="text-lg font-semibold text-red-400">
+              {t('delete_account.danger_zone')}
+            </h2>
+            <p className="mt-1 text-sm text-gray-400">{t('delete_account.permanent_warning')}</p>
             <ul className="mt-3 space-y-1 text-sm text-gray-400">
               <li className="flex items-center gap-2">
                 <span className="text-red-400">•</span> {t('delete_account.consequence1')}
@@ -114,27 +121,26 @@ export function DeleteAccount() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={t('delete_account.enter_password')}
-                    className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 outline-none ring-0 focus:ring-2 focus:ring-red-500"
+                    className="w-full rounded-xl border border-white/[0.08] bg-dark-800/60 px-4 py-3 text-white placeholder-gray-500 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
                   />
                 </div>
 
                 {/* Type DELETE */}
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-gray-300">
-                    Type <span className="font-mono text-red-400">DELETE</span> {t('delete_account.to_confirm')}
+                    Type <span className="font-mono text-red-400">DELETE</span>{' '}
+                    {t('delete_account.to_confirm')}
                   </label>
                   <input
                     type="text"
                     value={confirmText}
                     onChange={(e) => setConfirmText(e.target.value)}
                     placeholder="DELETE"
-                    className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 font-mono text-white placeholder-gray-500 outline-none ring-0 focus:ring-2 focus:ring-red-500"
+                    className="w-full rounded-xl border border-white/[0.08] bg-dark-800/60 px-4 py-3 font-mono text-white placeholder-gray-500 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
                   />
                 </div>
 
-                {error && (
-                  <p className="text-sm text-red-400">{error}</p>
-                )}
+                {error && <p className="text-sm text-red-400">{error}</p>}
 
                 <div className="flex items-center gap-3">
                   <button
@@ -156,7 +162,9 @@ export function DeleteAccount() {
                     className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500 disabled:opacity-30 disabled:hover:bg-red-600"
                   >
                     <TrashIcon className="h-4 w-4" />
-                    {isDeleting ? t('delete_account.deleting') : t('delete_account.delete_my_account')}
+                    {isDeleting
+                      ? t('delete_account.deleting')
+                      : t('delete_account.delete_my_account')}
                   </motion.button>
                 </div>
               </motion.div>

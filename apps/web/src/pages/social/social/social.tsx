@@ -75,8 +75,9 @@ export function Social() {
     () =>
       storeNotifications.map((n) => ({
         id: n.id,
-         
-        type: n.type as Notification['type'], // safe downcast – store type matches UI union
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: store type matches UI union
+        type: n.type as Notification['type'],
         title: n.title,
         message: n.body,
         timestamp: new Date(n.createdAt),
@@ -161,12 +162,50 @@ export function Social() {
   ];
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="relative flex h-full flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+      {/* Background mesh gradient */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-primary-500/[0.04] blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 h-[400px] w-[400px] rounded-full bg-purple-500/[0.04] blur-[120px]" />
+      </div>
+
+      {/* Floating ambient particles */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="pointer-events-none absolute h-0.5 w-0.5 rounded-full bg-primary-400"
+          style={{
+            left: `${15 + Math.random() * 70}%`,
+            top: `${10 + Math.random() * 80}%`,
+          }}
+          animate={{
+            y: [0, -25, 0],
+            opacity: [0.08, 0.25, 0.08],
+            scale: [1, 1.4, 1],
+          }}
+          transition={{
+            duration: 5 + Math.random() * 3,
+            repeat: Infinity,
+            delay: Math.random() * 4,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
       {/* Header with Tabs */}
-      <div className="flex-shrink-0 border-b border-white/10 bg-dark-900/80 backdrop-blur-xl">
-        <div className="px-6 py-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-white">Social Hub</h1>
+      <div className="relative z-10 flex-shrink-0 border-b border-white/[0.06] bg-dark-900/60 backdrop-blur-2xl">
+        {/* Top edge glow */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
+
+        <div className="px-6 py-5">
+          <div className="mb-5 flex items-center justify-between">
+            <motion.h1
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold tracking-tight text-transparent"
+            >
+              Social Hub
+            </motion.h1>
           </div>
 
           {/* Tabs */}
@@ -178,19 +217,31 @@ export function Social() {
                 <button
                   key={tabItem.id}
                   onClick={() => navigate(`/social/${tabItem.id}`)}
-                  className={`relative flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
+                  className={`group relative flex items-center gap-2.5 rounded-xl px-5 py-2.5 font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                      ? 'text-white shadow-lg shadow-primary-500/20'
+                      : 'text-white/50 hover:text-white/80'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  {tabItem.label}
+                  {/* Active tab background */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="socialActiveTab"
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-600/90 to-primary-500/70 shadow-lg shadow-primary-500/25"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  {/* Hover background for inactive */}
+                  {!isActive && (
+                    <div className="absolute inset-0 rounded-xl bg-white/[0.04] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  )}
+                  <Icon className={`relative z-10 h-5 w-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                  <span className="relative z-10">{tabItem.label}</span>
                   {tabItem.count > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white"
+                      className="relative z-10 rounded-full bg-red-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-md shadow-red-500/30"
                     >
                       {tabItem.count > 99 ? '99+' : tabItem.count}
                     </motion.span>
@@ -203,7 +254,7 @@ export function Social() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="relative z-10 flex-1 overflow-y-auto">
         <div className="flex gap-6 p-6">
           {/* Main content */}
           <AnimatePresence mode="wait">
@@ -217,52 +268,54 @@ export function Social() {
             >
               {tab === 'friends' && (
                 <FriendsTab
-                friends={filteredFriends}
-                pendingRequests={pendingRequests}
-                sentRequests={sentRequests}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                onAcceptRequest={acceptRequest}
-                onDeclineRequest={declineRequest}
-                isLoading={isLoading}
-                error={error}
-                onRetry={() => {
-                  clearError();
-                  fetchFriends();
-                  fetchPendingRequests();
-                }}
-              />
-            )}
+                  friends={filteredFriends}
+                  pendingRequests={pendingRequests}
+                  sentRequests={sentRequests}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  onAcceptRequest={acceptRequest}
+                  onDeclineRequest={declineRequest}
+                  isLoading={isLoading}
+                  error={error}
+                  onRetry={() => {
+                    clearError();
+                    fetchFriends();
+                    fetchPendingRequests();
+                  }}
+                />
+              )}
 
-            {tab === 'notifications' && (
-              <NotificationsTab
-                notifications={notifications}
-                onMarkAsRead={handleMarkAsRead}
-                onMarkAllAsRead={handleMarkAllAsRead}
-              />
-            )}
+              {tab === 'notifications' && (
+                <NotificationsTab
+                  notifications={notifications}
+                  onMarkAsRead={handleMarkAsRead}
+                  onMarkAllAsRead={handleMarkAllAsRead}
+                />
+              )}
 
-            {tab === 'discover' && (
-              <DiscoverTab
-                searchQuery={searchQuery}
-                searchResults={searchResults}
-                onSearchChange={handleSearch}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+              {tab === 'discover' && (
+                <DiscoverTab
+                  searchQuery={searchQuery}
+                  searchResults={searchResults}
+                  onSearchChange={handleSearch}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
 
-        {/* Online contacts sidebar — visible on friends tab */}
-        {tab === 'friends' && (
-          <aside className="hidden w-64 flex-shrink-0 lg:block">
-            <div className="sticky top-0 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
-              <ContactsPresenceList
-                className="max-h-[calc(100vh-12rem)] overflow-y-auto"
-                onContactClick={(friend) => navigate(`/messages?user=${friend.id}`)}
-              />
-            </div>
-          </aside>
-        )}
+          {/* Online contacts sidebar — visible on friends tab */}
+          {tab === 'friends' && (
+            <aside className="hidden w-64 flex-shrink-0 lg:block">
+              <div className="sticky top-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-dark-900/40 shadow-xl shadow-black/20 backdrop-blur-xl">
+                {/* Sidebar accent glow */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
+                <ContactsPresenceList
+                  className="max-h-[calc(100vh-12rem)] overflow-y-auto"
+                  onContactClick={(friend) => navigate(`/messages?user=${friend.id}`)}
+                />
+              </div>
+            </aside>
+          )}
         </div>
       </div>
     </div>

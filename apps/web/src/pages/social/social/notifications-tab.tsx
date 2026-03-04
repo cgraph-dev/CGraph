@@ -28,13 +28,15 @@ export function NotificationsTab({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white">
+        <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/40">
+          <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
           {unreadCount > 0 ? `${unreadCount} Unread` : 'All Caught Up!'}
+          <span className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
         </h3>
         {unreadCount > 0 && (
           <button
             onClick={onMarkAllAsRead}
-            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+            className="rounded-xl bg-primary-500/10 px-4 py-2 text-sm font-medium text-primary-400 ring-1 ring-primary-500/20 transition-all hover:bg-primary-500/20"
           >
             Mark All as Read
           </button>
@@ -43,9 +45,19 @@ export function NotificationsTab({
 
       {/* Notifications List */}
       {notifications.length === 0 ? (
-        <GlassCard variant="frosted" className="p-8 text-center">
-          <BellIconSolid className="mx-auto mb-3 h-12 w-12 text-white/40" />
-          <p className="text-white/60">No notifications yet</p>
+        <GlassCard variant="frosted" className="relative overflow-hidden p-12 text-center">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/[0.06] blur-[60px]" />
+          </div>
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-primary-500/10 ring-1 ring-white/[0.06]">
+              <BellIconSolid className="h-10 w-10 text-purple-400/60" />
+            </div>
+            <h4 className="mb-2 text-lg font-semibold text-white/80">No notifications yet</h4>
+            <p className="mx-auto max-w-sm text-sm text-white/40">
+              When someone interacts with you, notifications will show up here.
+            </p>
+          </div>
         </GlassCard>
       ) : (
         <div className="space-y-2">

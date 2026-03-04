@@ -80,9 +80,7 @@ export default function DataExport() {
   const exportIdRef = useRef<string | null>(null);
 
   const toggleCategory = useCallback((id: string) => {
-    setCategories((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, checked: !c.checked } : c)),
-    );
+    setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, checked: !c.checked } : c)));
   }, []);
 
   const selectedCount = categories.filter((c) => c.checked).length;
@@ -117,43 +115,48 @@ export default function DataExport() {
   }, [categories]);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       {/* Header */}
       <motion.div variants={entranceVariants.fadeUp} initial="hidden" animate="visible">
-        <h1 className="text-2xl font-bold text-white">Data Export</h1>
-        <p className="mt-1 text-sm text-dark-400">
+        <h1 className="mb-1 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+          Data Export
+        </h1>
+        <p className="text-sm text-white/40">
           Download a copy of your data. This is your right under GDPR Article 20.
         </p>
       </motion.div>
 
       {/* Category Selection */}
       <motion.div
-        className="rounded-xl border border-dark-700 bg-dark-800 p-4"
+        className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-dark-800/40 p-5 backdrop-blur-xl"
         variants={entranceVariants.fadeUp}
         initial="hidden"
         animate="visible"
         transition={{ delay: 0.05 }}
       >
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-dark-400">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">
           Select Data to Export
         </h2>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {categories.map((cat) => (
             <motion.label
               key={cat.id}
-              className="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-dark-700/50"
+              className="flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all duration-150 hover:bg-white/[0.04]"
               whileTap={{ scale: 0.98 }}
             >
               <input
                 type="checkbox"
                 checked={cat.checked}
                 onChange={() => toggleCategory(cat.id)}
-                className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-emerald-500 focus:ring-emerald-500/30"
+                className="h-4 w-4 rounded border-white/20 bg-dark-800/60 text-emerald-500 focus:ring-emerald-500/30"
               />
-              <div className="mr-2">{cat.icon}</div>
+              <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06]">
+                {cat.icon}
+              </div>
               <div className="flex-1">
-                <span className="font-medium text-white">{cat.label}</span>
-                <p className="text-xs text-dark-400">{cat.description}</p>
+                <span className="font-medium text-white/90">{cat.label}</span>
+                <p className="text-xs text-white/30">{cat.description}</p>
               </div>
             </motion.label>
           ))}
@@ -165,7 +168,7 @@ export default function DataExport() {
         {status === 'idle' && (
           <motion.button
             key="request"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-500 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-3.5 font-semibold text-white shadow-xl shadow-emerald-500/20 transition-all hover:shadow-emerald-500/30 disabled:opacity-50"
             onClick={requestExport}
             disabled={selectedCount === 0}
             whileHover={{ scale: 1.01 }}
@@ -202,9 +205,7 @@ export default function DataExport() {
           >
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="text-dark-300">Processing your export…</span>
-              <span className="font-mono text-emerald-400">
-                {Math.round(progress)}%
-              </span>
+              <span className="font-mono text-emerald-400">{Math.round(progress)}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-dark-700">
               <motion.div
@@ -263,14 +264,9 @@ export default function DataExport() {
             <ExclamationCircleIcon className="h-6 w-6 text-red-400" />
             <div className="flex-1">
               <p className="font-semibold text-red-300">Export Failed</p>
-              <p className="text-xs text-red-400/70">
-                Please try again later or contact support.
-              </p>
+              <p className="text-xs text-red-400/70">Please try again later or contact support.</p>
             </div>
-            <button
-              className="text-sm text-red-400 underline"
-              onClick={() => setStatus('idle')}
-            >
+            <button className="text-sm text-red-400 underline" onClick={() => setStatus('idle')}>
               Retry
             </button>
           </motion.div>
@@ -279,19 +275,19 @@ export default function DataExport() {
 
       {/* Info */}
       <motion.div
-        className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4 text-xs text-dark-400"
+        className="rounded-2xl border border-white/[0.06] bg-dark-800/40 p-5 text-xs text-white/40 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <p className="mb-1 font-medium text-dark-300">About Data Export</p>
+        <p className="mb-2 text-sm font-semibold text-white/60">About Data Export</p>
         <ul className="list-disc space-y-1 pl-4">
           <li>Exports are generated as a ZIP archive containing JSON files.</li>
           <li>Download links expire after 24 hours for security.</li>
           <li>You can request one export per 24-hour period.</li>
           <li>
-            Encrypted messages are exported in their encrypted form — you need
-            your encryption keys to read them.
+            Encrypted messages are exported in their encrypted form — you need your encryption keys
+            to read them.
           </li>
         </ul>
       </motion.div>

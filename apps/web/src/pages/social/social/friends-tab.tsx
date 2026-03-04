@@ -75,22 +75,24 @@ export function FriendsTab({
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
+        <MagnifyingGlassIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/30" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search friends..."
           aria-label="Search friends"
-          className="w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+          className="w-full rounded-2xl border border-white/[0.08] bg-dark-800/60 py-3.5 pl-12 pr-4 text-white shadow-inner shadow-black/20 backdrop-blur-xl transition-all duration-200 placeholder:text-white/30 focus:border-primary-500/40 focus:shadow-lg focus:shadow-primary-500/5 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         />
       </div>
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (
         <div>
-          <h3 className="mb-3 text-lg font-bold text-white">
+          <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-primary-400/80">
+            <span className="h-px flex-1 bg-gradient-to-r from-primary-500/30 to-transparent" />
             Pending Requests ({pendingRequests.length})
+            <span className="h-px flex-1 bg-gradient-to-l from-primary-500/30 to-transparent" />
           </h3>
           <div className="space-y-2">
             {pendingRequests.map((request, index) => (
@@ -103,16 +105,16 @@ export function FriendsTab({
                 <GlassCard variant="neon" glow className="p-4">
                   <div className="flex items-center gap-3">
                     <UserProfileCard userId={request.user?.id || ''} trigger="both">
-                      <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white">
+                      <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-emerald-600 font-medium text-white shadow-lg shadow-primary-500/20 ring-2 ring-primary-500/20">
                         {request.user?.username?.charAt(0).toUpperCase() || '?'}
                       </div>
                     </UserProfileCard>
 
                     <div className="flex-1">
-                      <p className="font-medium text-white">
+                      <p className="font-semibold text-white">
                         {request.user?.displayName || request.user?.username || 'Unknown User'}
                       </p>
-                      <p className="text-sm text-white/60">
+                      <p className="text-sm text-white/40">
                         @{request.user?.username || 'unknown'}
                       </p>
                     </div>
@@ -125,7 +127,7 @@ export function FriendsTab({
                           onAcceptRequest(request.id);
                           HapticFeedback.success();
                         }}
-                        className="rounded-lg bg-green-600 p-2 text-white transition-colors hover:bg-green-700"
+                        className="rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 p-2.5 text-white shadow-lg shadow-green-600/20 transition-shadow hover:shadow-green-600/40"
                         title="Accept"
                       >
                         <CheckIcon className="h-5 w-5" />
@@ -137,7 +139,7 @@ export function FriendsTab({
                           onDeclineRequest(request.id);
                           HapticFeedback.medium();
                         }}
-                        className="rounded-lg bg-red-600 p-2 text-white transition-colors hover:bg-red-700"
+                        className="rounded-xl bg-white/[0.06] p-2.5 text-white/60 transition-all hover:bg-red-500/20 hover:text-red-400"
                         title="Decline"
                       >
                         <XMarkIcon className="h-5 w-5" />
@@ -153,11 +155,27 @@ export function FriendsTab({
 
       {/* Friends List */}
       <div>
-        <h3 className="mb-3 text-lg font-bold text-white">All Friends ({friends.length})</h3>
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/40">
+          <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+          All Friends ({friends.length})
+          <span className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
+        </h3>
         {friends.length === 0 ? (
-          <GlassCard variant="frosted" className="p-8 text-center">
-            <UsersIcon className="mx-auto mb-3 h-12 w-12 text-white/40" />
-            <p className="text-white/60">No friends yet. Start adding friends to see them here!</p>
+          <GlassCard variant="frosted" className="relative overflow-hidden p-12 text-center">
+            {/* Empty state decorative gradient */}
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-500/[0.06] blur-[60px]" />
+            </div>
+            <div className="relative">
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500/10 to-purple-500/10 ring-1 ring-white/[0.06]">
+                <UsersIcon className="h-10 w-10 text-primary-400/60" />
+              </div>
+              <h4 className="mb-2 text-lg font-semibold text-white/80">No friends yet</h4>
+              <p className="mx-auto max-w-sm text-sm text-white/40">
+                Use the Discover tab to find people and send friend requests. Your connections will
+                appear here.
+              </p>
+            </div>
           </GlassCard>
         ) : (
           <div className="grid grid-cols-1 gap-2">
@@ -170,7 +188,7 @@ export function FriendsTab({
               >
                 <GlassCard
                   variant="crystal"
-                  className="group cursor-pointer p-4 transition-transform hover:scale-[1.01]"
+                  className="group cursor-pointer p-4 transition-all duration-200 hover:scale-[1.01] hover:shadow-lg hover:shadow-primary-500/5"
                 >
                   <div className="flex items-center gap-3">
                     <UserProfileCard userId={friend.id} trigger="both">
@@ -180,25 +198,25 @@ export function FriendsTab({
                             src={friend.avatarUrl}
                             alt={friend.displayName || friend.username}
                             size="medium"
-                            className="h-12 w-12 ring-2 ring-dark-700"
+                            className="h-12 w-12 ring-2 ring-white/[0.08]"
                             avatarBorderId={getAvatarBorderId(friend)}
                           />
                         ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white ring-2 ring-dark-700">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500/80 to-purple-600/80 font-medium text-white ring-2 ring-white/[0.08]">
                             {friend.username.charAt(0).toUpperCase()}
                           </div>
                         )}
                         {friend.status === 'online' && (
-                          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-dark-900" />
+                          <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/40 ring-2 ring-dark-900" />
                         )}
                       </div>
                     </UserProfileCard>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-white">
+                      <p className="truncate font-semibold text-white">
                         {friend.displayName || friend.username}
                       </p>
-                      <p className="truncate text-sm text-white/60">@{friend.username}</p>
+                      <p className="truncate text-sm text-white/40">@{friend.username}</p>
                     </div>
 
                     <motion.button
@@ -209,7 +227,7 @@ export function FriendsTab({
                         navigate(`/messages?user=${friend.id}`);
                         HapticFeedback.medium();
                       }}
-                      className="rounded-lg bg-primary-600 p-2 text-white opacity-0 transition-opacity hover:bg-primary-700 group-hover:opacity-100"
+                      className="rounded-xl bg-primary-500/10 p-2.5 text-primary-400 opacity-0 ring-1 ring-primary-500/20 transition-all hover:bg-primary-500/20 group-hover:opacity-100"
                       title="Send Message"
                     >
                       <ChatBubbleLeftRightIcon className="h-5 w-5" />

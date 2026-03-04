@@ -21,34 +21,35 @@ interface AvatarSectionProps {
  */
 export function AvatarSection({ user }: AvatarSectionProps) {
   return (
-    <GlassCard variant="crystal" glow className="mb-8 p-6">
-      <label className="mb-3 block text-sm font-medium text-gray-300">Profile Picture</label>
-      <div className="flex items-center gap-4">
-        <div className="h-20 w-20 overflow-hidden rounded-full bg-dark-700 ring-2 ring-dark-600 transition-all hover:ring-primary-500">
+    <GlassCard variant="crystal" glow className="relative mb-6 overflow-hidden p-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
+      <label className="mb-4 block text-sm font-semibold text-white/70">Profile Picture</label>
+      <div className="flex items-center gap-5">
+        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-dark-800/60 shadow-lg shadow-black/20 ring-2 ring-white/[0.08] transition-all duration-200 hover:ring-primary-500/40">
           {user?.avatarUrl ? (
             <ThemedAvatar
               src={user.avatarUrl}
               alt={user?.displayName || user?.username || 'User'}
               size="large"
-              className="h-20 w-20"
+              className="h-20 w-20 rounded-2xl"
               avatarBorderId={getAvatarBorderId(user)}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-gray-400">
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-500/10 to-purple-500/10 text-3xl font-bold text-white/40">
               {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
             </div>
           )}
         </div>
         <div>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => HapticFeedback.medium()}
-            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/20"
+            className="rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:shadow-primary-500/30"
           >
             Upload Image
           </motion.button>
-          <p className="mt-1 text-xs text-gray-500">JPG, PNG, or GIF. Max 2MB.</p>
+          <p className="mt-2 text-xs text-white/25">JPG, PNG, or GIF. Max 2MB.</p>
         </div>
       </div>
     </GlassCard>

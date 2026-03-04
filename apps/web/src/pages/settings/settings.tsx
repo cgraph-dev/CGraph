@@ -104,6 +104,12 @@ export default function Settings() {
 
   return (
     <div className="relative flex flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+      {/* Background mesh gradients */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-32 top-1/4 h-[400px] w-[400px] rounded-full bg-primary-500/[0.03] blur-[100px]" />
+        <div className="absolute bottom-1/4 right-0 h-[350px] w-[350px] rounded-full bg-purple-500/[0.03] blur-[100px]" />
+      </div>
+
       {/* Ambient particles */}
       {[...Array(8)].map((_, i) => (
         <motion.div
@@ -128,9 +134,11 @@ export default function Settings() {
       ))}
 
       {/* Sidebar */}
-      <nav className="relative z-10 w-56 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 p-4 backdrop-blur-xl">
+      <nav className="relative z-10 w-60 overflow-y-auto border-r border-white/[0.06] bg-dark-900/40 p-5 backdrop-blur-2xl">
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
+        {/* Edge highlight */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-primary-500/20 to-transparent" />
 
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -138,23 +146,23 @@ export default function Settings() {
           transition={tweens.moderate}
           className="relative z-10"
         >
-          <h2 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-bold text-transparent">
+          <h2 className="mb-6 flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-bold text-transparent">
             <SparklesIcon className="h-5 w-5 text-primary-400" />
             Settings
           </h2>
           <div className="space-y-1">
-            {settingsSections.map((item) => (
+            {settingsSections.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ ...springs.bouncy, delay: 0.05 }}
+                transition={{ ...springs.bouncy, delay: 0.02 + index * 0.03 }}
               >
                 <NavLink
                   to={`/settings/${item.id}`}
                   onClick={() => HapticFeedback.light()}
                   className={({ isActive }) =>
-                    `group relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2 transition-all duration-200 ${
+                    `group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 transition-all duration-200 ${
                       isActive || (item.id === 'account' && section === undefined)
                         ? 'text-white'
                         : 'text-gray-400 hover:text-white'
@@ -167,25 +175,37 @@ export default function Settings() {
                       {isActive ? (
                         <motion.div
                           layoutId="activeSettingsTab"
-                          className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/20 via-primary-500/10 to-transparent shadow-lg shadow-primary-500/5"
                           transition={springs.stiff}
                         />
                       ) : (
-                        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/0 via-purple-500/0 to-transparent opacity-0 transition-all duration-300 group-hover:from-primary-500/10 group-hover:via-purple-500/10 group-hover:opacity-100" />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/0 to-transparent opacity-0 transition-all duration-300 group-hover:from-white/[0.04] group-hover:opacity-100" />
                       )}
 
                       {/* Icon with glow */}
-                      <item.icon
-                        className={`relative z-10 h-5 w-5 flex-shrink-0 transition-all duration-200 ${
-                          isActive ? 'text-primary-400' : 'group-hover:scale-110'
+                      <div
+                        className={`relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? 'bg-primary-500/20 shadow-lg shadow-primary-500/10'
+                            : 'bg-white/[0.04] group-hover:bg-white/[0.06]'
                         }`}
-                        style={
-                          isActive ? { filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.6))' } : {}
-                        }
-                      />
-                      <div className="relative z-10 flex-1">
-                        <div className="font-medium">{item.label}</div>
-                        <div className="text-xs text-white/40 transition-colors group-hover:text-white/60">
+                      >
+                        <item.icon
+                          className={`h-4 w-4 transition-all duration-200 ${
+                            isActive
+                              ? 'text-primary-400'
+                              : 'text-gray-400 group-hover:text-white/70'
+                          }`}
+                          style={
+                            isActive
+                              ? { filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.6))' }
+                              : {}
+                          }
+                        />
+                      </div>
+                      <div className="relative z-10 min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium">{item.label}</div>
+                        <div className="truncate text-[11px] text-white/30 transition-colors group-hover:text-white/40">
                           {item.description}
                         </div>
                       </div>
@@ -193,7 +213,7 @@ export default function Settings() {
                       {/* Active indicator */}
                       {isActive && (
                         <motion.div
-                          className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
+                          className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-primary-500"
                           layoutId="settingsActiveIndicator"
                           initial={false}
                           transition={springs.stiff}
@@ -214,7 +234,7 @@ export default function Settings() {
       {/* Content */}
       <div className="relative z-10 flex-1 overflow-y-auto p-8">
         <motion.div
-          className="max-w-2xl"
+          className="mx-auto max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...tweens.moderate, delay: 0.1 }}

@@ -51,10 +51,10 @@ function ContactAvatar({ friend }: { friend: Friend }) {
         <img
           src={friend.avatarUrl}
           alt={friend.displayName || friend.username}
-          className="h-8 w-8 rounded-full object-cover"
+          className="h-8 w-8 rounded-lg object-cover ring-1 ring-white/[0.08]"
         />
       ) : (
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500/20 to-purple-500/20 text-xs font-semibold text-white/60 ring-1 ring-white/[0.08]">
           {initials}
         </div>
       )}
@@ -80,24 +80,21 @@ function ContactRow({
   return (
     <button
       type="button"
-      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-all duration-150 hover:bg-white/[0.04]"
       onClick={() => onClick?.(friend)}
     >
       <ContactAvatar friend={friend} />
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+        <div className="flex items-center gap-1.5">
+          <span className="truncate text-sm font-medium text-white/90">
             {friend.displayName || friend.username}
           </span>
-          <span className="truncate text-xs text-gray-500 dark:text-gray-400">
-            @{friend.username}
-          </span>
         </div>
-        {displayStatus && (
-          <p className="truncate text-xs text-gray-400 dark:text-gray-500">
-            {displayStatus}
-          </p>
+        {displayStatus ? (
+          <p className="truncate text-[11px] text-white/30">{displayStatus}</p>
+        ) : (
+          <p className="truncate text-[11px] text-white/20">@{friend.username}</p>
         )}
       </div>
 
@@ -140,23 +137,24 @@ export function ContactsPresenceList({
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Contacts</h2>
+      <div className="flex items-center justify-between px-4 py-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40">Contacts</h2>
         {onlineCount > 0 && (
-          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-            {onlineCount} online
+          <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/[0.08] px-2 py-0.5 text-[11px] font-medium text-emerald-400 ring-1 ring-emerald-500/20">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            {onlineCount}
           </span>
         )}
       </div>
 
       {/* Contact list */}
       {sortedFriends.length === 0 ? (
-        <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
-          <div className="mb-2 text-3xl">👋</div>
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">No contacts yet</p>
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            Add friends to see them here
-          </p>
+        <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.06]">
+            <span className="text-xl">👋</span>
+          </div>
+          <p className="text-sm font-medium text-white/50">No contacts yet</p>
+          <p className="mt-1 text-xs text-white/25">Add friends to see them here</p>
         </div>
       ) : (
         <div className="flex flex-col">
