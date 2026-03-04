@@ -15,14 +15,7 @@ interface MentionAutocompleteProps {
   onClose: () => void;
 }
 
-// Mock users for fallback
-const MOCK_USERS = [
-  { id: '1', username: 'alice', displayName: 'Alice' },
-  { id: '2', username: 'bob', displayName: 'Bob' },
-  { id: '3', username: 'charlie', displayName: 'Charlie' },
-  { id: '4', username: 'david', displayName: 'David' },
-  { id: '5', username: 'emma', displayName: 'Emma' },
-];
+// MOCK_USERS removed — API search is used exclusively
 
 /**
  * unknown for the chat module.
@@ -78,12 +71,12 @@ export function MentionAutocomplete({
             )
           );
         } else {
-          // Fallback to mock data
-          setUsers(filterMockUsers(query));
+          // API returned no users field — show empty results
+          setUsers([]);
         }
       } catch {
-        // Fallback to mock data on error
-        setUsers(filterMockUsers(query));
+        // API error — show empty results
+        setUsers([]);
       } finally {
         setIsLoading(false);
       }
@@ -141,13 +134,5 @@ export function MentionAutocomplete({
         ))
       )}
     </motion.div>
-  );
-}
-
-function filterMockUsers(query: string): MentionUser[] {
-  return MOCK_USERS.filter(
-    (u) =>
-      u.username.toLowerCase().includes(query.toLowerCase()) ||
-      u.displayName.toLowerCase().includes(query.toLowerCase())
   );
 }

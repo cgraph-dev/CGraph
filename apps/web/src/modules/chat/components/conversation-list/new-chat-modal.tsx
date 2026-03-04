@@ -3,7 +3,7 @@
  * @module modules/chat/components/conversation-list
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -12,9 +12,9 @@ import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useChatStore } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
+import { api } from '@/lib/api';
 import { getAvatarBorderId } from '@/lib/utils';
-import type { NewChatModalProps } from './types';
-import { MOCK_USERS } from './constants';
+import type { NewChatModalProps, MockUser } from './types';
 
 const logger = createLogger('NewChatModal');
 
@@ -28,14 +28,55 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
+  const [users, setUsers] = useState<MockUser[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
   const { createConversation } = useChatStore();
 
-  const filteredUsers = MOCK_USERS.filter(
-    (u) =>
-      u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Search users from API with debouncing
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setUsers([]);
+      return;
+    }
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const response = await api.get('/api/v1/users/search', {
+          params: { q: searchQuery, limit: 20 },
+        });
+        const results = response.data?.users || response.data?.data || [];
+        setUsers(
+          results.map((u: Record<string, unknown>) => ({
+            id: u.id as string,
+            username: (u.username as string) || '',
+            displayName: (u.display_name as string) || (u.username as string) || '',
+            avatarUrl: (u.avatar_url as string) || null,
+            status: (u.status as 'online' | 'offline') || 'offline',
+          }))
+        );
+      } catch (error) {
+        logger.error('Failed to search users:', error);
+        setUsers([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  const filteredUsers = users;
 
   const handleStartChat = async () => {
     if (selectedUsers.length === 0) return;
@@ -88,7 +129,7 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
           {selectedUsers.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
               {selectedUsers.map((userId) => {
-                const user = MOCK_USERS.find((u) => u.id === userId);
+                const user = users.find((u) => u.id === userId);
                 if (!user) return null;
                 return (
                   <motion.div

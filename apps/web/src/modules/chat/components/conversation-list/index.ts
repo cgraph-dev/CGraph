@@ -37,4 +37,4 @@ export type {
 } from './types';
 
 // Constants
-export { FILTER_OPTIONS, MOCK_USERS } from './constants';
+export { FILTER_OPTIONS } from './constants';

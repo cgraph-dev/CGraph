@@ -12,15 +12,5 @@ export const FILTER_OPTIONS: FilterOption[] = [
   { id: 'unread', label: 'Unread' },
 ];
 
-// Mock users for NewChatModal - would come from API in production
-export const MOCK_USERS = [
-  { id: '1', username: 'alice', displayName: 'Alice', avatarUrl: null, status: 'online' as const },
-  { id: '2', username: 'bob', displayName: 'Bob', avatarUrl: null, status: 'offline' as const },
-  {
-    id: '3',
-    username: 'charlie',
-    displayName: 'Charlie',
-    avatarUrl: null,
-    status: 'online' as const,
-  },
-];
+// MOCK_USERS removed — user search now uses GET /api/v1/users/search
+
