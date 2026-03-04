@@ -11,7 +11,6 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 import type { AdminStats, AdminState, AdminStore } from './adminStore.types';
-import { MOCK_ADMIN_STATS } from './adminStore.mockData';
 import { createModerationActions } from './admin-moderation-actions';
 import { createEventActions } from './admin-event-actions';
 import { createUserActions } from './admin-user-actions';
@@ -73,10 +72,8 @@ export const useAdminStore = create<AdminStore>()(
               isLoading: false,
             });
           } catch {
-            // Use mock data for development
             set({
-              stats: MOCK_ADMIN_STATS,
-              statsLastUpdated: new Date(),
+              error: 'Failed to load dashboard stats',
               isLoading: false,
             });
           }

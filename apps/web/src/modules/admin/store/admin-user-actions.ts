@@ -8,7 +8,6 @@
  */
 
 import type { AdminStore, AdminUser, UserStatus } from './adminStore.types';
-import { MOCK_ADMIN_USERS } from './adminStore.mockData';
 
 type Set = (
   partial: Partial<AdminStore> | ((state: AdminStore) => Partial<AdminStore>),
@@ -46,9 +45,8 @@ export function createUserActions(set: Set, get: Get) {
           isLoading: false,
         });
       } catch {
-        // Use mock data for development
         set({
-          users: MOCK_ADMIN_USERS,
+          error: 'Failed to load users',
           isLoading: false,
         });
       }

@@ -7,7 +7,6 @@
  */
 
 import type { AdminStore, ModerationItem, ModerationStatus } from './adminStore.types';
-import { MOCK_MODERATION_QUEUE } from './adminStore.mockData';
 
 type Set = (
   partial: Partial<AdminStore> | ((state: AdminStore) => Partial<AdminStore>),
@@ -40,9 +39,8 @@ export function createModerationActions(set: Set) {
           isLoading: false,
         });
       } catch {
-        // Use mock data for development
         set({
-          moderationQueue: MOCK_MODERATION_QUEUE,
+          error: 'Failed to load moderation queue',
           isLoading: false,
         });
       }

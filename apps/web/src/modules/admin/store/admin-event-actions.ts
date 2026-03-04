@@ -7,7 +7,6 @@
  */
 
 import type { AdminStore, AdminEvent, EventStatus } from './adminStore.types';
-import { MOCK_ADMIN_EVENTS } from './adminStore.mockData';
 
 type Set = (
   partial: Partial<AdminStore> | ((state: AdminStore) => Partial<AdminStore>),
@@ -45,9 +44,8 @@ export function createEventActions(set: Set, get: Get) {
           isLoading: false,
         });
       } catch {
-        // Use mock data for development
         set({
-          events: MOCK_ADMIN_EVENTS,
+          error: 'Failed to load events',
           isLoading: false,
         });
       }
@@ -79,21 +77,7 @@ export function createEventActions(set: Set, get: Get) {
           isLoading: false,
         }));
       } catch {
-        // Create locally for development
-        const now = new Date();
-        set((state) => ({
-          events: [
-            ...state.events,
-             
-            {
-              ...event,
-              id: `event_${Date.now()}`,
-              createdAt: now,
-              updatedAt: now,
-            } as AdminEvent, // safe downcast – local fallback construction
-          ],
-          isLoading: false,
-        }));
+        set({ isLoading: false, error: 'Failed to create event' });
       }
     },
 

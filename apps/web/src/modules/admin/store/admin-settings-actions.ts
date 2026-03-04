@@ -7,7 +7,6 @@
  */
 
 import type { AdminStore, SystemSetting } from './adminStore.types';
-import { MOCK_ADMIN_SETTINGS } from './adminStore.mockData';
 
 type Set = (
   partial: Partial<AdminStore> | ((state: AdminStore) => Partial<AdminStore>),
@@ -33,9 +32,8 @@ export function createSettingsActions(set: Set) {
          
         set({ systemSettings: response.data as SystemSetting[], isLoading: false }); // type assertion: API response data shape
       } catch {
-        // Use mock data for development
         set({
-          systemSettings: MOCK_ADMIN_SETTINGS,
+          error: 'Failed to load system settings',
           isLoading: false,
         });
       }
