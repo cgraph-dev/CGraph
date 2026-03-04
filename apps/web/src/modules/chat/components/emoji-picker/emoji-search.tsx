@@ -19,14 +19,14 @@ interface EmojiSearchProps {
 export function EmojiSearch({ searchQuery, onSearchChange }: EmojiSearchProps) {
   return (
     <div className="border-b border-white/10 p-3">
-      <div className="flex items-center gap-2 rounded-lg bg-dark-800/50 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2">
         <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search emojis..."
-          className="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
+          className="w-full bg-transparent text-sm text-white placeholder-white/30 focus:outline-none"
         />
         {searchQuery && (
           <button onClick={() => onSearchChange('')} className="text-gray-400 hover:text-white">

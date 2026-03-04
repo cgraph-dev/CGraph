@@ -93,7 +93,7 @@ export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalPr
             exit="initial"
             transition={springs.gentle}
             onClick={(e) => e.stopPropagation()}
-            className="mx-4 w-full max-w-lg rounded-2xl border border-white/10 bg-dark-800 p-6 shadow-2xl"
+            className="mx-4 w-full max-w-lg rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl"
           >
             {/* Header */}
             <div className="mb-5 flex items-center justify-between">
@@ -117,7 +117,7 @@ export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalPr
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="Ask a question..."
                 maxLength={200}
-                className="w-full rounded-xl border border-white/10 bg-dark-700 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               />
             </div>
 
@@ -133,7 +133,7 @@ export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalPr
                       onChange={(e) => updateOption(i, e.target.value)}
                       placeholder={`Option ${i + 1}`}
                       maxLength={100}
-                      className="flex-1 rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+                      className="flex-1 rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
                     />
                     {options.length > 2 && (
                       <button
@@ -164,7 +164,7 @@ export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalPr
                   type="checkbox"
                   checked={multipleChoice}
                   onChange={(e) => setMultipleChoice(e.target.checked)}
-                  className="rounded border-white/20 bg-dark-700 text-primary-500 focus:ring-primary-500"
+                  className="rounded border-white/20 bg-white/[0.06] text-primary-500 focus:ring-primary-500"
                 />
                 <span className="text-sm text-white/70">Allow multiple selections</span>
               </label>
@@ -173,7 +173,7 @@ export function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalPr
                   type="checkbox"
                   checked={anonymous}
                   onChange={(e) => setAnonymous(e.target.checked)}
-                  className="rounded border-white/20 bg-dark-700 text-primary-500 focus:ring-primary-500"
+                  className="rounded border-white/20 bg-white/[0.06] text-primary-500 focus:ring-primary-500"
                 />
                 <span className="text-sm text-white/70">Anonymous voting</span>
               </label>

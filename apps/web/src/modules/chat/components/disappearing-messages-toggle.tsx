@@ -47,7 +47,7 @@ export function DisappearingMessagesToggle({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-xl border border-white/10 bg-dark-800 py-1 shadow-xl">
+          <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-xl border border-white/10 bg-white/[0.04] py-1 shadow-xl">
             <p className="px-3 py-2 text-xs font-semibold uppercase text-white/30">
               Message timer
             </p>

@@ -123,7 +123,7 @@ export function FileMessage({ message, isOwnMessage, className = '' }: FileMessa
           className={`group relative flex min-w-[280px] max-w-sm items-center gap-3 rounded-xl border p-4 transition-all hover:scale-[1.02] ${
             isOwnMessage
               ? 'border-primary-500/30 bg-primary-500/10 hover:border-primary-500/50'
-              : 'border-gray-700 bg-dark-800/50 hover:border-gray-600'
+              : 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.08]'
           }`}
         >
           {/* File Icon */}
@@ -167,7 +167,7 @@ export function FileMessage({ message, isOwnMessage, className = '' }: FileMessa
             className={`flex-shrink-0 rounded-lg p-2 transition-colors ${
               isOwnMessage
                 ? 'text-primary-400 hover:bg-primary-500/20'
-                : 'text-gray-400 hover:bg-gray-700'
+                : 'text-gray-400 hover:bg-white/[0.06]'
             }`}
             title="Download file"
           >

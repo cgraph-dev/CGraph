@@ -26,7 +26,7 @@ export default function ImageEmbed({ embed, onExpand }: ImageEmbedProps) {
       onClick={onExpand}
     >
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-dark-800/50 backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/[0.04] backdrop-blur-sm">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
         </div>
       )}

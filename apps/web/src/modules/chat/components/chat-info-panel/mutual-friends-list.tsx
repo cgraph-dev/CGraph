@@ -68,7 +68,7 @@ export function MutualFriendsList({ friends, onFriendClick }: MutualFriendsListP
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 1 }}
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dark-900 bg-dark-700 text-xs font-bold text-gray-400"
+            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dark-900 bg-white/[0.06] text-xs font-bold text-gray-400"
           >
             +{friends.length - 5}
           </motion.div>

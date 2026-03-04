@@ -105,7 +105,7 @@ export function ScheduledMessagesList({
                   </div>
                 ) : totalScheduled === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="mb-4 rounded-full bg-dark-800/50 p-6">
+                    <div className="mb-4 rounded-full bg-white/[0.04] p-6">
                       <CalendarIcon className="h-12 w-12 text-gray-500" />
                     </div>
                     <p className="mb-2 text-lg font-medium text-gray-300">No scheduled messages</p>

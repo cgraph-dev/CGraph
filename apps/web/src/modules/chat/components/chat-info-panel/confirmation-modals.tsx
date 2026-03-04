@@ -39,7 +39,7 @@ export function BlockConfirmModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="w-full max-w-sm rounded-xl border border-white/10 bg-dark-800 p-6"
+            className="w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.04] p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-2 text-lg font-bold text-white">Block {userName}?</h3>
@@ -50,7 +50,7 @@ export function BlockConfirmModal({
             <div className="flex gap-3">
               <motion.button
                 onClick={onCancel}
-                className="flex-1 rounded-lg bg-dark-700 px-4 py-2 text-gray-300 hover:bg-dark-600"
+                className="flex-1 rounded-lg bg-white/[0.06] px-4 py-2 text-gray-300 hover:bg-white/[0.10]"
                 whileTap={{ scale: 0.98 }}
               >
                 Cancel
@@ -110,7 +110,7 @@ export function ReportModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="w-full max-w-sm rounded-xl border border-white/10 bg-dark-800 p-6"
+            className="w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.04] p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-2 text-lg font-bold text-white">Report {userName}</h3>
@@ -121,12 +121,12 @@ export function ReportModal({
               value={reportReason}
               onChange={(e) => onReasonChange(e.target.value)}
               placeholder="Describe the issue..."
-              className="mb-4 h-24 w-full resize-none rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="mb-4 h-24 w-full resize-none rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
             />
             <div className="flex gap-3">
               <motion.button
                 onClick={onCancel}
-                className="flex-1 rounded-lg bg-dark-700 px-4 py-2 text-gray-300 hover:bg-dark-600"
+                className="flex-1 rounded-lg bg-white/[0.06] px-4 py-2 text-gray-300 hover:bg-white/[0.10]"
                 whileTap={{ scale: 0.98 }}
               >
                 Cancel

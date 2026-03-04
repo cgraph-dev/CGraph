@@ -33,7 +33,7 @@ export function ScheduledMessageCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      className="group rounded-xl border border-white/10 bg-dark-800/50 p-4 transition-all hover:border-primary-500/30"
+      className="group rounded-xl border border-white/10 bg-white/[0.04] p-4 transition-all hover:border-primary-500/30"
     >
       <div className="mb-2 flex items-start justify-between">
         <div className="flex-1">

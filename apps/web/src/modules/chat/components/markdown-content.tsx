@@ -47,7 +47,7 @@ export const MarkdownContent = memo(function MarkdownContent({
           if (isBlock) {
             return (
               <code
-                className={`block overflow-x-auto rounded-lg bg-dark-900/80 p-3 font-mono text-xs text-emerald-300 ${codeClassName || ''}`}
+                className={`block overflow-x-auto rounded-lg bg-[rgb(30,32,40)]/[0.80] p-3 font-mono text-xs text-emerald-300 ${codeClassName || ''}`}
                 {...props}
               >
                 {children}
@@ -56,7 +56,7 @@ export const MarkdownContent = memo(function MarkdownContent({
           }
           return (
             <code
-              className="rounded bg-dark-900/60 px-1.5 py-0.5 font-mono text-xs text-pink-300"
+              className="rounded bg-[rgb(30,32,40)]/60 px-1.5 py-0.5 font-mono text-xs text-pink-300"
               {...props}
             >
               {children}

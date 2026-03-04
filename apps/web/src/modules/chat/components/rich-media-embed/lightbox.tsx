@@ -34,7 +34,7 @@ export default function Lightbox({ lightboxMedia, setLightboxMedia }: LightboxPr
           }}
         >
           <motion.button
-            className="absolute right-4 top-4 rounded-full bg-dark-800/80 p-2 text-white transition-colors hover:bg-dark-700"
+            className="absolute right-4 top-4 rounded-full bg-white/[0.04]/80 p-2 text-white transition-colors hover:bg-white/[0.08]"
             whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             onClick={(e) => {

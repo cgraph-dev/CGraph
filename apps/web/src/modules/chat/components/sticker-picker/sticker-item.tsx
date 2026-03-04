@@ -80,7 +80,7 @@ export function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerI
             className={cn(
               'absolute -bottom-8 left-1/2 z-50 -translate-x-1/2',
               'whitespace-nowrap rounded-md px-2 py-1 text-xs',
-              'border border-white/10 bg-dark-800',
+              'border border-white/10 bg-white/[0.04]',
               rarityColors?.text
             )}
           >

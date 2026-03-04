@@ -166,7 +166,7 @@ export function ForwardMessageModal({
                     placeholder="Search conversations..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-lg border border-gray-600 bg-gray-800/50 py-2 pl-10 pr-4 text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04]/50 py-2 pl-10 pr-4 text-white placeholder-white/30 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                   />
                 </div>
               </div>
@@ -195,7 +195,7 @@ export function ForwardMessageModal({
                         className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-all ${
                           isSelected
                             ? 'border-primary-500 bg-primary-500/20'
-                            : 'border-gray-600 bg-gray-800/50 hover:border-gray-500 hover:bg-gray-800'
+                            : 'border-white/[0.08] bg-white/[0.04]/50 hover:border-gray-500 hover:bg-white/[0.04]'
                         }`}
                       >
                         {/* Avatar */}
@@ -227,7 +227,7 @@ export function ForwardMessageModal({
                         {/* Checkmark */}
                         <div
                           className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
-                            isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-600'
+                            isSelected ? 'border-primary-500 bg-primary-500' : 'border-white/[0.08]'
                           }`}
                         >
                           {isSelected && <CheckIcon className="h-4 w-4 text-white" />}
@@ -244,7 +244,7 @@ export function ForwardMessageModal({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleClose}
-                  className="flex-1 rounded-xl border border-gray-600 bg-gray-800/50 px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-gray-800"
+                  className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04]/50 px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-white/[0.04]"
                 >
                   Cancel
                 </motion.button>
@@ -257,7 +257,7 @@ export function ForwardMessageModal({
                   className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition-all ${
                     selectedConversations.size > 0 && !isForwarding
                       ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-600 hover:shadow-primary-500/50'
-                      : 'cursor-not-allowed bg-gray-700 text-gray-500'
+                      : 'cursor-not-allowed bg-white/[0.06] text-gray-500'
                   }`}
                 >
                   <PaperAirplaneIcon className="h-5 w-5" />

@@ -91,7 +91,7 @@ export function ScheduleMessageModal({
                 </div>
 
                 {/* Message Preview */}
-                <div className="mb-6 rounded-xl bg-dark-800/50 p-4">
+                <div className="mb-6 rounded-xl bg-white/[0.04] p-4">
                   <p className="mb-2 text-sm font-medium text-gray-300">Message Preview:</p>
                   <p className="line-clamp-3 text-white">{messagePreview}</p>
                 </div>
@@ -120,7 +120,7 @@ export function ScheduleMessageModal({
                           className={`group relative rounded-xl p-3 transition-all ${
                             isActive
                               ? 'bg-primary-500/20 text-primary-400 ring-2 ring-primary-500/50'
-                              : 'bg-dark-800/50 text-gray-300 hover:bg-primary-500/10 hover:text-primary-400'
+                              : 'bg-white/[0.04] text-gray-300 hover:bg-primary-500/10 hover:text-primary-400'
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -147,7 +147,7 @@ export function ScheduleMessageModal({
                     onChange={(e) => handleCustomDateTimeChange(e.target.value)}
                     min={getMinDateTime()}
                     max={getMaxDateTime()}
-                    className="w-full rounded-xl border border-gray-700 bg-dark-800/50 px-4 py-3 text-white transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                   />
                   <p className="mt-2 text-xs text-gray-500">
                     Your timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
@@ -161,7 +161,7 @@ export function ScheduleMessageModal({
                 <div className="flex gap-3">
                   <motion.button
                     onClick={handleClose}
-                    className="flex-1 rounded-xl bg-dark-800/50 px-4 py-3 font-medium text-gray-300 transition-all hover:bg-dark-700/50 hover:text-white"
+                    className="flex-1 rounded-xl bg-white/[0.04] px-4 py-3 font-medium text-gray-300 transition-all hover:bg-white/[0.06] hover:text-white"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -173,7 +173,7 @@ export function ScheduleMessageModal({
                     className={`flex-1 rounded-xl px-4 py-3 font-medium transition-all ${
                       scheduledAt && !isScheduling
                         ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white hover:from-primary-600 hover:to-purple-600'
-                        : 'cursor-not-allowed bg-gray-700/50 text-gray-500'
+                        : 'cursor-not-allowed bg-white/[0.06]/50 text-gray-500'
                     }`}
                     whileHover={scheduledAt && !isScheduling ? { scale: 1.02 } : {}}
                     whileTap={scheduledAt && !isScheduling ? { scale: 0.98 } : {}}

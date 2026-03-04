@@ -24,7 +24,7 @@ export function CategoryButton({ category, isActive, onClick }: CategoryButtonPr
         'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
         isActive
           ? 'bg-primary-600 text-white'
-          : 'bg-dark-700 text-gray-400 hover:bg-dark-600 hover:text-white'
+          : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10] hover:text-white'
       )}
     >
       {category.icon}

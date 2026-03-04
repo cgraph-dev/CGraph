@@ -101,7 +101,7 @@ export function GifMessage({
         {/* Loading State */}
         {isLoading && !hasError && (
           <div
-            className="flex items-center justify-center rounded-lg bg-dark-700/50"
+            className="flex items-center justify-center rounded-lg bg-white/[0.06]"
             style={{
               width: `${displayWidth}px`,
               height: `${displayHeight}px`,
@@ -210,7 +210,7 @@ export function GifMessage({
               />
 
               {/* GIF Info */}
-              <div className="mt-4 rounded-lg bg-dark-800/90 p-3 text-center backdrop-blur-sm">
+              <div className="mt-4 rounded-lg bg-white/[0.04]/90 p-3 text-center backdrop-blur-sm">
                 <p className="text-sm font-medium text-white">{gifTitle}</p>
                 {gifWidth && gifHeight && (
                   <p className="mt-1 text-xs text-gray-400">

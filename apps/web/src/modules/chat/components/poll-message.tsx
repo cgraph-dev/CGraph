@@ -52,7 +52,7 @@ export function PollMessage({
   );
 
   return (
-    <div className="w-full max-w-sm rounded-xl border border-white/10 bg-dark-700/50 p-4">
+    <div className="w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.06] p-4">
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <ChartBarIcon className="h-4 w-4 text-primary-400" />

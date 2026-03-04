@@ -58,7 +58,7 @@ export function StickerPicker({
         ref={pickerRef}
         className={cn(
           'absolute bottom-full left-0 right-0 z-50 mb-2',
-          'rounded-2xl bg-dark-800/95 backdrop-blur-xl',
+          'rounded-2xl bg-white/[0.08] backdrop-blur-xl',
           'border border-white/10 shadow-2xl shadow-black/50',
           'overflow-hidden',
           className

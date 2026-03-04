@@ -23,7 +23,7 @@ export function GifItem({ gif, onSelect, isFavorite, onToggleFavorite }: GifItem
 
   return (
     <motion.div
-      className="relative cursor-pointer overflow-hidden rounded-lg bg-dark-700"
+      className="relative cursor-pointer overflow-hidden rounded-lg bg-white/[0.06]"
       style={{ aspectRatio: gif.width / gif.height }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -32,7 +32,7 @@ export function GifItem({ gif, onSelect, isFavorite, onToggleFavorite }: GifItem
       whileTap={{ scale: 0.98 }}
     >
       {/* Skeleton loader */}
-      {!isLoaded && <div className="absolute inset-0 animate-pulse bg-dark-600" />}
+      {!isLoaded && <div className="absolute inset-0 animate-pulse bg-white/[0.08]" />}
 
       {/* GIF Image */}
       <img

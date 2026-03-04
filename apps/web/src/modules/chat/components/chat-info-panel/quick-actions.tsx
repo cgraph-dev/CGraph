@@ -71,7 +71,7 @@ export function QuickActions({
           className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
             isMuted
               ? 'border border-yellow-500/30 bg-yellow-600/20 text-yellow-400'
-              : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+              : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
           }`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -94,7 +94,7 @@ export function QuickActions({
 
       <motion.button
         onClick={onReportClick}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-dark-600"
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-white/[0.10]"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
