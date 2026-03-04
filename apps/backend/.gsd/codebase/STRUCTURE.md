@@ -81,14 +81,14 @@ apps/backend/
 │   │   │   └── user_routes.ex     # Profiles, settings, friends, notifications
 │   │   ├── controllers/
 │   │   │   ├── api/
-│   │   │   │   ├── v1/            # Versioned API controllers (100+ files)
+│   │   │   │   ├── v1/            # Versioned API controllers (126 files)
 │   │   │   │   │   ├── auth_controller.ex / auth_json.ex
 │   │   │   │   │   ├── conversation_controller.ex / conversation_json.ex
 │   │   │   │   │   ├── message_controller.ex / message_json.ex
 │   │   │   │   │   ├── group_controller.ex / group_json.ex
 │   │   │   │   │   ├── forum_controller.ex / forum_json.ex
 │   │   │   │   │   ├── e2ee_controller.ex / e2ee_json.ex
-│   │   │   │   │   ├── ... (100+ controller/json pairs)
+│   │   │   │   │   ├── ... (126 controller/json files)
 │   │   │   │   │   └── web_push_controller.ex
 │   │   │   │   ├── admin/         # Admin-specific controllers
 │   │   │   │   │   ├── feature_flag_controller.ex

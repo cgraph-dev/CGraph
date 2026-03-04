@@ -760,7 +760,7 @@ lib/cgraph/
 ├── shop/              # CoinBundles, CoinCheckout, CoinPurchase
 ├── collaboration/     # Document, DocumentServer
 ├── data_export/       # 5 export modules
-└── ...                # ~30+ context domains total
+└── ...                # ~57 context domains total
 ```
 
 > **Facade file location inconsistency**: Most contexts place the facade as a **peer file**

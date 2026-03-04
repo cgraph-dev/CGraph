@@ -191,7 +191,7 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `:api_admin` — admin pipeline with RequireAuth + RequireAdmin plugs (audit-logged)
 - `:browser` — HTML pipeline for Phoenix LiveDashboard
 
-**Controllers:** Versioned under `controllers/api/v1/` — ~124 controller and JSON view files
+**Controllers:** Versioned under `controllers/api/v1/` — ~126 controller and JSON view files
 organized by resource (auth, users, messages, groups, forums, gamification, creators, etc.).
 Sub-controller split files: `custom_emoji_controller/favorites_actions.ex`,
 `forum_controller/voting_actions.ex`.
