@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── CGraph Brand Identity (extracted from landing/auth) ──────────── */
+:root {
+  --color-bg-space:        #0d1117;
+  --color-bg-deep:         #0f1320;
+  --color-surface-glass:   rgba(255, 255, 255, 0.04);
+  --color-surface-card:    rgba(15, 19, 40, 0.85);
+  --color-surface-raised:  rgba(30, 35, 60, 0.90);
+
+  --color-brand-purple:    #8b5cf6;
+  --color-brand-purple-dark: #7c3aed;
+  --color-brand-cyan:      #06b6d4;
+  --color-brand-teal:      #10b981;
+  --color-brand-green:     #22c55e;
+
+  --color-text-primary:    #ffffff;
+  --color-text-secondary:  #94a3b8;
+  --color-text-muted:      #475569;
+  --color-text-accent:     #a78bfa;
+
+  /* ─── Brand Gradients ─────────────────────────────────────────── */
+  --gradient-brand:        linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  --gradient-brand-text:   linear-gradient(90deg, #a78bfa 0%, #06b6d4 50%, #10b981 100%);
+  --gradient-hero:         linear-gradient(180deg, #0d1117 0%, #0f1320 50%, #0d1117 100%);
+  --gradient-glow-purple:  radial-gradient(ellipse at center, rgba(139,92,246,0.15) 0%, transparent 70%);
+  --gradient-glow-cyan:    radial-gradient(ellipse at center, rgba(6,182,212,0.12) 0%, transparent 70%);
+
+  /* ─── Glass System ────────────────────────────────────────────── */
+  --glass-blur-sm:   8px;
+  --glass-blur-md:   16px;
+  --glass-blur-lg:   32px;
+  --glass-blur-xl:   48px;
+  --glass-border:    rgba(255, 255, 255, 0.08);
+  --glass-border-md: rgba(255, 255, 255, 0.12);
+  --glass-border-lg: rgba(255, 255, 255, 0.18);
+
+  /* ─── Glow Shadows ────────────────────────────────────────────── */
+  --glow-purple:  0 0 20px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.15);
+  --glow-cyan:    0 0 20px rgba(6, 182, 212, 0.4), 0 0 60px rgba(6, 182, 212, 0.15);
+  --glow-green:   0 0 20px rgba(16, 185, 129, 0.4), 0 0 60px rgba(16, 185, 129, 0.15);
+  --glow-white:   0 0 20px rgba(255, 255, 255, 0.15);
+  --shadow-card:  0 24px 80px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255,255,255,0.08) inset;
+
+  /* ─── Particle System ─────────────────────────────────────────── */
+  --particle-color-1: rgba(139, 92, 246, 0.6);
+  --particle-color-2: rgba(6, 182, 212, 0.5);
+  --particle-color-3: rgba(255, 255, 255, 0.4);
+  --particle-color-4: rgba(16, 185, 129, 0.4);
+
+  /* ─── Typography ──────────────────────────────────────────────── */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+}
+
 @layer base {
   * {
     border-color: var(--token-border-default, #333333);

@@ -51,7 +51,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <motion.div
             key="dialog-backdrop"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             initial={reducedMotion ? undefined : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -61,11 +61,11 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
           <motion.div
             key="dialog-content"
             className="relative z-50"
-            initial={reducedMotion ? undefined : { opacity: 0, y: 20, scale: 0.97 }}
+            initial={reducedMotion ? undefined : { opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.97 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={
-              reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 30 }
+              reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 240, damping: 26 }
             }
           >
             {children}
@@ -91,7 +91,12 @@ export interface DialogContentProps {
 export function DialogContent({ children, className = '' }: DialogContentProps) {
   return (
     <div
-      className={`bg-surface border-surfaceBorder animate-in fade-in-0 zoom-in-95 mx-4 w-full max-w-md rounded-lg border p-6 shadow-xl ${className} `}
+      className={`mx-4 w-full max-w-md rounded-2xl border border-white/[0.18] p-6 shadow-card ${className} `}
+      style={{
+        backdropFilter: 'blur(48px)',
+        WebkitBackdropFilter: 'blur(48px)',
+        background: 'rgba(15, 19, 40, 0.92)',
+      }}
       onClick={(e) => e.stopPropagation()}
     >
       {children}

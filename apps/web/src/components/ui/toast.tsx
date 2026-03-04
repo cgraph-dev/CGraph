@@ -67,27 +67,27 @@ export const toast = {
 const typeConfig = {
   success: {
     icon: CheckCircleIcon,
-    bgColor: 'bg-green-600/10',
-    borderColor: 'border-green-600/50',
-    iconColor: 'text-green-500',
+    bgColor: 'bg-[rgba(15,19,40,0.85)]',
+    borderColor: 'border-white/[0.12] border-l-2 border-l-emerald-500',
+    iconColor: 'text-emerald-400',
   },
   error: {
     icon: XCircleIcon,
-    bgColor: 'bg-red-600/10',
-    borderColor: 'border-red-600/50',
-    iconColor: 'text-red-500',
+    bgColor: 'bg-[rgba(15,19,40,0.85)]',
+    borderColor: 'border-white/[0.12] border-l-2 border-l-red-500',
+    iconColor: 'text-red-400',
   },
   warning: {
     icon: ExclamationTriangleIcon,
-    bgColor: 'bg-yellow-600/10',
-    borderColor: 'border-yellow-600/50',
-    iconColor: 'text-yellow-500',
+    bgColor: 'bg-[rgba(15,19,40,0.85)]',
+    borderColor: 'border-white/[0.12] border-l-2 border-l-amber-500',
+    iconColor: 'text-amber-400',
   },
   info: {
     icon: InformationCircleIcon,
-    bgColor: 'bg-blue-600/10',
-    borderColor: 'border-blue-600/50',
-    iconColor: 'text-blue-500',
+    bgColor: 'bg-[rgba(15,19,40,0.85)]',
+    borderColor: 'border-white/[0.12] border-l-2 border-l-[var(--color-brand-purple)]',
+    iconColor: 'text-[var(--color-brand-purple)]',
   },
 };
 
@@ -98,18 +98,22 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
 
   const springTransition = prefersReducedMotion
     ? { duration: 0 }
-    : { type: 'spring' as const, stiffness: 400, damping: 25 };
+    : { type: 'spring' as const, stiffness: 320, damping: 28 };
 
   return (
     <motion.div
       layout
-      initial={prefersReducedMotion ? false : { opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.95 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, x: 60, scale: 0.9 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={
+        prefersReducedMotion
+          ? { opacity: 0 }
+          : { opacity: 0, x: 60, scale: 0.9, height: 0, marginBottom: 0 }
+      }
       transition={springTransition}
       role="alert"
       aria-live="assertive"
-      className={`flex items-start gap-3 rounded-lg border p-4 ${config.bgColor} ${config.borderColor} shadow-lg`}
+      className={`flex items-start gap-3 rounded-xl border p-4 backdrop-blur-xl ${config.bgColor} ${config.borderColor} shadow-card`}
     >
       <Icon className={`h-5 w-5 ${config.iconColor} mt-0.5 flex-shrink-0`} />
       <div className="min-w-0 flex-1">

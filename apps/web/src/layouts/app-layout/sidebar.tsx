@@ -67,7 +67,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-white/[0.08] bg-[rgb(30,32,40)]/[0.72] py-4 backdrop-blur-[20px] backdrop-saturate-[1.6] dark:bg-[rgb(30,32,40)]/[0.72]"
+      className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-white/[0.06] bg-[rgba(13,17,23,0.85)] py-4 backdrop-blur-xl backdrop-saturate-[1.6]"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -117,7 +117,12 @@ export default function Sidebar({
       >
         <a href="https://www.cgraph.org" title="Back to Home">
           <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileHover={{
+              scale: 1.1,
+              rotate: 5,
+              filter:
+                'drop-shadow(0 0 12px rgba(139,92,246,0.7)) drop-shadow(0 0 24px rgba(6,182,212,0.3))',
+            }}
             whileTap={{ scale: 0.95 }}
             transition={springs.snappy}
             role="img"

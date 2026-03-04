@@ -112,7 +112,10 @@ export function PopoverContent({
           transition={
             reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 30 }
           }
-          className={`absolute top-full mt-${sideOffset} z-50 ${alignClass} bg-surface border-surfaceBorder min-w-[200px] rounded-lg border p-4 shadow-lg ${className} `}
+          className={`absolute top-full mt-${sideOffset} z-50 ${alignClass} min-w-[200px] rounded-xl border border-white/[0.10] p-4 shadow-card backdrop-blur-xl ${className} `}
+          style={{
+            background: 'rgba(13, 17, 23, 0.92)',
+          }}
         >
           {children}
         </motion.div>

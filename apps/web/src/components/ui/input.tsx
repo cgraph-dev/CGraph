@@ -44,10 +44,7 @@ export function Input({
   return (
     <div className={fullWidth ? 'w-full' : ''}>
       {label && (
-        <label
-          htmlFor={inputId}
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor={inputId} className="mb-1 block text-sm font-medium text-white/70">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
@@ -61,11 +58,11 @@ export function Input({
         <input
           ref={ref}
           id={inputId}
-          className={`block rounded-lg border shadow-sm transition-all duration-200 ${sizeStyles[size]} ${paddingLeft} ${paddingRight} ${fullWidth ? 'w-full' : ''} ${
+          className={`block rounded-xl border shadow-sm transition-all duration-200 ${sizeStyles[size]} ${paddingLeft} ${paddingRight} ${fullWidth ? 'w-full' : ''} ${
             error
-              ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-600 dark:text-red-400'
-              : 'border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:border-gray-500'
-          } placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-50 dark:placeholder:text-gray-500 dark:disabled:bg-gray-900 ${className} `}
+              ? 'border-red-500/60 text-red-400 placeholder-red-400/40 focus:border-red-500 focus:shadow-[0_0_0_2px_rgba(239,68,68,0.15),0_0_20px_rgba(239,68,68,0.08)] focus:ring-red-500/20'
+              : 'focus:border-[var(--color-brand-purple)]/50 focus:ring-[var(--color-brand-purple)]/20 border-white/[0.08] bg-white/[0.04] text-white placeholder-white/30 hover:border-white/[0.15] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.15),0_0_20px_rgba(139,92,246,0.08)] focus:ring-2'
+          } focus:outline-none focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 ${className} `}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
           {...props}
@@ -117,10 +114,7 @@ export function Textarea({
   return (
     <div className={fullWidth ? 'w-full' : ''}>
       {label && (
-        <label
-          htmlFor={textareaId}
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor={textareaId} className="mb-1 block text-sm font-medium text-white/70">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>
@@ -182,10 +176,7 @@ export function Select({
   return (
     <div className={fullWidth ? 'w-full' : ''}>
       {label && (
-        <label
-          htmlFor={selectId}
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor={selectId} className="mb-1 block text-sm font-medium text-white/70">
           {label}
           {props.required && <span className="ml-1 text-red-500">*</span>}
         </label>

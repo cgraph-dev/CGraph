@@ -5,6 +5,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Brand tokens (from landing/auth identity)
+        brand: {
+          purple: 'var(--color-brand-purple)',
+          'purple-dark': 'var(--color-brand-purple-dark)',
+          cyan: 'var(--color-brand-cyan)',
+          teal: 'var(--color-brand-teal)',
+          green: 'var(--color-brand-green)',
+        },
+        surface: {
+          glass: 'var(--color-surface-glass)',
+          card: 'var(--color-surface-card)',
+          raised: 'var(--color-surface-raised)',
+          bg: 'var(--color-bg-space)',
+        },
         // Token-driven colors — read from CSS variables set by the theme engine.
         // The `rgb(var(--token-X-rgb) / <alpha>)` pattern lets Tailwind opacity
         // utilities (bg-primary/50) work correctly.
@@ -194,10 +208,20 @@ export default {
         'glow-md': '0 0 20px rgba(16, 185, 129, 0.4)',
         'glow-lg': '0 0 30px rgba(16, 185, 129, 0.5)',
         'glow-xl': '0 0 40px rgba(16, 185, 129, 0.6), 0 0 60px rgba(16, 185, 129, 0.3)',
+        'glow-purple': 'var(--glow-purple)',
+        'glow-cyan': 'var(--glow-cyan)',
+        'glow-green': 'var(--glow-green)',
         matrix: '0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.1)',
         'matrix-intense': '0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2)',
-        card: '0 2px 8px rgba(0, 0, 0, 0.3)',
+        card: 'var(--shadow-card)',
         'card-hover': '0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)',
+      },
+      backgroundImage: {
+        'gradient-brand': 'var(--gradient-brand)',
+        'gradient-brand-text': 'var(--gradient-brand-text)',
+        'gradient-hero': 'var(--gradient-hero)',
+        'glow-purple': 'var(--gradient-glow-purple)',
+        'glow-cyan': 'var(--gradient-glow-cyan)',
       },
     },
   },

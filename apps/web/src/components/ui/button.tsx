@@ -38,17 +38,17 @@ export function Button({
 
   const variantStyles: Record<typeof variant, string> = {
     primary:
-      'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm hover:shadow-lg hover:shadow-indigo-600/30 hover:-translate-y-0.5',
+      'bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-cyan)] text-white hover:opacity-90 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:-translate-y-0.5',
     secondary:
-      'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 hover:shadow-md',
+      'bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.08] hover:border-white/[0.15] hover:shadow-md',
     outline:
-      'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500',
+      'border border-white/[0.12] text-white/80 hover:bg-white/[0.04] hover:border-white/[0.20] focus:ring-[var(--color-brand-purple)]',
     ghost:
-      'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
+      'text-white/60 hover:bg-white/[0.06] hover:text-white focus:ring-[var(--color-brand-purple)]',
     danger:
       'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-lg hover:shadow-red-600/30 hover:-translate-y-0.5',
     success:
-      'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5',
+      'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5',
   };
 
   const sizeStyles: Record<typeof size, string> = {
@@ -146,13 +146,12 @@ export function IconButton({
     'inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles: Record<typeof variant, string> = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-    secondary:
-      'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700',
+    primary:
+      'bg-gradient-to-r from-[var(--color-brand-purple)] to-[var(--color-brand-cyan)] text-white hover:opacity-90',
+    secondary: 'bg-white/[0.06] text-white hover:bg-white/[0.10] border border-white/[0.08]',
     ghost:
-      'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
-    danger:
-      'text-red-600 hover:bg-red-50 hover:text-red-700 focus:ring-red-500 dark:hover:bg-red-900/20',
+      'text-white/60 hover:bg-white/[0.06] hover:text-white focus:ring-[var(--color-brand-purple)]',
+    danger: 'text-red-400 hover:bg-red-500/10 hover:text-red-300 focus:ring-red-500',
   };
 
   const sizeStyles: Record<typeof size, string> = {

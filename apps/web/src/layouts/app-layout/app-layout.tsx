@@ -4,6 +4,8 @@
  */
 import { ToastContainer } from '@/shared/components/ui';
 import ShaderBackground from '@/components/shaders/shader-background';
+import { ParticleField } from '@/components/ui/particle-field';
+import { GradientBackground } from '@/components/ui/gradient-background';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 import { useAppLayout } from './hooks';
 import { navItems } from './constants';
@@ -31,9 +33,13 @@ export default function AppLayout() {
 
   return (
     <div
-      className="relative flex h-screen text-white"
+      className="relative flex h-screen min-h-screen text-white"
       style={{ background: theme.colors.background }}
     >
+      {/* Brand ambient background — always on behind everything */}
+      <GradientBackground variant="minimal" />
+      <ParticleField count={60} />
+
       {/* Dynamic Background Effect */}
       {backgroundSettings.effect === 'shader' && (
         <ShaderBackground
