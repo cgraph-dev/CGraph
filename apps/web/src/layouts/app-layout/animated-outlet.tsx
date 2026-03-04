@@ -7,10 +7,8 @@
  * @module layouts/app-layout/AnimatedOutlet
  */
 
-import { durations } from '@cgraph/animation-constants';
 import { useLocation, useOutlet } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { tweens } from '@/lib/animation-presets';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
 const pageVariants = {
   initial: { opacity: 0, y: 6 },
@@ -18,10 +16,13 @@ const pageVariants = {
   exit: { opacity: 0 },
 };
 
-const pageTransition = {
-  enter: { duration: durations.fast.ms / 1000, ease: tweens.quickFade.ease },
-  exit: { duration: durations.instant.ms / 1000, ease: 'easeIn' as const },
+const pageSpringTransition = {
+  type: 'spring' as const,
+  stiffness: 300,
+  damping: 28,
 };
+
+const instantTransition = { duration: 0 };
 
 /**
  * unknown.
@@ -32,6 +33,7 @@ const pageTransition = {
 export function AnimatedOutlet() {
   const location = useLocation();
   const outlet = useOutlet();
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <AnimatePresence mode="wait">
@@ -39,10 +41,10 @@ export function AnimatedOutlet() {
         key={location.pathname}
         className="flex flex-1 overflow-hidden"
         variants={pageVariants}
-        initial="initial"
+        initial={prefersReducedMotion ? false : 'initial'}
         animate="animate"
         exit="exit"
-        transition={pageTransition.enter}
+        transition={prefersReducedMotion ? instantTransition : pageSpringTransition}
       >
         {outlet}
       </motion.div>

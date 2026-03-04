@@ -3,12 +3,11 @@
  * @module
  */
 import { create } from 'zustand';
-import { motion, AnimatePresence } from 'motion/react';
-import { springs } from '@/lib/animation-presets';
-import { 
-  CheckCircleIcon, 
-  XCircleIcon, 
-  ExclamationTriangleIcon, 
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  ExclamationTriangleIcon,
   InformationCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -36,7 +35,7 @@ export const useToastStore = create<ToastStore>((set) => ({
     set((state) => ({
       toasts: [...state.toasts, { ...toast, id }],
     }));
-    
+
     // Auto-remove after duration
     const duration = toast.duration ?? 5000;
     if (duration > 0) {
@@ -55,13 +54,13 @@ export const useToastStore = create<ToastStore>((set) => ({
 
 // Toast helper functions
 export const toast = {
-  success: (title: string, message?: string) => 
+  success: (title: string, message?: string) =>
     useToastStore.getState().addToast({ type: 'success', title, message }),
-  error: (title: string, message?: string) => 
+  error: (title: string, message?: string) =>
     useToastStore.getState().addToast({ type: 'error', title, message }),
-  warning: (title: string, message?: string) => 
+  warning: (title: string, message?: string) =>
     useToastStore.getState().addToast({ type: 'warning', title, message }),
-  info: (title: string, message?: string) => 
+  info: (title: string, message?: string) =>
     useToastStore.getState().addToast({ type: 'info', title, message }),
 };
 
@@ -95,28 +94,31 @@ const typeConfig = {
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
   const config = typeConfig[toast.type];
   const Icon = config.icon;
+  const prefersReducedMotion = useReducedMotion();
+
+  const springTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 400, damping: 25 };
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, x: 80, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 80, scale: 0.95 }}
-      transition={springs.snappy}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.95 }}
+      transition={springTransition}
       role="alert"
       aria-live="assertive"
-      className={`flex items-start gap-3 p-4 rounded-lg border ${config.bgColor} ${config.borderColor} shadow-lg`}
+      className={`flex items-start gap-3 rounded-lg border p-4 ${config.bgColor} ${config.borderColor} shadow-lg`}
     >
-      <Icon className={`h-5 w-5 ${config.iconColor} flex-shrink-0 mt-0.5`} />
-      <div className="flex-1 min-w-0">
+      <Icon className={`h-5 w-5 ${config.iconColor} mt-0.5 flex-shrink-0`} />
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-white">{toast.title}</p>
-        {toast.message && (
-          <p className="text-sm text-gray-400 mt-1">{toast.message}</p>
-        )}
+        {toast.message && <p className="mt-1 text-sm text-gray-400">{toast.message}</p>}
       </div>
       <button
         onClick={onRemove}
-        className="flex-shrink-0 text-gray-400 hover:text-white transition-colors"
+        className="flex-shrink-0 text-gray-400 transition-colors hover:text-white"
         aria-label="Dismiss notification"
       >
         <XMarkIcon className="h-5 w-5" />
@@ -137,7 +139,7 @@ export function ToastContainer() {
   return (
     <div
       aria-label="Notifications"
-      className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"
+      className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-sm flex-col gap-2"
     >
       <AnimatePresence mode="popLayout">
         {toasts.map((t) => (

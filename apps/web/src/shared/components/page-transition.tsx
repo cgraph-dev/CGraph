@@ -8,7 +8,7 @@
  * @module shared/components/PageTransition
  */
 
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import { transitions } from '@cgraph/animation-constants';
 
@@ -18,7 +18,13 @@ const PAGE_VARIANTS = {
   exit: transitions.pageEnter.exit,
 };
 
-const PAGE_TRANSITION = transitions.pageEnter.transition;
+const PAGE_SPRING_TRANSITION = {
+  type: 'spring' as const,
+  stiffness: 300,
+  damping: 30,
+};
+
+const INSTANT_TRANSITION = { duration: 0 };
 
 interface PageTransitionProps {
   readonly children: React.ReactNode;
@@ -30,15 +36,16 @@ interface PageTransitionProps {
  */
 export function PageTransition({ children }: PageTransitionProps): React.ReactElement {
   const location = useLocation();
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.div
       key={location.pathname}
       variants={PAGE_VARIANTS}
-      initial="initial"
+      initial={prefersReducedMotion ? false : 'initial'}
       animate="animate"
       exit="exit"
-      transition={PAGE_TRANSITION}
+      transition={prefersReducedMotion ? INSTANT_TRANSITION : PAGE_SPRING_TRANSITION}
     >
       {children}
     </motion.div>

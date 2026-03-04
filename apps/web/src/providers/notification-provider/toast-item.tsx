@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { XMarkIcon, GiftIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 import { GlassCard } from '@/shared/components/ui';
@@ -23,6 +23,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
   const [progress, setProgress] = useState(100);
   const colors = NOTIFICATION_COLORS[notification.type] ?? DEFAULT_NOTIFICATION_COLOR;
   const icon = NOTIFICATION_ICONS[notification.type];
+  const prefersReducedMotion = useReducedMotion();
 
   // Auto-dismiss timer
   useEffect(() => {
@@ -47,14 +48,14 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
 
   // Special rendering for level up
   if (notification.type === 'levelup') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const levelNotif = notification as LevelUpNotification; // safe downcast – guarded by type check
     return (
       <motion.div
-        initial={{ opacity: 0, x: -100, scale: 0.8 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, x: -100, scale: 0.8 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: -100, scale: 0.8 }}
-        transition={springs.dramatic}
+        exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -100, scale: 0.8 }}
+        transition={prefersReducedMotion ? { duration: 0 } : springs.dramatic}
         className="pointer-events-auto"
       >
         <GlassCard
@@ -120,14 +121,14 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
 
   // Quest complete rendering
   if (notification.type === 'quest') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const questNotif = notification as QuestNotification; // safe downcast – guarded by type check
     return (
       <motion.div
-        initial={{ opacity: 0, x: -100, scale: 0.8 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, x: -100, scale: 0.8 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: -100, scale: 0.8 }}
-        transition={springs.dramatic}
+        exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -100, scale: 0.8 }}
+        transition={prefersReducedMotion ? { duration: 0 } : springs.dramatic}
         className="pointer-events-auto"
       >
         <GlassCard
@@ -181,10 +182,10 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
   // Standard toast rendering
   return (
     <motion.div
-      initial={{ opacity: 0, x: -100, scale: 0.8 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, x: -100, scale: 0.8 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: -100, scale: 0.8 }}
-      transition={springs.dramatic}
+      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -100, scale: 0.8 }}
+      transition={prefersReducedMotion ? { duration: 0 } : springs.dramatic}
       className="pointer-events-auto"
       role="alert"
       aria-live="polite"
