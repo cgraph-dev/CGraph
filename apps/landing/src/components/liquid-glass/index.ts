@@ -8,3 +8,4 @@ export { PricingSection } from './PricingSection';
 export { SocialProofSection } from './SocialProofSection';
 export { CTASection } from './CTASection';
 export { Footer } from './Footer';
+export { LiquidGlassLayout } from './LiquidGlassLayout';
