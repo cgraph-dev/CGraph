@@ -28,45 +28,65 @@ defmodule CGraph.Creators.Payout do
   """
   @spec request_payout(User.t()) :: {:ok, CreatorPayout.t()} | {:error, atom()}
   def request_payout(%User{} = creator) do
-    Repo.transaction(fn ->
-      # Lock the creator's earnings rows to prevent concurrent payouts
-      total_earned =
-        from(e in CGraph.Creators.CreatorEarning,
-          where: e.creator_id == ^creator.id,
-          select: coalesce(sum(e.net_amount_cents), 0),
-          lock: "FOR UPDATE"
-        )
-        |> Repo.one()
+    result =
+      Repo.transaction(fn ->
+        # Lock the creator's earnings rows to prevent concurrent payouts
+        total_earned =
+          from(e in CGraph.Creators.CreatorEarning,
+            where: e.creator_id == ^creator.id,
+            select: coalesce(sum(e.net_amount_cents), 0),
+            lock: "FOR UPDATE"
+          )
+          |> Repo.one()
 
-      total_paid_out =
-        from(p in CreatorPayout,
-          where: p.creator_id == ^creator.id and p.status == "completed",
-          select: coalesce(sum(p.amount_cents), 0)
-        )
-        |> Repo.one()
+        total_paid_out =
+          from(p in CreatorPayout,
+            where: p.creator_id == ^creator.id and p.status == "completed",
+            select: coalesce(sum(p.amount_cents), 0)
+          )
+          |> Repo.one()
 
-      available_balance_cents = total_earned - total_paid_out
+        available_balance_cents = total_earned - total_paid_out
 
-      cond do
-        available_balance_cents < @minimum_payout_cents ->
-          Repo.rollback(:below_minimum)
+        cond do
+          available_balance_cents < @minimum_payout_cents ->
+            Repo.rollback(:below_minimum)
 
-        creator.creator_status != "active" ->
-          Repo.rollback(:account_not_active)
+          creator.creator_status != "active" ->
+            Repo.rollback(:account_not_active)
 
-        is_nil(creator.stripe_connect_id) ->
-          Repo.rollback(:no_connect_account)
+          is_nil(creator.stripe_connect_id) ->
+            Repo.rollback(:no_connect_account)
 
-        has_pending_payout?(creator.id) ->
-          Repo.rollback(:payout_already_pending)
+          has_pending_payout?(creator.id) ->
+            Repo.rollback(:payout_already_pending)
 
-        true ->
-          case create_transfer(creator, available_balance_cents) do
-            {:ok, payout} -> payout
-            {:error, reason} -> Repo.rollback(reason)
-          end
-      end
-    end)
+          true ->
+            case create_transfer(creator, available_balance_cents) do
+              {:ok, payout} -> payout
+              {:error, reason} -> Repo.rollback(reason)
+            end
+        end
+      end)
+
+    case result do
+      {:ok, payout} ->
+        CGraph.Audit.log(:financial, :payout_requested, %{
+          creator_id: creator.id,
+          amount_cents: payout.amount_cents,
+          payout_id: payout.id
+        })
+
+        {:ok, payout}
+
+      {:error, reason} ->
+        CGraph.Audit.log(:financial, :payout_request_failed, %{
+          creator_id: creator.id,
+          reason: reason
+        })
+
+        {:error, reason}
+    end
   end
 
   @doc """
