@@ -3,10 +3,10 @@
  * @module
  */
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, type HTMLMotionProps } from 'motion/react';
 import { useMotionSafe } from '@/hooks/useMotionSafe';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
@@ -115,7 +115,7 @@ function LoadingSpinner({ size, className = '' }: LoadingSpinnerProps): React.Re
 }
 
 // Icon button variant for toolbar actions
-interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface IconButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
   icon: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';

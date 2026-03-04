@@ -95,8 +95,9 @@ export function AnimationSetsSection({
                                 : anim.speed === 'smooth'
                                   ? 0.7
                                   : 1,
-                         
-                        ease: anim.easing as import('framer-motion').Easing,
+
+                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- easing string from AnimationSet
+                        ease: anim.easing as import('motion/react').Easing,
                         repeat: Infinity,
                         repeatDelay: 0.5,
                       }}

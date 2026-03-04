@@ -8,6 +8,7 @@
  * @module hooks/useMotionSafe
  */
 import { useMemo } from 'react';
+import type { TargetAndTransition, Transition } from 'motion/react';
 import { useReducedMotion, useAnimationIntensity, getMotionTransition } from './useReducedMotion';
 import { springs as sharedSprings } from '@cgraph/animation-constants';
 
@@ -18,17 +19,17 @@ export interface MotionSafeResult {
   intensity: number;
   /** Spring configs that respect reduced motion (instant when reduced) */
   springs: {
-    gentle: object;
-    snappy: object;
-    bouncy: object;
-    smooth: object;
+    gentle: Transition;
+    snappy: Transition;
+    bouncy: Transition;
+    smooth: Transition;
   };
   /** Get a transition config — returns { duration: 0 } when reduced */
-  getTransition: (springConfig?: { damping?: number; stiffness?: number }) => object;
+  getTransition: (springConfig?: { damping?: number; stiffness?: number }) => Transition;
   /** whileTap value — returns {} when reduced motion, { scale } when active */
-  tapScale: (scale?: number) => object;
+  tapScale: (scale?: number) => TargetAndTransition;
   /** whileHover value — returns {} when reduced motion, { scale } when active */
-  hoverScale: (scale?: number) => object;
+  hoverScale: (scale?: number) => TargetAndTransition;
 }
 
 /**
@@ -48,8 +49,8 @@ export function useMotionSafe(): MotionSafeResult {
   const shouldAnimate = !reducedMotion && intensity > 0;
 
   return useMemo(() => {
-    const instant = { duration: 0 };
-    const toSpring = (s: { stiffness: number; damping: number; mass: number }) =>
+    const instant: Transition = { duration: 0 };
+    const toSpring = (s: { stiffness: number; damping: number; mass: number }): Transition =>
       shouldAnimate
         ? {
             type: 'spring' as const,
@@ -68,8 +69,8 @@ export function useMotionSafe(): MotionSafeResult {
         smooth: toSpring(sharedSprings.smooth),
       },
       getTransition: (springConfig) => getMotionTransition(reducedMotion, springConfig),
-      tapScale: (scale = 0.97) => (shouldAnimate ? { scale } : {}),
-      hoverScale: (scale = 1.02) => (shouldAnimate ? { scale } : {}),
+      tapScale: (scale = 0.97): TargetAndTransition => (shouldAnimate ? { scale } : {}),
+      hoverScale: (scale = 1.02): TargetAndTransition => (shouldAnimate ? { scale } : {}),
     };
   }, [shouldAnimate, intensity, reducedMotion]);
 }
