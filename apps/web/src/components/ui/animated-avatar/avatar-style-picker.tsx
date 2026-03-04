@@ -39,7 +39,7 @@ export function AvatarStylePicker() {
       </div>
 
       {/* Preview */}
-      <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-dark-800/50 p-8">
+      <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-white/[0.04] p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-purple-500/5" />
         <AnimatedAvatar
           alt="Preview"
@@ -62,7 +62,7 @@ export function AvatarStylePicker() {
             className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
               activeCategory === cat.id
                 ? 'bg-primary-600 text-white'
-                : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.08]'
             }`}
           >
             {cat.name}
@@ -87,8 +87,8 @@ export function AvatarStylePicker() {
                   isSelected
                     ? 'bg-primary-600 text-white ring-2 ring-primary-400'
                     : isOwned
-                      ? 'bg-dark-700 text-gray-300 hover:bg-dark-600'
-                      : 'cursor-not-allowed bg-dark-800 text-gray-500 opacity-60'
+                      ? 'bg-white/[0.06] text-gray-300 hover:bg-white/[0.08]'
+                      : 'cursor-not-allowed bg-white/[0.03] text-gray-500 opacity-60'
                 }`}
                 whileHover={isOwned ? { scale: 1.02 } : {}}
                 whileTap={isOwned ? { scale: 0.98 } : {}}
@@ -145,7 +145,7 @@ export function AvatarStylePicker() {
               type="text"
               value={style.borderColor}
               onChange={(e) => updateStyle('borderColor', e.target.value)}
-              className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+              className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
             />
           </div>
         </div>
@@ -162,7 +162,7 @@ export function AvatarStylePicker() {
               type="text"
               value={style.secondaryColor}
               onChange={(e) => updateStyle('secondaryColor', e.target.value)}
-              className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+              className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
             />
           </div>
         </div>
@@ -195,7 +195,7 @@ export function AvatarStylePicker() {
               className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.animationSpeed === speed
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.08]'
               }`}
             >
               {speed}
@@ -224,7 +224,7 @@ export function AvatarStylePicker() {
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                 style.shape === shape.value
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.08]'
               }`}
             >
               {shape.label}
@@ -254,7 +254,7 @@ export function AvatarStylePicker() {
               className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-all ${
                 style.particleEffect === effect.value
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.08]'
               }`}
             >
               <span>{effect.emoji}</span>
@@ -271,7 +271,7 @@ export function AvatarStylePicker() {
           <div
             onClick={() => updateStyle('pulseOnHover', !style.pulseOnHover)}
             className={`h-6 w-10 rounded-full transition-colors ${
-              style.pulseOnHover ? 'bg-primary-600' : 'bg-dark-600'
+              style.pulseOnHover ? 'bg-primary-600' : 'bg-white/[0.08]'
             }`}
           >
             <motion.div
@@ -287,7 +287,7 @@ export function AvatarStylePicker() {
           <div
             onClick={() => updateStyle('showLevel', !style.showLevel)}
             className={`h-6 w-10 rounded-full transition-colors ${
-              style.showLevel ? 'bg-primary-600' : 'bg-dark-600'
+              style.showLevel ? 'bg-primary-600' : 'bg-white/[0.08]'
             }`}
           >
             <motion.div

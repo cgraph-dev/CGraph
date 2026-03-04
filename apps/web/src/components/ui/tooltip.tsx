@@ -110,7 +110,7 @@ export default function Tooltip({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: durationsSec.fast }}
-              className={`pointer-events-none fixed z-[100] rounded bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-lg ${getTransformClass()}`}
+              className={`pointer-events-none fixed z-[100] rounded-lg bg-[rgb(30,32,40)]/[0.82] backdrop-blur-[24px] border border-white/[0.08] px-2 py-1 text-xs font-medium text-white shadow-lg ${getTransformClass()}`}
               style={{
                 left: coords.x,
                 top: coords.y,

@@ -17,24 +17,24 @@ function CommunityCardSkeleton() {
   return (
     <div className="space-y-3 rounded-lg border border-dark-600 p-4">
       {/* Banner */}
-      <div className="h-24 w-full animate-pulse rounded-lg bg-dark-700" />
+      <div className="h-24 w-full animate-pulse rounded-lg bg-white/[0.06]" />
       {/* Avatar + name */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 animate-pulse rounded-full bg-dark-700" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.06]" />
         <div className="space-y-1.5">
-          <div className="h-4 w-32 animate-pulse rounded bg-dark-700" />
-          <div className="h-3 w-20 animate-pulse rounded bg-dark-700" />
+          <div className="h-4 w-32 animate-pulse rounded bg-white/[0.06]" />
+          <div className="h-3 w-20 animate-pulse rounded bg-white/[0.06]" />
         </div>
       </div>
       {/* Description */}
       <div className="space-y-1">
-        <div className="h-3 w-full animate-pulse rounded bg-dark-700" />
-        <div className="h-3 w-3/4 animate-pulse rounded bg-dark-700" />
+        <div className="h-3 w-full animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-3 w-3/4 animate-pulse rounded bg-white/[0.06]" />
       </div>
       {/* Stats */}
       <div className="flex gap-4">
-        <div className="h-3 w-16 animate-pulse rounded bg-dark-700" />
-        <div className="h-3 w-16 animate-pulse rounded bg-dark-700" />
+        <div className="h-3 w-16 animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-3 w-16 animate-pulse rounded bg-white/[0.06]" />
       </div>
     </div>
   );
@@ -51,12 +51,12 @@ export function ExploreSkeleton({
     <div className={className}>
       {/* Header + search */}
       <div className="space-y-4 p-4">
-        <div className="h-7 w-40 animate-pulse rounded bg-dark-700" />
-        <div className="h-10 w-full animate-pulse rounded-lg bg-dark-700" />
+        <div className="h-7 w-40 animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-white/[0.06]" />
         {/* Category pills */}
         <div className="flex gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-7 w-20 animate-pulse rounded-full bg-dark-700" />
+            <div key={i} className="h-7 w-20 animate-pulse rounded-full bg-white/[0.06]" />
           ))}
         </div>
       </div>

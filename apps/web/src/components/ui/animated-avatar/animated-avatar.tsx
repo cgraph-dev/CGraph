@@ -110,7 +110,7 @@ export default function AnimatedAvatar({
         whileTap={onClick ? { scale: 0.95 } : {}}
       >
         {/* Inner Avatar */}
-        <div className={`h-full w-full ${shapeClass} relative overflow-hidden bg-dark-800`}>
+        <div className={`h-full w-full ${shapeClass} relative overflow-hidden bg-white/[0.06]`}>
           {src ? (
             <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
           ) : (
@@ -164,7 +164,7 @@ export default function AnimatedAvatar({
         <AnimatePresence mode="wait">
           <motion.div
             key={statusType}
-            className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${STATUS_COLORS[statusType].bg} z-10 border-2 border-dark-900`}
+            className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${STATUS_COLORS[statusType].bg} z-10 border-2 border-[rgb(30,32,40)]`}
             initial={{ scale: 0 }}
             animate={{
               scale: 1,

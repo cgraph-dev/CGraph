@@ -59,7 +59,7 @@ export default function EmptyState({
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={iconVariants} className="flex items-center justify-center w-16 h-16 rounded-full bg-dark-700 mb-4">
+      <motion.div variants={iconVariants} className="flex items-center justify-center w-16 h-16 rounded-full bg-white/[0.06] mb-4">
         {icon || <InboxIcon className="h-8 w-8 text-gray-500" />}
       </motion.div>
       <motion.h3 variants={itemVariants} className="text-lg font-semibold text-white mb-2">{title}</motion.h3>
@@ -70,7 +70,7 @@ export default function EmptyState({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
           onClick={action.onClick}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-[rgb(30,32,40)]"
         >
           <PlusIcon className="h-4 w-4" />
           <span>{action.label}</span>

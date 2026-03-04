@@ -16,12 +16,12 @@ interface ChannelListSkeletonProps {
 function ChannelItemSkeleton() {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <div className="h-10 w-10 flex-shrink-0 animate-pulse rounded-full bg-dark-700" />
+      <div className="h-10 w-10 flex-shrink-0 animate-pulse rounded-full bg-white/[0.06]" />
       <div className="flex-1 space-y-2">
-        <div className="h-3.5 w-28 animate-pulse rounded bg-dark-700" />
-        <div className="h-3 w-44 animate-pulse rounded bg-dark-700" />
+        <div className="h-3.5 w-28 animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-3 w-44 animate-pulse rounded bg-white/[0.06]" />
       </div>
-      <div className="h-3 w-10 animate-pulse rounded bg-dark-700" />
+      <div className="h-3 w-10 animate-pulse rounded bg-white/[0.06]" />
     </div>
   );
 }
@@ -36,8 +36,8 @@ export function ChannelListSkeleton({
   return (
     <div className={`space-y-1 ${className}`}>
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="h-5 w-24 animate-pulse rounded bg-dark-700" />
-        <div className="h-5 w-5 animate-pulse rounded bg-dark-700" />
+        <div className="h-5 w-24 animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-5 w-5 animate-pulse rounded bg-white/[0.06]" />
       </div>
       {Array.from({ length: count }).map((_, i) => (
         <ChannelItemSkeleton key={i} />
