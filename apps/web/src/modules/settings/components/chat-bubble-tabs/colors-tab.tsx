@@ -28,7 +28,7 @@ export function ColorsTab({ style, updateStyle }: TabProps) {
             type="text"
             value={style.ownMessageBg}
             onChange={(e) => updateStyle('ownMessageBg', e.target.value)}
-            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+            className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
           />
         </div>
       </div>
@@ -46,7 +46,7 @@ export function ColorsTab({ style, updateStyle }: TabProps) {
             type="text"
             value={style.otherMessageBg}
             onChange={(e) => updateStyle('otherMessageBg', e.target.value)}
-            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+            className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ export function ColorsTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('useGradient', !style.useGradient)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.useGradient ? 'bg-primary-600' : 'bg-dark-600'
+            style.useGradient ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div
@@ -77,7 +77,7 @@ export function ColorsTab({ style, updateStyle }: TabProps) {
                 className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.gradientDirection === dir
                     ? 'bg-primary-600 text-white'
-                    : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
                 }`}
               >
                 {dir}

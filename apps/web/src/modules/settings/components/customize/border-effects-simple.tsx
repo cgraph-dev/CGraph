@@ -141,7 +141,7 @@ export function renderRotateBorder({
       animate={{ rotate: 360 }}
       transition={{ duration: durations.cinematic.ms / 1000 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
     >
-      <div className="h-full w-full rounded-full bg-gray-900" />
+      <div className="h-full w-full rounded-full bg-[rgb(30,32,40)]" />
     </motion.div>
   );
 }

@@ -116,7 +116,7 @@ export function DndSchedulePanel() {
           <button
             onClick={() => setQuietHoursEnabled(!quietHoursEnabled)}
             className={`relative h-6 w-11 rounded-full transition-colors ${
-              quietHoursEnabled ? 'bg-primary-600' : 'bg-dark-600'
+              quietHoursEnabled ? 'bg-primary-600' : 'bg-white/[0.08]'
             }`}
           >
             <span
@@ -147,7 +147,7 @@ export function DndSchedulePanel() {
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
+                  className="rounded-lg border border-dark-500 bg-white/[0.06] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -159,7 +159,7 @@ export function DndSchedulePanel() {
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
+                  className="rounded-lg border border-dark-500 bg-white/[0.06] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -177,7 +177,7 @@ export function DndSchedulePanel() {
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="max-w-[200px] rounded-lg border border-dark-500 bg-dark-700 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
+                className="max-w-[200px] rounded-lg border border-dark-500 bg-white/[0.06] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
               >
                 {COMMON_TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>

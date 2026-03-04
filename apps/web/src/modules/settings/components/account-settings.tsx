@@ -134,7 +134,7 @@ export function AccountSettings() {
             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
             disabled={!canChangeUsername}
             placeholder={user?.username || 'Choose a username'}
-            className={`flex-1 rounded-xl border bg-dark-800/60 px-4 py-3 text-white placeholder-gray-500 shadow-inner shadow-black/20 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
+            className={`flex-1 rounded-xl border bg-white/[0.04]/60 px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
               canChangeUsername
                 ? 'border-white/[0.08] focus:border-primary-500/40'
                 : 'cursor-not-allowed border-white/[0.04] text-gray-500'

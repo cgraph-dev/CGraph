@@ -76,7 +76,7 @@ export function BannerUploadCard({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onCancel}
-              className="rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-dark-600"
+              className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/[0.10]"
             >
               Cancel
             </motion.button>

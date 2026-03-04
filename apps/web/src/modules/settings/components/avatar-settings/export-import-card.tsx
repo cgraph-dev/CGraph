@@ -49,7 +49,7 @@ export function ExportImportCard({
             value={importText}
             onChange={(e) => onImportTextChange(e.target.value)}
             placeholder='{"borderStyle":"rainbow","borderWidth":3,...}'
-            className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-4 py-2 font-mono text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 font-mono text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
             rows={4}
           />
           <motion.button
@@ -71,7 +71,7 @@ export function ExportImportCard({
           }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-4 py-3 text-gray-400 transition-colors hover:border-red-500 hover:text-red-400"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-gray-400 transition-colors hover:border-red-500 hover:text-red-400"
         >
           Reset to Defaults
         </motion.button>

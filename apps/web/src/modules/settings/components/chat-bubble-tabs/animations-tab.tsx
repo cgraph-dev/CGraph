@@ -25,7 +25,7 @@ export function AnimationsTab({ style, updateStyle }: TabProps) {
               className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.entranceAnimation === anim
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
               }`}
             >
               {anim}
@@ -39,7 +39,7 @@ export function AnimationsTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('hoverEffect', !style.hoverEffect)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.hoverEffect ? 'bg-primary-600' : 'bg-dark-600'
+            style.hoverEffect ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div

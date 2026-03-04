@@ -53,7 +53,7 @@ export function ExportImportModal({ exportData, onImport, onClose }: ExportImpor
             <h3 className="text-xl font-bold text-white">Export / Import Settings</h3>
             <button
               onClick={onClose}
-              className="rounded-full p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+              className="rounded-full p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -68,7 +68,7 @@ export function ExportImportModal({ exportData, onImport, onClose }: ExportImpor
                 <textarea
                   value={exportData}
                   readOnly
-                  className="h-40 w-full resize-none rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 font-mono text-xs text-white"
+                  className="h-40 w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 font-mono text-xs text-white"
                 />
                 <button
                   onClick={() => {
@@ -92,12 +92,12 @@ export function ExportImportModal({ exportData, onImport, onClose }: ExportImpor
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
                 placeholder="Paste settings JSON here..."
-                className="h-40 w-full resize-none rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 font-mono text-xs text-white focus:border-primary-500 focus:outline-none"
+                className="h-40 w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 font-mono text-xs text-white focus:border-primary-500 focus:outline-none"
               />
               <button
                 onClick={() => onImport(importText)}
                 disabled={!importText.trim()}
-                className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-500 disabled:bg-dark-700 disabled:text-gray-500"
+                className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-500 disabled:bg-white/[0.06] disabled:text-gray-500"
               >
                 Import Settings
               </button>

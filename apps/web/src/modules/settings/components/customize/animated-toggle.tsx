@@ -60,7 +60,7 @@ export default function AnimatedToggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => !disabled && onChange(!checked)}
-        className={`relative flex-shrink-0 ${config.track} rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900 ${checked ? '' : 'bg-dark-600'} `}
+        className={`relative flex-shrink-0 ${config.track} rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900 ${checked ? '' : 'bg-white/[0.08]'} `}
         style={{
           backgroundColor: checked ? color : undefined,
           boxShadow: checked ? `0 0 12px ${color}60` : 'none',
@@ -140,7 +140,7 @@ export function ToggleGroup({
       {title && (
         <h4 className="text-sm font-medium uppercase tracking-wider text-gray-400">{title}</h4>
       )}
-      <div className="space-y-2 rounded-xl border border-white/5 bg-dark-800/50 p-4">
+      <div className="space-y-2 rounded-xl border border-white/5 bg-white/[0.04] p-4">
         {children}
       </div>
     </div>
@@ -168,7 +168,7 @@ export function CompactToggle({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${checked ? '' : 'bg-dark-600'} `}
+      className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${checked ? '' : 'bg-white/[0.08]'} `}
       style={{
         backgroundColor: checked ? color : undefined,
       }}

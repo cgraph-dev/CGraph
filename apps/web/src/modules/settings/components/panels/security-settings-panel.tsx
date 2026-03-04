@@ -34,7 +34,7 @@ export function SecuritySettingsPanel() {
             <h3 className="font-medium text-white">Password</h3>
             <p className="mt-1 text-sm text-gray-400">Change your password</p>
           </div>
-          <button className="rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-dark-600">
+          <button className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/[0.10]">
             Change
           </button>
         </div>
@@ -90,7 +90,7 @@ export function SecuritySettingsPanel() {
           </div>
           <a
             href="/settings/sessions"
-            className="rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-dark-600"
+            className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/[0.10]"
           >
             View Sessions
           </a>

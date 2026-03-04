@@ -110,7 +110,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Current Plan */}
-      <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-6">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
@@ -137,7 +137,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
             <button
               onClick={handleManageBilling}
               disabled={portalLoading}
-              className="flex items-center gap-2 rounded-lg bg-gray-700 px-4 py-2 text-sm text-white transition-colors hover:bg-gray-600 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-white transition-colors hover:bg-white/[0.10] disabled:opacity-50"
             >
               {portalLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -163,7 +163,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
         <span className={billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}>Monthly</span>
         <button
           onClick={() => setBillingCycle((c) => (c === 'monthly' ? 'yearly' : 'monthly'))}
-          className="relative h-7 w-14 rounded-full bg-gray-700 transition-colors"
+          className="relative h-7 w-14 rounded-full bg-white/[0.06] transition-colors"
         >
           <div
             className={`absolute top-1 h-5 w-5 rounded-full bg-indigo-500 transition-transform ${
@@ -189,7 +189,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
               className={`relative rounded-xl border p-6 transition-all ${
                 plan.highlighted
                   ? 'border-indigo-500 bg-indigo-500/10'
-                  : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                  : 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.08]'
               } ${isCurrent ? 'ring-2 ring-indigo-500' : ''}`}
             >
               {plan.badge && (
@@ -235,10 +235,10 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
                 disabled={isCurrent || checkoutLoading !== null}
                 className={`mt-6 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
                   isCurrent
-                    ? 'cursor-not-allowed bg-gray-700 text-gray-400'
+                    ? 'cursor-not-allowed bg-white/[0.06] text-gray-400'
                     : plan.highlighted
                       ? 'bg-indigo-500 text-white hover:bg-indigo-600'
-                      : 'bg-gray-700 text-white hover:bg-gray-600'
+                      : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
                 }`}
               >
                 {checkoutLoading === plan.id ? (
@@ -260,7 +260,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
 
       {/* Invoice History */}
       {invoices.length > 0 && (
-        <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-6">
           <h4 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
             <FileText className="h-5 w-5 text-indigo-400" />
             Invoice History
@@ -268,7 +268,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-700 text-left text-gray-400">
+                <tr className="border-b border-white/[0.08] text-left text-gray-400">
                   <th className="pb-2 pr-4">Date</th>
                   <th className="pb-2 pr-4">Amount</th>
                   <th className="pb-2 pr-4">Status</th>
@@ -277,7 +277,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
               </thead>
               <tbody>
                 {invoices.map((invoice) => (
-                  <tr key={invoice.id} className="border-b border-gray-700/50">
+                  <tr key={invoice.id} className="border-b border-white/[0.06]">
                     <td className="py-2 pr-4 text-gray-300">
                       {new Date(invoice.createdAt).toLocaleDateString()}
                     </td>
@@ -319,7 +319,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       )}
 
       {/* FAQ Section */}
-      <div className="rounded-xl border border-gray-700 bg-gray-800/50 p-6">
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-6">
         <h4 className="mb-4 text-lg font-semibold text-white">Billing FAQ</h4>
         <div className="space-y-4 text-sm">
           <div>

@@ -48,7 +48,7 @@ export function LanguageSettingsPanel() {
           value={language}
           onChange={handleLanguageChange}
           disabled={isSaving}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
         >
           <option value="en">English</option>
           <option value="es">Español</option>
@@ -77,7 +77,7 @@ export function LanguageSettingsPanel() {
             }
           }}
           disabled={isSaving}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
         >
           <option value="mdy">MM/DD/YYYY</option>
           <option value="dmy">DD/MM/YYYY</option>
@@ -101,7 +101,7 @@ export function LanguageSettingsPanel() {
             }
           }}
           disabled={isSaving}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
         >
           <option value="twelve_hour">12-hour (1:30 PM)</option>
           <option value="twenty_four_hour">24-hour (13:30)</option>

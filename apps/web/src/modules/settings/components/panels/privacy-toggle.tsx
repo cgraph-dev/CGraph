@@ -28,7 +28,7 @@ export function PrivacyToggle({
         onClick={onToggle}
         disabled={disabled}
         className={`relative h-6 w-11 rounded-full transition-colors ${
-          checked ? 'bg-primary-600' : 'bg-dark-600'
+          checked ? 'bg-primary-600' : 'bg-white/[0.08]'
         } ${disabled ? 'opacity-50' : ''}`}
       >
         <span

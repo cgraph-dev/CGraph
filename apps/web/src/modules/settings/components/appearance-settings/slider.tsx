@@ -39,7 +39,7 @@ export function Slider({
           {displayValue ?? value.toFixed(1)}
         </span>
       </div>
-      <div className="relative h-2 overflow-hidden rounded-full bg-dark-700">
+      <div className="relative h-2 overflow-hidden rounded-full bg-white/[0.06]">
         <div
           className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary-600 to-primary-400 transition-all duration-150"
           style={{ width: `${percentage}%` }}

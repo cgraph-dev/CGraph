@@ -96,7 +96,7 @@ export function NotificationSoundSettings() {
       </motion.div>
 
       {/* Volume slider */}
-      <div className="mb-6 rounded-xl border border-white/10 bg-dark-700/50 p-4">
+      <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.06] p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-white">Volume</span>
           <span className="text-xs text-white/40">{volume}%</span>
@@ -116,7 +116,7 @@ export function NotificationSoundSettings() {
         {CATEGORIES.map((cat) => (
           <div
             key={cat.key}
-            className="flex items-center justify-between rounded-xl border border-white/10 bg-dark-700/50 px-4 py-3"
+            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3"
           >
             <div>
               <span className="text-sm font-medium text-white">{cat.label}</span>
@@ -126,7 +126,7 @@ export function NotificationSoundSettings() {
               <select
                 value={selectedSounds[cat.key]}
                 onChange={(e) => handleSoundChange(cat.key, e.target.value)}
-                className="rounded-lg border border-white/10 bg-dark-800 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
               >
                 {SOUNDS.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>

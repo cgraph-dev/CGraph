@@ -40,7 +40,7 @@ export function ShapeTab({ style, updateStyle }: TabProps) {
               className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.bubbleShape === shape
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
               }`}
             >
               {shape}
@@ -54,7 +54,7 @@ export function ShapeTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('showTail', !style.showTail)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.showTail ? 'bg-primary-600' : 'bg-dark-600'
+            style.showTail ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div

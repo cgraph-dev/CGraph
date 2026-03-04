@@ -53,7 +53,7 @@ export function PrivacySettingsPanel() {
               )
             }
             disabled={isSaving}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white disabled:opacity-50"
           >
             <option value="everyone">Everyone</option>
             <option value="friends">Friends Only</option>
@@ -74,7 +74,7 @@ export function PrivacySettingsPanel() {
               }
             }}
             disabled={isSaving}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white disabled:opacity-50"
           >
             <option value="everyone">Everyone</option>
             <option value="nobody">No One</option>
@@ -100,7 +100,7 @@ export function PrivacySettingsPanel() {
               }
             }}
             disabled={isSaving}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white disabled:opacity-50"
           >
             <option value="anyone">Everyone</option>
             <option value="friends">Friends Only</option>
@@ -127,7 +127,7 @@ export function PrivacySettingsPanel() {
               }
             }}
             disabled={isSaving}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white disabled:opacity-50"
           >
             <option value="public">Public</option>
             <option value="friends">Friends Only</option>
@@ -181,7 +181,7 @@ export function PrivacySettingsPanel() {
                        
                       (settings.privacy as unknown as Record<string, unknown>)[key] !== false // type assertion: dynamic privacy setting key access
                         ? 'bg-primary-600'
-                        : 'bg-dark-600'
+                        : 'bg-white/[0.08]'
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span

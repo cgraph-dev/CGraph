@@ -49,7 +49,7 @@ export function ProfileInfoCard({ formData, onChange, onSave }: ProfileInfoCardP
             placeholder="Tell others about yourself..."
             maxLength={MAX_BIO_LENGTH}
             rows={4}
-            className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <p className="mt-1 text-xs text-gray-500">
             {formData.bio.length}/{MAX_BIO_LENGTH} characters
@@ -68,7 +68,7 @@ export function ProfileInfoCard({ formData, onChange, onSave }: ProfileInfoCardP
             onChange={(e) => onChange({ ...formData, location: e.target.value })}
             placeholder="City, Country"
             maxLength={MAX_LOCATION_LENGTH}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
 
@@ -83,7 +83,7 @@ export function ProfileInfoCard({ formData, onChange, onSave }: ProfileInfoCardP
             value={formData.website}
             onChange={(e) => onChange({ ...formData, website: e.target.value })}
             placeholder="https://yourwebsite.com"
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
 
@@ -99,7 +99,7 @@ export function ProfileInfoCard({ formData, onChange, onSave }: ProfileInfoCardP
             onChange={(e) => onChange({ ...formData, occupation: e.target.value })}
             placeholder="Your profession or role"
             maxLength={MAX_OCCUPATION_LENGTH}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
 

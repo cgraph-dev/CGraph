@@ -22,7 +22,7 @@ import type { ToggleProps } from './types';
 export function Toggle({ enabled, onChange, label, description, icon, disabled }: ToggleProps) {
   return (
     <div
-      className={`flex items-center justify-between rounded-lg border border-dark-700 bg-dark-800/50 p-4 ${disabled ? 'opacity-50' : 'hover:border-dark-600'} transition-colors`}
+      className={`flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 ${disabled ? 'opacity-50' : 'hover:border-white/[0.08]'} transition-colors`}
     >
       <div className="flex items-center gap-3">
         {icon && <div className={`text-gray-400 ${enabled ? 'text-primary-400' : ''}`}>{icon}</div>}
@@ -36,7 +36,7 @@ export function Toggle({ enabled, onChange, label, description, icon, disabled }
         onClick={onChange}
         disabled={disabled}
         whileTap={{ scale: 0.95 }}
-        className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${enabled ? 'bg-primary-500' : 'bg-dark-600'} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} `}
+        className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${enabled ? 'bg-primary-500' : 'bg-white/[0.08]'} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} `}
         style={enabled ? { boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)' } : undefined}
       >
         <motion.div

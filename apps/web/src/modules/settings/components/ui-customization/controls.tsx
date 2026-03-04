@@ -32,13 +32,13 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 w-20 cursor-pointer rounded-lg border-2 border-dark-600"
+          className="h-10 w-20 cursor-pointer rounded-lg border-2 border-white/[0.08]"
         />
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-28 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+          className="w-28 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
         />
       </div>
     </div>
@@ -90,7 +90,7 @@ export function SliderControl({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-dark-700"
+        className="slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/[0.06]"
       />
     </div>
   );
@@ -125,7 +125,7 @@ export function Select({ label, value, onChange, options }: SelectProps) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white transition-colors focus:border-primary-500 focus:outline-none"
+        className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white transition-colors focus:border-primary-500 focus:outline-none"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -156,7 +156,7 @@ interface ToggleProps {
  */
 export function Toggle({ label, description, value, onChange }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-dark-700/30">
+    <div className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-white/[0.08]/30">
       <div className="flex-1">
         <div className="text-sm font-medium text-white">{label}</div>
         {description && <div className="mt-0.5 text-xs text-gray-500">{description}</div>}
@@ -167,7 +167,7 @@ export function Toggle({ label, description, value, onChange }: ToggleProps) {
           HapticFeedback.light();
         }}
         className={`relative h-6 w-12 rounded-full transition-colors ${
-          value ? 'bg-primary-600' : 'bg-dark-600'
+          value ? 'bg-primary-600' : 'bg-white/[0.08]'
         }`}
         whileTap={{ scale: 0.95 }}
       >

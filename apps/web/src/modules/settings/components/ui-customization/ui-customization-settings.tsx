@@ -72,7 +72,7 @@ export default function UICustomizationSettings() {
         <div className="flex gap-2">
           <motion.button
             onClick={() => setShowExportModal(true)}
-            className="rounded-lg bg-dark-700 px-4 py-2 text-white transition-colors hover:bg-dark-600"
+            className="rounded-lg bg-white/[0.06] px-4 py-2 text-white transition-colors hover:bg-white/[0.10]"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -107,7 +107,7 @@ export default function UICustomizationSettings() {
               className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

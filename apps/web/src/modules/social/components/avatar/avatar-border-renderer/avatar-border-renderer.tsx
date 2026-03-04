@@ -193,7 +193,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
 
       {/* Avatar image container */}
       <div
-        className="relative z-10 overflow-hidden rounded-full bg-gray-900"
+        className="relative z-10 overflow-hidden rounded-full bg-[rgb(30,32,40)]"
         style={{
           width: innerSize,
           height: innerSize,

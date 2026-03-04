@@ -90,7 +90,7 @@ export function NotificationSettingsPanel() {
       onClick={() => handleToggle(settingKey, !value)}
       disabled={isSaving}
       className={`relative h-6 w-11 rounded-full transition-colors ${
-        value ? 'bg-primary-600' : 'bg-dark-600'
+        value ? 'bg-primary-600' : 'bg-white/[0.08]'
       } ${isSaving ? 'cursor-wait opacity-50' : ''}`}
     >
       <span
@@ -211,7 +211,7 @@ export function NotificationSettingsPanel() {
               className={`relative h-6 w-11 rounded-full transition-colors ${
                 settings.notifications.pushNotifications && pushState.registered
                   ? 'bg-primary-600'
-                  : 'bg-dark-600'
+                  : 'bg-white/[0.08]'
               } ${isSaving || !pushState.supported || pushState.permission === 'denied' ? 'cursor-not-allowed opacity-50' : ''}`}
             >
               <span
@@ -249,7 +249,7 @@ export function NotificationSettingsPanel() {
             </div>
             <a
               href="/settings/dnd-schedule"
-              className="rounded-lg bg-dark-600 px-3 py-1.5 text-sm text-primary-400 transition-colors hover:bg-dark-500"
+              className="rounded-lg bg-white/[0.08] px-3 py-1.5 text-sm text-primary-400 transition-colors hover:bg-white/[0.12]"
             >
               Configure
             </a>

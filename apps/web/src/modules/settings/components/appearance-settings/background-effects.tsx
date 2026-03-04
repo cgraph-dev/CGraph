@@ -71,7 +71,7 @@ export function BackgroundEffects({
               className={`rounded-lg border p-3 capitalize transition-all ${
                 backgroundEffect === effect
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-dark-600 bg-dark-700 text-gray-400 hover:border-dark-500'
+                  : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-dark-500'
               } `}
             >
               {effect === 'none' ? 'Off' : 'Shader Effects'}
@@ -91,7 +91,7 @@ export function BackgroundEffects({
                   className={`rounded-lg border px-3 py-2 text-xs capitalize transition-all ${
                     shaderVariant === variant
                       ? 'border-primary-500 bg-primary-500/10 text-white'
-                      : 'border-dark-600 bg-dark-700 text-gray-400 hover:border-dark-500'
+                      : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-dark-500'
                   } `}
                 >
                   {variant}
@@ -117,7 +117,7 @@ export function BackgroundEffects({
               step={0.1}
               value={backgroundIntensity || 0.6}
               onChange={(e) => updateSettings({ backgroundIntensity: parseFloat(e.target.value) })}
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-dark-600 accent-primary-500"
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/[0.08] accent-primary-500"
             />
           </div>
         )}

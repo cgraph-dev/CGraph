@@ -54,7 +54,7 @@ export function DisplayOptions({
         description="Adjust text size and message density"
       />
 
-      <div className="space-y-6 rounded-xl border border-dark-700 bg-dark-800/50 p-6">
+      <div className="space-y-6 rounded-xl border border-white/[0.06] bg-white/[0.04] p-6">
         {/* Font Scale */}
         <Slider
           value={fontScale}
@@ -88,7 +88,7 @@ export function DisplayOptions({
                 className={`rounded-lg border-2 p-4 transition-all ${
                   messageDisplay === mode
                     ? 'border-primary-500 bg-primary-500/10'
-                    : 'border-dark-600 hover:border-dark-500'
+                    : 'border-white/[0.08] hover:border-dark-500'
                 } `}
               >
                 <div className="flex flex-col items-center gap-2">
@@ -97,23 +97,23 @@ export function DisplayOptions({
                       <div className="flex items-center gap-2">
                         <div className="h-6 w-6 rounded-full bg-primary-500" />
                         <div className="flex-1">
-                          <div className="h-2 w-16 rounded bg-dark-600" />
-                          <div className="mt-1 h-1.5 w-24 rounded bg-dark-700" />
+                          <div className="h-2 w-16 rounded bg-white/[0.08]" />
+                          <div className="mt-1 h-1.5 w-24 rounded bg-white/[0.06]" />
                         </div>
                       </div>
-                      <div className="ml-8 h-3 rounded bg-dark-700" />
+                      <div className="ml-8 h-3 rounded bg-white/[0.06]" />
                     </div>
                   ) : (
                     <div className="w-full space-y-1">
                       <div className="flex items-center gap-1">
                         <div className="h-4 w-4 rounded-full bg-primary-500" />
-                        <div className="h-2 w-12 rounded bg-dark-600" />
-                        <div className="h-2 flex-1 rounded bg-dark-700" />
+                        <div className="h-2 w-12 rounded bg-white/[0.08]" />
+                        <div className="h-2 flex-1 rounded bg-white/[0.06]" />
                       </div>
                       <div className="flex items-center gap-1">
                         <div className="h-4 w-4 rounded-full bg-green-500" />
-                        <div className="h-2 w-10 rounded bg-dark-600" />
-                        <div className="h-2 flex-1 rounded bg-dark-700" />
+                        <div className="h-2 w-10 rounded bg-white/[0.08]" />
+                        <div className="h-2 flex-1 rounded bg-white/[0.06]" />
                       </div>
                     </div>
                   )}

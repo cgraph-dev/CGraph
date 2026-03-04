@@ -78,7 +78,7 @@ export default function RangeSliderControl({
       {/* Slider container */}
       <div className="relative flex h-6 items-center">
         {/* Track background */}
-        <div className="absolute inset-x-0 h-2 overflow-hidden rounded-full bg-dark-700">
+        <div className="absolute inset-x-0 h-2 overflow-hidden rounded-full bg-white/[0.06]">
           {/* Filled portion */}
           <motion.div
             className="h-full rounded-full"
@@ -164,7 +164,7 @@ export function CompactSlider({
 
   return (
     <div className="relative flex h-4 flex-1 items-center">
-      <div className="absolute inset-x-0 h-1.5 overflow-hidden rounded-full bg-dark-700">
+      <div className="absolute inset-x-0 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
         <div
           className="h-full rounded-full transition-all"
           style={{

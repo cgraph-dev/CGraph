@@ -20,7 +20,7 @@ export function EffectsTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('glassEffect', !style.glassEffect)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.glassEffect ? 'bg-primary-600' : 'bg-dark-600'
+            style.glassEffect ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div

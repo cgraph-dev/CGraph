@@ -50,7 +50,7 @@ export function OnlineStatusDropdown({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:bg-white/[0.06]"
       >
         <OnlineStatusIndicator status={currentStatus} size="sm" showTooltip={false} />
         <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -67,7 +67,7 @@ export function OnlineStatusDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04]">
           {availableStatuses.map((status) => (
             <button
               key={status}
@@ -76,7 +76,7 @@ export function OnlineStatusDropdown({
                 onChange(status);
                 setIsOpen(false);
               }}
-              className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${status === currentStatus ? 'bg-gray-50 dark:bg-gray-700' : ''}`}
+              className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06] ${status === currentStatus ? 'bg-gray-50 dark:bg-white/[0.06]' : ''}`}
             >
               <OnlineStatusIndicator status={status} size="sm" showTooltip={false} />
               <span className="text-sm text-gray-700 dark:text-gray-300">

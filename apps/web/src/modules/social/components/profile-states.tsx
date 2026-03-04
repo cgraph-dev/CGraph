@@ -120,7 +120,7 @@ interface ProfileInvalidUserProps {
  */
 export function ProfileInvalidUser({ onGoBack }: ProfileInvalidUserProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-dark-900 p-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(30,32,40)] p-8">
       <GlassCard variant="frosted" className="max-w-md p-8 text-center">
         <h2 className="mb-4 text-xl font-bold text-white">Failed to load user profile</h2>
         <p className="mb-6 text-gray-400">The user profile could not be found or is invalid.</p>

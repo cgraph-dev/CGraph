@@ -188,7 +188,7 @@ export function BillingSettingsPanel() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-700 text-left text-gray-400">
+                <tr className="border-b border-white/[0.08] text-left text-gray-400">
                   <th className="pb-2 pr-4">Date</th>
                   <th className="pb-2 pr-4">Amount</th>
                   <th className="pb-2 pr-4">Status</th>
@@ -197,7 +197,7 @@ export function BillingSettingsPanel() {
               </thead>
               <tbody>
                 {invoices.map((invoice) => (
-                  <tr key={invoice.id} className="border-b border-gray-700/50">
+                  <tr key={invoice.id} className="border-b border-white/[0.06]">
                     <td className="py-2 pr-4 text-gray-300">
                       {new Date(invoice.createdAt).toLocaleDateString()}
                     </td>

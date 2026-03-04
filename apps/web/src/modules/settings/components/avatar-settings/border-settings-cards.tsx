@@ -26,7 +26,7 @@ export function BorderWidthCard() {
         max="10"
         value={style.borderWidth}
         onChange={(e) => updateStyle('borderWidth', parseInt(e.target.value))}
-        className="slider-thumb-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-dark-700"
+        className="slider-thumb-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/[0.06]"
       />
     </GlassCard>
   );
@@ -49,7 +49,7 @@ export function BorderColorCard() {
           type="color"
           value={style.borderColor}
           onChange={(e) => updateStyle('borderColor', e.target.value)}
-          className="h-12 w-24 cursor-pointer rounded-lg border border-dark-600 bg-transparent"
+          className="h-12 w-24 cursor-pointer rounded-lg border border-white/[0.08] bg-transparent"
         />
         <div className="flex-1">
           <p className="text-sm text-gray-400">Selected Color</p>
@@ -81,7 +81,7 @@ export function GlowIntensityCard() {
         max="100"
         value={style.glowIntensity}
         onChange={(e) => updateStyle('glowIntensity', parseInt(e.target.value))}
-        className="slider-thumb-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-dark-700"
+        className="slider-thumb-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/[0.06]"
       />
     </GlassCard>
   );

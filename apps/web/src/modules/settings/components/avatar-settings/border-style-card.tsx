@@ -34,7 +34,7 @@ export function BorderStyleCard() {
             className={`relative rounded-lg p-3 text-sm capitalize transition-all ${
               style.borderStyle === borderStyle
                 ? 'border-2 border-primary-500 bg-primary-500/20 text-white'
-                : 'border border-dark-600 bg-dark-700/50 text-gray-400 hover:border-primary-500/50 hover:text-white'
+                : 'border border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-primary-500/50 hover:text-white'
             } `}
           >
             {borderStyle}

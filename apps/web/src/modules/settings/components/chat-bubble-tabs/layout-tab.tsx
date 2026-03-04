@@ -35,7 +35,7 @@ export function LayoutTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('showAvatar', !style.showAvatar)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.showAvatar ? 'bg-primary-600' : 'bg-dark-600'
+            style.showAvatar ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div
@@ -56,7 +56,7 @@ export function LayoutTab({ style, updateStyle }: TabProps) {
                 className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.avatarSize === size
                     ? 'bg-primary-600 text-white'
-                    : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
                 }`}
               >
                 {size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'}
@@ -71,7 +71,7 @@ export function LayoutTab({ style, updateStyle }: TabProps) {
         <button
           onClick={() => updateStyle('showTimestamp', !style.showTimestamp)}
           className={`relative h-6 w-12 rounded-full transition-colors ${
-            style.showTimestamp ? 'bg-primary-600' : 'bg-dark-600'
+            style.showTimestamp ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div
@@ -92,7 +92,7 @@ export function LayoutTab({ style, updateStyle }: TabProps) {
                 className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.timestampPosition === pos
                     ? 'bg-primary-600 text-white'
-                    : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
                 }`}
               >
                 {pos}

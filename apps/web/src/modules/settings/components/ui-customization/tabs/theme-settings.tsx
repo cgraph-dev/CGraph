@@ -10,14 +10,14 @@ import type { SettingsTabProps } from './types';
 import { ColorPicker } from './controls';
 
 const THEMES = [
-  { value: 'dark' as const, label: 'Dark', preview: 'bg-dark-900' },
+  { value: 'dark' as const, label: 'Dark', preview: 'bg-[rgb(30,32,40)]' },
   { value: 'darker' as const, label: 'Darker', preview: 'bg-dark-950' },
   { value: 'midnight' as const, label: 'Midnight', preview: 'bg-gray-950' },
   { value: 'amoled' as const, label: 'AMOLED', preview: 'bg-black' },
 ];
 
 const GRADIENTS = [
-  { value: 'none' as const, label: 'None', preview: 'bg-dark-900' },
+  { value: 'none' as const, label: 'None', preview: 'bg-[rgb(30,32,40)]' },
   {
     value: 'subtle' as const,
     label: 'Subtle',
@@ -59,7 +59,7 @@ export function ThemeSettings({ preferences, updatePreference }: SettingsTabProp
               className={`rounded-xl border-2 p-4 transition-all ${
                 preferences.theme === theme.value
                   ? 'border-primary-500 bg-primary-500/10'
-                  : 'border-dark-600 hover:border-dark-500'
+                  : 'border-white/[0.08] hover:border-dark-500'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -84,7 +84,7 @@ export function ThemeSettings({ preferences, updatePreference }: SettingsTabProp
               className={`rounded-xl border-2 p-4 transition-all ${
                 preferences.backgroundGradient === gradient.value
                   ? 'border-primary-500'
-                  : 'border-dark-600 hover:border-dark-500'
+                  : 'border-white/[0.08] hover:border-dark-500'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

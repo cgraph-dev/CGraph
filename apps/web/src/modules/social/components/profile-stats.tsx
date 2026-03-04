@@ -39,7 +39,7 @@ export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <motion.div
-          className="rounded-xl border border-primary-500/20 bg-dark-800/50 p-4 text-center"
+          className="rounded-xl border border-primary-500/20 bg-white/[0.04] p-4 text-center"
           whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-primary-400 to-green-400 bg-clip-text text-2xl font-bold text-transparent">
@@ -52,7 +52,7 @@ export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
         </motion.div>
 
         <motion.div
-          className="rounded-xl border border-purple-500/20 bg-dark-800/50 p-4 text-center"
+          className="rounded-xl border border-purple-500/20 bg-white/[0.04] p-4 text-center"
           whileHover={{ scale: 1.05, borderColor: 'rgba(139, 92, 246, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-2xl font-bold text-transparent">
@@ -65,7 +65,7 @@ export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
         </motion.div>
 
         <motion.div
-          className="rounded-xl border border-orange-500/20 bg-dark-800/50 p-4 text-center"
+          className="rounded-xl border border-orange-500/20 bg-white/[0.04] p-4 text-center"
           whileHover={{ scale: 1.05, borderColor: 'rgba(249, 115, 22, 0.5)' }}
         >
           <div className="flex items-center justify-center gap-1 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-2xl font-bold text-transparent">
@@ -79,7 +79,7 @@ export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
         </motion.div>
 
         <motion.div
-          className="rounded-xl border border-blue-500/20 bg-dark-800/50 p-4 text-center"
+          className="rounded-xl border border-blue-500/20 bg-white/[0.04] p-4 text-center"
           whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-2xl font-bold text-transparent">

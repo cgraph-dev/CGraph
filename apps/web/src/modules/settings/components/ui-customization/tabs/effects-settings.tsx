@@ -37,7 +37,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
               className={`rounded-lg border px-4 py-3 text-sm transition-all ${
                 preferences.glassEffect === effect.value
                   ? 'border-primary-500 bg-primary-500/20 text-primary-300'
-                  : 'border-dark-600 bg-dark-700/50 text-gray-400 hover:border-dark-500'
+                  : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-dark-500'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

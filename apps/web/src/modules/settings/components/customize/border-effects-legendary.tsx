@@ -38,7 +38,7 @@ export function renderLegendaryBorder({
         animate={{ rotate: 360 }}
         transition={{ duration: 4 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
       >
-        <div className="h-full w-full rounded-full bg-gray-900" />
+        <div className="h-full w-full rounded-full bg-[rgb(30,32,40)]" />
       </motion.div>
       {/* Particle ring */}
       {Array.from({ length: 8 }).map((_, i) => (
@@ -95,7 +95,7 @@ export function renderMythicBorder({
         animate={{ rotate: 360 }}
         transition={{ duration: 6 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
       >
-        <div className="h-full w-full rounded-full bg-gray-900" />
+        <div className="h-full w-full rounded-full bg-[rgb(30,32,40)]" />
       </motion.div>
       <motion.div
         className="absolute inset-[-4px] rounded-full"
@@ -106,7 +106,7 @@ export function renderMythicBorder({
         animate={{ rotate: -360 }}
         transition={{ duration: 4 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
       >
-        <div className="h-full w-full rounded-full bg-gray-900" />
+        <div className="h-full w-full rounded-full bg-[rgb(30,32,40)]" />
       </motion.div>
       {/* Orbiting particles */}
       {Array.from({ length: 12 }).map((_, i) => (

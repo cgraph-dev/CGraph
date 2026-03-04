@@ -42,7 +42,7 @@ export const GradientSlider = memo(function GradientSlider({
           max={max}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-700"
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/[0.06]"
           style={{
             background: `linear-gradient(to right, ${colors.primary} 0%, ${colors.primary} ${percentage}%, #374151 ${percentage}%, #374151 100%)`,
           }}

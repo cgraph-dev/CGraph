@@ -72,7 +72,7 @@ export function BackgroundsTab({
                     ? colors
                       ? `${colors.bg} ${colors.text} border ${colors.border}`
                       : 'bg-primary-600 text-white'
-                    : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -115,7 +115,7 @@ export function BackgroundsTab({
 
           <div className="relative z-10 space-y-3 p-4">
             <div className="flex justify-start">
-              <div className="max-w-[70%] rounded-2xl rounded-bl-md bg-dark-800/80 px-4 py-2 backdrop-blur-sm">
+              <div className="max-w-[70%] rounded-2xl rounded-bl-md bg-white/[0.06] px-4 py-2 backdrop-blur-sm">
                 <p className="text-sm text-white">Hey! How&apos;s it going?</p>
                 <span className="text-xs text-gray-400">12:34 PM</span>
               </div>
@@ -178,7 +178,7 @@ export function BackgroundsTab({
                   )}
 
                   {!isOwned && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-dark-900/60">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[rgb(30,32,40)]/60">
                       <div className="text-center">
                         <LockClosedIcon className="mx-auto mb-1 h-6 w-6 text-gray-400" />
                         <span className="text-xs text-gray-400">{bg.coinPrice} coins</span>
@@ -198,7 +198,7 @@ export function BackgroundsTab({
                   )}
                 </div>
 
-                <div className="bg-dark-800 p-3">
+                <div className="bg-white/[0.04] p-3">
                   <p className="truncate text-sm font-medium text-white">{bg.name}</p>
                   <div className="mt-1 flex items-center justify-between">
                     <span
@@ -260,7 +260,7 @@ export function BackgroundsTab({
 
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-300">Reduce Motion</label>
-              <button className="relative h-6 w-12 rounded-full bg-dark-600 transition-colors hover:bg-dark-500">
+              <button className="relative h-6 w-12 rounded-full bg-white/[0.08] transition-colors hover:bg-white/[0.12]">
                 <motion.div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white" />
               </button>
             </div>

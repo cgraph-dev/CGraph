@@ -96,7 +96,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
             placeholder="Search borders..."
             value={filters.search}
             onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-white/30 focus:border-cyan-500/50 focus:outline-none"
           />
         </div>
 
@@ -264,7 +264,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
                     disabled={isEquipped}
                     className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                       isEquipped
-                        ? 'cursor-not-allowed bg-gray-600'
+                        ? 'cursor-not-allowed bg-white/[0.08]'
                         : 'bg-cyan-500 hover:bg-cyan-600'
                     }`}
                   >

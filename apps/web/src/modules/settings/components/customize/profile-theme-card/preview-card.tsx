@@ -16,7 +16,7 @@ export default function PreviewCard({ theme }: PreviewCardProps) {
       {/* Center: Preview avatar */}
       <div className="flex flex-1 items-center justify-center">
         <motion.div
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 bg-dark-900/80"
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 bg-[rgb(30,32,40)]/[0.80]"
           style={{
             borderColor: theme.accentPrimary,
             boxShadow: theme.glowEnabled ? `0 0 20px ${theme.accentPrimary}60` : undefined,

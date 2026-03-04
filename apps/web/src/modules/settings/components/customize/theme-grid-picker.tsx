@@ -120,7 +120,7 @@ export default function ThemeGridPicker<T extends string>({
 
             {/* Hover tooltip */}
             <div className="pointer-events-none absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-              <div className="rounded border border-white/10 bg-dark-800 px-2 py-1 text-xs text-white shadow-lg">
+              <div className="rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-white shadow-lg">
                 {option.name}
                 {option.isLocked && ' 🔒'}
               </div>

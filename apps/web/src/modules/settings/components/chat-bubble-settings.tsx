@@ -150,7 +150,7 @@ export default function ChatBubbleSettings() {
       {/* Preview */}
       <GlassCard variant="frosted" className="p-6">
         <h3 className="mb-4 text-lg font-bold text-white">Preview</h3>
-        <div className="space-y-4 rounded-xl bg-dark-900/50 p-4">
+        <div className="space-y-4 rounded-xl bg-[rgb(30,32,40)]/[0.50] p-4">
           {/* Other person's message */}
           <div
             className={`flex items-end gap-2 ${style.alignReceived === 'right' ? 'flex-row-reverse' : ''}`}
@@ -251,7 +251,7 @@ export default function ChatBubbleSettings() {
               className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

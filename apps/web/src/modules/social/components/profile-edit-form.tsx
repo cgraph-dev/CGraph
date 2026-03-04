@@ -224,7 +224,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-700 text-2xl text-gray-400">
+            <div className="flex h-full w-full items-center justify-center bg-white/[0.06] text-2xl text-gray-400">
               {displayName?.[0]?.toUpperCase() ?? '?'}
             </div>
           )}
@@ -261,7 +261,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
           onChange={(e) => setDisplayName(e.target.value.slice(0, 50))}
           maxLength={50}
           placeholder="Your display name"
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           disabled={busy}
         />
         <p className="text-right text-xs text-gray-500">{displayName.length}/50</p>
@@ -279,7 +279,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
           maxLength={500}
           rows={4}
           placeholder="Tell us about yourself..."
-          className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           disabled={busy}
         />
         <p className="text-right text-xs text-gray-500">{bio.length}/500</p>
@@ -297,7 +297,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
           onChange={(e) => setSignature(e.target.value.slice(0, 100))}
           maxLength={100}
           placeholder="A short tagline (optional)"
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           disabled={busy}
         />
         <p className="text-right text-xs text-gray-500">{signature.length}/100</p>
@@ -328,7 +328,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
       {/* ---- Crop Modal ---- */}
       {cropImageSrc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-xl bg-gray-900 shadow-2xl">
+          <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-xl bg-[rgb(30,32,40)] shadow-2xl">
             <div className="relative h-80 w-full">
               <Cropper
                 image={cropImageSrc}

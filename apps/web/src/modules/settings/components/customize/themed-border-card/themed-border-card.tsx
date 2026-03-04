@@ -44,7 +44,7 @@ export default function ThemedBorderCard({
   return (
     <motion.button
       onClick={() => canInteract && onSelect()}
-      className={`relative ${config.container} group flex flex-col items-center justify-center gap-1 rounded-xl p-2 transition-all duration-200 ${canInteract ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isSelected ? 'ring-2 ring-white' : 'hover:ring-1 hover:ring-white/30'} border border-white/10 bg-dark-800/80`}
+      className={`relative ${config.container} group flex flex-col items-center justify-center gap-1 rounded-xl p-2 transition-all duration-200 ${canInteract ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${isSelected ? 'ring-2 ring-white' : 'hover:ring-1 hover:ring-white/30'} border border-white/10 bg-white/[0.06]`}
       whileHover={canInteract ? { scale: 1.05, y: -2 } : {}}
       whileTap={canInteract ? { scale: 0.98 } : {}}
     >
@@ -68,7 +68,7 @@ export default function ThemedBorderCard({
           borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
         }
       >
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-dark-900">
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[rgb(30,32,40)]">
           <span className="text-2xl">👤</span>
         </div>
 

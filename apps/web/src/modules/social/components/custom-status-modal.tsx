@@ -186,7 +186,7 @@ export function CustomStatusModal({
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">Set Custom Status</h2>
-              <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:bg-dark-700">
+              <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:bg-white/[0.08]">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
@@ -201,8 +201,8 @@ export function CustomStatusModal({
                     onClick={() => setPresenceMode(mode.id)}
                     className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all ${
                       presenceMode === mode.id
-                        ? 'bg-dark-700 ring-1 ring-primary-500/40 text-white'
-                        : 'bg-dark-800 text-gray-400 hover:bg-dark-700 hover:text-gray-300'
+                        ? 'bg-white/[0.06] ring-1 ring-primary-500/40 text-white'
+                        : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] hover:text-gray-300'
                     }`}
                   >
                     <span className={`h-2.5 w-2.5 rounded-full ${mode.color}`} />
@@ -216,10 +216,10 @@ export function CustomStatusModal({
             </div>
 
             {/* Status Input */}
-            <div className="mb-4 flex items-center gap-3 rounded-lg bg-dark-800 p-3 ring-1 ring-gray-700 focus-within:ring-primary-500">
+            <div className="mb-4 flex items-center gap-3 rounded-lg bg-white/[0.04] p-3 ring-1 ring-gray-700 focus-within:ring-primary-500">
               <button
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-dark-700 text-xl transition-colors hover:bg-dark-600"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.06] text-xl transition-colors hover:bg-white/[0.10]"
               >
                 {emoji || <FaceSmileIcon className="h-5 w-5 text-gray-400" />}
               </button>
@@ -229,7 +229,7 @@ export function CustomStatusModal({
                 value={statusText}
                 onChange={(e) => setStatusText(e.target.value)}
                 maxLength={128}
-                className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none"
+                className="flex-1 bg-transparent text-white placeholder-white/30 outline-none"
                 autoFocus
               />
             </div>
@@ -243,7 +243,7 @@ export function CustomStatusModal({
                   exit={{ height: 0, opacity: 0 }}
                   className="mb-4 overflow-hidden"
                 >
-                  <div className="flex flex-wrap gap-2 rounded-lg bg-dark-800 p-3">
+                  <div className="flex flex-wrap gap-2 rounded-lg bg-white/[0.04] p-3">
                     {QUICK_EMOJIS.map((e) => (
                       <button
                         key={e}
@@ -251,7 +251,7 @@ export function CustomStatusModal({
                           setEmoji(e);
                           setShowEmojiPicker(false);
                         }}
-                        className={`flex h-8 w-8 items-center justify-center rounded-lg text-lg transition-colors hover:bg-dark-600 ${
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg text-lg transition-colors hover:bg-white/[0.10] ${
                           emoji === e ? 'bg-primary-600/20 ring-1 ring-primary-500' : ''
                         }`}
                       >
@@ -274,7 +274,7 @@ export function CustomStatusModal({
                     className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
                       statusText === preset.text && emoji === preset.emoji
                         ? 'bg-primary-600/20 text-primary-400 ring-1 ring-primary-500/30'
-                        : 'bg-dark-800 text-gray-300 hover:bg-dark-700'
+                        : 'bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]'
                     }`}
                   >
                     <span>{preset.emoji}</span>
@@ -298,7 +298,7 @@ export function CustomStatusModal({
                     className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                       expiresIn === opt.value
                         ? 'bg-primary-600 text-white'
-                        : 'bg-dark-800 text-gray-400 hover:bg-dark-700'
+                        : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08]'
                     }`}
                   >
                     {opt.label}
@@ -311,14 +311,14 @@ export function CustomStatusModal({
             <div className="flex items-center gap-3">
               <button
                 onClick={handleClear}
-                className="rounded-lg px-4 py-2 text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                className="rounded-lg px-4 py-2 text-sm text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
               >
                 Clear Status
               </button>
               <div className="flex-1" />
               <button
                 onClick={onClose}
-                className="rounded-lg px-4 py-2 text-sm text-gray-400 transition-colors hover:bg-dark-700"
+                className="rounded-lg px-4 py-2 text-sm text-gray-400 transition-colors hover:bg-white/[0.08]"
               >
                 Cancel
               </button>

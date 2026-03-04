@@ -72,10 +72,10 @@ export function RSSFeedLinks({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+      className={`rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.04] ${className}`}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+      <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3 dark:border-white/[0.08]">
         <RssIcon className="h-5 w-5 text-orange-500" />
         <h3 className="font-semibold text-gray-900 dark:text-white">RSS Feeds</h3>
       </div>
@@ -85,7 +85,7 @@ export function RSSFeedLinks({
         {feeds.map((feed) => (
           <div
             key={feed.id}
-            className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+            className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06]/50"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -108,7 +108,7 @@ export function RSSFeedLinks({
                 <button
                   type="button"
                   onClick={() => copyToClipboard(feed.url)}
-                  className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-300"
+                  className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/[0.10] dark:hover:text-gray-300"
                   title="Copy feed URL"
                 >
                   <LinkIcon className="h-4 w-4" />
