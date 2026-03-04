@@ -14,7 +14,7 @@ export type {
   DailyRewardsSectionProps,
 } from './types';
 
-export { MOCK_ACHIEVEMENTS, MOCK_LEADERBOARD, MOCK_QUESTS, MOCK_DAILY_REWARDS } from './mock-data';
+// Mock data has been replaced by API calls — see gamification-queries.ts
 
 export { getCategoryConfigs, type CategoryConfig } from './categories';
 export { StatsOverview } from './stats-overview';

@@ -4,7 +4,6 @@
  */
 import { TrophyIcon, SparklesIcon, ChartBarIcon, GiftIcon } from '@heroicons/react/24/outline';
 import type { ProgressionCategory } from './types';
-import { MOCK_ACHIEVEMENTS, MOCK_LEADERBOARD, MOCK_QUESTS } from './mock-data';
 
 export interface CategoryConfig {
   id: ProgressionCategory;
@@ -14,31 +13,35 @@ export interface CategoryConfig {
 }
 
 /**
- * unknown for the customize module.
- */
-/**
- * Retrieves category configs.
+ * Retrieves category configs with live counts from API data.
+ * @param achievementCount - Number of achievements loaded
+ * @param leaderboardCount - Number of leaderboard entries loaded
+ * @param activeQuestCount - Number of active (incomplete) quests
  * @returns The category configs.
  */
-export function getCategoryConfigs(): CategoryConfig[] {
+export function getCategoryConfigs(
+  achievementCount = 0,
+  leaderboardCount = 0,
+  activeQuestCount = 0
+): CategoryConfig[] {
   return [
     {
       id: 'achievements',
       label: 'Achievements',
       icon: TrophyIcon,
-      count: MOCK_ACHIEVEMENTS.length,
+      count: achievementCount,
     },
     {
       id: 'leaderboards',
       label: 'Leaderboards',
       icon: ChartBarIcon,
-      count: MOCK_LEADERBOARD.length,
+      count: leaderboardCount,
     },
     {
       id: 'quests',
       label: 'Quests',
       icon: SparklesIcon,
-      count: MOCK_QUESTS.filter((q) => !q.completed).length,
+      count: activeQuestCount,
     },
     {
       id: 'rewards',
