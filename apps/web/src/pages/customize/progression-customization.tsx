@@ -30,10 +30,6 @@ export type {
 } from './progression-customization/index';
 
 export {
-  MOCK_ACHIEVEMENTS,
-  MOCK_LEADERBOARD,
-  MOCK_QUESTS,
-  MOCK_DAILY_REWARDS,
   getCategoryConfigs,
   StatsOverview,
   AchievementsSection,
