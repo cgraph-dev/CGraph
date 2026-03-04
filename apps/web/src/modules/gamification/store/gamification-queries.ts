@@ -228,3 +228,118 @@ export function createFetchLore(set: StoreSet, _get: StoreGet) {
     set({ loreEntries: [] });
   };
 }
+
+// ── Standalone Fetch Functions (for page-level data) ───────────────────
+// These are not store actions — they return data directly for pages to use.
+
+/**
+ * Fetch leaderboard entries.
+ */
+export async function fetchLeaderboard(type: 'global' | 'friends' | 'weekly' = 'global') {
+  try {
+    const response = await api.get('/api/v1/leaderboard', { params: { type } });
+    return response.data?.data || response.data?.leaderboard || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch leaderboard:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch daily reward streak data.
+ */
+export async function fetchDailyRewards() {
+  try {
+    const response = await api.get('/api/v1/daily-rewards');
+    return response.data?.data || response.data?.rewards || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch daily rewards:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all cosmetic borders.
+ */
+export async function fetchBorders() {
+  try {
+    const response = await api.get('/api/v1/cosmetics/borders');
+    return response.data?.data || response.data?.borders || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch borders:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all cosmetic titles.
+ */
+export async function fetchTitles() {
+  try {
+    const response = await api.get('/api/v1/cosmetics/titles');
+    return response.data?.data || response.data?.titles || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch titles:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all cosmetic badges.
+ */
+export async function fetchBadges() {
+  try {
+    const response = await api.get('/api/v1/cosmetics/badges');
+    return response.data?.data || response.data?.badges || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch badges:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all available themes.
+ */
+export async function fetchThemes() {
+  try {
+    const response = await api.get('/api/v1/themes');
+    return response.data?.data || response.data?.themes || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch themes:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch achievements list (standalone, not store action).
+ */
+export async function fetchAchievementsList() {
+  try {
+    const response = await api.get('/api/v1/gamification/achievements');
+    return response.data?.data || [];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch achievements:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch quests list (standalone, not store action).
+ */
+export async function fetchQuestsList() {
+  try {
+    const [activeRes, dailyRes, weeklyRes] = await Promise.all([
+      api.get('/api/v1/quests/active'),
+      api.get('/api/v1/quests/daily'),
+      api.get('/api/v1/quests/weekly'),
+    ]);
+    return [
+      ...(activeRes.data?.data || []),
+      ...(dailyRes.data?.data || []),
+      ...(weeklyRes.data?.data || []),
+    ];
+  } catch (error: unknown) {
+    logger.error('Failed to fetch quests:', error);
+    return [];
+  }
+}
