@@ -12,8 +12,8 @@
 
 | # | Phase | Goal | Tasks | Plans | Status |
 |---|-------|------|-------|-------|--------|
-| 20 | Backend Safety Net | Fix all P0 security + crash bugs in backend APIs | 10 | 2 | Not started |
-| 21 | Web Wiring | Replace all mock data with real API calls in web app | 8 | 2 | Not started |
+| 20 | Backend Safety Net | Fix all P0 security + crash bugs in backend APIs | 10 | 2 | ✅ Complete |
+| 21 | Web Wiring | Replace all mock data with real API calls in web app | 8 | 2 | ✅ Complete |
 | 22 | Mobile Wiring | Wire mobile stubs, facades, mocks to real stores/APIs | 12 | 3 | Not started |
 | 23 | Creator & Payments | End-to-end creator monetization + coin shop + IAP | 8 | 2 | Not started |
 | 24 | Test Coverage | Creator tests, webhook tests, coverage baseline | 5 | 1 | Not started |
@@ -44,22 +44,22 @@ users hit the APIs. No frontend work — pure backend hardening.
 
 ---
 
-## Phase 21 — Web Wiring
+## Phase 21 — Web Wiring ✅
 
 **Goal**: Every web page displays real data from backend APIs. No mock constants, no hardcoded
 fallbacks, no TODO comments.
 
-**Plan 21-01: Customization Pages + Forum Admin**
-- [ ] Wire Progression Customization (achievements, leaderboard, quests, daily rewards) → gamification API
-- [ ] Wire Identity Customization (borders, titles, badges) → cosmetics API
-- [ ] Wire Theme Customization → themes API
-- [ ] Wire Forum Admin analytics → `/api/v1/forums/:id/analytics`
-- [ ] Wire Forum Admin rules → `/api/v1/forums/:id/automod/rules`
-- [ ] Wire Forum Admin mod queue → `/api/v1/moderation/reports`
+**Plan 21-01: Customization Pages + Forum Admin** ✅
+- [x] Wire Progression Customization (achievements, leaderboard, quests, daily rewards) → gamification API
+- [x] Wire Identity Customization (borders, titles, badges) → cosmetics API
+- [x] Wire Theme Customization → themes API
+- [x] Wire Forum Admin analytics → `/api/v1/forums/:id/analytics`
+- [x] Wire Forum Admin rules → `/api/v1/forums/:id/automod/rules`
+- [x] Wire Forum Admin mod queue → `/api/v1/moderation/reports`
 
-**Plan 21-02: Admin Dashboard + Error States**
-- [ ] Remove `adminStore.mockData.ts` fallback — show "unavailable" on error
-- [ ] Audit all remaining `MOCK_` constants across web codebase and replace
+**Plan 21-02: Admin Dashboard + Error States** ✅
+- [x] Remove `adminStore.mockData.ts` fallback — show "unavailable" on error
+- [x] Audit all remaining `MOCK_` constants across web codebase and replace
 
 ---
 

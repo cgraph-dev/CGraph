@@ -14,28 +14,28 @@ Secure real-time communication that works end-to-end.
 
 ## Position
 
-- **Phase:** 20 of 25 — **Backend Safety Net** (Complete)
-- **Plan:** 2/2 plans executed in Phase 20
-- **Status:** ✅ Phase 20 complete — all security and API quality fixes deployed
-- **Last activity:** Phase 20 executed — security critical fixes + API crash fixes
+- **Phase:** 21 of 25 — **Web Wiring** (Complete)
+- **Plan:** 2/2 plans executed in Phase 21
+- **Status:** ✅ Phase 21 complete — all web pages wired to real backend APIs
+- **Last activity:** Phase 21 executed — mock data removed, real API calls wired
 
 ## Plans
 
 | Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
 | ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
-| 20-01 | Security Critical — Payout race, JWS/RTDN verify, SIWE chain_id     | 1    | ✅         | —                | Complete  |
-| 20-02 | API Quality — inspect leaks, Repo.get!, CoinBundles, dead code       | 1    | ✅         | —                | Complete  |
+| 21-01 | Web Customization Pages & Forum Admin — Replace mock data with API   | 1    | ✅         | 20-01, 20-02     | Complete  |
+| 21-02 | Web Admin Dashboard & Mock Data Audit — Remove all remaining mocks   | 1    | ✅         | 21-01            | Complete  |
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 83%         |
-| Phases complete    | 20 / 25     |
-| Requirements done  | 152 / ~191  |
-| Current phase reqs | 10 / 10     |
+| Overall progress   | 87%         |
+| Phases complete    | 21 / 25     |
+| Requirements done  | 160 / ~191  |
+| Current phase reqs | 8 / 8       |
 
-█████████████████████████████████░░░░░░░ 83%
+██████████████████████████████████░░░░░░ 87%
 
 ## Phase Summary
 
@@ -61,7 +61,7 @@ Secure real-time communication that works end-to-end.
 | 18  | Rich Media & Polish     | **Complete** (2026-03-02) |
 | 19  | Launch                  | **Complete** (2025-07-24) |
 | 20  | Backend Safety Net      | **Complete**              |
-| 21  | Web Wiring              | Not started               |
+| 21  | Web Wiring              | **Complete**              |
 | 22  | Mobile Wiring           | Not started               |
 | 23  | Creator & Payments      | Not started               |
 | 24  | Test Coverage           | Not started               |
@@ -70,16 +70,16 @@ Secure real-time communication that works end-to-end.
 ## Session Continuity
 
 Last session: current
-Stopped at: Phase 20 complete — ready for Phase 21 (Web Wiring)
-Resume file: `.gsd/ROADMAP.md` → Phase 21 (Web Wiring)
+Stopped at: Phase 21 complete — ready for Phase 22 (Mobile Wiring)
+Resume file: `.gsd/ROADMAP.md` → Phase 22 (Mobile Wiring)
 
 ## Last Action
 
-Phase 20 "Backend Safety Net" executed:
-- Plan 20-01: Payout race condition fixed (Repo.transaction + FOR UPDATE), Apple JWS + Google RTDN verification added to IAP controller, SIWE chain_id validation, audit logging across security paths
-- Plan 20-02: 30 inspect(reason) leaks replaced with ErrorHelpers, 11 Repo.get! fixed, CoinBundles moved to runtime config, dead @tier_mapping removed, Earnings balance query made atomic
-- Verification: 11/11 checks pass
+Phase 21 "Web Wiring" executed:
+- Plan 21-01: 17 files modified — progression, identity, theme customization pages + forum admin + chat wired to real APIs. 8 gamification fetch functions added. All MOCK_ data constants removed.
+- Plan 21-02: Admin dashboard mock fallbacks removed (5 store action files), full codebase mock audit complete, PREVIEW_ rename for cosmetic data.
+- Verification: 10/10 checks pass — zero MOCK_ in production code
 
 ---
 
-_Last updated: current (phase 20 complete)_
+_Last updated: current (phase 21 complete)_
