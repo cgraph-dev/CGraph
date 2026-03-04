@@ -4,7 +4,7 @@
  * Chat bubble animation configurations for different bubble styles.
  */
 
-import { durations } from '@cgraph/animation-constants';
+import { durations, springs as sharedSprings, stagger } from '@cgraph/animation-constants';
 import { type Transition, type TargetAndTransition } from 'motion/react';
 
 import { springs } from './presets';
@@ -139,3 +139,52 @@ export const chatBubbleAnimations: Record<
     transition: { delay, duration: durations.slower.ms / 1000, ease: [0.4, 0, 0.2, 1] },
   }),
 };
+
+// =============================================================================
+// DIRECTIONAL ENTRANCE VARIANTS
+// =============================================================================
+
+/** Message entrance variant — direction-aware slide + fade */
+export const messageEntranceVariants = {
+  /** Sent message (slides from right) */
+  sent: {
+    initial: { opacity: 0, x: 20, scale: 0.97 },
+    animate: { opacity: 1, x: 0, scale: 1 },
+    transition: {
+      type: 'spring' as const,
+      stiffness: sharedSprings.snappy.stiffness,
+      damping: sharedSprings.snappy.damping,
+    },
+  },
+  /** Received message (slides from left) */
+  received: {
+    initial: { opacity: 0, x: -20, scale: 0.97 },
+    animate: { opacity: 1, x: 0, scale: 1 },
+    transition: {
+      type: 'spring' as const,
+      stiffness: sharedSprings.snappy.stiffness,
+      damping: sharedSprings.snappy.damping,
+    },
+  },
+} as const;
+
+/** Stagger container for batch message arrivals */
+export const messageListStagger = {
+  animate: {
+    transition: {
+      staggerChildren: stagger.fast.staggerChildren,
+    },
+  },
+} as const;
+
+/** Typing indicator pulse */
+export const typingIndicatorVariants = {
+  animate: {
+    opacity: [0.4, 1, 0.4],
+    transition: {
+      duration: 1.2,
+      repeat: Infinity,
+      ease: 'easeInOut' as const,
+    },
+  },
+} as const;

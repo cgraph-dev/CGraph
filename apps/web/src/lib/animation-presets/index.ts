@@ -4,8 +4,21 @@
  * Barrel file re-exporting all animation presets submodules.
  */
 
-export { springs, tweens, durationsSec, loop, loopWithDelay, staggerConfigs, entranceVariants } from './presets';
-export { chatBubbleAnimations } from './chat-bubbles';
+export {
+  springs,
+  tweens,
+  durationsSec,
+  loop,
+  loopWithDelay,
+  staggerConfigs,
+  entranceVariants,
+} from './presets';
+export {
+  chatBubbleAnimations,
+  messageEntranceVariants,
+  messageListStagger,
+  typingIndicatorVariants,
+} from './chat-bubbles';
 export type { ChatBubbleStyleId } from './chat-bubbles';
 export {
   hoverAnimations,

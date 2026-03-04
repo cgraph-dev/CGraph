@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useSpring, useTransform, AnimatePresence } from 'motion/react';
+import { motion, useSpring, useTransform, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useGesture } from '@use-gesture/react';
 import { AnimationEngine, HapticFeedback } from '@/lib/animations/animation-engine';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
@@ -57,6 +57,7 @@ export function AnimatedMessageWrapper({
 
   const animationSpeed = useCustomizationStore((s) => s.animationSpeed);
   const speedMultiplier = SPEED_MULTIPLIERS[animationSpeed] ?? 1;
+  const prefersReducedMotion = useReducedMotion();
 
   // Spring physics for swipe gesture
   const x = useSpring(0, { stiffness: 300, damping: 30 });
@@ -149,10 +150,10 @@ export function AnimatedMessageWrapper({
         ref={wrapperRef}
         className="relative touch-none select-none"
         custom={{ index, isOwnMessage, speedMultiplier }}
-        variants={messageVariants}
-        initial={isNew ? 'initial' : false}
+        variants={prefersReducedMotion ? undefined : messageVariants}
+        initial={isNew && !prefersReducedMotion ? 'initial' : false}
         animate="animate"
-        exit="exit"
+        exit={prefersReducedMotion ? undefined : 'exit'}
         whileHover={enableGestures ? 'hover' : undefined}
         whileTap={enableGestures ? 'tap' : undefined}
         style={{
