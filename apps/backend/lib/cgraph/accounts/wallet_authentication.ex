@@ -26,6 +26,7 @@ defmodule CGraph.Accounts.WalletAuthentication do
 
   @siwe_expiration_seconds 300
   @allowed_domains ["web.cgraph.org", "cgraph.org", "localhost"]
+  @default_allowed_chain_ids [1]
 
   @doc """
   Get or create a wallet authentication challenge nonce.
@@ -103,18 +104,37 @@ defmodule CGraph.Accounts.WalletAuthentication do
   def verify_wallet_signature(wallet_address, signature, message \\ nil) do
     normalized_address = String.downcase(wallet_address)
 
-    with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
-         sign_message <- message || build_legacy_sign_message(wallet_challenge.nonce),
-         :ok <- validate_message(sign_message, wallet_challenge.nonce, normalized_address),
-         :ok <- verify_eip191_signature(sign_message, signature, normalized_address) do
-      # Delete the challenge to prevent replay attacks
-      Repo.delete(wallet_challenge)
+    result =
+      with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
+           sign_message <- message || build_legacy_sign_message(wallet_challenge.nonce),
+           :ok <- validate_message(sign_message, wallet_challenge.nonce, normalized_address),
+           :ok <- verify_eip191_signature(sign_message, signature, normalized_address) do
+        # Delete the challenge to prevent replay attacks
+        Repo.delete(wallet_challenge)
 
-      # Get or create user for this wallet
-      case get_user_by_wallet(normalized_address) do
-        {:ok, user} -> {:ok, user}
-        {:error, :not_found} -> create_wallet_user(normalized_address)
+        # Get or create user for this wallet
+        case get_user_by_wallet(normalized_address) do
+          {:ok, user} -> {:ok, user}
+          {:error, :not_found} -> create_wallet_user(normalized_address)
+        end
       end
+
+    case result do
+      {:ok, user} ->
+        CGraph.Audit.log(:auth, :wallet_login_success, %{
+          wallet_address: normalized_address,
+          user_id: user.id
+        })
+
+        {:ok, user}
+
+      {:error, reason} ->
+        CGraph.Audit.log(:auth, :wallet_login_failure, %{
+          wallet_address: normalized_address,
+          reason: reason
+        })
+
+        {:error, reason}
     end
   end
 
@@ -139,6 +159,7 @@ defmodule CGraph.Accounts.WalletAuthentication do
     with :ok <- validate_nonce(fields, expected_nonce),
          :ok <- validate_address(fields, expected_address),
          :ok <- validate_domain(fields),
+         :ok <- validate_chain_id(fields),
          :ok <- validate_expiration(fields) do
       :ok
     end
@@ -157,6 +178,21 @@ defmodule CGraph.Accounts.WalletAuthentication do
   defp validate_domain(%{domain: domain}) do
     if domain in @allowed_domains, do: :ok, else: {:error, :invalid_domain}
   end
+
+  defp validate_chain_id(%{chain_id: chain_id_str}) do
+    allowed =
+      Application.get_env(:cgraph, :allowed_chain_ids, @default_allowed_chain_ids)
+
+    case Integer.parse(chain_id_str) do
+      {chain_id, ""} ->
+        if chain_id in allowed, do: :ok, else: {:error, :invalid_chain_id}
+
+      _ ->
+        {:error, :invalid_chain_id}
+    end
+  end
+
+  defp validate_chain_id(_fields), do: :ok
 
   defp validate_expiration(%{expiration_time: exp_str}) do
     case DateTime.from_iso8601(exp_str) do
