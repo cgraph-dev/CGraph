@@ -1,21 +1,18 @@
 ---
 phase: 21-ui-interactions
-verified: 2025-07-17
-status: gaps_found
-score: 18/20 truths verified
+verified: 2026-03-04
+status: passed
+score: 20/20 truths verified
 type: post-execution
-gaps:
+gaps_resolved:
   - id: GAP-01
     truth: 'Web build passes with zero TypeScript errors in Phase 21 files'
-    severity: blocker
-    artifacts: [apps/web/src/hooks/useMotionSafe.ts, apps/web/src/components/ui/button.tsx]
-    reason:
-      'tapScale()/hoverScale() return `object`; whileTap/whileHover expect TargetAndTransition'
+    fix: 'useMotionSafe returns TargetAndTransition/Transition; button uses HTMLMotionProps'
+    commit: 22766f22
   - id: GAP-02
     truth: 'Zero framer-motion references in apps/web/src'
-    severity: minor
-    artifacts: [apps/web/src/pages/customize/effects-customization/animation-sets-section.tsx]
-    reason: "import('framer-motion').Easing type reference missed by Plan 01 sed migration"
+    fix: "Replaced import('framer-motion').Easing with import('motion/react').Easing"
+    commit: 22766f22
 ---
 
 # Phase 21: UI Interactions & Motion Upgrade — Post-Execution Verification Report
@@ -24,7 +21,7 @@ gaps:
 page transitions, toasts) has polished spring-driven animations using `motion/react` and
 `@cgraph/animation-constants`, respecting `useReducedMotion()` throughout.
 
-**Verified:** 2025-07-17 **Status:** gaps_found
+**Verified:** 2026-03-04 **Status:** passed
 
 ---
 
@@ -61,28 +58,28 @@ page transitions, toasts) has polished spring-driven animations using `motion/re
 
 ## Required Artifacts
 
-| Artifact                                                             | Purpose                        | Exists        | Substantive           | Wired                                       | Status      |
-| -------------------------------------------------------------------- | ------------------------------ | ------------- | --------------------- | ------------------------------------------- | ----------- |
-| packages/animation-constants/src/layout-ids.ts                       | LAYOUT_IDS constants           | ✓ (20 lines)  | ✓ No stubs            | ✓ Re-exported from index.ts                 | ✓ VERIFIED  |
-| apps/web/src/hooks/useMotionSafe.ts                                  | Reduced motion + spring hook   | ✓ (75 lines)  | ✓ No stubs            | ✓ Imported in button.tsx, sidebar.tsx       | ✓ VERIFIED  |
-| apps/web/src/lib/animation-presets/chat-bubbles.ts                   | Chat animation presets         | ✓ (190 lines) | ✓ No stubs            | ✓ Re-exported from presets/index.ts         | ✓ VERIFIED  |
-| apps/web/src/lib/animation-presets/index.ts                          | Barrel re-exports              | ✓ (39 lines)  | ✓ Exports all presets | ✓ Used by AnimatedMessageWrapper            | ✓ VERIFIED  |
-| apps/web/src/components/ui/button.tsx                                | motion.button with interaction | ✓ (193 lines) | ✓ No stubs            | ✓ Imports useMotionSafe, motion             | ⚠️ TS ERROR |
-| apps/web/src/components/ui/dialog.tsx                                | AnimatePresence spring dialog  | ✓ (162 lines) | ✓ No stubs            | ✓ Uses AnimatePresence, useReducedMotion    | ✓ VERIFIED  |
-| apps/web/src/components/ui/popover.tsx                               | AnimatePresence scale+fade     | ✓ (124 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED  |
-| apps/web/src/components/ui/tooltip.tsx                               | AnimatePresence scale+fade     | ✓ (127 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED  |
-| apps/web/src/components/navigation/dropdown.tsx                      | Spring dropdown                | ✓ (149 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED  |
-| apps/web/src/pages/notifications/notifications/notification-item.tsx | Stagger entrance               | ✓ (210 lines) | ✓ No stubs            | ✓ Uses stagger                              | ✓ VERIFIED  |
-| apps/web/src/modules/chat/components/animated-message-wrapper.tsx    | Directional variants           | ✓ (231 lines) | ✓ No stubs            | ✓ Imports animation-presets                 | ✓ VERIFIED  |
-| apps/web/src/shared/components/page-transition.tsx                   | Spring page transition         | ✓ (53 lines)  | ✓ No stubs            | ✓ Imports motion/react                      | ✓ VERIFIED  |
-| apps/web/src/layouts/app-layout/animated-outlet.tsx                  | Spring outlet                  | ✓ (53 lines)  | ✓ No stubs            | ✓ Imports AnimatePresence, useReducedMotion | ✓ VERIFIED  |
-| apps/web/src/layouts/app-layout/sidebar.tsx                          | LayoutId indicator             | ✓ (328 lines) | ✓ No stubs            | ✓ Imports LAYOUT_IDS, useMotionSafe         | ✓ VERIFIED  |
-| apps/web/src/components/ui/toast.tsx                                 | Spring toast enter             | ✓ (155 lines) | ✓ No stubs            | ✓ Uses spring, useReducedMotion             | ✓ VERIFIED  |
-| apps/web/src/providers/notification-provider/toast-item.tsx          | Toast reduced motion           | ✓ (239 lines) | ✓ No stubs            | ✓ Uses useReducedMotion                     | ✓ VERIFIED  |
-| apps/mobile/src/components/button.tsx                                | Haptic spring button           | ✓ (173 lines) | ✓ No stubs            | ✓ Imports expo-haptics, Reanimated          | ✓ VERIFIED  |
-| apps/mobile/src/components/icon-button.tsx                           | Haptic spring icon button      | ✓ (142 lines) | ✓ No stubs            | ✓ Imports expo-haptics, Reanimated          | ✓ VERIFIED  |
+| Artifact                                                             | Purpose                        | Exists        | Substantive           | Wired                                       | Status     |
+| -------------------------------------------------------------------- | ------------------------------ | ------------- | --------------------- | ------------------------------------------- | ---------- |
+| packages/animation-constants/src/layout-ids.ts                       | LAYOUT_IDS constants           | ✓ (20 lines)  | ✓ No stubs            | ✓ Re-exported from index.ts                 | ✓ VERIFIED |
+| apps/web/src/hooks/useMotionSafe.ts                                  | Reduced motion + spring hook   | ✓ (75 lines)  | ✓ No stubs            | ✓ Imported in button.tsx, sidebar.tsx       | ✓ VERIFIED |
+| apps/web/src/lib/animation-presets/chat-bubbles.ts                   | Chat animation presets         | ✓ (190 lines) | ✓ No stubs            | ✓ Re-exported from presets/index.ts         | ✓ VERIFIED |
+| apps/web/src/lib/animation-presets/index.ts                          | Barrel re-exports              | ✓ (39 lines)  | ✓ Exports all presets | ✓ Used by AnimatedMessageWrapper            | ✓ VERIFIED |
+| apps/web/src/components/ui/button.tsx                                | motion.button with interaction | ✓ (194 lines) | ✓ No stubs            | ✓ Imports useMotionSafe, HTMLMotionProps    | ✓ VERIFIED |
+| apps/web/src/components/ui/dialog.tsx                                | AnimatePresence spring dialog  | ✓ (162 lines) | ✓ No stubs            | ✓ Uses AnimatePresence, useReducedMotion    | ✓ VERIFIED |
+| apps/web/src/components/ui/popover.tsx                               | AnimatePresence scale+fade     | ✓ (124 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED |
+| apps/web/src/components/ui/tooltip.tsx                               | AnimatePresence scale+fade     | ✓ (127 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED |
+| apps/web/src/components/navigation/dropdown.tsx                      | Spring dropdown                | ✓ (149 lines) | ✓ No stubs            | ✓ Uses AnimatePresence                      | ✓ VERIFIED |
+| apps/web/src/pages/notifications/notifications/notification-item.tsx | Stagger entrance               | ✓ (210 lines) | ✓ No stubs            | ✓ Uses stagger                              | ✓ VERIFIED |
+| apps/web/src/modules/chat/components/animated-message-wrapper.tsx    | Directional variants           | ✓ (231 lines) | ✓ No stubs            | ✓ Imports animation-presets                 | ✓ VERIFIED |
+| apps/web/src/shared/components/page-transition.tsx                   | Spring page transition         | ✓ (53 lines)  | ✓ No stubs            | ✓ Imports motion/react                      | ✓ VERIFIED |
+| apps/web/src/layouts/app-layout/animated-outlet.tsx                  | Spring outlet                  | ✓ (53 lines)  | ✓ No stubs            | ✓ Imports AnimatePresence, useReducedMotion | ✓ VERIFIED |
+| apps/web/src/layouts/app-layout/sidebar.tsx                          | LayoutId indicator             | ✓ (328 lines) | ✓ No stubs            | ✓ Imports LAYOUT_IDS, useMotionSafe         | ✓ VERIFIED |
+| apps/web/src/components/ui/toast.tsx                                 | Spring toast enter             | ✓ (155 lines) | ✓ No stubs            | ✓ Uses spring, useReducedMotion             | ✓ VERIFIED |
+| apps/web/src/providers/notification-provider/toast-item.tsx          | Toast reduced motion           | ✓ (239 lines) | ✓ No stubs            | ✓ Uses useReducedMotion                     | ✓ VERIFIED |
+| apps/mobile/src/components/button.tsx                                | Haptic spring button           | ✓ (173 lines) | ✓ No stubs            | ✓ Imports expo-haptics, Reanimated          | ✓ VERIFIED |
+| apps/mobile/src/components/icon-button.tsx                           | Haptic spring icon button      | ✓ (142 lines) | ✓ No stubs            | ✓ Imports expo-haptics, Reanimated          | ✓ VERIFIED |
 
-**Artifacts:** 17/18 verified (1 has TS type errors)
+**Artifacts:** 18/18 verified
 
 ---
 
@@ -112,47 +109,23 @@ page transitions, toasts) has polished spring-driven animations using `motion/re
 
 ---
 
-## Gaps Summary
+## Gaps Summary (Resolved)
 
-### GAP-01: TypeScript type mismatch in button.tsx (Blocker)
+### GAP-01: TypeScript type mismatch in button.tsx — RESOLVED ✓
 
-**Truth:** Web build compiles cleanly with zero TS errors in Phase 21 files
+**Fix applied (commit 22766f22):**
 
-**Errors:**
+- `useMotionSafe.ts`: Imported `TargetAndTransition` and `Transition` from `motion/react`. Changed
+  return types from `object` to proper motion types.
+- `button.tsx`: Changed interface to extend `Omit<HTMLMotionProps<'button'>, 'ref'>` instead of
+  `React.ButtonHTMLAttributes`, resolving `onAnimationStart` prop conflict.
 
-```
-src/components/ui/button.tsx(65,7): error TS2322: Type 'object' is not assignable to type 'TargetAndTransition | VariantLabels | undefined'.
-src/components/ui/button.tsx(66,7): error TS2322: Type 'object' is not assignable to type 'TargetAndTransition | VariantLabels | undefined'.
-src/components/ui/button.tsx(177,7): error TS2322: Type 'object' is not assignable to type 'TargetAndTransition | VariantLabels | undefined'.
-src/components/ui/button.tsx(178,7): error TS2322: Type 'object' is not assignable to type 'TargetAndTransition | VariantLabels | undefined'.
-```
+### GAP-02: Stale framer-motion type reference — RESOLVED ✓
 
-**Root cause:** `useMotionSafe.ts` defines `tapScale()` and `hoverScale()` return type as `object`.
-The motion library's `whileTap` and `whileHover` props expect
-`TargetAndTransition | VariantLabels | undefined`. TypeScript correctly rejects assigning `object`
-to the more specific union type.
+**Fix applied (commit 22766f22):**
 
-**Fix:** Update `useMotionSafe.ts` return types for `tapScale` and `hoverScale` to return
-`TargetAndTransition` (imported from `motion/react`), or use `Record<string, number>` /
-`{ scale: number } | Record<string, never>`. Also update the `springs` return types from `object` to
-motion's `Transition` type.
-
-### GAP-02: Stale framer-motion type reference (Minor)
-
-**Truth:** Zero framer-motion references in apps/web/src
-
-**Error:**
-
-```
-src/pages/customize/effects-customization/animation-sets-section.tsx(99,53): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
-```
-
-**Root cause:** Line 99 uses `import('framer-motion').Easing` as a type assertion. Plan 01's sed
-migration only targeted `from 'framer-motion'` import statements, missing this dynamic import type
-syntax.
-
-**Fix:** Replace `import('framer-motion').Easing` with `import('motion/react').Easing` or
-`import('motion').Easing`.
+- `animation-sets-section.tsx`: Replaced `import('framer-motion').Easing` with
+  `import('motion/react').Easing`.
 
 ### Note: Out-of-Scope Remnants
 
@@ -196,32 +169,6 @@ Directional animation requires real conversation context
 
 ---
 
-## Recommended Fix Plan
-
-### 21-11-PLAN.md: Fix TypeScript Type Errors
-
-**Objective:** Resolve 5 TS errors introduced by Phase 21
-
-**Tasks:**
-
-1. **Fix useMotionSafe return types** — Update `tapScale`/`hoverScale` return types from `object` to
-   `TargetAndTransition` (from `motion/react`). Update `springs` types from `object` to motion's
-   transition type.
-   - Files: `apps/web/src/hooks/useMotionSafe.ts`
-   - Verify: `npx tsc --noEmit` shows 0 errors for button.tsx
-
-2. **Fix stale framer-motion type reference** — Replace `import('framer-motion').Easing` with
-   `import('motion/react').Easing`
-   - Files: `apps/web/src/pages/customize/effects-customization/animation-sets-section.tsx`
-   - Verify: `npx tsc --noEmit` shows 0 errors for animation-sets-section.tsx
-
-3. **Re-verify build** — Run full tsc check
-   - Verify: `npx tsc --noEmit 2>&1 | grep "error TS" | wc -l` = 0
-
-**Estimated scope:** Small (< 15 min)
-
----
-
 ## Verification Metadata
 
 - **Approach:** Goal-backward (truths → artifacts → wiring → anti-patterns)
@@ -229,5 +176,5 @@ Directional animation requires real conversation context
 - **Artifacts checked:** 18
 - **Key links checked:** 9
 - **Anti-pattern files scanned:** 16
-- **TypeScript build:** 5 errors found (4 type mismatches + 1 missing module)
-- **Build blocker:** Yes — button.tsx type errors / animation-sets-section.tsx missing module
+- **TypeScript build:** 0 errors (after gap closure commit 22766f22)
+- **Build blocker:** None
