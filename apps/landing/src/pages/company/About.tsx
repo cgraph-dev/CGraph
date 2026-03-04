@@ -6,13 +6,11 @@
  *
  * @since v0.9.2
  * @updated v0.9.14 - Professional rewrite with real project data
+ * @updated v0.10.0 - Migrated to Liquid Glass design system
  */
 
 import { motion } from 'framer-motion';
-
-const springs = { bouncy: { type: 'spring' as const, stiffness: 300, damping: 10 } };
-import { MarketingLayout } from '@/components/marketing';
-import { NeonIcon } from '@/components/marketing/ui';
+import { LiquidGlassLayout } from '@/components/liquid-glass';
 
 const platformStats = [
   { label: 'Features Shipped', value: '55+', detail: 'of 69 tracked' },
@@ -183,485 +181,408 @@ const values = [
 
 export default function About() {
   return (
-    <MarketingLayout
+    <LiquidGlassLayout
       title="About CGraph"
-      subtitle="The all-in-one secure communication platform — real-time messaging, community forums, E2EE, and gamification."
-      eyebrow="Our Story"
+      subtitle="Building the future of private communication"
+      maxWidth="max-w-6xl"
     >
       {/* Mission Section */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
+      <section className="py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">Why I Built This</h2>
+          <p className="mt-4 text-xl leading-relaxed text-slate-500">
+            I got tired of needing one app for chat, another for forums, and a separate plugin for
+            anything engaging.{' '}
+            <span className="font-semibold text-glow-purple">
+              CGraph puts messaging, forums, encryption, and gamification in one place
+            </span>
+            . Private by default. Fun to use. That&apos;s the whole idea.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* Platform Stats */}
+      <section className="py-16">
+        <div className="text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-3xl text-center"
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="marketing-section__title">Why I Built This</h2>
-            <p className="text-xl leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-              I got tired of needing one app for chat, another for forums, and a separate plugin for
-              anything engaging.{' '}
-              <span className="marketing-hero__highlight">
-                CGraph puts messaging, forums, encryption, and gamification in one place
-              </span>
-              . Private by default. Fun to use. That’s the whole idea.
+            <h2 className="text-3xl font-bold text-slate-900">Platform at a Glance</h2>
+            <p className="mt-3 text-lg text-slate-500">
+              Real numbers from our codebase — no vanity metrics.
             </p>
           </motion.div>
         </div>
-      </section>
 
-      {/* Platform Stats */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container">
-          <div className="marketing-section__header">
+        <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
+          {platformStats.map((stat, index) => (
             <motion.div
+              key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="glass-surface rounded-2xl p-6 text-center shadow-glass"
             >
-              <h2 className="marketing-section__title">Platform at a Glance</h2>
-              <p className="marketing-section__desc">
-                Real numbers from our codebase — no vanity metrics.
-              </p>
-            </motion.div>
-          </div>
-
-          <div
-            className="marketing-grid marketing-grid--2"
-            style={{ maxWidth: '48rem', margin: '0 auto' }}
-          >
-            {platformStats.map((stat, index) => (
               <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className="text-5xl font-bold text-slate-900"
+                initial={{ scale: 0.5 }}
+                whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="marketing-card text-center"
+                transition={{ delay: index * 0.1 + 0.2, duration: 0.5 }}
               >
-                <motion.div
-                  className="font-zentry text-5xl font-bold"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                  initial={{ scale: 0.5 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 + 0.2, ...springs.bouncy }}
-                >
-                  {stat.value}
-                </motion.div>
-                <div className="mt-2 text-lg font-semibold text-white">{stat.label}</div>
-                <div className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
-                  {stat.detail}
-                </div>
+                {stat.value}
               </motion.div>
-            ))}
-          </div>
+              <div className="mt-2 text-lg font-semibold text-slate-900">{stat.label}</div>
+              <div className="mt-1 text-sm text-slate-500">{stat.detail}</div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* What We're Building */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
-          <div className="marketing-section__header">
+      <section className="py-16">
+        <div className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-slate-900">What&apos;s in Here</h2>
+            <p className="mt-3 text-lg text-slate-500">
+              Six things CGraph does, all shipped and working.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {capabilities.map((cap, index) => (
             <motion.div
+              key={cap.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: index * 0.08, duration: 0.5 }}
+              className="glass-surface rounded-2xl p-6 shadow-glass"
             >
-              <h2 className="marketing-section__title">What's in Here</h2>
-              <p className="marketing-section__desc">
-                Six things CGraph does, all shipped and working.
-              </p>
+              <span className="text-3xl">{cap.icon}</span>
+              <h3 className="mt-3 text-lg font-semibold text-slate-900">{cap.title}</h3>
+              <p className="mt-2 text-sm text-slate-500">{cap.description}</p>
             </motion.div>
-          </div>
-
-          <div className="marketing-grid marketing-grid--3">
-            {capabilities.map((cap, index) => (
-              <motion.div
-                key={cap.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="marketing-card"
-              >
-                <span className="marketing-card__icon">
-                  <NeonIcon symbol={cap.icon} size={34} title={cap.title} />
-                </span>
-                <h3 className="marketing-card__title">{cap.title}</h3>
-                <p className="marketing-card__desc">{cap.description}</p>
-              </motion.div>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container">
-          <div className="marketing-section__header">
+      <section className="py-16">
+        <div className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-slate-900">What We Care About</h2>
+            <p className="mt-3 text-lg text-slate-500">
+              The principles that shape every decision in the codebase.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {values.map((value, index) => (
             <motion.div
+              key={value.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: index * 0.08, duration: 0.5 }}
+              className="glass-surface rounded-2xl p-6 shadow-glass"
             >
-              <h2 className="marketing-section__title">What We Care About</h2>
-              <p className="marketing-section__desc">
-                The principles that shape every decision in the codebase.
-              </p>
+              <span className="text-3xl">{value.icon}</span>
+              <h3 className="mt-3 text-lg font-semibold text-slate-900">{value.title}</h3>
+              <p className="mt-2 text-sm text-slate-500">{value.description}</p>
             </motion.div>
-          </div>
-
-          <div className="marketing-grid marketing-grid--3">
-            {values.map((value, index) => (
-              <motion.div
-                key={value.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="marketing-card"
-              >
-                <span className="marketing-card__icon">
-                  <NeonIcon symbol={value.icon} size={34} title={value.title} />
-                </span>
-                <h3 className="marketing-card__title">{value.title}</h3>
-                <p className="marketing-card__desc">{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Tech Stack Section */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
-          <div className="marketing-section__header">
+      <section className="py-16">
+        <div className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-slate-900">Tech Stack</h2>
+            <p className="mt-3 text-lg text-slate-500">
+              The technologies behind CGraph and why they were picked.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {techStack.map((group, gIndex) => (
             <motion.div
+              key={group.category}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: gIndex * 0.15, duration: 0.5 }}
+              className="glass-surface rounded-2xl p-8 shadow-glass"
             >
-              <h2 className="marketing-section__title">Tech Stack</h2>
-              <p className="marketing-section__desc">
-                The technologies behind CGraph and why they were picked.
-              </p>
+              <h3 className="mb-6 text-lg font-bold text-glow-purple">{group.category}</h3>
+              <div className="space-y-4">
+                {group.items.map((item) => (
+                  <div key={item.name}>
+                    <div className="text-sm font-semibold text-slate-900">{item.name}</div>
+                    <div className="text-xs text-slate-500">{item.role}</div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
-          </div>
-
-          <div className="marketing-grid marketing-grid--3">
-            {techStack.map((group, gIndex) => (
-              <motion.div
-                key={group.category}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: gIndex * 0.15 }}
-                className="marketing-card"
-                style={{ padding: '2rem' }}
-              >
-                <h3
-                  className="mb-6 text-lg font-bold"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  {group.category}
-                </h3>
-                <div className="space-y-4">
-                  {group.items.map((item) => (
-                    <div key={item.name}>
-                      <div className="text-sm font-semibold text-white">{item.name}</div>
-                      <div className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                        {item.role}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Founder Section */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container">
-          <div className="marketing-section__header">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="marketing-section__title">Meet the Founder</h2>
-              <p className="marketing-section__desc">Solo project. I do everything.</p>
-            </motion.div>
-          </div>
-
-          <div className="mx-auto max-w-lg">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="marketing-card team-card text-center"
-              style={{ padding: '2.5rem' }}
-            >
-              <div
-                className="team-card__avatar mx-auto"
-                style={{
-                  width: '5rem',
-                  height: '5rem',
-                  fontSize: '1.5rem',
-                  background:
-                    'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                }}
-              >
-                BL
-              </div>
-              <h3 className="team-card__name mt-4">Burca Lucas</h3>
-              <p className="team-card__role">Founder & Developer</p>
-              <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                Full-stack developer based in Georgia. I handle the backend (Elixir/Phoenix),
-                frontend (React), mobile (React Native), crypto (Triple Ratchet / PQXDH),
-                infrastructure, and design. Yeah, all of it.
-              </p>
-              <div className="mt-4 flex justify-center gap-4">
-                <a
-                  href="https://github.com/cgraph-dev/CGraph"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:text-white"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  GitHub →
-                </a>
-                <a
-                  href="mailto:hello@cgraph.org"
-                  className="text-sm transition-colors hover:text-white"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  Contact →
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Development Timeline */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="marketing-section__header">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="marketing-section__title">Timeline</h2>
-              <p className="marketing-section__desc">
-                What shipped and when — straight from the changelog.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {milestones.map((milestone, index) => (
-              <motion.div
-                key={milestone.version}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ scale: 1.03, y: -5 }}
-                className="marketing-card relative overflow-hidden"
-                style={{
-                  borderColor: milestone.completed
-                    ? 'rgba(16, 185, 129, 0.3)'
-                    : 'rgba(139, 92, 246, 0.3)',
-                }}
-              >
-                <div
-                  className="absolute inset-0 opacity-10"
-                  style={{
-                    background: milestone.completed
-                      ? 'radial-gradient(circle at top right, rgba(16, 185, 129, 0.4), transparent 70%)'
-                      : 'radial-gradient(circle at top right, rgba(139, 92, 246, 0.4), transparent 70%)',
-                  }}
-                />
-
-                <div className="relative mb-3 flex items-center justify-between">
-                  <span
-                    className="font-mono text-sm font-bold"
-                    style={{
-                      color: milestone.completed
-                        ? 'var(--color-primary)'
-                        : 'var(--color-secondary)',
-                    }}
-                  >
-                    {milestone.version}
-                  </span>
-
-                  <div className="relative flex items-center justify-center">
-                    <motion.div
-                      className="relative flex h-7 w-7 items-center justify-center rounded-full"
-                      style={{
-                        background: milestone.completed
-                          ? 'var(--color-primary)'
-                          : 'var(--color-secondary)',
-                        boxShadow: milestone.completed
-                          ? '0 0 12px rgba(16, 185, 129, 0.5)'
-                          : '0 0 12px rgba(139, 92, 246, 0.5)',
-                      }}
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + 0.3, ...springs.bouncy }}
-                    >
-                      {milestone.completed ? (
-                        <svg
-                          className="h-3.5 w-3.5 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      ) : (
-                        <motion.div
-                          className="h-2 w-2 rounded-full bg-white"
-                          animate={{ scale: [1, 1.3, 1] }}
-                          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-                        />
-                      )}
-                    </motion.div>
-                    {!milestone.completed && (
-                      <motion.div
-                        className="absolute h-7 w-7 rounded-full"
-                        style={{ background: 'rgba(139, 92, 246, 0.4)' }}
-                        animate={{ scale: [1, 2], opacity: [0.5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                <div className="relative mb-1 text-xs" style={{ color: 'var(--color-gray)' }}>
-                  {milestone.date}
-                </div>
-
-                <h3 className="relative mb-2 text-base font-bold text-white">{milestone.title}</h3>
-
-                <p
-                  className="relative text-sm"
-                  style={{ color: 'var(--color-gray)', margin: 0, lineHeight: 1.6 }}
-                >
-                  {milestone.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Security Commitment */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container">
+      <section className="py-16">
+        <div className="text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-3xl text-center"
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="marketing-section__title">Security</h2>
-            <p className="mb-8 text-lg" style={{ color: 'var(--color-gray)' }}>
-              Security isn’t a feature we ship. It’s the foundation.
-            </p>
+            <h2 className="text-3xl font-bold text-slate-900">Meet the Founder</h2>
+            <p className="mt-3 text-lg text-slate-500">Solo project. I do everything.</p>
           </motion.div>
-
-          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-            {[
-              {
-                title: 'Post-Quantum E2EE',
-                detail:
-                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Past messages stay safe even if a key gets compromised — including against quantum computers.',
-              },
-              {
-                title: 'Automated Security in CI',
-                detail:
-                  'Gitleaks for secrets, Sobelow for Elixir, Grype for containers, pnpm audit for deps. All blocking — nothing merges if these fail.',
-              },
-              {
-                title: 'GDPR',
-                detail:
-                  'Full data export as JSON. Account deletion. Data minimization. Configurable retention. We don’t keep what we don’t need.',
-              },
-              {
-                title: 'Infrastructure',
-                detail:
-                  'Cloudflare WAF + DDoS protection, TLS 1.3, HSTS, CSP headers, rate limiting, trusted proxy validation.',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="marketing-card"
-              >
-                <h3 className="mb-2 font-semibold text-white">{item.title}</h3>
-                <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                  {item.detail}
-                </p>
-              </motion.div>
-            ))}
-          </div>
         </div>
-      </section>
 
-      {/* Vision Section */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
+        <div className="mx-auto mt-10 max-w-lg">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center"
+            transition={{ duration: 0.5 }}
+            className="glass-surface rounded-2xl p-10 text-center shadow-glass"
           >
-            <h2 className="marketing-section__title">What's Next</h2>
-            <p className="marketing-section__desc mx-auto max-w-2xl" style={{ lineHeight: 1.8 }}>
-              Public beta is targeting Q2 2026. After that: message threads, SSO/SAML for teams,
-              desktop apps, and more. The roadmap goes through 2027.
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-violet-600 text-2xl font-bold text-white">
+              BL
+            </div>
+            <h3 className="mt-4 text-xl font-bold text-slate-900">Burca Lucas</h3>
+            <p className="mt-1 text-sm font-medium text-glow-purple">Founder & Developer</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+              Full-stack developer based in Georgia. I handle the backend (Elixir/Phoenix), frontend
+              (React), mobile (React Native), crypto (Triple Ratchet / PQXDH), infrastructure, and
+              design. Yeah, all of it.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <div className="mt-4 flex justify-center gap-4">
               <a
                 href="https://github.com/cgraph-dev/CGraph"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="marketing-btn marketing-btn--primary"
+                className="text-sm text-glow-purple transition-colors hover:text-slate-900"
               >
-                Follow on GitHub
+                GitHub →
               </a>
-              <a href="mailto:hello@cgraph.org" className="marketing-btn marketing-btn--secondary">
-                Get in Touch
+              <a
+                href="mailto:hello@cgraph.org"
+                className="text-sm text-glow-purple transition-colors hover:text-slate-900"
+              >
+                Contact →
               </a>
             </div>
           </motion.div>
         </div>
       </section>
-    </MarketingLayout>
+
+      {/* Development Timeline */}
+      <section className="py-16">
+        <div className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-slate-900">Timeline</h2>
+            <p className="mt-3 text-lg text-slate-500">
+              What shipped and when — straight from the changelog.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {milestones.map((milestone, index) => (
+            <motion.div
+              key={milestone.version}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              whileHover={{ scale: 1.03, y: -5 }}
+              className="glass-surface relative overflow-hidden rounded-2xl p-6 shadow-glass"
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <span className="font-mono text-sm font-bold text-glow-purple">
+                  {milestone.version}
+                </span>
+
+                <div className="relative flex items-center justify-center">
+                  <motion.div
+                    className="relative flex h-7 w-7 items-center justify-center rounded-full"
+                    style={{
+                      background: milestone.completed ? 'rgb(139, 92, 246)' : 'rgb(168, 85, 247)',
+                      boxShadow: milestone.completed
+                        ? '0 0 12px rgba(139, 92, 246, 0.4)'
+                        : '0 0 12px rgba(168, 85, 247, 0.4)',
+                    }}
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
+                  >
+                    {milestone.completed ? (
+                      <svg
+                        className="h-3.5 w-3.5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    ) : (
+                      <motion.div
+                        className="h-2 w-2 rounded-full bg-white"
+                        animate={{ scale: [1, 1.3, 1] }}
+                        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                    )}
+                  </motion.div>
+                  {!milestone.completed && (
+                    <motion.div
+                      className="absolute h-7 w-7 rounded-full"
+                      style={{ background: 'rgba(168, 85, 247, 0.4)' }}
+                      animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-1 text-xs text-slate-500">{milestone.date}</div>
+
+              <h3 className="mb-2 text-base font-bold text-slate-900">{milestone.title}</h3>
+
+              <p className="text-sm leading-relaxed text-slate-500">{milestone.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Security Commitment */}
+      <section className="py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">Security</h2>
+          <p className="mb-8 mt-3 text-lg text-slate-500">
+            Security isn&apos;t a feature we ship. It&apos;s the foundation.
+          </p>
+        </motion.div>
+
+        <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+          {[
+            {
+              title: 'Post-Quantum E2EE',
+              detail:
+                'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Past messages stay safe even if a key gets compromised — including against quantum computers.',
+            },
+            {
+              title: 'Automated Security in CI',
+              detail:
+                'Gitleaks for secrets, Sobelow for Elixir, Grype for containers, pnpm audit for deps. All blocking — nothing merges if these fail.',
+            },
+            {
+              title: 'GDPR',
+              detail:
+                "Full data export as JSON. Account deletion. Data minimization. Configurable retention. We don't keep what we don't need.",
+            },
+            {
+              title: 'Infrastructure',
+              detail:
+                'Cloudflare WAF + DDoS protection, TLS 1.3, HSTS, CSP headers, rate limiting, trusted proxy validation.',
+            },
+          ].map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="glass-surface rounded-2xl p-6 shadow-glass"
+            >
+              <h3 className="mb-2 font-semibold text-slate-900">{item.title}</h3>
+              <p className="text-sm text-slate-500">{item.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Vision Section */}
+      <section className="py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">What&apos;s Next</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-slate-500">
+            Public beta is targeting Q2 2026. After that: message threads, SSO/SAML for teams,
+            desktop apps, and more. The roadmap goes through 2027.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a
+              href="https://github.com/cgraph-dev/CGraph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            >
+              Follow on GitHub
+            </a>
+            <a
+              href="mailto:hello@cgraph.org"
+              className="rounded-xl border border-slate-200/50 px-6 py-3 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50"
+            >
+              Get in Touch
+            </a>
+          </div>
+        </motion.div>
+      </section>
+    </LiquidGlassLayout>
   );
 }

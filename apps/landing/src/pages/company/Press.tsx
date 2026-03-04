@@ -7,8 +7,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { MarketingLayout } from '@/components/marketing';
-import { NeonIcon } from '@/components/marketing/ui';
+import { LiquidGlassLayout } from '@/components/liquid-glass';
 
 const pressReleases = [
   {
@@ -72,258 +71,215 @@ const companyFacts = [
 
 export default function Press() {
   return (
-    <MarketingLayout
+    <LiquidGlassLayout
       title="Press & Media"
-      subtitle="Resources for journalists and media professionals"
-      eyebrow="Media Resources"
+      subtitle="Media resources and company information"
+      maxWidth="max-w-5xl"
     >
       {/* Press Kit Download */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-card text-center"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)',
-            }}
-          >
-            <h2 className="mb-4 text-2xl font-bold text-white">Professional Press Kit</h2>
-            <p className="mb-6 text-gray-400">
-              Download a complete, publication-ready package with approved copy, brand assets, fact
-              sheet, and launch press release.
-            </p>
+      <section className="py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass-surface rounded-2xl p-8 text-center shadow-glass"
+        >
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">Professional Press Kit</h2>
+          <p className="mb-6 text-slate-500">
+            Download a complete, publication-ready package with approved copy, brand assets, fact
+            sheet, and launch press release.
+          </p>
 
-            <div className="mx-auto mb-6 grid max-w-3xl gap-3 text-left sm:grid-cols-2">
-              {[
-                'Brand guidelines and approved boilerplate',
-                'Fact sheet with structured company metadata',
-                'High-resolution product and brand visuals',
-                'Launch press release and media contact info',
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-2 text-sm text-gray-300">
-                  <span className="mt-1">
-                    <NeonIcon symbol="✅" size={14} title="Included" />
-                  </span>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+          <div className="mx-auto mb-6 grid max-w-3xl gap-3 text-left sm:grid-cols-2">
+            {[
+              'Brand guidelines and approved boilerplate',
+              'Fact sheet with structured company metadata',
+              'High-resolution product and brand visuals',
+              'Launch press release and media contact info',
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-2 text-sm text-slate-500">
+                <span className="mt-0.5 text-purple-500">✓</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="/downloads/cgraph-press-kit.zip"
-                download
-                className="inline-flex rounded-lg px-8 py-4 font-semibold text-white shadow-lg transition-all"
-                style={{
-                  background:
-                    'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-                  boxShadow: '0 10px 40px rgba(16, 185, 129, 0.25)',
-                }}
-              >
-                Download Press Kit (ZIP)
-              </a>
-              <a href="/press-kit/README.md" className="marketing-btn marketing-btn--secondary">
-                Preview Contents
-              </a>
-            </div>
-          </motion.div>
-        </div>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/downloads/cgraph-press-kit.zip"
+              download
+              className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-6 py-3 font-medium text-white shadow-glass transition-colors hover:bg-purple-600"
+            >
+              Download Press Kit (ZIP)
+            </a>
+            <a
+              href="/press-kit/README.md"
+              className="glass-surface inline-flex items-center gap-2 rounded-xl px-6 py-3 font-medium text-slate-700 shadow-glass transition-shadow hover:shadow-glass-lg"
+            >
+              Preview Contents
+            </a>
+          </div>
+        </motion.div>
       </section>
 
       {/* Brand Assets */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-section__header"
-          >
-            <h2 className="marketing-section__title">Brand Assets</h2>
-            <p className="marketing-section__desc">Download individual assets for your coverage</p>
-          </motion.div>
+      <section className="py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">Brand Assets</h2>
+          <p className="text-lg text-slate-500">Download individual assets for your coverage</p>
+        </motion.div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {brandAssets.map((asset, index) => (
-              <motion.a
-                key={asset.name}
-                href={asset.href}
-                download
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="marketing-card group"
-                style={{ padding: '1.5rem' }}
-              >
-                <div className="mb-3">
-                  <NeonIcon symbol={asset.icon} size={36} title={asset.name} />
-                </div>
-                <h3 className="mb-1 font-semibold text-white">{asset.name}</h3>
-                <p className="mb-3 text-sm text-gray-400">{asset.description}</p>
-                <span className="text-xs" style={{ color: 'var(--color-primary)' }}>
-                  {asset.formats}
-                </span>
-              </motion.a>
-            ))}
-          </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {brandAssets.map((asset, index) => (
+            <motion.a
+              key={asset.name}
+              href={asset.href}
+              download
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="glass-surface group rounded-xl p-5 shadow-glass transition-shadow hover:shadow-glass-lg"
+            >
+              <div className="mb-3 text-4xl">{asset.icon}</div>
+              <h3 className="mb-1 font-semibold text-slate-900">{asset.name}</h3>
+              <p className="mb-3 text-sm text-slate-500">{asset.description}</p>
+              <span className="text-xs text-glow-purple">{asset.formats}</span>
+            </motion.a>
+          ))}
         </div>
       </section>
 
       {/* Company Facts */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-section__header"
-          >
-            <h2 className="marketing-section__title">Company Facts</h2>
-            <p className="marketing-section__desc">Key information about CGraph</p>
-          </motion.div>
+      <section className="py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">Company Facts</h2>
+          <p className="text-lg text-slate-500">Key information about CGraph</p>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-card mx-auto max-w-3xl"
-            style={{ padding: '1.5rem' }}
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              {companyFacts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="flex justify-between border-b border-white/10 pb-3 last:border-0 sm:border-0 sm:pb-0"
-                >
-                  <span className="text-gray-400">{fact.label}</span>
-                  <span className="font-medium text-white">{fact.value}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass-surface mx-auto max-w-3xl rounded-2xl p-6 shadow-glass"
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            {companyFacts.map((fact) => (
+              <div
+                key={fact.label}
+                className="flex justify-between border-b border-slate-200/50 pb-3 last:border-0 sm:border-0 sm:pb-0"
+              >
+                <span className="text-slate-500">{fact.label}</span>
+                <span className="font-medium text-slate-900">{fact.value}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* Press Releases */}
-      <section className="marketing-section marketing-section--dark">
-        <div className="marketing-section__container" style={{ maxWidth: '56rem' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-section__header"
-          >
-            <h2 className="marketing-section__title">Press Releases</h2>
-            <p className="marketing-section__desc">Recent announcements and news</p>
-          </motion.div>
+      <section className="py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <h2 className="text-3xl font-bold text-slate-900">Press Releases</h2>
+          <p className="text-lg text-slate-500">Recent announcements and news</p>
+        </motion.div>
 
-          <div className="space-y-6">
-            {pressReleases.map((release, index) => (
-              <motion.a
-                key={release.title}
-                href={release.link}
-                download
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="marketing-card group block"
-                style={{ padding: '1.5rem' }}
-              >
-                <span className="text-sm" style={{ color: 'var(--color-primary)' }}>
-                  {release.date}
-                </span>
-                <h3 className="mt-2 text-lg font-semibold text-white group-hover:text-emerald-300">
-                  {release.title}
-                </h3>
-                <p className="mt-2 text-gray-400">{release.summary}</p>
-                <span
-                  className="mt-3 inline-block text-sm"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  Download release →
-                </span>
-              </motion.a>
-            ))}
-          </div>
+        <div className="space-y-6">
+          {pressReleases.map((release, index) => (
+            <motion.a
+              key={release.title}
+              href={release.link}
+              download
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="glass-surface group block rounded-xl p-5 shadow-glass"
+            >
+              <span className="text-sm text-glow-purple">{release.date}</span>
+              <h3 className="mt-2 text-lg font-semibold text-slate-900 group-hover:text-glow-purple">
+                {release.title}
+              </h3>
+              <p className="mt-2 text-slate-500">{release.summary}</p>
+              <span className="mt-3 inline-block text-sm text-glow-purple">Download release →</span>
+            </motion.a>
+          ))}
         </div>
       </section>
 
       {/* Media Coverage - Coming Soon */}
       {mediaAppearances.length > 0 && (
-        <section className="marketing-section marketing-section--alt">
-          <div className="marketing-section__container" style={{ maxWidth: '56rem' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="marketing-section__header"
-            >
-              <h2 className="marketing-section__title">In the News</h2>
-              <p className="marketing-section__desc">Selected media coverage</p>
-            </motion.div>
+        <section className="py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8"
+          >
+            <h2 className="text-3xl font-bold text-slate-900">In the News</h2>
+            <p className="text-lg text-slate-500">Selected media coverage</p>
+          </motion.div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {mediaAppearances.map((article, index) => (
-                <motion.a
-                  key={article.title}
-                  href={article.link}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                  className="marketing-card group"
-                  style={{ padding: '1.5rem' }}
-                >
-                  <span className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
-                    {article.outlet}
-                  </span>
-                  <h3 className="mt-2 font-semibold text-white group-hover:text-emerald-300">
-                    {article.title}
-                  </h3>
-                  <span className="mt-2 block text-sm text-gray-500">{article.date}</span>
-                </motion.a>
-              ))}
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {mediaAppearances.map((article, index) => (
+              <motion.a
+                key={article.title}
+                href={article.link}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                className="glass-surface group rounded-xl p-5 shadow-glass"
+              >
+                <span className="text-sm font-medium text-glow-purple">{article.outlet}</span>
+                <h3 className="mt-2 font-semibold text-slate-900 group-hover:text-glow-purple">
+                  {article.title}
+                </h3>
+                <span className="mt-2 block text-sm text-slate-500">{article.date}</span>
+              </motion.a>
+            ))}
           </div>
         </section>
       )}
 
       {/* Contact Section */}
-      <section className="marketing-section marketing-section--tertiary">
-        <div className="marketing-section__container" style={{ maxWidth: '48rem' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="marketing-card text-center"
-            style={{ padding: '2rem' }}
-          >
-            <h2 className="mb-4 text-xl font-bold text-white">Media Inquiries</h2>
-            <p className="mb-6 text-gray-400">
-              For interview requests, press inquiries, or additional information, please contact our
-              media relations team.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="mailto:press@cgraph.org"
-                className="inline-flex rounded-lg px-6 py-3 font-medium text-white shadow-lg transition-all"
-                style={{
-                  background:
-                    'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-                  boxShadow: '0 10px 40px rgba(16, 185, 129, 0.25)',
-                }}
-              >
-                press@cgraph.org
-              </a>
-            </div>
-          </motion.div>
-        </div>
+      <section className="py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass-surface rounded-2xl p-8 text-center shadow-glass"
+        >
+          <h2 className="mb-4 text-xl font-bold text-slate-900">Media Inquiries</h2>
+          <p className="mb-6 text-slate-500">
+            For interview requests, press inquiries, or additional information, please contact our
+            media relations team.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="mailto:press@cgraph.org"
+              className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-6 py-3 font-medium text-white shadow-glass transition-colors hover:bg-purple-600"
+            >
+              press@cgraph.org
+            </a>
+          </div>
+        </motion.div>
       </section>
-    </MarketingLayout>
+    </LiquidGlassLayout>
   );
 }
