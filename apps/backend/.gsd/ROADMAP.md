@@ -1,68 +1,161 @@
-# CGraph Backend Roadmap — Post-v1.0 Hardening
+# CGraph Roadmap — Full-Stack Wiring to 100% Deployment
 
-> Generated: 2026-03-04 | Phases: TBD | Scope: Backend only (`apps/backend/`)
+> Generated: 2026-03-04 | Phases: 6 | Scope: Full monorepo (backend + web + mobile)
 >
-> This roadmap focuses on backend hardening after v1.0.0 release: security fixes, performance
-> optimization, API quality improvements, and test coverage. Frontend/mobile work is managed in a
-> separate GSD instance at the monorepo root.
+> Every backend API, frontend page, and mobile screen has been built. This roadmap wires them
+> together so every feature actually works for real users. See DISCOVERY.md for the full gap
+> analysis that produced these phases.
 
 ---
 
 ## Phase Overview
 
-| # | Phase | Goal | Reqs | Status |
-|---|-------|------|------|--------|
-| — | — | — | — | Awaiting planning |
+| # | Phase | Goal | Tasks | Plans | Status |
+|---|-------|------|-------|-------|--------|
+| 20 | Backend Safety Net | Fix all P0 security + crash bugs in backend APIs | 10 | 2 | Not started |
+| 21 | Web Wiring | Replace all mock data with real API calls in web app | 8 | 2 | Not started |
+| 22 | Mobile Wiring | Wire mobile stubs, facades, mocks to real stores/APIs | 12 | 3 | Not started |
+| 23 | Creator & Payments | End-to-end creator monetization + coin shop + IAP | 8 | 2 | Not started |
+| 24 | Test Coverage | Creator tests, webhook tests, coverage baseline | 5 | 1 | Not started |
+| 25 | Infrastructure & Perf | PgBouncer, MeiliSearch, load tests, version sync | 6 | 1 | Not started |
 
-> Run `/gsd:discovery-phase` to analyze active requirements from PROJECT.md and plan phases.
+> **Total**: ~49 tasks across 6 phases, 11 plan files
 
 ---
 
-## Active Requirements (from PROJECT.md)
+## Phase 20 — Backend Safety Net
 
-### Security Hardening (P0)
+**Goal**: Fix every issue that would cause 500 errors, data loss, or security breaches when real
+users hit the APIs. No frontend work — pure backend hardening.
 
-- Fix payout race condition (Repo.transaction + FOR UPDATE)
-- Remove `inspect(reason)` from 25+ controller API errors
-- Verify Apple JWS signatures in IAP flow
-- Verify Google RTDN Pub/Sub auth tokens
-- Validate SIWE chain_id
-- Complete audit logging
+**Plan 20-01: Security Critical Fixes**
+- [ ] Fix payout race condition with `Repo.transaction` + `FOR UPDATE` row lock
+- [ ] Verify Apple JWS signatures in IAP flow (`iap_controller.ex`)
+- [ ] Verify Google RTDN Pub/Sub auth tokens (`iap_controller.ex`)
+- [ ] Validate SIWE `chain_id` parameter (`wallet_authentication.ex`)
+- [ ] Complete audit logging for security-sensitive operations
 
-### API Quality (P1)
+**Plan 20-02: API Crash & Quality Fixes**
+- [ ] Replace `inspect(reason)` with safe error messages in 25+ controllers
+- [ ] Replace `Repo.get!` with `Repo.get` + error tuple in 3 locations
+- [ ] Make `Earnings.get_balance/1` atomic (single query, no read-then-write)
+- [ ] Fix compile-time `System.get_env` in `CoinBundles` → runtime config
+- [ ] Remove dead `@tier_mapping` code from `stripe_webhook_controller.ex`
 
-- Fix `Repo.get!` with user-controlled params (3 locations)
-- Make `Earnings.get_balance/1` atomic
-- Fix compile-time `System.get_env` in CoinBundles
-- Remove dead code (`@tier_mapping`)
-- Move hardcoded plan definitions to config
-- Split oversized controllers (6 controllers > 400 LOC)
-- Split `iap_validator.ex` (542 LOC)
+---
 
-### Performance & Scaling (P1)
+## Phase 21 — Web Wiring
 
-- Run load tests against staging (k6 scripts ready)
-- Deploy PgBouncer (config exists)
-- Activate MeiliSearch in production
-- Fix auth p95 latency (383ms vs 300ms SLO)
-- Implement CRDT state compaction
-- Fix Elixir version mismatch (Dockerfile 1.17.3 vs local 1.19.4)
+**Goal**: Every web page displays real data from backend APIs. No mock constants, no hardcoded
+fallbacks, no TODO comments.
 
-### Test Coverage (P1)
+**Plan 21-01: Customization Pages + Forum Admin**
+- [ ] Wire Progression Customization (achievements, leaderboard, quests, daily rewards) → gamification API
+- [ ] Wire Identity Customization (borders, titles, badges) → cosmetics API
+- [ ] Wire Theme Customization → themes API
+- [ ] Wire Forum Admin analytics → `/api/v1/forums/:id/analytics`
+- [ ] Wire Forum Admin rules → `/api/v1/forums/:id/automod/rules`
+- [ ] Wire Forum Admin mod queue → `/api/v1/moderation/reports`
 
-- Write Creator monetization tests (9 files + 1 controller, zero tests)
-- Expand Stripe webhook tests (4 tests, signature only)
-- Establish backend coverage baseline (`mix coveralls`)
-- Add IAP credential startup validation
+**Plan 21-02: Admin Dashboard + Error States**
+- [ ] Remove `adminStore.mockData.ts` fallback — show "unavailable" on error
+- [ ] Audit all remaining `MOCK_` constants across web codebase and replace
+
+---
+
+## Phase 22 — Mobile Wiring
+
+**Goal**: Every mobile screen uses real data, every facade resolves to a real store, every hook
+has a working implementation.
+
+**Plan 22-01: Screen Mock Data Replacement**
+- [ ] Wire Notifications Inbox → `useNotificationStore` → `GET /api/v1/notifications`
+- [ ] Wire User Wall → user wall API → `GET /api/v1/users/:id/wall`
+- [ ] Remove mock forum fallback — show error state on API failure
+- [ ] Fix `currentUserId = 'current-user'` in Call History → `useAuthStore().user.id`
+
+**Plan 22-02: Store Facades & Hooks**
+- [ ] Wire `useCommunityFacade().forums` → `forumStore.forums`
+- [ ] Wire `useMarketplaceFacade().balance` → `gamificationStore.coins`
+- [ ] Wire `useUIFacade()` methods to UI state management (or remove mobile-irrelevant ones)
+- [ ] Implement `useVoiceRecording()` with `expo-av` Audio API
+- [ ] Create `VoiceMessageRecorder` component
+- [ ] Create `features/forums/hooks/` directory with forum-specific hooks
+
+**Plan 22-03: Protocol & Infrastructure**
+- [ ] Implement X3DH DH4 (one-time prekey computation) for full forward secrecy
+- [ ] Expand WatermelonDB message sender stub (cache sender profile data)
+
+---
+
+## Phase 23 — Creator & Payments End-to-End
+
+**Goal**: Creator monetization, coin shop, and IAP work end-to-end from UI to database for both
+web and mobile.
+
+**Plan 23-01: Creator Monetization Service Layer**
+- [ ] Create web `creatorService.ts` (onboard, status, subscribe, balance, payout, analytics)
+- [ ] Create web creator store module with hooks
+- [ ] Wire Creator Dashboard pages to real API
+- [ ] Create mobile creator service (matching web)
+
+**Plan 23-02: Coin Shop & IAP**
+- [ ] Create web `coinShopService.ts` (bundles, checkout)
+- [ ] Wire web gamification shop page to coin shop API
+- [ ] Wire mobile marketplace to coin shop API (IAP service exists, needs coin shop integration)
+- [ ] Create AI service layer for web + mobile (summarize, smart replies, moderate)
+
+---
+
+## Phase 24 — Test Coverage
+
+**Goal**: Ship safety net — catch regressions in revenue-critical and security-critical paths.
+
+**Plan 24-01: Critical Path Tests**
+- [ ] Write Creator monetization tests (9 files + 1 controller, zero tests currently)
+- [ ] Expand Stripe webhook tests beyond signature verification
+- [ ] Add IAP credential startup validation tests
+- [ ] Establish backend coverage baseline with `mix coveralls`
+- [ ] Wire test coverage to CI (coveralls.json already exists)
+
+---
+
+## Phase 25 — Infrastructure & Performance
+
+**Goal**: Production-ready infrastructure for real user traffic at scale.
+
+**Plan 25-01: Production Readiness**
+- [ ] Deploy PgBouncer (config exists at `pgbouncer/pgbouncer.ini`)
+- [ ] Activate MeiliSearch in production search pipeline
+- [ ] Run k6 load tests against staging
+- [ ] Fix auth p95 latency (383ms → <300ms SLO)
+- [ ] Align Elixir version — Dockerfile 1.17.3 to match dev 1.19.4
+- [ ] Implement CRDT state compaction for group sync
+
+---
+
+## Dependency Graph
+
+```
+Phase 20 (Backend Safety)
+  ├─→ Phase 21 (Web Wiring)      ←─ needs safe APIs
+  ├─→ Phase 22 (Mobile Wiring)   ←─ needs safe APIs
+  └─→ Phase 23 (Creator/Pay)     ←─ needs payout race fix
+        └─→ Phase 24 (Tests)     ←─ needs features to exist
+              └─→ Phase 25 (Infra) ←─ needs stable baseline
+```
+
+Phases 21 and 22 can run in parallel after Phase 20.
 
 ---
 
 ## Reference
 
-- **Codebase docs:** `.gsd/codebase/` (7 files, 6,384 lines)
-- **Detailed concerns:** `.gsd/codebase/CONCERNS.md` (48 action items, score 7.3/10)
-- **Prior roadmap:** 19 phases completed (v0.9.47 → v1.0.0), archived in git history
+- **Discovery analysis**: `.gsd/DISCOVERY.md` (full gap inventory)
+- **Codebase docs**: `.gsd/codebase/` (7 files, 6,384 lines)
+- **Detailed concerns**: `.gsd/codebase/CONCERNS.md` (48 action items, score 7.3/10)
+- **Prior roadmap**: Phases 1–19 completed (v0.9.47 → v1.0.0), archived in `.gsd/phases/`
 
 ---
 
-_Last updated: 2026-03-04 — project initialization_
+_Last updated: 2026-03-04 — phases 20–25 planned from DISCOVERY.md analysis_

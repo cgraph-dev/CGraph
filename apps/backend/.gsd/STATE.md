@@ -1,82 +1,85 @@
-# CGraph Backend — Project State
+# CGraph Project State
 
 > Auto-maintained by GSD workflow. Do not edit manually.
 
 ---
 
-## Project Reference
+## Core Value
 
-See: .gsd/PROJECT.md (updated 2026-03-04)
+Secure real-time communication that works end-to-end.
 
-**Core value:** Every API response is correct, secure, and fast.
-**Current focus:** Project initialized — ready to plan roadmap.
+## Current Focus
 
-## Current Position
+**Post-v1.0 Hardening** — Wiring all built features end-to-end for 100% deployment status.
 
-Phase: 0 of TBD (Project Initialization)
-Plan: —
-Status: Ready to plan roadmap
-Last activity: 2026-03-04 — Backend-only GSD instance created
+## Position
 
-Progress: ░░░░░░░░░░ 0%
+- **Phase:** 20 of 25 — **Backend Safety Net** (Not started)
+- **Plan:** 0/2 plans executed in Phase 20
+- **Status:** 🔄 Planning complete, execution pending
+- **Last activity:** 2026-03-04 — Discovery + planning for phases 20–25
 
-## Performance Metrics
+## Plans
 
-**Velocity:**
+| Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status      |
+| ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | ----------- |
+| 20-01 | Security Critical — Payout race, JWS/RTDN verify, SIWE chain_id     | 1    | ✅         | —                | Not started |
+| 20-02 | API Quality — inspect leaks, Repo.get!, CoinBundles, dead code       | 1    | ✅         | —                | Not started |
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: 0 hours
+## Progress
 
-**By Phase:**
+| Metric             | Value       |
+| ------------------ | ----------- |
+| Overall progress   | 79%         |
+| Phases complete    | 19 / 25     |
+| Requirements done  | 142 / ~191  |
+| Current phase reqs | 0 / 10      |
 
-| Phase | Plans | Total | Avg/Plan |
-| ----- | ----- | ----- | -------- |
-| —     | —     | —     | —        |
+████████████████████████████████░░░░░░░░ 79%
 
-**Recent Trend:**
+## Phase Summary
 
-- Last 5 plans: —
-- Trend: —
-
-## Accumulated Context
-
-### Decisions
-
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- (init): Backend-only GSD instance — frontend/mobile managed at monorepo root
-
-### Prior Work
-
-This backend completed 19 phases (142 requirements) under a full-monorepo GSD instance.
-Version 1.0.0 was tagged. This new GSD instance focuses exclusively on backend hardening:
-security fixes, performance, API quality, and test coverage.
-
-Codebase mapping: 7 verified docs in `.gsd/codebase/` (6,384 lines, 3 audit passes).
-
-### Blockers/Concerns
-
-From `.gsd/codebase/CONCERNS.md`:
-
-- 4 P0 security vulnerabilities (payout race, IAP signature bypass ×2, error info leak)
-- Creator monetization code has zero tests (financial code)
-- No load tests have ever been run against staging/production
-- Auth p95 latency exceeds 300ms SLO even in local dev
+| #   | Phase                   | Status                    |
+| --- | ----------------------- | ------------------------- |
+| 1   | Infrastructure Baseline | **Complete** (2026-02-27) |
+| 2   | Auth Core               | **Complete** (2026-02-28) |
+| 3   | Auth Advanced           | **Complete** (2026-02-28) |
+| 4   | Design System & Mobile  | **Complete** (2026-02-28) |
+| 5   | Message Transport       | **Complete** (2026-02-28) |
+| 6   | Message Features & Sync | **Complete** (2026-02-28) |
+| 7   | E2EE & Mobile Security  | **Complete** (2026-02-28) |
+| 8   | Social & Profiles       | **Complete** (2026-03-01) |
+| 9   | Notifications & Safety  | **Complete** (2026-03-01) |
+| 10  | Message Extras          | **Complete** (2026-03-01) |
+| 11  | Groups & Channels       | **Complete** (2026-03-01) |
+| 12  | Roles & Moderation      | **Complete** (2026-03-01) |
+| 13  | Voice & Video           | **Complete** (2026-03-01) |
+| 14  | Forum Core              | **Complete** (2026-03-01) |
+| 15  | Forum Customization     | **Complete** (2026-03-02) |
+| 16  | Gamification            | **Complete** (2026-03-02) |
+| 17  | Monetization            | **Complete** (2026-03-02) |
+| 18  | Rich Media & Polish     | **Complete** (2026-03-02) |
+| 19  | Launch                  | **Complete** (2025-07-24) |
+| 20  | Backend Safety Net      | Not started               |
+| 21  | Web Wiring              | Not started               |
+| 22  | Mobile Wiring           | Not started               |
+| 23  | Creator & Payments      | Not started               |
+| 24  | Test Coverage           | Not started               |
+| 25  | Infrastructure & Perf   | Not started               |
 
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Project initialized — PROJECT.md, STATE.md, ROADMAP.md reset for backend-only scope
-Resume file: None
+Stopped at: Planning complete — phases 20–25 defined with 11 plan files
+Resume file: `.gsd/ROADMAP.md` → Phase 20 (Backend Safety Net)
 
 ## Last Action
 
-Created backend-only GSD project. PROJECT.md rewritten with backend scope, validated requirements
-from v1.0.0, and active requirements focused on security hardening, API quality, performance, and
-test coverage. Ready for roadmap planning.
+Post-v1.0 hardening planning complete:
+- DISCOVERY.md: Full-stack wiring gap analysis (18 mobile gaps, 6+ web mock areas, 5 missing service layers)
+- ROADMAP.md: 6 phases (20–25) with 49 tasks across 11 plan files
+- Phase directories: 20-backend-safety through 25-infrastructure created with detailed PLAN.md files
 
 ---
 
-_Last updated: 2026-03-04 (project initialization)_
+_Last updated: 2026-03-04 (post-v1.0 hardening planned)_
