@@ -22,7 +22,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
         className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
           activeCategory === 'all'
             ? 'bg-primary-500 text-white'
-            : 'bg-dark-700 text-gray-400 hover:text-white'
+            : 'bg-white/[0.06] text-gray-400 hover:text-white'
         }`}
       >
         All
@@ -38,7 +38,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
               activeCategory === key
                 ? 'bg-primary-500 text-white'
-                : 'bg-dark-700 text-gray-400 hover:text-white'
+                : 'bg-white/[0.06] text-gray-400 hover:text-white'
             }`}
           >
             {label}

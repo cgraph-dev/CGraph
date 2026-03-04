@@ -37,7 +37,7 @@ export function RankingsList({ entries, currentUserId, currentCategory, page }: 
               exit={{ opacity: 0, x: 20 }}
               transition={{ delay: index * 0.02 }}
               onClick={() => navigate(`/profile/${entry.userId}`)}
-              className={`group flex cursor-pointer items-center gap-3 p-4 transition-all hover:bg-dark-800/50 sm:gap-4 ${
+              className={`group flex cursor-pointer items-center gap-3 p-4 transition-all hover:bg-white/[0.04] sm:gap-4 ${
                 isCurrentUser
                   ? `border-l-4 border-primary-500 bg-gradient-to-r from-primary-500/10 to-transparent`
                   : ''

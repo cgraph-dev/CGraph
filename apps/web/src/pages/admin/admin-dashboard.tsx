@@ -41,10 +41,10 @@ export default function AdminDashboard() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+      className="min-h-screen bg-gray-50 dark:bg-[rgb(30,32,40)]"
     >
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <header className="border-b border-gray-200 bg-white shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => queryClient.invalidateQueries()}
-              className="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.10]"
             >
               <ArrowPathIcon className="h-4 w-4" />
               <span>Refresh</span>
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <nav className="border-b border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.04]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto py-2">
             {tabs.map((tab) => (
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
                   'flex items-center space-x-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
                   activeTab === tab.id
                     ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]'
                 )}
               >
                 <tab.icon className="h-5 w-5" />

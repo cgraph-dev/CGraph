@@ -34,7 +34,7 @@ export function getRankBadge(rank: number): React.ReactNode {
     );
   }
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-dark-600">
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.08]">
       <span className="text-lg font-semibold text-gray-400">#{rank}</span>
     </div>
   );

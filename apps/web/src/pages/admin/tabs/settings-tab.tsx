@@ -38,7 +38,7 @@ export function SettingsTab() {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
           System Configuration
         </h2>

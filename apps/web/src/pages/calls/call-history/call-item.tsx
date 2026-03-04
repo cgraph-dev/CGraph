@@ -36,10 +36,10 @@ export default function CallItem({ call, onDelete }: CallItemProps) {
     <motion.div
       variants={itemVariants}
       layout
-      className="flex items-center gap-4 rounded-lg bg-dark-800/50 p-3 transition-colors hover:bg-dark-700/50"
+      className="flex items-center gap-4 rounded-lg bg-white/[0.04] p-3 transition-colors hover:bg-white/[0.06]"
     >
       {/* Avatar */}
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-dark-700">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/[0.06]">
         <span className="text-lg font-semibold text-white/80">{call.recipientName.charAt(0)}</span>
       </div>
 
@@ -71,7 +71,7 @@ export default function CallItem({ call, onDelete }: CallItemProps) {
         <button
           type="button"
           onClick={handleCallBack}
-          className="rounded-full p-2 text-emerald-400 transition-colors hover:bg-dark-600"
+          className="rounded-full p-2 text-emerald-400 transition-colors hover:bg-white/[0.10]"
           title={`Call ${call.recipientName}`}
         >
           {call.type === 'video' ? <Video className="h-5 w-5" /> : <Phone className="h-5 w-5" />}

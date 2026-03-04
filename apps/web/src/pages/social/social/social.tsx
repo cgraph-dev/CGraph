@@ -193,7 +193,7 @@ export function Social() {
       ))}
 
       {/* Header with Tabs */}
-      <div className="relative z-10 flex-shrink-0 border-b border-white/[0.06] bg-dark-900/60 backdrop-blur-2xl">
+      <div className="relative z-10 flex-shrink-0 border-b border-white/[0.06] bg-[rgb(30,32,40)]/60 backdrop-blur-2xl">
         {/* Top edge glow */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
 
@@ -306,7 +306,7 @@ export function Social() {
           {/* Online contacts sidebar — visible on friends tab */}
           {tab === 'friends' && (
             <aside className="hidden w-64 flex-shrink-0 lg:block">
-              <div className="sticky top-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-dark-900/40 shadow-xl shadow-black/20 backdrop-blur-xl">
+              <div className="sticky top-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[rgb(30,32,40)]/40 shadow-xl shadow-black/20 backdrop-blur-xl">
                 {/* Sidebar accent glow */}
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
                 <ContactsPresenceList

@@ -47,7 +47,7 @@ export function ProfileAbout({
           value={editedBio}
           onChange={(e) => onBioChange(e.target.value)}
           placeholder="Tell us about yourself..."
-          className="w-full resize-none rounded-lg border border-primary-500/30 bg-dark-800/50 px-4 py-3 text-white placeholder-gray-500 transition-colors focus:border-primary-500 focus:outline-none"
+          className="w-full resize-none rounded-lg border border-primary-500/30 bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 transition-colors focus:border-primary-500 focus:outline-none"
           rows={4}
           maxLength={500}
         />

@@ -54,7 +54,7 @@ export function ReportsTab() {
       className="space-y-6"
     >
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         <div className="flex space-x-2">
           {['pending', 'resolved', 'dismissed', 'all'].map((status) => (
             <button
@@ -64,7 +64,7 @@ export function ReportsTab() {
                 'rounded-lg px-4 py-2 text-sm font-medium capitalize transition-colors',
                 statusFilter === status
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]'
               )}
             >
               {status}
@@ -121,7 +121,7 @@ function ReportCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">

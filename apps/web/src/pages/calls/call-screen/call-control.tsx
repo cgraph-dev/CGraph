@@ -23,7 +23,7 @@ export function CallControl({ icon, label, onClick, active, danger, disabled }: 
           ? 'bg-red-500 text-white hover:bg-red-600'
           : active
             ? 'bg-primary-500 text-white'
-            : 'bg-dark-700/80 text-gray-300 hover:bg-dark-600'
+            : 'bg-white/[0.08] text-gray-300 hover:bg-white/[0.10]'
       } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
     >
       {icon}

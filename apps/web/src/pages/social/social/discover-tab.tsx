@@ -30,7 +30,7 @@ export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: Disc
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search users, forums, and groups..."
-          className="w-full rounded-2xl border border-white/[0.08] bg-dark-800/60 py-4 pl-14 pr-4 text-lg text-white shadow-inner shadow-black/20 backdrop-blur-xl transition-all duration-200 placeholder:text-white/30 focus:border-primary-500/40 focus:shadow-lg focus:shadow-primary-500/5 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.04]/60 py-4 pl-14 pr-4 text-lg text-white shadow-inner shadow-black/20 backdrop-blur-xl transition-all duration-200 placeholder:text-white/30 focus:border-primary-500/40 focus:shadow-lg focus:shadow-primary-500/5 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           autoFocus
         />
       </div>

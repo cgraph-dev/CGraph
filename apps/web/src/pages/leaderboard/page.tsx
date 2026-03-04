@@ -160,7 +160,7 @@ export default function LeaderboardPage() {
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   scope === opt.id
                     ? 'bg-primary-500/20 text-primary-400 ring-1 ring-primary-500/30'
-                    : 'text-gray-400 hover:bg-dark-700/50 hover:text-white'
+                    : 'text-gray-400 hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
                 {opt.icon}
@@ -256,7 +256,7 @@ export default function LeaderboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.05 }}
-                className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4 text-center"
+                className="rounded-xl border border-white/[0.06]/50 bg-white/[0.04] p-4 text-center"
               >
                 <div
                   className={`inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${currentCategory.gradient} mb-2 bg-opacity-20`}

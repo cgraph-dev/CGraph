@@ -103,7 +103,7 @@ export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboard
             </div>
 
             {/* Karma */}
-            <div className="flex items-center gap-2 rounded-lg bg-dark-600/50 px-4 py-2 backdrop-blur-sm">
+            <div className="flex items-center gap-2 rounded-lg bg-white/[0.08] px-4 py-2 backdrop-blur-sm">
               <SparklesIcon
                 className={`h-5 w-5 ${isTopThree ? 'text-yellow-400' : 'text-primary-400'}`}
               />

@@ -20,7 +20,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/[0.10] disabled:cursor-not-allowed disabled:opacity-50"
       >
         Previous
       </button>
@@ -45,7 +45,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
               className={`h-8 w-8 rounded-lg text-sm font-medium transition-colors ${
                 currentPage === pageNum
                   ? 'bg-purple-600 text-white'
-                  : 'bg-dark-700 text-gray-300 hover:bg-dark-600'
+                  : 'bg-white/[0.06] text-gray-300 hover:bg-white/[0.10]'
               }`}
             >
               {pageNum}
@@ -57,7 +57,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/[0.10] disabled:cursor-not-allowed disabled:opacity-50"
       >
         Next
       </button>

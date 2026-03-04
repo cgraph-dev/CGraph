@@ -36,7 +36,7 @@ export function VideoTile({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className={`relative overflow-hidden rounded-2xl bg-dark-800 ${isPinned ? 'col-span-2 row-span-2' : ''} ${isLocal ? 'ring-2 ring-primary-500/50' : ''}`}
+      className={`relative overflow-hidden rounded-2xl bg-white/[0.04] ${isPinned ? 'col-span-2 row-span-2' : ''} ${isLocal ? 'ring-2 ring-primary-500/50' : ''}`}
       onClick={onPin}
     >
       {hasVideo && stream ? (
@@ -111,7 +111,7 @@ export function VideoTile({
 
       {/* Local Badge */}
       {isLocal && (
-        <div className="absolute left-3 top-3 rounded-lg bg-dark-800/80 px-2 py-1 text-xs text-gray-300">
+        <div className="absolute left-3 top-3 rounded-lg bg-white/[0.06] px-2 py-1 text-xs text-gray-300">
           You
         </div>
       )}

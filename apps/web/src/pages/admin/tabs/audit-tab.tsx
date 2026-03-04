@@ -40,7 +40,7 @@ export function AuditTab() {
       className="space-y-6"
     >
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         <div className="flex space-x-2 overflow-x-auto">
           {categories.map((category) => (
             <button
@@ -50,7 +50,7 @@ export function AuditTab() {
                 'whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium capitalize transition-colors',
                 categoryFilter === category
                   ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]'
               )}
             >
               {category}
@@ -60,13 +60,13 @@ export function AuditTab() {
       </div>
 
       {/* Audit Log Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         {isLoading ? (
           <LoadingState />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+              <thead className="bg-gray-50 dark:bg-white/[0.06]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
                     Time
@@ -87,12 +87,12 @@ export function AuditTab() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {auditData?.entries.map((entry: AuditEntry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.06]/50">
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {format(new Date(entry.timestamp), 'MMM d, HH:mm:ss')}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.06] dark:text-gray-300">
                         {entry.category}
                       </span>
                     </td>

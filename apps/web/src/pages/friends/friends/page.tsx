@@ -50,7 +50,7 @@ export default function Friends() {
   return (
     <div className="flex h-full flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Friends List Panel */}
-      <div className="relative flex w-96 flex-col overflow-hidden border-r border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
+      <div className="relative flex w-96 flex-col overflow-hidden border-r border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] backdrop-blur-xl">
         {/* Ambient glow effect */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 

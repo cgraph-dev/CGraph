@@ -112,7 +112,7 @@ export function FriendRequestCard({ request, type, onAccept, onDecline }: Friend
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="group/btn rounded-lg bg-dark-700/50 p-2 transition-all hover:bg-red-600/20"
+              className="group/btn rounded-lg bg-white/[0.06] p-2 transition-all hover:bg-red-600/20"
               title={type === 'incoming' ? 'Decline' : 'Cancel'}
             >
               <XMarkIcon className="h-5 w-5 text-gray-400 transition-colors group-hover/btn:text-red-400" />

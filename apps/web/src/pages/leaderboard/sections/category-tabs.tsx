@@ -38,7 +38,7 @@ export function CategoryTabs({ category, onCategoryChange }: CategoryTabsProps) 
             className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
               category === cat.id
                 ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg`
-                : 'border border-dark-700 bg-dark-800/80 text-gray-400 hover:bg-dark-700 hover:text-white'
+                : 'border border-white/[0.06] bg-white/[0.06] text-gray-400 hover:bg-white/[0.08] hover:text-white'
             }`}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}

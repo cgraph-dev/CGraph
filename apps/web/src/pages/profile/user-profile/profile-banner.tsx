@@ -56,7 +56,7 @@ export function ProfileBanner({
             <>
               <motion.button
                 onClick={onCancel}
-                className="flex items-center gap-2 rounded-lg border border-white/10 bg-dark-700/90 px-4 py-2 font-medium text-white backdrop-blur-sm transition-colors hover:bg-dark-600"
+                className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06]/90 px-4 py-2 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/[0.10]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -77,7 +77,7 @@ export function ProfileBanner({
           ) : (
             <motion.button
               onClick={onEditToggle}
-              className="flex items-center gap-2 rounded-lg border border-white/10 bg-dark-700/90 px-4 py-2 font-medium text-white backdrop-blur-sm transition-colors hover:bg-dark-600"
+              className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06]/90 px-4 py-2 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/[0.10]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -93,7 +93,7 @@ export function ProfileBanner({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 flex cursor-pointer items-center justify-center bg-dark-900/60 backdrop-blur-sm transition-colors hover:bg-dark-900/70"
+          className="absolute inset-0 flex cursor-pointer items-center justify-center bg-[rgb(30,32,40)]/60 backdrop-blur-sm transition-colors hover:bg-[rgb(30,32,40)]/70"
           onClick={onUploadClick}
         >
           <div className="text-center">

@@ -56,7 +56,7 @@ export default function UserLeaderboard() {
   };
 
   return (
-    <div className="relative min-h-screen bg-dark-900 pb-12">
+    <div className="relative min-h-screen bg-[rgb(30,32,40)] pb-12">
       {/* Ambient background particles */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
@@ -106,7 +106,7 @@ export default function UserLeaderboard() {
 
         {/* Empty State */}
         {!loading && !error && users.length === 0 && (
-          <div className="rounded-lg bg-dark-800 p-12 text-center">
+          <div className="rounded-lg bg-white/[0.04] p-12 text-center">
             <TrophyIcon className="mx-auto h-16 w-16 text-gray-600" />
             <h2 className="mt-4 text-xl font-semibold text-gray-300">No users yet</h2>
             <p className="mt-2 text-gray-500">Be the first to join the leaderboard!</p>

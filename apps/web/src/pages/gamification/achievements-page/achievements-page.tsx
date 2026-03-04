@@ -95,7 +95,7 @@ export default function AchievementsPage() {
   return (
     <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 border-b border-white/5 bg-dark-950/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-20 border-b border-white/5 bg-[rgb(20,22,28)]/80 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -162,7 +162,7 @@ export default function AchievementsPage() {
               placeholder="Search achievements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-dark-700 bg-dark-800 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 transition-colors focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/[0.06] bg-white/[0.04] py-2 pl-9 pr-4 text-sm text-white placeholder-white/30 transition-colors focus:border-primary-500 focus:outline-none"
             />
           </div>
 
@@ -180,7 +180,7 @@ export default function AchievementsPage() {
                 className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                   selectedCategory === category.id
                     ? `bg-gradient-to-r ${category.color} text-white shadow-lg`
-                    : 'bg-dark-800 text-gray-400 hover:text-white'
+                    : 'bg-white/[0.04] text-gray-400 hover:text-white'
                 }`}
               >
                 {category.icon}
@@ -200,7 +200,7 @@ export default function AchievementsPage() {
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
               showUnlockedOnly
                 ? 'border border-green-500/40 bg-green-500/20 text-green-400'
-                : 'bg-dark-800 text-gray-400'
+                : 'bg-white/[0.04] text-gray-400'
             }`}
           >
             <CheckCircleIcon className="h-4 w-4" />

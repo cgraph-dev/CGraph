@@ -120,13 +120,13 @@ export const EarningsPage: React.FC = () => {
 
       {/* Balance summary */}
       <div className="mb-8 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+        <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Earned</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {formatCents(balance?.total_earned_cents ?? 0)}
           </p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+        <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Paid Out</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {formatCents(balance?.total_paid_out_cents ?? 0)}
@@ -158,9 +158,9 @@ export const EarningsPage: React.FC = () => {
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             Payout History
           </h2>
-          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/[0.08]">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-800">
+              <thead className="bg-gray-50 dark:bg-white/[0.04]">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Date</th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Amount</th>
@@ -168,7 +168,7 @@ export const EarningsPage: React.FC = () => {
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Completed</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-[rgb(30,32,40)]">
                 {payouts.map((p) => (
                   <tr key={p.id}>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">

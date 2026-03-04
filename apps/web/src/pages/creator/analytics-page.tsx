@@ -81,7 +81,7 @@ export const AnalyticsPage: React.FC = () => {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h1>
         {/* Period selector */}
-        <div className="flex gap-1 rounded-lg border border-gray-200 p-0.5 dark:border-gray-700">
+        <div className="flex gap-1 rounded-lg border border-gray-200 p-0.5 dark:border-white/[0.08]">
           {(['7d', '30d', '90d'] as Period[]).map((p) => (
             <button
               key={p}
@@ -89,7 +89,7 @@ export const AnalyticsPage: React.FC = () => {
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                 period === p
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.04]'
               }`}
             >
               {p === '7d' ? '7 days' : p === '30d' ? '30 days' : '90 days'}
@@ -124,7 +124,7 @@ export const AnalyticsPage: React.FC = () => {
 
       {/* Earnings over time — simple bar chart */}
       {earningsData?.earnings_over_time && earningsData.earnings_over_time.length > 0 && (
-        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             Earnings Over Time
           </h2>
@@ -152,15 +152,15 @@ export const AnalyticsPage: React.FC = () => {
 
       {/* Top performing forums */}
       {earningsData?.top_forums && earningsData.top_forums.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-          <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+        <div className="rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
+          <div className="border-b border-gray-200 px-6 py-4 dark:border-white/[0.08]">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Top Performing Forums
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-800">
+              <thead className="bg-gray-50 dark:bg-white/[0.04]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Forum</th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Subscribers</th>
@@ -205,7 +205,7 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ label, value, description }) => (
-  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
     <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
     <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
     <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{description}</p>

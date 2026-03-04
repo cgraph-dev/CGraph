@@ -96,7 +96,7 @@ export default function KeyVerificationPage() {
         </div>
 
         {/* Instructions */}
-        <div className="rounded-xl bg-dark-800/50 p-5">
+        <div className="rounded-xl bg-white/[0.04] p-5">
           <h3 className="mb-3 text-sm font-semibold text-white/80">How to verify:</h3>
           <div className="space-y-2">
             {[
@@ -115,7 +115,7 @@ export default function KeyVerificationPage() {
         </div>
 
         {/* Safety Number */}
-        <div className="rounded-xl bg-dark-800/50 p-6 text-center">
+        <div className="rounded-xl bg-white/[0.04] p-6 text-center">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/30">
             Safety Number
           </p>
@@ -139,7 +139,7 @@ export default function KeyVerificationPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="flex flex-col items-center rounded-xl bg-dark-800/50 p-6"
+            className="flex flex-col items-center rounded-xl bg-white/[0.04] p-6"
           >
             {/* Placeholder QR grid */}
             <div className="flex h-48 w-48 items-center justify-center rounded-lg bg-white">
@@ -157,7 +157,7 @@ export default function KeyVerificationPage() {
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-sm font-medium transition-colors ${
               copiedField === 'number'
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-                : 'border-dark-600 bg-dark-800/50 text-white/60 hover:text-white'
+                : 'border-white/[0.08] bg-white/[0.04] text-white/60 hover:text-white'
             }`}
           >
             {copiedField === 'number' ? (
@@ -175,7 +175,7 @@ export default function KeyVerificationPage() {
           <button
             type="button"
             onClick={shareNumber}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-dark-600 bg-dark-800/50 py-3 text-sm font-medium text-white/60 transition-colors hover:text-white"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] py-3 text-sm font-medium text-white/60 transition-colors hover:text-white"
           >
             <Share2 className="h-4 w-4" />
             Share

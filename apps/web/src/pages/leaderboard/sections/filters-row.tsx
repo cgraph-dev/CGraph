@@ -34,7 +34,7 @@ export function FiltersRow({
       className="mb-8 flex flex-col items-center justify-between gap-4 sm:flex-row"
     >
       {/* Time Period Tabs */}
-      <div className="flex items-center gap-1 rounded-2xl border border-dark-700 bg-dark-800/80 p-1.5 backdrop-blur-sm">
+      <div className="flex items-center gap-1 rounded-2xl border border-white/[0.06] bg-white/[0.06] p-1.5 backdrop-blur-sm">
         {TIME_PERIODS.map((period) => (
           <motion.button
             key={period.id}
@@ -45,7 +45,7 @@ export function FiltersRow({
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
               timePeriod === period.id
                 ? `bg-gradient-to-r ${currentCategory.gradient} text-white shadow-md`
-                : 'text-gray-400 hover:bg-dark-700/50 hover:text-white'
+                : 'text-gray-400 hover:bg-white/[0.06] hover:text-white'
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -65,13 +65,13 @@ export function FiltersRow({
             placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-48 rounded-xl border border-dark-700 bg-dark-800/80 py-2 pl-9 pr-4 text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/50 sm:w-64"
+            className="w-48 rounded-xl border border-white/[0.06] bg-white/[0.06] py-2 pl-9 pr-4 text-white placeholder-white/30 transition-all focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/50 sm:w-64"
           />
         </div>
         <motion.button
           onClick={onRefresh}
           disabled={isRefreshing}
-          className="rounded-xl border border-dark-700 bg-dark-800/80 p-2.5 text-gray-400 transition-all hover:bg-dark-700 hover:text-white disabled:opacity-50"
+          className="rounded-xl border border-white/[0.06] bg-white/[0.06] p-2.5 text-gray-400 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

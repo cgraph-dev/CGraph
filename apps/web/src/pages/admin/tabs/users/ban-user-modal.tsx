@@ -32,7 +32,7 @@ export function BanUserModal({ user, onConfirm, onClose }: BanUserModalProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800"
+        className="mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-white/[0.04]"
       >
         <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Ban User: @{user.username}
@@ -47,7 +47,7 @@ export function BanUserModal({ user, onConfirm, onClose }: BanUserModalProps) {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Enter reason for ban..."
-              className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
+              className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
               rows={3}
             />
           </div>
@@ -59,7 +59,7 @@ export function BanUserModal({ user, onConfirm, onClose }: BanUserModalProps) {
             <select
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
             >
               <option value="permanent">Permanent</option>
               <option value="86400">1 Day</option>

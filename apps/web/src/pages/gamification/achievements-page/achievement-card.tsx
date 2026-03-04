@@ -79,7 +79,7 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
                   {achievement.progress} / {achievement.maxProgress}
                 </span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-dark-700">
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <motion.div
                   className={`h-full bg-gradient-to-r ${CATEGORIES.find((c) => c.id === achievement.category)?.color || 'from-purple-500 to-pink-500'}`}
                   initial={{ width: 0 }}

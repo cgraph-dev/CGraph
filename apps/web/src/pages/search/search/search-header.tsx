@@ -37,7 +37,7 @@ export function SearchHeader({
   onClear,
 }: SearchHeaderProps) {
   return (
-    <div className="relative z-10 border-b border-primary-500/20 bg-dark-900/50 px-6 py-4 backdrop-blur-xl">
+    <div className="relative z-10 border-b border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] px-6 py-4 backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-purple-500/5" />
 
       <motion.div

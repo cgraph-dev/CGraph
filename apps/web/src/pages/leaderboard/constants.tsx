@@ -105,8 +105,8 @@ export const RANK_CONFIGS: Record<number, RankConfig> = {
 };
 
 export const DEFAULT_RANK_CONFIG: RankConfig = {
-  bg: 'bg-dark-800/50',
-  border: 'border-dark-600',
+  bg: 'bg-white/[0.04]',
+  border: 'border-white/[0.08]',
   text: 'text-gray-400',
   glow: '',
   glowColor: 'transparent',

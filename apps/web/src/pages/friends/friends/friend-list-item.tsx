@@ -131,7 +131,7 @@ export function FriendListItem({
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="rounded-lg p-1.5 transition-colors hover:bg-dark-600"
+            className="rounded-lg p-1.5 transition-colors hover:bg-white/[0.10]"
           >
             <EllipsisVerticalIcon className="h-4 w-4 text-gray-400 transition-colors hover:text-white" />
           </motion.button>
@@ -152,7 +152,7 @@ export function FriendListItem({
                         setDropdownOpen(false);
                         HapticFeedback.medium();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 transition-colors hover:bg-dark-600/50 hover:text-white"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 transition-colors hover:bg-white/[0.10]/50 hover:text-white"
                     >
                       <UserMinusIcon className="h-4 w-4" />
                       Remove

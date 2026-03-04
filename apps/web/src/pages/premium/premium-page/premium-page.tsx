@@ -153,7 +153,7 @@ export default function PremiumPage() {
           transition={{ delay: 0.1 }}
           className="mb-10 flex justify-center"
         >
-          <div className="inline-flex items-center gap-4 rounded-xl border border-dark-700 bg-dark-800 p-1">
+          <div className="inline-flex items-center gap-4 rounded-xl border border-white/[0.06] bg-white/[0.04] p-1">
             <button
               onClick={() => setBillingInterval('month')}
               className={`rounded-lg px-6 py-2 text-sm font-medium transition-all ${

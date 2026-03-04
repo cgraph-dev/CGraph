@@ -140,7 +140,7 @@ export default function ExplorePage() {
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search communities..."
-              className="w-full rounded-xl bg-dark-800 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/40 outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
+              className="w-full rounded-xl bg-white/[0.04] py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/40 outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
             />
           </div>
 
@@ -149,7 +149,7 @@ export default function ExplorePage() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOption)}
-              className="appearance-none rounded-xl bg-dark-800 py-2.5 pl-9 pr-8 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
+              className="appearance-none rounded-xl bg-white/[0.04] py-2.5 pl-9 pr-8 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>

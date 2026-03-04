@@ -138,10 +138,10 @@ export function PricingCard({
           disabled={isCurrentPlan || isSubscribing}
           className={`w-full rounded-xl py-3 font-semibold transition-all ${
             isCurrentPlan
-              ? 'cursor-not-allowed bg-dark-700 text-gray-500'
+              ? 'cursor-not-allowed bg-white/[0.06] text-gray-500'
               : tier.popular
                 ? `bg-gradient-to-r ${tier.gradient} text-white hover:opacity-90`
-                : 'bg-dark-700 text-white hover:bg-dark-600'
+                : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
           }`}
           whileHover={!isCurrentPlan ? { scale: 1.02 } : {}}
           whileTap={!isCurrentPlan ? { scale: 0.98 } : {}}

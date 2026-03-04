@@ -72,7 +72,7 @@ export function AchievementDetailModal({ achievement, onClose }: AchievementDeta
                   {achievement.progress} / {achievement.maxProgress}
                 </span>
               </div>
-              <div className="h-3 overflow-hidden rounded-full bg-dark-700">
+              <div className="h-3 overflow-hidden rounded-full bg-white/[0.06]">
                 <motion.div
                   className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
                   initial={{ width: 0 }}
@@ -113,7 +113,7 @@ export function AchievementDetailModal({ achievement, onClose }: AchievementDeta
               )}
             </div>
           ) : (
-            <div className="rounded-xl border border-dark-700 bg-dark-800 p-3 text-center">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-3 text-center">
               <LockClosedIcon className="mx-auto mb-1 h-6 w-6 text-gray-500" />
               <p className="font-medium text-gray-400">Locked</p>
               <p className="text-xs text-gray-500">Keep progressing to unlock!</p>

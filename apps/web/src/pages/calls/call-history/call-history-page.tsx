@@ -24,14 +24,14 @@ export default function CallHistoryPage() {
   return (
     <PageContainer title="Call History" subtitle="View and manage your recent calls" maxWidth="lg">
       {/* Filter tabs */}
-      <div className="mb-6 flex items-center gap-1 rounded-lg bg-dark-800/50 p-1">
+      <div className="mb-6 flex items-center gap-1 rounded-lg bg-white/[0.04] p-1">
         {FILTER_OPTIONS.map((opt) => (
           <button
             key={opt.value}
             type="button"
             onClick={() => setFilter(opt.value)}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              filter === opt.value ? 'bg-dark-700 text-white' : 'text-white/50 hover:text-white/70'
+              filter === opt.value ? 'bg-white/[0.06] text-white' : 'text-white/50 hover:text-white/70'
             }`}
           >
             {opt.label}
@@ -49,7 +49,7 @@ export default function CallHistoryPage() {
       {/* Empty state */}
       {!isLoading && isEmpty && (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-dark-800">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/[0.04]">
             <Phone className="h-10 w-10 text-white/20" />
           </div>
           <h3 className="text-lg font-semibold text-white/60">No calls yet</h3>

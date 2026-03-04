@@ -51,7 +51,7 @@ export default function CommunityCard({ community }: CommunityCardProps) {
   return (
     <div
       onClick={handleClick}
-      className="group cursor-pointer rounded-xl border border-white/10 bg-dark-800/60 p-4 transition-all hover:border-primary-500/30 hover:bg-dark-800 hover:shadow-lg hover:shadow-primary-500/5"
+      className="group cursor-pointer rounded-xl border border-white/10 bg-white/[0.04]/60 p-4 transition-all hover:border-primary-500/30 hover:bg-white/[0.04] hover:shadow-lg hover:shadow-primary-500/5"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && handleClick()}

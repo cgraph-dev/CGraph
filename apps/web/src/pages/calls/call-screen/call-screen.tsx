@@ -45,7 +45,7 @@ export default function CallScreen() {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col overflow-hidden bg-dark-900"
+      className="fixed inset-0 flex flex-col overflow-hidden bg-[rgb(30,32,40)]"
       onMouseMove={resetControlsTimeout}
       onClick={resetControlsTimeout}
     >

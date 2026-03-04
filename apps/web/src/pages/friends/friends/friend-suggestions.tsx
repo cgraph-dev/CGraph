@@ -78,18 +78,18 @@ export function FriendSuggestions() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8, transition: { duration: durations.normal.ms / 1000 } }}
-              className="relative flex w-40 shrink-0 flex-col items-center rounded-xl bg-dark-800 p-4 ring-1 ring-gray-700/50"
+              className="relative flex w-40 shrink-0 flex-col items-center rounded-xl bg-white/[0.04] p-4 ring-1 ring-gray-700/50"
             >
               {/* Dismiss button */}
               <button
                 onClick={() => handleDismiss(suggestion.id)}
-                className="absolute right-1.5 top-1.5 rounded-full p-1 text-gray-500 hover:bg-dark-700 hover:text-gray-300"
+                className="absolute right-1.5 top-1.5 rounded-full p-1 text-gray-500 hover:bg-white/[0.08] hover:text-gray-300"
               >
                 <XMarkIcon className="h-3.5 w-3.5" />
               </button>
 
               {/* Avatar */}
-              <div className="mb-2 h-14 w-14 overflow-hidden rounded-full bg-dark-600">
+              <div className="mb-2 h-14 w-14 overflow-hidden rounded-full bg-white/[0.08]">
                 {suggestion.avatar_url ? (
                   <img
                     src={suggestion.avatar_url}

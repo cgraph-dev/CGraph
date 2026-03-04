@@ -172,7 +172,7 @@ export function NotificationItem({
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="rounded-lg bg-dark-700/50 p-1.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
+                    className="rounded-lg bg-white/[0.06] p-1.5 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-white"
                   >
                     <EllipsisHorizontalIcon className="h-5 w-5" />
                   </motion.button>

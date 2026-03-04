@@ -28,11 +28,11 @@ function MockNotificationItem({
   return (
     <div
       className={`flex w-[380px] cursor-pointer items-start gap-3 rounded-lg p-3 transition-colors ${
-        isRead ? 'hover:bg-dark-800' : 'bg-dark-800/50 hover:bg-dark-700'
+        isRead ? 'hover:bg-white/[0.04]' : 'bg-white/[0.04] hover:bg-white/[0.08]'
       }`}
     >
       {/* Icon */}
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-600 text-sm">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.08] text-sm">
         {icons[type]}
       </div>
 

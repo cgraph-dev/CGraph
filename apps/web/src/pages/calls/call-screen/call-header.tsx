@@ -59,13 +59,13 @@ export function CallHeader({
       </div>
 
       {/* Connection Quality Indicator */}
-      <div className="flex items-center gap-2 rounded-full bg-dark-800/80 px-3 py-1.5">
+      <div className="flex items-center gap-2 rounded-full bg-white/[0.06] px-3 py-1.5">
         <div className="flex gap-0.5">
           {[1, 2, 3, 4].map((bar) => (
             <div
               key={bar}
               className={`w-1 rounded-full transition-all duration-300 ${
-                bar <= 3 ? 'bg-green-500' : 'bg-dark-600'
+                bar <= 3 ? 'bg-green-500' : 'bg-white/[0.08]'
               }`}
               style={{ height: `${bar * 4}px` }}
             />

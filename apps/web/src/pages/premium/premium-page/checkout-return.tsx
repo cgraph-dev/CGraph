@@ -44,7 +44,7 @@ export function CheckoutReturn() {
 
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="mx-auto max-w-md rounded-xl border border-gray-700 bg-gray-800/50 p-8 text-center">
+      <div className="mx-auto max-w-md rounded-xl border border-white/[0.08] bg-white/[0.04] p-8 text-center">
         {status === 'loading' && (
           <>
             <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-indigo-500" />

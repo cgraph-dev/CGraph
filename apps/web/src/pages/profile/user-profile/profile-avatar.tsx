@@ -52,7 +52,7 @@ export function ProfileAvatar({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-dark-900/70 backdrop-blur-sm transition-colors hover:bg-dark-900/80"
+          className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-[rgb(30,32,40)]/70 backdrop-blur-sm transition-colors hover:bg-[rgb(30,32,40)]/[0.80]"
           onClick={onAvatarClick}
         >
           <div className="text-center">

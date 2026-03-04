@@ -235,7 +235,7 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => (
-  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
     <div className="mb-2 flex items-center justify-between">
       <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</span>
       <span className="text-xl">{icon}</span>
@@ -254,7 +254,7 @@ interface QuickActionProps {
 const QuickAction: React.FC<QuickActionProps> = ({ title, description, href, icon }) => (
   <a
     href={href}
-    className="group rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-blue-600"
+    className="group rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm dark:border-white/[0.08] dark:bg-[rgb(30,32,40)] dark:hover:border-blue-600"
   >
     <div className="mb-2 text-2xl">{icon}</div>
     <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">

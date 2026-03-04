@@ -82,7 +82,7 @@ export function AddFriendForm({
                 value={addFriendInput}
                 onChange={(e) => setAddFriendInput(e.target.value)}
                 placeholder="Enter username..."
-                className="flex-1 rounded-xl border border-primary-500/30 bg-dark-800/50 px-3 py-2 text-sm text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="flex-1 rounded-xl border border-primary-500/30 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -175,7 +175,7 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
                   className={`relative z-10 rounded-full px-1.5 py-0.5 text-xs ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white'
-                      : 'bg-dark-600 text-gray-400'
+                      : 'bg-white/[0.08] text-gray-400'
                   }`}
                 >
                   {tab.count}
@@ -217,7 +217,7 @@ export function FriendsSearchBar({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search friends..."
-              className="w-full rounded-xl border border-primary-500/30 bg-dark-800/50 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              className="w-full rounded-xl border border-primary-500/30 bg-white/[0.04] py-2 pl-9 pr-4 text-sm text-white placeholder-white/30 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
           </div>
         </motion.div>

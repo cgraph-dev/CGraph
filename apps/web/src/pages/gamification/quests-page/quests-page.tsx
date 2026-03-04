@@ -117,7 +117,7 @@ export default function QuestsPage() {
   return (
     <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 border-b border-white/5 bg-dark-950/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-20 border-b border-white/5 bg-[rgb(20,22,28)]/80 backdrop-blur-xl">
         <div className="mx-auto max-w-4xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -145,7 +145,7 @@ export default function QuestsPage() {
                 fetchQuests();
                 HapticFeedback.light();
               }}
-              className="rounded-xl bg-dark-800 p-2 text-gray-400 transition-colors hover:text-white"
+              className="rounded-xl bg-white/[0.04] p-2 text-gray-400 transition-colors hover:text-white"
             >
               <ArrowPathIcon className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
             </motion.button>
@@ -173,7 +173,7 @@ export default function QuestsPage() {
               className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all ${
                 selectedTab === tab.id
                   ? `bg-gradient-to-r ${tab.color} text-white shadow-lg`
-                  : 'bg-dark-800 text-gray-400 hover:text-white'
+                  : 'bg-white/[0.04] text-gray-400 hover:text-white'
               }`}
             >
               {tab.icon}

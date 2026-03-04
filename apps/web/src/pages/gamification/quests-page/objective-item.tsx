@@ -26,7 +26,7 @@ export default function ObjectiveItem({ objective }: ObjectiveItemProps) {
           {objective.completed ? (
             <CheckCircleIcon className="h-4 w-4 text-green-400" />
           ) : (
-            <div className="h-4 w-4 rounded-full border-2 border-gray-600" />
+            <div className="h-4 w-4 rounded-full border-2 border-white/[0.08]" />
           )}
           <span
             className={`text-sm ${objective.completed ? 'text-gray-400 line-through' : 'text-gray-300'}`}
@@ -38,7 +38,7 @@ export default function ObjectiveItem({ objective }: ObjectiveItemProps) {
           {objective.currentValue} / {objective.targetValue}
         </span>
       </div>
-      <div className="ml-6 h-1 overflow-hidden rounded-full bg-dark-700">
+      <div className="ml-6 h-1 overflow-hidden rounded-full bg-white/[0.06]">
         <motion.div
           className={`h-full ${objective.completed ? 'bg-green-500' : 'bg-gradient-to-r from-primary-500 to-purple-500'}`}
           initial={{ width: 0 }}

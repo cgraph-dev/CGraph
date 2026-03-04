@@ -22,7 +22,7 @@ import { containerVariants, itemVariants } from './animations';
 
 function SafetyNumberGrid({ rows }: { rows: string[][] }) {
   return (
-    <div className="space-y-2 rounded-xl bg-dark-900/60 p-5">
+    <div className="space-y-2 rounded-xl bg-[rgb(30,32,40)]/60 p-5">
       {rows.map((row, ri) => (
         <div key={ri} className="flex justify-center gap-3">
           {row.map((block, bi) => (
@@ -56,8 +56,8 @@ function QRCodePlaceholder() {
   const size = gridSize * cellPx;
 
   return (
-    <div className="flex flex-col items-center rounded-xl bg-dark-900/40 p-6">
-      <div className="relative rounded-lg bg-dark-800" style={{ width: size, height: size }}>
+    <div className="flex flex-col items-center rounded-xl bg-[rgb(30,32,40)]/40 p-6">
+      <div className="relative rounded-lg bg-white/[0.04]" style={{ width: size, height: size }}>
         {cells.map(({ x, y }) => (
           <div
             key={`${x}-${y}`}
@@ -137,7 +137,7 @@ export default function E2EEVerificationPage() {
         <button
           type="button"
           onClick={handleShare}
-          className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
+          className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
         >
           <Share2 className="h-4 w-4" />
           Share
@@ -153,7 +153,7 @@ export default function E2EEVerificationPage() {
         {/* User card */}
         <motion.div
           variants={itemVariants}
-          className="flex items-center gap-4 rounded-xl bg-dark-800/50 p-5"
+          className="flex items-center gap-4 rounded-xl bg-white/[0.04] p-5"
         >
           <div
             className={`flex h-14 w-14 items-center justify-center rounded-full ${
@@ -197,7 +197,7 @@ export default function E2EEVerificationPage() {
               className={`flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                 copiedField === 'number'
                   ? 'bg-emerald-500/20 text-emerald-400'
-                  : 'bg-dark-700 text-white/60 hover:text-white'
+                  : 'bg-white/[0.06] text-white/60 hover:text-white'
               }`}
             >
               {copiedField === 'number' ? (
@@ -215,7 +215,7 @@ export default function E2EEVerificationPage() {
             <button
               type="button"
               onClick={handleShare}
-              className="flex items-center gap-2 rounded-full bg-dark-700 px-5 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
+              className="flex items-center gap-2 rounded-full bg-white/[0.06] px-5 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
             >
               <Share2 className="h-4 w-4" />
               Share

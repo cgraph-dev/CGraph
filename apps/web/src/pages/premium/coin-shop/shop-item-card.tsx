@@ -82,7 +82,7 @@ export function ShopItemCard({
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-dark-700 pt-4">
+        <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-4">
           <div className="flex items-center gap-1">
             <CurrencyDollarIcon className="h-5 w-5 text-yellow-400" />
             <span className="font-bold text-yellow-400">
@@ -98,7 +98,7 @@ export function ShopItemCard({
                 ? 'cursor-default bg-green-500/20 text-green-400'
                 : canAfford
                   ? 'bg-primary-500 text-white hover:bg-primary-400'
-                  : 'cursor-not-allowed bg-dark-700 text-gray-500'
+                  : 'cursor-not-allowed bg-white/[0.06] text-gray-500'
             }`}
             whileHover={canAfford && !isOwned ? { scale: 1.05 } : {}}
             whileTap={canAfford && !isOwned ? { scale: 0.95 } : {}}

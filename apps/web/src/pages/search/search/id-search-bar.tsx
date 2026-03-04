@@ -35,7 +35,7 @@ export function IdSearchBar({
   onSearch,
 }: IdSearchBarProps) {
   return (
-    <div className="relative z-10 border-b border-primary-500/20 bg-dark-900/30 px-6 py-4 backdrop-blur-sm">
+    <div className="relative z-10 border-b border-primary-500/20 bg-[rgb(30,32,40)]/30 px-6 py-4 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ export function IdSearchBar({
               value={idSearchType}
                
               onChange={(e) => setIdSearchType(e.target.value as IdSearchType)} // safe downcast – select event value
-              className="rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="user">User ID</option>
               <option value="group">Group ID</option>
@@ -58,7 +58,7 @@ export function IdSearchBar({
               value={idSearchValue}
               onChange={(e) => setIdSearchValue(e.target.value)}
               placeholder={`Enter ${idSearchType} ID...`}
-              className="flex-1 rounded-lg border border-primary-500/30 bg-dark-700/50 px-4 py-2 text-sm text-white placeholder-gray-400 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 rounded-lg border border-primary-500/30 bg-white/[0.06] px-4 py-2 text-sm text-white placeholder-gray-400 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
             <motion.button
               onClick={onSearch}

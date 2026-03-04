@@ -128,7 +128,7 @@ export const PayoutPage: React.FC = () => {
       <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Payouts</h1>
 
       {/* Payout request card */}
-      <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+      <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
         <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Request Withdrawal
         </h2>
@@ -182,8 +182,8 @@ export const PayoutPage: React.FC = () => {
       </div>
 
       {/* Payout history */}
-      <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-        <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+      <div className="rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
+        <div className="border-b border-gray-200 px-6 py-4 dark:border-white/[0.08]">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">History</h2>
         </div>
 
@@ -194,7 +194,7 @@ export const PayoutPage: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-800">
+              <thead className="bg-gray-50 dark:bg-white/[0.04]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                     Requested

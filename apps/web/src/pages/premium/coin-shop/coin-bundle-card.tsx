@@ -78,7 +78,7 @@ export function CoinBundleCard({
           <motion.button
             onClick={() => onPurchase(bundle)}
             disabled={disabled}
-            className="mt-3 w-full rounded-lg bg-dark-700 py-2 text-sm text-white transition-all hover:bg-dark-600"
+            className="mt-3 w-full rounded-lg bg-white/[0.06] py-2 text-sm text-white transition-all hover:bg-white/[0.10]"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
