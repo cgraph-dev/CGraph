@@ -13,12 +13,9 @@ export { default } from './identity-customization';
 // Types
 export type { Rarity, Border, Title, Badge, ProfileLayout, RarityOption } from './types';
 
-// Constants
+// Constants (MOCK_ data removed — now fetched from API)
 export {
   RARITIES,
-  MOCK_BORDERS,
-  MOCK_TITLES,
-  MOCK_BADGES,
   PROFILE_LAYOUTS,
   getRarityColor,
   getV2BorderType,

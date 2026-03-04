@@ -15,12 +15,14 @@ import {
 } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 import { ALL_BORDERS } from '@/data/borderCollections';
+import {
+  fetchBorders,
+  fetchTitles,
+  fetchBadges,
+} from '@/modules/gamification/store/gamification-queries';
 
 import type { Rarity, Border, Title, Badge, ProfileLayout } from './types';
 import {
-  MOCK_BORDERS,
-  MOCK_TITLES,
-  MOCK_BADGES,
   getV2BorderType,
   LEGACY_BORDER_ID_TO_V2_TYPE,
 } from './constants';
@@ -57,6 +59,12 @@ export function useIdentityCustomization() {
   const [selectedRarity, setSelectedRarity] = useState<Rarity | 'all'>('all');
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
+  // API data state
+  const [borders, setBorders] = useState<Border[]>([]);
+  const [titles, setTitles] = useState<Title[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [isLoadingIdentity, setIsLoadingIdentity] = useState(true);
+
   // Fetch customizations on mount
   useEffect(() => {
     if (user?.id) {
@@ -64,19 +72,39 @@ export function useIdentityCustomization() {
     }
   }, [user?.id, fetchCustomizations]);
 
+  // Fetch cosmetics data from API
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingIdentity(true);
+    Promise.all([fetchBorders(), fetchTitles(), fetchBadges()])
+      .then(([bordersData, titlesData, badgesData]) => {
+        if (cancelled) return;
+        setBorders(bordersData);
+        setTitles(titlesData);
+        setBadges(badgesData);
+      })
+      .catch(() => {
+        // Errors are logged in the fetch functions
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingIdentity(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   // --- Filtering ---
 
-  const filteredBorders = MOCK_BORDERS.filter((border) => {
+  const filteredBorders = borders.filter((border) => {
     const matchesSearch = border.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRarity = selectedRarity === 'all' || border.rarity === selectedRarity;
     return matchesSearch && matchesRarity;
   });
 
-  const filteredTitles = MOCK_TITLES.filter((t) =>
+  const filteredTitles = titles.filter((t) =>
     t.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredBadges = MOCK_BADGES.filter((badge) => {
+  const filteredBadges = badges.filter((badge) => {
     const matchesSearch = badge.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRarity = selectedRarity === 'all' || badge.rarity === selectedRarity;
     return matchesSearch && matchesRarity;
@@ -215,6 +243,12 @@ export function useIdentityCustomization() {
     profileLayout,
     isSaving,
     error,
+    isLoadingIdentity,
+
+    // Data counts (for section tabs)
+    bordersCount: borders.length,
+    titlesCount: titles.length,
+    badgesCount: badges.length,
 
     // Filtered data
     filteredBorders,

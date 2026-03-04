@@ -19,9 +19,6 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  MOCK_BORDERS,
-  MOCK_TITLES,
-  MOCK_BADGES,
   PROFILE_LAYOUTS,
   getRarityColor,
 } from './constants';
@@ -30,13 +27,6 @@ import { useIdentityCustomization, type SectionId } from './useIdentityCustomiza
 import { SearchFilterBar } from './search-filter-bar';
 import { SaveButton } from './save-button';
 import { tweens } from '@/lib/animation-presets';
-
-const SECTION_TABS: { id: SectionId; label: string; count: number }[] = [
-  { id: 'borders', label: 'Avatar Borders', count: MOCK_BORDERS.length },
-  { id: 'titles', label: 'Titles', count: MOCK_TITLES.length },
-  { id: 'badges', label: 'Badges', count: MOCK_BADGES.length },
-  { id: 'layouts', label: 'Profile Layouts', count: PROFILE_LAYOUTS.length },
-];
 
 /**
  * Identity Customization component.
@@ -56,6 +46,10 @@ export default function IdentityCustomization() {
     profileLayout,
     isSaving,
     error,
+    isLoadingIdentity,
+    bordersCount,
+    titlesCount,
+    badgesCount,
     filteredBorders,
     filteredTitles,
     filteredBadges,
@@ -66,11 +60,26 @@ export default function IdentityCustomization() {
     handleSaveChanges,
   } = useIdentityCustomization();
 
+  const sectionTabs: { id: SectionId; label: string; count: number }[] = [
+    { id: 'borders', label: 'Avatar Borders', count: bordersCount },
+    { id: 'titles', label: 'Titles', count: titlesCount },
+    { id: 'badges', label: 'Badges', count: badgesCount },
+    { id: 'layouts', label: 'Profile Layouts', count: PROFILE_LAYOUTS.length },
+  ];
+
+  if (isLoadingIdentity) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Section Tabs */}
       <div className="flex gap-2 border-b border-white/10 pb-4">
-        {SECTION_TABS.map((section) => (
+        {sectionTabs.map((section) => (
           <button
             key={section.id}
             onClick={() => setActiveSection(section.id)}
