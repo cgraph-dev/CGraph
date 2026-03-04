@@ -961,12 +961,12 @@ page, parity audit, and the two wallet auth methods deferred from core auth.
 
 ### Requirements (4)
 
-| REQ-ID   | Requirement                                    |
-| -------- | ---------------------------------------------- |
+| REQ-ID      | Requirement                                                  |
+| ----------- | ------------------------------------------------------------ |
 | ~~AUTH-12~~ | ~~Privy auth~~ — **DESCOPED** (custom auth already complete) |
-| AUTH-13  | Ethereum wallet signature auth (SIWE + WalletConnect polish) |
-| INFRA-09 | Landing page reflects v1.0 features            |
-| INFRA-10 | App Store and Google Play submissions approved |
+| AUTH-13     | Ethereum wallet signature auth (SIWE + WalletConnect polish) |
+| INFRA-09    | Landing page reflects v1.0 features                          |
+| INFRA-10    | App Store and Google Play submissions approved               |
 
 ### Success Criteria
 
@@ -1033,28 +1033,53 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ## Progress
 
-| Phase | Name                    | Status                   | Progress |
-| ----- | ----------------------- | ------------------------ | -------- |
-| 1     | Infrastructure Baseline | ✅ Complete (2026-02-27) | 100%     |
-| 2     | Auth Core               | ✅ Complete (2026-02-28) | 100%     |
-| 3     | Auth Advanced           | ✅ Complete (2026-02-28) | 100%     |
-| 4     | Design System & Mobile  | ✅ Complete (2026-02-28) | 100%     |
-| 5     | Message Transport       | ✅ Complete (2026-02-28) | 100%     |
-| 6     | Message Features & Sync | ✅ Complete (2026-02-28) | 100%     |
-| 7     | E2EE & Mobile Security  | ✅ Complete (2026-02-28) | 100%     |
-| 8     | Social & Profiles       | ✅ Complete (2026-03-01) | 100%     |
-| 9     | Notifications & Safety  | ✅ Complete (2026-03-01) | 100%     |
-| 10    | Message Extras          | Planned (3 plans)        | 0%       |
-| 11    | Groups & Channels       | Ready to plan            | 0%       |
-| 12    | Roles & Moderation      | Blocked by 11            | 0%       |
-| 13    | Voice & Video           | Blocked by 12            | 0%       |
-| 14    | Forum Core              | Blocked by 12            | 0%       |
-| 15    | Forum Customization     | Blocked by 14            | 0%       |
-| 16    | Gamification            | ✅ Complete              | 100%     |
-| 17    | Monetization            | Planned (4 plans)        | 0%       |
-| 18    | Rich Media & Polish     | Planned (5 plans)        | 0%       |
-| 19    | Launch                  | Blocked by 15,17,18      | 0%       |
+| Phase | Name                     | Status                   | Progress |
+| ----- | ------------------------ | ------------------------ | -------- |
+| 1     | Infrastructure Baseline  | ✅ Complete (2026-02-27) | 100%     |
+| 2     | Auth Core                | ✅ Complete (2026-02-28) | 100%     |
+| 3     | Auth Advanced            | ✅ Complete (2026-02-28) | 100%     |
+| 4     | Design System & Mobile   | ✅ Complete (2026-02-28) | 100%     |
+| 5     | Message Transport        | ✅ Complete (2026-02-28) | 100%     |
+| 6     | Message Features & Sync  | ✅ Complete (2026-02-28) | 100%     |
+| 7     | E2EE & Mobile Security   | ✅ Complete (2026-02-28) | 100%     |
+| 8     | Social & Profiles        | ✅ Complete (2026-03-01) | 100%     |
+| 9     | Notifications & Safety   | ✅ Complete (2026-03-01) | 100%     |
+| 10    | Message Extras           | Planned (3 plans)        | 0%       |
+| 11    | Groups & Channels        | Ready to plan            | 0%       |
+| 12    | Roles & Moderation       | Blocked by 11            | 0%       |
+| 13    | Voice & Video            | Blocked by 12            | 0%       |
+| 14    | Forum Core               | Blocked by 12            | 0%       |
+| 15    | Forum Customization      | Blocked by 14            | 0%       |
+| 16    | Gamification             | ✅ Complete              | 100%     |
+| 17    | Monetization             | Planned (4 plans)        | 0%       |
+| 18    | Rich Media & Polish      | Planned (5 plans)        | 0%       |
+| 19    | Launch                   | Blocked by 15,17,18      | 0%       |
+| 20    | Liquid Glass UI          | ✅ Partial (2 plans)     | 30%      |
+| 21    | UI Interactions & Motion | Planned (10 plans)       | 0%       |
 
 ---
 
-_Roadmap: 19 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-03_
+### Phase 21: UI Interactions & Motion Upgrade
+
+**Goal:** Every UI interaction (buttons, modals, sidebars, dropdowns, notifications, chat, page
+transitions, toasts) has polished spring-driven animations using `motion/react` and
+`@cgraph/animation-constants`, respecting `useReducedMotion()` throughout.
+
+**Depends on:** Phase 20 (Liquid Glass UI) **Plans:** 10 plans
+
+Plans:
+
+- [ ] 21-01-PLAN.md — Import migration: framer-motion → motion/react (727 files)
+- [ ] 21-02-PLAN.md — Animation constants expansion + useMotionSafe hook
+- [ ] 21-03-PLAN.md — Button & IconButton motion system
+- [ ] 21-04-PLAN.md — Sidebar & navigation layoutId indicators
+- [ ] 21-05-PLAN.md — Modals, dialogs & overlay animations
+- [ ] 21-06-PLAN.md — Dropdowns & notification badge animations
+- [ ] 21-07-PLAN.md — Chat message entrance animations
+- [ ] 21-08-PLAN.md — Page transitions & toast enhancements
+- [ ] 21-09-PLAN.md — Mobile haptics & Reanimated upgrades
+- [ ] 21-10-PLAN.md — Hardcoded value cleanup & final validation
+
+---
+
+_Roadmap: 21 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-04_
