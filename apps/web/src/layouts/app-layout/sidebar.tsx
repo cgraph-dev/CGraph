@@ -2,7 +2,7 @@
  * Sidebar Component - Responsive navigation sidebar with badges
  * @module layouts/app-layout
  */
-import { durations } from '@cgraph/animation-constants';
+import { durations, LAYOUT_IDS } from '@cgraph/animation-constants';
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import AnimatedLogo from '@/components/navigation/animated-logo';
@@ -17,6 +17,7 @@ import type { NavItem } from './constants';
 import { tweens, loop, springs, staggerConfigs } from '@/lib/animation-presets';
 import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
 import type { FeatureGateKey } from '@cgraph/shared-types';
+import { useMotionSafe } from '@/hooks/useMotionSafe';
 
 /**
  * Lock badge overlay for level-gated nav items.
@@ -62,6 +63,8 @@ export default function Sidebar({
   unreadCount,
   navItems,
 }: SidebarProps) {
+  const { shouldAnimate } = useMotionSafe();
+
   return (
     <aside
       className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-white/[0.08] bg-[rgb(30,32,40)]/[0.72] py-4 backdrop-blur-[20px] backdrop-saturate-[1.6] dark:bg-[rgb(30,32,40)]/[0.72]"
@@ -220,9 +223,9 @@ export default function Sidebar({
                   {isActive && (
                     <motion.div
                       className="absolute -left-3 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
-                      layoutId="activeIndicator"
+                      layoutId={LAYOUT_IDS.sidebarActiveIndicator}
                       initial={false}
-                      transition={springs.bouncy}
+                      transition={shouldAnimate ? springs.bouncy : { duration: 0 }}
                       style={{
                         boxShadow: '0 0 10px rgba(16, 185, 129, 0.8)',
                       }}
