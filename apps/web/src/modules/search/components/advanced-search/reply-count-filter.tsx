@@ -5,7 +5,7 @@
 import type { AdvancedSearchFilters } from '@/modules/search/components/advanced-search/types';
 
 const NUM_INPUT_CLS =
-  'w-24 rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500';
+  'w-24 rounded-lg border border-white/[0.10] bg-white/[0.06] px-3 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500';
 
 interface ReplyCountFilterProps {
   filters: AdvancedSearchFilters;

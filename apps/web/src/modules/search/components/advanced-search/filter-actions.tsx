@@ -27,7 +27,7 @@ export function FilterActions({
   isLoading,
 }: FilterActionsProps) {
   return (
-    <div className="flex items-center justify-between border-t border-dark-500 pt-4">
+    <div className="flex items-center justify-between border-t border-white/[0.10] pt-4">
       <button onClick={handleReset} className="text-sm text-gray-400 hover:text-gray-200">
         Reset filters
       </button>
@@ -41,7 +41,7 @@ export function FilterActions({
                
               (e) => updateFilter('resultsPerPage', parseInt(e.target.value) as 10 | 25 | 50) // type assertion: select options are constrained to 10, 25, or 50
             }
-            className="rounded border border-dark-500 bg-dark-700 px-2 py-1 text-gray-200"
+            className="rounded border border-white/[0.10] bg-white/[0.06] px-2 py-1 text-gray-200"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>

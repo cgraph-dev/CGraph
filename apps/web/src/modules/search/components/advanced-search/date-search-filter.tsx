@@ -15,7 +15,7 @@ import type {
 } from '@/modules/search/components/advanced-search/types';
 
 const DATE_INPUT_CLS =
-  'flex-1 rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500';
+  'flex-1 rounded-lg border border-white/[0.10] bg-white/[0.06] px-3 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500';
 
 interface DateSearchFilterProps {
   filters: AdvancedSearchFilters;

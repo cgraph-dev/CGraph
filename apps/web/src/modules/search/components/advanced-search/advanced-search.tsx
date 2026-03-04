@@ -51,7 +51,7 @@ export default function AdvancedSearch({
   );
 
   return (
-    <div className={cn('overflow-hidden rounded-xl border border-dark-500 bg-dark-800', className)}>
+    <div className={cn('overflow-hidden rounded-xl border border-white/[0.10] bg-white/[0.04]', className)}>
       <SearchBar
         filters={filters}
         updateFilter={updateFilter}

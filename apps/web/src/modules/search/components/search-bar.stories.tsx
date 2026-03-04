@@ -22,7 +22,7 @@ function MockSearchBar({
 
   return (
     <div className="w-[400px]">
-      <div className="flex items-center gap-2 rounded-lg border border-dark-600 bg-dark-800 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2">
         <span className="text-gray-500">🔍</span>
         <input
           type="text"
@@ -40,7 +40,7 @@ function MockSearchBar({
           {['Messages', 'People', 'Files', 'Channels'].map((f) => (
             <button
               key={f}
-              className="rounded-full border border-dark-600 px-3 py-1 text-xs text-gray-300 hover:bg-dark-700"
+              className="rounded-full border border-white/[0.08] px-3 py-1 text-xs text-gray-300 hover:bg-white/[0.08]"
             >
               {f}
             </button>
@@ -49,11 +49,11 @@ function MockSearchBar({
       )}
 
       {showSuggestions && (
-        <div className="mt-2 rounded-lg border border-dark-700 bg-dark-800 p-1">
+        <div className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.04] p-1">
           {['react hooks tutorial', 'react native setup', 'react context api'].map((s) => (
             <button
               key={s}
-              className="block w-full rounded px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+              className="block w-full rounded px-3 py-2 text-left text-sm text-gray-300 hover:bg-white/[0.08]"
             >
               {s}
             </button>

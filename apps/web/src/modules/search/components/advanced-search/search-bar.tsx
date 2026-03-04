@@ -40,7 +40,7 @@ export function SearchBar({
   isLoading,
 }: SearchBarProps) {
   return (
-    <div className="border-b border-dark-500 p-4">
+    <div className="border-b border-white/[0.10] p-4">
       <div className="flex gap-3">
         <div className="relative flex-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -50,7 +50,7 @@ export function SearchBar({
             onChange={(e) => updateFilter('keywords', e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Search keywords..."
-            className="w-full rounded-lg border border-dark-500 bg-dark-700 py-3 pl-11 pr-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.10] bg-white/[0.06] py-3 pl-11 pr-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
 
@@ -71,7 +71,7 @@ export function SearchBar({
 
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 rounded-lg border border-dark-500 bg-dark-700 px-4 py-2 text-gray-400 transition-colors hover:bg-dark-600 hover:text-gray-200"
+          className="flex items-center gap-2 rounded-lg border border-white/[0.10] bg-white/[0.06] px-4 py-2 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-gray-200"
         >
           <FunnelIcon className="h-4 w-4" />
           <span>Filters</span>

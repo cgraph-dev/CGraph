@@ -105,7 +105,7 @@ function SplitVariant({
     <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex flex-1 items-center justify-center bg-dark-900 p-8"
+      className="flex flex-1 items-center justify-center bg-[rgb(30,32,40)] p-8"
     >
       <div className="w-full max-w-md">
         {showLogo && (

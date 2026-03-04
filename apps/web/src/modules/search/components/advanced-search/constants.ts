@@ -23,13 +23,13 @@ export const defaultFilters: AdvancedSearchFilters = {
 /* ── Shared Tailwind class tokens ───────────────────────────── */
 
 export const INPUT_CLS =
-  'w-full rounded-lg border border-dark-500 bg-dark-700 px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500';
+  'w-full rounded-lg border border-white/[0.10] bg-white/[0.06] px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500';
 
 export const SELECT_CLS =
-  'w-full rounded-lg border border-dark-500 bg-dark-700 px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500';
+  'w-full rounded-lg border border-white/[0.10] bg-white/[0.06] px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500';
 
 export const CHECKBOX_CLS =
-  'rounded border-dark-400 bg-dark-600 text-primary-500 focus:ring-primary-500';
+  'rounded border-white/[0.08] bg-white/[0.08] text-primary-500 focus:ring-primary-500';
 
 export const LABEL_CLS = 'mb-2 block text-sm font-medium text-gray-400';
 

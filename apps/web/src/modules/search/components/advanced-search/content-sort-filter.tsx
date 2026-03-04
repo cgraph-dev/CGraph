@@ -40,7 +40,7 @@ export function ContentSortFilter({ filters, updateFilter }: ContentSortFilterPr
                 value={type}
                 checked={filters.contentType === type}
                 onChange={() => updateFilter('contentType', type)}
-                className="border-dark-400 bg-dark-600 text-primary-500 focus:ring-primary-500"
+                className="border-white/[0.08] bg-white/[0.08] text-primary-500 focus:ring-primary-500"
               />
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </label>
@@ -74,7 +74,7 @@ export function ContentSortFilter({ filters, updateFilter }: ContentSortFilterPr
             value={filters.sortOrder}
              
             onChange={(e) => updateFilter('sortOrder', e.target.value as 'desc' | 'asc')}
-            className="w-32 rounded-lg border border-dark-500 bg-dark-700 px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-32 rounded-lg border border-white/[0.10] bg-white/[0.06] px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="desc">Descending</option>
             <option value="asc">Ascending</option>

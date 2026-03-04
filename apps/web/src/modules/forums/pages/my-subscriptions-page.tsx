@@ -119,7 +119,7 @@ export function MySubscriptionsPage() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex items-center gap-1 rounded-xl bg-dark-800/50 p-1">
+      <div className="flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
         {(
           [
             { key: 'all', label: 'All', icon: FunnelIcon },
@@ -172,7 +172,7 @@ export function MySubscriptionsPage() {
               <GlassCard key={sub.id} variant="default" className="p-4">
                 <div className="flex items-center gap-3">
                   {/* Type badge */}
-                  <span className="rounded bg-dark-600 px-2 py-0.5 text-xs capitalize text-gray-400">
+                  <span className="rounded bg-white/[0.08] px-2 py-0.5 text-xs capitalize text-gray-400">
                     {targetType}
                   </span>
 
@@ -198,7 +198,7 @@ export function MySubscriptionsPage() {
                        
                       handleUpdateLevel(sub.id, e.target.value as 'all' | 'mentions' | 'none')
                     }
-                    className="rounded-lg border border-white/10 bg-dark-700 px-2 py-1 text-xs text-gray-300"
+                    className="rounded-lg border border-white/10 bg-white/[0.06] px-2 py-1 text-xs text-gray-300"
                   >
                     <option value="all">🔔 All</option>
                     <option value="mentions">🔕 Mentions</option>

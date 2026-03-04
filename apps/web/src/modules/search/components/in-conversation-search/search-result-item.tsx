@@ -36,10 +36,10 @@ export function SearchResultItem({ message, query, onJumpTo }: SearchResultItemP
   return (
     <button
       onClick={handleJump}
-      className="group flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-dark-700"
+      className="group flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/[0.08]"
     >
       {/* Sender avatar */}
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-dark-600 text-xs font-medium text-gray-300">
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-xs font-medium text-gray-300">
         {message.sender?.avatar_url ? (
           <img
             src={message.sender.avatar_url}
