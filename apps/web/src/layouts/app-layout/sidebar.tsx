@@ -64,23 +64,23 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <aside
-      className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-primary-500/20 bg-dark-900/50 py-4 backdrop-blur-xl"
+      className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-white/[0.08] bg-[rgb(30,32,40)]/[0.72] py-4 backdrop-blur-[20px] backdrop-saturate-[1.6] dark:bg-[rgb(30,32,40)]/[0.72]"
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Animated gradient border — matches landing nav pattern */}
+      {/* Subtle glass edge highlight */}
       <div
         className="pointer-events-none absolute inset-y-0 right-0 z-20 w-px"
         style={{
           background:
-            'linear-gradient(180deg, transparent 0%, rgba(16,185,129,0.5) 25%, rgba(139,92,246,0.5) 50%, rgba(16,185,129,0.5) 75%, transparent 100%)',
+            'linear-gradient(180deg, transparent 0%, rgba(147,197,253,0.3) 25%, rgba(196,181,253,0.3) 50%, rgba(134,239,172,0.3) 75%, transparent 100%)',
           backgroundSize: '100% 200%',
           animation: 'sidebar-border-flow 4s linear infinite',
         }}
       />
 
       {/* Ambient glow effect */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgb(var(--lg-glow-blue))]/5 via-transparent to-[rgb(var(--lg-glow-purple))]/5" />
 
       {/* Floating particles */}
       {[...Array(6)].map((_, i) => (
@@ -175,7 +175,7 @@ export default function Sidebar({
                     <div className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl text-gray-400 transition-all duration-200 hover:text-white">
                       {/* Hover glow effect */}
                       <motion.div
-                        className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        className="absolute inset-0 rounded-xl border border-white/[0.04] bg-white/[0.06] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                         initial={false}
                       />
                       <Icon className="relative z-10 h-6 w-6 transition-transform group-hover:scale-110" />
@@ -231,6 +231,7 @@ export default function Sidebar({
 
                   {/* Level gate lock badge */}
                   {'featureGate' in item && item.featureGate && (
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: guarded by `in` check
                     <NavItemGateBadge feature={item.featureGate as FeatureGateKey} />
                   )}
                 </motion.div>

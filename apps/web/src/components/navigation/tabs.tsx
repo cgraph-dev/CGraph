@@ -44,25 +44,27 @@ export default function Tabs({
       case 'pills':
         return `${base} rounded-full transform active:scale-95 ${
           isActive
-            ? 'bg-primary-600 text-white'
-            : 'text-gray-400 hover:text-white hover:bg-dark-700'
+            ? 'bg-blue-500/80 text-white shadow-[0_0_12px_rgba(59,130,246,0.2)]'
+            : 'text-gray-400 hover:text-white hover:bg-white/[0.06]'
         }`;
       case 'underline':
         return `${base} border-b-2 transform active:scale-95 ${
           isActive
-            ? 'border-primary-500 text-white'
-            : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
+            ? 'border-blue-400 text-white'
+            : 'border-transparent text-gray-400 hover:text-white hover:border-white/[0.12]'
         }`;
       default:
-        return `${base} rounded-lg transform active:scale-95 ${
-          isActive ? 'bg-dark-700 text-white' : 'text-gray-400 hover:text-white hover:bg-dark-800'
+        return `${base} rounded-xl transform active:scale-95 ${
+          isActive
+            ? 'bg-white/[0.08] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.06)]'
+            : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
         }`;
     }
   };
 
   return (
     <div
-      className={`flex ${variant === 'underline' ? 'border-b border-dark-700' : 'gap-1 rounded-lg bg-dark-800/50 p-1'} ${
+      className={`flex ${variant === 'underline' ? 'border-b border-white/[0.06]' : 'gap-1 rounded-xl border border-white/[0.06] bg-white/[0.04] p-1 backdrop-blur-[12px]'} ${
         fullWidth ? 'w-full' : 'inline-flex'
       } ${className}`}
     >

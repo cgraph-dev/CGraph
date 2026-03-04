@@ -16,10 +16,18 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { GlassCard } from '@/shared/components/ui';
+import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useAuthStore } from '@/modules/auth/store';
 import { buildCommands, CATEGORY_LABELS, type Command } from './command-registry';
+
+/** Pastel accent per command category */
+const CATEGORY_ACCENT: Record<string, string> = {
+  navigation: 'text-blue-400 dark:text-blue-300',
+  actions: 'text-purple-400 dark:text-purple-300',
+  user: 'text-green-400 dark:text-green-300',
+  recent: 'text-amber-400 dark:text-amber-300',
+};
 
 export type { Command };
 
@@ -126,20 +134,23 @@ export function CommandPalette({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-[6px] dark:bg-black/60"
           />
 
           {/* Palette */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            initial={{ opacity: 0, scale: 0.96, y: -16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            exit={{ opacity: 0, scale: 0.96, y: -16 }}
+            transition={springPreset}
             className={`fixed left-1/2 top-[20%] z-50 w-full max-w-lg -translate-x-1/2 ${className}`}
           >
-            <GlassCard variant="crystal" className="overflow-hidden">
+            <div
+              className={`overflow-hidden rounded-2xl ${glassSurfaceElevated} shadow-[0_8px_32px_rgba(0,0,0,0.25)]`}
+            >
               {/* Search input */}
-              <div className="flex items-center gap-3 border-b border-white/10 p-4">
-                <MagnifyingGlassIcon className="h-5 w-5 text-white/40" />
+              <div className="flex items-center gap-3 border-b border-white/[0.06] p-4">
+                <MagnifyingGlassIcon className="h-5 w-5 text-blue-400/80 dark:text-blue-300/80" />
                 <input
                   ref={inputRef}
                   type="text"
@@ -149,14 +160,18 @@ export function CommandPalette({
                   onKeyDown={handleKeyDown}
                   className="flex-1 bg-transparent text-white placeholder-white/40 focus:outline-none"
                 />
-                <kbd className="rounded bg-white/10 px-2 py-1 text-xs text-white/50">esc</kbd>
+                <kbd className="rounded-md border border-white/[0.06] bg-white/[0.06] px-2 py-0.5 text-[10px] text-white/50">
+                  esc
+                </kbd>
               </div>
 
               {/* Commands list */}
               <div className="max-h-96 overflow-y-auto p-2">
                 {Object.entries(groupedCommands).map(([category, cmds]) => (
                   <div key={category} className="mb-2">
-                    <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/40">
+                    <p
+                      className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${CATEGORY_ACCENT[category] ?? 'text-white/40'}`}
+                    >
                       {CATEGORY_LABELS[category]}
                     </p>
                     {cmds.map((cmd) => {
@@ -171,13 +186,19 @@ export function CommandPalette({
                             cmd.action();
                           }}
                           onMouseEnter={() => setSelectedIndex(globalIndex)}
-                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-all duration-150 ${
                             isSelected
-                              ? 'bg-primary-500/20 text-white'
-                              : 'text-white/70 hover:bg-white/5'
+                              ? 'bg-white/[0.08] text-white shadow-[inset_0_0.5px_0_rgba(255,255,255,0.06)]'
+                              : 'text-white/70 hover:bg-white/[0.04]'
                           } `}
                         >
-                          <span className={isSelected ? 'text-primary-400' : 'text-white/50'}>
+                          <span
+                            className={
+                              isSelected
+                                ? (CATEGORY_ACCENT[cmd.category] ?? 'text-blue-400')
+                                : 'text-white/40'
+                            }
+                          >
                             {cmd.icon}
                           </span>
                           <span className="flex-1">{cmd.label}</span>
@@ -186,7 +207,7 @@ export function CommandPalette({
                               {cmd.shortcut.split(' ').map((key, i) => (
                                 <kbd
                                   key={i}
-                                  className="rounded bg-white/10 px-1.5 py-0.5 text-xs text-white/50"
+                                  className="rounded border border-white/[0.06] bg-white/[0.05] px-1.5 py-0.5 text-[10px] text-white/40"
                                 >
                                   {key}
                                 </kbd>
@@ -201,14 +222,14 @@ export function CommandPalette({
 
                 {filteredCommands.length === 0 && (
                   <div className="py-8 text-center text-white/40">
-                    No commands found for "{query}"
+                    No commands found for &ldquo;{query}&rdquo;
                   </div>
                 )}
 
                 {/* Recent searches */}
                 {!query && recentSearches.length > 0 && (
-                  <div className="mt-2 border-t border-white/10 pt-2">
-                    <p className="flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/40">
+                  <div className="mt-2 border-t border-white/[0.06] pt-2">
+                    <p className="flex items-center gap-2 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-400/70 dark:text-amber-300/70">
                       <ClockIcon className="h-3 w-3" />
                       Recent
                     </p>
@@ -216,7 +237,7 @@ export function CommandPalette({
                       <button
                         key={i}
                         onClick={() => setQuery(search)}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-white/50 hover:bg-white/5"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-white/50 transition-colors hover:bg-white/[0.04]"
                       >
                         <ClockIcon className="h-4 w-4" />
                         {search}
@@ -227,18 +248,24 @@ export function CommandPalette({
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between border-t border-white/10 px-4 py-2 text-xs text-white/40">
+              <div className="flex items-center justify-between border-t border-white/[0.06] px-4 py-2 text-[10px] text-white/40">
                 <div className="flex items-center gap-2">
-                  <kbd className="rounded bg-white/10 px-1.5 py-0.5">↑</kbd>
-                  <kbd className="rounded bg-white/10 px-1.5 py-0.5">↓</kbd>
+                  <kbd className="rounded border border-white/[0.06] bg-white/[0.05] px-1.5 py-0.5">
+                    ↑
+                  </kbd>
+                  <kbd className="rounded border border-white/[0.06] bg-white/[0.05] px-1.5 py-0.5">
+                    ↓
+                  </kbd>
                   <span>to navigate</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <kbd className="rounded bg-white/10 px-1.5 py-0.5">↵</kbd>
+                  <kbd className="rounded border border-white/[0.06] bg-white/[0.05] px-1.5 py-0.5">
+                    ↵
+                  </kbd>
                   <span>to select</span>
                 </div>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
         </>
       )}

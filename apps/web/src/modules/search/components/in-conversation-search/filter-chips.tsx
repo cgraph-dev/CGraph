@@ -7,12 +7,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import {
-  UserIcon,
-  CalendarDaysIcon,
-  PhotoIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { UserIcon, CalendarDaysIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { ConversationSearchFilters } from '../../hooks/useConversationSearch';
 
 interface FilterChipsProps {
@@ -66,10 +61,10 @@ export function FilterChips({ filters, onFiltersChange, participants = [] }: Fil
       <div className="relative">
         <button
           onClick={() => setShowSenderPicker((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors ${
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs backdrop-blur-sm transition-all duration-150 ${
             filters.senderId
-              ? 'border-primary-500/50 bg-primary-500/10 text-primary-300'
-              : 'border-gray-600 bg-dark-700 text-gray-400 hover:border-gray-500'
+              ? 'border-purple-400/30 bg-purple-500/15 text-purple-300 shadow-[0_0_8px_rgba(192,132,252,0.12)]'
+              : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-white/[0.12] hover:bg-white/[0.10]'
           }`}
         >
           <UserIcon className="h-3.5 w-3.5" />
@@ -86,13 +81,15 @@ export function FilterChips({ filters, onFiltersChange, participants = [] }: Fil
         </button>
 
         {showSenderPicker && (
-          <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-700 bg-dark-800 p-1 shadow-xl">
+          <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)]/[0.92] p-1 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-[16px]">
             {participants.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setSender(p.id)}
-                className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors ${
-                  filters.senderId === p.id ? 'bg-primary-600/20 text-white' : 'text-gray-300 hover:bg-dark-700'
+                className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                  filters.senderId === p.id
+                    ? 'bg-purple-500/15 text-white'
+                    : 'text-gray-300 hover:bg-white/[0.06]'
                 }`}
               >
                 <UserIcon className="h-3.5 w-3.5 text-gray-500" />
@@ -107,10 +104,10 @@ export function FilterChips({ filters, onFiltersChange, participants = [] }: Fil
       <div className="relative">
         <button
           onClick={() => setShowDatePicker((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors ${
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs backdrop-blur-sm transition-all duration-150 ${
             filters.dateFrom || filters.dateTo
-              ? 'border-primary-500/50 bg-primary-500/10 text-primary-300'
-              : 'border-gray-600 bg-dark-700 text-gray-400 hover:border-gray-500'
+              ? 'border-blue-400/30 bg-blue-500/15 text-blue-300 shadow-[0_0_8px_rgba(147,197,253,0.12)]'
+              : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-white/[0.12] hover:bg-white/[0.10]'
           }`}
         >
           <CalendarDaysIcon className="h-3.5 w-3.5" />
@@ -130,24 +127,26 @@ export function FilterChips({ filters, onFiltersChange, participants = [] }: Fil
         </button>
 
         {showDatePicker && (
-          <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-gray-700 bg-dark-800 p-3 shadow-xl">
+          <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)]/[0.92] p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-[16px]">
             <label className="mb-1 block text-[10px] uppercase text-gray-500">From</label>
             <input
               type="date"
               value={filters.dateFrom ?? ''}
-              onChange={(e) => onFiltersChange({ ...filters, dateFrom: e.target.value || undefined })}
-              className="mb-2 w-full rounded border border-gray-600 bg-dark-700 px-2 py-1 text-xs text-white"
+              onChange={(e) =>
+                onFiltersChange({ ...filters, dateFrom: e.target.value || undefined })
+              }
+              className="mb-2 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-2 py-1 text-xs text-white"
             />
             <label className="mb-1 block text-[10px] uppercase text-gray-500">To</label>
             <input
               type="date"
               value={filters.dateTo ?? ''}
               onChange={(e) => onFiltersChange({ ...filters, dateTo: e.target.value || undefined })}
-              className="mb-2 w-full rounded border border-gray-600 bg-dark-700 px-2 py-1 text-xs text-white"
+              className="mb-2 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-2 py-1 text-xs text-white"
             />
             <button
               onClick={() => setDateRange(filters.dateFrom ?? '', filters.dateTo ?? '')}
-              className="w-full rounded bg-primary-600 px-2 py-1 text-xs text-white hover:bg-primary-500"
+              className="w-full rounded-lg bg-blue-500 px-2 py-1 text-xs text-white shadow-[0_0_12px_rgba(59,130,246,0.2)] transition-colors hover:bg-blue-400"
             >
               Apply
             </button>
@@ -160,10 +159,10 @@ export function FilterChips({ filters, onFiltersChange, participants = [] }: Fil
         <button
           key={t}
           onClick={() => setType(t)}
-          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs capitalize transition-colors ${
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs capitalize backdrop-blur-sm transition-all duration-150 ${
             filters.type === t
-              ? 'border-primary-500/50 bg-primary-500/10 text-primary-300'
-              : 'border-gray-600 bg-dark-700 text-gray-400 hover:border-gray-500'
+              ? 'border-green-400/30 bg-green-500/15 text-green-300 shadow-[0_0_8px_rgba(134,239,172,0.12)]'
+              : 'border-white/[0.08] bg-white/[0.06] text-gray-400 hover:border-white/[0.12] hover:bg-white/[0.10]'
           }`}
         >
           {t === 'image' && <PhotoIcon className="h-3.5 w-3.5" />}

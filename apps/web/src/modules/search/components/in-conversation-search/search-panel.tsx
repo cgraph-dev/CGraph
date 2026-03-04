@@ -13,7 +13,7 @@
 import { useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { springs } from '@/lib/animation-presets';
+import { springPreset } from '@/components/liquid-glass/shared';
 import { useConversationSearch } from '../../hooks/useConversationSearch';
 import { FilterChips } from './filter-chips';
 import { SearchResultItem } from './search-result-item';
@@ -97,23 +97,23 @@ export function InConversationSearchPanel({
           initial={{ x: '100%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '100%', opacity: 0 }}
-          transition={springs.snappy}
-          className="absolute inset-y-0 right-0 z-30 flex w-80 flex-col border-l border-gray-700/50 bg-dark-900 shadow-2xl lg:w-96"
+          transition={springPreset}
+          className="absolute inset-y-0 right-0 z-30 flex w-80 flex-col border-l border-white/[0.08] bg-[rgb(30,32,40)]/[0.82] shadow-[−8px_0_32px_rgba(0,0,0,0.3)] backdrop-blur-[20px] backdrop-saturate-[1.6] lg:w-96"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-700/50 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
             <h3 className="text-sm font-semibold text-white">Search Messages</h3>
             <button
               onClick={onClose}
-              className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+              className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
 
           {/* Search input */}
-          <div className="flex items-center gap-2 border-b border-gray-700/50 px-3 py-2">
-            <MagnifyingGlassIcon className="h-4 w-4 text-gray-500" />
+          <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
+            <MagnifyingGlassIcon className="h-4 w-4 text-blue-400/60" />
             <input
               ref={inputRef}
               type="text"
@@ -130,15 +130,11 @@ export function InConversationSearchPanel({
           </div>
 
           {/* Filter chips */}
-          <FilterChips
-            filters={filters}
-            onFiltersChange={setFilters}
-            participants={participants}
-          />
+          <FilterChips filters={filters} onFiltersChange={setFilters} participants={participants} />
 
           {/* Results count */}
           {query.length >= 2 && (
-            <div className="border-b border-gray-700/50 px-4 py-1.5">
+            <div className="border-b border-white/[0.06] px-4 py-1.5">
               <span className="text-[11px] text-gray-500">
                 {isLoading ? 'Searching...' : `${total} result${total !== 1 ? 's' : ''} found`}
               </span>
@@ -146,11 +142,7 @@ export function InConversationSearchPanel({
           )}
 
           {/* Result list */}
-          <div
-            ref={listRef}
-            onScroll={handleScroll}
-            className="flex-1 overflow-y-auto"
-          >
+          <div ref={listRef} onScroll={handleScroll} className="flex-1 overflow-y-auto">
             {results.length === 0 && query.length >= 2 && !isLoading ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <MagnifyingGlassIcon className="h-10 w-10 text-gray-600" />
