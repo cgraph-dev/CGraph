@@ -15,3 +15,4 @@ export { useToast, type ToastOptions, type UseToastReturn } from './useToast';
 export { useAdaptiveMotion } from './useAdaptiveMotion';
 export { useNotification } from './useNotification';
 export { useAdaptiveInterval, type AdaptiveIntervalOptions } from './useAdaptiveInterval';
+export { useMotionSafe, type MotionSafeResult } from './useMotionSafe';
