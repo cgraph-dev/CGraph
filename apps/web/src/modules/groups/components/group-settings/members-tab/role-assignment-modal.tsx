@@ -49,7 +49,7 @@ export function RoleAssignmentModal({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md space-y-4 rounded-xl border border-gray-700 bg-dark-900 p-6 shadow-2xl"
+            className="w-full max-w-md space-y-4 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6 shadow-2xl"
           >
             <h3 className="text-lg font-semibold text-white">Assign Roles</h3>
             <p className="text-sm text-gray-400">
@@ -62,13 +62,13 @@ export function RoleAssignmentModal({
                 .map((role) => (
                   <label
                     key={role.id}
-                    className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-dark-700"
+                    className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-white/[0.08]"
                   >
                     <input
                       type="checkbox"
                       checked={selectedRoleIds.has(role.id)}
                       onChange={() => onToggleRole(role.id)}
-                      className="h-4 w-4 rounded border-gray-600 bg-dark-800 text-primary-600"
+                      className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.04] text-primary-600"
                     />
                     <div
                       className="h-3 w-3 rounded-full"

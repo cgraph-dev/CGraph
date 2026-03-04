@@ -34,7 +34,7 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
           className={`relative flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
             routeActive || isActive
               ? 'text-white'
-              : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
+              : 'text-gray-400 hover:bg-white/[0.08] hover:text-gray-200'
           }`}
         >
           {/* Active indicator with shared layout animation */}

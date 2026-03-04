@@ -127,7 +127,7 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
   return (
     <div className={`flex h-full ${className}`}>
       {/* Role List */}
-      <div className="w-64 border-r border-gray-700/50 p-4">
+      <div className="w-64 border-r border-white/[0.06] p-4">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="flex items-center gap-2 font-semibold text-white">
             <ShieldCheckIcon className="h-5 w-5 text-primary-400" />
@@ -155,7 +155,7 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
                 className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
                   selectedRole?.id === role.id
                     ? 'border border-primary-500/50 bg-primary-600/20'
-                    : 'hover:bg-dark-700'
+                    : 'hover:bg-white/[0.08]'
                 }`}
               >
                 <div

@@ -53,7 +53,7 @@ export function MemberListItem({
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div className="h-10 w-10 overflow-hidden rounded-full bg-dark-700">
+        <div className="h-10 w-10 overflow-hidden rounded-full bg-white/[0.06]">
           {member.avatarUrl ? (
             <img src={member.avatarUrl} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -89,7 +89,7 @@ export function MemberListItem({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => onToggleMenu(isMenuOpen ? null : member.id)}
-          className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-white"
+          className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.08] hover:text-white"
         >
           <EllipsisVerticalIcon className="h-5 w-5" />
         </motion.button>
@@ -100,14 +100,14 @@ export function MemberListItem({
               initial={{ opacity: 0, scale: 0.95, y: -4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -4 }}
-              className="absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-gray-700 bg-dark-800 shadow-xl"
+              className="absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] shadow-xl"
             >
               <button
                 onClick={() => {
                   onToggleMenu(null);
                   onOpenRoleModal(member.id);
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-white/[0.08]"
               >
                 <ShieldCheckIcon className="h-4 w-4" />
                 Change Role
@@ -118,7 +118,7 @@ export function MemberListItem({
                     onToggleMenu(null);
                     onUnmute(member.id);
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-orange-400 hover:bg-dark-700"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-orange-400 hover:bg-white/[0.08]"
                 >
                   <SpeakerXMarkIcon className="h-4 w-4" />
                   Unmute
@@ -129,7 +129,7 @@ export function MemberListItem({
                     onToggleMenu(null);
                     onAction(member.id, 'mute');
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-orange-400 hover:bg-dark-700"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-orange-400 hover:bg-white/[0.08]"
                 >
                   <SpeakerXMarkIcon className="h-4 w-4" />
                   Mute
@@ -140,7 +140,7 @@ export function MemberListItem({
                   onToggleMenu(null);
                   onAction(member.id, 'kick');
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-yellow-400 hover:bg-dark-700"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-yellow-400 hover:bg-white/[0.08]"
               >
                 <ArrowRightStartOnRectangleIcon className="h-4 w-4" />
                 Kick
@@ -150,7 +150,7 @@ export function MemberListItem({
                   onToggleMenu(null);
                   onAction(member.id, 'ban');
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-dark-700"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-white/[0.08]"
               >
                 <NoSymbolIcon className="h-4 w-4" />
                 Ban

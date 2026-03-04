@@ -50,7 +50,7 @@ export function InviteManageTab({
             key={invite.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-xl border border-gray-700 bg-dark-800 p-4"
+            className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-4"
           >
             <div className="flex items-start justify-between">
               <div className="min-w-0 flex-1">
@@ -59,7 +59,7 @@ export function InviteManageTab({
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={() => onCopyLink(invite.url)}
-                    className="rounded p-1 hover:bg-dark-700"
+                    className="rounded p-1 hover:bg-white/[0.08]"
                   >
                     <ClipboardDocumentIcon className="h-4 w-4 text-gray-400" />
                   </motion.button>

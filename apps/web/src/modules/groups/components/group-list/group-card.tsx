@@ -35,7 +35,7 @@ export function GroupCard({ group, onClick }: GroupCardProps) {
 
           {/* Icon */}
           <div className="absolute -bottom-8 left-4">
-            <div className="h-16 w-16 overflow-hidden rounded-2xl border-4 border-dark-900 bg-dark-800">
+            <div className="h-16 w-16 overflow-hidden rounded-2xl border-4 border-dark-900 bg-white/[0.04]">
               {group.iconUrl ? (
                 <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
               ) : (

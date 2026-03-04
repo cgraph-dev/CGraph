@@ -166,8 +166,8 @@ export function IncomingCallModal({ call, onAccept, onDecline }: IncomingCallMod
 
         {/* Keyboard Shortcuts Hint */}
         <div className="mt-4 text-center text-xs text-gray-500">
-          Press <kbd className="rounded bg-dark-700 px-1.5 py-0.5">A</kbd> to accept or{' '}
-          <kbd className="rounded bg-dark-700 px-1.5 py-0.5">D</kbd> to decline
+          Press <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5">A</kbd> to accept or{' '}
+          <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5">D</kbd> to decline
         </div>
       </GlassCard>
     </motion.div>

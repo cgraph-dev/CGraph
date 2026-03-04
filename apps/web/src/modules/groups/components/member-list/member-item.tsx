@@ -189,7 +189,7 @@ export function MemberContextMenu({ member, position, isOwner, onClose }: Member
       >
         <GlassCard variant="frosted" className="overflow-hidden py-2">
           {/* Header */}
-          <div className="border-b border-gray-700/50 px-4 py-3">
+          <div className="border-b border-white/[0.06] px-4 py-3">
             <div className="flex items-center gap-3">
               <ThemedAvatar
                 src={member.user.avatarUrl}
@@ -210,7 +210,7 @@ export function MemberContextMenu({ member, position, isOwner, onClose }: Member
             {menuItems.map((item, index) => {
               if ('divider' in item) {
                 return (
-                  <div key={`divider-${index}`} className="my-1 border-t border-gray-700/50" />
+                  <div key={`divider-${index}`} className="my-1 border-t border-white/[0.06]" />
                 );
               }
 
@@ -222,7 +222,7 @@ export function MemberContextMenu({ member, position, isOwner, onClose }: Member
                   className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
                     item.danger
                       ? 'text-red-400 hover:bg-red-500/10'
-                      : 'text-gray-300 hover:bg-dark-700 hover:text-white'
+                      : 'text-gray-300 hover:bg-white/[0.08] hover:text-white'
                   }`}
                 >
                   <item.icon className="h-4 w-4" />

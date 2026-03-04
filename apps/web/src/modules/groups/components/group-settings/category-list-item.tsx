@@ -69,7 +69,7 @@ export function CategoryListItem({
               if (e.key === 'Enter') onSave(category.id);
               if (e.key === 'Escape') onCancelEdit();
             }}
-            className="flex-1 rounded border border-gray-700 bg-dark-800 px-2 py-1 text-sm text-white focus:border-primary-500 focus:outline-none"
+            className="flex-1 rounded border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-sm text-white focus:border-primary-500 focus:outline-none"
             autoFocus
           />
           <button
@@ -80,7 +80,7 @@ export function CategoryListItem({
           </button>
           <button
             onClick={onCancelEdit}
-            className="rounded px-2 py-1 text-xs text-gray-400 hover:bg-dark-700"
+            className="rounded px-2 py-1 text-xs text-gray-400 hover:bg-white/[0.08]"
           >
             Cancel
           </button>
@@ -101,26 +101,26 @@ export function CategoryListItem({
             <button
               onClick={() => onMoveUp(index)}
               disabled={index === 0}
-              className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-white disabled:opacity-30"
+              className="rounded p-1 text-gray-500 hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
             >
               <ChevronUpIcon className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => onMoveDown(index)}
               disabled={index === totalCount - 1}
-              className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-white disabled:opacity-30"
+              className="rounded p-1 text-gray-500 hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
             >
               <ChevronDownIcon className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => onStartEdit(category)}
-              className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-white"
+              className="rounded p-1 text-gray-500 hover:bg-white/[0.08] hover:text-white"
             >
               <PencilIcon className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => onDeleteRequest(category.id)}
-              className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-red-400"
+              className="rounded p-1 text-gray-500 hover:bg-white/[0.08] hover:text-red-400"
             >
               <TrashIcon className="h-3.5 w-3.5" />
             </button>

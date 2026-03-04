@@ -52,7 +52,7 @@ export function VoiceChannelPanel() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={springs.snappy}
-          className="border-t border-dark-600 bg-dark-800/95 backdrop-blur-sm"
+          className="border-t border-white/[0.08] bg-white/[0.08] backdrop-blur-sm"
         >
           {/* Channel Info */}
           <div className="flex items-center gap-2 px-3 py-2">
@@ -73,7 +73,7 @@ export function VoiceChannelPanel() {
                   className="flex items-center gap-2 rounded py-0.5 text-sm"
                 >
                   {/* Avatar */}
-                  <div className="h-5 w-5 flex-shrink-0 overflow-hidden rounded-full bg-dark-600">
+                  <div className="h-5 w-5 flex-shrink-0 overflow-hidden rounded-full bg-white/[0.08]">
                     {member.avatarUrl ? (
                       <img
                         src={member.avatarUrl}
@@ -119,7 +119,7 @@ export function VoiceChannelPanel() {
           )}
 
           {/* Control Bar */}
-          <div className="flex items-center justify-center gap-1 border-t border-dark-700 px-3 py-2">
+          <div className="flex items-center justify-center gap-1 border-t border-white/[0.06] px-3 py-2">
             {/* Mute */}
             <ControlButton
               onClick={toggleMute}
@@ -194,8 +194,8 @@ function ControlButton({ onClick, children, active, danger, title }: ControlButt
         danger
           ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
           : active
-            ? 'bg-dark-600 text-white hover:bg-dark-500'
-            : 'bg-dark-700 text-gray-400 hover:bg-dark-600 hover:text-gray-200'
+            ? 'bg-white/[0.08] text-white hover:bg-white/[0.12]'
+            : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10] hover:text-gray-200'
       }`}
     >
       {children}

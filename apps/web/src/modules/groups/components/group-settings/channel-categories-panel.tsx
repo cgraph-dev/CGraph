@@ -162,7 +162,7 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-dark-700 px-3 py-1.5 text-sm text-gray-300 hover:bg-dark-600"
+          className="flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-1.5 text-sm text-gray-300 hover:bg-white/[0.10]"
         >
           <PlusIcon className="h-4 w-4" />
           Add Category

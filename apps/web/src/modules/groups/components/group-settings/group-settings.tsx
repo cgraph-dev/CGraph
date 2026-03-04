@@ -64,7 +64,7 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
   }
 
   return (
-    <div className="flex h-full bg-dark-900">
+    <div className="flex h-full bg-[rgb(30,32,40)]">
       {/* Sidebar */}
       <SettingsSidebar group={activeGroup} activeTab={activeTab} onTabChange={setActiveTab} />
 

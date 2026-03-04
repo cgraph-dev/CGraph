@@ -65,7 +65,7 @@ export function EmojiGrid({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onUploadClick}
-            className="mt-4 flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-sm text-gray-300 hover:bg-dark-600"
+            className="mt-4 flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-gray-300 hover:bg-white/[0.10]"
           >
             <PlusIcon className="h-4 w-4" />
             Upload your first emoji
@@ -80,7 +80,7 @@ export function EmojiGrid({
               initial="hidden"
               animate="visible"
               transition={{ delay: index * 0.03 }}
-              className="group relative rounded-xl border border-gray-700/50 bg-dark-800/50 p-3 transition-colors hover:border-gray-600"
+              className="group relative rounded-xl border border-white/[0.06] bg-white/[0.04] p-3 transition-colors hover:border-white/[0.08]"
             >
               {/* Emoji Image */}
               <div className="mb-2 flex items-center justify-center">
@@ -103,7 +103,7 @@ export function EmojiGrid({
                       if (e.key === 'Enter') onRename(emoji.id);
                       if (e.key === 'Escape') onCancelEdit();
                     }}
-                    className="w-full rounded border border-gray-700 bg-dark-900 px-1.5 py-0.5 text-xs text-white focus:border-primary-500 focus:outline-none"
+                    className="w-full rounded border border-white/[0.08] bg-[rgb(30,32,40)] px-1.5 py-0.5 text-xs text-white focus:border-primary-500 focus:outline-none"
                     autoFocus
                   />
                   <button onClick={() => onRename(emoji.id)} className="text-xs text-primary-400">
@@ -125,13 +125,13 @@ export function EmojiGrid({
               <div className="absolute inset-x-0 bottom-0 flex translate-y-1 justify-center gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
                 <button
                   onClick={() => onStartEdit(emoji)}
-                  className="rounded bg-dark-900/90 p-1 text-gray-400 hover:text-white"
+                  className="rounded bg-[rgb(30,32,40)]/[0.90] p-1 text-gray-400 hover:text-white"
                 >
                   <PencilIcon className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => onDeleteRequest(emoji.id)}
-                  className="rounded bg-dark-900/90 p-1 text-gray-400 hover:text-red-400"
+                  className="rounded bg-[rgb(30,32,40)]/[0.90] p-1 text-gray-400 hover:text-red-400"
                 >
                   <TrashIcon className="h-3.5 w-3.5" />
                 </button>
@@ -144,7 +144,7 @@ export function EmojiGrid({
             whileHover={{ scale: 1.02, borderColor: 'rgba(99,102,241,0.5)' }}
             whileTap={{ scale: 0.98 }}
             onClick={onUploadClick}
-            className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-700 p-3 text-gray-500 transition-colors hover:border-primary-500/50 hover:text-gray-400"
+            className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/[0.08] p-3 text-gray-500 transition-colors hover:border-primary-500/50 hover:text-gray-400"
           >
             <PlusIcon className="mb-1 h-8 w-8" />
             <span className="text-xs">Upload</span>

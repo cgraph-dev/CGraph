@@ -210,7 +210,7 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
       />
 
       {/* Guidelines */}
-      <div className="rounded-lg border border-gray-800 bg-dark-800/50 px-4 py-3">
+      <div className="rounded-lg border border-gray-800 bg-white/[0.04] px-4 py-3">
         <h4 className="mb-1 text-sm font-medium text-gray-300">Emoji Guidelines</h4>
         <ul className="space-y-0.5 text-xs text-gray-500">
           <li>• Supported formats: PNG, GIF, WebP, JPEG</li>

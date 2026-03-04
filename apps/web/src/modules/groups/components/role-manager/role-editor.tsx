@@ -89,7 +89,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
       <GlassCard variant="frosted" className="overflow-hidden">
         <button
           onClick={() => toggleSection('general')}
-          className="flex w-full items-center justify-between p-4 transition-colors hover:bg-dark-700/50"
+          className="flex w-full items-center justify-between p-4 transition-colors hover:bg-white/[0.06]"
         >
           <span className="font-semibold text-white">General</span>
           {expandedSections.has('general') ? (
@@ -105,7 +105,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-gray-700/50"
+              className="overflow-hidden border-t border-white/[0.06]"
             >
               <div className="space-y-4 p-4">
                 {/* Role Name */}
@@ -115,7 +115,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
                     type="text"
                     value={role.name}
                     onChange={(e) => onUpdate({ name: e.target.value })}
-                    className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
+                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
                   />
                 </div>
 
@@ -142,7 +142,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
 
                 {/* Toggles */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between rounded-lg bg-dark-800 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-white/[0.04] p-3">
                     <div>
                       <span className="font-medium text-white">Display separately</span>
                       <p className="text-xs text-gray-400">
@@ -152,7 +152,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
                     <Toggle value={!role.isDefault} onChange={() => {}} />
                   </div>
 
-                  <div className="flex items-center justify-between rounded-lg bg-dark-800 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-white/[0.04] p-3">
                     <div>
                       <span className="font-medium text-white">Mentionable</span>
                       <p className="text-xs text-gray-400">Anyone can @mention this role</p>
@@ -173,7 +173,7 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
       <GlassCard variant="frosted" className="overflow-hidden">
         <button
           onClick={() => toggleSection('permissions')}
-          className="flex w-full items-center justify-between p-4 transition-colors hover:bg-dark-700/50"
+          className="flex w-full items-center justify-between p-4 transition-colors hover:bg-white/[0.06]"
         >
           <span className="font-semibold text-white">Permissions</span>
           {expandedSections.has('permissions') ? (
@@ -189,14 +189,14 @@ export function RoleEditor({ role, isNew, onUpdate, onDelete, onSave }: RoleEdit
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-gray-700/50"
+              className="overflow-hidden border-t border-white/[0.06]"
             >
               <div className="space-y-2 p-4">
                 {Object.entries(PERMISSIONS).map(([key, perm]) => (
                   <div
                     key={key}
                     className={`flex items-center justify-between rounded-lg p-3 ${
-                      perm.danger ? 'border border-red-500/20 bg-red-500/5' : 'bg-dark-800'
+                      perm.danger ? 'border border-red-500/20 bg-red-500/5' : 'bg-white/[0.04]'
                     }`}
                   >
                     <div>

@@ -65,7 +65,7 @@ export function GroupList({
         {showCreateButton && (
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-dark-700 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.06] text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-white"
             title="Create Group"
           >
             <Plus className="h-5 w-5" />
@@ -93,7 +93,7 @@ export function GroupList({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search groups..."
-                className="focus:border-brand-500 w-full rounded-lg border border-dark-600 bg-dark-700 py-2 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none"
+                className="focus:border-brand-500 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-2 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none"
               />
             </div>
           )}
@@ -104,7 +104,7 @@ export function GroupList({
               className={`rounded-lg p-2 transition-colors ${
                 currentVariant === 'grid'
                   ? 'bg-brand-500 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:text-white'
+                  : 'bg-white/[0.06] text-gray-400 hover:text-white'
               }`}
               title="Grid view"
             >
@@ -115,7 +115,7 @@ export function GroupList({
               className={`rounded-lg p-2 transition-colors ${
                 currentVariant === 'list'
                   ? 'bg-brand-500 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:text-white'
+                  : 'bg-white/[0.06] text-gray-400 hover:text-white'
               }`}
               title="List view"
             >

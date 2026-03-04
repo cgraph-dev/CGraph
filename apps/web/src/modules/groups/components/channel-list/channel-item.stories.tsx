@@ -19,7 +19,7 @@ function MockChannelItem({
   unreadCount?: number;
 }) {
   const icons: Record<string, string> = { text: '#', voice: '🔊', announcement: '📢' };
-  const bg = isActive ? 'bg-dark-600' : 'hover:bg-dark-700';
+  const bg = isActive ? 'bg-white/[0.08]' : 'hover:bg-white/[0.08]';
   const textColor = isMuted ? 'text-gray-600' : unreadCount > 0 ? 'text-white font-medium' : 'text-gray-400';
 
   return (

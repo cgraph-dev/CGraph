@@ -59,7 +59,7 @@ export function InviteCreateTab({
           <select
             value={expiration ?? ''}
             onChange={(e) => setExpiration(e.target.value ? Number(e.target.value) : null)}
-            className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           >
             {EXPIRATION_OPTIONS.map((opt) => (
               <option key={opt.label} value={opt.value ?? ''}>
@@ -78,7 +78,7 @@ export function InviteCreateTab({
           <select
             value={maxUses ?? ''}
             onChange={(e) => setMaxUses(e.target.value ? Number(e.target.value) : null)}
-            className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           >
             {MAX_USES_OPTIONS.map((opt) => (
               <option key={opt.label} value={opt.value ?? ''}>
@@ -115,7 +115,7 @@ export function InviteCreateTab({
                 type="text"
                 value={inviteLink}
                 readOnly
-                className="flex-1 rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-sm text-white"
+                className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}

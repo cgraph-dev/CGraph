@@ -76,7 +76,7 @@ export function GroupCallView({
   // Connecting state
   if (connectionState === 'idle') {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-dark-900">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-[rgb(30,32,40)]">
         <h2 className="text-xl font-semibold text-white">Group Call</h2>
         <p className="text-sm text-white/60">
           Ready to join {roomOptions.roomName}
@@ -93,7 +93,7 @@ export function GroupCallView({
 
   if (connectionState === ConnectionState.Connecting) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-dark-900">
+      <div className="flex h-full w-full items-center justify-center bg-[rgb(30,32,40)]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
           <span className="text-sm text-white/60">Connecting...</span>
@@ -104,11 +104,11 @@ export function GroupCallView({
 
   if (error) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-dark-900">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[rgb(30,32,40)]">
         <p className="text-sm text-red-400">{error}</p>
         <button
           onClick={connect}
-          className="rounded-lg bg-dark-700 px-4 py-2 text-sm text-white hover:bg-dark-600"
+          className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-white hover:bg-white/[0.10]"
         >
           Retry
         </button>
@@ -117,7 +117,7 @@ export function GroupCallView({
   }
 
   return (
-    <div className="flex h-full w-full flex-col bg-dark-900">
+    <div className="flex h-full w-full flex-col bg-[rgb(30,32,40)]">
       {/* Participant Grid */}
       <div className={`grid flex-1 gap-2 p-2 ${gridClass}`}>
         {/* Local participant tile */}
@@ -146,14 +146,14 @@ export function GroupCallView({
       </div>
 
       {/* Control Bar */}
-      <div className="flex items-center justify-center gap-3 border-t border-white/5 bg-dark-800 p-4">
+      <div className="flex items-center justify-center gap-3 border-t border-white/5 bg-white/[0.04] p-4">
         {/* Mute toggle */}
         <button
           onClick={toggleMute}
           className={`rounded-full p-3 transition-colors ${
             isMuted
               ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-              : 'bg-dark-700 text-white hover:bg-dark-600'
+              : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
           }`}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
@@ -170,7 +170,7 @@ export function GroupCallView({
           className={`rounded-full p-3 transition-colors ${
             !isVideoOn
               ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-              : 'bg-dark-700 text-white hover:bg-dark-600'
+              : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
           }`}
           aria-label={isVideoOn ? 'Turn off camera' : 'Turn on camera'}
         >
@@ -187,7 +187,7 @@ export function GroupCallView({
           className={`rounded-full p-3 transition-colors ${
             isScreenSharing
               ? 'bg-primary-500/20 text-primary-400 hover:bg-primary-500/30'
-              : 'bg-dark-700 text-white hover:bg-dark-600'
+              : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
           }`}
           aria-label={
             isScreenSharing ? 'Stop screen share' : 'Share screen'

@@ -20,7 +20,7 @@ export function Toggle({ value, onChange }: ToggleProps) {
       whileTap={{ scale: 0.9 }}
       onClick={() => onChange(!value)}
       className={`h-6 w-12 flex-shrink-0 rounded-full transition-colors ${
-        value ? 'bg-primary-600' : 'bg-dark-600'
+        value ? 'bg-primary-600' : 'bg-white/[0.08]'
       }`}
     >
       <motion.div

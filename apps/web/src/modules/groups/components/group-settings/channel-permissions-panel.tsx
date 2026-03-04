@@ -184,10 +184,10 @@ export function ChannelPermissionsPanel({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-xl border border-gray-700 bg-dark-900 shadow-2xl"
+        className="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] shadow-2xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold text-white">Channel Permissions</h2>
             <p className="text-sm text-gray-400">#{channelName}</p>

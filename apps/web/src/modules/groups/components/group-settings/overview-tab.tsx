@@ -32,7 +32,7 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
         <h3 className="mb-4 font-semibold text-white">Group Appearance</h3>
 
         {/* Banner */}
-        <div className="relative mb-4 h-32 overflow-hidden rounded-xl bg-dark-700">
+        <div className="relative mb-4 h-32 overflow-hidden rounded-xl bg-white/[0.06]">
           {group.bannerUrl ? (
             <img src={group.bannerUrl} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -43,7 +43,7 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-dark-900/80 px-3 py-1.5 text-sm text-white"
+            className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-[rgb(30,32,40)]/[0.80] px-3 py-1.5 text-sm text-white"
           >
             <PhotoIcon className="h-4 w-4" />
             Change Banner
@@ -52,7 +52,7 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
 
         {/* Icon */}
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 overflow-hidden rounded-2xl bg-dark-700">
+          <div className="h-20 w-20 overflow-hidden rounded-2xl bg-white/[0.06]">
             {group.iconUrl ? (
               <img src={group.iconUrl} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -86,7 +86,7 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
             type="text"
             value={formData.name}
             onChange={(e) => onChange({ ...formData, name: e.target.value })}
-            className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           />
         </div>
 
@@ -96,11 +96,11 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
             value={formData.description}
             onChange={(e) => onChange({ ...formData, description: e.target.value })}
             rows={4}
-            className="w-full resize-none rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
+            className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center justify-between rounded-lg bg-dark-800 p-4">
+        <div className="flex items-center justify-between rounded-lg bg-white/[0.04] p-4">
           <div>
             <span className="font-medium text-white">Public Group</span>
             <p className="text-xs text-gray-400">Anyone can discover and join</p>
@@ -109,7 +109,7 @@ export function OverviewTab({ group, formData, onChange }: OverviewTabProps) {
             whileTap={{ scale: 0.9 }}
             onClick={() => onChange({ ...formData, isPublic: !formData.isPublic })}
             className={`h-6 w-12 rounded-full transition-colors ${
-              formData.isPublic ? 'bg-primary-600' : 'bg-dark-600'
+              formData.isPublic ? 'bg-primary-600' : 'bg-white/[0.08]'
             }`}
           >
             <motion.div

@@ -51,7 +51,7 @@ export function AddOverrideForm({
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm ${
                   addType === 'role'
                     ? 'bg-primary-500/10 text-primary-400 border border-primary-500'
-                    : 'text-gray-400 border border-gray-700'
+                    : 'text-gray-400 border border-white/[0.08]'
                 }`}
               >
                 <ShieldCheckIcon className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function AddOverrideForm({
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm ${
                   addType === 'member'
                     ? 'bg-primary-500/10 text-primary-400 border border-primary-500'
-                    : 'text-gray-400 border border-gray-700'
+                    : 'text-gray-400 border border-white/[0.08]'
                 }`}
               >
                 <UserIcon className="h-4 w-4" />
@@ -74,7 +74,7 @@ export function AddOverrideForm({
               <select
                 value={selectedTargetId}
                 onChange={(e) => onTargetChange(e.target.value)}
-                className="w-full rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
               >
                 <option value="">Select a role...</option>
                 {availableRoles.map((r) => (
@@ -89,7 +89,7 @@ export function AddOverrideForm({
                 placeholder="Enter member ID..."
                 value={selectedTargetId}
                 onChange={(e) => onTargetChange(e.target.value)}
-                className="w-full rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               />
             )}
 

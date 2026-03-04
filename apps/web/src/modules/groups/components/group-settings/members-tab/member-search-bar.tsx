@@ -33,13 +33,13 @@ export function MemberSearchBar({
           placeholder="Search members..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full rounded-lg border border-gray-700 bg-dark-800 py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] py-2 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
         />
       </div>
       <select
         value={roleFilter}
         onChange={(e) => onRoleFilterChange(e.target.value)}
-        className="rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
+        className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
       >
         <option value="all">All Roles</option>
         <option value="owner">Owners</option>

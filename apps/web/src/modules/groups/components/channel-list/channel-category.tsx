@@ -50,7 +50,7 @@ export function CategorySection({
                 e.stopPropagation();
                 onCreateChannel();
               }}
-              className="rounded p-0.5 hover:bg-dark-700"
+              className="rounded p-0.5 hover:bg-white/[0.08]"
             >
               <PlusIcon className="h-4 w-4 text-gray-400 hover:text-white" />
             </motion.button>

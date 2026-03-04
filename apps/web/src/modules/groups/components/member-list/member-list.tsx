@@ -103,7 +103,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
   return (
     <div className={`flex h-full flex-col ${className}`}>
       {/* Header */}
-      <div className="border-b border-gray-700/50 p-4">
+      <div className="border-b border-white/[0.06] p-4">
         <div className="relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
@@ -111,7 +111,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
             placeholder="Search members..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-700 bg-dark-800 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] py-2 pl-9 pr-4 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
           />
         </div>
       </div>

@@ -32,7 +32,7 @@ export function ConfirmModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md rounded-2xl border border-gray-700 bg-dark-900 p-6"
+        className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className={`text-xl font-bold ${danger ? 'text-red-400' : 'text-white'} mb-2`}>
@@ -43,7 +43,7 @@ export function ConfirmModal({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
+            className="flex-1 rounded-xl bg-white/[0.06] py-3 text-gray-300 transition-colors hover:bg-white/[0.10]"
           >
             Cancel
           </button>

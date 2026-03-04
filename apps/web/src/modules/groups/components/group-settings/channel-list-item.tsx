@@ -89,14 +89,14 @@ export function ChannelListItem({
               type="text"
               value={editName}
               onChange={(e) => onEditNameChange(e.target.value)}
-              className="rounded border border-gray-700 bg-dark-800 px-2 py-1 text-sm text-white focus:border-primary-500 focus:outline-none"
+              className="rounded border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-sm text-white focus:border-primary-500 focus:outline-none"
             />
             <input
               type="text"
               value={editTopic}
               onChange={(e) => onEditTopicChange(e.target.value)}
               placeholder="Topic"
-              className="flex-1 rounded border border-gray-700 bg-dark-800 px-2 py-1 text-sm text-white placeholder-gray-600 focus:border-primary-500 focus:outline-none"
+              className="flex-1 rounded border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-sm text-white placeholder-gray-600 focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div className="flex gap-1">
@@ -108,7 +108,7 @@ export function ChannelListItem({
             </button>
             <button
               onClick={onCancelEdit}
-              className="rounded px-2 py-1 text-xs text-gray-400 hover:bg-dark-700"
+              className="rounded px-2 py-1 text-xs text-gray-400 hover:bg-white/[0.08]"
             >
               Cancel
             </button>
@@ -136,7 +136,7 @@ export function ChannelListItem({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onPermissions(channel.id)}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-primary-400"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.08] hover:text-primary-400"
               title="Permissions"
             >
               <ShieldCheckIcon className="h-4 w-4" />
@@ -145,7 +145,7 @@ export function ChannelListItem({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onStartEdit(channel)}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-white"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.08] hover:text-white"
             >
               <PencilIcon className="h-4 w-4" />
             </motion.button>
@@ -153,7 +153,7 @@ export function ChannelListItem({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onDelete(channel.id)}
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-red-400"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-white/[0.08] hover:text-red-400"
             >
               <TrashIcon className="h-4 w-4" />
             </motion.button>

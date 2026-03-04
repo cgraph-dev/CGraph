@@ -22,8 +22,8 @@ interface SettingsSidebarProps {
  */
 export function SettingsSidebar({ group, activeTab, onTabChange }: SettingsSidebarProps) {
   return (
-    <div className="w-56 border-r border-gray-700/50 bg-dark-800/50 p-4">
-      <div className="mb-6 flex items-center gap-3 border-b border-gray-700/50 pb-4">
+    <div className="w-56 border-r border-white/[0.06] bg-white/[0.04] p-4">
+      <div className="mb-6 flex items-center gap-3 border-b border-white/[0.06] pb-4">
         <div className="h-10 w-10 overflow-hidden rounded-xl">
           {group.iconUrl ? (
             <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
@@ -51,7 +51,7 @@ export function SettingsSidebar({ group, activeTab, onTabChange }: SettingsSideb
                 ? 'bg-primary-600/20 text-primary-400'
                 : tab.id === 'danger'
                   ? 'text-red-400 hover:bg-red-500/10'
-                  : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                  : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
             }`}
           >
             <tab.icon className="h-5 w-5" />

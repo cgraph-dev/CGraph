@@ -76,7 +76,7 @@ export function ConfirmActionModal({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md space-y-4 rounded-xl border border-gray-700 bg-dark-900 p-6 shadow-2xl"
+            className="w-full max-w-md space-y-4 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6 shadow-2xl"
           >
             <h3 className="text-lg font-semibold text-white">
               {ACTION_TITLES[action]}
@@ -89,7 +89,7 @@ export function ConfirmActionModal({
               <select
                 value={banDuration}
                 onChange={(e) => onBanDurationChange(e.target.value)}
-                className="w-full rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white"
               >
                 <option value="permanent">Permanent</option>
                 <option value="1h">1 Hour</option>
@@ -105,7 +105,7 @@ export function ConfirmActionModal({
                 onChange={(e) => onReasonChange(e.target.value)}
                 placeholder="Reason (optional)"
                 rows={2}
-                className="w-full resize-none rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white placeholder-gray-500"
+                className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30"
               />
             )}
 

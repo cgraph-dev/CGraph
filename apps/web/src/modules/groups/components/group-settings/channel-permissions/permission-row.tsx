@@ -23,7 +23,7 @@ interface PermissionRowProps {
  */
 export function PermissionRow({ bit, label, description, state, onToggle }: PermissionRowProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-dark-700/50">
+    <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-white/[0.06]">
       <div>
         <p className="text-sm font-medium text-white">{label}</p>
         <p className="text-xs text-gray-500">{description}</p>
@@ -35,7 +35,7 @@ export function PermissionRow({ bit, label, description, state, onToggle }: Perm
             ? 'bg-green-500/10 text-green-400'
             : state === 'deny'
               ? 'bg-red-500/10 text-red-400'
-              : 'bg-gray-700/50 text-gray-400'
+              : 'bg-white/[0.06]/50 text-gray-400'
         }`}
       >
         {state === 'allow' && <CheckIcon className="h-3.5 w-3.5" />}

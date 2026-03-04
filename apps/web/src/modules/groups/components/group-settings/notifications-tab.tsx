@@ -120,12 +120,12 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
                 className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors ${
                   notifLevel === opt.level
                     ? 'border-primary-500 bg-primary-500/10'
-                    : 'border-gray-700/50 hover:border-gray-600'
+                    : 'border-white/[0.06] hover:border-white/[0.08]'
                 }`}
               >
                 <div
                   className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    notifLevel === opt.level ? 'bg-primary-500/20' : 'bg-dark-700'
+                    notifLevel === opt.level ? 'bg-primary-500/20' : 'bg-white/[0.06]'
                   }`}
                 >
                   <Icon
@@ -145,7 +145,7 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
                     className={`h-5 w-5 rounded-full border-2 ${
                       notifLevel === opt.level
                         ? 'border-primary-500 bg-primary-500'
-                        : 'border-gray-600'
+                        : 'border-white/[0.08]'
                     }`}
                   >
                     {notifLevel === opt.level && (
@@ -176,7 +176,7 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
           <button
             onClick={() => setSuppressEveryone(!suppressEveryone)}
             className={`relative h-6 w-11 rounded-full transition-colors ${
-              suppressEveryone ? 'bg-primary-600' : 'bg-dark-700'
+              suppressEveryone ? 'bg-primary-600' : 'bg-white/[0.06]'
             }`}
           >
             <motion.div
@@ -197,7 +197,7 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
           <button
             onClick={() => setSuppressRoles(!suppressRoles)}
             className={`relative h-6 w-11 rounded-full transition-colors ${
-              suppressRoles ? 'bg-primary-600' : 'bg-dark-700'
+              suppressRoles ? 'bg-primary-600' : 'bg-white/[0.06]'
             }`}
           >
             <motion.div

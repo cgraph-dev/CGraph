@@ -68,7 +68,7 @@ export function CreateChannelForm({
                     className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm ${
                       newType === type
                         ? 'border-primary-500 bg-primary-500/10 text-primary-400'
-                        : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                        : 'border-white/[0.08] text-gray-400 hover:border-white/[0.08]'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -83,14 +83,14 @@ export function CreateChannelForm({
               placeholder="channel-name"
               value={newName}
               onChange={(e) => onNameChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
             />
             <input
               type="text"
               placeholder="Channel topic (optional)"
               value={newTopic}
               onChange={(e) => onTopicChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
             />
             <div className="flex justify-end">
               <motion.button

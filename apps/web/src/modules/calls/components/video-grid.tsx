@@ -27,7 +27,7 @@ function VideoTile({ stream, participant, isLocal = false, isSpeaking = false }:
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-dark-800 ${
+      className={`relative overflow-hidden rounded-xl bg-white/[0.04] ${
         isSpeaking ? 'ring-2 ring-primary-500' : 'ring-1 ring-white/10'
       }`}
     >

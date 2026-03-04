@@ -50,7 +50,7 @@ export function CreateCategoryForm({
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-              className="w-full rounded-lg border border-gray-700 bg-dark-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               autoFocus
             />
             <div className="flex justify-end">

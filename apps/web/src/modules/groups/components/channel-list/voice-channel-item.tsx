@@ -56,7 +56,7 @@ export function VoiceChannelItem({ channel, groupId }: VoiceChannelItemProps) {
       className={`relative flex w-full flex-col gap-1 rounded-lg px-2 py-1.5 text-left transition-colors ${
         isConnected
           ? 'text-white'
-          : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
+          : 'text-gray-400 hover:bg-white/[0.08] hover:text-gray-200'
       }`}
     >
       {/* Active indicator */}
@@ -106,8 +106,8 @@ function MemberAvatar({ member }: { member: VoiceMember }) {
   return (
     <div className="group relative">
       <div
-        className={`h-6 w-6 overflow-hidden rounded-full bg-dark-600 ring-2 ${
-          member.selfMute ? 'ring-red-500/40' : 'ring-dark-800'
+        className={`h-6 w-6 overflow-hidden rounded-full bg-white/[0.08] ring-2 ${
+          member.selfMute ? 'ring-red-500/40' : 'ring-[rgb(30,32,40)]'
         }`}
       >
         {member.avatarUrl ? (
@@ -125,7 +125,7 @@ function MemberAvatar({ member }: { member: VoiceMember }) {
 
       {/* Mute indicator */}
       {member.selfMute && (
-        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-1 ring-dark-800">
+        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-1 ring-[rgb(30,32,40)]">
           <svg viewBox="0 0 10 10" className="h-full w-full text-white">
             <line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" strokeWidth="1.5" />
           </svg>
@@ -133,7 +133,7 @@ function MemberAvatar({ member }: { member: VoiceMember }) {
       )}
 
       {/* Tooltip */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1 -translate-x-1/2 whitespace-nowrap rounded bg-dark-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1 -translate-x-1/2 whitespace-nowrap rounded bg-[rgb(30,32,40)] px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
         {member.displayName ?? member.username ?? member.userId}
         {member.selfMute && ' (Muted)'}
         {member.selfDeafen && ' (Deafened)'}

@@ -160,14 +160,14 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
             className={`rounded-lg p-2 transition-colors ${
               showFilters || filterCategory
                 ? 'bg-primary-600/20 text-primary-400'
-                : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
             }`}
           >
             <FunnelIcon className="h-5 w-5" />
           </button>
           <button
             onClick={fetchAuditLog}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
           >
             <ArrowPathIcon className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -183,7 +183,7 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
             placeholder="Search audit log..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg bg-dark-800 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 outline-none ring-1 ring-gray-700 focus:ring-primary-500"
+            className="w-full rounded-lg bg-white/[0.04] py-2 pl-9 pr-4 text-sm text-white placeholder-white/30 outline-none ring-1 ring-gray-700 focus:ring-primary-500"
           />
         </div>
 
@@ -202,7 +202,7 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
                   className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                     filterCategory === opt.value
                       ? 'bg-primary-600 text-white'
-                      : 'bg-dark-700 text-gray-400 hover:bg-dark-600 hover:text-white'
+                      : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10] hover:text-white'
                   }`}
                 >
                   {opt.label}
@@ -240,7 +240,7 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
                 transition={{ delay: index * 0.03 }}
                 className="flex items-start gap-3 p-4"
               >
-                <div className={`mt-0.5 rounded-lg bg-dark-700 p-2 ${actionInfo.color}`}>
+                <div className={`mt-0.5 rounded-lg bg-white/[0.06] p-2 ${actionInfo.color}`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -280,14 +280,14 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white disabled:opacity-30"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white disabled:opacity-30"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
             >
               <ChevronRightIcon className="h-4 w-4" />
             </button>

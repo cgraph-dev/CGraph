@@ -75,7 +75,7 @@ export function VideoCallModal({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className={`relative overflow-hidden bg-dark-900 ${
+          className={`relative overflow-hidden bg-[rgb(30,32,40)] ${
             isFullscreen ? 'h-screen w-screen' : 'h-[80vh] w-[90vw] max-w-6xl rounded-2xl'
           }`}
         >
@@ -89,7 +89,7 @@ export function VideoCallModal({
           />
 
           {/* Main Video Area */}
-          <div className="relative h-full w-full bg-dark-950">
+          <div className="relative h-full w-full bg-[rgb(20,22,28)]">
             {/* Group call — multi-participant grid */}
             {isGroupCall || callState.participants.length > 1 ? (
               <VideoGrid
@@ -140,7 +140,7 @@ export function VideoCallModal({
                 </div>
 
                 {/* Local PiP */}
-                <div className="absolute bottom-20 right-4 h-40 w-56 overflow-hidden rounded-lg border-2 border-white/20 bg-dark-800 shadow-2xl">
+                <div className="absolute bottom-20 right-4 h-40 w-56 overflow-hidden rounded-lg border-2 border-white/20 bg-white/[0.04] shadow-2xl">
                   {localStream && callState.isVideoEnabled ? (
                     <video
                       ref={localVideoRef}
@@ -151,7 +151,7 @@ export function VideoCallModal({
                       style={{ transform: 'scaleX(-1)' }}
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-dark-900">
+                    <div className="flex h-full w-full items-center justify-center bg-[rgb(30,32,40)]">
                       <VideoCameraSlashIcon className="h-12 w-12 text-gray-600" />
                     </div>
                   )}

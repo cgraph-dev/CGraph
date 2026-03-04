@@ -34,7 +34,7 @@ export function DeleteEmojiModal({ deleteConfirmId, onConfirm, onCancel }: Delet
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm space-y-4 rounded-xl border border-gray-700 bg-dark-900 p-6 shadow-2xl"
+            className="w-full max-w-sm space-y-4 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6 shadow-2xl"
           >
             <h3 className="text-lg font-semibold text-white">Delete Emoji</h3>
             <p className="text-sm text-gray-400">

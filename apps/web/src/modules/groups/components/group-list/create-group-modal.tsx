@@ -117,7 +117,7 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
                       name="name"
                       placeholder="My Awesome Group"
                       required
-                      className="w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
 
@@ -129,11 +129,11 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
                       name="description"
                       placeholder="What's your group about?"
                       rows={3}
-                      className="w-full resize-none rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                      className="w-full resize-none rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between rounded-xl bg-dark-800 p-4">
+                  <div className="flex items-center justify-between rounded-xl bg-white/[0.04] p-4">
                     <div>
                       <span className="font-medium text-white">Public Group</span>
                       <p className="text-xs text-gray-400">Anyone can discover and join</p>
@@ -143,7 +143,7 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setIsPublic(!isPublic)}
                       className={`h-6 w-12 rounded-full transition-colors ${
-                        isPublic ? 'bg-primary-600' : 'bg-dark-600'
+                        isPublic ? 'bg-primary-600' : 'bg-white/[0.08]'
                       }`}
                     >
                       <motion.div
@@ -158,7 +158,7 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
                   <button
                     type="button"
                     onClick={onClose}
-                    className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
+                    className="flex-1 rounded-xl bg-white/[0.06] py-3 text-gray-300 transition-colors hover:bg-white/[0.10]"
                   >
                     Cancel
                   </button>
