@@ -1069,16 +1069,16 @@ transitions, toasts) has polished spring-driven animations using `motion/react` 
 
 Plans:
 
-- [ ] 21-01-PLAN.md — Import migration: framer-motion → motion/react (727 files)
-- [ ] 21-02-PLAN.md — Animation constants expansion + useMotionSafe hook
-- [ ] 21-03-PLAN.md — Button & IconButton motion system
-- [ ] 21-04-PLAN.md — Sidebar & navigation layoutId indicators
-- [ ] 21-05-PLAN.md — Modals, dialogs & overlay animations
-- [ ] 21-06-PLAN.md — Dropdowns & notification badge animations
-- [ ] 21-07-PLAN.md — Chat message entrance animations
-- [ ] 21-08-PLAN.md — Page transitions & toast enhancements
-- [ ] 21-09-PLAN.md — Mobile haptics & Reanimated upgrades
-- [ ] 21-10-PLAN.md — Hardcoded value cleanup & final validation
+- [x] 21-01-PLAN.md — Import migration: framer-motion → motion/react (727 files)
+- [x] 21-02-PLAN.md — Animation constants expansion + useMotionSafe hook
+- [x] 21-03-PLAN.md — Button & IconButton motion system
+- [x] 21-04-PLAN.md — Sidebar & navigation layoutId indicators
+- [x] 21-05-PLAN.md — Modals, dialogs & overlay animations
+- [x] 21-06-PLAN.md — Dropdowns & notification badge animations
+- [x] 21-07-PLAN.md — Chat message entrance animations
+- [x] 21-08-PLAN.md — Page transitions & toast enhancements
+- [x] 21-09-PLAN.md — Mobile haptics & Reanimated upgrades
+- [x] 21-10-PLAN.md — Hardcoded value cleanup & final validation
 
 ---
 
