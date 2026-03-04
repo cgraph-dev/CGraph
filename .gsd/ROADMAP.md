@@ -1106,4 +1106,25 @@ Plans:
 
 ---
 
-_Roadmap: 21 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-04_
+### Phase 22: Modern UI Overhaul — Discord/Instagram/Messenger Quality
+
+**Goal:** Upgrade web and mobile UI to match the complexity and polish of Discord, Instagram, and Meta Messenger — with message grouping, floating action bars, swipe gestures, command palette, server icon bar, forum cards, stories row, user card popovers, responsive layouts, skeleton loading, and micro-interactions across both platforms.
+
+**Depends on:** Phases 20 (Liquid Glass UI), 21 (UI Interactions & Motion) **Plans:** 10 plans
+
+Plans:
+
+- [ ] 22-01-PLAN.md — Web design tokens + enhanced UI primitives (Avatar, Skeleton, ContextMenu, ScrollArea)
+- [ ] 22-02-PLAN.md — Mobile design tokens + mobile UI primitives parity
+- [ ] 22-03-PLAN.md — Web chat message overhaul (Discord-style grouping, action bars, reactions, embeds, threads)
+- [ ] 22-04-PLAN.md — Mobile chat overhaul (Messenger-style bubbles, swipe-to-reply, long-press actions, reactions)
+- [ ] 22-05-PLAN.md — Conversation list & chat info panel (stories row, online now, member list, shared media grid)
+- [ ] 22-06-PLAN.md — Profile & social surfaces (Instagram-style profiles, user card popovers, status composer)
+- [ ] 22-07-PLAN.md — Groups & channels UI (Discord server icon bar, channel categories, voice user indicators)
+- [ ] 22-08-PLAN.md — Forums UI overhaul (thread cards, grid/list views, voting, rich post composer, polls)
+- [ ] 22-09-PLAN.md — Navigation, search & cross-cutting (command palette, search overlay, notifications, call overlay, explore)
+- [ ] 22-10-PLAN.md — Polish pass (skeleton loading compositions, empty states, micro-interactions, responsive layout, mobile tab bar)
+
+---
+
+_Roadmap: 22 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-05_
