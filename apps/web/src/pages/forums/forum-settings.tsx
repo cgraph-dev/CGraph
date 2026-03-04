@@ -56,13 +56,13 @@ export default function ForumSettings() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-dark-900">
+    <div className="flex-1 overflow-y-auto bg-[rgb(30,32,40)]">
       <div className="mx-auto max-w-3xl px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center gap-4">
           <Link
             to={`/forums/${forumSlug}`}
-            className="rounded-lg p-2 transition-colors hover:bg-dark-700"
+            className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
           </Link>

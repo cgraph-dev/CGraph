@@ -60,7 +60,7 @@ export function CategoriesPanel({
             value={newCategoryName}
             onChange={(e) => onNewCategoryNameChange(e.target.value)}
             placeholder="New category name..."
-            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
+            className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white"
             onKeyDown={(e) => e.key === 'Enter' && onAddCategory()}
           />
           <motion.button
@@ -86,7 +86,7 @@ export function CategoriesPanel({
                 key={category.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
+                className="group flex items-center gap-3 rounded-lg bg-white/[0.06] p-3"
               >
                 <div className="cursor-move text-gray-500">
                   <EllipsisHorizontalIcon className="h-5 w-5" />
@@ -101,7 +101,7 @@ export function CategoriesPanel({
                     }}
                     onBlur={() => onEditCategory(null)}
                     onKeyDown={(e) => e.key === 'Enter' && onEditCategory(null)}
-                    className="flex-1 rounded border border-dark-500 bg-dark-600 px-2 py-1 text-white"
+                    className="flex-1 rounded border border-dark-500 bg-white/[0.08] px-2 py-1 text-white"
                     autoFocus
                   />
                 ) : (

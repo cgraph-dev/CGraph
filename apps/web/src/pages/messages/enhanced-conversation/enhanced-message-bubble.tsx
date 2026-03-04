@@ -115,7 +115,7 @@ export function EnhancedMessageBubble({
             {showAvatar && (
               <motion.button
                 onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
-                className="h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-dark-600 ring-2 ring-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-white/[0.08] ring-2 ring-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
                 transition={springs.snappy}
@@ -155,7 +155,7 @@ export function EnhancedMessageBubble({
                 >
                   <motion.button
                     onClick={onReply}
-                    className="rounded-full border border-white/10 bg-dark-700/80 p-2 text-gray-400 backdrop-blur-sm hover:text-white"
+                    className="rounded-full border border-white/10 bg-white/[0.08] p-2 text-gray-400 backdrop-blur-sm hover:text-white"
                     whileHover={{ scale: 1.1, rotate: -15 }}
                     whileTap={{ scale: 0.9 }}
                     title="Reply"
@@ -172,7 +172,7 @@ export function EnhancedMessageBubble({
 
                   <motion.button
                     onClick={() => setShowReactionPicker(!showReactionPicker)}
-                    className="rounded-full border border-white/10 bg-dark-700/80 p-2 text-gray-400 backdrop-blur-sm hover:text-primary-400"
+                    className="rounded-full border border-white/10 bg-white/[0.08] p-2 text-gray-400 backdrop-blur-sm hover:text-primary-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="React"

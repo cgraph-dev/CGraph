@@ -28,7 +28,7 @@ export function MessageInput({
     <>
       {/* Reply preview */}
       {replyTo && (
-        <div className="flex items-center justify-between border-t border-dark-700 bg-dark-800 px-4 py-2">
+        <div className="flex items-center justify-between border-t border-white/[0.06] bg-white/[0.04] px-4 py-2">
           <div className="flex items-center gap-2">
             <div className="h-8 w-1 rounded-full bg-primary-500" />
             <div>
@@ -40,7 +40,7 @@ export function MessageInput({
           </div>
           <button
             onClick={onCancelReply}
-            className="rounded p-1 text-gray-400 hover:bg-dark-700 hover:text-white"
+            className="rounded p-1 text-gray-400 hover:bg-white/[0.08] hover:text-white"
           >
             <CloseIcon />
           </button>
@@ -48,8 +48,8 @@ export function MessageInput({
       )}
 
       {/* Input */}
-      <div className="border-t border-dark-700 p-4">
-        <div className="flex items-end gap-2 rounded-lg bg-dark-700 px-4 py-2">
+      <div className="border-t border-white/[0.06] p-4">
+        <div className="flex items-end gap-2 rounded-lg bg-white/[0.06] px-4 py-2">
           <button className="p-1 text-gray-400 transition-colors hover:text-white">
             <PaperClipIcon className="h-5 w-5" />
           </button>
@@ -60,7 +60,7 @@ export function MessageInput({
             onKeyDown={onKeyDown}
             placeholder={`Message #${channelName}`}
             rows={1}
-            className="max-h-32 flex-1 resize-none bg-transparent text-white placeholder-gray-500 focus:outline-none"
+            className="max-h-32 flex-1 resize-none bg-transparent text-white placeholder-white/30 focus:outline-none"
             style={{ minHeight: '24px' }}
           />
 

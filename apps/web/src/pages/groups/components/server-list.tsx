@@ -47,7 +47,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
     }
   };
   return (
-    <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 py-3 backdrop-blur-xl">
+    <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] py-3 backdrop-blur-xl">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
@@ -61,7 +61,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 group-hover:rounded-xl group-hover:bg-primary-600"
+            className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] transition-all duration-200 group-hover:rounded-xl group-hover:bg-primary-600"
             style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
           >
             <ChatBubbleLeftRightIcon className="h-6 w-6 text-white" />
@@ -96,7 +96,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
         whileHover={{ scale: 1.05, rotate: 90 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Create new server"
-        className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-green-600 hover:to-green-700"
+        className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-green-600 hover:to-green-700"
         style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
       >
         <PlusIcon className="h-6 w-6 text-green-400 transition-colors group-hover:text-white" />
@@ -115,7 +115,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Join server with invite"
-        className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-blue-600 hover:to-blue-700"
+        className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-blue-600 hover:to-blue-700"
         style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
       >
         <TicketIcon className="h-6 w-6 text-blue-400 transition-colors group-hover:text-white" />
@@ -134,7 +134,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           to="/groups/explore"
           onClick={() => HapticFeedback.medium()}
           aria-label="Explore public groups"
-          className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-emerald-600 hover:to-teal-700"
+          className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-emerald-600 hover:to-teal-700"
           style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
         >
           <GlobeAltIcon className="h-6 w-6 text-emerald-400 transition-colors group-hover:text-white" />
@@ -190,14 +190,14 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
                   placeholder="https://cgraph.app/invite/abc123 or abc123"
-                  className="mb-4 w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                  className="mb-4 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && handleJoinByInvite()}
                 />
 
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowJoinModal(false)}
-                    className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
+                    className="flex-1 rounded-xl bg-white/[0.06] py-3 text-gray-300 transition-colors hover:bg-white/[0.10]"
                   >
                     Cancel
                   </button>

@@ -28,7 +28,7 @@ export function ConfirmStep({ formData, subscriptionTier = 'free' }: ConfirmStep
         Confirm Your Forum
       </h2>
 
-      <div className="overflow-hidden rounded-lg bg-dark-700">
+      <div className="overflow-hidden rounded-lg bg-white/[0.06]">
         {/* Preview Banner */}
         <div
           className="h-32"
@@ -43,7 +43,7 @@ export function ConfirmStep({ formData, subscriptionTier = 'free' }: ConfirmStep
         <div className="-mt-8 p-6">
           <div className="flex items-start gap-4">
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-dark-700"
+              className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white/[0.06]"
               style={{ backgroundColor: formData.primaryColor }}
             >
               {formData.iconUrl ? (
@@ -65,7 +65,7 @@ export function ConfirmStep({ formData, subscriptionTier = 'free' }: ConfirmStep
               {formData.description && <p className="mt-2 text-gray-300">{formData.description}</p>}
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded bg-dark-600 px-2 py-1 text-xs text-gray-300">
+                <span className="rounded bg-white/[0.08] px-2 py-1 text-xs text-gray-300">
                   {categoryLabel}
                 </span>
                 {formData.isPublic ? (

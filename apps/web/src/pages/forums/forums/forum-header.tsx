@@ -29,7 +29,7 @@ export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: F
       </div>
 
       {/* Forum Info - Glassmorphic */}
-      <div className="border-b border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
+      <div className="border-b border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-4 py-4">
@@ -84,7 +84,7 @@ export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: F
                       }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="rounded-full bg-dark-700/80 p-2 text-gray-400 backdrop-blur-sm transition-colors hover:bg-dark-600 hover:text-white"
+                      className="rounded-full bg-white/[0.08] p-2 text-gray-400 backdrop-blur-sm transition-colors hover:bg-white/[0.10] hover:text-white"
                       title="Forum Settings"
                     >
                       <Cog6ToothIcon className="h-5 w-5" />
@@ -100,7 +100,7 @@ export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: F
                     whileTap={{ scale: 0.95 }}
                     className={`rounded-full px-4 py-2 font-medium transition-all ${
                       forum.isSubscribed
-                        ? 'bg-dark-700/80 text-white backdrop-blur-sm hover:bg-dark-600'
+                        ? 'bg-white/[0.08] text-white backdrop-blur-sm hover:bg-white/[0.10]'
                         : 'bg-gradient-to-r from-primary-600 to-purple-600 text-white hover:from-primary-500 hover:to-purple-500'
                     }`}
                     style={{

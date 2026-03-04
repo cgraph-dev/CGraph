@@ -77,7 +77,7 @@ export const GeneralPanel = memo(function GeneralPanel({
               type="text"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
-              className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div>
@@ -86,7 +86,7 @@ export const GeneralPanel = memo(function GeneralPanel({
               value={description}
               onChange={(e) => onDescriptionChange(e.target.value)}
               rows={4}
-              className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="Describe your forum..."
             />
           </div>
@@ -96,7 +96,7 @@ export const GeneralPanel = memo(function GeneralPanel({
       <GlassCard className="p-6">
         <h3 className="mb-4 text-lg font-semibold text-white">Privacy & Access</h3>
         <div className="space-y-4">
-          <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700/50 p-4 transition-colors hover:bg-dark-700">
+          <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-white/[0.06] p-4 transition-colors hover:bg-white/[0.08]">
             <input
               type="radio"
               checked={isPublic}
@@ -111,7 +111,7 @@ export const GeneralPanel = memo(function GeneralPanel({
               <p className="mt-1 text-sm text-gray-400">Anyone can view and join</p>
             </div>
           </label>
-          <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700/50 p-4 transition-colors hover:bg-dark-700">
+          <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-white/[0.06] p-4 transition-colors hover:bg-white/[0.08]">
             <input
               type="radio"
               checked={!isPublic}
@@ -134,7 +134,7 @@ export const GeneralPanel = memo(function GeneralPanel({
               type="checkbox"
               checked={isNsfw}
               onChange={(e) => onNsfwChange(e.target.checked)}
-              className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500"
+              className="h-5 w-5 rounded border-white/[0.08] bg-white/[0.06] text-primary-500"
             />
             <div>
               <span className="font-medium text-white">NSFW Content (18+)</span>
@@ -146,7 +146,7 @@ export const GeneralPanel = memo(function GeneralPanel({
               type="checkbox"
               checked={requireApproval}
               onChange={(e) => onRequireApprovalChange(e.target.checked)}
-              className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500"
+              className="h-5 w-5 rounded border-white/[0.08] bg-white/[0.06] text-primary-500"
             />
             <div>
               <span className="font-medium text-white">Require Post Approval</span>
@@ -181,7 +181,7 @@ export const GeneralPanel = memo(function GeneralPanel({
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mt-4 rounded-lg bg-dark-800 p-4"
+              className="mt-4 rounded-lg bg-white/[0.04] p-4"
             >
               <p className="mb-3 text-sm text-gray-300">
                 Type <span className="font-mono text-red-400">{forumName}</span> to confirm:
@@ -190,7 +190,7 @@ export const GeneralPanel = memo(function GeneralPanel({
                 type="text"
                 value={deleteConfirmText}
                 onChange={(e) => onDeleteConfirmTextChange(e.target.value)}
-                className="mb-3 w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white"
+                className="mb-3 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white"
               />
               <div className="flex gap-3">
                 <button
@@ -198,7 +198,7 @@ export const GeneralPanel = memo(function GeneralPanel({
                     onShowDeleteConfirm(false);
                     onDeleteConfirmTextChange('');
                   }}
-                  className="rounded-lg bg-dark-600 px-4 py-2 text-white hover:bg-dark-500"
+                  className="rounded-lg bg-white/[0.08] px-4 py-2 text-white hover:bg-white/[0.12]"
                 >
                   Cancel
                 </button>

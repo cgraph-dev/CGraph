@@ -52,7 +52,7 @@ export default function Conversation() {
   // ── Loading state ────────────────────────────────────────────────────
   if (!ctx.conversation) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-dark-900">
+      <div className="flex flex-1 items-center justify-center bg-[rgb(30,32,40)]">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
     );

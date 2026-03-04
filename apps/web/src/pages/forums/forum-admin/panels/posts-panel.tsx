@@ -52,7 +52,7 @@ export function PostsPanel({ flairs, onAddFlair, onUpdateFlair, onRemoveFlair }:
           {flairs.map((flair) => (
             <motion.div
               key={flair.id}
-              className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
+              className="group flex items-center gap-3 rounded-lg bg-white/[0.06] p-3"
             >
               <div
                 className="rounded-full px-3 py-1 text-sm font-medium text-white"

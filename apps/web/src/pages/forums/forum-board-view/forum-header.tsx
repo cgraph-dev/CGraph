@@ -93,10 +93,10 @@ export function ForumHeader({
               <div className="flex items-center gap-3">
                 {/* Voting */}
                 {user && (
-                  <div className="flex items-center gap-1 rounded-lg bg-dark-700 p-1">
+                  <div className="flex items-center gap-1 rounded-lg bg-white/[0.06] p-1">
                     <button
                       onClick={() => onVote('up')}
-                      className="rounded p-2 transition-colors hover:bg-dark-600 hover:text-green-400"
+                      className="rounded p-2 transition-colors hover:bg-white/[0.10] hover:text-green-400"
                     >
                       <ArrowUpIcon className="h-5 w-5" />
                     </button>
@@ -105,7 +105,7 @@ export function ForumHeader({
                     </span>
                     <button
                       onClick={() => onVote('down')}
-                      className="rounded p-2 transition-colors hover:bg-dark-600 hover:text-red-400"
+                      className="rounded p-2 transition-colors hover:bg-white/[0.10] hover:text-red-400"
                     >
                       <ArrowDownIcon className="h-5 w-5" />
                     </button>
@@ -117,7 +117,7 @@ export function ForumHeader({
                   onClick={onSubscribe}
                   className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
                     isSubscribed
-                      ? 'bg-dark-700 text-gray-300 hover:bg-dark-600'
+                      ? 'bg-white/[0.06] text-gray-300 hover:bg-white/[0.10]'
                       : 'bg-primary-600 text-white hover:bg-primary-700'
                   }`}
                 >
@@ -129,7 +129,7 @@ export function ForumHeader({
                 {isOwner && (
                   <Link
                     to={`/forums/${forum.slug}/settings`}
-                    className="rounded-lg bg-dark-700 p-2 transition-colors hover:bg-dark-600"
+                    className="rounded-lg bg-white/[0.06] p-2 transition-colors hover:bg-white/[0.10]"
                   >
                     <Cog6ToothIcon className="h-5 w-5" />
                   </Link>
@@ -141,7 +141,7 @@ export function ForumHeader({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="border-b border-dark-700 bg-dark-800">
+      <div className="border-b border-white/[0.06] bg-white/[0.04]">
         <div className="mx-auto max-w-6xl px-4">
           <nav className="flex gap-1">
             {tabs.map((tab) => (

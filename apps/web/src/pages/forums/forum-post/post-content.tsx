@@ -40,7 +40,7 @@ export function PostContent({ post, currentUserId, onShowEditHistory }: PostCont
       {/* Meta row */}
       <div className="mb-3 flex items-center gap-2 text-sm text-gray-400">
         <Link to={`/forums/${forum.slug}`} className="flex items-center gap-2 hover:underline">
-          <div className="h-6 w-6 overflow-hidden rounded-full bg-dark-600">
+          <div className="h-6 w-6 overflow-hidden rounded-full bg-white/[0.08]">
             {forum.iconUrl ? (
               <img src={forum.iconUrl} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -154,7 +154,7 @@ export function PostContent({ post, currentUserId, onShowEditHistory }: PostCont
             {post.attachments.map((attachment) => (
               <div
                 key={attachment.id}
-                className="flex items-center gap-3 rounded-lg border border-dark-600 bg-dark-700 p-3 transition-colors hover:border-primary-500/50"
+                className="flex items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.06] p-3 transition-colors hover:border-primary-500/50"
               >
                 {attachment.fileType.startsWith('image/') && attachment.thumbnailUrl ? (
                   <img
@@ -163,7 +163,7 @@ export function PostContent({ post, currentUserId, onShowEditHistory }: PostCont
                     className="h-12 w-12 rounded object-cover"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded bg-dark-600">
+                  <div className="flex h-12 w-12 items-center justify-center rounded bg-white/[0.08]">
                     <span className="text-xs text-gray-400">
                       {attachment.fileType.split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
                     </span>
@@ -196,7 +196,7 @@ export function PostContent({ post, currentUserId, onShowEditHistory }: PostCont
 
       {/* Thread Rating */}
       {(post.rating !== undefined || post.ratingCount !== undefined) && (
-        <div className="mb-4 border-b border-dark-700 pb-4">
+        <div className="mb-4 border-b border-white/[0.06] pb-4">
           <ThreadRating
             threadId={post.id}
             rating={post.rating}

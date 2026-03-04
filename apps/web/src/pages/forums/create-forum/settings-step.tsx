@@ -42,7 +42,7 @@ function ToggleSetting({
   };
 
   return (
-    <div className="rounded-lg bg-dark-700 p-4">
+    <div className="rounded-lg bg-white/[0.06] p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {isActive && activeIcon ? activeIcon : icon}
@@ -55,7 +55,7 @@ function ToggleSetting({
           type="button"
           onClick={onToggle}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            isActive ? colorMap[activeColor] : 'bg-dark-600'
+            isActive ? colorMap[activeColor] : 'bg-white/[0.08]'
           }`}
         >
           <span

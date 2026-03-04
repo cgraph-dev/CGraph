@@ -15,13 +15,13 @@ interface PostTypeTabsProps {
  */
 export default function PostTypeTabs({ postType, setPostType }: PostTypeTabsProps) {
   return (
-    <div className="mb-6 flex gap-2 border-b border-dark-700 pb-4">
+    <div className="mb-6 flex gap-2 border-b border-white/[0.06] pb-4">
       <button
         onClick={() => setPostType('text')}
         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
           postType === 'text'
             ? 'bg-primary-600 text-white'
-            : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+            : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
         }`}
       >
         Text
@@ -31,7 +31,7 @@ export default function PostTypeTabs({ postType, setPostType }: PostTypeTabsProp
         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
           postType === 'image'
             ? 'bg-primary-600 text-white'
-            : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+            : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
         }`}
       >
         <PhotoIcon className="h-5 w-5" />
@@ -42,7 +42,7 @@ export default function PostTypeTabs({ postType, setPostType }: PostTypeTabsProp
         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
           postType === 'link'
             ? 'bg-primary-600 text-white'
-            : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+            : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
         }`}
       >
         <LinkIcon className="h-5 w-5" />
@@ -53,7 +53,7 @@ export default function PostTypeTabs({ postType, setPostType }: PostTypeTabsProp
         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
           postType === 'poll'
             ? 'bg-primary-600 text-white'
-            : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+            : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]'
         }`}
       >
         <ChartBarIcon className="h-5 w-5" />

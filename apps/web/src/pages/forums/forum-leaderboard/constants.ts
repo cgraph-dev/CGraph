@@ -55,7 +55,7 @@ export function getRankBadge(rank: number): RankBadgeConfig {
       emoji: '🥉',
       glow: '0 0 15px rgba(251, 146, 60, 0.4)',
     };
-  return { bg: 'bg-dark-600', text: 'text-gray-300', emoji: null, glow: 'none' };
+  return { bg: 'bg-white/[0.08]', text: 'text-gray-300', emoji: null, glow: 'none' };
 }
 
 /**

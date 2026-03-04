@@ -35,7 +35,7 @@ export function ConversationSidebar({
   onNewConversation,
 }: ConversationSidebarProps) {
   return (
-    <div className="relative flex h-full w-80 flex-col border-r border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
+    <div className="relative flex h-full w-80 flex-col border-r border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] backdrop-blur-xl">
       {/* Ambient glow effect */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
@@ -95,7 +95,7 @@ export function ConversationSidebar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             aria-label="Search conversations"
-            className="w-full rounded-xl border border-primary-500/30 bg-dark-800/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+            className="w-full rounded-xl border border-primary-500/30 bg-white/[0.04] py-2.5 pl-9 pr-4 text-sm text-white placeholder-white/30 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           />
         </motion.div>
       </div>

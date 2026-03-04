@@ -55,7 +55,7 @@ export function MessageInputArea({
 
         <StickerButton onClick={onToggleStickerPicker} isActive={showStickerPicker} />
 
-        <div className="flex-1 rounded-xl border border-white/10 bg-dark-700/50 backdrop-blur-sm">
+        <div className="flex-1 rounded-xl border border-white/10 bg-white/[0.06] backdrop-blur-sm">
           <textarea
             value={messageInput}
             onChange={(e) => onMessageChange(e.target.value)}
@@ -67,7 +67,7 @@ export function MessageInputArea({
             }}
             placeholder="Type a message..."
             rows={1}
-            className="w-full resize-none bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+            className="w-full resize-none bg-transparent px-4 py-3 text-white placeholder-white/30 focus:outline-none"
           />
         </div>
 

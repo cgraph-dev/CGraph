@@ -14,7 +14,7 @@ import { motion } from 'motion/react';
  */
 export function LoadingOverlay() {
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-dark-900/80 backdrop-blur-sm">
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[rgb(30,32,40)]/[0.80] backdrop-blur-sm">
       <div className="flex flex-col items-center gap-4">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
         <span className="text-sm text-gray-400">Loading servers...</span>

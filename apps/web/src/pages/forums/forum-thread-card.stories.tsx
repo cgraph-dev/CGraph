@@ -25,7 +25,7 @@ function MockForumThreadCard({
   lastActivity?: string;
 }) {
   return (
-    <div className="w-[500px] rounded-lg border border-dark-700 bg-dark-800 p-4 transition-colors hover:border-dark-600">
+    <div className="w-[500px] rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 transition-colors hover:border-white/[0.08]">
       <div className="flex items-start gap-3">
         {/* Avatar */}
         <div className="h-8 w-8 rounded-full bg-primary-600 flex-shrink-0" />
@@ -51,7 +51,7 @@ function MockForumThreadCard({
           {/* Tags */}
           <div className="mt-1 flex gap-1.5">
             {tags.map((tag) => (
-              <span key={tag} className="rounded bg-dark-600 px-2 py-0.5 text-[10px] text-gray-400">
+              <span key={tag} className="rounded bg-white/[0.08] px-2 py-0.5 text-[10px] text-gray-400">
                 {tag}
               </span>
             ))}

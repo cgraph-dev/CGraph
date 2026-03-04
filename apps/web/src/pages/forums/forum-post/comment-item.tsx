@@ -48,7 +48,7 @@ export function CommentItem({
         {depth > 0 && (
           <div className="flex flex-col items-center">
             <div
-              className="w-px flex-1 cursor-pointer bg-dark-600 hover:bg-primary-500"
+              className="w-px flex-1 cursor-pointer bg-white/[0.08] hover:bg-primary-500"
               onClick={() => setIsCollapsed(!isCollapsed)}
             />
           </div>
@@ -61,7 +61,7 @@ export function CommentItem({
               to={comment.author.username ? `/u/${comment.author.username}` : '#'}
               className="flex items-center gap-2"
             >
-              <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-dark-600">
+              <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-white/[0.08]">
                 {comment.author.avatarUrl ? (
                   <ThemedAvatar
                     src={comment.author.avatarUrl}
@@ -104,7 +104,7 @@ export function CommentItem({
               <div className="mt-2 flex items-center gap-1 text-xs text-gray-400">
                 <button
                   onClick={() => onVote(comment.id, 1, comment.myVote)}
-                  className={`rounded p-1 hover:bg-dark-700 ${
+                  className={`rounded p-1 hover:bg-white/[0.08] ${
                     comment.myVote === 1 ? 'text-orange-500' : 'hover:text-orange-500'
                   }`}
                 >
@@ -127,7 +127,7 @@ export function CommentItem({
                 </span>
                 <button
                   onClick={() => onVote(comment.id, -1, comment.myVote)}
-                  className={`rounded p-1 hover:bg-dark-700 ${
+                  className={`rounded p-1 hover:bg-white/[0.08] ${
                     comment.myVote === -1 ? 'text-blue-500' : 'hover:text-blue-500'
                   }`}
                 >
@@ -139,11 +139,11 @@ export function CommentItem({
                 </button>
                 <button
                   onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                  className="rounded px-2 py-1 transition-colors hover:bg-dark-700"
+                  className="rounded px-2 py-1 transition-colors hover:bg-white/[0.08]"
                 >
                   Reply
                 </button>
-                <button className="rounded px-2 py-1 transition-colors hover:bg-dark-700">
+                <button className="rounded px-2 py-1 transition-colors hover:bg-white/[0.08]">
                   Share
                 </button>
               </div>
@@ -156,7 +156,7 @@ export function CommentItem({
                     onChange={(e) => setReplyContent(e.target.value)}
                     placeholder="Write a reply..."
                     rows={3}
-                    className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                   <div className="mt-2 flex justify-end gap-2">
                     <button

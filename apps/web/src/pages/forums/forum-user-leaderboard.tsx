@@ -46,7 +46,7 @@ function PeriodTabs({
   const periods: LeaderboardPeriod[] = ['all_time', 'monthly', 'weekly', 'daily'];
 
   return (
-    <div className="flex gap-1 rounded-lg bg-dark-800 p-1">
+    <div className="flex gap-1 rounded-lg bg-white/[0.04] p-1">
       {periods.map((p) => (
         <button
           key={p}
@@ -54,7 +54,7 @@ function PeriodTabs({
           className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
             current === p
               ? 'bg-primary-600 text-white shadow-md'
-              : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
+              : 'text-gray-400 hover:bg-white/[0.08] hover:text-gray-200'
           }`}
         >
           {LEADERBOARD_PERIOD_LABELS[p]}
@@ -97,7 +97,7 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex items-center gap-3 rounded-lg bg-dark-800/60 px-4 py-3 transition-colors hover:bg-dark-700/60"
+      className="flex items-center gap-3 rounded-lg bg-white/[0.04]/60 px-4 py-3 transition-colors hover:bg-white/[0.08]/60"
     >
       {/* Position */}
       <span className="w-8 text-center text-sm font-bold text-gray-400">
@@ -112,7 +112,7 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
           className="h-9 w-9 rounded-full object-cover"
         />
       ) : (
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-dark-600">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.08]">
           <span className="text-sm font-bold text-gray-400">
             {entry.user.username?.charAt(0)?.toUpperCase() ?? '?'}
           </span>
@@ -202,7 +202,7 @@ function MyRankCard() {
               {progress.nextRank.name}
             </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-dark-600">
+          <div className="h-2 overflow-hidden rounded-full bg-white/[0.08]">
             <motion.div
               className="h-full rounded-full"
               style={{
@@ -230,7 +230,7 @@ function RanksSidebar({ ranks }: { ranks: ForumRank[] }) {
   if (ranks.length === 0) return null;
 
   return (
-    <div className="rounded-xl bg-dark-800/60 p-4">
+    <div className="rounded-xl bg-white/[0.04]/60 p-4">
       <h3 className="mb-3 text-sm font-semibold text-gray-300">Rank Tiers</h3>
       <div className="space-y-2">
         {ranks.map((r) => (
@@ -313,7 +313,7 @@ export default function ForumUserLeaderboard() {
               {isLoading && entries.length === 0 ? (
                 <div className="space-y-2">
                   {[...Array(8)].map((_, i) => (
-                    <div key={i} className="h-14 animate-pulse rounded-lg bg-dark-700/50" />
+                    <div key={i} className="h-14 animate-pulse rounded-lg bg-white/[0.06]" />
                   ))}
                 </div>
               ) : (

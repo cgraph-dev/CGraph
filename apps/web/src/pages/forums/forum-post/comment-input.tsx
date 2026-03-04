@@ -40,7 +40,7 @@ export function CommentInput({
 }: CommentInputProps) {
   if (isLocked) {
     return (
-      <div className="mt-4 rounded-lg border border-yellow-600/50 bg-dark-800 p-4">
+      <div className="mt-4 rounded-lg border border-yellow-600/50 bg-white/[0.04] p-4">
         <div className="flex items-center gap-3 text-yellow-400">
           <LockClosedIcon className="h-5 w-5" />
           <p className="text-sm">This post is locked. New comments are disabled.</p>
@@ -50,7 +50,7 @@ export function CommentInput({
   }
 
   return (
-    <div className="mt-4 rounded-lg border border-dark-700 bg-dark-800 p-4">
+    <div className="mt-4 rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
       <p className="mb-2 text-sm text-gray-400">
         Comment as <span className="text-primary-400">{username}</span>
       </p>
@@ -59,7 +59,7 @@ export function CommentInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder="What are your thoughts?"
         rows={4}
-        className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
       <div className="mt-2 flex justify-end">
         <button

@@ -53,7 +53,7 @@ export const ModQueuePanel = memo(function ModQueuePanel({
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               queueFilter === filter
                 ? 'bg-primary-500 text-white'
-                : 'bg-dark-700 text-gray-400 hover:text-white'
+                : 'bg-white/[0.06] text-gray-400 hover:text-white'
             }`}
           >
             {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -75,7 +75,7 @@ export const ModQueuePanel = memo(function ModQueuePanel({
                 key={item.id}
                 className={`rounded-lg border p-4 ${
                   item.status === 'pending'
-                    ? 'border-dark-600 bg-dark-700/50'
+                    ? 'border-white/[0.08] bg-white/[0.06]'
                     : item.status === 'approved'
                       ? 'border-green-500/30 bg-green-500/10'
                       : 'border-red-500/30 bg-red-500/10'

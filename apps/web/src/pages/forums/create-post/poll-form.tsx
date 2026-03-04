@@ -37,7 +37,7 @@ export default function PollForm({
           placeholder="Poll Question"
           value={pollQuestion}
           onChange={(e) => setPollQuestion(e.target.value)}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
           required
         />
       </div>
@@ -56,7 +56,7 @@ export default function PollForm({
                 newOptions[index] = e.target.value;
                 setPollOptions(newOptions);
               }}
-              className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
             />
             {pollOptions.length > 2 && (
@@ -73,20 +73,20 @@ export default function PollForm({
         <button
           type="button"
           onClick={() => setPollOptions([...pollOptions, ''])}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-gray-300 transition-colors hover:bg-dark-600"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-gray-300 transition-colors hover:bg-white/[0.10]"
         >
           + Add Option
         </button>
       </div>
 
       {/* Poll Settings */}
-      <div className="space-y-3 rounded-lg border border-dark-700 bg-dark-800/50 p-4">
+      <div className="space-y-3 rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
             checked={pollAllowMultiple}
             onChange={(e) => setPollAllowMultiple(e.target.checked)}
-            className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+            className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
           />
           <span className="text-sm text-gray-300">Allow multiple selections</span>
         </label>
@@ -95,7 +95,7 @@ export default function PollForm({
             type="checkbox"
             checked={pollPublic}
             onChange={(e) => setPollPublic(e.target.checked)}
-            className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+            className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
           />
           <span className="text-sm text-gray-300">Public poll (show who voted)</span>
         </label>

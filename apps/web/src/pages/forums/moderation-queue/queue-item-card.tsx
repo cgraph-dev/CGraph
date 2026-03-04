@@ -53,7 +53,7 @@ export function QueueItemCard({
         'rounded-xl border transition-all',
         isSelected
           ? 'border-primary-500 bg-primary-500/10'
-          : 'border-dark-600 bg-dark-800 hover:border-dark-500'
+          : 'border-white/[0.08] bg-white/[0.04] hover:border-dark-500'
       )}
     >
       {/* Header */}
@@ -72,7 +72,7 @@ export function QueueItemCard({
         </button>
 
         {/* Icon */}
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-dark-700 text-gray-400">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.06] text-gray-400">
           {ITEM_TYPE_ICONS[item.itemType]}
         </div>
 
@@ -106,7 +106,7 @@ export function QueueItemCard({
 
         {/* Reason Badge */}
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-dark-700 px-2 py-1 text-xs text-gray-400">
+          <span className="rounded-lg bg-white/[0.06] px-2 py-1 text-xs text-gray-400">
             {REASON_LABELS[item.reason]}
           </span>
           {item.reportCount > 0 && (
@@ -120,7 +120,7 @@ export function QueueItemCard({
         {/* Expand Button */}
         <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+          className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
           animate={{ rotate: isExpanded ? 180 : 0 }}
         >
           <ChevronDownIcon className="h-4 w-4" />
@@ -136,9 +136,9 @@ export function QueueItemCard({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-dark-600 p-4">
+            <div className="border-t border-white/[0.08] p-4">
               {/* Full Content Preview */}
-              <div className="mb-4 rounded-lg bg-dark-900 p-4">
+              <div className="mb-4 rounded-lg bg-[rgb(30,32,40)] p-4">
                 <p className="text-sm text-gray-300">{item.content}</p>
               </div>
 
@@ -146,7 +146,7 @@ export function QueueItemCard({
               <div className="flex items-center justify-between">
                 <button
                   onClick={handleViewOriginal}
-                  className="flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-dark-600 hover:text-white"
+                  className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-white/[0.10] hover:text-white"
                 >
                   <EyeIcon className="h-4 w-4" />
                   View Original

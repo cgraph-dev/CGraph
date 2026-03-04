@@ -74,25 +74,25 @@ export function PostActionBar({
     currentForum?.moderators?.some((m: { id: string }) => m.id === user?.id);
 
   return (
-    <div className="flex items-center gap-4 border-t border-dark-700 pt-4 text-gray-400">
+    <div className="flex items-center gap-4 border-t border-white/[0.06] pt-4 text-gray-400">
       <span className="flex items-center gap-1.5 text-sm">
         <ChatBubbleLeftIcon className="h-5 w-5" />
         <span>{commentCount} Comments</span>
       </span>
 
-      <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
+      <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-white/[0.08]">
         <ShareIcon className="h-5 w-5" />
         <span>Share</span>
       </button>
 
-      <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
+      <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-white/[0.08]">
         <BookmarkIcon className="h-5 w-5" />
         <span>Save</span>
       </button>
 
       <button
         onClick={onToggleSubscription}
-        className={`flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700 ${
+        className={`flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-white/[0.08] ${
           isSubscribed ? 'text-primary-400' : ''
         }`}
       >
@@ -103,7 +103,7 @@ export function PostActionBar({
       {/* More Actions Dropdown */}
       <Dropdown
         trigger={
-          <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
+          <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-white/[0.08]">
             <EllipsisHorizontalIcon className="h-5 w-5" />
           </button>
         }

@@ -57,7 +57,7 @@ export function ForumLeaderboardCard({
 
       <div className="relative z-10 flex">
         {/* Voting Column - Enhanced */}
-        <div className="relative flex w-16 flex-col items-center justify-center gap-1 bg-dark-800/50 p-2 backdrop-blur-sm">
+        <div className="relative flex w-16 flex-col items-center justify-center gap-1 bg-white/[0.04] p-2 backdrop-blur-sm">
           <motion.button
             onClick={() => handleVote(1)}
             disabled={!isAuthenticated}

@@ -94,7 +94,7 @@ export default function ForumLeaderboard() {
       {/* Main Leaderboard */}
       <div className="relative z-10 flex-1 overflow-y-auto">
         {/* Header - Glassmorphic */}
-        <div className="sticky top-0 z-10 border-b border-yellow-500/20 bg-dark-900/80 px-4 py-3 backdrop-blur-xl">
+        <div className="sticky top-0 z-10 border-b border-yellow-500/20 bg-[rgb(30,32,40)]/[0.80] px-4 py-3 backdrop-blur-xl">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-transparent" />
 
           <div className="relative z-10 flex items-center justify-between">
@@ -139,7 +139,7 @@ export default function ForumLeaderboard() {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 rounded-lg bg-dark-700/80 px-4 py-2 text-white backdrop-blur-sm transition-all hover:bg-dark-600"
+                className="flex items-center gap-2 rounded-lg bg-white/[0.08] px-4 py-2 text-white backdrop-blur-sm transition-all hover:bg-white/[0.10]"
                 style={{
                   boxShadow: '0 0 15px rgba(16, 185, 129, 0.1)',
                 }}
@@ -199,7 +199,7 @@ export default function ForumLeaderboard() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-24 animate-pulse rounded-lg bg-dark-700/50 backdrop-blur-sm"
+                    className="h-24 animate-pulse rounded-lg bg-white/[0.06] backdrop-blur-sm"
                   />
                 ))}
               </div>
@@ -233,7 +233,7 @@ export default function ForumLeaderboard() {
                       disabled={isLoadingLeaderboard}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full rounded-lg bg-dark-700/80 py-3 font-medium text-gray-300 backdrop-blur-sm transition-all hover:bg-dark-600"
+                      className="w-full rounded-lg bg-white/[0.08] py-3 font-medium text-gray-300 backdrop-blur-sm transition-all hover:bg-white/[0.10]"
                       style={{
                         boxShadow: '0 0 15px rgba(16, 185, 129, 0.1)',
                       }}

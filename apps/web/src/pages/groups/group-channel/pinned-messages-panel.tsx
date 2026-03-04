@@ -92,14 +92,14 @@ export function PinnedMessagesPanel({
       animate={{ width: 320, opacity: 1 }}
       exit={{ width: 0, opacity: 0 }}
       transition={{ ...springs.stiff, mass: 0.8 }}
-      className="flex flex-col overflow-hidden border-l border-dark-700 bg-dark-800"
+      className="flex flex-col overflow-hidden border-l border-white/[0.06] bg-white/[0.04]"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-dark-700 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
         <h3 className="text-sm font-semibold text-white">Pinned Messages</h3>
         <button
           onClick={onClose}
-          className="rounded p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+          className="rounded p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
         >
           <XMarkIcon className="h-4 w-4" />
         </button>
@@ -135,7 +135,7 @@ export function PinnedMessagesPanel({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={springs.stiff}
-              className="hover:bg-dark-750 group border-b border-dark-700 px-4 py-3"
+              className="hover:bg-white/[0.05] group border-b border-white/[0.06] px-4 py-3"
             >
               {pin.message ? (
                 <>

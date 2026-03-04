@@ -108,7 +108,7 @@ export default function ForumAdmin() {
   // Loading state
   if (!forum) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-dark-900">
+      <div className="flex flex-1 items-center justify-center bg-[rgb(30,32,40)]">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
     );
@@ -117,7 +117,7 @@ export default function ForumAdmin() {
   // Access denied
   if (!isModerator) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-dark-900">
+      <div className="flex flex-1 items-center justify-center bg-[rgb(30,32,40)]">
         <GlassCard className="p-8 text-center">
           <ShieldCheckIcon className="mx-auto mb-4 h-16 w-16 text-red-400" />
           <h2 className="mb-2 text-xl font-bold text-white">Access Denied</h2>
@@ -128,7 +128,7 @@ export default function ForumAdmin() {
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-dark-900">
+    <div className="flex flex-1 overflow-hidden bg-[rgb(30,32,40)]">
       <Sidebar
         forumSlug={forumSlug || ''}
         forumName={forum.name}

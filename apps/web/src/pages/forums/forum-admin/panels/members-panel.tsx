@@ -60,13 +60,13 @@ export function MembersPanel({
               value={memberSearch}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search members..."
-              className="w-full rounded-lg border border-dark-600 bg-dark-700 py-2.5 pl-10 pr-4 text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-2.5 pl-10 pr-4 text-white"
             />
           </div>
           <select
             value={memberFilter}
             onChange={(e) => onFilterChange(e.target.value)}
-            className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
+            className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white"
           >
             <option value="all">All Roles</option>
             {MEMBER_ROLES.map((role) => (
@@ -81,7 +81,7 @@ export function MembersPanel({
           {filteredMembers.map((member) => (
             <motion.div
               key={member.id}
-              className="flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
+              className="flex items-center gap-3 rounded-lg bg-white/[0.06] p-3"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-purple-500">
                 <span className="font-bold text-white">{member.displayName[0]}</span>
@@ -104,7 +104,7 @@ export function MembersPanel({
               <select
                 value={member.role}
                 onChange={(e) => onUpdateMemberRole(member.id, e.target.value)}
-                className={`rounded-lg border border-dark-500 bg-dark-600 px-3 py-1.5 text-sm ${
+                className={`rounded-lg border border-dark-500 bg-white/[0.08] px-3 py-1.5 text-sm ${
                   MEMBER_ROLES.find((r) => r.id === member.role)?.color
                 }`}
               >

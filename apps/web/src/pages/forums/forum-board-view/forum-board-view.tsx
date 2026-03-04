@@ -87,7 +87,7 @@ export function ForumBoardView() {
       />
 
       {/* Navigation Tabs */}
-      <div className="border-b border-dark-700 bg-dark-800">
+      <div className="border-b border-white/[0.06] bg-white/[0.04]">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex items-center gap-1">
             {TABS.map((tab) => (

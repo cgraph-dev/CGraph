@@ -31,10 +31,10 @@ export interface PostVoteSidebarProps {
 /** Vertical vote sidebar for a forum post */
 export function PostVoteSidebar({ postId, score, myVote, onVote }: PostVoteSidebarProps) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-l-lg bg-dark-700/50 p-4">
+    <div className="flex flex-col items-center gap-1 rounded-l-lg bg-white/[0.06] p-4">
       <button
         onClick={() => onVote('post', postId, 1, myVote)}
-        className={`rounded p-1 transition-colors hover:bg-dark-600 ${
+        className={`rounded p-1 transition-colors hover:bg-white/[0.10] ${
           myVote === 1 ? 'text-orange-500' : 'text-gray-400 hover:text-orange-500'
         }`}
       >
@@ -53,7 +53,7 @@ export function PostVoteSidebar({ postId, score, myVote, onVote }: PostVoteSideb
       </span>
       <button
         onClick={() => onVote('post', postId, -1, myVote)}
-        className={`rounded p-1 transition-colors hover:bg-dark-600 ${
+        className={`rounded p-1 transition-colors hover:bg-white/[0.10] ${
           myVote === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'
         }`}
       >

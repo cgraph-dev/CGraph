@@ -116,7 +116,7 @@ export default function PluginMarketplace() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-dark-900">
+    <div className="flex-1 overflow-y-auto bg-[rgb(30,32,40)]">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 px-6 py-8">
         <div className="mx-auto max-w-6xl">
@@ -139,7 +139,7 @@ export default function PluginMarketplace() {
       </div>
 
       {/* Search and Filters */}
-      <div className="sticky top-0 z-10 border-b border-dark-700 bg-dark-800">
+      <div className="sticky top-0 z-10 border-b border-white/[0.06] bg-white/[0.04]">
         <div className="mx-auto max-w-6xl px-6 py-4">
           <div className="flex flex-col gap-4 md:flex-row">
             {/* Search */}
@@ -150,7 +150,7 @@ export default function PluginMarketplace() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search plugins..."
-                className="w-full rounded-lg border border-dark-600 bg-dark-700 py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-3 pl-12 pr-4 text-white placeholder-white/30 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
             </div>
 
@@ -158,7 +158,7 @@ export default function PluginMarketplace() {
             <select
               value={selectedCategory || ''}
               onChange={(e) => setSelectedCategory(e.target.value || null)}
-              className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:border-purple-500"
+              className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:border-purple-500"
             >
               <option value="">All Categories</option>
               {marketplaceCategories.map((cat) => (
@@ -175,7 +175,7 @@ export default function PluginMarketplace() {
                 className={`rounded-lg px-4 py-3 font-medium transition-colors ${
                   showOfficial === true
                     ? 'bg-purple-600 text-white'
-                    : 'bg-dark-700 text-gray-300 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-300 hover:bg-white/[0.10]'
                 }`}
               >
                 <CheckCircleSolid className="mr-1 inline-block h-5 w-5" />
@@ -186,7 +186,7 @@ export default function PluginMarketplace() {
                 className={`rounded-lg px-4 py-3 font-medium transition-colors ${
                   showOfficial === false
                     ? 'bg-purple-600 text-white'
-                    : 'bg-dark-700 text-gray-300 hover:bg-dark-600'
+                    : 'bg-white/[0.06] text-gray-300 hover:bg-white/[0.10]'
                 }`}
               >
                 Community
@@ -217,7 +217,7 @@ export default function PluginMarketplace() {
               return (
                 <div
                   key={plugin.plugin_id}
-                  className="overflow-hidden rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+                  className="overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.04] transition-colors hover:border-white/[0.08]"
                 >
                   {/* Plugin Header */}
                   <div className="p-6">
@@ -257,7 +257,7 @@ export default function PluginMarketplace() {
                   {/* Actions */}
                   <div className="px-6 pb-6">
                     <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-dark-700 px-3 py-1 text-xs text-gray-400">
+                      <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs text-gray-400">
                         {getCategoryDisplayName(plugin.category)}
                       </span>
                       <div className="flex-1" />

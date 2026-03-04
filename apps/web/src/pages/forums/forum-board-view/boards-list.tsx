@@ -19,7 +19,7 @@ export function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsList
     return (
       <div className="space-y-4">
         {[...Array(SKELETON_COUNTS.boards)].map((_, i) => (
-          <div key={i} className="h-20 animate-pulse rounded-lg bg-dark-700" />
+          <div key={i} className="h-20 animate-pulse rounded-lg bg-white/[0.06]" />
         ))}
       </div>
     );
@@ -67,9 +67,9 @@ export function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsList
       )}
 
       {/* Boards Table */}
-      <div className="overflow-hidden rounded-lg bg-dark-700">
+      <div className="overflow-hidden rounded-lg bg-white/[0.06]">
         {/* Header */}
-        <div className="grid grid-cols-12 gap-4 border-b border-dark-600 bg-dark-800 px-4 py-3 text-sm font-medium text-gray-400">
+        <div className="grid grid-cols-12 gap-4 border-b border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm font-medium text-gray-400">
           <div className="col-span-6">Board</div>
           <div className="col-span-2 text-center">Threads</div>
           <div className="col-span-2 text-center">Posts</div>

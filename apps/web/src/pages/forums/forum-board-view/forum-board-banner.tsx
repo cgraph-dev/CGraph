@@ -52,7 +52,7 @@ export function ForumBoardBanner({
       />
 
       {/* Forum Info Bar */}
-      <div className="border-b border-dark-700 bg-dark-800">
+      <div className="border-b border-white/[0.06] bg-white/[0.04]">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-start gap-4">
             {/* Icon */}
@@ -76,11 +76,11 @@ export function ForumBoardBanner({
 
                 <div className="flex items-center gap-3">
                   {/* Voting */}
-                  <div className="flex items-center gap-1 rounded-lg bg-dark-700 p-1">
+                  <div className="flex items-center gap-1 rounded-lg bg-white/[0.06] p-1">
                     <button
                       onClick={() => onVote(1)}
                       disabled={!isAuthenticated}
-                      className={`rounded p-2 ${forum.userVote === 1 ? 'bg-orange-500 text-white' : 'text-gray-400 hover:bg-dark-600'}`}
+                      className={`rounded p-2 ${forum.userVote === 1 ? 'bg-orange-500 text-white' : 'text-gray-400 hover:bg-white/[0.10]'}`}
                     >
                       <ArrowUpIcon className="h-5 w-5" />
                     </button>
@@ -92,7 +92,7 @@ export function ForumBoardBanner({
                     <button
                       onClick={() => onVote(-1)}
                       disabled={!isAuthenticated}
-                      className={`rounded p-2 ${forum.userVote === -1 ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-dark-600'}`}
+                      className={`rounded p-2 ${forum.userVote === -1 ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-white/[0.10]'}`}
                     >
                       <ArrowDownIcon className="h-5 w-5" />
                     </button>
@@ -103,7 +103,7 @@ export function ForumBoardBanner({
                     onClick={onSubscribe}
                     className={`rounded-lg px-4 py-2 font-medium transition-colors ${
                       forum.isSubscribed
-                        ? 'bg-dark-700 text-white hover:bg-dark-600'
+                        ? 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
                         : 'bg-primary-600 text-white hover:bg-primary-700'
                     }`}
                   >
@@ -113,7 +113,7 @@ export function ForumBoardBanner({
                   {isOwner && (
                     <button
                       onClick={() => navigate(`/forums/${forum.slug}/admin`)}
-                      className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:bg-dark-600"
+                      className="rounded-lg bg-white/[0.06] p-2 text-gray-400 transition-colors hover:bg-white/[0.10]"
                       title="Forum Admin Dashboard"
                     >
                       <CogIcon className="h-5 w-5" />

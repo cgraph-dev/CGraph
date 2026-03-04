@@ -15,7 +15,7 @@ import type { MembersSidebarProps } from './types';
  */
 export function MembersSidebar({ onlineMembers, offlineMembers }: MembersSidebarProps) {
   return (
-    <div className="w-60 overflow-y-auto border-l border-dark-700 bg-dark-800">
+    <div className="w-60 overflow-y-auto border-l border-white/[0.06] bg-white/[0.04]">
       {/* Online members */}
       {onlineMembers.length > 0 && (
         <div className="p-3">

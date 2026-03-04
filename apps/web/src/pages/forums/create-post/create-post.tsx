@@ -63,13 +63,13 @@ export default function CreatePost() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-dark-900">
+    <div className="flex-1 overflow-y-auto bg-[rgb(30,32,40)]">
       <div className="animate-fadeIn mx-auto max-w-3xl px-4 py-8">
         {/* Header */}
         <div className="mb-6 flex items-center gap-4">
           <Link
             to={`/forums/${forumSlug}`}
-            className="rounded-lg p-2 transition-colors hover:bg-dark-700"
+            className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
           </Link>
@@ -122,7 +122,7 @@ export default function CreatePost() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={300}
-              className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
             />
             <div className="mt-1 text-right text-xs text-gray-500">{title.length}/300</div>
@@ -138,7 +138,7 @@ export default function CreatePost() {
               <select
                 value={selectedPrefix}
                 onChange={(e) => setSelectedPrefix(e.target.value)}
-                className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">No Prefix</option>
                 {threadPrefixes.map((prefix) => (
@@ -163,12 +163,12 @@ export default function CreatePost() {
           )}
 
           {postType === 'image' && (
-            <div className="rounded-lg border-2 border-dashed border-dark-600 p-8 text-center">
+            <div className="rounded-lg border-2 border-dashed border-white/[0.08] p-8 text-center">
               <PhotoIcon className="mx-auto mb-4 h-12 w-12 text-gray-500" />
               <p className="mb-2 text-gray-400">Drag and drop images or</p>
               <button
                 type="button"
-                className="rounded-lg bg-dark-600 px-4 py-2 text-white transition-colors hover:bg-dark-500"
+                className="rounded-lg bg-white/[0.08] px-4 py-2 text-white transition-colors hover:bg-white/[0.12]"
               >
                 Upload
               </button>
@@ -185,7 +185,7 @@ export default function CreatePost() {
                 placeholder="URL"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required={postType === 'link'}
               />
             </div>
@@ -226,7 +226,7 @@ export default function CreatePost() {
           <div className="flex items-center justify-end gap-3 pt-4">
             <Link
               to={`/forums/${forumSlug}`}
-              className="rounded-lg bg-dark-700 px-6 py-2.5 font-medium text-white transition-colors hover:bg-dark-600"
+              className="rounded-lg bg-white/[0.06] px-6 py-2.5 font-medium text-white transition-colors hover:bg-white/[0.10]"
             >
               Cancel
             </Link>

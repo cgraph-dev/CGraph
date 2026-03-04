@@ -38,7 +38,7 @@ export function ReportModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md rounded-lg border border-dark-600 bg-dark-800 p-6">
+      <div className="mx-4 w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.04] p-6">
         <h3 className="mb-4 text-lg font-semibold text-white">Report Post</h3>
         <p className="mb-4 text-sm text-gray-400">
           Please select a reason for reporting this post. Our moderation team will review your
@@ -48,7 +48,7 @@ export function ReportModal({
         <select
           value={reportReason}
           onChange={(e) => setReportReason(e.target.value)}
-          className="mb-4 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
+          className="mb-4 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
         >
           {REPORT_REASONS.map((reason) => (
             <option key={reason.value} value={reason.value}>

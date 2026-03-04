@@ -36,7 +36,7 @@ export function MessagesArea({
       {/* Welcome message */}
       {!hasMessages && !isLoadingMessages && (
         <div className="py-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.06]">
             <HashtagIcon className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="mb-1 text-xl font-bold text-white">Welcome to #{channelName}!</h3>
@@ -62,11 +62,11 @@ export function MessagesArea({
         <div key={groupIndex}>
           {/* Date header */}
           <div className="my-4 flex items-center gap-4">
-            <div className="h-px flex-1 bg-dark-700" />
+            <div className="h-px flex-1 bg-white/[0.06]" />
             <span className="text-xs font-medium text-gray-500">
               {formatDateHeader(group.date)}
             </span>
-            <div className="h-px flex-1 bg-dark-700" />
+            <div className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
           {/* Messages */}

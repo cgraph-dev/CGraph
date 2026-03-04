@@ -73,7 +73,7 @@ export function ConversationItem({
               ? 'bg-gradient-to-br from-primary-500 to-purple-600'
               : isHovered
                 ? 'bg-gradient-to-br from-primary-500/50 to-purple-600/50'
-                : 'bg-dark-700'
+                : 'bg-white/[0.06]'
           }`}
         >
           {avatar ? (

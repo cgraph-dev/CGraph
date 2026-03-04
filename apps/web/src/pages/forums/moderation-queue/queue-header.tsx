@@ -51,7 +51,7 @@ export function QueueHeader({ queueCounts, isLoading, onRefresh }: QueueHeaderPr
         <button
           onClick={onRefresh}
           disabled={isLoading}
-          className="rounded-lg bg-dark-700 p-2.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
+          className="rounded-lg bg-white/[0.06] p-2.5 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-white"
         >
           <ArrowPathIcon className={cn('h-5 w-5', isLoading && 'animate-spin')} />
         </button>

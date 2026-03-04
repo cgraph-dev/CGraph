@@ -25,7 +25,7 @@ interface LeaderboardSidebarProps {
  */
 export function LeaderboardSidebar({ topForums }: LeaderboardSidebarProps) {
   return (
-    <div className="hidden w-80 overflow-y-auto border-l border-dark-600 lg:block">
+    <div className="hidden w-80 overflow-y-auto border-l border-white/[0.08] lg:block">
       <div className="p-4">
         <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 p-4">
           <div className="mb-4 flex items-center gap-2">
@@ -41,7 +41,7 @@ export function LeaderboardSidebar({ topForums }: LeaderboardSidebarProps) {
         </div>
 
         {/* About Competition */}
-        <div className="mt-4 rounded-lg bg-dark-700 p-4">
+        <div className="mt-4 rounded-lg bg-white/[0.06] p-4">
           <h3 className="mb-2 font-bold text-white">How It Works</h3>
           <ul className="space-y-2 text-sm text-gray-400">
             <li className="flex items-start gap-2">

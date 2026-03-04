@@ -59,7 +59,7 @@ export function RulesPanel({
 
         <div className="space-y-3">
           {rules.map((rule, index) => (
-            <motion.div key={rule.id} className="group rounded-lg bg-dark-700/50 p-4">
+            <motion.div key={rule.id} className="group rounded-lg bg-white/[0.06] p-4">
               <div className="flex items-start gap-3">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-500/20 font-bold text-primary-400">
                   {index + 1}
@@ -71,13 +71,13 @@ export function RulesPanel({
                         type="text"
                         value={rule.title}
                         onChange={(e) => onUpdateRule(rule.id, 'title', e.target.value)}
-                        className="w-full rounded-lg border border-dark-500 bg-dark-600 px-3 py-2 font-medium text-white"
+                        className="w-full rounded-lg border border-dark-500 bg-white/[0.08] px-3 py-2 font-medium text-white"
                         placeholder="Rule title"
                       />
                       <textarea
                         value={rule.description}
                         onChange={(e) => onUpdateRule(rule.id, 'description', e.target.value)}
-                        className="w-full resize-none rounded-lg border border-dark-500 bg-dark-600 px-3 py-2 text-white"
+                        className="w-full resize-none rounded-lg border border-dark-500 bg-white/[0.08] px-3 py-2 text-white"
                         rows={2}
                         placeholder="Rule description"
                       />

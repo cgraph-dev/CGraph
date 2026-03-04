@@ -32,7 +32,7 @@ export function ChannelList({
   const { fetchGroup } = useGroupStore();
   if (!activeGroup) {
     return (
-      <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-dark-800/50 backdrop-blur-xl">
+      <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-white/[0.04] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
         <motion.div
           initial={{ opacity: 0 }}
@@ -64,7 +64,7 @@ export function ChannelList({
   }
 
   return (
-    <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-dark-800/50 backdrop-blur-xl">
+    <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-white/[0.04] backdrop-blur-xl">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
@@ -191,7 +191,7 @@ export function ChannelList({
                     setCategoryName('');
                   }
                 }}
-                className="min-w-0 flex-1 rounded bg-dark-700 px-2 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="min-w-0 flex-1 rounded bg-white/[0.06] px-2 py-1 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </motion.div>
           ) : (
@@ -212,7 +212,7 @@ export function ChannelList({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="relative z-10 flex h-14 items-center gap-2 border-t border-primary-500/20 bg-dark-900/80 px-2 backdrop-blur-sm"
+        className="relative z-10 flex h-14 items-center gap-2 border-t border-primary-500/20 bg-[rgb(30,32,40)]/[0.80] px-2 backdrop-blur-sm"
       >
         <motion.div
           whileHover={{ backgroundColor: 'rgba(31, 41, 55, 0.5)' }}
@@ -240,7 +240,7 @@ export function ChannelList({
           whileHover={{ scale: 1.1, rotate: 90 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => HapticFeedback.light()}
-          className="rounded-lg bg-dark-700/50 p-1.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-primary-400"
+          className="rounded-lg bg-white/[0.06] p-1.5 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-primary-400"
         >
           <Cog6ToothIcon className="h-5 w-5" />
         </motion.button>

@@ -81,7 +81,7 @@ export function ModeratorsPanel({
               value={newModUsername}
               onChange={(e) => onNewModUsernameChange(e.target.value)}
               placeholder="Search username to add..."
-              className="w-full rounded-lg border border-dark-600 bg-dark-700 py-2.5 pl-10 pr-4 text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-2.5 pl-10 pr-4 text-white"
             />
           </div>
           <motion.button
@@ -126,7 +126,7 @@ export function ModeratorsPanel({
             {moderators.map((mod) => (
               <motion.div
                 key={mod.id}
-                className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
+                className="group flex items-center gap-3 rounded-lg bg-white/[0.06] p-3"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
                   <span className="font-bold text-white">

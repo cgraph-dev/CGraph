@@ -37,7 +37,7 @@ export function BulkActionsBar({
           <div className="flex items-center gap-3">
             <button
               onClick={onClearSelection}
-              className="rounded-lg bg-dark-700 px-3 py-1.5 text-sm text-gray-300 transition-colors hover:bg-dark-600"
+              className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.10]"
             >
               Clear
             </button>

@@ -21,12 +21,12 @@ export function MemberItem({ member, isOffline = false }: MemberItemProps) {
 
   return (
     <div
-      className={`flex cursor-pointer items-center gap-2 rounded p-1.5 hover:bg-dark-700 ${
+      className={`flex cursor-pointer items-center gap-2 rounded p-1.5 hover:bg-white/[0.08] ${
         isOffline ? 'opacity-60' : ''
       }`}
     >
       <div className="relative">
-        <div className="h-8 w-8 overflow-hidden rounded-full bg-dark-600">
+        <div className="h-8 w-8 overflow-hidden rounded-full bg-white/[0.08]">
           {member.user.avatarUrl ? (
             <img
               src={member.user.avatarUrl}

@@ -52,7 +52,7 @@ export function ChannelItem({ channel, groupId, isActive }: ChannelItemProps) {
         className={`relative z-10 flex items-center gap-1.5 rounded px-2 py-1.5 transition-all ${
           isActive
             ? 'bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent text-white'
-            : 'text-gray-400 hover:bg-dark-700/50 hover:text-gray-200'
+            : 'text-gray-400 hover:bg-white/[0.06] hover:text-gray-200'
         }`}
         style={isActive ? { boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' } : {}}
       >

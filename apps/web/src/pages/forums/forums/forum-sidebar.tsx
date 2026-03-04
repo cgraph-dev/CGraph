@@ -21,7 +21,7 @@ import { springs } from '@/lib/animation-presets';
  */
 export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSidebarProps) {
   return (
-    <div className="relative z-10 hidden w-80 overflow-y-auto border-l border-primary-500/20 bg-dark-900/50 p-4 backdrop-blur-xl lg:block">
+    <div className="relative z-10 hidden w-80 overflow-y-auto border-l border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] p-4 backdrop-blur-xl lg:block">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
@@ -102,10 +102,10 @@ export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSide
                 // Skeleton loading for communities
                 Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="-mx-2 flex animate-pulse items-center gap-3 p-2">
-                    <div className="h-8 w-8 rounded-full bg-dark-600/50" />
+                    <div className="h-8 w-8 rounded-full bg-white/[0.08]" />
                     <div className="min-w-0 flex-1">
-                      <div className="mb-1 h-4 w-24 rounded bg-dark-600/50" />
-                      <div className="h-3 w-16 rounded bg-dark-600/50" />
+                      <div className="mb-1 h-4 w-24 rounded bg-white/[0.08]" />
+                      <div className="h-3 w-16 rounded bg-white/[0.08]" />
                     </div>
                   </div>
                 ))

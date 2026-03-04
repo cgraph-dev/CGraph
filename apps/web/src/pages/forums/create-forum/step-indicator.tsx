@@ -16,7 +16,7 @@ interface StepIndicatorProps {
  */
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <div className="border-b border-dark-700 bg-dark-800">
+    <div className="border-b border-white/[0.06] bg-white/[0.04]">
       <div className="mx-auto max-w-3xl px-6 py-4">
         <div className="flex items-center justify-between">
           {WIZARD_STEPS.map((s, i) => (
@@ -27,7 +27,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
                     ? 'bg-primary-600 text-white'
                     : currentStep > s.num
                       ? 'bg-green-600 text-white'
-                      : 'bg-dark-700 text-gray-400'
+                      : 'bg-white/[0.06] text-gray-400'
                 }`}
               >
                 <s.icon className="h-5 w-5" />
@@ -36,7 +36,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
               {i < 3 && (
                 <div
                   className={`mx-2 h-0.5 w-8 ${
-                    currentStep > s.num ? 'bg-green-600' : 'bg-dark-600'
+                    currentStep > s.num ? 'bg-green-600' : 'bg-white/[0.08]'
                   }`}
                 />
               )}

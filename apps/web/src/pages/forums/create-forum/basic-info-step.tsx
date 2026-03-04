@@ -37,8 +37,8 @@ export function BasicInfoStep({ formData, onNameChange, onUpdateField }: BasicIn
           value={formData.name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="MyAwesomeForum"
-          className={`w-full rounded-lg border bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 ${
-            nameInvalid ? 'border-red-500' : 'border-dark-600'
+          className={`w-full rounded-lg border bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 ${
+            nameInvalid ? 'border-red-500' : 'border-white/[0.08]'
           }`}
           maxLength={NAME_MAX_LENGTH}
         />
@@ -71,7 +71,7 @@ export function BasicInfoStep({ formData, onNameChange, onUpdateField }: BasicIn
               onUpdateField('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
             }
             placeholder="my-awesome-forum"
-            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             maxLength={SLUG_MAX_LENGTH}
           />
         </div>
@@ -84,7 +84,7 @@ export function BasicInfoStep({ formData, onNameChange, onUpdateField }: BasicIn
           onChange={(e) => onUpdateField('description', e.target.value)}
           placeholder="Tell people what your forum is about..."
           rows={4}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           maxLength={500}
         />
       </div>
@@ -94,7 +94,7 @@ export function BasicInfoStep({ formData, onNameChange, onUpdateField }: BasicIn
         <select
           value={formData.category}
           onChange={(e) => onUpdateField('category', e.target.value)}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         >
           {FORUM_CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>

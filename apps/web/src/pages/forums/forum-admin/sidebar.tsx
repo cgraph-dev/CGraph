@@ -39,9 +39,9 @@ export function Sidebar({
   const pendingCount = modQueue.filter((i) => i.status === 'pending').length;
 
   return (
-    <aside className="flex w-64 flex-col border-r border-dark-700 bg-dark-800">
+    <aside className="flex w-64 flex-col border-r border-white/[0.06] bg-white/[0.04]">
       {/* Header */}
-      <div className="border-b border-dark-700 p-4">
+      <div className="border-b border-white/[0.06] p-4">
         <Link
           to={`/forums/${forumSlug}`}
           className="mb-4 flex items-center gap-2 text-gray-400 transition-colors hover:text-white"
@@ -76,7 +76,7 @@ export function Sidebar({
             className={`mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all ${
               activeTab === tab.id
                 ? 'bg-primary-500/20 text-primary-400'
-                : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
             }`}
             whileHover={{ x: 2 }}
             whileTap={{ scale: 0.98 }}
@@ -96,7 +96,7 @@ export function Sidebar({
       </nav>
 
       {/* Save Button */}
-      <div className="border-t border-dark-700 p-4">
+      <div className="border-t border-white/[0.06] p-4">
         <motion.button
           onClick={onSave}
           disabled={isSaving}

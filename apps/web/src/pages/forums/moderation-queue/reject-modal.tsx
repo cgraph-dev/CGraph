@@ -40,7 +40,7 @@ export function RejectModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="w-full max-w-md rounded-2xl border border-dark-600 bg-dark-800 p-6"
+            className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-white/[0.04] p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-4 text-lg font-bold text-white">Reject Content</h3>
@@ -51,12 +51,12 @@ export function RejectModal({
               value={reason}
               onChange={(e) => onReasonChange(e.target.value)}
               placeholder="Reason for rejection..."
-              className="mb-4 h-24 w-full rounded-lg border border-dark-500 bg-dark-700 p-3 text-sm text-white placeholder-gray-500 outline-none focus:border-red-500"
+              className="mb-4 h-24 w-full rounded-lg border border-dark-500 bg-white/[0.06] p-3 text-sm text-white placeholder-white/30 outline-none focus:border-red-500"
             />
             <div className="flex justify-end gap-3">
               <button
                 onClick={onCancel}
-                className="rounded-lg bg-dark-700 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-dark-600"
+                className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-white/[0.10]"
               >
                 Cancel
               </button>

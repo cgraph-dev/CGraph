@@ -13,7 +13,7 @@ import { tweens, loop } from '@/lib/animation-presets';
  */
 export function LoadingSpinner() {
   return (
-    <div className="flex flex-1 items-center justify-center bg-dark-900">
+    <div className="flex flex-1 items-center justify-center bg-[rgb(30,32,40)]">
       <motion.div
         className="h-12 w-12 rounded-full border-4 border-primary-500 border-t-transparent"
         animate={{ rotate: 360 }}

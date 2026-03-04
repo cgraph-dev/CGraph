@@ -43,7 +43,7 @@ export function ServerIcon({ group, isActive }: ServerIconProps) {
           className={`relative z-10 flex h-12 w-12 items-center justify-center overflow-hidden transition-all ${
             isActive
               ? 'rounded-xl bg-gradient-to-br from-primary-600 to-primary-700'
-              : 'rounded-2xl bg-dark-700 group-hover:rounded-xl group-hover:bg-primary-600'
+              : 'rounded-2xl bg-white/[0.06] group-hover:rounded-xl group-hover:bg-primary-600'
           }`}
           style={{
             boxShadow: isActive

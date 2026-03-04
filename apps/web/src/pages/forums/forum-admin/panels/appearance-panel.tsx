@@ -54,7 +54,7 @@ export function AppearancePanel({
       <GlassCard className="p-6">
         <h3 className="mb-4 text-lg font-semibold text-white">Live Preview</h3>
         <div
-          className="overflow-hidden rounded-xl border border-dark-600"
+          className="overflow-hidden rounded-xl border border-white/[0.08]"
           style={
              
             {
@@ -76,7 +76,7 @@ export function AppearancePanel({
               }}
             />
           )}
-          <div className="flex items-center gap-4 bg-dark-800 p-4">
+          <div className="flex items-center gap-4 bg-white/[0.04] p-4">
             {appearance.iconUrl ? (
               <img
                 src={appearance.iconUrl}
@@ -121,7 +121,7 @@ export function AppearancePanel({
               className={`rounded-xl border-2 p-3 transition-all ${
                 appearance.themePreset === theme.id
                   ? 'border-primary-500'
-                  : 'border-dark-600 hover:border-dark-500'
+                  : 'border-white/[0.08] hover:border-dark-500'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -185,7 +185,7 @@ export function AppearancePanel({
           <div>
             <label className="mb-2 block text-sm text-gray-400">Icon URL</label>
             <div className="flex items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-dark-700">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white/[0.06]">
                 {appearance.iconUrl ? (
                   <img src={appearance.iconUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -197,14 +197,14 @@ export function AppearancePanel({
                 value={appearance.iconUrl}
                 onChange={(e) => setAppearance((prev) => ({ ...prev, iconUrl: e.target.value }))}
                 placeholder="https://example.com/icon.png"
-                className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
+                className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white"
               />
             </div>
           </div>
           <div>
             <label className="mb-2 block text-sm text-gray-400">Banner URL</label>
             <div className="space-y-2">
-              <div className="flex h-24 items-center justify-center overflow-hidden rounded-xl bg-dark-700">
+              <div className="flex h-24 items-center justify-center overflow-hidden rounded-xl bg-white/[0.06]">
                 {appearance.bannerUrl ? (
                   <img src={appearance.bannerUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -216,7 +216,7 @@ export function AppearancePanel({
                 value={appearance.bannerUrl}
                 onChange={(e) => setAppearance((prev) => ({ ...prev, bannerUrl: e.target.value }))}
                 placeholder="https://example.com/banner.png"
-                className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white"
               />
             </div>
           </div>
@@ -232,7 +232,7 @@ export function AppearancePanel({
           onChange={(e) => setAppearance((prev) => ({ ...prev, customCss: e.target.value }))}
           rows={8}
           placeholder="/* Custom CSS goes here */"
-          className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 font-mono text-sm text-white"
+          className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 font-mono text-sm text-white"
         />
       </GlassCard>
     </motion.div>
@@ -265,7 +265,7 @@ function ColorInput({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
+          className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 font-mono text-sm text-white"
         />
       </div>
     </div>

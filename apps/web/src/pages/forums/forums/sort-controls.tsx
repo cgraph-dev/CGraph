@@ -31,7 +31,7 @@ export function SortControls({
   onNavigateToCreateForum,
 }: SortControlsProps) {
   return (
-    <div className="sticky top-0 z-10 border-b border-primary-500/20 bg-dark-900/80 px-4 py-3 backdrop-blur-xl">
+    <div className="sticky top-0 z-10 border-b border-primary-500/20 bg-[rgb(30,32,40)]/[0.80] px-4 py-3 backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-purple-500/5" />
 
       <div className="relative z-10 mx-auto flex max-w-4xl items-center gap-4">
@@ -70,7 +70,7 @@ export function SortControls({
         <div className="relative">
           <button
             onClick={onToggleSortMenu}
-            className="flex items-center gap-2 rounded-full bg-dark-800 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-dark-700"
+            className="flex items-center gap-2 rounded-full bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/[0.08]"
           >
             {sortOptions.find((s) => s.value === sortBy)?.icon && (
               <span className="h-4 w-4">
@@ -87,7 +87,7 @@ export function SortControls({
           {showSortMenu && (
             <>
               <div className="fixed inset-0 z-10" onClick={onCloseSortMenu} />
-              <div className="absolute left-0 top-full z-20 mt-1 rounded-lg border border-dark-700 bg-dark-800 py-1 shadow-lg">
+              <div className="absolute left-0 top-full z-20 mt-1 rounded-lg border border-white/[0.06] bg-white/[0.04] py-1 shadow-lg">
                 {sortOptions.map((option) => (
                   <button
                     key={option.value}
@@ -95,7 +95,7 @@ export function SortControls({
                       onSortChange(option.value);
                       onCloseSortMenu();
                     }}
-                    className={`flex w-full items-center gap-2 px-4 py-2 transition-colors hover:bg-dark-700 ${
+                    className={`flex w-full items-center gap-2 px-4 py-2 transition-colors hover:bg-white/[0.08] ${
                       sortBy === option.value ? 'text-primary-400' : 'text-white'
                     }`}
                   >
@@ -113,7 +113,7 @@ export function SortControls({
           <div className="relative">
             <button
               onClick={onToggleTimeMenu}
-              className="flex items-center gap-2 rounded-full bg-dark-800 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-dark-700"
+              className="flex items-center gap-2 rounded-full bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/[0.08]"
             >
               {timeRangeOptions.find((t) => t.value === timeRange)?.label}
               <ChevronDownIcon className="h-4 w-4" />
@@ -122,7 +122,7 @@ export function SortControls({
             {showTimeMenu && (
               <>
                 <div className="fixed inset-0 z-10" onClick={onCloseTimeMenu} />
-                <div className="absolute left-0 top-full z-20 mt-1 rounded-lg border border-dark-700 bg-dark-800 py-1 shadow-lg">
+                <div className="absolute left-0 top-full z-20 mt-1 rounded-lg border border-white/[0.06] bg-white/[0.04] py-1 shadow-lg">
                   {timeRangeOptions.map((option) => (
                     <button
                       key={option.value}
@@ -130,7 +130,7 @@ export function SortControls({
                         onTimeRangeChange(option.value);
                         onCloseTimeMenu();
                       }}
-                      className={`w-full px-4 py-2 text-left transition-colors hover:bg-dark-700 ${
+                      className={`w-full px-4 py-2 text-left transition-colors hover:bg-white/[0.08] ${
                         timeRange === option.value ? 'text-primary-400' : 'text-white'
                       }`}
                     >

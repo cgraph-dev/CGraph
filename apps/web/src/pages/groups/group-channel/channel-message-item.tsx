@@ -24,7 +24,7 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
 
   return (
     <div
-      className={`group relative flex gap-4 px-4 py-0.5 hover:bg-dark-800/30 ${
+      className={`group relative flex gap-4 px-4 py-0.5 hover:bg-white/[0.03] ${
         showHeader ? 'mt-4' : ''
       }`}
       onMouseEnter={() => setShowActions(true)}
@@ -33,7 +33,7 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
       {/* Avatar or spacer */}
       <div className="w-10 flex-shrink-0">
         {showHeader && (
-          <div className="h-10 w-10 overflow-hidden rounded-full bg-dark-600">
+          <div className="h-10 w-10 overflow-hidden rounded-full bg-white/[0.08]">
             {message.author.avatarUrl ? (
               <img
                 src={message.author.avatarUrl}
@@ -87,7 +87,7 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
                 className={`flex items-center gap-1 rounded px-2 py-0.5 text-xs transition-colors ${
                   reaction.hasReacted
                     ? 'border border-primary-500/50 bg-primary-600/30'
-                    : 'bg-dark-700 hover:bg-dark-600'
+                    : 'bg-white/[0.06] hover:bg-white/[0.10]'
                 }`}
               >
                 <span>{reaction.emoji}</span>
@@ -113,20 +113,20 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
 
       {/* Actions */}
       {showActions && (
-        <div className="absolute -top-4 right-4 flex items-center gap-0.5 rounded border border-dark-600 bg-dark-700 shadow-lg">
-          <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="React">
+        <div className="absolute -top-4 right-4 flex items-center gap-0.5 rounded border border-white/[0.08] bg-white/[0.06] shadow-lg">
+          <button className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white" title="React">
             <FaceSmileIcon className="h-4 w-4" />
           </button>
           <button
             onClick={onReply}
-            className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white"
+            className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white"
             title="Reply"
           >
             <ReplyIcon />
           </button>
           <button
             onClick={onOpenThread}
-            className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white"
+            className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white"
             title="Reply in Thread"
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4" />
@@ -134,13 +134,13 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
           {onReport && currentUserId && message.authorId !== currentUserId && (
             <button
               onClick={onReport}
-              className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-red-400"
+              className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-red-400"
               title="Report"
             >
               <FlagIcon className="h-4 w-4" />
             </button>
           )}
-          <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="More">
+          <button className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white" title="More">
             <EllipsisVerticalIcon className="h-4 w-4" />
           </button>
         </div>

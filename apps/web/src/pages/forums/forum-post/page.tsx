@@ -63,12 +63,12 @@ export default function ForumPost() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-dark-900">
+    <div className="flex-1 overflow-y-auto bg-[rgb(30,32,40)]">
       <BackButton forumSlug={forumSlug || ''} />
 
       <div className="animate-fadeIn mx-auto max-w-4xl px-4 py-4">
         {/* Post article */}
-        <article className="animate-slideUp rounded-lg border border-dark-700 bg-dark-800">
+        <article className="animate-slideUp rounded-lg border border-white/[0.06] bg-white/[0.04]">
           <div className="flex">
             <PostVoteSidebar
               postId={currentPost.id}

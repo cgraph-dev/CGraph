@@ -91,7 +91,7 @@ export function PostsList({
             disabled={isLoading}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="rounded-full bg-dark-800/80 px-6 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-dark-700 disabled:opacity-50"
+            className="rounded-full bg-white/[0.06] px-6 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/[0.08] disabled:opacity-50"
             style={{
               boxShadow: '0 0 15px rgba(16, 185, 129, 0.1)',
             }}

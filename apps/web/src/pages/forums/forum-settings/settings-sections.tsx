@@ -31,7 +31,7 @@ export function GeneralSection({
   setDescription,
 }: GeneralSectionProps) {
   return (
-    <section className="rounded-xl bg-dark-800 p-6">
+    <section className="rounded-xl bg-white/[0.04] p-6">
       <h2 className="mb-4 text-lg font-semibold text-white">General</h2>
       <div className="space-y-4">
         <div>
@@ -40,7 +40,7 @@ export function GeneralSection({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500"
             required
           />
         </div>
@@ -50,7 +50,7 @@ export function GeneralSection({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Describe what your forum is about..."
           />
         </div>
@@ -74,10 +74,10 @@ interface PrivacySectionProps {
  */
 export function PrivacySection({ isPublic, setIsPublic }: PrivacySectionProps) {
   return (
-    <section className="rounded-xl bg-dark-800 p-6">
+    <section className="rounded-xl bg-white/[0.04] p-6">
       <h2 className="mb-4 text-lg font-semibold text-white">Privacy</h2>
       <div className="space-y-4">
-        <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700 p-4 transition-colors hover:bg-dark-600">
+        <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-white/[0.06] p-4 transition-colors hover:bg-white/[0.10]">
           <input
             type="radio"
             name="privacy"
@@ -95,7 +95,7 @@ export function PrivacySection({ isPublic, setIsPublic }: PrivacySectionProps) {
             </p>
           </div>
         </label>
-        <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700 p-4 transition-colors hover:bg-dark-600">
+        <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-white/[0.06] p-4 transition-colors hover:bg-white/[0.10]">
           <input
             type="radio"
             name="privacy"
@@ -133,14 +133,14 @@ interface ContentSectionProps {
  */
 export function ContentSection({ isNsfw, setIsNsfw }: ContentSectionProps) {
   return (
-    <section className="rounded-xl bg-dark-800 p-6">
+    <section className="rounded-xl bg-white/[0.04] p-6">
       <h2 className="mb-4 text-lg font-semibold text-white">Content</h2>
       <label className="flex cursor-pointer items-center gap-3">
         <input
           type="checkbox"
           checked={isNsfw}
           onChange={(e) => setIsNsfw(e.target.checked)}
-          className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+          className="h-5 w-5 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
         />
         <div>
           <span className="font-medium text-white">NSFW Content</span>
@@ -201,7 +201,7 @@ export function DangerZone({
       </div>
 
       {showDeleteConfirm && (
-        <div className="mt-4 rounded-lg bg-dark-800 p-4">
+        <div className="mt-4 rounded-lg bg-white/[0.04] p-4">
           <p className="mb-3 text-sm text-gray-300">
             Type <span className="font-mono text-red-400">{forumName}</span> to confirm deletion:
           </p>
@@ -209,7 +209,7 @@ export function DangerZone({
             type="text"
             value={deleteConfirmText}
             onChange={(e) => setDeleteConfirmText(e.target.value)}
-            className="mb-3 w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white"
+            className="mb-3 w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white"
             placeholder={forumName}
           />
           <div className="flex gap-3">
@@ -219,7 +219,7 @@ export function DangerZone({
                 setShowDeleteConfirm(false);
                 setDeleteConfirmText('');
               }}
-              className="rounded-lg bg-dark-600 px-4 py-2 text-white transition-colors hover:bg-dark-500"
+              className="rounded-lg bg-white/[0.08] px-4 py-2 text-white transition-colors hover:bg-white/[0.12]"
             >
               Cancel
             </button>

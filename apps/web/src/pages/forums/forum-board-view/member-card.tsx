@@ -24,7 +24,7 @@ export function MemberCard({ member }: MemberCardProps) {
   return (
     <Link
       to={`/profile/${member.userId}`}
-      className="flex items-center gap-4 rounded-lg border border-dark-600 bg-dark-700 p-4 transition-colors hover:border-primary-500/50"
+      className="flex items-center gap-4 rounded-lg border border-white/[0.08] bg-white/[0.06] p-4 transition-colors hover:border-primary-500/50"
     >
       {/* Avatar */}
       <div className="flex-shrink-0">
@@ -36,7 +36,7 @@ export function MemberCard({ member }: MemberCardProps) {
             avatarBorderId={getAvatarBorderId(member)}
           />
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-dark-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.08]">
             <UserIcon className="h-6 w-6 text-gray-400" />
           </div>
         )}

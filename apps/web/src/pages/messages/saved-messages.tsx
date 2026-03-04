@@ -89,7 +89,7 @@ export function SavedMessages() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search saved messages..."
-          className="w-full rounded-xl border border-white/10 bg-dark-700 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+          className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
         />
       </div>
 
@@ -127,7 +127,7 @@ export function SavedMessages() {
                 variants={entranceVariants.fadeUp}
                 exit={{ opacity: 0, x: -20 }}
                 layout
-                className="group rounded-xl border border-white/5 bg-dark-700/50 p-4 transition-colors hover:border-white/10"
+                className="group rounded-xl border border-white/5 bg-white/[0.06] p-4 transition-colors hover:border-white/10"
               >
                 <div className="flex items-start gap-3">
                   {/* Avatar */}

@@ -16,7 +16,7 @@ export function ThreadsList({ threads, forumSlug, isLoading }: ThreadsListProps)
     return (
       <div className="space-y-3">
         {[...Array(SKELETON_COUNTS.threads)].map((_, i) => (
-          <div key={i} className="h-16 animate-pulse rounded-lg bg-dark-700" />
+          <div key={i} className="h-16 animate-pulse rounded-lg bg-white/[0.06]" />
         ))}
       </div>
     );
@@ -35,9 +35,9 @@ export function ThreadsList({ threads, forumSlug, isLoading }: ThreadsListProps)
   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-dark-700">
+    <div className="overflow-hidden rounded-lg bg-white/[0.06]">
       {/* Header */}
-      <div className="grid grid-cols-12 gap-4 border-b border-dark-600 bg-dark-800 px-4 py-3 text-sm font-medium text-gray-400">
+      <div className="grid grid-cols-12 gap-4 border-b border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm font-medium text-gray-400">
         <div className="col-span-6">Thread</div>
         <div className="col-span-2 text-center">Replies</div>
         <div className="col-span-2 text-center">Views</div>
