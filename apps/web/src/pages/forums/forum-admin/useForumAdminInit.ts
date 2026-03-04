@@ -4,8 +4,12 @@
 
 import { useEffect, type Dispatch, type SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
 import type { ForumCategory, ForumModerator } from '@/modules/forums/store';
 import type { ForumAppearance, ForumRule, MemberData, ModQueueItem, ForumAnalytics } from './types';
+
+const logger = createLogger('ForumAdminInit');
 
 interface ForumLike {
   name: string;
@@ -97,99 +101,70 @@ export function useForumAdminInit(deps: InitDeps) {
         cardStyle: 'default',
       });
 
-      // Mock analytics data
-      setAnalytics({
-        totalMembers: forum.memberCount || 0,
-        activeMembers: Math.floor((forum.memberCount || 0) * 0.3),
-        totalPosts: Math.floor(Math.random() * 500) + 50,
-        totalComments: Math.floor(Math.random() * 2000) + 200,
-        postsToday: Math.floor(Math.random() * 20),
-        postsThisWeek: Math.floor(Math.random() * 100),
-        topPosters: [
-          { username: 'user1', count: 45 },
-          { username: 'user2', count: 38 },
-          { username: 'user3', count: 32 },
-        ],
-        growthRate: Math.floor(Math.random() * 30) - 5,
-      });
+      // Fetch analytics from API
+      if (forumSlug) {
+        api.get(`/api/v1/forums/${forumSlug}/analytics`)
+          .then((res) => {
+            const data = res.data?.data || res.data?.analytics || res.data;
+            setAnalytics({
+              totalMembers: data.total_members ?? forum.memberCount ?? 0,
+              activeMembers: data.active_members ?? Math.floor((forum.memberCount || 0) * 0.3),
+              totalPosts: data.total_posts ?? 0,
+              totalComments: data.total_comments ?? 0,
+              postsToday: data.posts_today ?? 0,
+              postsThisWeek: data.posts_this_week ?? 0,
+              topPosters: data.top_posters || [],
+              growthRate: data.growth_rate ?? 0,
+            });
+          })
+          .catch((error) => {
+            logger.error('Failed to fetch forum analytics:', error);
+            // Fallback: use available forum data
+            setAnalytics({
+              totalMembers: forum.memberCount || 0,
+              activeMembers: 0,
+              totalPosts: 0,
+              totalComments: 0,
+              postsToday: 0,
+              postsThisWeek: 0,
+              topPosters: [],
+              growthRate: 0,
+            });
+          });
 
-      // Mock rules
-      setRules([
-        {
-          id: '1',
-          title: 'Be Respectful',
-          description:
-            'Treat others with respect. No harassment, hate speech, or personal attacks.',
-          order: 1,
-        },
-        {
-          id: '2',
-          title: 'Stay On Topic',
-          description: "Keep discussions relevant to the forum's purpose.",
-          order: 2,
-        },
-        {
-          id: '3',
-          title: 'No Spam',
-          description: "Don't post spam, self-promotion, or duplicate content.",
-          order: 3,
-        },
-      ]);
+        // Fetch rules from API
+        api.get(`/api/v1/forums/${forumSlug}/rules`)
+          .then((res) => {
+            const rules = res.data?.data || res.data?.rules || [];
+            setRules(rules);
+          })
+          .catch((error) => {
+            logger.error('Failed to fetch forum rules:', error);
+            setRules([]);
+          });
 
-      // Mock mod queue
-      setModQueue([
-        {
-          id: '1',
-          type: 'report',
-          content: 'Inappropriate language in post',
-          author: 'user123',
-          authorId: '1',
-          reason: 'Harassment',
-          reportedBy: 'user456',
-          createdAt: new Date().toISOString(),
-          status: 'pending',
-        },
-        {
-          id: '2',
-          type: 'post',
-          content: 'New post awaiting approval',
-          author: 'newuser',
-          authorId: '2',
-          createdAt: new Date().toISOString(),
-          status: 'pending',
-        },
-      ]);
+        // Fetch mod queue from API
+        api.get(`/api/v1/forums/${forumSlug}/moderation/queue`)
+          .then((res) => {
+            const items = res.data?.data || res.data?.items || [];
+            setModQueue(items);
+          })
+          .catch((error) => {
+            logger.error('Failed to fetch mod queue:', error);
+            setModQueue([]);
+          });
 
-      // Mock members
-      setMembers([
-        {
-          id: '1',
-          username: 'topuser',
-          displayName: 'Top User',
-          role: 'admin',
-          joinedAt: '2024-01-01',
-          postCount: 150,
-          karma: 500,
-        },
-        {
-          id: '2',
-          username: 'activemod',
-          displayName: 'Active Mod',
-          role: 'moderator',
-          joinedAt: '2024-02-15',
-          postCount: 89,
-          karma: 320,
-        },
-        {
-          id: '3',
-          username: 'contributor1',
-          displayName: 'Contributor One',
-          role: 'contributor',
-          joinedAt: '2024-03-20',
-          postCount: 45,
-          karma: 180,
-        },
-      ]);
+        // Fetch members from API
+        api.get(`/api/v1/forums/${forumSlug}/members`)
+          .then((res) => {
+            const members = res.data?.data || res.data?.members || [];
+            setMembers(members);
+          })
+          .catch((error) => {
+            logger.error('Failed to fetch forum members:', error);
+            setMembers([]);
+          });
+      }
     }
   }, [forum]);
 
