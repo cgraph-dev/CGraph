@@ -330,16 +330,11 @@ defmodule CGraphWeb.StripeWebhookController do
 
   defp find_user_by_metadata(_), do: {:error, :no_user_metadata}
 
-  @tier_mapping %{
-    # Map Stripe price IDs to tier names
-    # In production, use env-based mapping via get_tier_from_env/1
-  }
-
   defp determine_tier_from_subscription(%{items: %{data: items}}) do
     # Get the first subscription item's price
     case items do
       [%{price: %{id: price_id}} | _] ->
-        tier = Map.get(@tier_mapping, price_id, get_tier_from_env(price_id))
+        tier = get_tier_from_env(price_id)
         {:ok, tier || "premium"}
 
       _ ->

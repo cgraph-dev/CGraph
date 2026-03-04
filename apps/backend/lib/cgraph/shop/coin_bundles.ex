@@ -25,12 +25,14 @@ defmodule CGraph.Shop.CoinBundles do
           bonus: String.t() | nil
         }
 
-  @bundles [
+  require Logger
+
+  @bundle_definitions [
     %{
       id: "starter",
       coins: 100,
       price_cents: 99,
-      stripe_price_id: System.get_env("STRIPE_PRICE_COINS_STARTER"),
+      stripe_env_key: :stripe_price_coins_starter,
       label: "Starter Pack",
       bonus: nil
     },
@@ -38,7 +40,7 @@ defmodule CGraph.Shop.CoinBundles do
       id: "popular",
       coins: 500,
       price_cents: 399,
-      stripe_price_id: System.get_env("STRIPE_PRICE_COINS_POPULAR"),
+      stripe_env_key: :stripe_price_coins_popular,
       label: "Popular Pack",
       bonus: "20% bonus"
     },
@@ -46,7 +48,7 @@ defmodule CGraph.Shop.CoinBundles do
       id: "mega",
       coins: 1200,
       price_cents: 799,
-      stripe_price_id: System.get_env("STRIPE_PRICE_COINS_MEGA"),
+      stripe_env_key: :stripe_price_coins_mega,
       label: "Mega Pack",
       bonus: "50% bonus"
     },
@@ -54,21 +56,48 @@ defmodule CGraph.Shop.CoinBundles do
       id: "ultra",
       coins: 3000,
       price_cents: 1499,
-      stripe_price_id: System.get_env("STRIPE_PRICE_COINS_ULTRA"),
+      stripe_env_key: :stripe_price_coins_ultra,
       label: "Ultra Pack",
       bonus: "100% bonus"
     }
   ]
 
-  @doc "Returns all available coin bundles."
+  @doc "Returns all available coin bundles with Stripe price IDs resolved at runtime."
   @spec get_bundles() :: [bundle()]
-  def get_bundles, do: @bundles
+  def get_bundles do
+    coin_prices = Application.get_env(:cgraph, :stripe_coin_prices, %{})
+
+    Enum.map(@bundle_definitions, fn bundle ->
+      stripe_price_id = Map.get(coin_prices, bundle.stripe_env_key)
+
+      bundle
+      |> Map.delete(:stripe_env_key)
+      |> Map.put(:stripe_price_id, stripe_price_id)
+    end)
+  end
 
   @doc "Returns a specific bundle by ID, or nil if not found."
   @spec get_bundle(String.t()) :: bundle() | nil
   def get_bundle(id) when is_binary(id) do
-    Enum.find(@bundles, &(&1.id == id))
+    Enum.find(get_bundles(), &(&1.id == id))
   end
 
   def get_bundle(_), do: nil
+
+  @doc "Validates that all Stripe coin price IDs are configured. Logs warnings for missing."
+  @spec validate_config!() :: :ok
+  def validate_config! do
+    coin_prices = Application.get_env(:cgraph, :stripe_coin_prices, %{})
+
+    Enum.each(@bundle_definitions, fn bundle ->
+      unless Map.get(coin_prices, bundle.stripe_env_key) do
+        Logger.warning("Missing Stripe price ID for coin bundle",
+          bundle: bundle.id,
+          config_key: bundle.stripe_env_key
+        )
+      end
+    end)
+
+    :ok
+  end
 end

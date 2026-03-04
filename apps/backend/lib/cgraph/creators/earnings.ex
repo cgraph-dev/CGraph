@@ -53,25 +53,34 @@ defmodule CGraph.Creators.Earnings do
   """
   @spec get_balance(String.t()) :: map()
   def get_balance(creator_id) do
-    total_earned =
+    # Single query with subqueries ensures consistent point-in-time snapshot
+    result =
       from(e in CreatorEarning,
         where: e.creator_id == ^creator_id,
-        select: coalesce(sum(e.net_amount_cents), 0)
+        select: %{
+          total_earned_cents: coalesce(sum(e.net_amount_cents), 0),
+          total_paid_out_cents:
+            subquery(
+              from(p in CreatorPayout,
+                where: p.creator_id == ^creator_id and p.status == "completed",
+                select: coalesce(sum(p.amount_cents), 0)
+              )
+            )
+        }
       )
       |> Repo.one()
 
-    total_paid_out =
-      from(p in CreatorPayout,
-        where: p.creator_id == ^creator_id and p.status == "completed",
-        select: coalesce(sum(p.amount_cents), 0)
-      )
-      |> Repo.one()
+    case result do
+      nil ->
+        %{total_earned_cents: 0, total_paid_out_cents: 0, available_balance_cents: 0}
 
-    %{
-      total_earned_cents: total_earned,
-      total_paid_out_cents: total_paid_out,
-      available_balance_cents: total_earned - total_paid_out
-    }
+      %{total_earned_cents: earned, total_paid_out_cents: paid} ->
+        %{
+          total_earned_cents: earned,
+          total_paid_out_cents: paid,
+          available_balance_cents: earned - paid
+        }
+    end
   end
 
   @doc """

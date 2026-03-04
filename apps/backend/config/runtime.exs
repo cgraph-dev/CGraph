@@ -246,6 +246,14 @@ if config_env() == :prod do
     cancel_url: app_url <> "/billing/cancel",
     portal_return_url: app_url <> "/settings/billing"
 
+  # Coin bundle Stripe price IDs (optional — nil enables demo mode)
+  config :cgraph, :stripe_coin_prices, %{
+    stripe_price_coins_starter: System.get_env("STRIPE_PRICE_COINS_STARTER"),
+    stripe_price_coins_popular: System.get_env("STRIPE_PRICE_COINS_POPULAR"),
+    stripe_price_coins_mega: System.get_env("STRIPE_PRICE_COINS_MEGA"),
+    stripe_price_coins_ultra: System.get_env("STRIPE_PRICE_COINS_ULTRA")
+  }
+
   # Sentry error tracking
   if System.get_env("SENTRY_DSN") do
     config :sentry,
