@@ -1059,32 +1059,27 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 
 ---
 
-### Phase 20: Liquid Glass UI — Web App Visual Layer Upgrade
+### Phase 20: Liquid Glass UI — Web App Visual Layer Upgrade ✅
 
 **Goal:** Replace all legacy `bg-dark-*` / `bg-gray-*` styling across `apps/web` with the
 liquid-glass design system. Visual layer only — zero store/hook/socket/API changes.
 
-**Depends on:** Commit `61489806` (liquid-glass primitives) **Plans:** 10 plans
+**Depends on:** Commit `61489806` (liquid-glass primitives) **Plans:** 10 plans — **COMPLETE**
 
 Plans:
 
-- [ ] 20-01-PLAN.md — Shared UI Primitives (card, modal, button, input, select, badge, tooltip,
-      popover, skeleton, empty-state, glass-card, animated-avatar)
-- [ ] 20-02-PLAN.md — Chat Conversations & Input (conversation list, message input, reactions,
-      thread panel)
-- [ ] 20-03-PLAN.md — Chat Secondary (info panels, pickers, media messages, modals, E2EE UI)
-- [ ] 20-04-PLAN.md — Settings & Social (settings panels, avatar/appearance settings, chat bubble
-      customization, social components)
-- [ ] 20-05-PLAN.md — Groups & Calls (channel list, group settings, members, roles, call modals,
-      video grid)
-- [ ] 20-06-PLAN.md — Forums (editors, headers, comments, leaderboards, BBCode, search, permissions,
-      RSS)
-- [ ] 20-07-PLAN.md — Gamification, Admin, Moderation & Premium (achievements, quests, streaks,
-      admin dashboard, moderation queue)
-- [ ] 20-08-PLAN.md — Pages: Auth, Settings, Customize, Security, Profile, Social
-- [ ] 20-09-PLAN.md — Pages: Forums, Groups, Messages
-- [ ] 20-10-PLAN.md — Pages: Admin, Premium, Creator, Gamification, Leaderboard, Calls, Community,
-      Friends, Notifications, Search, Explore, 404
+- [x] 20-01-PLAN.md — Shared UI Primitives (22 files)
+- [x] 20-02-PLAN.md — Chat Conversations & Input (25 files)
+- [x] 20-03-PLAN.md — Chat Secondary (24 files)
+- [x] 20-04-PLAN.md — Settings & Social (60 files)
+- [x] 20-05-PLAN.md — Groups & Calls (46 files)
+- [x] 20-06-PLAN.md — Forums (88 files)
+- [x] 20-07-PLAN.md — Gamification, Admin, Moderation & Premium (65 files)
+- [x] 20-08-PLAN.md — Pages: Auth, Settings, Customize (59 files)
+- [x] 20-09-PLAN.md — Pages: Forums, Groups, Messages (78 files)
+- [x] 20-10-PLAN.md — Pages: Admin, Calls, Community, Social, Gamification (61 files)
+
+**Result:** 0 legacy `bg-dark-*` remaining (6 intentional theme preview configs preserved). Zero TypeScript errors.
 
 ---
 
