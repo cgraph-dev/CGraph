@@ -135,7 +135,7 @@ export function ModerationDashboard() {
               setLoading(true);
               fetchStats();
             }}
-            className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-gray-400 hover:bg-dark-600 hover:text-white"
+            className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-xs text-gray-400 hover:bg-white/[0.10] hover:text-white"
           >
             Refresh
           </button>
@@ -159,7 +159,7 @@ export function ModerationDashboard() {
             setLoading(true);
             fetchStats();
           }}
-          className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-gray-400 hover:bg-dark-600 hover:text-white"
+          className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-xs text-gray-400 hover:bg-white/[0.10] hover:text-white"
         >
           Refresh
         </button>

@@ -52,7 +52,7 @@ export function BadgePickerModal({
           <motion.div
             className={cn(
               'relative z-10 w-full max-w-lg',
-              'rounded-2xl bg-dark-800',
+              'rounded-2xl bg-white/[0.04]',
               'border border-white/10',
               'shadow-2xl shadow-black/50',
               'overflow-hidden'
@@ -91,7 +91,7 @@ export function BadgePickerModal({
                       key={badge.id}
                       className={cn(
                         'rounded-xl p-2',
-                        'bg-dark-700/50 hover:bg-dark-600/50',
+                        'bg-white/[0.06] hover:bg-white/[0.10]/50',
                         'border border-transparent hover:border-primary-500/30',
                         'transition-colors'
                       )}
@@ -115,7 +115,7 @@ export function BadgePickerModal({
             </div>
 
             {/* Footer hint */}
-            <div className="border-t border-white/10 bg-dark-700/50 px-4 py-3">
+            <div className="border-t border-white/10 bg-white/[0.06] px-4 py-3">
               <p className="text-center text-xs text-gray-500">
                 Equipped badges are visible on your profile across all forums
               </p>

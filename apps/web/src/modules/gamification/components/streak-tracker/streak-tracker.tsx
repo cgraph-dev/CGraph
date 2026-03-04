@@ -192,7 +192,7 @@ export function StreakTracker({
         {/* View All Milestones Toggle */}
         <button
           onClick={() => setShowMilestones(!showMilestones)}
-          className="w-full border-t border-dark-700 p-4 text-sm text-gray-400 transition-colors hover:bg-dark-700/50 hover:text-white"
+          className="w-full border-t border-white/[0.06] p-4 text-sm text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
         >
           {showMilestones ? 'Hide' : 'View'} All Milestones
         </button>

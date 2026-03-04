@@ -9,7 +9,7 @@ import type { SystemMetrics } from '@/types/admin.types';
  */
 export function JobsStatusCard({ jobs }: { jobs?: SystemMetrics['jobs'] }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
       <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Background Jobs</h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">

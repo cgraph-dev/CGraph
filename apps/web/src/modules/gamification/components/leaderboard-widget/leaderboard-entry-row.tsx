@@ -41,7 +41,7 @@ export function LeaderboardEntryRow({
       className={`flex cursor-pointer items-center gap-4 rounded-lg p-3 transition-colors ${
         entry.isCurrentUser
           ? 'bg-primary-500/20 ring-1 ring-primary-500/50'
-          : 'hover:bg-dark-700/50'
+          : 'hover:bg-white/[0.06]'
       }`}
     >
       {/* Rank */}

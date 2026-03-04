@@ -78,7 +78,7 @@ export function AchievementModal({
                 {/* Progress */}
                 {achievement.targetProgress && !isUnlocked && (
                   <div className="mb-4">
-                    <div className="h-3 overflow-hidden rounded-full bg-dark-700">
+                    <div className="h-3 overflow-hidden rounded-full bg-white/[0.06]">
                       <motion.div
                         className="h-full rounded-full"
                         style={{ backgroundColor: RARITY_COLORS[achievement.rarity] }}

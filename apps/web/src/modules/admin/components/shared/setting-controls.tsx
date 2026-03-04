@@ -72,7 +72,7 @@ export function SettingNumber({
         type="number"
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        className="w-24 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-right dark:border-gray-600 dark:bg-gray-700"
+        className="w-24 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-right dark:border-white/[0.08] dark:bg-white/[0.06]"
       />
     </div>
   );

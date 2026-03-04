@@ -61,7 +61,7 @@ export function PaymentStep({
               className={`flex items-center gap-2 rounded-xl border p-3 transition-all ${
                 paymentMethod === method.id
                   ? 'border-primary-500 bg-primary-500/20'
-                  : 'border-white/10 bg-dark-800/50 hover:border-white/20'
+                  : 'border-white/10 bg-white/[0.04] hover:border-white/20'
               } `}
             >
               <span className="text-xl">{method.icon}</span>
@@ -88,7 +88,7 @@ export function PaymentStep({
                 onChange={(e) => onCardDataChange({ cardNumber: formatCardNumber(e.target.value) })}
                 placeholder="1234 5678 9012 3456"
                 maxLength={19}
-                className="w-full rounded-lg border border-white/10 bg-dark-800/50 py-3 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-lg border border-white/10 bg-white/[0.04] py-3 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -102,7 +102,7 @@ export function PaymentStep({
                 onChange={(e) => onCardDataChange({ cardExpiry: formatExpiry(e.target.value) })}
                 placeholder="MM/YY"
                 maxLength={5}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -113,7 +113,7 @@ export function PaymentStep({
                 onChange={(e) => onCardDataChange({ cardCvc: formatCvc(e.target.value) })}
                 placeholder="123"
                 maxLength={4}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -125,7 +125,7 @@ export function PaymentStep({
               value={cardData.cardName}
               onChange={(e) => onCardDataChange({ cardName: e.target.value })}
               placeholder="John Doe"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -134,7 +134,7 @@ export function PaymentStep({
               type="checkbox"
               checked={cardData.saveCard}
               onChange={(e) => onCardDataChange({ saveCard: e.target.checked })}
-              className="rounded border-white/20 bg-dark-800 text-primary-500 focus:ring-primary-500"
+              className="rounded border-white/20 bg-white/[0.04] text-primary-500 focus:ring-primary-500"
             />
             <span className="text-sm text-white/70">Save card for future purchases</span>
           </label>
@@ -143,7 +143,7 @@ export function PaymentStep({
 
       {/* Other payment methods message */}
       {paymentMethod !== 'card' && (
-        <div className="rounded-xl bg-dark-800/50 p-4 text-center">
+        <div className="rounded-xl bg-white/[0.04] p-4 text-center">
           <p className="text-white/60">
             You will be redirected to {PAYMENT_METHODS.find((m) => m.id === paymentMethod)?.name} to
             complete your payment.

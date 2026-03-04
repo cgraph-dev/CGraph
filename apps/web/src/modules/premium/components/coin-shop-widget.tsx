@@ -86,7 +86,7 @@ export function CoinShopWidget({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handlePurchase(pkg)}
-              className="rounded-xl bg-dark-800/50 p-3 text-center transition-colors hover:bg-dark-700/50"
+              className="rounded-xl bg-white/[0.04] p-3 text-center transition-colors hover:bg-white/[0.06]"
             >
               <div className="mb-1 flex items-center justify-center gap-1">
                 <CoinIcon className="h-4 w-4" />

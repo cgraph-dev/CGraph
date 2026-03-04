@@ -33,12 +33,12 @@ export const OrderableItem = memo(function OrderableItem({
     <Reorder.Item value={item} dragListener={false} dragControls={dragControls} className="mb-2">
       <motion.div
         layout
-        className={`group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 ${item.is_hidden ? 'opacity-50' : ''} `}
+        className={`group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-gray-300 dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-white/[0.08] ${item.is_hidden ? 'opacity-50' : ''} `}
         style={{ marginLeft: depth * 24 }}
       >
         {/* Drag handle */}
         <motion.div
-          className="cursor-grab rounded p-1 hover:bg-gray-100 active:cursor-grabbing dark:hover:bg-gray-700"
+          className="cursor-grab rounded p-1 hover:bg-gray-100 active:cursor-grabbing dark:hover:bg-white/[0.06]"
           onPointerDown={(e) => dragControls.start(e)}
         >
           <Bars3Icon className="h-5 w-5 text-gray-400" />
@@ -48,7 +48,7 @@ export const OrderableItem = memo(function OrderableItem({
         {hasChildren ? (
           <button
             onClick={onToggleExpand}
-            className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="rounded p-1 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
           >
             {isExpanded ? (
               <ChevronDownIcon className="h-4 w-4 text-gray-500" />
@@ -76,7 +76,7 @@ export const OrderableItem = memo(function OrderableItem({
         </div>
 
         {/* Order indicator */}
-        <div className="rounded bg-gray-100 px-2 py-1 font-mono text-xs text-gray-400 dark:bg-gray-700">
+        <div className="rounded bg-gray-100 px-2 py-1 font-mono text-xs text-gray-400 dark:bg-white/[0.06]">
           #{item.display_order + 1}
         </div>
 
@@ -87,7 +87,7 @@ export const OrderableItem = memo(function OrderableItem({
             disabled={!canMoveUp}
             className={`rounded p-1.5 transition-colors ${
               canMoveUp
-                ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]'
                 : 'cursor-not-allowed text-gray-300 dark:text-gray-600'
             }`}
             title="Move up"
@@ -99,7 +99,7 @@ export const OrderableItem = memo(function OrderableItem({
             disabled={!canMoveDown}
             className={`rounded p-1.5 transition-colors ${
               canMoveDown
-                ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]'
                 : 'cursor-not-allowed text-gray-300 dark:text-gray-600'
             }`}
             title="Move down"

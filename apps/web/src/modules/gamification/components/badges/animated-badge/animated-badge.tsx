@@ -67,7 +67,7 @@ export function AnimatedBadge({
       <motion.div
         className={cn(
           'relative flex items-center justify-center rounded-full',
-          isCompleted ? `bg-gradient-to-br ${colors.gradient}` : 'bg-dark-700 grayscale',
+          isCompleted ? `bg-gradient-to-br ${colors.gradient}` : 'bg-white/[0.06] grayscale',
           isEquipped && 'ring-2 ring-primary-500 ring-offset-2 ring-offset-dark-900'
         )}
         style={{

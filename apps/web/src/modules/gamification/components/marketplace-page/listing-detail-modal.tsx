@@ -38,7 +38,7 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-gray-900"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[rgb(30,32,40)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Preview */}

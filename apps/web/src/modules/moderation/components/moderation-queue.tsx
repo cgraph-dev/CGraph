@@ -47,7 +47,7 @@ const QueueItemCard = memo(function QueueItemCard({
   onReject,
 }: QueueItemCardProps) {
   return (
-    <div className={`rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 bg-gray-800/50'} p-4`}>
+    <div className={`rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-white/[0.08] bg-white/[0.04]'} p-4`}>
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {item.status === 'pending' && (
@@ -55,7 +55,7 @@ const QueueItemCard = memo(function QueueItemCard({
               type="checkbox"
               checked={isSelected}
               onChange={() => onToggleSelect(item.id)}
-              className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-blue-600 focus:ring-blue-500"
               aria-label={`Select report ${item.id}`}
             />
           )}
@@ -232,7 +232,7 @@ export function ModerationQueue() {
               type="checkbox"
               checked={selectedIds.size === pendingItems.length && pendingItems.length > 0}
               onChange={handleSelectAll}
-              className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-blue-600 focus:ring-blue-500"
             />
             Select all
           </label>
@@ -241,7 +241,7 @@ export function ModerationQueue() {
           value={statusFilter}
            
           onChange={(e) => setStatusFilter(e.target.value as FilterStatus)} // safe downcast – select event value
-          className="rounded bg-gray-800 px-3 py-1.5 text-sm text-gray-300"
+          className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >
           <option value="pending">Pending</option>
           <option value="all">All</option>
@@ -250,7 +250,7 @@ export function ModerationQueue() {
           value={priorityFilter}
            
           onChange={(e) => setPriorityFilter(e.target.value as FilterPriority)} // safe downcast – select event value
-          className="rounded bg-gray-800 px-3 py-1.5 text-sm text-gray-300"
+          className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >
           <option value="all">All Priorities</option>
           <option value="critical">Critical</option>
@@ -331,7 +331,7 @@ export function ModerationQueue() {
       {isLoadingQueue && <div className="py-8 text-center text-gray-500">Loading queue…</div>}
 
       {!isLoadingQueue && filteredQueue.length === 0 && (
-        <div className="rounded-lg border border-gray-700 bg-gray-800/30 py-8 text-center text-gray-500">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-8 text-center text-gray-500">
           No items in queue
         </div>
       )}

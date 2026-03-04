@@ -44,7 +44,7 @@ export function ModeratorLeaderboard({ data }: ModeratorLeaderboardProps) {
             {entries.map((mod, index) => (
               <div
                 key={mod.reviewer_id}
-                className="flex items-center justify-between rounded-lg bg-dark-700/50 px-3 py-2"
+                className="flex items-center justify-between rounded-lg bg-white/[0.06] px-3 py-2"
               >
                 <div className="flex items-center gap-3">
                   {/* Rank badge */}
@@ -56,7 +56,7 @@ export function ModeratorLeaderboard({ data }: ModeratorLeaderboardProps) {
                           ? 'bg-gray-400/20 text-gray-300'
                           : index === 2
                             ? 'bg-orange-500/20 text-orange-400'
-                            : 'bg-dark-600 text-gray-500'
+                            : 'bg-white/[0.08] text-gray-500'
                     }`}
                   >
                     {index + 1}

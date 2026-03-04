@@ -48,7 +48,7 @@ export function SidebarVariant({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
             onClick={() => onUserClick?.(entry.userId)}
-            className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-dark-700/50"
+            className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-white/[0.06]"
           >
             <span
               className="w-6 text-center font-bold"
@@ -75,7 +75,7 @@ export function SidebarVariant({
       </div>
 
       {currentUserEntry && currentUserEntry.rank > 5 && (
-        <div className="mt-4 border-t border-dark-700 pt-4">
+        <div className="mt-4 border-t border-white/[0.06] pt-4">
           <div className="flex items-center gap-3 rounded-lg bg-primary-500/10 p-2">
             <span className="w-6 text-center font-bold">#{currentUserEntry.rank}</span>
             <ThemedAvatar

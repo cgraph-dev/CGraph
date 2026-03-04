@@ -42,7 +42,7 @@ export function OrderDetailsStep({
       className="space-y-6"
     >
       {/* Order summary */}
-      <div className="space-y-3 rounded-xl bg-dark-800/50 p-4">
+      <div className="space-y-3 rounded-xl bg-white/[0.04] p-4">
         <h3 className="font-semibold text-white">Order Summary</h3>
         <div className="flex items-start justify-between">
           <div>
@@ -86,7 +86,7 @@ export function OrderDetailsStep({
             value={promoCode}
             onChange={(e) => onPromoChange(e.target.value.toUpperCase())}
             placeholder="Enter code"
-            className="flex-1 rounded-lg border border-white/10 bg-dark-800/50 px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <Button
             onClick={onApplyPromo}

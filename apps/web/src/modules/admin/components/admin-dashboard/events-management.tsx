@@ -35,7 +35,7 @@ function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-gray-900 p-6"
+        className="w-full max-w-md rounded-2xl border border-white/10 bg-[rgb(30,32,40)] p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-xl font-bold">Create New Event</h2>

@@ -31,7 +31,7 @@ export function BadgeTooltip({ achievement, colors, isVisible }: BadgeTooltipPro
           className={cn(
             'absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2',
             'rounded-xl px-4 py-3',
-            'bg-dark-800/95 backdrop-blur-xl',
+            'bg-white/[0.08] backdrop-blur-xl',
             'border border-white/10',
             'shadow-xl shadow-black/50',
             'min-w-[200px] max-w-[280px]',
@@ -74,7 +74,7 @@ export function BadgeTooltip({ achievement, colors, isVisible }: BadgeTooltipPro
                     {achievement.progress} / {achievement.maxProgress}
                   </span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-dark-600">
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
                   <motion.div
                     className="h-full rounded-full"
                     style={{

@@ -32,7 +32,7 @@ export function ProgressBar({
           {unit}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+      <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-white/[0.06]">
         <div
           className={clsx(
             'h-2 rounded-full transition-all',

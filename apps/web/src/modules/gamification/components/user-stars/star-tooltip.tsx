@@ -24,7 +24,7 @@ interface StarTooltipProps {
 export function StarTooltip({ tier, postCount, progress, postsToNext }: StarTooltipProps) {
   return (
     <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-      <div className="rounded-lg border border-dark-600 bg-dark-800 px-3 py-2 shadow-xl">
+      <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 shadow-xl">
         <div className="flex items-center gap-2">
           <span className="font-semibold" style={{ color: tier.color }}>
             {tier.name}
@@ -45,7 +45,7 @@ export function StarTooltip({ tier, postCount, progress, postsToNext }: StarTool
               <span className="text-gray-500">Next tier</span>
               <span className="text-gray-400">{progress}%</span>
             </div>
-            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-dark-600">
+            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-white/[0.08]">
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: tier.color }}

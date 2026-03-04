@@ -27,11 +27,11 @@ export function QuestObjectiveItem({ objective, index }: QuestObjectiveItemProps
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="flex items-center gap-3 rounded-lg bg-dark-800/50 p-2"
+      className="flex items-center gap-3 rounded-lg bg-white/[0.04] p-2"
     >
       <div
         className={`flex h-5 w-5 items-center justify-center rounded-full ${
-          objective.completed ? 'bg-green-500' : 'bg-dark-600'
+          objective.completed ? 'bg-green-500' : 'bg-white/[0.08]'
         }`}
       >
         {objective.completed ? (

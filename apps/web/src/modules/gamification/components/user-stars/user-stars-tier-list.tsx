@@ -19,7 +19,7 @@ export function UserStarsTierList() {
       {USER_TIERS.map((tier) => (
         <div
           key={tier.name}
-          className="flex items-center justify-between rounded-lg border border-dark-600 bg-dark-800/50 px-4 py-3"
+          className="flex items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3"
         >
           <div className="flex items-center gap-3">
             <UserStars postCount={tier.minPosts} size="md" compact animated={false} />

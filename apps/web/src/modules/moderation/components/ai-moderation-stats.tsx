@@ -118,15 +118,15 @@ export function AIModrationStats({ data }: AIModrationStatsProps) {
 
             {/* Stats Summary */}
             <div className="mt-4 grid grid-cols-3 gap-3">
-              <div className="rounded-lg bg-dark-700/50 p-3 text-center">
+              <div className="rounded-lg bg-white/[0.06] p-3 text-center">
                 <p className="text-lg font-bold text-white">{totalDecisions}</p>
                 <p className="text-xs text-gray-400">Total Decisions</p>
               </div>
-              <div className="rounded-lg bg-dark-700/50 p-3 text-center">
+              <div className="rounded-lg bg-white/[0.06] p-3 text-center">
                 <p className="text-lg font-bold text-white">{autoActionCount}</p>
                 <p className="text-xs text-gray-400">Auto-Actioned</p>
               </div>
-              <div className="rounded-lg bg-dark-700/50 p-3 text-center">
+              <div className="rounded-lg bg-white/[0.06] p-3 text-center">
                 <p className="text-lg font-bold text-white">{autoActionRate}%</p>
                 <p className="text-xs text-gray-400">Auto Rate</p>
               </div>

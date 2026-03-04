@@ -130,14 +130,14 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-5 overflow-hidden rounded-xl border border-white/10 bg-dark-700 p-4"
+            className="mb-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] p-4"
           >
             <div className="space-y-3">
               <input
                 value={editingRule.name || ''}
                 onChange={(e) => setEditingRule({ ...editingRule, name: e.target.value })}
                 placeholder="Rule name"
-                className="w-full rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               />
               <div className="grid grid-cols-2 gap-3">
                 <select
@@ -149,7 +149,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                       rule_type: e.target.value as AutomodRule['rule_type'], // safe downcast – select event value
                     })
                   }
-                  className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
                 >
                   {RULE_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -166,7 +166,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                       action: e.target.value as AutomodRule['action'], // safe downcast – select event value
                     })
                   }
-                  className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
                 >
                   {ACTIONS.map((a) => (
                     <option key={a.value} value={a.value}>
@@ -180,7 +180,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                 onChange={(e) => setEditingRule({ ...editingRule, pattern: e.target.value })}
                 placeholder="Pattern (regex for word filter, domains for link filter)"
                 rows={3}
-                className="w-full rounded-lg border border-white/10 bg-dark-800 px-3 py-2 font-mono text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               />
               <div className="flex justify-end gap-2">
                 <button
@@ -222,8 +222,8 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
               key={rule.id}
               className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
                 rule.is_enabled
-                  ? 'border-white/10 bg-dark-700/50'
-                  : 'border-white/5 bg-dark-800/50 opacity-50'
+                  ? 'border-white/10 bg-white/[0.06]'
+                  : 'border-white/5 bg-white/[0.04] opacity-50'
               }`}
             >
               <div className="min-w-0 flex-1">

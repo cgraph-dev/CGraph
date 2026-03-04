@@ -29,7 +29,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
         transition={{ delay: 0.6 }}
       >
         <div className="h-24 w-24 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 p-1">
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[rgb(30,32,40)]">
             <span className="text-3xl font-bold text-gray-500">{oldLevel}</span>
             <span className="text-[10px] uppercase tracking-wider text-gray-600">Previous</span>
           </div>
@@ -57,7 +57,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
         transition={{ ...springs.default, delay: 0.8 }}
       >
         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 p-1.5">
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[rgb(30,32,40)]">
             <span className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-4xl font-bold text-transparent">
               {newLevel}
             </span>

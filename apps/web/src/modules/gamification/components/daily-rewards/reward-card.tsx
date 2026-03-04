@@ -34,12 +34,12 @@ export const RewardCard = memo<RewardCardProps>(function RewardCard({
       transition={{ delay: index * ANIMATION_DURATIONS.cardStagger }}
       className={`relative flex flex-col items-center rounded-xl p-3 transition-all ${
         isToday && canClaim
-          ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-2 ring-offset-2 ring-offset-dark-800'
+          ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-2 ring-offset-2 ring-offset-[rgb(30,32,40)]'
           : isClaimed
-            ? 'bg-dark-700/50 opacity-60'
+            ? 'bg-white/[0.06] opacity-60'
             : isLocked
-              ? 'bg-dark-800'
-              : 'bg-dark-700'
+              ? 'bg-white/[0.04]'
+              : 'bg-white/[0.06]'
       }`}
       style={
         // type assertion: CSS custom property requires CSSProperties widening
@@ -54,7 +54,7 @@ export const RewardCard = memo<RewardCardProps>(function RewardCard({
             ? 'bg-green-500 text-white'
             : isToday
               ? 'text-white'
-              : 'bg-dark-600 text-gray-400'
+              : 'bg-white/[0.08] text-gray-400'
         }`}
         style={isToday && !isClaimed ? { backgroundColor: primaryColor } : {}}
       >
@@ -74,7 +74,7 @@ export const RewardCard = memo<RewardCardProps>(function RewardCard({
         )}
 
         {isPremiumLocked && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-dark-900/70">
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-[rgb(30,32,40)]/70">
             <StarIcon className="h-4 w-4 text-amber-500" />
           </div>
         )}

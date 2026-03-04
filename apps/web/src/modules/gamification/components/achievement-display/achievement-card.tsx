@@ -83,7 +83,7 @@ export function AchievementCard({
                 />
               )}
               {!unlocked && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-dark-900/50">
+                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-[rgb(30,32,40)]/[0.50]">
                   <LockClosedIcon className="h-5 w-5 text-gray-400" />
                 </div>
               )}
@@ -114,7 +114,7 @@ export function AchievementCard({
                   {achievement.currentProgress || 0}/{achievement.targetProgress}
                 </span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+              <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ backgroundColor: RARITY_COLORS[achievement.rarity] }}

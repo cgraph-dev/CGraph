@@ -70,7 +70,7 @@ function CategoryTab({ label, icon: Icon, isActive, count, onClick }: CategoryTa
         'transition-colors',
         isActive
           ? 'border border-primary-500/30 bg-primary-500/20 text-primary-400'
-          : 'border border-transparent bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
+          : 'border border-transparent bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]/50 hover:text-white'
       )}
       onClick={onClick}
       whileHover={{ scale: 1.02 }}

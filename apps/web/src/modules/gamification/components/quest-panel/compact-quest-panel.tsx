@@ -50,7 +50,7 @@ export function CompactQuestPanel({
               <motion.div key={quest.id} className="flex items-center gap-3" whileHover={{ x: 2 }}>
                 <div
                   className={`flex h-6 w-6 items-center justify-center rounded-full ${
-                    ready ? 'bg-green-500' : 'bg-dark-700'
+                    ready ? 'bg-green-500' : 'bg-white/[0.06]'
                   }`}
                 >
                   {ready ? (
@@ -61,7 +61,7 @@ export function CompactQuestPanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-xs text-gray-300">{quest.title}</p>
-                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-dark-700">
+                  <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/[0.06]">
                     <motion.div
                       className={`h-full rounded-full ${ready ? 'bg-green-500' : 'bg-primary-500'}`}
                       initial={{ width: 0 }}

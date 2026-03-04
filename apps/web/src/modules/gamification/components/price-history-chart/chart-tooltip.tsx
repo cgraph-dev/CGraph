@@ -25,7 +25,7 @@ export function ChartTooltip({ hoveredPoint, dimensions, currency }: ChartToolti
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="absolute z-10 rounded-lg border border-white/10 bg-gray-900 p-3 shadow-xl"
+          className="absolute z-10 rounded-lg border border-white/10 bg-[rgb(30,32,40)] p-3 shadow-xl"
           style={{
             left: Math.min(hoveredPoint.x - 60, dimensions.width - 140),
             top: hoveredPoint.y - 80,

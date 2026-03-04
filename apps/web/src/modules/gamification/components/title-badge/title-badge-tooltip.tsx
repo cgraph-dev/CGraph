@@ -29,7 +29,7 @@ export function TitleBadgeTooltip({ title, rarityColor }: TitleBadgeTooltipProps
       className={cn(
         'absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2',
         'rounded-lg px-3 py-2',
-        'bg-dark-800/95 backdrop-blur-xl',
+        'bg-white/[0.08] backdrop-blur-xl',
         'border border-white/10',
         'shadow-xl shadow-black/50',
         'whitespace-nowrap',

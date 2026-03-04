@@ -133,7 +133,7 @@ export const BorderPreview = memo(function BorderPreview({
         >
           <motion.div
             className={cn(
-              'relative w-full max-w-md rounded-2xl border border-white/10 bg-dark-800 p-6 shadow-2xl',
+              'relative w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl',
               className,
             )}
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -195,7 +195,7 @@ export const BorderPreview = memo(function BorderPreview({
             </div>
 
             {/* In-context Preview: Fake message bubble */}
-            <div className="mb-6 rounded-xl border border-white/5 bg-dark-700/50 p-4">
+            <div className="mb-6 rounded-xl border border-white/5 bg-white/[0.06] p-4">
               <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
                 In Chat Preview
               </p>
@@ -259,7 +259,7 @@ export const BorderPreview = memo(function BorderPreview({
                     'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-medium transition-all',
                     canAfford
                       ? `bg-gradient-to-r ${rarityStyle.gradient} text-white hover:opacity-90`
-                      : 'cursor-not-allowed bg-gray-700 text-gray-500',
+                      : 'cursor-not-allowed bg-white/[0.06] text-gray-500',
                   )}
                 >
                   <ShoppingCartIcon className="h-5 w-5" />

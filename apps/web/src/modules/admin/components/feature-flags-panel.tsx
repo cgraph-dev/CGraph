@@ -88,7 +88,7 @@ function FlagRow({
   onDelete: (name: string) => void;
 }) {
   return (
-    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+    <tr className="border-b border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.04]">
       <td className="px-4 py-3">
         <button
           className="text-left font-medium text-blue-600 dark:text-blue-400 hover:underline"
@@ -101,7 +101,7 @@ function FlagRow({
         )}
       </td>
       <td className="px-4 py-3">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-white/[0.06] text-gray-800 dark:text-gray-200">
           {flag.type}
         </span>
       </td>
@@ -187,7 +187,7 @@ function FlagHistory({ flagName }: { flagName: string }) {
               {new Date(entry.timestamp).toLocaleString()}
             </p>
             {entry.changes && Object.keys(entry.changes).length > 0 && (
-              <pre className="text-xs bg-gray-50 dark:bg-gray-800 rounded p-1 mt-1 max-w-xs overflow-x-auto">
+              <pre className="text-xs bg-gray-50 dark:bg-white/[0.04] rounded p-1 mt-1 max-w-xs overflow-x-auto">
                 {JSON.stringify(entry.changes, null, 2)}
               </pre>
             )}
@@ -223,7 +223,7 @@ function CreateFlagModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+      <div className="bg-white dark:bg-white/[0.04] rounded-lg shadow-xl p-6 w-full max-w-md">
         <h3 className="text-lg font-semibold mb-4">Create Feature Flag</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -233,7 +233,7 @@ function CreateFlagModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. dark_mode_v2"
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
               required
             />
           </div>
@@ -242,7 +242,7 @@ function CreateFlagModal({
             <select
               value={type}
               onChange={(e) => setType(e.target.value as FlagType)}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
             >
               <option value="boolean">Boolean (on/off)</option>
               <option value="percentage">Percentage rollout</option>
@@ -257,14 +257,14 @@ function CreateFlagModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description"
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-white/[0.06]"
             >
               Cancel
             </button>
@@ -376,7 +376,7 @@ export function FeatureFlagsPanel() {
         <div className="flex gap-2">
           <button
             onClick={loadFlags}
-            className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-white/[0.06]"
           >
             Refresh
           </button>
@@ -410,9 +410,9 @@ export function FeatureFlagsPanel() {
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto border rounded-lg dark:border-gray-700">
+        <div className="overflow-x-auto border rounded-lg dark:border-white/[0.08]">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-800 text-left">
+            <thead className="bg-gray-50 dark:bg-white/[0.04] text-left">
               <tr>
                 <th className="px-4 py-2 font-medium">Name</th>
                 <th className="px-4 py-2 font-medium">Type</th>
@@ -440,7 +440,7 @@ export function FeatureFlagsPanel() {
 
       {/* Detail view with history */}
       {selectedFlag && (
-        <div className="border rounded-lg dark:border-gray-700 p-4">
+        <div className="border rounded-lg dark:border-white/[0.08] p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold">
               Flag: <span className="text-blue-600 dark:text-blue-400">{selectedFlag}</span>

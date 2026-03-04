@@ -70,7 +70,7 @@ export function RarityEffects({ rarity, colors, config }: RarityEffectsProps) {
         >
           {/* Inner mask */}
           <div
-            className="absolute rounded-full bg-dark-900"
+            className="absolute rounded-full bg-[rgb(30,32,40)]"
             style={{
               inset: 3,
             }}

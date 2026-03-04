@@ -77,7 +77,7 @@ export default function LevelUpModal({
               {/* Close Button */}
               <motion.button
                 onClick={onClose}
-                className="absolute right-4 top-4 z-10 rounded-full bg-dark-800/80 p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                className="absolute right-4 top-4 z-10 rounded-full bg-white/[0.06] p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
               >

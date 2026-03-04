@@ -106,7 +106,7 @@ export function DailyRewards({
     <div className={className}>
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Header */}
-        <div className="border-b border-dark-700 p-4">
+        <div className="border-b border-white/[0.06] p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div
@@ -180,14 +180,14 @@ export function DailyRewards({
         {/* Monthly Progress */}
         {monthlyReward && (
           <div className="px-4 pb-4">
-            <div className="rounded-lg bg-dark-700/50 p-4">
+            <div className="rounded-lg bg-white/[0.06] p-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm text-gray-400">Monthly Reward Progress</span>
                 <span className="text-sm font-medium">
                   {monthlyProgress}/{monthlyReward.daysRequired} days
                 </span>
               </div>
-              <div className="mb-3 h-2 overflow-hidden rounded-full bg-dark-600">
+              <div className="mb-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
                   initial={{ width: 0 }}
@@ -207,7 +207,7 @@ export function DailyRewards({
           <div className="px-4 pb-4">
             <button
               onClick={onClaimWithAd}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-dark-600 p-3 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/[0.08] p-3 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
             >
               <ArrowPathIcon className="h-5 w-5" />
               Watch ad for 2x reward

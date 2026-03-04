@@ -52,9 +52,9 @@ export function ReportDialog({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Dialog */}
-      <div className="relative mx-4 flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-xl dark:bg-gray-800">
+      <div className="relative mx-4 flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-xl dark:bg-white/[0.04]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b p-4 dark:border-gray-700">
+        <div className="flex items-center justify-between border-b p-4 dark:border-white/[0.08]">
           <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
             <FlagIcon className="h-5 w-5" />
             <h2 className="text-lg font-semibold">Report Content</h2>
@@ -62,7 +62,7 @@ export function ReportDialog({
           <button
             onClick={handleClose}
             aria-label="Close report dialog"
-            className="rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-white/[0.06]"
           >
             <XMarkIcon className="h-5 w-5 text-gray-500" />
           </button>
@@ -91,12 +91,12 @@ export function ReportDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t p-4 dark:border-gray-700">
+        <div className="flex justify-end gap-3 border-t p-4 dark:border-white/[0.08]">
           {step === 'category' && (
             <>
               <button
                 onClick={handleClose}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.06]"
               >
                 Cancel
               </button>
@@ -115,7 +115,7 @@ export function ReportDialog({
               <button
                 onClick={() => setStep('category')}
                 disabled={reportMutation.isPending}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.06]"
               >
                 Back
               </button>
@@ -158,7 +158,7 @@ export function ReportDialog({
           {step === 'success' && (
             <button
               onClick={handleClose}
-              className="rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+              className="rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/[0.06]"
             >
               Done
             </button>
@@ -194,7 +194,7 @@ function CategoryStep({
             className={`block cursor-pointer rounded-lg border p-3 transition-colors ${
               selectedCategory === category.value
                 ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                : 'border-gray-200 hover:border-gray-300 dark:border-white/[0.08] dark:hover:border-white/[0.08]'
             } `}
           >
             <div className="flex items-start gap-3">
@@ -264,7 +264,7 @@ function DetailsStep({
           placeholder="Describe what happened..."
           maxLength={2000}
           rows={4}
-          className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+          className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-gray-100 dark:placeholder-white/30"
         />
         <div className="mt-1 text-right text-xs text-gray-500">{description.length}/2000</div>
       </div>

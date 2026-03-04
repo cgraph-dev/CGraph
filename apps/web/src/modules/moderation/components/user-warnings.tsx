@@ -28,7 +28,7 @@ const WarningCard = memo(function WarningCard({ warning, onRevoke }: WarningCard
 
   return (
     <div
-      className={`rounded-lg border p-3 ${warning.isActive ? 'border-red-800/40 bg-red-900/10' : 'border-gray-700 bg-gray-800/30'}`}
+      className={`rounded-lg border p-3 ${warning.isActive ? 'border-red-800/40 bg-red-900/10' : 'border-white/[0.08] bg-white/[0.04]/30'}`}
     >
       <div className="mb-1 flex items-center justify-between">
         <span className="text-sm font-medium text-white">{warning.warningTypeName}</span>
@@ -122,7 +122,7 @@ export function UserWarnings({ userId }: UserWarningsProps) {
       )}
 
       {currentUserWarnings.length === 0 && (
-        <div className="rounded-lg border border-gray-700 bg-gray-800/30 py-6 text-center text-gray-500">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-6 text-center text-gray-500">
           No warnings issued
         </div>
       )}

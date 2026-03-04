@@ -82,13 +82,13 @@ export function ModerationLog() {
       {isLoadingLog && <div className="py-8 text-center text-gray-500">Loading log…</div>}
 
       {!isLoadingLog && moderationLog.length === 0 && (
-        <div className="rounded-lg border border-gray-700 bg-gray-800/30 py-8 text-center text-gray-500">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-8 text-center text-gray-500">
           No moderation actions recorded
         </div>
       )}
 
       {!isLoadingLog && moderationLog.length > 0 && (
-        <div className="rounded-lg border border-gray-700 bg-gray-800/50 px-4">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-4">
           {moderationLog.map((entry) => (
             <LogEntryRow key={entry.id} entry={entry} />
           ))}

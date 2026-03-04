@@ -93,7 +93,7 @@ export function FeatureComparison({
         {/* Header */}
         <thead>
           <tr>
-            <th className="sticky left-0 w-64 bg-dark-900 p-4 text-left">
+            <th className="sticky left-0 w-64 bg-[rgb(30,32,40)] p-4 text-left">
               <span className="text-lg font-bold text-white">Features</span>
             </th>
             {tiers.map((tier) => {
@@ -158,7 +158,7 @@ export function FeatureComparison({
               <tr>
                 <td
                   colSpan={tiers.length + 1}
-                  className="sticky left-0 border-t border-white/5 bg-dark-800/50 p-3"
+                  className="sticky left-0 border-t border-white/5 bg-white/[0.04] p-3"
                 >
                   <button
                     onClick={() =>
@@ -191,7 +191,7 @@ export function FeatureComparison({
                       className="border-t border-white/5"
                     >
                       {/* Feature name */}
-                      <td className="sticky left-0 bg-dark-900 p-4">
+                      <td className="sticky left-0 bg-[rgb(30,32,40)] p-4">
                         <div className="flex items-center gap-2">
                           <span className="text-white/80">{feature.name}</span>
                           {feature.description && (
@@ -209,7 +209,7 @@ export function FeatureComparison({
                                     initial={{ opacity: 0, y: 5 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 5 }}
-                                    className="absolute left-0 top-full z-10 mt-1 w-48 rounded-lg bg-dark-700 p-2 text-xs text-white/70 shadow-lg"
+                                    className="absolute left-0 top-full z-10 mt-1 w-48 rounded-lg bg-white/[0.06] p-2 text-xs text-white/70 shadow-lg"
                                   >
                                     {feature.description}
                                   </motion.div>
@@ -244,7 +244,7 @@ export function FeatureComparison({
         {/* Footer with CTAs */}
         <tfoot>
           <tr className="border-t border-white/10">
-            <td className="sticky left-0 bg-dark-900 p-4" />
+            <td className="sticky left-0 bg-[rgb(30,32,40)] p-4" />
             {tiers.map((tier) => {
               const isCurrent = tier === currentTier;
               const isHighlighted = tier === highlightedTier;

@@ -41,8 +41,8 @@ export function FilterControls({
             onChange={(e) => onFilterUpdate('search', e.target.value)}
             className={cn(
               'w-full rounded-lg py-2 pl-9 pr-4',
-              'border border-white/10 bg-dark-700/50',
-              'text-white placeholder-gray-500',
+              'border border-white/10 bg-white/[0.06]',
+              'text-white placeholder-white/30',
               'focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50',
               'transition-all'
             )}
@@ -63,7 +63,7 @@ export function FilterControls({
           }
           className={cn(
             'rounded-lg px-3 py-2',
-            'border border-white/10 bg-dark-700/50',
+            'border border-white/10 bg-white/[0.06]',
             'text-white',
             'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
             'cursor-pointer'
@@ -91,7 +91,7 @@ export function FilterControls({
           }
           className={cn(
             'rounded-lg px-3 py-2',
-            'border border-white/10 bg-dark-700/50',
+            'border border-white/10 bg-white/[0.06]',
             'text-white',
             'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
             'cursor-pointer'
@@ -117,7 +117,7 @@ export function FilterControls({
           }
           className={cn(
             'rounded-lg px-3 py-2',
-            'border border-white/10 bg-dark-700/50',
+            'border border-white/10 bg-white/[0.06]',
             'text-white',
             'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
             'cursor-pointer'

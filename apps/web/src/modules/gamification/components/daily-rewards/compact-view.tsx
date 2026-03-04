@@ -31,7 +31,7 @@ export function CompactView({
             animate={canClaim ? { scale: [1, 1.1, 1] } : {}}
             transition={loop(tweens.verySlow)}
             className={`flex h-12 w-12 items-center justify-center rounded-xl ${
-              canClaim ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-dark-700'
+              canClaim ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-white/[0.06]'
             }`}
           >
             {canClaim ? (

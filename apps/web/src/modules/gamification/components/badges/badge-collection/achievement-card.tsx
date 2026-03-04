@@ -84,8 +84,8 @@ function ListItem({
     <motion.div
       className={cn(
         'flex items-center gap-4 rounded-xl p-4',
-        'border border-white/5 bg-dark-800/50',
-        'hover:border-white/10 hover:bg-dark-700/50',
+        'border border-white/5 bg-white/[0.04]',
+        'hover:border-white/10 hover:bg-white/[0.06]',
         'cursor-pointer transition-all'
       )}
       initial={{ opacity: 0, x: -20 }}
@@ -124,7 +124,7 @@ function ListItem({
         </p>
         {!achievement.unlocked && achievement.maxProgress > 1 && (
           <div className="mt-2 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-dark-600">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -185,8 +185,8 @@ function GridItem({
     <motion.div
       className={cn(
         'relative rounded-xl p-4',
-        'border border-white/5 bg-dark-800/50',
-        'hover:border-white/10 hover:bg-dark-700/50',
+        'border border-white/5 bg-white/[0.04]',
+        'hover:border-white/10 hover:bg-white/[0.06]',
         'cursor-pointer transition-all',
         'flex flex-col items-center text-center'
       )}
@@ -235,7 +235,7 @@ function GridItem({
       {/* Progress bar (if in progress) */}
       {!achievement.unlocked && achievement.maxProgress > 1 && progress > 0 && (
         <div className="mt-2 w-full">
-          <div className="h-1 overflow-hidden rounded-full bg-dark-600">
+          <div className="h-1 overflow-hidden rounded-full bg-white/[0.08]">
             <div
               className="h-full rounded-full transition-all"
               style={{

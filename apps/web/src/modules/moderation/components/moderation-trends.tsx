@@ -128,7 +128,7 @@ export function ModerationTrends({ data, byCategory }: ModerationTrendsProps) {
             {categoryEntries.map(([category, count]) => (
               <div
                 key={category}
-                className="flex items-center justify-between rounded-lg bg-dark-700/50 px-3 py-2"
+                className="flex items-center justify-between rounded-lg bg-white/[0.06] px-3 py-2"
               >
                 <div className="flex items-center gap-2">
                   <div

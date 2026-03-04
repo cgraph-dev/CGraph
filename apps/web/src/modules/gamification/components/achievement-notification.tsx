@@ -103,7 +103,7 @@ function AchievementToast({
         )}
 
         {/* Auto-dismiss Progress Bar */}
-        <div className="absolute left-0 right-0 top-0 h-1 bg-dark-800">
+        <div className="absolute left-0 right-0 top-0 h-1 bg-white/[0.04]">
           <motion.div
             className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
             style={{ width: `${autoDismissProgress}%` }}
@@ -171,7 +171,7 @@ function AchievementToast({
                     onDismiss();
                     HapticFeedback.light();
                   }}
-                  className="rounded-full p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                  className="rounded-full p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -204,7 +204,7 @@ function AchievementToast({
                       {achievement.progress} / {achievement.maxProgress}
                     </span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-dark-800">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.04]">
                     <motion.div
                       className="h-full rounded-full"
                       style={{

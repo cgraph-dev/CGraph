@@ -38,8 +38,8 @@ export function WeeklyCalendar({ weeklyProgress, todayClaimed }: WeeklyCalendarP
                 day.completed
                   ? 'bg-gradient-to-br from-orange-500 to-red-500'
                   : isToday && !todayClaimed
-                    ? 'bg-dark-600 ring-2 ring-orange-500 ring-offset-2 ring-offset-dark-800'
-                    : 'bg-dark-700'
+                    ? 'bg-white/[0.08] ring-2 ring-orange-500 ring-offset-2 ring-offset-[rgb(30,32,40)]'
+                    : 'bg-white/[0.06]'
               }`}
               whileHover={day.completed || isToday ? { scale: 1.1 } : {}}
             >

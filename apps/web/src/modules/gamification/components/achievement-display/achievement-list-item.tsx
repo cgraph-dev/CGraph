@@ -36,7 +36,7 @@ export function AchievementListItem({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
       onClick={onClick}
-      className={`flex cursor-pointer items-center gap-4 border-b border-dark-700 p-4 transition-colors hover:bg-dark-700/50 ${
+      className={`flex cursor-pointer items-center gap-4 border-b border-white/[0.06] p-4 transition-colors hover:bg-white/[0.06] ${
         !unlocked ? 'opacity-70' : ''
       }`}
     >
@@ -55,7 +55,7 @@ export function AchievementListItem({
           <TrophyIcon className="h-6 w-6" style={{ color: RARITY_COLORS[achievement.rarity] }} />
         )}
         {!unlocked && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-dark-900/50">
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-[rgb(30,32,40)]/[0.50]">
             <LockClosedIcon className="h-4 w-4 text-gray-400" />
           </div>
         )}

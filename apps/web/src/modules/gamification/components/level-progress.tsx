@@ -71,7 +71,7 @@ export default function LevelProgress({
               whileHover={{ scale: 1.1, rotate: 5 }}
             >
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-purple-600">
-                <div className="absolute inset-0.5 flex items-center justify-center rounded-full bg-dark-900">
+                <div className="absolute inset-0.5 flex items-center justify-center rounded-full bg-[rgb(30,32,40)]">
                   <span className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-lg font-bold text-transparent">
                     {level}
                   </span>
@@ -92,7 +92,7 @@ export default function LevelProgress({
                   {progressXP.toLocaleString()} / {neededXP.toLocaleString()} XP
                 </span>
               </div>
-              <div className="relative h-2 overflow-hidden rounded-full bg-dark-800">
+              <div className="relative h-2 overflow-hidden rounded-full bg-white/[0.04]">
                 <motion.div
                   className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500"
                   initial={{ width: 0 }}
@@ -155,7 +155,7 @@ export default function LevelProgress({
               whileHover={{ scale: 1.05, rotate: 5 }}
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 p-1">
-                <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
+                <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[rgb(30,32,40)]">
                   <span className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent">
                     {level}
                   </span>
@@ -179,7 +179,7 @@ export default function LevelProgress({
                   {(neededXP - progressXP).toLocaleString()} XP to level {level + 1}
                 </span>
               </div>
-              <div className="relative h-3 overflow-hidden rounded-full bg-dark-800">
+              <div className="relative h-3 overflow-hidden rounded-full bg-white/[0.04]">
                 <motion.div
                   className="absolute inset-y-0 left-0 rounded-full"
                   style={{ background: 'linear-gradient(90deg, #10b981, #8b5cf6, #ec4899)' }}

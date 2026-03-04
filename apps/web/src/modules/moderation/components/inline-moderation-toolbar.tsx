@@ -120,7 +120,7 @@ export default function InlineModerationToolbar({
         exit={{ y: 100, opacity: 0 }}
         className={cn(
           'fixed bottom-6 left-1/2 z-50 -translate-x-1/2',
-          'rounded-xl border border-dark-500 bg-dark-800 shadow-2xl',
+          'rounded-xl border border-dark-500 bg-white/[0.04] shadow-2xl',
           'p-4',
           className
         )}
@@ -182,7 +182,7 @@ export default function InlineModerationToolbar({
                 </button>
 
                 {showMoveDropdown && (
-                  <div className="absolute bottom-full left-0 mb-2 max-h-60 w-64 overflow-y-auto rounded-lg border border-dark-500 bg-dark-700 shadow-xl">
+                  <div className="absolute bottom-full left-0 mb-2 max-h-60 w-64 overflow-y-auto rounded-lg border border-dark-500 bg-white/[0.06] shadow-xl">
                     <div className="border-b border-dark-500 p-2 text-xs text-gray-400">
                       Move to forum:
                     </div>
@@ -192,7 +192,7 @@ export default function InlineModerationToolbar({
                         <button
                           key={forum.id}
                           onClick={() => handleBulkMove(forum.id)}
-                          className="w-full px-3 py-2 text-left text-sm transition-colors hover:bg-dark-600"
+                          className="w-full px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.10]"
                         >
                           {forum.name}
                         </button>
@@ -216,7 +216,7 @@ export default function InlineModerationToolbar({
                 </button>
                 <button
                   onClick={() => setConfirmAction(null)}
-                  className="rounded p-1 text-gray-400 hover:bg-dark-600"
+                  className="rounded p-1 text-gray-400 hover:bg-white/[0.10]"
                 >
                   <XMarkIcon className="h-4 w-4" />
                 </button>
@@ -236,7 +236,7 @@ export default function InlineModerationToolbar({
           {/* Clear selection */}
           <button
             onClick={clearBulkSelection}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-600 hover:text-gray-200"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-gray-200"
             title="Clear selection"
           >
             <XMarkIcon className="h-5 w-5" />

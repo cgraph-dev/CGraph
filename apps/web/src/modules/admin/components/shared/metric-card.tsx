@@ -44,7 +44,7 @@ export function MetricCard({
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]"
     >
       <div className="mb-4 flex items-center justify-between">
         <div

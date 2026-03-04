@@ -31,7 +31,7 @@ export function MilestoneProgress({ currentStreak, milestones }: MilestoneProgre
           </span>
         )}
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+      <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500"
           initial={{ width: 0 }}

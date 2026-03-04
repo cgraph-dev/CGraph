@@ -73,7 +73,7 @@ export function FullQuestPanel({
                 onRefresh();
                 HapticFeedback.light();
               }}
-              className="rounded-lg bg-dark-700 p-2 transition-colors hover:bg-dark-600"
+              className="rounded-lg bg-white/[0.06] p-2 transition-colors hover:bg-white/[0.10]"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -93,7 +93,7 @@ export function FullQuestPanel({
           </div>
         ) : activeQuests.length === 0 ? (
           <div className="py-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.06]">
               <CheckCircleIcon className="h-8 w-8 text-green-400" />
             </div>
             <p className="text-gray-400">All quests completed!</p>
@@ -152,7 +152,7 @@ export function FullQuestPanel({
 
                           {/* Progress Bar */}
                           <div className="relative">
-                            <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+                            <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                               <motion.div
                                 className={`h-full rounded-full ${ready ? 'bg-green-500' : 'bg-gradient-to-r from-primary-500 to-purple-500'}`}
                                 initial={{ width: 0 }}
@@ -238,7 +238,7 @@ export function FullQuestPanel({
         {/* Show More */}
         {activeQuests.length > maxQuests && (
           <motion.button
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-dark-700 py-3 text-sm text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] py-3 text-sm text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-white"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

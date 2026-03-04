@@ -25,14 +25,14 @@ export const OrderingToolbar = memo(function OrderingToolbar({
   onReset,
 }: OrderingToolbarProps) {
   return (
-    <div className="mb-4 flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
+    <div className="mb-4 flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-white/[0.04]">
       <div className="flex items-center gap-2">
         <button
           onClick={onUndo}
           disabled={!canUndo}
           className={`rounded-lg p-2 transition-colors ${
             canUndo
-              ? 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
+              ? 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-white/[0.06]'
               : 'cursor-not-allowed text-gray-300 dark:text-gray-600'
           }`}
           title="Undo (Ctrl+Z)"
@@ -44,7 +44,7 @@ export const OrderingToolbar = memo(function OrderingToolbar({
           disabled={!canRedo}
           className={`rounded-lg p-2 transition-colors ${
             canRedo
-              ? 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
+              ? 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-white/[0.06]'
               : 'cursor-not-allowed text-gray-300 dark:text-gray-600'
           }`}
           title="Redo (Ctrl+Y)"
@@ -61,7 +61,7 @@ export const OrderingToolbar = memo(function OrderingToolbar({
         {hasChanges && (
           <button
             onClick={onReset}
-            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
+            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-white/[0.06]"
           >
             <XMarkIcon className="h-4 w-4" />
             Reset
@@ -73,7 +73,7 @@ export const OrderingToolbar = memo(function OrderingToolbar({
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             hasChanges && !isSaving
               ? 'bg-orange-600 text-white hover:bg-orange-700'
-              : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-gray-700'
+              : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/[0.06]'
           }`}
         >
           {isSaving ? (

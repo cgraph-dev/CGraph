@@ -89,7 +89,7 @@ export function LeaderboardWidget({
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Header with Filters */}
         {showFilters && (
-          <div className="border-b border-dark-700 p-4">
+          <div className="border-b border-white/[0.06] p-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               {/* Type Selector */}
               <div className="flex items-center gap-2 overflow-x-auto">
@@ -100,7 +100,7 @@ export function LeaderboardWidget({
                     className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       leaderboardType === value
                         ? 'text-white'
-                        : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
+                        : 'bg-white/[0.08] text-gray-400 hover:bg-white/[0.12]'
                     }`}
                     style={leaderboardType === value ? { backgroundColor: primaryColor } : {}}
                   >
@@ -111,7 +111,7 @@ export function LeaderboardWidget({
               </div>
 
               {/* Time Period */}
-              <div className="flex items-center gap-1 rounded-lg bg-dark-700 p-0.5">
+              <div className="flex items-center gap-1 rounded-lg bg-white/[0.06] p-0.5">
                 {TIME_PERIODS.map(({ value, label }) => (
                   <button
                     key={value}
@@ -119,7 +119,7 @@ export function LeaderboardWidget({
                     onClick={() => onTimePeriodChange?.(value as TimePeriod)} // type assertion: button value constrained to TimePeriod
                     className={`rounded px-3 py-1.5 text-sm transition-colors ${
                       timePeriod === value
-                        ? 'bg-dark-600 text-white'
+                        ? 'bg-white/[0.08] text-white'
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
@@ -137,13 +137,13 @@ export function LeaderboardWidget({
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex animate-pulse items-center gap-4">
-                  <div className="h-8 w-8 rounded bg-dark-700" />
-                  <div className="h-10 w-10 rounded-full bg-dark-700" />
+                  <div className="h-8 w-8 rounded bg-white/[0.06]" />
+                  <div className="h-10 w-10 rounded-full bg-white/[0.06]" />
                   <div className="flex-1">
-                    <div className="mb-1 h-4 w-24 rounded bg-dark-700" />
-                    <div className="h-3 w-16 rounded bg-dark-700" />
+                    <div className="mb-1 h-4 w-24 rounded bg-white/[0.06]" />
+                    <div className="h-3 w-16 rounded bg-white/[0.06]" />
                   </div>
-                  <div className="h-5 w-12 rounded bg-dark-700" />
+                  <div className="h-5 w-12 rounded bg-white/[0.06]" />
                 </div>
               ))}
             </div>
@@ -170,11 +170,11 @@ export function LeaderboardWidget({
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-4 flex items-center justify-center gap-4 border-t border-dark-700 pt-4">
+                <div className="mt-4 flex items-center justify-center gap-4 border-t border-white/[0.06] pt-4">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                     disabled={currentPage === 0}
-                    className="rounded-lg p-2 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg p-2 hover:bg-white/[0.10] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeftIcon className="h-5 w-5" />
                   </button>
@@ -184,7 +184,7 @@ export function LeaderboardWidget({
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                     disabled={currentPage === totalPages - 1}
-                    className="rounded-lg p-2 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg p-2 hover:bg-white/[0.10] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronRightIcon className="h-5 w-5" />
                   </button>
@@ -193,7 +193,7 @@ export function LeaderboardWidget({
 
               {/* Current User Position (if not visible) */}
               {currentUserEntry && !paginatedEntries.find((e) => e.isCurrentUser) && (
-                <div className="mt-4 border-t border-dark-700 pt-4">
+                <div className="mt-4 border-t border-white/[0.06] pt-4">
                   <p className="mb-2 text-xs text-gray-400">Your Position</p>
                   <LeaderboardEntryRow
                     entry={currentUserEntry}

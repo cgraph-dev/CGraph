@@ -113,7 +113,7 @@ export function CreateListing({
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
                 step >= s.id
                   ? 'bg-primary-500 text-white'
-                  : 'bg-dark-700 text-gray-500'
+                  : 'bg-white/[0.06] text-gray-500'
               }`}
             >
               {step > s.id ? <CheckIcon className="h-4 w-4" /> : s.id}
@@ -122,7 +122,7 @@ export function CreateListing({
               {s.label}
             </span>
             {s.id < 3 && (
-              <div className={`h-px w-8 ${step > s.id ? 'bg-primary-500' : 'bg-dark-700'}`} />
+              <div className={`h-px w-8 ${step > s.id ? 'bg-primary-500' : 'bg-white/[0.06]'}`} />
             )}
           </div>
         ))}
@@ -149,7 +149,7 @@ export function CreateListing({
                       : 'border-white/10 bg-white/5 hover:border-white/20'
                   }`}
                 >
-                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-dark-700 text-2xl">
+                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-white/[0.06] text-2xl">
                     {item.icon ?? '🎨'}
                   </div>
                   <div className="truncate text-sm font-medium text-white">{item.name}</div>
@@ -219,7 +219,7 @@ export function CreateListing({
                   type="checkbox"
                   checked={acceptsTrades}
                   onChange={(e) => setAcceptsTrades(e.target.checked)}
-                  className="rounded border-white/20 bg-dark-700"
+                  className="rounded border-white/20 bg-white/[0.06]"
                 />
                 <span className="text-sm text-gray-400">Accept trade offers</span>
               </label>

@@ -31,7 +31,7 @@ export function CollectionHeader({ stats }: CollectionHeaderProps) {
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 w-32 overflow-hidden rounded-full bg-dark-700">
+      <div className="h-2 w-32 overflow-hidden rounded-full bg-white/[0.06]">
         <motion.div
           className="h-full bg-gradient-to-r from-primary-500 to-primary-400"
           initial={{ width: 0 }}

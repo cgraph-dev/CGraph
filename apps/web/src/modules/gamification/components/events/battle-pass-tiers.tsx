@@ -98,7 +98,7 @@ export function BattlePassTiers({
         </div>
 
         {/* Progress Bar */}
-        <div className="relative h-3 overflow-hidden rounded-full bg-dark-700">
+        <div className="relative h-3 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
@@ -158,7 +158,7 @@ export function BattlePassTiers({
                   {tier.freeRewards.map((reward) => (
                     <div
                       key={reward.id}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-dark-600 text-sm"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.08] text-sm"
                       title={reward.name}
                     >
                       {reward.icon ? <span>{reward.icon}</span> : <GiftIcon className="h-4 w-4 text-gray-400" />}
@@ -230,7 +230,7 @@ export function BattlePassTiers({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="rounded-xl border border-white/10 bg-dark-800/90 p-4 backdrop-blur-sm"
+            className="rounded-xl border border-white/10 bg-white/[0.04]/90 p-4 backdrop-blur-sm"
           >
             <h4 className="mb-2 font-bold text-white">Tier {selectedTier} Details</h4>
             {tiers.find((t) => t.tier === selectedTier) && (

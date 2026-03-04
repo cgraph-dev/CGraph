@@ -46,7 +46,7 @@ export function FilterBar({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search achievements..."
-          className="w-full rounded-lg bg-dark-700 py-2 pl-10 pr-4 outline-none focus:ring-2"
+          className="w-full rounded-lg bg-white/[0.06] py-2 pl-10 pr-4 outline-none focus:ring-2"
           // type assertion: CSS custom property requires CSSProperties widening
            
           style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
@@ -57,7 +57,7 @@ export function FilterBar({
       <div className="relative">
         <button
           onClick={onToggleFilters}
-          className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 hover:bg-dark-600"
+          className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 hover:bg-white/[0.10]"
         >
           <FunnelIcon className="h-5 w-5" />
           <span className="capitalize">{selectedCategory}</span>
@@ -72,14 +72,14 @@ export function FilterBar({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
+              className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-white/[0.08] bg-white/[0.06] py-1 shadow-xl"
             >
               <button
                 onClick={() => {
                   onCategoryChange('all');
                   onToggleFilters();
                 }}
-                className={`w-full px-4 py-2 text-left hover:bg-dark-600 ${
+                className={`w-full px-4 py-2 text-left hover:bg-white/[0.10] ${
                   selectedCategory === 'all' ? 'text-white' : 'text-gray-400'
                 }`}
               >
@@ -92,7 +92,7 @@ export function FilterBar({
                     onCategoryChange(cat);
                     onToggleFilters();
                   }}
-                  className={`flex w-full items-center gap-2 px-4 py-2 text-left capitalize hover:bg-dark-600 ${
+                  className={`flex w-full items-center gap-2 px-4 py-2 text-left capitalize hover:bg-white/[0.10] ${
                     selectedCategory === cat ? 'text-white' : 'text-gray-400'
                   }`}
                 >
@@ -110,7 +110,7 @@ export function FilterBar({
         value={sortBy}
          
         onChange={(e) => onSortChange(e.target.value as SortOption)} // type assertion: select value is constrained to SortOption
-        className="rounded-lg bg-dark-700 px-4 py-2 outline-none"
+        className="rounded-lg bg-white/[0.06] px-4 py-2 outline-none"
       >
         <option value="rarity">By Rarity</option>
         <option value="recent">Recently Unlocked</option>

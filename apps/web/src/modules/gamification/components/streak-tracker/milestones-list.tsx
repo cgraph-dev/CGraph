@@ -24,7 +24,7 @@ export function MilestonesList({ milestones, currentStreak, isVisible }: Milesto
           exit={{ height: 0, opacity: 0 }}
           className="overflow-hidden"
         >
-          <div className="space-y-2 bg-dark-800/50 p-4">
+          <div className="space-y-2 bg-white/[0.04] p-4">
             {milestones.map((milestone) => {
               const isCompleted = milestone.days <= currentStreak;
               const isClaimable = isCompleted && !milestone.claimed;
@@ -37,7 +37,7 @@ export function MilestonesList({ milestones, currentStreak, isVisible }: Milesto
                       ? 'border border-green-500/30 bg-green-500/10'
                       : isClaimable
                         ? 'border border-amber-500/30 bg-amber-500/10'
-                        : 'bg-dark-700'
+                        : 'bg-white/[0.06]'
                   }`}
                 >
                   <div className="flex items-center gap-3">

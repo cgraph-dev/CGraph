@@ -72,7 +72,7 @@ export function SuccessStep({
       <h3 className="mt-6 text-xl font-bold text-white">Payment Successful!</h3>
       <p className="mt-2 text-white/60">Thank you for your purchase</p>
 
-      <div className="mt-6 rounded-xl bg-dark-800/50 p-4 text-left">
+      <div className="mt-6 rounded-xl bg-white/[0.04] p-4 text-left">
         <div className="flex justify-between text-sm">
           <span className="text-white/60">Transaction ID</span>
           <span className="font-mono text-white">{transactionId}</span>
