@@ -15,7 +15,7 @@ interface MentionAutocompleteProps {
   onClose: () => void;
 }
 
-// MOCK_USERS removed — API search is used exclusively
+// User search is handled via API exclusively
 
 /**
  * unknown for the chat module.

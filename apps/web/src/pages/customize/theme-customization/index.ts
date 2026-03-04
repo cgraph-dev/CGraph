@@ -27,4 +27,4 @@ export { useThemeCustomization } from './hooks';
 // Types
 export type { ThemeCategory, Theme, ThemeCardProps, CategoryTab } from './types';
 
-// Constants (MOCK_THEMES removed — now fetched from API)
+// Constants (themes now fetched from API)

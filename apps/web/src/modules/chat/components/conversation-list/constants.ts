@@ -12,5 +12,5 @@ export const FILTER_OPTIONS: FilterOption[] = [
   { id: 'unread', label: 'Unread' },
 ];
 
-// MOCK_USERS removed — user search now uses GET /api/v1/users/search
+// User search now uses GET /api/v1/users/search
 

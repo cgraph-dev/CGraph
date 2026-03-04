@@ -13,7 +13,7 @@ export { default } from './identity-customization';
 // Types
 export type { Rarity, Border, Title, Badge, ProfileLayout, RarityOption } from './types';
 
-// Constants (MOCK_ data removed — now fetched from API)
+// Constants (data now fetched from API)
 export {
   RARITIES,
   PROFILE_LAYOUTS,
