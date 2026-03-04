@@ -38,6 +38,7 @@ defmodule CGraph.Forums.Polls do
   """
   @spec vote_poll(String.t(), String.t(), [String.t()]) :: {:ok, PollVote.t()} | {:error, atom()}
   def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
+    # get! safe: poll_id validated by caller via get_thread_poll
     poll = Repo.get!(ThreadPoll, poll_id)
 
     with :ok <- validate_poll_open(poll),
@@ -63,6 +64,7 @@ defmodule CGraph.Forums.Polls do
   """
   @spec get_poll_results(String.t()) :: map()
   def get_poll_results(poll_id) do
+    # get! safe: poll_id validated by caller via get_thread_poll
     poll = Repo.get!(ThreadPoll, poll_id)
 
     vote_count = from(v in PollVote,
@@ -114,6 +116,7 @@ defmodule CGraph.Forums.Polls do
         |> Repo.update_all(inc: [total_votes: 1])
 
         # Broadcast updated poll results to thread channel
+        # get! safe: poll_id just used for successful vote insert above
         poll = Repo.get!(ThreadPoll, poll_id)
         results = get_poll_results(poll_id)
         CGraphWeb.Endpoint.broadcast("thread:#{poll.thread_id}", "poll_vote_update", %{

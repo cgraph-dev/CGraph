@@ -45,7 +45,7 @@ const meta: Meta<typeof EmptyState> = {
   },
   decorators: [
     (Story) => (
-      <div className="w-96 rounded-lg bg-dark-800">
+      <div className="w-96 rounded-lg bg-white/[0.04]">
         <Story />
       </div>
     ),

@@ -113,22 +113,26 @@ defmodule CGraphWeb.GamificationController do
 
     case Gamification.try_unlock_achievement(user.id, achievement_id) do
       {:ok, user_achievement} ->
-        achievement = CGraph.Repo.get!(Gamification.Achievement, achievement_id)
+        case CGraph.Repo.get(Gamification.Achievement, achievement_id) do
+          nil ->
+            conn |> put_status(:not_found) |> json(%{error: "Achievement not found"})
 
-        conn
-        |> put_status(:ok)
-        |> json(%{
-          success: true,
-          unlocked: user_achievement.unlocked,
-          achievement: %{
-            id: achievement.id,
-            name: achievement.name,
-            description: achievement.description,
-            xp_reward: achievement.xp_reward,
-            coin_reward: achievement.coin_reward
-          },
-          unlocked_at: user_achievement.unlocked_at
-        })
+          achievement ->
+            conn
+            |> put_status(:ok)
+            |> json(%{
+              success: true,
+              unlocked: user_achievement.unlocked,
+              achievement: %{
+                id: achievement.id,
+                name: achievement.name,
+                description: achievement.description,
+                xp_reward: achievement.xp_reward,
+                coin_reward: achievement.coin_reward
+              },
+              unlocked_at: user_achievement.unlocked_at
+            })
+        end
 
       {:error, :already_unlocked} ->
         conn

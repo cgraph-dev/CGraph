@@ -56,44 +56,52 @@ defmodule CGraphWeb.API.V1.ForumModerationController do
 
   @doc "GET /forums/:forum_id/moderation/queue"
   def queue(conn, %{"forum_id" => forum_id} = params) do
-    forum = Repo.get!(CGraph.Forums.Forum, forum_id)
+    case Repo.get(CGraph.Forums.Forum, forum_id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "Forum not found"})
 
-    opts = [
-      status: params["status"] || "pending",
-      cursor: params["cursor"],
-      limit: parse_int(params["limit"], 20)
-    ]
+      forum ->
+        opts = [
+          status: params["status"] || "pending",
+          cursor: params["cursor"],
+          limit: parse_int(params["limit"], 20)
+        ]
 
-    {items, pagination} = Moderation.get_mod_queue(forum, opts)
+        {items, pagination} = Moderation.get_mod_queue(forum, opts)
 
-    json(conn, %{
-      data: Enum.map(items, &serialize_mod_item/1),
-      pagination: pagination
-    })
+        json(conn, %{
+          data: Enum.map(items, &serialize_mod_item/1),
+          pagination: pagination
+        })
+    end
   end
 
   # ── Moderation Action ──────────────────────────────────────────────
 
   @doc "POST /forums/:forum_id/moderation/action"
   def action(conn, %{"forum_id" => _forum_id, "post_id" => post_id, "action" => mod_action}) do
-    post = Repo.get!(CGraph.Forums.Post, post_id)
+    case Repo.get(CGraph.Forums.Post, post_id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "Post not found"})
 
-    case mod_action do
-      "approve" ->
-        Moderation.resolve_flag(post, :approve)
-        json(conn, %{status: "approved"})
+      post ->
+        case mod_action do
+          "approve" ->
+            Moderation.resolve_flag(post, :approve)
+            json(conn, %{status: "approved"})
 
-      "remove" ->
-        Moderation.resolve_flag(post, :remove)
-        json(conn, %{status: "removed"})
+          "remove" ->
+            Moderation.resolve_flag(post, :remove)
+            json(conn, %{status: "removed"})
 
-      "hide" ->
-        reason = conn.params["reason"] || "Hidden by moderator"
-        Moderation.hide_post(post_id, reason)
-        json(conn, %{status: "hidden"})
+          "hide" ->
+            reason = conn.params["reason"] || "Hidden by moderator"
+            Moderation.hide_post(post_id, reason)
+            json(conn, %{status: "hidden"})
 
-      _ ->
-        conn |> put_status(:bad_request) |> json(%{error: "Invalid action"})
+          _ ->
+            conn |> put_status(:bad_request) |> json(%{error: "Invalid action"})
+        end
     end
   end
 
@@ -118,20 +126,23 @@ defmodule CGraphWeb.API.V1.ForumModerationController do
 
   @doc "POST /forums/:forum_id/moderation/warn"
   def warn(conn, %{"forum_id" => forum_id} = params) do
-    forum = Repo.get!(CGraph.Forums.Forum, forum_id)
-    target_user = Repo.get!(CGraph.Accounts.User, params["user_id"])
-    issuer = conn.assigns[:current_user]
+    with %CGraph.Forums.Forum{} = forum <- Repo.get(CGraph.Forums.Forum, forum_id),
+         %CGraph.Accounts.User{} = target_user <- Repo.get(CGraph.Accounts.User, params["user_id"]) do
+      issuer = conn.assigns[:current_user]
 
-    case Moderation.warn_user(forum, target_user, issuer, params) do
-      {:ok, warning} ->
-        conn
-        |> put_status(:created)
-        |> json(%{warning: serialize_warning(warning)})
+      case Moderation.warn_user(forum, target_user, issuer, params) do
+        {:ok, warning} ->
+          conn
+          |> put_status(:created)
+          |> json(%{warning: serialize_warning(warning)})
 
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Failed to issue warning", details: inspect(changeset)})
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "Failed to issue warning", details: inspect(changeset)})
+      end
+    else
+      nil -> conn |> put_status(:not_found) |> json(%{error: "Forum or user not found"})
     end
   end
 
@@ -160,18 +171,22 @@ defmodule CGraphWeb.API.V1.ForumModerationController do
 
   @doc "GET /forums/:forum_id/moderation/stats"
   def stats(conn, %{"forum_id" => forum_id}) do
-    forum = Repo.get!(CGraph.Forums.Forum, forum_id)
+    case Repo.get(CGraph.Forums.Forum, forum_id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "Forum not found"})
 
-    {pending_items, _} = Moderation.get_mod_queue(forum, status: "pending", limit: 0)
-    {resolved_items, _} = Moderation.get_mod_queue(forum, status: "approved", limit: 0)
+      forum ->
+        {pending_items, _} = Moderation.get_mod_queue(forum, status: "pending", limit: 0)
+        {resolved_items, _} = Moderation.get_mod_queue(forum, status: "approved", limit: 0)
 
-    json(conn, %{
-      data: %{
-        pending_count: length(pending_items),
-        resolved_count: length(resolved_items),
-        forum_id: forum_id
-      }
-    })
+        json(conn, %{
+          data: %{
+            pending_count: length(pending_items),
+            resolved_count: length(resolved_items),
+            forum_id: forum_id
+          }
+        })
+    end
   end
 
   # ── Serializers ────────────────────────────────────────────────────

@@ -23,6 +23,7 @@ defmodule CGraph.Accounts.UserManagement do
   @doc "Get a user by ID (raises on not found)."
   @spec get_user!(String.t()) :: User.t()
   def get_user!(id) do
+    # get! safe: intentional raising API — callers handle NoResultsError
     Repo.get!(User, id)
     |> Repo.preload(:customization)
   end

@@ -131,7 +131,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
       className={`relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isSelected
           ? 'border-emerald-500 shadow-lg shadow-emerald-500/50'
-          : 'border-dark-600 hover:border-dark-500'
+          : 'border-white/[0.08] hover:border-white/[0.10]'
       } ${isLocked ? 'opacity-60' : ''} `}
       whileHover={{ scale: isLocked ? 1 : 1.02 }}
       whileTap={{ scale: isLocked ? 1 : 0.98 }}
@@ -182,7 +182,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
       </div>
 
       {/* Theme Info */}
-      <div className="border-t border-dark-600 bg-dark-900/50 p-4">
+      <div className="border-t border-white/[0.08] bg-[rgb(30,32,40)]/50 p-4">
         <div className="mb-2 flex items-start justify-between">
           <div className="flex-1">
             <h4 className="flex items-center gap-2 font-semibold text-foreground">

@@ -49,7 +49,7 @@ export default function ProgressBar({
           {showLabel && <span className="text-sm text-gray-400">{Math.round(percentage)}%</span>}
         </div>
       )}
-      <div className={`w-full overflow-hidden rounded-full bg-dark-700 ${sizeClasses[size]}`}>
+      <div className={`w-full overflow-hidden rounded-full bg-white/[0.06] ${sizeClasses[size]}`}>
         <div
           className={`${sizeClasses[size]} ${colorClasses[color]} rounded-full transition-all duration-500 ${
             animated ? 'animate-pulse' : ''

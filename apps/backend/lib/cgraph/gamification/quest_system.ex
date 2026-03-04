@@ -141,6 +141,7 @@ defmodule CGraph.Gamification.QuestSystem do
       true ->
         Repo.transaction(fn ->
           {:ok, _} = user_quest |> UserQuest.claim_changeset() |> Repo.update()
+          # get! safe: user_id from authenticated session inside transaction
           user = Repo.get!(User, user_id)
           quest = user_quest.quest
 

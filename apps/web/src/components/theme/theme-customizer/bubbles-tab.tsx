@@ -56,7 +56,7 @@ export function BubblesTab({
               className={`rounded-xl p-3 text-center transition-all ${
                 selectedStyle === option.value
                   ? 'bg-primary-600/20 ring-2 ring-primary-500'
-                  : 'bg-dark-700 hover:bg-dark-600'
+                  : 'bg-white/[0.06] hover:bg-white/[0.10]'
               } ${isPremium ? 'opacity-60' : ''}`}
             >
               <span className="text-sm font-medium text-gray-300">{option.label}</span>
@@ -136,7 +136,7 @@ export function BubblesTab({
               whileTap={{ scale: 0.95 }}
               onClick={() => onUpdateSettings({ [toggle.key]: !toggle.value })}
               className={`rounded-xl p-3 text-center transition-all ${
-                toggle.value ? 'border border-primary-500/50 bg-primary-600/20' : 'bg-dark-700'
+                toggle.value ? 'border border-primary-500/50 bg-primary-600/20' : 'bg-white/[0.06]'
               }`}
             >
               <span className="text-xs font-medium text-gray-300">{toggle.label}</span>

@@ -103,6 +103,7 @@ defmodule CGraph.Gamification.AchievementSystem do
         |> Ecto.Changeset.change(%{progress: achievement.max_progress, unlocked: true, unlocked_at: DateTime.utc_now()})
         |> Repo.update()
 
+      # get! safe: ua.user_id FK from UserAchievement inside transaction
       user = Repo.get!(User, ua.user_id)
 
       if achievement.xp_reward > 0 do

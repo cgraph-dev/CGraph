@@ -63,7 +63,7 @@ export default function Switch({
         onClick={() => !disabled && onChange(!checked)}
         whileTap={!disabled ? { scale: 0.95 } : {}}
         className={`relative inline-flex flex-shrink-0 ${currentSize.track} rounded-full transition-colors duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900 ${
-          checked ? 'bg-primary-600 hover:bg-primary-700' : 'bg-dark-600 hover:bg-dark-500'
+          checked ? 'bg-primary-600 hover:bg-primary-700' : 'bg-white/[0.08] hover:bg-white/[0.12]'
         }`}
       >
         <motion.span

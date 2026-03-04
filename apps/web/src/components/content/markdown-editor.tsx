@@ -146,9 +146,9 @@ export default function MarkdownEditor({
   );
 
   return (
-    <div className={`overflow-hidden rounded-lg border border-dark-600 bg-dark-700 ${className}`}>
+    <div className={`overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.06] ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-dark-600 bg-dark-800 px-2 py-1.5">
+      <div className="flex items-center justify-between border-b border-white/[0.08] bg-white/[0.04] px-2 py-1.5">
         <div className="flex items-center gap-0.5">
           {toolbarButtons.map((button) => (
             <button
@@ -156,7 +156,7 @@ export default function MarkdownEditor({
               type="button"
               onClick={() => insertFormatting(button)}
               disabled={disabled || showPreview}
-              className="rounded p-1.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded p-1.5 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               title={button.label}
             >
               <button.icon className="h-4 w-4" />
@@ -169,7 +169,7 @@ export default function MarkdownEditor({
           type="button"
           onClick={() => setShowPreview(!showPreview)}
           className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-            showPreview ? 'bg-primary-600 text-white' : 'bg-dark-600 text-gray-400 hover:text-white'
+            showPreview ? 'bg-primary-600 text-white' : 'bg-white/[0.08] text-gray-400 hover:text-white'
           }`}
         >
           {showPreview ? 'Edit' : 'Preview'}
@@ -203,7 +203,7 @@ export default function MarkdownEditor({
       )}
 
       {/* Markdown help */}
-      <div className="border-t border-dark-600 bg-dark-800 px-3 py-1.5">
+      <div className="border-t border-white/[0.08] bg-white/[0.04] px-3 py-1.5">
         <p className="text-xs text-gray-500">
           <span className="font-medium">Markdown supported:</span> **bold**, _italic_, `code`,
           [link](url), ![image](url)

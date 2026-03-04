@@ -122,7 +122,7 @@ export default function UserBadge({
           {username && <span className={`${s.id} truncate`}>@{username}</span>}
           {showId && (
             <span
-              className={` ${s.id} rounded bg-dark-700/50 px-1.5 py-0.5 font-mono text-gray-500 ${transitions.default} `}
+              className={` ${s.id} rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-gray-500 ${transitions.default} `}
             >
               {userIdDisplay}
             </span>
@@ -153,7 +153,7 @@ export function UserBadgeMini({
   return (
     <span className={`inline-flex items-center gap-1 ${className}`}>
       <span className="font-medium text-white">{name}</span>
-      <span className="rounded bg-dark-700/50 px-1 font-mono text-xs text-gray-500">
+      <span className="rounded bg-white/[0.06] px-1 font-mono text-xs text-gray-500">
         {userIdDisplay}
       </span>
     </span>

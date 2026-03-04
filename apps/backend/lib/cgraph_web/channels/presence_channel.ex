@@ -50,6 +50,7 @@ defmodule CGraphWeb.PresenceChannel do
     user = socket.assigns.current_user
 
     # Restore persisted status from DB on reconnect
+    # get! safe: user.id from authenticated socket assignment
     user = Repo.get!(User, user.id)
     {restored_status, restored_meta} = restore_persisted_status(user)
 

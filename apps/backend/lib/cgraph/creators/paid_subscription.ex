@@ -33,23 +33,27 @@ defmodule CGraph.Creators.PaidSubscription do
   """
   @spec subscribe_to_paid_forum(User.t(), Forum.t()) :: {:ok, PaidForumSubscription.t()} | {:error, any()}
   def subscribe_to_paid_forum(%User{} = subscriber, %Forum{} = forum) do
-    creator = Repo.get!(User, forum.owner_id)
+    case Repo.get(User, forum.owner_id) do
+      nil ->
+        {:error, :creator_not_found}
 
-    cond do
-      !forum.monetization_enabled ->
-        {:error, :not_a_paid_forum}
+      creator ->
+        cond do
+          !forum.monetization_enabled ->
+            {:error, :not_a_paid_forum}
 
-      is_nil(creator.stripe_connect_id) ->
-        {:error, :creator_not_onboarded}
+          is_nil(creator.stripe_connect_id) ->
+            {:error, :creator_not_onboarded}
 
-      is_nil(subscriber.stripe_customer_id) ->
-        {:error, :subscriber_needs_payment_method}
+          is_nil(subscriber.stripe_customer_id) ->
+            {:error, :subscriber_needs_payment_method}
 
-      has_active_subscription?(subscriber.id, forum.id) ->
-        {:error, :already_subscribed}
+          has_active_subscription?(subscriber.id, forum.id) ->
+            {:error, :already_subscribed}
 
-      true ->
-        create_stripe_subscription(subscriber, forum, creator)
+          true ->
+            create_stripe_subscription(subscriber, forum, creator)
+        end
     end
   end
 

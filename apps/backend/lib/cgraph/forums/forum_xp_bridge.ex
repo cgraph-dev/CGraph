@@ -116,6 +116,7 @@ defmodule CGraph.Forums.ForumXpBridge do
 
   defp grant_xp(user_id, amount, source, reference_id) do
     # Get user to calculate total_after and level_after
+    # get! safe: user_id from authenticated session via forum activity
     user = Repo.get!(CGraph.Accounts.User, user_id)
 
     total_after = (user.xp || 0) + amount

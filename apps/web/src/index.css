@@ -100,11 +100,11 @@
   }
 
   .btn-secondary {
-    @apply btn bg-dark-700 text-foreground hover:bg-dark-600 px-4 py-2;
+    @apply btn bg-white/[0.06] text-foreground hover:bg-white/[0.08] px-4 py-2;
   }
 
   .btn-ghost {
-    @apply btn bg-transparent text-foreground hover:bg-dark-700 px-4 py-2;
+    @apply btn bg-transparent text-foreground hover:bg-white/[0.06] px-4 py-2;
   }
 
   .btn-danger {
@@ -113,13 +113,13 @@
 
   /* Input styles */
   .input {
-    @apply w-full rounded-md border border-dark-600 bg-dark-800 px-3 py-2 text-sm text-foreground
+    @apply w-full rounded-md border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-foreground
            placeholder:text-foreground-muted focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500;
   }
 
   /* Card styles */
   .card {
-    @apply rounded-lg border border-dark-700 bg-dark-800 p-4;
+    @apply rounded-lg border border-white/[0.06] bg-white/[0.04] p-4;
   }
 
   /* Message bubble */
@@ -132,7 +132,7 @@
   }
 
   .message-bubble-received {
-    @apply message-bubble bg-dark-700 text-foreground;
+    @apply message-bubble bg-white/[0.06] text-foreground;
   }
 
   /* Avatar */
@@ -155,21 +155,21 @@
   /* Sidebar */
   .sidebar-item {
     @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground-secondary
-           hover:bg-dark-700 hover:text-foreground transition-colors cursor-pointer;
+           hover:bg-white/[0.06] hover:text-foreground transition-colors cursor-pointer;
   }
 
   .sidebar-item-active {
-    @apply sidebar-item bg-dark-700 text-foreground;
+    @apply sidebar-item bg-white/[0.06] text-foreground;
   }
 
   /* Channel list item */
   .channel-item {
     @apply flex items-center gap-2 px-2 py-1 mx-2 rounded text-foreground-muted
-           hover:bg-dark-700 hover:text-foreground cursor-pointer transition-colors;
+           hover:bg-white/[0.06] hover:text-foreground cursor-pointer transition-colors;
   }
 
   .channel-item-active {
-    @apply channel-item bg-dark-600 text-foreground;
+    @apply channel-item bg-white/[0.08] text-foreground;
   }
 }
 
@@ -416,7 +416,7 @@
   }
 
   .card-interactive:hover {
-    @apply border-dark-600 shadow-lg shadow-black/20;
+    @apply border-white/[0.08] shadow-lg shadow-black/20;
     transform: translateY(-1px);
   }
 
@@ -439,7 +439,7 @@
 
   /* Glass effect */
   .glass {
-    @apply bg-dark-800/80 backdrop-blur-sm;
+    @apply bg-white/[0.06] backdrop-blur-sm;
   }
 
   /* Markdown content styling — theme-aware */
@@ -452,10 +452,10 @@
   .markdown-content ol { @apply list-decimal list-inside mb-4 text-foreground-secondary space-y-1; }
   .markdown-content li { @apply text-foreground-secondary; }
   .markdown-content blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-foreground-muted my-4; }
-  .markdown-content hr { @apply border-dark-700 my-6; }
+  .markdown-content hr { @apply border-white/[0.06] my-6; }
   .markdown-content table { @apply w-full border-collapse mb-4; }
-  .markdown-content th { @apply bg-dark-700 px-4 py-2 text-left font-semibold text-foreground border border-dark-600; }
-  .markdown-content td { @apply px-4 py-2 border border-dark-600 text-foreground-secondary; }
+  .markdown-content th { @apply bg-white/[0.06] px-4 py-2 text-left font-semibold text-foreground border border-white/[0.08]; }
+  .markdown-content td { @apply px-4 py-2 border border-white/[0.08] text-foreground-secondary; }
   .markdown-content img { @apply rounded-lg max-w-full h-auto my-4; }
 }
 

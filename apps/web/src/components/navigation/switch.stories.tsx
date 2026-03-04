@@ -178,7 +178,7 @@ export const SettingsPanel: Story = {
     };
 
     return (
-      <div className="w-80 space-y-4 rounded-lg bg-dark-800 p-4">
+      <div className="w-80 space-y-4 rounded-lg bg-white/[0.04] p-4">
         <h3 className="mb-4 font-medium text-white">Settings</h3>
         <Switch
           checked={settings.notifications}

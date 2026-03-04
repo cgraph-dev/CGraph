@@ -54,7 +54,7 @@ export function AvatarTab({
               className={`relative rounded-xl p-3 transition-all ${
                 isSelected
                   ? 'bg-primary-600/20 ring-2 ring-primary-500'
-                  : 'bg-dark-700 hover:bg-dark-600'
+                  : 'bg-white/[0.06] hover:bg-white/[0.10]'
               } ${isPremium ? 'cursor-not-allowed opacity-60' : ''}`}
             >
               <div className="text-center">
@@ -104,7 +104,7 @@ export function AvatarTab({
       </div>
 
       {/* Glow Toggle */}
-      <div className="flex items-center justify-between rounded-xl bg-dark-700 p-4">
+      <div className="flex items-center justify-between rounded-xl bg-white/[0.06] p-4">
         <div>
           <span className="font-medium text-white">Glow Effect</span>
           <p className="text-xs text-gray-400">Add ambient glow around your avatar</p>
@@ -113,7 +113,7 @@ export function AvatarTab({
           whileTap={{ scale: 0.9 }}
           onClick={onToggleGlow}
           className={`h-6 w-12 rounded-full transition-colors ${
-            glowEnabled ? 'bg-primary-600' : 'bg-dark-600'
+            glowEnabled ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div

@@ -64,7 +64,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
           glowColor={colors.glow}
           className="relative overflow-hidden p-4"
         >
-          <div className="absolute left-0 right-0 top-0 h-1 bg-dark-800">
+          <div className="absolute left-0 right-0 top-0 h-1 bg-white/[0.04]">
             <motion.div
               className="h-full bg-gradient-to-r from-yellow-500 to-orange-500"
               initial={{ width: '100%' }}
@@ -106,7 +106,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
             {notification.dismissible && (
               <motion.button
                 onClick={onDismiss}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -137,7 +137,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
           glowColor={colors.glow}
           className="relative overflow-hidden p-4"
         >
-          <div className="absolute left-0 right-0 top-0 h-1 bg-dark-800">
+          <div className="absolute left-0 right-0 top-0 h-1 bg-white/[0.04]">
             <motion.div
               className="h-full bg-gradient-to-r from-primary-500 to-emerald-500"
               initial={{ width: '100%' }}
@@ -166,7 +166,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
             {notification.dismissible && (
               <motion.button
                 onClick={onDismiss}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -195,7 +195,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
         className={`relative overflow-hidden p-4 ${colors.bg} border ${colors.border}`}
       >
         {notification.duration && notification.duration > 0 && (
-          <div className="absolute left-0 right-0 top-0 h-1 bg-dark-800">
+          <div className="absolute left-0 right-0 top-0 h-1 bg-white/[0.04]">
             <motion.div
               className="h-full bg-primary-500"
               initial={{ width: '100%' }}
@@ -225,7 +225,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
           {notification.dismissible && (
             <motion.button
               onClick={onDismiss}
-              className="flex-shrink-0 rounded-full p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+              className="flex-shrink-0 rounded-full p-1 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
             >

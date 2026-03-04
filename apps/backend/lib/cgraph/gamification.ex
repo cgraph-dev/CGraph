@@ -416,6 +416,7 @@ defmodule CGraph.Gamification do
   def get_user_stats(user_id) do
     alias CGraph.Gamification.{Achievement, UserAchievement, UserQuest}
 
+    # get! safe: called with authenticated user.id from controller
     user = Repo.get!(User, user_id)
 
     unlocked_achievements =

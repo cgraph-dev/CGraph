@@ -39,11 +39,11 @@ type Story = StoryObj<typeof meta>;
  */
 export const Overlay: Story = {
   render: () => (
-    <div className="relative h-60 w-80 rounded-lg bg-dark-800">
+    <div className="relative h-60 w-80 rounded-lg bg-white/[0.04]">
       <div className="space-y-4 p-4">
-        <div className="h-4 w-3/4 rounded bg-dark-700" />
-        <div className="h-4 w-1/2 rounded bg-dark-700" />
-        <div className="h-4 w-2/3 rounded bg-dark-700" />
+        <div className="h-4 w-3/4 rounded bg-white/[0.06]" />
+        <div className="h-4 w-1/2 rounded bg-white/[0.06]" />
+        <div className="h-4 w-2/3 rounded bg-white/[0.06]" />
       </div>
       <LoadingOverlay message="Saving changes..." />
     </div>
@@ -55,7 +55,7 @@ export const Overlay: Story = {
  */
 export const Skeleton: Story = {
   render: () => (
-    <div className="w-80 space-y-4 rounded-lg bg-dark-800 p-4">
+    <div className="w-80 space-y-4 rounded-lg bg-white/[0.04] p-4">
       <SkeletonAvatar />
       <SkeletonText lines={3} />
     </div>
@@ -67,7 +67,7 @@ export const Skeleton: Story = {
  */
 export const MessageSkeleton: Story = {
   render: () => (
-    <div className="w-96 rounded-lg bg-dark-900">
+    <div className="w-96 rounded-lg bg-[rgb(30,32,40)]">
       <SkeletonMessage />
       <SkeletonMessage />
       <SkeletonMessage />
@@ -83,7 +83,7 @@ export const MessageSkeleton: Story = {
  */
 export const FullPageSpinner: Story = {
   render: () => (
-    <div className="relative h-[500px] w-[800px] overflow-hidden rounded-lg border border-dark-600">
+    <div className="relative h-[500px] w-[800px] overflow-hidden rounded-lg border border-white/[0.08]">
       <LoadingSpinner />
     </div>
   ),

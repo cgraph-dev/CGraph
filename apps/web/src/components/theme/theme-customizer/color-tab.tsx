@@ -44,7 +44,7 @@ export function ColorTab({ selectedColor, onSelectColor }: ColorTabProps) {
             className={`relative rounded-xl p-4 transition-all ${
               selectedColor === preset
                 ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
-                : 'hover:bg-dark-700'
+                : 'hover:bg-white/[0.08]'
             }`}
           >
             <div

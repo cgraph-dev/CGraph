@@ -109,27 +109,32 @@ defmodule CGraphWeb.API.V1.CreatorController do
   @doc "POST /api/v1/forums/:id/subscribe — Subscribe to a paid forum."
   def subscribe(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    forum = Repo.get!(Forum, forum_id)
 
-    case Creators.subscribe_to_paid_forum(user, forum) do
-      {:ok, sub} ->
-        conn
-        |> put_status(:created)
-        |> json(%{data: %{
-          subscription_id: sub.id,
-          status: sub.status,
-          price_cents: sub.price_cents,
-          current_period_end: sub.current_period_end
-        }})
+    case Repo.get(Forum, forum_id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: %{message: "Forum not found"}})
 
-      {:error, :not_a_paid_forum} ->
-        conn |> put_status(:bad_request) |> json(%{error: %{message: "This forum does not have paid subscriptions"}})
+      forum ->
+        case Creators.subscribe_to_paid_forum(user, forum) do
+          {:ok, sub} ->
+            conn
+            |> put_status(:created)
+            |> json(%{data: %{
+              subscription_id: sub.id,
+              status: sub.status,
+              price_cents: sub.price_cents,
+              current_period_end: sub.current_period_end
+            }})
 
-      {:error, :already_subscribed} ->
-        conn |> put_status(:conflict) |> json(%{error: %{message: "Already subscribed to this forum"}})
+          {:error, :not_a_paid_forum} ->
+            conn |> put_status(:bad_request) |> json(%{error: %{message: "This forum does not have paid subscriptions"}})
 
-      {:error, reason} ->
-        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_subscribe")}})
+          {:error, :already_subscribed} ->
+            conn |> put_status(:conflict) |> json(%{error: %{message: "Already subscribed to this forum"}})
+
+          {:error, reason} ->
+            conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_subscribe")}})
+        end
     end
   end
 

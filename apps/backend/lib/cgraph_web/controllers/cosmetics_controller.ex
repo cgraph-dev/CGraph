@@ -382,23 +382,27 @@ defmodule CGraphWeb.CosmeticsController do
           |> put_status(:forbidden)
           |> json(%{error: "Effect has expired"})
         else
-          effect = Repo.get!(ChatEffect, effect_id)
+          case Repo.get(ChatEffect, effect_id) do
+            nil ->
+              conn |> put_status(:not_found) |> json(%{error: "Effect not found"})
 
-          # Deactivate other effects of the same type
-          from(ue in UserChatEffect,
-            join: ce in ChatEffect, on: ue.effect_id == ce.id,
-            where: ue.user_id == ^user.id and ue.is_active == true and ce.effect_type == ^effect.effect_type
-          )
-          |> Repo.update_all(set: [is_active: false])
+            effect ->
+              # Deactivate other effects of the same type
+              from(ue in UserChatEffect,
+                join: ce in ChatEffect, on: ue.effect_id == ce.id,
+                where: ue.user_id == ^user.id and ue.is_active == true and ce.effect_type == ^effect.effect_type
+              )
+              |> Repo.update_all(set: [is_active: false])
 
-          # Activate this effect
-          {:ok, updated} = user_effect
-          |> UserChatEffect.activate_changeset(%{is_active: true})
-          |> Repo.update()
+              # Activate this effect
+              {:ok, updated} = user_effect
+              |> UserChatEffect.activate_changeset(%{is_active: true})
+              |> Repo.update()
 
-          conn
-          |> put_status(:ok)
-          |> json(%{success: true, effect: serialize_user_chat_effect(Repo.preload(updated, :chat_effect))})
+              conn
+              |> put_status(:ok)
+              |> json(%{success: true, effect: serialize_user_chat_effect(Repo.preload(updated, :chat_effect))})
+          end
         end
     end
   end

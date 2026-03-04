@@ -263,6 +263,7 @@ defmodule CGraph.Messaging.CoreMessages do
     unless user_in_conversation?(target_conversation_id, user.id) do
       {:error, :unauthorized}
     else
+      # get! safe: conversation existence validated by user_in_conversation? check above
       target_conversation = Repo.get!(Conversation, target_conversation_id)
 
       attrs = %{

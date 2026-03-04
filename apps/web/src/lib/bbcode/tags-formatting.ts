@@ -62,7 +62,7 @@ export const formattingTags: BBCodeTag[] = [
       _,
       author,
       text
-    ) => `<blockquote class="border-l-4 border-primary-500 bg-dark-700/50 rounded-r-lg p-4 my-4">
+    ) => `<blockquote class="border-l-4 border-primary-500 bg-white/[0.06] rounded-r-lg p-4 my-4">
       <div class="text-sm text-primary-400 font-medium mb-2">${escapeHtml(author)} wrote:</div>
       <div class="text-gray-300">${text}</div>
     </blockquote>`,
@@ -72,7 +72,7 @@ export const formattingTags: BBCodeTag[] = [
   {
     pattern: /\[quote\]([\s\S]*?)\[\/quote\]/gi,
     replace: (_, text) =>
-      `<blockquote class="border-l-4 border-primary-500 bg-dark-700/50 rounded-r-lg p-4 my-4 text-gray-300">${text}</blockquote>`,
+      `<blockquote class="border-l-4 border-primary-500 bg-white/[0.06] rounded-r-lg p-4 my-4 text-gray-300">${text}</blockquote>`,
     priority: 3,
   },
 
@@ -122,8 +122,8 @@ export const formattingTags: BBCodeTag[] = [
       _,
       title,
       content
-    ) => `<details class="bg-dark-700/50 rounded-lg my-4 overflow-hidden">
-      <summary class="cursor-pointer p-3 bg-dark-600/50 hover:bg-dark-600 font-medium text-gray-200">
+    ) => `<details class="bg-white/[0.06] rounded-lg my-4 overflow-hidden">
+      <summary class="cursor-pointer p-3 bg-white/[0.08]/50 hover:bg-white/[0.10] font-medium text-gray-200">
         <span class="ml-2">${escapeHtml(title)}</span>
       </summary>
       <div class="p-4 text-gray-300">${content}</div>
@@ -133,8 +133,8 @@ export const formattingTags: BBCodeTag[] = [
   // Spoiler: [spoiler]...[/spoiler]
   {
     pattern: /\[spoiler\]([\s\S]*?)\[\/spoiler\]/gi,
-    replace: (_, content) => `<details class="bg-dark-700/50 rounded-lg my-4 overflow-hidden">
-      <summary class="cursor-pointer p-3 bg-dark-600/50 hover:bg-dark-600 font-medium text-gray-200">
+    replace: (_, content) => `<details class="bg-white/[0.06] rounded-lg my-4 overflow-hidden">
+      <summary class="cursor-pointer p-3 bg-white/[0.08]/50 hover:bg-white/[0.10] font-medium text-gray-200">
         <span class="ml-2">Spoiler (click to reveal)</span>
       </summary>
       <div class="p-4 text-gray-300">${content}</div>
@@ -144,7 +144,7 @@ export const formattingTags: BBCodeTag[] = [
   // Horizontal rule
   {
     pattern: /\[hr\]/gi,
-    replace: () => '<hr class="border-dark-500 my-6" />',
+    replace: () => '<hr class="border-white/[0.10] my-6" />',
     priority: 10,
   },
   // Me action: [me]does something[/me] -> * Username does something *

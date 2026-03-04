@@ -157,7 +157,7 @@ try {
                 <Toaster
                   position="bottom-right"
                   toastOptions={{
-                    className: 'bg-dark-800 text-white border border-dark-700',
+                    className: 'bg-white/[0.04] text-white border border-white/[0.06]',
                     duration: 4000,
                     style: {
                       background: '#1f2937',

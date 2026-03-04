@@ -24,9 +24,9 @@ function MockFileAttachment({
   };
 
   return (
-    <div className="flex w-[300px] items-center gap-3 rounded-lg border border-dark-600 bg-dark-800 p-3">
+    <div className="flex w-[300px] items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
       {/* Thumbnail / icon */}
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-dark-700 text-lg">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.06] text-lg">
         {icons[type]}
       </div>
 
@@ -35,7 +35,7 @@ function MockFileAttachment({
         <p className="truncate text-sm font-medium text-white">{fileName}</p>
         <p className="text-xs text-gray-500">{fileSize}</p>
         {progress !== undefined && (
-          <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-dark-600">
+          <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/[0.08]">
             <div
               className="h-full rounded-full bg-primary-500 transition-all"
               style={{ width: `${progress}%` }}

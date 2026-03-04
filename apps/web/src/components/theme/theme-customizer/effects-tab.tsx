@@ -52,7 +52,7 @@ export function EffectsTab({
               className={`rounded-xl p-4 text-left transition-all ${
                 selectedEffect === option.value
                   ? 'bg-primary-600/20 ring-2 ring-primary-500'
-                  : 'bg-dark-700 hover:bg-dark-600'
+                  : 'bg-white/[0.06] hover:bg-white/[0.10]'
               } ${isPremium ? 'opacity-60' : ''}`}
             >
               <div className="mb-2 flex items-center justify-between">
@@ -77,7 +77,7 @@ export function EffectsTab({
               className={`flex-1 rounded-xl px-4 py-2 text-center capitalize transition-all ${
                 animationSpeed === speed
                   ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:text-white'
+                  : 'bg-white/[0.06] text-gray-400 hover:text-white'
               }`}
             >
               {speed}
@@ -87,7 +87,7 @@ export function EffectsTab({
       </div>
 
       {/* Particles Toggle */}
-      <div className="flex items-center justify-between rounded-xl bg-dark-700 p-4">
+      <div className="flex items-center justify-between rounded-xl bg-white/[0.06] p-4">
         <div>
           <span className="font-medium text-white">Particle Effects</span>
           <p className="text-xs text-gray-400">Show floating particles in animations</p>
@@ -96,7 +96,7 @@ export function EffectsTab({
           whileTap={{ scale: 0.9 }}
           onClick={onToggleParticles}
           className={`h-6 w-12 rounded-full transition-colors ${
-            particlesEnabled ? 'bg-primary-600' : 'bg-dark-600'
+            particlesEnabled ? 'bg-primary-600' : 'bg-white/[0.08]'
           }`}
         >
           <motion.div

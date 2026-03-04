@@ -19,7 +19,7 @@ function MockVoicePlayer({
   const progress = state === 'playing' ? 45 : 0;
 
   return (
-    <div className="flex w-[280px] items-center gap-3 rounded-2xl bg-dark-700 px-4 py-3">
+    <div className="flex w-[280px] items-center gap-3 rounded-2xl bg-white/[0.06] px-4 py-3">
       {/* Play/pause button */}
       <button className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-white">
         {state === 'loading' ? (
@@ -40,7 +40,7 @@ function MockVoicePlayer({
             return (
               <div
                 key={i}
-                className={`w-[3px] rounded-full ${filled ? 'bg-primary-400' : 'bg-dark-500'}`}
+                className={`w-[3px] rounded-full ${filled ? 'bg-primary-400' : 'bg-white/[0.12]'}`}
                 style={{ height: `${height}px` }}
               />
             );

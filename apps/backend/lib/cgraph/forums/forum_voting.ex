@@ -85,6 +85,7 @@ defmodule CGraph.Forums.ForumVoting do
   """
   @spec update_forum_hot_score(Ecto.UUID.t()) :: {non_neg_integer(), nil | [term()]}
   def update_forum_hot_score(forum_id) do
+    # get! safe: forum_id from internal score recalculation
     forum = Repo.get!(Forum, forum_id)
 
     score = forum.score

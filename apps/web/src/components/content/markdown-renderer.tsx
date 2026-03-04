@@ -64,7 +64,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             if (isInline) {
               return (
                 <code
-                  className="rounded bg-dark-700 px-1.5 py-0.5 text-sm text-primary-300"
+                  className="rounded bg-white/[0.06] px-1.5 py-0.5 text-sm text-primary-300"
                   {...props}
                 >
                   {children}
@@ -73,7 +73,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             }
             return (
               <code
-                className={`block overflow-x-auto rounded-lg bg-dark-700 p-4 text-sm ${className || ''}`}
+                className={`block overflow-x-auto rounded-lg bg-white/[0.06] p-4 text-sm ${className || ''}`}
                 {...props}
               >
                 {children}
@@ -82,7 +82,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           },
           // Pre blocks for code
           pre: ({ children }) => (
-            <pre className="my-4 overflow-x-auto rounded-lg bg-dark-700">{children}</pre>
+            <pre className="my-4 overflow-x-auto rounded-lg bg-white/[0.06]">{children}</pre>
           ),
           // Blockquotes
           blockquote: ({ children }) => (
@@ -111,17 +111,17 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           // Tables
           table: ({ children }) => (
             <div className="my-4 overflow-x-auto">
-              <table className="min-w-full border-collapse border border-dark-600">
+              <table className="min-w-full border-collapse border border-white/[0.08]">
                 {children}
               </table>
             </div>
           ),
           th: ({ children }) => (
-            <th className="border border-dark-600 bg-dark-700 px-4 py-2 text-left font-medium">
+            <th className="border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-left font-medium">
               {children}
             </th>
           ),
-          td: ({ children }) => <td className="border border-dark-600 px-4 py-2">{children}</td>,
+          td: ({ children }) => <td className="border border-white/[0.08] px-4 py-2">{children}</td>,
           // Task lists
           input: ({ checked, ...props }) => (
             <input
@@ -152,7 +152,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             <ol className="my-3 list-inside list-decimal space-y-1 text-gray-300">{children}</ol>
           ),
           // Horizontal rules
-          hr: () => <hr className="my-6 border-dark-600" />,
+          hr: () => <hr className="my-6 border-white/[0.08]" />,
         }}
       >
         {content}

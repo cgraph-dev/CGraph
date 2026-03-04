@@ -16,6 +16,7 @@ defmodule CGraph.Workers.AppealNotificationWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"appeal_id" => appeal_id, "outcome" => outcome}}) do
+    # get! safe: appeal_id from Oban job args (system-internal)
     appeal =
       Repo.get!(Appeal, appeal_id)
       |> Repo.preload([:user, review_action: :report])

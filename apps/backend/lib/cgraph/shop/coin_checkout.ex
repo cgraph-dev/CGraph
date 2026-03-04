@@ -140,36 +140,45 @@ defmodule CGraph.Shop.CoinCheckout do
 
   defp do_fulfill(purchase) do
     # IMPORTANT: award_coins/4 requires %User{} struct (not UUID) and String.t() type (not atom)
-    user = Repo.get!(User, purchase.user_id)
-
-    case CGraph.Gamification.award_coins(user, purchase.coins_awarded, "purchase",
-           description: "Coin bundle: #{purchase.bundle_id}",
-           reference_type: "coin_purchase",
-           reference_id: purchase.id
-         ) do
-      {:ok, _updated_user} ->
-        Repo.update(
-          Ecto.Changeset.change(purchase,
-            status: "completed",
-            fulfilled_at: DateTime.utc_now() |> DateTime.truncate(:second)
-          )
-        )
-
-        Logger.info("coin_purchase_fulfilled",
-          purchase_id: purchase.id,
+    case Repo.get(User, purchase.user_id) do
+      nil ->
+        Logger.error("coin_fulfillment_user_not_found",
           user_id: purchase.user_id,
-          coins: purchase.coins_awarded
+          purchase_id: purchase.id
         )
 
-        {:ok, :fulfilled}
+        {:error, :user_not_found}
 
-      {:error, reason} ->
-        Logger.error("coin_fulfillment_failed",
-          purchase_id: purchase.id,
-          reason: inspect(reason)
-        )
+      user ->
+        case CGraph.Gamification.award_coins(user, purchase.coins_awarded, "purchase",
+               description: "Coin bundle: #{purchase.bundle_id}",
+               reference_type: "coin_purchase",
+               reference_id: purchase.id
+             ) do
+          {:ok, _updated_user} ->
+            Repo.update(
+              Ecto.Changeset.change(purchase,
+                status: "completed",
+                fulfilled_at: DateTime.utc_now() |> DateTime.truncate(:second)
+              )
+            )
 
-        {:error, reason}
+            Logger.info("coin_purchase_fulfilled",
+              purchase_id: purchase.id,
+              user_id: purchase.user_id,
+              coins: purchase.coins_awarded
+            )
+
+            {:ok, :fulfilled}
+
+          {:error, reason} ->
+            Logger.error("coin_fulfillment_failed",
+              purchase_id: purchase.id,
+              reason: inspect(reason)
+            )
+
+            {:error, reason}
+        end
     end
   end
 

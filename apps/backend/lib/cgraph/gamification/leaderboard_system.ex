@@ -257,6 +257,7 @@ defmodule CGraph.Gamification.LeaderboardSystem do
   end
 
   defp get_user_standard_rank(user_id, category) do
+    # get! safe: user_id from authenticated session via controller
     user = Repo.get!(User, user_id)
     {field, value} = case category do
       "xp" -> {:xp, user.xp}

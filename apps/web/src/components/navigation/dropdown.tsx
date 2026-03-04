@@ -84,7 +84,7 @@ export default function Dropdown({
               transition={
                 reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 30 }
               }
-              className={`fixed z-50 min-w-[160px] origin-top rounded-lg border border-dark-600 bg-dark-800 py-1 shadow-xl ${className}`}
+              className={`fixed z-50 min-w-[160px] origin-top rounded-lg border border-white/[0.08] bg-white/[0.04] py-1 shadow-xl ${className}`}
               style={{
                 top: position.top,
                 left: align === 'right' ? 'auto' : position.left,
@@ -116,7 +116,7 @@ function getDropdownItemClass(disabled: boolean | undefined, danger: boolean | u
   if (danger) {
     return 'text-red-400 hover:bg-red-500/10';
   }
-  return 'text-gray-200 hover:bg-dark-700';
+  return 'text-gray-200 hover:bg-white/[0.08]';
 }
 
 /**
@@ -145,5 +145,5 @@ export function DropdownItem({ children, onClick, icon, danger, disabled }: Drop
  * Dropdown Divider component.
  */
 export function DropdownDivider() {
-  return <div className="my-1 border-t border-dark-600" />;
+  return <div className="my-1 border-t border-white/[0.08]" />;
 }

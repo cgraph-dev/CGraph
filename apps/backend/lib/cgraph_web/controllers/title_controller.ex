@@ -61,18 +61,22 @@ defmodule CGraphWeb.TitleController do
 
     case Gamification.equip_title(user.id, title_id) do
       {:ok, _updated_user} ->
-        title = Repo.get!(Gamification.Title, title_id)
+        case Repo.get(Gamification.Title, title_id) do
+          nil ->
+            conn |> put_status(:not_found) |> json(%{error: "Title not found"})
 
-        conn
-        |> put_status(:ok)
-        |> json(%{
-          success: true,
-          equipped_title: %{
-            id: title.id,
-            name: title.name,
-            color: title.color
-          }
-        })
+          title ->
+            conn
+            |> put_status(:ok)
+            |> json(%{
+              success: true,
+              equipped_title: %{
+                id: title.id,
+                name: title.name,
+                color: title.color
+              }
+            })
+        end
 
       {:error, :not_owned} ->
         conn

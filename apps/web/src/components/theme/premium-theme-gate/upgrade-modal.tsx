@@ -94,8 +94,8 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
                   whileHover={{ scale: 1.02 }}
                   className={`relative rounded-2xl border-2 p-6 ${
                     plan.highlighted
-                      ? `${config.borderColor} bg-dark-800/80`
-                      : 'border-gray-700 bg-dark-800/40'
+                      ? `${config.borderColor} bg-white/[0.06]`
+                      : 'border-gray-700 bg-white/[0.04]/40'
                   }`}
                 >
                   {plan.highlighted && (
@@ -129,7 +129,7 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     className={`w-full rounded-xl py-3 font-semibold text-white ${
-                      plan.highlighted ? config.bgColor : 'bg-dark-700 hover:bg-dark-600'
+                      plan.highlighted ? config.bgColor : 'bg-white/[0.06] hover:bg-white/[0.10]'
                     }`}
                   >
                     Get {plan.name}

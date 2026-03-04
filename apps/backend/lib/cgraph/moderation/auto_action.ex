@@ -217,6 +217,7 @@ defmodule CGraph.Moderation.AutoAction do
         ) || raise "No admin user found for AI auto-action system"
 
       id ->
+        # get! safe: ID from system config (AI_MODERATOR_USER_ID)
         Repo.get!(User, id)
     end
   end

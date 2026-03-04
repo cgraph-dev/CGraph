@@ -125,7 +125,7 @@ export const basicTags: BBCodeTag[] = [
       if (!videoId) {
         return '<span class="text-gray-400 italic">[Invalid YouTube URL]</span>';
       }
-      return `<div class="relative w-full pt-[56.25%] my-4 rounded-lg overflow-hidden bg-dark-700">
+      return `<div class="relative w-full pt-[56.25%] my-4 rounded-lg overflow-hidden bg-white/[0.06]">
         <iframe 
           src="https://www.youtube-nocookie.com/embed/${videoId}" 
           class="absolute inset-0 w-full h-full"
@@ -157,7 +157,7 @@ export const basicTags: BBCodeTag[] = [
     pattern: /\[code=([a-zA-Z0-9]+)\]([\s\S]*?)\[\/code\]/gi,
     replace: (_, lang, code) => {
       const escapedCode = escapeHtml(code.trim());
-      return `<pre class="bg-dark-700 rounded-lg p-4 my-4 overflow-x-auto"><code class="language-${lang.toLowerCase()} text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
+      return `<pre class="bg-white/[0.06] rounded-lg p-4 my-4 overflow-x-auto"><code class="language-${lang.toLowerCase()} text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
     },
     priority: 1,
   },
@@ -166,7 +166,7 @@ export const basicTags: BBCodeTag[] = [
     pattern: /\[code\]([\s\S]*?)\[\/code\]/gi,
     replace: (_, code) => {
       const escapedCode = escapeHtml(code.trim());
-      return `<pre class="bg-dark-700 rounded-lg p-4 my-4 overflow-x-auto"><code class="text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
+      return `<pre class="bg-white/[0.06] rounded-lg p-4 my-4 overflow-x-auto"><code class="text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
     },
     priority: 1,
   },
@@ -175,7 +175,7 @@ export const basicTags: BBCodeTag[] = [
     pattern: /\[php\]([\s\S]*?)\[\/php\]/gi,
     replace: (_, code) => {
       const escapedCode = escapeHtml(code.trim());
-      return `<pre class="bg-dark-700 rounded-lg p-4 my-4 overflow-x-auto"><code class="language-php text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
+      return `<pre class="bg-white/[0.06] rounded-lg p-4 my-4 overflow-x-auto"><code class="language-php text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
     },
     priority: 1,
   },
@@ -184,7 +184,7 @@ export const basicTags: BBCodeTag[] = [
     pattern: /\[html\]([\s\S]*?)\[\/html\]/gi,
     replace: (_, code) => {
       const escapedCode = escapeHtml(code.trim());
-      return `<pre class="bg-dark-700 rounded-lg p-4 my-4 overflow-x-auto"><code class="language-html text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
+      return `<pre class="bg-white/[0.06] rounded-lg p-4 my-4 overflow-x-auto"><code class="language-html text-sm font-mono text-gray-200">${escapedCode}</code></pre>`;
     },
     priority: 1,
   },

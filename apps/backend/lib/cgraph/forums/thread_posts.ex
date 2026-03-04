@@ -73,6 +73,7 @@ defmodule CGraph.Forums.ThreadPosts do
           )
 
           # Update board stats
+          # get! safe: thread_id from just-inserted post in Multi transaction
           thread = Repo.get!(Thread, thread_id)
           from(b in Board, where: b.id == ^thread.board_id)
           |> Repo.update_all(
@@ -81,6 +82,7 @@ defmodule CGraph.Forums.ThreadPosts do
           )
 
           # Update forum stats
+          # get! safe: board_id FK from thread fetched above
           board = Repo.get!(Board, thread.board_id)
           from(f in Forum, where: f.id == ^board.forum_id)
           |> Repo.update_all(inc: [post_count: 1])
@@ -256,6 +258,7 @@ defmodule CGraph.Forums.ThreadPosts do
   end
 
   defp update_thread_score(thread_id, delta) do
+    # get! safe: thread_id from internal vote processing
     _thread = Repo.get!(Thread, thread_id)
     upvotes = if delta > 0, do: 1, else: 0
     downvotes = if delta < 0, do: 1, else: 0

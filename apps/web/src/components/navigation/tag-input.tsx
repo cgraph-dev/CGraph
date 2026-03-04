@@ -82,7 +82,7 @@ export default function TagInput({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="flex flex-wrap gap-2 rounded-lg border border-dark-600 bg-dark-700 p-2 focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary-500">
+      <div className="flex flex-wrap gap-2 rounded-lg border border-white/[0.08] bg-white/[0.06] p-2 focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary-500">
         {tags.map((tag) => (
           <span
             key={tag.id}
@@ -115,7 +115,7 @@ export default function TagInput({
       </div>
 
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-lg border border-dark-600 bg-dark-800 shadow-lg">
+        <div className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-lg border border-white/[0.08] bg-white/[0.04] shadow-lg">
           {filteredSuggestions.map((suggestion, index) => (
             <button
               key={suggestion.id}
@@ -123,7 +123,7 @@ export default function TagInput({
               className={`w-full px-3 py-2 text-left text-sm transition-colors ${
                 index === activeSuggestion
                   ? 'bg-primary-600/20 text-primary-400'
-                  : 'text-gray-300 hover:bg-dark-700'
+                  : 'text-gray-300 hover:bg-white/[0.08]'
               }`}
             >
               {suggestion.label}

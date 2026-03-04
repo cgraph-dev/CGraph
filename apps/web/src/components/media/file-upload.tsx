@@ -198,7 +198,7 @@ export default function FileUpload({
           className={`cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-all duration-200 ${
             isDragging
               ? 'scale-[1.02] border-primary-500 bg-primary-500/10 shadow-lg shadow-primary-500/20'
-              : 'border-dark-600 hover:border-dark-500 hover:bg-dark-800/50 hover:shadow-md'
+              : 'border-white/[0.08] hover:border-white/[0.10] hover:bg-white/[0.04] hover:shadow-md'
           }`}
         >
           <PhotoIcon className="mx-auto mb-2 h-10 w-10 text-gray-500" />

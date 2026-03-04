@@ -19,6 +19,7 @@ defmodule CGraph.Accounts.UsernameService do
   """
   @spec can_change_username?(Ecto.UUID.t(), boolean()) :: {:ok, non_neg_integer()} | {:error, {:cooldown, non_neg_integer()}}
   def can_change_username?(user_id, is_premium \\ false) do
+    # get! safe: user_id from authenticated session
     user = Repo.get!(User, user_id)
     cooldown_days = if is_premium, do: @premium_cooldown_days, else: @default_cooldown_days
 
@@ -46,6 +47,7 @@ defmodule CGraph.Accounts.UsernameService do
     is_premium = Keyword.get(opts, :premium, false)
     reason = Keyword.get(opts, :reason)
 
+    # get! safe: user_id from authenticated session
     user = Repo.get!(User, user_id)
 
     # Check cooldown (unless admin is doing it)

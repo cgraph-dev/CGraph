@@ -28,6 +28,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   """
   @spec get!(String.t(), list()) :: Message.t()
   def get!(id, preloads \\ []) do
+    # get! safe: intentional raising API — callers should use get/1 for user input
     Message
     |> Repo.get!(id)
     |> maybe_preload(preloads)

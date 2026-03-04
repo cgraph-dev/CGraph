@@ -114,7 +114,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowPreview(!showPreview)}
               className={`rounded-lg p-2 transition-colors ${
-                showPreview ? 'bg-primary-600 text-white' : 'bg-dark-700 text-gray-400'
+                showPreview ? 'bg-primary-600 text-white' : 'bg-white/[0.06] text-gray-400'
               }`}
             >
               <EyeIcon className="h-5 w-5" />
@@ -126,7 +126,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                 resetTheme();
                 HapticFeedback.warning();
               }}
-              className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:text-white"
+              className="rounded-lg bg-white/[0.06] p-2 text-gray-400 transition-colors hover:text-white"
             >
               <ArrowPathIcon className="h-5 w-5" />
             </motion.button>
@@ -135,7 +135,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onClose}
-                className="rounded-lg bg-dark-700 px-4 py-2 text-gray-300 transition-colors hover:text-white"
+                className="rounded-lg bg-white/[0.06] px-4 py-2 text-gray-300 transition-colors hover:text-white"
               >
                 Done
               </motion.button>
@@ -156,7 +156,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                   className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors ${
                     activeTab === tab.id
                       ? 'border border-primary-500/30 bg-primary-600/20 text-primary-400'
-                      : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                      : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
                   }`}
                 >
                   <tab.icon className="h-5 w-5" />
@@ -180,7 +180,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                       applyPreset(preset.value);
                       HapticFeedback.success();
                     }}
-                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
                   >
                     {preset.name}
                   </motion.button>

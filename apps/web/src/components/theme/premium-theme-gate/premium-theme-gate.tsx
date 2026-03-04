@@ -64,12 +64,12 @@ export function PremiumThemeGate({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 flex items-center justify-center bg-dark-900/60 backdrop-blur-sm"
+            className="absolute inset-0 flex items-center justify-center bg-[rgb(30,32,40)]/60 backdrop-blur-sm"
           >
             <GlassCard variant="frosted" glow className="max-w-sm p-6 text-center">
               {/* Lock icon with animation */}
               <motion.div
-                className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-800"
+                className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.04]"
                 animate={{
                   boxShadow: [
                     '0 0 20px rgba(139, 92, 246, 0.3)',
@@ -123,7 +123,7 @@ export function PremiumThemeGate({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border-2 border-dashed border-gray-700 bg-dark-800/50 p-4"
+          className="rounded-xl border-2 border-dashed border-gray-700 bg-white/[0.04] p-4"
         >
           <div className="flex items-center gap-3">
             <div className={`rounded-lg p-2 ${config.bgColor}`}>

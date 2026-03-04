@@ -71,6 +71,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   @doc "Equip a title for a user."
   @spec equip_title(binary(), binary()) :: {:ok, User.t()} | {:error, atom()}
   def equip_title(user_id, title_id) do
+    # get! safe: user_id from authenticated session via controller
     user = Repo.get!(User, user_id)
 
     case Repo.get_by(UserTitle, user_id: user_id, title_id: title_id) do
