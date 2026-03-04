@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { glassSurfaceElevated } from '@/components/liquid-glass/shared';
 
 interface Option {
   value: string;
@@ -29,8 +30,8 @@ interface SelectProps {
  */
 function getBorderClass(hasError: boolean, isOpen: boolean): string {
   if (hasError) return 'border-red-500';
-  if (isOpen) return 'border-primary-500';
-  return 'border-dark-600';
+  if (isOpen) return 'border-white/[0.16]';
+  return 'border-white/[0.08]';
 }
 
 /**
@@ -91,7 +92,7 @@ export default function Select({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`flex w-full items-center justify-between rounded-lg border bg-dark-700 px-4 py-2.5 text-left transition-colors ${getBorderClass(!!error, isOpen)} ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:border-dark-500'}`}
+        className={`flex w-full items-center justify-between rounded-lg border bg-white/[0.04] px-4 py-2.5 text-left transition-colors ${getBorderClass(!!error, isOpen)} ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:border-white/[0.15]'}`}
       >
         <div className="flex min-w-0 items-center gap-2">
           {selectedOption?.icon}
@@ -105,16 +106,16 @@ export default function Select({
       </button>
 
       {isOpen && (
-        <div className="absolute z-20 mt-1 max-h-60 w-full overflow-hidden rounded-lg border border-dark-600 bg-dark-800 shadow-xl">
+        <div className={`absolute z-20 mt-1 max-h-60 w-full overflow-hidden rounded-lg ${glassSurfaceElevated} shadow-xl`}>
           {searchable && (
-            <div className="border-b border-dark-600 p-2">
+            <div className="border-b border-white/[0.06] p-2">
               <input
                 ref={inputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full rounded border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full rounded border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
           )}
@@ -127,8 +128,8 @@ export default function Select({
                 <button
                   key={option.value}
                   onClick={() => handleSelect(option.value)}
-                  className={`flex w-full items-center justify-between px-4 py-2.5 transition-colors hover:bg-dark-700 ${
-                    option.value === value ? 'bg-dark-700' : ''
+                  className={`flex w-full items-center justify-between px-4 py-2.5 transition-colors hover:bg-white/[0.08] ${
+                    option.value === value ? 'bg-white/[0.06]' : ''
                   }`}
                 >
                   <div className="flex min-w-0 items-center gap-2">
@@ -194,7 +195,7 @@ export function SelectTrigger({
     <button
       type="button"
       id={id}
-      className={`inline-flex items-center justify-between rounded-lg border border-dark-600 bg-dark-800 px-3 py-2 text-sm text-white ${className}`}
+      className={`inline-flex items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white ${className}`}
     >
       {children}
     </button>
@@ -219,7 +220,7 @@ export function SelectValue({ placeholder }: { placeholder?: string }) {
  */
 export function SelectContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-dark-600 bg-dark-800 p-1 shadow-xl">{children}</div>
+    <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-1 shadow-xl">{children}</div>
   );
 }
 
@@ -237,7 +238,7 @@ export function SelectItem({
   value: string;
 }) {
   return (
-    <div className="cursor-pointer rounded px-3 py-2 text-sm text-white hover:bg-dark-700">
+    <div className="cursor-pointer rounded px-3 py-2 text-sm text-white hover:bg-white/[0.08]">
       {children}
     </div>
   );

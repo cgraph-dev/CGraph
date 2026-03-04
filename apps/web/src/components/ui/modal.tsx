@@ -4,6 +4,7 @@
  */
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { glassSurfaceElevated } from '@/components/liquid-glass/shared';
 
 interface ModalProps {
   isOpen: boolean;
@@ -116,20 +117,20 @@ export function Modal({
       {/* Modal panel */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeClasses[size]} animate-scale-in rounded-xl bg-white shadow-2xl dark:bg-gray-900`}
+        className={`relative w-full ${sizeClasses[size]} animate-scale-in rounded-xl shadow-2xl ${glassSurfaceElevated}`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+          <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
             {title && (
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 id="modal-title" className="text-lg font-semibold text-white">
                 {title}
               </h2>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-gray-300"
                 aria-label="Close modal"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +151,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="rounded-b-xl border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <div className="rounded-b-xl border-t border-white/[0.06] bg-white/[0.04] px-6 py-4">
             {footer}
           </div>
         )}
@@ -210,7 +211,7 @@ export function ConfirmDialog({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="rounded-lg border bg-white/[0.06] border-white/[0.08] px-4 py-2 text-sm font-medium text-gray-300 hover:bg-white/[0.10] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {cancelLabel}
           </button>
@@ -245,7 +246,7 @@ export function ConfirmDialog({
         </div>
       }
     >
-      <p className="text-gray-600 dark:text-gray-400">{message}</p>
+      <p className="text-gray-400">{message}</p>
     </Modal>
   );
 }

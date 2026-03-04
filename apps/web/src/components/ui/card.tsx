@@ -1,5 +1,6 @@
 /** Card — reusable card container with variant, padding, and animation options. */
 import { ReactNode } from 'react';
+import { glassSurface } from '@/components/liquid-glass/shared';
 
 interface CardProps {
   children: ReactNode;
@@ -24,13 +25,13 @@ export default function Card({
   padding = 'md',
   animate = false,
 }: CardProps) {
-  const baseStyles = 'rounded-lg bg-dark-800 border border-dark-700';
+  const baseStyles = `rounded-lg ${glassSurface}`;
 
   const variantStyles = {
     default: '',
     interactive:
-      'hover:border-dark-600 hover:bg-dark-750 hover:shadow-card-hover transition-all duration-200 cursor-pointer',
-    elevated: 'shadow-card border-dark-600',
+      'hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-200 cursor-pointer',
+    elevated: 'shadow-card',
   };
 
   const paddingStyles = {
@@ -64,7 +65,7 @@ interface CardHeaderProps {
  * Card Header display component.
  */
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
-  return <div className={`mb-3 border-b border-dark-700 pb-3 ${className}`}>{children}</div>;
+  return <div className={`mb-3 border-b border-white/[0.06] pb-3 ${className}`}>{children}</div>;
 }
 
 // Card Title component
@@ -113,7 +114,7 @@ interface CardFooterProps {
  * Card Footer display component.
  */
 export function CardFooter({ children, className = '' }: CardFooterProps) {
-  return <div className={`mt-3 border-t border-dark-700 pt-3 ${className}`}>{children}</div>;
+  return <div className={`mt-3 border-t border-white/[0.06] pt-3 ${className}`}>{children}</div>;
 }
 
 // Card Description component

@@ -7,7 +7,7 @@ import { motion, type HTMLMotionProps } from 'motion/react';
 import { useMotionSafe } from '@/hooks/useMotionSafe';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'glass';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -49,6 +49,8 @@ export function Button({
       'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-lg hover:shadow-red-600/30 hover:-translate-y-0.5',
     success:
       'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5',
+    glass:
+      'bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.12] text-white backdrop-blur-sm',
   };
 
   const sizeStyles: Record<typeof size, string> = {

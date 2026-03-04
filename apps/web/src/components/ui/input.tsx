@@ -125,8 +125,8 @@ export function Textarea({
         className={`block rounded-lg border px-3 py-2 text-sm shadow-sm ${fullWidth ? 'w-full' : ''} ${
           error
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-600 dark:text-red-400'
-            : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-        } min-h-[100px] resize-y focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-50 dark:disabled:bg-gray-900 ${className} `}
+            : 'border-white/[0.08] bg-white/[0.04] text-white focus:border-[var(--color-brand-purple)]/50 focus:ring-[var(--color-brand-purple)]/20'
+        } min-h-[100px] resize-y focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-white/[0.02] disabled:opacity-50 ${className} `}
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined}
         {...props}
@@ -187,8 +187,8 @@ export function Select({
         className={`block rounded-lg border px-3 py-2 text-sm shadow-sm ${fullWidth ? 'w-full' : ''} ${
           error
             ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500 dark:border-red-600 dark:text-red-400'
-            : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-        } focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-50 dark:disabled:bg-gray-900 ${className} `}
+            : 'border-white/[0.08] bg-white/[0.04] text-white focus:border-[var(--color-brand-purple)]/50 focus:ring-[var(--color-brand-purple)]/20'
+        } focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-white/[0.02] disabled:opacity-50 ${className} `}
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
         {...props}

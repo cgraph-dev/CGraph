@@ -51,8 +51,8 @@ function TextArea({
       {label && <label className="mb-2 block text-sm font-medium text-gray-300">{label}</label>}
       <textarea
         ref={setRefs}
-        className={`w-full resize-none rounded-lg border bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-          error ? 'border-red-500' : 'border-dark-600'
+        className={`w-full resize-none rounded-lg border bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+          error ? 'border-red-500' : 'border-white/[0.08]'
         } ${className}`}
         style={autoResize ? { height, overflow: height ? 'hidden' : 'auto' } : undefined}
         {...props}

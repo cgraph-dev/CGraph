@@ -30,7 +30,7 @@ export default function Badge({
   icon,
 }: BadgeProps) {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: 'bg-dark-600 text-gray-300',
+    default: 'bg-white/[0.08] border border-white/[0.06] text-white/80',
     primary: 'bg-primary-600/20 text-primary-400 border border-primary-500/30',
     success: 'bg-green-600/20 text-green-400 border border-green-500/30',
     warning: 'bg-yellow-600/20 text-yellow-400 border border-yellow-500/30',
@@ -38,7 +38,7 @@ export default function Badge({
     info: 'bg-blue-600/20 text-blue-400 border border-blue-500/30',
     destructive: 'bg-red-600/20 text-red-400 border border-red-500/30',
     secondary: 'bg-gray-600/20 text-gray-300 border border-gray-500/30',
-    outline: 'bg-transparent text-gray-300 border border-dark-600',
+    outline: 'bg-transparent text-gray-300 border border-white/[0.08]',
   };
 
   const sizeStyles: Record<BadgeSize, string> = {

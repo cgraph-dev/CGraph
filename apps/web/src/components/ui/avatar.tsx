@@ -92,7 +92,7 @@ export default function Avatar({
     <div className={`relative inline-block ${className}`}>
       <div
         className={`${sizeStyles[size].container} flex items-center justify-center overflow-hidden rounded-full ${
-          !src ? getColorFromName(name) : 'bg-dark-600'
+          !src ? getColorFromName(name) : 'bg-white/[0.06]'
         } ${borderStyle.className}`}
         style={borderStyle.style}
       >
@@ -108,7 +108,7 @@ export default function Avatar({
       {/* Status indicator */}
       {status && (
         <span
-          className={`absolute bottom-0 right-0 ${sizeStyles[size].status} rounded-full ${statusColors[status]} ring-2 ring-dark-800`}
+          className={`absolute bottom-0 right-0 ${sizeStyles[size].status} rounded-full ${statusColors[status]} ring-2 ring-[rgb(30,32,40)]`}
         />
       )}
 
@@ -149,7 +149,7 @@ export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps
       {visibleAvatars.map((child, index) => (
         <div
           key={index}
-          className={`relative rounded-full ring-2 ring-dark-800 ${index > 0 ? overlapStyles[size] : ''}`}
+          className={`relative rounded-full ring-2 ring-[rgb(30,32,40)] ${index > 0 ? overlapStyles[size] : ''}`}
           style={{ zIndex: visibleAvatars.length - index }}
         >
           {child}
@@ -157,7 +157,7 @@ export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps
       ))}
       {overflowCount > 0 && (
         <div
-          className={`${overlapStyles[size]} relative rounded-full ring-2 ring-dark-800`}
+          className={`${overlapStyles[size]} relative rounded-full ring-2 ring-[rgb(30,32,40)]`}
           style={{ zIndex: 0 }}
         >
           <Avatar name={`+${overflowCount}`} size={size} />
