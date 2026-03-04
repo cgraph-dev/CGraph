@@ -58,7 +58,7 @@ export function MessageMediaContent({
           href={message.metadata.url as string} // type assertion: message metadata field
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-2 flex items-center gap-2 rounded-lg bg-dark-600/50 p-2 transition-colors hover:bg-dark-600"
+          className="mb-2 flex items-center gap-2 rounded-lg bg-white/[0.08] p-2 transition-colors hover:bg-white/[0.10]"
         >
           <FileIcon />
           <span className="truncate text-sm">

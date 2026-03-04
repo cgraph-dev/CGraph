@@ -59,7 +59,7 @@ export function UISettingsPanel({
                     e.target.value as UIPreferences['glassEffect'] /* safe downcast – event value */
                   )
                 }
-                className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
                 <option value="default">Default</option>
                 <option value="frosted">Frosted</option>
@@ -82,7 +82,7 @@ export function UISettingsPanel({
                       .value as UIPreferences['voiceVisualizerTheme'] /* safe downcast – event value */
                   )
                 }
-                className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
                 <option value="matrix-green">Matrix Green</option>
                 <option value="cyber-blue">Cyber Blue</option>
@@ -105,7 +105,7 @@ export function UISettingsPanel({
                     e.target.value as AnimationIntensity /* safe downcast – event value */
                   )
                 }
-                className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
                 <option value="low">Low (Performance)</option>
                 <option value="medium">Medium</option>
@@ -128,7 +128,7 @@ export function UISettingsPanel({
                       .value as UIPreferences['messageEntranceAnimation'] /* safe downcast – event value */
                   )
                 }
-                className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
                 <option value="slide">Slide</option>
                 <option value="scale">Scale</option>
@@ -160,7 +160,7 @@ export function UISettingsPanel({
                    
                   uiPreferences[key as keyof typeof uiPreferences]
                     ? 'bg-primary-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]'
-                    : 'border border-dark-600 bg-dark-700/50 text-gray-400'
+                    : 'border border-white/[0.08] bg-white/[0.06] text-gray-400'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

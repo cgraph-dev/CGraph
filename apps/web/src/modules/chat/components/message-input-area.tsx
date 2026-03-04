@@ -132,7 +132,7 @@ export function MessageInputArea({
             </motion.button>
 
             {/* Text input */}
-            <div className="flex-1 rounded-xl border border-primary-500/20 bg-dark-900/50 transition-all focus-within:border-primary-500/50">
+            <div className="flex-1 rounded-xl border border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] transition-all focus-within:border-primary-500/50">
               <textarea
                 value={messageInput}
                 onChange={(e) => {
@@ -142,7 +142,7 @@ export function MessageInputArea({
                 onKeyDown={onKeyPress}
                 placeholder="Type a message..."
                 rows={1}
-                className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-white/30 focus:outline-none"
                 style={{ minHeight: '48px' }}
               />
             </div>

@@ -126,7 +126,7 @@ export function AnimatedReactionBubble({
         : 'bg-primary-500/20 border-primary-400/60 shadow-lg shadow-primary-500/20'
       : isOwnMessage
         ? 'bg-white/10 border-white/20 hover:bg-white/20'
-        : 'bg-dark-700/80 border-dark-600/60 hover:bg-dark-600/80',
+        : 'bg-white/[0.08] border-white/[0.06] hover:bg-white/[0.12]',
     className
   );
 

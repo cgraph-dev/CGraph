@@ -31,7 +31,7 @@ export function ThreadReplyBadge({ messageId, conversationId, message }: ThreadR
     <motion.button
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs text-primary-400 transition-colors hover:bg-dark-700/60"
+      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs text-primary-400 transition-colors hover:bg-white/[0.08]/60"
       onClick={() => openThread(conversationId, message)}
       title="View thread"
     >

@@ -99,7 +99,7 @@ export const MessageBubble = memo(function MessageBubble({
         className={cn('group flex items-end gap-2', isOwn ? 'flex-row-reverse' : '')}
       >
         <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} max-w-[70%]`}>
-          <div className="rounded-2xl border border-transparent bg-dark-800/50 px-4 py-2 backdrop-blur-[8px] dark:border-white/[0.04] dark:bg-white/[0.05]">
+          <div className="rounded-2xl border border-transparent bg-white/[0.04] px-4 py-2 backdrop-blur-[8px] dark:border-white/[0.04] dark:bg-white/[0.05]">
             <p className="text-sm italic text-gray-500 dark:text-gray-500">
               [This message was deleted]
             </p>
@@ -152,7 +152,7 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Reply preview */}
         {message.replyTo && (
           <div
-            className={`mb-1 rounded-lg border border-transparent bg-dark-700/50 px-3 py-1.5 text-xs backdrop-blur-[8px] dark:border-white/[0.04] dark:bg-white/[0.06] ${isOwn ? 'text-right' : ''}`}
+            className={`mb-1 rounded-lg border border-transparent bg-white/[0.06] px-3 py-1.5 text-xs backdrop-blur-[8px] dark:border-white/[0.04] dark:bg-white/[0.06] ${isOwn ? 'text-right' : ''}`}
           >
             <span className="text-primary-400">
               {message.replyTo.sender?.username || 'Unknown'}
@@ -203,7 +203,7 @@ export const MessageBubble = memo(function MessageBubble({
                 bubbleStyle === 'default' &&
                 (isOwn
                   ? 'rounded-2xl rounded-br-md bg-primary-600/90 shadow-[0_2px_8px_rgba(16,185,129,0.15)] hover:bg-primary-500/90'
-                  : 'rounded-2xl rounded-bl-md border border-transparent bg-dark-700/80 shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:bg-dark-600/80 dark:border-white/[0.06] dark:bg-white/[0.08] dark:hover:bg-white/[0.12]')
+                  : 'rounded-2xl rounded-bl-md border border-transparent bg-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:bg-white/[0.12] dark:border-white/[0.06] dark:bg-white/[0.08] dark:hover:bg-white/[0.12]')
             )}
             style={bubbleInlineStyle}
           >
@@ -315,13 +315,13 @@ export const MessageBubble = memo(function MessageBubble({
             <div className="flex items-center gap-1">
               <button
                 onClick={onReply}
-                className="rounded p-1 text-gray-500 transition-colors hover:bg-dark-700 hover:text-white dark:hover:bg-white/[0.10]"
+                className="rounded p-1 text-gray-500 transition-colors hover:bg-white/[0.08] hover:text-white dark:hover:bg-white/[0.10]"
                 title="Reply"
               >
                 <ReplyIcon />
               </button>
               <button
-                className="rounded p-1 text-gray-500 transition-colors hover:bg-dark-700 hover:text-white dark:hover:bg-white/[0.10]"
+                className="rounded p-1 text-gray-500 transition-colors hover:bg-white/[0.08] hover:text-white dark:hover:bg-white/[0.10]"
                 title="React"
               >
                 <FaceSmileIcon className="h-4 w-4" />

@@ -103,7 +103,7 @@ export function MentionAutocomplete({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className="absolute bottom-full left-0 right-0 mb-2 max-h-40 overflow-y-auto rounded-xl border border-gray-700 bg-dark-800 p-2 shadow-xl"
+      className="absolute bottom-full left-0 right-0 mb-2 max-h-40 overflow-y-auto rounded-xl border border-white/[0.08] bg-white/[0.04] p-2 shadow-xl"
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-3">
@@ -119,7 +119,7 @@ export function MentionAutocomplete({
             key={user.id}
             whileHover={{ x: 2 }}
             onClick={() => onSelect(user.username)}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-dark-700"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-white/[0.08]"
           >
             {user.avatarUrl ? (
               <ThemedAvatar

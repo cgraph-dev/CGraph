@@ -38,7 +38,7 @@ export function ScrollToBottomButton({
           exit={{ y: 20, opacity: 0, scale: 0.9 }}
           transition={springs.snappy}
           onClick={onClick}
-          className="absolute bottom-24 right-6 z-30 flex items-center gap-1.5 rounded-full border border-dark-600 bg-dark-800/90 px-3 py-2 text-sm text-white shadow-xl backdrop-blur-sm transition-colors hover:bg-dark-700"
+          className="absolute bottom-24 right-6 z-30 flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04]/90 px-3 py-2 text-sm text-white shadow-xl backdrop-blur-sm transition-colors hover:bg-white/[0.08]"
           aria-label="Scroll to latest messages"
         >
           {/* Bouncing arrow */}

@@ -130,7 +130,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
           animate="animate"
           exit="initial"
           transition={springs.gentle}
-          className="flex h-full w-96 flex-col border-l border-white/10 bg-dark-800"
+          className="flex h-full w-96 flex-col border-l border-white/10 bg-white/[0.04]"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
@@ -234,7 +234,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
 
           {/* Reply input */}
           <div className="border-t border-white/10 p-3">
-            <div className="flex items-end gap-2 rounded-xl bg-dark-700 px-3 py-2">
+            <div className="flex items-end gap-2 rounded-xl bg-white/[0.06] px-3 py-2">
               <textarea
                 ref={inputRef}
                 value={replyText}

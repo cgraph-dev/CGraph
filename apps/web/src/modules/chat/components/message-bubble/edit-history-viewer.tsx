@@ -79,9 +79,9 @@ export function EditHistoryViewer({
   return (
     <div
       ref={popoverRef}
-      className="absolute bottom-full left-0 z-50 mb-1 w-72 rounded-lg border border-dark-600 bg-dark-800 shadow-xl"
+      className="absolute bottom-full left-0 z-50 mb-1 w-72 rounded-lg border border-white/[0.08] bg-white/[0.04] shadow-xl"
     >
-      <div className="border-b border-dark-600 px-3 py-2">
+      <div className="border-b border-white/[0.08] px-3 py-2">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
           Edit History
         </h4>

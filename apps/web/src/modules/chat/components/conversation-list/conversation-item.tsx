@@ -60,8 +60,8 @@ export function ConversationItem({
             isActive
               ? 'border-l-2 border-primary-500 bg-primary-600/10'
               : conversation.unreadCount > 0
-                ? 'border-l-2 border-primary-400/50 bg-primary-500/5 hover:bg-dark-700/50'
-                : 'hover:bg-dark-700/50'
+                ? 'border-l-2 border-primary-400/50 bg-primary-500/5 hover:bg-white/[0.06]'
+                : 'hover:bg-white/[0.06]'
           }`}
           onMouseEnter={() => setShowMenu(true)}
           onMouseLeave={() => setShowMenu(false)}

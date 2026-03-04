@@ -21,7 +21,7 @@ export interface ReactionPickerProps {
 export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
   return (
     <motion.div
-      className="flex items-center gap-2 rounded-full border border-dark-600 bg-dark-800/95 px-4 py-3 shadow-2xl backdrop-blur-xl"
+      className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.08] px-4 py-3 shadow-2xl backdrop-blur-xl"
       initial={{ scale: 0, opacity: 0, y: 20 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0, opacity: 0, y: 20 }}

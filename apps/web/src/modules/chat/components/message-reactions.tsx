@@ -131,7 +131,7 @@ export default function MessageReactions({
             className={`group relative inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs transition-all duration-200 ${
               reaction.hasReacted
                 ? 'border border-primary-500/50 bg-gradient-to-r from-primary-500/30 to-purple-500/30'
-                : 'border border-dark-600 bg-dark-700/50 hover:bg-dark-600/50'
+                : 'border border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]'
             } `}
           >
             {/* Animated glow for user's own reaction */}
@@ -164,7 +164,7 @@ export default function MessageReactions({
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-dark-600 bg-dark-800 px-3 py-2 text-xs text-gray-200 shadow-xl"
+                className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs text-gray-200 shadow-xl"
               >
                 <div className="mb-1 font-medium">Reacted with {reaction.emoji}</div>
                 <div className="text-gray-400">
@@ -179,7 +179,7 @@ export default function MessageReactions({
                   )}
                 </div>
                 {/* Tooltip arrow */}
-                <div className="absolute left-1/2 top-full -mt-px h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-dark-600 bg-dark-800" />
+                <div className="absolute left-1/2 top-full -mt-px h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-white/[0.08] bg-white/[0.04]" />
               </motion.div>
             )}
           </motion.button>
@@ -196,7 +196,7 @@ export default function MessageReactions({
             HapticFeedback.light();
           }}
           disabled={disabled}
-          className={`rounded-full p-1.5 transition-all duration-200 ${getTotalReactions() > 0 ? 'opacity-0 group-hover:opacity-100' : 'opacity-60 hover:opacity-100'} ${showPicker ? 'bg-primary-500/20' : 'hover:bg-dark-700/50'} `}
+          className={`rounded-full p-1.5 transition-all duration-200 ${getTotalReactions() > 0 ? 'opacity-0 group-hover:opacity-100' : 'opacity-60 hover:opacity-100'} ${showPicker ? 'bg-primary-500/20' : 'hover:bg-white/[0.06]'} `}
           aria-label="Add reaction"
         >
           {showPicker ? (
@@ -213,7 +213,7 @@ export default function MessageReactions({
               initial={{ opacity: 0, scale: 0.9, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              className="absolute bottom-full left-0 z-50 mb-2 min-w-[280px] rounded-lg border border-dark-600 bg-dark-800 p-3 shadow-2xl"
+              className="absolute bottom-full left-0 z-50 mb-2 min-w-[280px] rounded-lg border border-white/[0.08] bg-white/[0.04] p-3 shadow-2xl"
             >
               {/* Quick reactions */}
               <div className="mb-3">
@@ -225,7 +225,7 @@ export default function MessageReactions({
                       whileHover={{ scale: 1.15, rotate: 5 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleReaction(emoji)}
-                      className="rounded-lg p-2 transition-colors hover:bg-dark-700/70"
+                      className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
                     >
                       <span className="text-2xl leading-none">{emoji}</span>
                     </motion.button>
@@ -244,7 +244,7 @@ export default function MessageReactions({
                       className={`rounded px-2 py-1 text-xs transition-colors ${
                         activeCategory === category
                           ? 'bg-primary-500/20 text-primary-300'
-                          : 'text-gray-400 hover:bg-dark-700/50 hover:text-gray-300'
+                          : 'text-gray-400 hover:bg-white/[0.06] hover:text-gray-300'
                       } `}
                     >
                       {category}
@@ -261,7 +261,7 @@ export default function MessageReactions({
                     whileHover={{ scale: 1.2, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleReaction(emoji)}
-                    className="rounded p-2 transition-colors hover:bg-dark-700/70"
+                    className="rounded p-2 transition-colors hover:bg-white/[0.08]"
                   >
                     <span className="text-xl leading-none">{emoji}</span>
                   </motion.button>

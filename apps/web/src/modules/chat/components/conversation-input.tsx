@@ -84,7 +84,7 @@ function ConversationInputComponent({
   return (
     <div
       ref={inputContainerRef}
-      className="flex-shrink-0 border-t border-white/10 bg-dark-900/80 p-4 backdrop-blur-xl"
+      className="flex-shrink-0 border-t border-white/10 bg-[rgb(30,32,40)]/[0.80] p-4 backdrop-blur-xl"
     >
       {/* Reply Preview */}
       {replyTo && (
@@ -168,7 +168,7 @@ function ConversationInputComponent({
           </motion.button>
 
           {/* Message Input */}
-          <div className="flex-1 rounded-xl border border-primary-500/20 bg-dark-900/50 transition-all focus-within:border-primary-500/50">
+          <div className="flex-1 rounded-xl border border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] transition-all focus-within:border-primary-500/50">
             <textarea
               value={messageInput}
               onChange={(e) => {
@@ -178,7 +178,7 @@ function ConversationInputComponent({
               onKeyDown={onKeyPress}
               placeholder="Type a message..."
               rows={1}
-              className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+              className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-white/30 focus:outline-none"
               style={{ minHeight: '48px' }}
             />
           </div>

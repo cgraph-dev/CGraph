@@ -108,7 +108,7 @@ export function MessageInput({
               placeholder={placeholder}
               disabled={disabled || isRecording}
               rows={1}
-              className="w-full resize-none rounded-xl border border-gray-700/50 bg-dark-800/50 px-4 py-2 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none"
+              className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.04] px-4 py-2 text-white placeholder-white/30 focus:border-primary-500/50 focus:outline-none"
               style={{ maxHeight: '150px' }}
             />
 
@@ -143,7 +143,7 @@ export function MessageInput({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute inset-0 flex items-center justify-center rounded-xl bg-dark-900/90 backdrop-blur-sm"
+            className="absolute inset-0 flex items-center justify-center rounded-xl bg-[rgb(30,32,40)]/[0.90] backdrop-blur-sm"
           >
             <VoiceMessageRecorder
               onComplete={handleVoiceMessage}

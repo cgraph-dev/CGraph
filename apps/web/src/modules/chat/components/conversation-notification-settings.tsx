@@ -154,7 +154,7 @@ export function ConversationNotificationSettings({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="w-full max-w-sm rounded-2xl border border-white/10 bg-dark-800 p-6 shadow-2xl"
+          className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

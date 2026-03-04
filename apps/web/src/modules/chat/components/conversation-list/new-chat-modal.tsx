@@ -79,7 +79,7 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-gray-700 bg-dark-800 py-2 pl-9 pr-4 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 pl-9 pr-4 text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               autoFocus
             />
           </div>
@@ -124,7 +124,7 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
                   );
                 }}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors ${
-                  selectedUsers.includes(user.id) ? 'bg-primary-600/20' : 'hover:bg-dark-700'
+                  selectedUsers.includes(user.id) ? 'bg-primary-600/20' : 'hover:bg-white/[0.08]'
                 }`}
               >
                 <div className="relative">
@@ -155,7 +155,7 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
           <div className="mt-4 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 rounded-xl bg-dark-700 py-2 text-gray-300 hover:bg-dark-600"
+              className="flex-1 rounded-xl bg-white/[0.06] py-2 text-gray-300 hover:bg-white/[0.10]"
             >
               Cancel
             </button>

@@ -40,7 +40,7 @@ export function InputToolbar({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => onToggleMode('emoji')}
-        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-yellow-400"
+        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-yellow-400"
       >
         <FaceSmileIcon className="h-6 w-6" />
       </motion.button>
@@ -50,7 +50,7 @@ export function InputToolbar({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => onToggleMode('sticker')}
-        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-purple-400"
+        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-purple-400"
       >
         <span className="text-lg">🎨</span>
       </motion.button>
@@ -60,7 +60,7 @@ export function InputToolbar({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => onToggleMode('gif')}
-        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-green-400"
+        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-green-400"
       >
         <GifIcon className="h-6 w-6" />
       </motion.button>
@@ -71,7 +71,7 @@ export function InputToolbar({
         whileTap={{ scale: 0.9 }}
         onClick={onToggleRecording}
         className={`rounded-lg p-2 transition-colors ${
-          isRecording ? 'bg-red-500 text-white' : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+          isRecording ? 'bg-red-500 text-white' : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
         }`}
       >
         <MicrophoneIcon className="h-6 w-6" />
