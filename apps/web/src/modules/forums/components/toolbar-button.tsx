@@ -14,7 +14,7 @@ export function ToolbarButton({ title, onClick, children }: ToolbarButtonProps) 
       type="button"
       title={title}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
+      className="flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-200 dark:hover:bg-white/[0.10]"
     >
       {children}
     </button>

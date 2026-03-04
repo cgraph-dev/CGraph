@@ -85,11 +85,11 @@ export function ForumStatistics({
 
   if (isLoading) {
     return (
-      <div className={`animate-pulse rounded-lg bg-gray-100 p-4 dark:bg-gray-800 ${className}`}>
-        <div className="mb-3 h-4 w-1/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+      <div className={`animate-pulse rounded-lg bg-gray-100 p-4 dark:bg-white/[0.04] ${className}`}>
+        <div className="mb-3 h-4 w-1/4 rounded bg-gray-200 dark:bg-white/[0.06]"></div>
         <div className="space-y-2">
-          <div className="h-3 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-          <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="h-3 w-3/4 rounded bg-gray-200 dark:bg-white/[0.06]"></div>
+          <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-white/[0.06]"></div>
         </div>
       </div>
     );
@@ -134,10 +134,10 @@ export function ForumStatistics({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+      className={`rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.04] ${className}`}
     >
       {/* Header */}
-      <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+      <div className="border-b border-gray-200 px-4 py-3 dark:border-white/[0.08]">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
           <ChartBarIcon className="h-5 w-5 text-blue-500" />
           Forum Statistics
@@ -177,7 +177,7 @@ export function ForumStatistics({
         </div>
 
         {/* Online Now */}
-        <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
+        <div className="border-t border-gray-200 pt-4 dark:border-white/[0.08]">
           <div className="mb-3 flex items-center gap-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
             <span className="font-medium text-gray-900 dark:text-white">
@@ -228,7 +228,7 @@ export function ForumStatistics({
 
         {/* Newest Member */}
         {stats.newestMember && (
-          <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+          <div className="mt-4 border-t border-gray-200 pt-4 dark:border-white/[0.08]">
             <div className="flex items-center gap-2 text-sm">
               <UserIcon className="h-4 w-4 text-gray-400" />
               <span className="text-gray-500">Welcome our newest member:</span>

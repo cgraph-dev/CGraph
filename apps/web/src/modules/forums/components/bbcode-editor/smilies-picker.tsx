@@ -23,14 +23,14 @@ export function SmiliesPicker({ isOpen, onToggle, onClose, onSelectSmiley }: Smi
           e.stopPropagation();
           onToggle();
         }}
-        className="rounded p-2 text-gray-400 transition-colors hover:bg-dark-600 hover:text-gray-200"
+        className="rounded p-2 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-gray-200"
         title="Insert Emoji"
       >
         <FaceSmileIcon className="h-4 w-4" />
       </button>
       {isOpen && (
         <div
-          className="absolute left-0 top-full z-50 mt-1 grid grid-cols-5 gap-1 rounded-lg border border-dark-500 bg-dark-700 p-2 shadow-xl"
+          className="absolute left-0 top-full z-50 mt-1 grid grid-cols-5 gap-1 rounded-lg border border-dark-500 bg-white/[0.06] p-2 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           {SMILIES.map((smiley) => (
@@ -41,7 +41,7 @@ export function SmiliesPicker({ isOpen, onToggle, onClose, onSelectSmiley }: Smi
                 onSelectSmiley(smiley.emoji);
                 onClose();
               }}
-              className="flex h-8 w-8 items-center justify-center rounded text-lg hover:bg-dark-600"
+              className="flex h-8 w-8 items-center justify-center rounded text-lg hover:bg-white/[0.10]"
               title={smiley.code}
             >
               {smiley.emoji}

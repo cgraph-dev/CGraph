@@ -75,7 +75,7 @@ export function CommentHeader({
       {hasChildren && (
         <button
           onClick={onToggleCollapse}
-          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 hover:bg-dark-600 hover:text-white"
+          className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-400 hover:bg-white/[0.10] hover:text-white"
           aria-expanded={!isCollapsed}
           aria-label={isCollapsed ? 'Expand replies' : 'Collapse replies'}
         >

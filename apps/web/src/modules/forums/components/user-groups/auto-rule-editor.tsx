@@ -152,7 +152,7 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
       </AnimatePresence>
 
       {/* Rule Templates */}
-      <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+      <div className="bg-white/[0.04] rounded-lg p-4 border border-white/[0.08]">
         <h3 className="text-sm font-semibold text-gray-300 mb-2">Quick Templates</h3>
         <div className="flex flex-wrap gap-2">
           {RULE_TEMPLATES.map((tmpl) => (
@@ -163,7 +163,7 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
                 setShowForm(true);
                 // Template data will be applied via the form
               }}
-              className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
+              className="px-3 py-1.5 text-xs bg-white/[0.06] hover:bg-white/[0.10] text-gray-300 rounded-lg transition-colors"
             >
               {tmpl.name}
             </button>
@@ -182,7 +182,7 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
             <motion.div
               key={rule.id}
               layout
-              className="bg-gray-800 rounded-lg border border-gray-700 p-4"
+              className="bg-white/[0.04] rounded-lg border border-white/[0.08] p-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -198,11 +198,11 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-white">{rule.name}</span>
                       <span className={`px-1.5 py-0.5 text-xs rounded ${
-                        rule.isActive ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'
+                        rule.isActive ? 'bg-green-900 text-green-300' : 'bg-white/[0.06] text-gray-400'
                       }`}>
                         {rule.isActive ? 'Active' : 'Inactive'}
                       </span>
-                      <span className="px-1.5 py-0.5 text-xs bg-gray-700 text-gray-300 rounded">
+                      <span className="px-1.5 py-0.5 text-xs bg-white/[0.06] text-gray-300 rounded">
                         {RULE_TYPE_LABELS[rule.ruleType]?.label || rule.ruleType}
                       </span>
                     </div>
@@ -222,14 +222,14 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setEditingRule(rule); setShowForm(true); }}
-                    className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors"
                     title="Edit"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(rule.id)}
-                    className="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-gray-700 transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/[0.06] transition-colors"
                     title="Delete"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -320,7 +320,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-lg p-6"
+        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-lg p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">{rule ? 'Edit Rule' : 'Create Auto-Rule'}</h3>
@@ -331,7 +331,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               required
             />
           </div>
@@ -342,7 +342,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               placeholder="Optional description"
             />
           </div>
@@ -353,7 +353,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
               <select
                 value={ruleType}
                 onChange={(e) => setRuleType(e.target.value as CreateAutoRuleData['ruleType'])}
-                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               >
                 {Object.entries(RULE_TYPE_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v.label}</option>
@@ -369,7 +369,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
                 type="number"
                 value={threshold}
                 onChange={(e) => setThreshold(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
                 min={0}
               />
             </div>
@@ -380,7 +380,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
             <select
               value={targetGroupId}
               onChange={(e) => setTargetGroupId(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
             >
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
@@ -398,7 +398,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
             <span className="text-sm text-gray-300">Active</span>
           </label>
 
-          <div className="flex justify-end gap-3 pt-2 border-t border-gray-700">
+          <div className="flex justify-end gap-3 pt-2 border-t border-white/[0.08]">
             <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
               Cancel
             </button>

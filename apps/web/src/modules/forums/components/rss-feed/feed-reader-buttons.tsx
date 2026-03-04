@@ -22,7 +22,7 @@ export const FeedReaderButtons = memo(function FeedReaderButtons({
           rel="noopener noreferrer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:bg-white/[0.06]"
         >
           <div
             className="flex h-8 w-8 items-center justify-center rounded"

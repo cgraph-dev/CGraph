@@ -47,7 +47,7 @@ export const ForumIcon = memo(function ForumIcon({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={onEditIcon}
-          className="absolute -bottom-2 -right-2 rounded-full border border-dark-600 bg-dark-700 p-2 opacity-0 transition-opacity group-hover:opacity-100"
+          className="absolute -bottom-2 -right-2 rounded-full border border-white/[0.08] bg-white/[0.06] p-2 opacity-0 transition-opacity group-hover:opacity-100"
         >
           <PencilIcon className="h-4 w-4" />
         </motion.button>

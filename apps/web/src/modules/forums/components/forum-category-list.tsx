@@ -115,7 +115,7 @@ export function ForumCategoryList({
 
     return (
       <motion.div
-        className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-dark-700/50"
+        className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-white/[0.06]"
         onClick={() => toggleCategory(category.id)}
         whileHover={{ x: 4 }}
       >
@@ -152,7 +152,7 @@ export function ForumCategoryList({
               e.stopPropagation();
               onEditCategory?.(category);
             }}
-            className="rounded-lg p-2 text-gray-400 hover:bg-dark-600 hover:text-white"
+            className="rounded-lg p-2 text-gray-400 hover:bg-white/[0.10] hover:text-white"
           >
             <Cog6ToothIcon className="h-4 w-4" />
           </motion.button>
@@ -167,7 +167,7 @@ export function ForumCategoryList({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onCategoryClick?.(category)}
-      className="flex w-full items-center gap-3 rounded-lg bg-dark-700/50 p-3 text-left transition-colors hover:bg-dark-600/50"
+      className="flex w-full items-center gap-3 rounded-lg bg-white/[0.06] p-3 text-left transition-colors hover:bg-white/[0.10]/50"
     >
       <div
         className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
@@ -229,7 +229,7 @@ export function ForumCategoryList({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onCreateCategory}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-dark-600 p-4 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/[0.08] p-4 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
         >
           <PlusIcon className="h-5 w-5" />
           Create Category
@@ -264,7 +264,7 @@ export function ForumCategoryList({
                           />
                         ))
                       ) : (
-                        <div className="border-t border-dark-700/50 p-4 pl-14 text-sm text-gray-500">
+                        <div className="border-t border-white/[0.06]/50 p-4 pl-14 text-sm text-gray-500">
                           No forums in this category yet
                         </div>
                       )}

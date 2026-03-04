@@ -29,7 +29,7 @@ export function SearchResultItem({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
       className={`cursor-pointer p-3 transition-colors ${
-        isSelected ? 'bg-dark-600' : 'hover:bg-dark-700'
+        isSelected ? 'bg-white/[0.08]' : 'hover:bg-white/[0.08]'
       }`}
       onClick={onClick}
     >

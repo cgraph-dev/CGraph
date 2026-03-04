@@ -106,7 +106,7 @@ export function LeaderboardPodium({ entries, className = '' }: LeaderboardPodium
                 />
               ) : (
                 <div
-                  className={`flex items-center justify-center rounded-full bg-dark-600 ring-2 ${config.border} ${entry.position === 1 ? 'h-16 w-16' : 'h-12 w-12'}`}
+                  className={`flex items-center justify-center rounded-full bg-white/[0.08] ring-2 ${config.border} ${entry.position === 1 ? 'h-16 w-16' : 'h-12 w-12'}`}
                 >
                   <span className="text-lg font-bold text-gray-400">
                     {entry.user.username?.charAt(0)?.toUpperCase() ?? '?'}

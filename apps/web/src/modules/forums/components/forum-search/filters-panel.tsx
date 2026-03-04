@@ -32,7 +32,7 @@ export function FiltersPanel({
           exit={{ opacity: 0, height: 0 }}
           className="overflow-hidden"
         >
-          <div className="space-y-4 border-t border-dark-600 p-4">
+          <div className="space-y-4 border-t border-white/[0.08] p-4">
             {/* Sort Options */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-400">Sort By</label>
@@ -44,7 +44,7 @@ export function FiltersPanel({
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.sortBy === value
                         ? 'text-white'
-                        : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
+                        : 'bg-white/[0.08] text-gray-400 hover:bg-white/[0.12]'
                     }`}
                     style={filters.sortBy === value ? { backgroundColor: primaryColor } : {}}
                   >
@@ -69,7 +69,7 @@ export function FiltersPanel({
                     className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.timeRange === value
                         ? 'text-white'
-                        : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
+                        : 'bg-white/[0.08] text-gray-400 hover:bg-white/[0.12]'
                     }`}
                     style={filters.timeRange === value ? { backgroundColor: primaryColor } : {}}
                   >
@@ -91,7 +91,7 @@ export function FiltersPanel({
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.type === value
                         ? 'text-white'
-                        : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
+                        : 'bg-white/[0.08] text-gray-400 hover:bg-white/[0.12]'
                     }`}
                     style={filters.type === value ? { backgroundColor: primaryColor } : {}}
                   >

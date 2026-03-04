@@ -50,7 +50,7 @@ const PackCard = memo(function PackCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={tweens.brisk}
-      className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04]"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -90,7 +90,7 @@ const PackCard = memo(function PackCard({
             className={`rounded-lg px-2 py-1 text-xs font-medium transition-colors ${
               pack.isActive
                 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                : 'bg-gray-100 text-gray-500 dark:bg-white/[0.06] dark:text-gray-400'
             }`}
           >
             {pack.isActive ? 'Active' : 'Inactive'}
@@ -98,7 +98,7 @@ const PackCard = memo(function PackCard({
           <button
             type="button"
             onClick={() => onExport(pack.id)}
-            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
             title="Export pack"
           >
             <ArrowDownTrayIcon className="h-4 w-4" />
@@ -128,7 +128,7 @@ const PackCard = memo(function PackCard({
               {pack.emojis.map((emoji) => (
                 <div
                   key={emoji.id}
-                  className="group relative flex flex-col items-center rounded-lg p-1 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className="group relative flex flex-col items-center rounded-lg p-1 hover:bg-gray-50 dark:hover:bg-white/[0.06]"
                   title={`:${emoji.shortcode}:`}
                 >
                   <img
@@ -177,14 +177,14 @@ const CreatePackForm = memo(function CreatePackForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Pack name"
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
         />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description (optional)"
           rows={2}
-          className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
         />
         <div className="flex gap-2">
           <button
@@ -198,7 +198,7 @@ const CreatePackForm = memo(function CreatePackForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+            className="rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.06]"
           >
             Cancel
           </button>
@@ -319,7 +319,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={importing}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.06]"
             >
               <ArrowUpTrayIcon className="h-4 w-4" />
               {importing ? 'Importing…' : 'Import'}
@@ -371,7 +371,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
         </AnimatePresence>
 
         {packs.length === 0 && !loading && (
-          <div className="rounded-xl border-2 border-dashed border-gray-200 py-12 text-center dark:border-gray-700">
+          <div className="rounded-xl border-2 border-dashed border-gray-200 py-12 text-center dark:border-white/[0.08]">
             <SparklesIcon className="mx-auto h-10 w-10 text-gray-400" />
             <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
               No emoji packs yet

@@ -29,13 +29,13 @@ export function EditorActions({
   primaryColor,
 }: EditorActionsProps) {
   return (
-    <div className="flex items-center gap-3 border-t border-dark-700 bg-dark-800/50 p-4">
+    <div className="flex items-center gap-3 border-t border-white/[0.06] bg-white/[0.04] p-4">
       {allowAttachments && (
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onFileSelect}
-          className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
+          className="rounded-lg bg-white/[0.08] p-2 text-gray-400 hover:text-white"
           title="Attach files"
         >
           <PaperClipIcon className="h-5 w-5" />
@@ -47,7 +47,7 @@ export function EditorActions({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowPollCreator(true)}
-          className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
+          className="rounded-lg bg-white/[0.08] p-2 text-gray-400 hover:text-white"
           title="Add poll"
         >
           <SparklesIcon className="h-5 w-5" />

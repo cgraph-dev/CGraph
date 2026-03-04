@@ -45,7 +45,7 @@ export function CommentVoteButtons({ comment, onVote }: CommentVoteButtonsProps)
   );
 
   return (
-    <div className="relative flex items-center gap-2 rounded-lg bg-dark-800/50 px-2 py-1">
+    <div className="relative flex items-center gap-2 rounded-lg bg-white/[0.04] px-2 py-1">
       <motion.button
         onClick={() => handleVote(1)}
         className={`rounded p-1 transition-colors ${

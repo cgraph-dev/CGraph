@@ -33,7 +33,7 @@ export function ForumRow({ forum, index, primaryColor, variant, onForumClick }: 
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="group flex cursor-pointer items-center gap-4 border-t border-dark-700/50 p-4 pl-14 hover:bg-dark-700/30"
+      className="group flex cursor-pointer items-center gap-4 border-t border-white/[0.06]/50 p-4 pl-14 hover:bg-white/[0.08]/30"
       onClick={() => onForumClick?.(forum)}
     >
       {/* Forum Icon */}

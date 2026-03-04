@@ -63,7 +63,7 @@ export function CommentActions({
           className={`rounded p-1 transition-colors ${
             currentVote === 1
               ? 'text-green-500'
-              : 'text-gray-400 hover:bg-dark-600 hover:text-green-400'
+              : 'text-gray-400 hover:bg-white/[0.10] hover:text-green-400'
           }`}
           aria-label="Upvote"
         >
@@ -94,7 +94,7 @@ export function CommentActions({
           className={`rounded p-1 transition-colors ${
             currentVote === -1
               ? 'text-red-500'
-              : 'text-gray-400 hover:bg-dark-600 hover:text-red-400'
+              : 'text-gray-400 hover:bg-white/[0.10] hover:text-red-400'
           }`}
           aria-label="Downvote"
         >
@@ -128,7 +128,7 @@ export function CommentActions({
         onClick={onReply}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-400 hover:bg-dark-600 hover:text-white"
+        className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-400 hover:bg-white/[0.10] hover:text-white"
       >
         <ChatBubbleLeftIcon className="h-4 w-4" />
         Reply

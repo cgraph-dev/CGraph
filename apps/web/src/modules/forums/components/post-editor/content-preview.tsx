@@ -16,7 +16,7 @@ interface ContentPreviewProps {
  */
 export function ContentPreview({ title, content }: ContentPreviewProps) {
   return (
-    <div className="prose prose-invert min-h-[200px] max-w-none rounded-lg border border-dark-600 bg-dark-800 p-4">
+    <div className="prose prose-invert min-h-[200px] max-w-none rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
       <h1>{title || 'Post Title'}</h1>
       <div
         dangerouslySetInnerHTML={{

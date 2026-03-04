@@ -152,7 +152,7 @@ export function CommentCard({
             {hasReplies && (
               <button
                 onClick={() => onToggleCollapse(comment.id)}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-gray-200"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-gray-200"
               >
                 <span>
                   {isCollapsed ? 'Show' : 'Hide'} {comment.replies.length} replies

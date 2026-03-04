@@ -137,7 +137,7 @@ export const PostIconPicker = memo(function PostIconPicker({
               className={`rounded-lg border-2 p-2 transition-colors ${
                 !selectedIcon
                   ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30'
-                  : 'border-transparent hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'border-transparent hover:bg-gray-100 dark:hover:bg-white/[0.06]'
               } `}
               title="No icon"
             >
@@ -172,8 +172,8 @@ export const PostIconPicker = memo(function PostIconPicker({
         disabled={disabled}
         className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${
           disabled
-            ? 'cursor-not-allowed bg-gray-100 opacity-50 dark:bg-gray-800'
-            : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600'
+            ? 'cursor-not-allowed bg-gray-100 opacity-50 dark:bg-white/[0.04]'
+            : 'border-gray-200 bg-white hover:border-gray-300 dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-white/[0.08]'
         } `}
       >
         {selectedIcon ? (
@@ -209,7 +209,7 @@ export const PostIconPicker = memo(function PostIconPicker({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+            className="absolute z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xl dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]"
           >
             <IconSearch value={searchQuery} onChange={setSearchQuery} />
 

@@ -151,10 +151,10 @@ export function EditorToolbar({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-dark-500 bg-dark-700/50 p-2">
+    <div className="flex flex-wrap items-center gap-1 border-b border-dark-500 bg-white/[0.06] p-2">
       {toolbarButtons.map((item, index) => {
         if (item === 'separator') {
-          return <div key={index} className="mx-1 h-6 w-px bg-dark-500" />;
+          return <div key={index} className="mx-1 h-6 w-px bg-white/[0.12]" />;
         }
         if (item === 'dropdown') {
           return null;
@@ -164,7 +164,7 @@ export function EditorToolbar({
             key={index}
             type="button"
             onClick={item.action}
-            className="rounded p-2 text-gray-400 transition-colors hover:bg-dark-600 hover:text-gray-200"
+            className="rounded p-2 text-gray-400 transition-colors hover:bg-white/[0.10] hover:text-gray-200"
             title={item.label}
           >
             {item.icon}
@@ -215,7 +215,7 @@ export function EditorToolbar({
               'flex items-center gap-2 rounded px-3 py-1.5 text-sm transition-colors',
               isPreviewMode
                 ? 'bg-primary-600 text-white'
-                : 'text-gray-400 hover:bg-dark-600 hover:text-gray-200'
+                : 'text-gray-400 hover:bg-white/[0.10] hover:text-gray-200'
             )}
           >
             {isPreviewMode ? (

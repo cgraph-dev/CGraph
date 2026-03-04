@@ -183,14 +183,14 @@ export function ForumSearch({
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none"
+            className="flex-1 bg-transparent text-white placeholder-white/30 outline-none"
           />
           {query && (
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={clearSearch}
-              className="rounded p-1 hover:bg-dark-600"
+              className="rounded p-1 hover:bg-white/[0.10]"
             >
               <XMarkIcon className="h-5 w-5 text-gray-400" />
             </motion.button>
@@ -201,7 +201,7 @@ export function ForumSearch({
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
               className={`rounded-lg p-2 transition-colors ${
-                isFiltersOpen || hasActiveFilters ? '' : 'hover:bg-dark-600'
+                isFiltersOpen || hasActiveFilters ? '' : 'hover:bg-white/[0.10]'
               }`}
               style={
                 isFiltersOpen || hasActiveFilters

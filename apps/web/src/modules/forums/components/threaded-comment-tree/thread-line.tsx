@@ -22,7 +22,7 @@ export function ThreadLine({ depth, isLast }: ThreadLineProps) {
     <>
       {/* Vertical line connecting to parent */}
       <div
-        className="absolute left-0 top-0 w-0.5 bg-dark-600"
+        className="absolute left-0 top-0 w-0.5 bg-white/[0.08]"
         style={{
           left: -12,
           height: isLast ? 24 : '100%',
@@ -30,7 +30,7 @@ export function ThreadLine({ depth, isLast }: ThreadLineProps) {
       />
       {/* Horizontal connector to thread line */}
       <div
-        className="absolute h-0.5 bg-dark-600"
+        className="absolute h-0.5 bg-white/[0.08]"
         style={{
           left: -12,
           top: 24,

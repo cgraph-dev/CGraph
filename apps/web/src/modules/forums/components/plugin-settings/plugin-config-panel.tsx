@@ -90,7 +90,7 @@ export default function PluginConfigPanel({
   const settingKeys = Object.keys(settings).filter((k) => k !== 'hooks');
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+    <div className="bg-white dark:bg-white/[0.04] rounded-lg shadow p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ export default function PluginConfigPanel({
       </div>
 
       {/* Enable/Disable Toggle */}
-      <div className="flex items-center justify-between py-3 border-t border-b dark:border-gray-700">
+      <div className="flex items-center justify-between py-3 border-t border-b dark:border-white/[0.08]">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Enable Plugin
         </span>
@@ -179,14 +179,14 @@ export default function PluginConfigPanel({
                     type="number"
                     value={value}
                     onChange={(e) => handleSettingChange(key, Number(e.target.value))}
-                    className="rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+                    className="rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
                   />
                 ) : (
                   <input
                     type="text"
                     value={String(value ?? '')}
                     onChange={(e) => handleSettingChange(key, e.target.value)}
-                    className="rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+                    className="rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
                   />
                 )}
               </div>
@@ -205,7 +205,7 @@ export default function PluginConfigPanel({
 
       {/* Uninstall */}
       {!plugin.is_core && (
-        <div className="pt-4 border-t dark:border-gray-700">
+        <div className="pt-4 border-t dark:border-white/[0.08]">
           {showUninstallConfirm ? (
             <div className="space-y-2">
               <p className="text-sm text-red-600">

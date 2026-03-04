@@ -83,7 +83,7 @@ export function RankBadge({
       {/* Tooltip */}
       {showTooltip && (
         <span
-          className="absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-dark-800 px-2 py-1 text-[11px] text-gray-200 shadow-lg ring-1 ring-white/10"
+          className="absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-white/[0.04] px-2 py-1 text-[11px] text-gray-200 shadow-lg ring-1 ring-white/10"
           role="tooltip"
         >
           {tooltipText}

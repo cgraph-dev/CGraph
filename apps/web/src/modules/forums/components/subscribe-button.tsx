@@ -144,7 +144,7 @@ export function SubscribeButton({
           className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
             isSubscribed
               ? 'bg-primary-600/20 text-primary-400 hover:bg-primary-600/30'
-              : 'bg-dark-600 text-gray-300 hover:bg-dark-500 hover:text-white'
+              : 'bg-white/[0.08] text-gray-300 hover:bg-white/[0.12] hover:text-white'
           } disabled:opacity-50`}
         >
           <Icon className="h-4 w-4" />
@@ -161,7 +161,7 @@ export function SubscribeButton({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
             transition={tweens.quickFade}
-            className="absolute right-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-xl border border-white/10 bg-dark-800 shadow-2xl"
+            className="absolute right-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] shadow-2xl"
           >
             {LEVELS.map((level) => {
               const LevelIcon = level.icon;

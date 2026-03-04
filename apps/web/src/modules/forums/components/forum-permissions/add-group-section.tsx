@@ -40,7 +40,7 @@ export function AddGroupSection({
           <select
             value={selectedGroupId}
             onChange={(e) => onSelectGroup(e.target.value)}
-            className="flex-1 rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white"
+            className="flex-1 rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white"
           >
             <option value="">Select group…</option>
             {groups

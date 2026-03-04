@@ -152,7 +152,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
             >
               {showResults ? (
                 // Results View
-                <div className="relative overflow-hidden rounded-lg border border-dark-600 bg-dark-800/50 p-3">
+                <div className="relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
                   {/* Progress Bar */}
                   <motion.div
                     initial={{ width: 0 }}
@@ -192,13 +192,13 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-2 border-t border-dark-600 pt-2"
+                        className="mt-2 border-t border-white/[0.08] pt-2"
                       >
                         <div className="flex flex-wrap gap-2">
                           {option.voters.slice(0, 10).map((voterId) => (
                             <span
                               key={voterId}
-                              className="rounded bg-dark-700 px-2 py-1 text-xs text-gray-400"
+                              className="rounded bg-white/[0.06] px-2 py-1 text-xs text-gray-400"
                             >
                               User {voterId.slice(0, 8)}
                             </span>
@@ -223,7 +223,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                   className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
                     isSelected
                       ? 'border-primary-500 bg-primary-500/20'
-                      : 'border-dark-600 bg-dark-800/50 hover:border-primary-500/50'
+                      : 'border-white/[0.08] bg-white/[0.04] hover:border-primary-500/50'
                   } ${isPollClosed ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} `}
                 >
                   <div className="flex items-center gap-3">
@@ -259,7 +259,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
           className={`w-full rounded-lg py-3 font-semibold transition-all ${
             selectedOptions.length > 0
               ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white hover:shadow-lg hover:shadow-primary-500/50'
-              : 'cursor-not-allowed bg-dark-700 text-gray-500'
+              : 'cursor-not-allowed bg-white/[0.06] text-gray-500'
           } ${isSubmitting ? 'opacity-50' : ''} `}
         >
           {isSubmitting ? 'Submitting...' : 'Submit Vote'}
@@ -267,7 +267,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
       )}
 
       {/* Poll Info */}
-      <div className="mt-4 border-t border-dark-600 pt-4 text-xs text-gray-500">
+      <div className="mt-4 border-t border-white/[0.08] pt-4 text-xs text-gray-500">
         {poll.allowMultiple && !hasVoted && !isPollClosed && (
           <p>
             Multiple choice poll

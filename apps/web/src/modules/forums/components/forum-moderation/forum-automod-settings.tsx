@@ -167,7 +167,7 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
             onChange={(e) => setWordInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addBannedWord()}
             placeholder="Add banned word…"
-            className="flex-1 rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+            className="flex-1 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
           />
           <button
             onClick={addBannedWord}
@@ -219,7 +219,7 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
               onChange={(e) => setDomainInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addBlacklistDomain()}
               placeholder="Add blacklisted domain…"
-              className="flex-1 rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+              className="flex-1 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
             <button
               onClick={addBlacklistDomain}
@@ -251,7 +251,7 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
                   max_posts_per_minute: Number(e.target.value),
                 })
               }
-              className="w-full rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+              className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
           </div>
           <div>
@@ -264,7 +264,7 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
                   max_duplicate_content: Number(e.target.value),
                 })
               }
-              className="w-full rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+              className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
               onChange={(e) =>
                 updateFilter('caps_filter', { max_caps_percentage: Number(e.target.value) })
               }
-              className="w-full rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+              className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
           </div>
           <div>
@@ -299,14 +299,14 @@ export default function ForumAutomodSettings({ forumId }: ForumAutomodSettingsPr
               onChange={(e) =>
                 updateFilter('caps_filter', { min_length: Number(e.target.value) })
               }
-              className="w-full rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+              className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
             />
           </div>
         </div>
       </FilterSection>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t dark:border-gray-700">
+      <div className="flex justify-end pt-4 border-t dark:border-white/[0.08]">
         <button
           onClick={handleSave}
           disabled={isSaving}
@@ -339,7 +339,7 @@ function FilterSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border p-4 dark:border-gray-700 space-y-3">
+    <div className="rounded-lg border p-4 dark:border-white/[0.08] space-y-3">
       <div className="flex items-center justify-between">
         <div>
           <h4 className="font-medium text-gray-900 dark:text-white">{title}</h4>
@@ -366,7 +366,7 @@ function FilterSection({
             <select
               value={action}
               onChange={(e) => onActionChange(e.target.value)}
-              className="rounded border px-2 py-1 text-xs dark:bg-gray-700 dark:border-gray-600"
+              className="rounded border px-2 py-1 text-xs dark:bg-white/[0.06] dark:border-white/[0.08]"
             >
               {ACTION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>

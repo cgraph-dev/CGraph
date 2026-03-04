@@ -128,7 +128,7 @@ export function UserGroupManager({ forumId }: UserGroupManagerProps) {
           >
             <motion.div
               layout
-              className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+              className="flex items-center justify-between p-4 bg-white/[0.04] rounded-lg border border-white/[0.08] hover:border-white/[0.08] transition-colors"
             >
               <div className="flex items-center gap-4">
                 {/* Color indicator */}
@@ -163,7 +163,7 @@ export function UserGroupManager({ forumId }: UserGroupManagerProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditingGroup(group); setShowCreateForm(true); }}
-                  className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors"
                   title="Edit"
                 >
                   <PencilIcon className="h-4 w-4" />
@@ -171,7 +171,7 @@ export function UserGroupManager({ forumId }: UserGroupManagerProps) {
                 {!group.isDefault && (
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(group); }}
-                    className="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-gray-700 transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/[0.06] transition-colors"
                     title="Delete"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -257,7 +257,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-2xl max-h-[80vh] overflow-y-auto p-6"
+        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-2xl max-h-[80vh] overflow-y-auto p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">{group ? 'Edit Group' : 'Create Group'}</h3>
@@ -270,7 +270,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
@@ -279,7 +279,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as CreateGroupData['type'])}
-                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               >
                 <option value="custom">Custom</option>
                 <option value="joinable">Joinable</option>
@@ -293,7 +293,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               rows={2}
             />
           </div>
@@ -310,7 +310,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
           </div>
 
           {/* Permissions */}
-          <div className="border-t border-gray-700 pt-4">
+          <div className="border-t border-white/[0.08] pt-4">
             <h4 className="text-sm font-semibold text-gray-300 mb-3">Permissions</h4>
             {Object.entries(PERMISSION_CATEGORIES).map(([cat, perms]) => (
               <div key={cat} className="mb-4">
@@ -333,7 +333,7 @@ function GroupForm({ group, onSave, onClose }: GroupFormProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
               Cancel
             </button>

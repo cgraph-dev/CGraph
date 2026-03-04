@@ -40,17 +40,17 @@ export function ShareMenu({ isOpen, onClose, postTitle }: ShareMenuProps) {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
+          className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-white/[0.08] bg-white/[0.06] py-1 shadow-xl"
         >
           <button
             onClick={copyLink}
-            className="w-full px-4 py-2 text-left text-sm hover:bg-dark-600"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
           >
             Copy link
           </button>
           <button
             onClick={shareOnTwitter}
-            className="w-full px-4 py-2 text-left text-sm hover:bg-dark-600"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
           >
             Share on Twitter
           </button>

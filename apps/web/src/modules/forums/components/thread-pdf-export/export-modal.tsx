@@ -87,11 +87,11 @@ export const ExportModal = memo(function ExportModal({
           animate="visible"
           exit="hidden"
           transition={springs.default}
-          className="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-800"
+          className="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-white/[0.04]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-white/[0.08]">
             <div className="flex items-center gap-3">
               <DocumentArrowDownIcon className="h-6 w-6 text-orange-600" />
               <div>
@@ -105,7 +105,7 @@ export const ExportModal = memo(function ExportModal({
             </div>
             <button
               onClick={onClose}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/[0.06]"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -114,7 +114,7 @@ export const ExportModal = memo(function ExportModal({
           {/* Content */}
           <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
             {/* Thread Preview */}
-            <div className="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50">
+            <div className="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-white/[0.06]/50">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{thread.title}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {thread.posts.length} replies • By {thread.author.name}
@@ -194,7 +194,7 @@ export const ExportModal = memo(function ExportModal({
                     value={options.headerText || ''}
                     onChange={(e) => updateOption('headerText', e.target.value)}
                     placeholder="e.g., Confidential"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
                   />
                 </div>
 
@@ -207,7 +207,7 @@ export const ExportModal = memo(function ExportModal({
                     value={options.footerText || ''}
                     onChange={(e) => updateOption('footerText', e.target.value)}
                     placeholder="e.g., Page number will be added"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
                   />
                 </div>
               </div>
@@ -215,14 +215,14 @@ export const ExportModal = memo(function ExportModal({
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 px-6 py-4 dark:border-gray-700">
+          <div className="border-t border-gray-200 px-6 py-4 dark:border-white/[0.08]">
             {isExporting ? (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Generating PDF...</span>
                   <span className="text-orange-600 dark:text-orange-400">{progress}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/[0.06]">
                   <motion.div
                     className="h-full bg-orange-500"
                     initial={{ width: 0 }}
@@ -234,7 +234,7 @@ export const ExportModal = memo(function ExportModal({
               <div className="flex justify-end gap-3">
                 <button
                   onClick={onClose}
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.06]"
                 >
                   Cancel
                 </button>

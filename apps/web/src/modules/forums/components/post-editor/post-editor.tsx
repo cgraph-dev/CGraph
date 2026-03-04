@@ -68,7 +68,7 @@ export function PostEditor({
     <div className={className}>
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Title Input */}
-        <div className="border-b border-dark-700 p-4">
+        <div className="border-b border-white/[0.06] p-4">
           <div className="mb-3 flex gap-3">
             {/* Prefix Selector */}
             {prefixes.length > 0 && (
@@ -76,7 +76,7 @@ export function PostEditor({
                 <select
                   value={editor.prefixId || ''}
                   onChange={(e) => editor.setPrefixId(e.target.value || undefined)}
-                  className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
+                  className="appearance-none rounded-lg bg-white/[0.06] px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={
                      
                     {
@@ -101,7 +101,7 @@ export function PostEditor({
                 <select
                   value={editor.categoryId || ''}
                   onChange={(e) => editor.setCategoryId(e.target.value || undefined)}
-                  className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
+                  className="appearance-none rounded-lg bg-white/[0.06] px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={
                      
                     {
@@ -126,7 +126,7 @@ export function PostEditor({
             value={editor.title}
             onChange={(e) => editor.setTitle(e.target.value)}
             placeholder="Post title..."
-            className="w-full bg-transparent text-xl font-semibold placeholder-gray-500 outline-none"
+            className="w-full bg-transparent text-xl font-semibold placeholder-white/30 outline-none"
           />
           <div className="mt-1 text-right text-xs text-gray-500">
             {editor.title.length}/{maxTitleLength}
@@ -175,7 +175,7 @@ export function PostEditor({
                   value={editor.content}
                   onChange={(e) => editor.setContent(e.target.value)}
                   placeholder="Write your post content here... (Markdown supported)"
-                  className="min-h-[300px] w-full resize-y bg-transparent p-4 placeholder-gray-500 outline-none"
+                  className="min-h-[300px] w-full resize-y bg-transparent p-4 placeholder-white/30 outline-none"
                   style={{ fontFamily: 'inherit' }}
                 />
               </motion.div>
@@ -189,7 +189,7 @@ export function PostEditor({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-center justify-center bg-dark-800/90"
+                className="absolute inset-0 flex items-center justify-center bg-white/[0.04]/90"
               >
                 <div className="text-center">
                   <PaperClipIcon
@@ -204,7 +204,7 @@ export function PostEditor({
         </div>
 
         {/* Character Count */}
-        <div className="border-t border-dark-700 px-4 py-2 text-right text-xs text-gray-500">
+        <div className="border-t border-white/[0.06] px-4 py-2 text-right text-xs text-gray-500">
           {editor.content.length.toLocaleString()}/{maxContentLength.toLocaleString()} characters
           {editor.lastSaved && (
             <span className="ml-4">Auto-saved at {editor.lastSaved.toLocaleTimeString()}</span>

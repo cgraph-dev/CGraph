@@ -99,7 +99,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
       </div>
 
       {/* OR-logic explanation */}
-      <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+      <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.08]">
         <p className="text-xs text-gray-400">
           <strong className="text-gray-300">OR-logic stacking:</strong> Users with multiple secondary
           groups inherit the <em>union</em> of all group permissions. Any &quot;allow&quot; from any group grants access.
@@ -112,7 +112,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
           const members = membersByGroup[group.id] || [];
           const isExpanded = expandedGroupId === group.id;
           return (
-            <div key={group.id} className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+            <div key={group.id} className="bg-white/[0.04] rounded-lg border border-white/[0.08] overflow-hidden">
               {/* Group header */}
               <button
                 onClick={() => handleExpand(group.id)}
@@ -145,7 +145,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="border-t border-gray-700"
+                    className="border-t border-white/[0.08]"
                   >
                     {isLoadingMembers ? (
                       <div className="p-4 text-center">
@@ -265,7 +265,7 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md p-6"
+        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-md p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">Assign Secondary Group</h3>
@@ -276,7 +276,7 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               placeholder="Enter user ID or username"
               required
             />
@@ -286,7 +286,7 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
             <select
               value={groupId}
               onChange={(e) => setGroupId(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
             >
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
@@ -299,7 +299,7 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
               type="datetime-local"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
             />
           </div>
           <div>
@@ -308,7 +308,7 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               placeholder="e.g., Premium subscription"
             />
           </div>

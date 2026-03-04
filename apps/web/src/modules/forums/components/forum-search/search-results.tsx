@@ -65,7 +65,7 @@ export function SearchResults({
               <LoadingState primaryColor={primaryColor} />
             ) : results.length > 0 ? (
               <motion.div
-                className="divide-y divide-dark-700"
+                className="divide-y divide-white/[0.06]"
                 variants={resultContainer}
                 initial="hidden"
                 animate="show"
@@ -143,7 +143,7 @@ function SuggestionsState({
         <button
           key={index}
           onClick={() => onSuggestionClick(suggestion)}
-          className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-dark-700"
+          className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-white/[0.08]"
         >
           <ClockIcon className="h-4 w-4 text-gray-500" />
           <span>{suggestion}</span>

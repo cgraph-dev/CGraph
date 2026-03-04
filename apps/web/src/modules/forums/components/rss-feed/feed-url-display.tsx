@@ -26,7 +26,7 @@ export const FeedUrlDisplay = memo(function FeedUrlDisplay({ url, format }: Feed
   }, [url, showToast]);
 
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+    <div className="flex items-center gap-2 rounded-lg bg-gray-100 p-3 dark:bg-white/[0.04]">
       <div className="flex-1 overflow-hidden">
         <div className="mb-1 text-xs text-gray-500 dark:text-gray-400">
           {format.toUpperCase()} Feed URL
@@ -40,7 +40,7 @@ export const FeedUrlDisplay = memo(function FeedUrlDisplay({ url, format }: Feed
         className={`rounded-lg p-2 transition-colors ${
           copied
             ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400'
-            : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+            : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-white/[0.06] dark:text-gray-300 dark:hover:bg-white/[0.10]'
         }`}
         title="Copy to clipboard"
       >

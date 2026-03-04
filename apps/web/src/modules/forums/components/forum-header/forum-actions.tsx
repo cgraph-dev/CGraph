@@ -53,7 +53,7 @@ export const ForumActions = memo(function ForumActions({
         onClick={onJoin}
         disabled={isJoining}
         className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
-          isMember ? 'bg-dark-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400' : ''
+          isMember ? 'bg-white/[0.08] text-gray-300 hover:bg-red-500/20 hover:text-red-400' : ''
         }`}
         style={!isMember ? { backgroundColor: primaryColor } : {}}
       >
@@ -69,7 +69,7 @@ export const ForumActions = memo(function ForumActions({
         className={`rounded-lg p-2 transition-colors ${
           isSubscribed
             ? 'bg-amber-500/20 text-amber-400'
-            : 'bg-dark-600 text-gray-400 hover:text-white'
+            : 'bg-white/[0.08] text-gray-400 hover:text-white'
         }`}
         title={isSubscribed ? 'Unsubscribe' : 'Subscribe'}
       >
@@ -81,7 +81,7 @@ export const ForumActions = memo(function ForumActions({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onToggleMenu}
-          className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
+          className="rounded-lg bg-white/[0.08] p-2 text-gray-400 hover:text-white"
         >
           <EllipsisHorizontalIcon className="h-5 w-5" />
         </motion.button>
@@ -92,11 +92,11 @@ export const ForumActions = memo(function ForumActions({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
+              className="absolute right-0 z-50 mt-1 w-48 rounded-lg border border-white/[0.08] bg-white/[0.06] py-1 shadow-xl"
             >
               <button
                 onClick={onCopyLink}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
               >
                 <ShareIcon className="h-4 w-4" />
                 Share
@@ -104,7 +104,7 @@ export const ForumActions = memo(function ForumActions({
               {canManage && onSettings && (
                 <button
                   onClick={onSettings}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
                 >
                   <Cog6ToothIcon className="h-4 w-4" />
                   Settings

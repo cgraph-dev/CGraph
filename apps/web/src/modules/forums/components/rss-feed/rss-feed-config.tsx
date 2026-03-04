@@ -40,7 +40,7 @@ const CopyButton = memo(function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+      className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/[0.06] dark:hover:text-gray-300"
       title="Copy feed URL"
     >
       {copied ? (
@@ -64,7 +64,7 @@ const BoardRow = memo(function BoardRow({
   const feedUrl = feedFormat === 'atom' ? board.atomUrl : board.feedUrl;
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
+    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-white/[0.08] dark:bg-white/[0.04]">
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <RssIcon className="h-4 w-4 text-orange-500" />
@@ -72,7 +72,7 @@ const BoardRow = memo(function BoardRow({
         </div>
         {board.rssEnabled && feedUrl && (
           <div className="mt-1 flex items-center gap-1">
-            <code className="max-w-xs truncate rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+            <code className="max-w-xs truncate rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-white/[0.06] dark:text-gray-400">
               {feedUrl}
             </code>
             <CopyButton text={feedUrl} />
@@ -161,7 +161,7 @@ export const RssFeedConfig = memo(function RssFeedConfig({ forumId }: RssFeedCon
       )}
 
       {/* Global toggle */}
-      <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
         <div className="flex items-center gap-3">
           <GlobeAltIcon className="h-5 w-5 text-orange-500" />
           <div>
@@ -183,7 +183,7 @@ export const RssFeedConfig = memo(function RssFeedConfig({ forumId }: RssFeedCon
       </div>
 
       {/* Settings */}
-      <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-white/[0.08] dark:bg-white/[0.04]">
         <Cog6ToothIcon className="h-5 w-5 text-gray-400" />
 
         <div className="flex items-center gap-3">
@@ -195,7 +195,7 @@ export const RssFeedConfig = memo(function RssFeedConfig({ forumId }: RssFeedCon
               setFeedFormatLocal(v);
               setFeedFormat(v);
             }}
-            className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
           >
             <option value="rss">RSS 2.0</option>
             <option value="atom">Atom 1.0</option>
@@ -213,7 +213,7 @@ export const RssFeedConfig = memo(function RssFeedConfig({ forumId }: RssFeedCon
               setItemsLocal(v);
               setItemsPerFeed(v);
             }}
-            className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>

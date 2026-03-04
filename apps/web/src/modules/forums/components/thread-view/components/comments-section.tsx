@@ -78,7 +78,7 @@ export function CommentsSection({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onExport}
-              className="flex items-center gap-1 rounded-lg bg-dark-600 px-3 py-1.5 text-sm text-gray-400 hover:bg-dark-500 hover:text-white"
+              className="flex items-center gap-1 rounded-lg bg-white/[0.08] px-3 py-1.5 text-sm text-gray-400 hover:bg-white/[0.12] hover:text-white"
               title="Export thread"
             >
               <DocumentArrowDownIcon className="h-4 w-4" />

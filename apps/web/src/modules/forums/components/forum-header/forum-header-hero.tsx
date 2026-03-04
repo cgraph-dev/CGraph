@@ -65,7 +65,7 @@ export const ForumHeaderHero = memo(function ForumHeaderHero({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onEditBanner}
-            className="absolute right-4 top-4 flex items-center gap-2 rounded-lg bg-dark-800/80 px-4 py-2 text-sm backdrop-blur-sm hover:bg-dark-700"
+            className="absolute right-4 top-4 flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-sm backdrop-blur-sm hover:bg-white/[0.08]"
           >
             <PhotoIcon className="h-4 w-4" />
             Edit Banner

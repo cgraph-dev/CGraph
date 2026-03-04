@@ -45,7 +45,7 @@ export function CommentForm({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write a comment..."
-            className="focus:border-primary w-full resize-none rounded-lg border border-dark-600 bg-dark-700 p-3 focus:outline-none"
+            className="focus:border-primary w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] p-3 focus:outline-none"
             rows={4}
              
             style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties

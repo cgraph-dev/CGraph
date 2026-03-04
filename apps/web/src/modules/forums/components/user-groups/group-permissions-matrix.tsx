@@ -171,14 +171,14 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-2 border-b border-gray-700 pb-2">
+      <div className="flex gap-2 border-b border-white/[0.08] pb-2">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
               activeCategory === cat
-                ? 'bg-gray-700 text-white'
+                ? 'bg-white/[0.06] text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -194,8 +194,8 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-700">
-              <th className="text-left py-3 px-4 font-medium text-gray-400 sticky left-0 bg-gray-900 z-10 min-w-[180px]">
+            <tr className="border-b border-white/[0.08]">
+              <th className="text-left py-3 px-4 font-medium text-gray-400 sticky left-0 bg-[rgb(30,32,40)] z-10 min-w-[180px]">
                 Group
               </th>
               {filteredPerms.map((perm) => (
@@ -213,10 +213,10 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
             {groups.map((group) => (
               <motion.tr
                 key={group.id}
-                className="border-b border-gray-800 hover:bg-gray-800/50"
+                className="border-b border-gray-800 hover:bg-white/[0.04]"
                 layout
               >
-                <td className="py-3 px-4 sticky left-0 bg-gray-900 z-10">
+                <td className="py-3 px-4 sticky left-0 bg-[rgb(30,32,40)] z-10">
                   <div className="flex items-center gap-2">
                     <div
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
@@ -242,7 +242,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
                         } ${
                           checked
                             ? 'bg-green-600/30 text-green-400 hover:bg-green-600/40'
-                            : 'bg-gray-700/50 text-gray-500 hover:bg-gray-700'
+                            : 'bg-white/[0.06]/50 text-gray-500 hover:bg-white/[0.06]'
                         }`}
                         title={`${perm.label}: ${checked ? 'Allowed' : 'Denied'}`}
                       >

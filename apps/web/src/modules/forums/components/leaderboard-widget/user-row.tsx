@@ -31,7 +31,7 @@ export function UserRow({
   return (
     <Link
       to={profilePath}
-      className="group -mx-2 flex items-center gap-3 rounded-lg p-2 transition-all duration-200 hover:bg-dark-600/50"
+      className="group -mx-2 flex items-center gap-3 rounded-lg p-2 transition-all duration-200 hover:bg-white/[0.10]/50"
     >
       {getRankIcon(rank)}
 

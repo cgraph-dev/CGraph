@@ -106,7 +106,7 @@ export default function BBCodeEditor({
 
       {/* Editor / Preview */}
       {isPreviewMode ? (
-        <div className="bg-dark-800 p-4" style={{ minHeight }}>
+        <div className="bg-white/[0.04] p-4" style={{ minHeight }}>
           <BBCodeRenderer content={value} showWarnings />
         </div>
       ) : (
@@ -117,7 +117,7 @@ export default function BBCodeEditor({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full resize-y bg-dark-800 p-4 text-gray-200 placeholder-gray-500 focus:outline-none"
+          className="w-full resize-y bg-white/[0.04] p-4 text-gray-200 placeholder-white/30 focus:outline-none"
           style={{ minHeight }}
         />
       )}

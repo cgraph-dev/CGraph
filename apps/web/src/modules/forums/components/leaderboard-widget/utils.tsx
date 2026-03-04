@@ -38,7 +38,7 @@ export function getRankIcon(rank: number) {
     );
   }
   return (
-    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-dark-600">
+    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.08]">
       <span className="text-xs font-medium text-gray-400">{rank}</span>
     </div>
   );

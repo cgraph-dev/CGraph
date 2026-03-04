@@ -56,7 +56,7 @@ const PackGroup = memo(function PackGroup({
       <button
         type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="flex w-full items-center gap-1 rounded-md px-1 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700"
+        className="flex w-full items-center gap-1 rounded-md px-1 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.06]"
       >
         <span className={`transition-transform ${collapsed ? '' : 'rotate-90'}`}>▶</span>
         {name}
@@ -70,7 +70,7 @@ const PackGroup = memo(function PackGroup({
             return (
               <div
                 key={emoji.id}
-                className="group relative flex cursor-pointer flex-col items-center rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="group relative flex cursor-pointer flex-col items-center rounded-md p-1 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
                 onMouseEnter={() => setHoveredId(emoji.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => handleSelect(emoji)}
@@ -196,16 +196,16 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={tweens.quickFade}
-        className={`absolute z-50 ${positionStyles[position]} w-80 rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 ${className}`}
+        className={`absolute z-50 ${positionStyles[position]} w-80 rounded-xl border border-gray-200 bg-white shadow-xl dark:border-white/[0.08] dark:bg-white/[0.04] ${className}`}
         style={{ maxHeight }}
       >
         {/* Header */}
-        <div className="border-b border-gray-200 p-3 dark:border-gray-700">
+        <div className="border-b border-gray-200 p-3 dark:border-white/[0.08]">
           <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search emojis..." />
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 border-b border-gray-200 px-3 py-2 dark:border-gray-700">
+        <div className="flex items-center gap-1 border-b border-gray-200 px-3 py-2 dark:border-white/[0.08]">
           <CategoryTab
             icon="🕐"
             name="Recent"
@@ -248,13 +248,13 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
 
         {/* Category tabs for custom emojis */}
         {activeTab === 'custom' && categories.length > 0 && !isSearchActive && (
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 px-3 py-2 dark:border-gray-700">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 px-3 py-2 dark:border-white/[0.08]">
             <button
               onClick={() => setActiveCategory(null)}
               className={`whitespace-nowrap rounded-full px-2 py-1 text-xs ${
                 !activeCategory
                   ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                  : 'bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-300'
               }`}
             >
               All
@@ -266,7 +266,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
                 className={`whitespace-nowrap rounded-full px-2 py-1 text-xs ${
                   activeCategory === cat.id
                     ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                    : 'bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-300'
                 }`}
               >
                 {cat.icon} {cat.name}
@@ -321,7 +321,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-gray-700">
+        <div className="flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-white/[0.08]">
           <span className="text-xs text-gray-400">{emojis.length} custom emojis</span>
           <button
             onClick={() => {

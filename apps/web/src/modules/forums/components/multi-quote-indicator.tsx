@@ -69,7 +69,7 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-400"
+                className="rounded-lg bg-white/[0.06] p-2 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-400"
                 title="Clear selection"
               >
                 <XMarkIcon className="h-5 w-5" />
@@ -79,11 +79,11 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
 
           {/* Selected Posts Preview */}
           {multiQuoteBuffer.length > 0 && (
-            <div className="mt-3 max-h-32 space-y-1 overflow-y-auto border-t border-dark-600 pt-3">
+            <div className="mt-3 max-h-32 space-y-1 overflow-y-auto border-t border-white/[0.08] pt-3">
               {multiQuoteBuffer.map((postId) => (
                 <div
                   key={postId}
-                  className="flex items-center justify-between gap-2 rounded bg-dark-700/50 px-2 py-1.5"
+                  className="flex items-center justify-between gap-2 rounded bg-white/[0.06] px-2 py-1.5"
                 >
                   <span className="truncate text-xs text-gray-400">
                     Post ID: {postId.slice(0, 8)}...

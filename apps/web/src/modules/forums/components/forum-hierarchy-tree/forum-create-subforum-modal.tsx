@@ -46,7 +46,7 @@ export function CreateSubforumModal({
           const found = flattenTree(tree).find((f) => f.node.id === e.target.value);
           onSelectParent(found?.node ?? null);
         }}
-        className="mb-4 w-full rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white"
+        className="mb-4 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white"
       >
         <option value="">Select parent…</option>
         {flattenTree(tree).map(({ node, depth }) => (
@@ -62,7 +62,7 @@ export function CreateSubforumModal({
         value={form.name}
         onChange={(e) => onFormChange((f) => ({ ...f, name: e.target.value }))}
         placeholder="e.g. General Discussion"
-        className="mb-4 w-full rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+        className="mb-4 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
         autoFocus
       />
 
@@ -73,7 +73,7 @@ export function CreateSubforumModal({
         onChange={(e) => onFormChange((f) => ({ ...f, description: e.target.value }))}
         placeholder="What is this subforum about?"
         rows={2}
-        className="mb-4 w-full resize-none rounded-lg border border-white/10 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+        className="mb-4 w-full resize-none rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
       />
 
       {/* Type */}
@@ -86,7 +86,7 @@ export function CreateSubforumModal({
             className={`rounded-lg px-3 py-1.5 text-sm capitalize transition-colors ${
               form.forum_type === t
                 ? 'bg-primary-600 text-white'
-                : 'bg-dark-600 text-gray-400 hover:text-white'
+                : 'bg-white/[0.08] text-gray-400 hover:text-white'
             }`}
           >
             {t}
@@ -100,7 +100,7 @@ export function CreateSubforumModal({
           type="checkbox"
           checked={form.is_public}
           onChange={(e) => onFormChange((f) => ({ ...f, is_public: e.target.checked }))}
-          className="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+          className="rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
         />
         Publicly visible
       </label>

@@ -51,7 +51,7 @@ export function MoreMenu({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
+          className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-white/[0.08] bg-white/[0.06] py-1 shadow-xl"
         >
           {canEdit && (
             <button
@@ -59,7 +59,7 @@ export function MoreMenu({
                 onEdit?.();
                 onClose();
               }}
-              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
             >
               <PencilIcon className="h-4 w-4" />
               Edit
@@ -72,7 +72,7 @@ export function MoreMenu({
                   onPin?.();
                   onClose();
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
               >
                 <MapPinIcon className="h-4 w-4" />
                 {post.isPinned ? 'Unpin' : 'Pin'}
@@ -82,18 +82,18 @@ export function MoreMenu({
                   onLock?.();
                   onClose();
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
               >
                 <LockClosedIcon className="h-4 w-4" />
                 {post.isLocked ? 'Unlock' : 'Lock'}
               </button>
-              <hr className="my-1 border-dark-600" />
+              <hr className="my-1 border-white/[0.08]" />
               <button
                 onClick={() => {
                   onDelete?.();
                   onClose();
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-white/[0.10]"
               >
                 <TrashIcon className="h-4 w-4" />
                 Delete
@@ -105,7 +105,7 @@ export function MoreMenu({
               onReport?.();
               onClose();
             }}
-            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-white/[0.10]"
           >
             <FlagIcon className="h-4 w-4" />
             Report

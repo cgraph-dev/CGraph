@@ -72,11 +72,11 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
         >
           <GlassCard variant="frosted" className="flex h-full flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-dark-600 p-6">
+            <div className="flex items-center justify-between border-b border-white/[0.08] p-6">
               <h2 className="text-2xl font-bold text-white">Edit History</h2>
               <button
                 onClick={onClose}
-                className="rounded-lg p-2 transition-colors hover:bg-dark-700"
+                className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
               >
                 <XMarkIcon className="h-6 w-6 text-gray-400" />
               </button>
@@ -96,7 +96,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
               ) : (
                 <div className="flex h-full">
                   {/* Timeline Sidebar */}
-                  <div className="w-64 overflow-y-auto border-r border-dark-600">
+                  <div className="w-64 overflow-y-auto border-r border-white/[0.08]">
                     <div className="space-y-2 p-4">
                       {history.map((edit, index) => (
                         <button
@@ -105,7 +105,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
                           className={`w-full rounded-lg p-3 text-left transition-colors ${
                             selectedEdit?.id === edit.id
                               ? 'border border-primary-500 bg-primary-500/20'
-                              : 'border border-transparent bg-dark-700/50 hover:bg-dark-700'
+                              : 'border border-transparent bg-white/[0.06] hover:bg-white/[0.08]'
                           }`}
                         >
                           <div className="mb-1 flex items-center gap-2">
@@ -136,7 +136,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
                         className="space-y-4"
                       >
                         {/* Edit Info */}
-                        <div className="flex items-center gap-4 border-b border-dark-600 pb-4">
+                        <div className="flex items-center gap-4 border-b border-white/[0.08] pb-4">
                           <div className="flex-1">
                             <h3 className="mb-1 text-lg font-semibold text-white">
                               Edit #{history.findIndex((h) => h.id === selectedEdit.id) + 1}
@@ -150,7 +150,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
 
                         {/* Reason */}
                         {selectedEdit.reason && (
-                          <div className="rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+                          <div className="rounded-lg border border-white/[0.08] bg-white/[0.06] p-4">
                             <h4 className="mb-2 text-sm font-semibold text-gray-300">
                               Edit Reason
                             </h4>
@@ -159,7 +159,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
                         )}
 
                         {/* Previous Content */}
-                        <div className="rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+                        <div className="rounded-lg border border-white/[0.08] bg-white/[0.06] p-4">
                           <h4 className="mb-2 text-sm font-semibold text-gray-300">
                             Previous Content
                           </h4>

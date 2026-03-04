@@ -19,11 +19,11 @@ interface ViewModeToggleProps {
  */
 export function ViewModeToggle({ viewMode, onViewModeChange }: ViewModeToggleProps) {
   return (
-    <div className="flex rounded-lg border border-dark-600 bg-dark-700/50 p-0.5">
+    <div className="flex rounded-lg border border-white/[0.08] bg-white/[0.06] p-0.5">
       <button
         onClick={() => onViewModeChange('linear')}
         className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors ${
-          viewMode === 'linear' ? 'bg-dark-600 text-white' : 'text-gray-400 hover:text-white'
+          viewMode === 'linear' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white'
         }`}
         title="Linear view - comments in order"
       >
@@ -33,7 +33,7 @@ export function ViewModeToggle({ viewMode, onViewModeChange }: ViewModeTogglePro
       <button
         onClick={() => onViewModeChange('threaded')}
         className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors ${
-          viewMode === 'threaded' ? 'bg-dark-600 text-white' : 'text-gray-400 hover:text-white'
+          viewMode === 'threaded' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white'
         }`}
         title="Threaded view - nested replies"
       >

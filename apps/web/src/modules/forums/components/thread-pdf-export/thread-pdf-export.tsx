@@ -100,8 +100,8 @@ export const ThreadPDFExport = memo(function ThreadPDFExport({
         disabled={disabled || isExporting}
         className={`inline-flex items-center gap-2 rounded-lg transition-colors ${
           disabled || isExporting
-            ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-white/[0.04]'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.06]'
         } ${SIZE_CLASSES[size]} ${className}`}
         title="Export to PDF"
       >

@@ -112,7 +112,7 @@ export const PostIconSelector = memo(function PostIconSelector({
           className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors ${
             selectedIconId === null
               ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:border-indigo-400 dark:bg-indigo-900/20 dark:text-indigo-300'
-              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06]'
           }`}
         >
           <XMarkIcon className="h-4 w-4" />
@@ -134,7 +134,7 @@ export const PostIconSelector = memo(function PostIconSelector({
               className={`relative flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors ${
                 isSelected
                   ? 'border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500 dark:border-indigo-400 dark:bg-indigo-900/20 dark:text-indigo-300'
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.06]'
               }`}
             >
               {icon.emoji ? (
@@ -166,7 +166,7 @@ export const PostIconSelector = memo(function PostIconSelector({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={tweens.brisk}
-            className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"
+            className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 dark:bg-white/[0.04]"
           >
             {(() => {
               const selected = icons.find((i) => i.id === selectedIconId);

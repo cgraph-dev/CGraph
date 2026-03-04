@@ -47,7 +47,7 @@ export const VoteButtons = memo(function VoteButtons({
         onClick={() => handleVote(1)}
         disabled={isVoting}
         className={`rounded-lg p-2 transition-colors ${
-          userVote === 1 ? 'bg-green-500/20 text-green-500' : 'text-gray-400 hover:bg-dark-600'
+          userVote === 1 ? 'bg-green-500/20 text-green-500' : 'text-gray-400 hover:bg-white/[0.10]'
         }`}
         animate={
           userVote === 1
@@ -79,7 +79,7 @@ export const VoteButtons = memo(function VoteButtons({
         onClick={() => handleVote(-1)}
         disabled={isVoting}
         className={`rounded-lg p-2 transition-colors ${
-          userVote === -1 ? 'bg-red-500/20 text-red-500' : 'text-gray-400 hover:bg-dark-600'
+          userVote === -1 ? 'bg-red-500/20 text-red-500' : 'text-gray-400 hover:bg-white/[0.10]'
         }`}
         animate={
           userVote === -1

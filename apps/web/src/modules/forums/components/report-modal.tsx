@@ -124,7 +124,7 @@ export default function ReportModal({
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-2 transition-colors hover:bg-dark-700"
+                className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
               >
                 <XMarkIcon className="h-5 w-5 text-gray-400" />
               </button>
@@ -154,7 +154,7 @@ export default function ReportModal({
                     className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
                       selectedReason === reason.value
                         ? 'border-red-500 bg-red-500/20'
-                        : 'border-dark-600 bg-dark-700/50 hover:border-red-500/50'
+                        : 'border-white/[0.08] bg-white/[0.06] hover:border-red-500/50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default function ReportModal({
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Provide more information to help moderators review this report..."
                 rows={4}
-                className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500"
                 maxLength={1000}
               />
               <div className="mt-1 text-right text-xs text-gray-500">{details.length}/1000</div>
@@ -198,7 +198,7 @@ export default function ReportModal({
                 onClick={handleClose}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 rounded-lg bg-dark-700 px-4 py-3 font-medium text-white transition-colors hover:bg-dark-600"
+                className="flex-1 rounded-lg bg-white/[0.06] px-4 py-3 font-medium text-white transition-colors hover:bg-white/[0.10]"
               >
                 Cancel
               </motion.button>
@@ -210,7 +210,7 @@ export default function ReportModal({
                 className={`flex-1 rounded-lg px-4 py-3 font-medium transition-all ${
                   selectedReason && !isSubmitting
                     ? 'bg-red-600 text-white shadow-lg shadow-red-500/20 hover:bg-red-500'
-                    : 'cursor-not-allowed bg-dark-700 text-gray-500'
+                    : 'cursor-not-allowed bg-white/[0.06] text-gray-500'
                 }`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Report'}

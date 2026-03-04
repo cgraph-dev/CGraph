@@ -45,7 +45,7 @@ export function AdminNodeList({
           >
             <span className="flex-1 truncate text-sm font-medium text-white">{node.name}</span>
 
-            <span className="rounded bg-dark-600 px-2 py-0.5 text-xs capitalize text-gray-400">
+            <span className="rounded bg-white/[0.08] px-2 py-0.5 text-xs capitalize text-gray-400">
               {node.forum_type}
             </span>
 

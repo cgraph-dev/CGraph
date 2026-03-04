@@ -149,7 +149,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
           <button
             onClick={handleResetAll}
             disabled={resetting}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white border border-gray-600 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
           >
             <ArrowPathIcon className={`h-4 w-4 ${resetting ? 'animate-spin' : ''}`} />
             Reset to Inherit All
@@ -185,7 +185,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-700">
+                <tr className="border-b border-white/[0.08]">
                   <th className="text-left py-2 px-3 font-medium text-gray-400 min-w-[160px]">Group</th>
                   {perms.map((p) => (
                     <th key={p.key} className="py-2 px-2 font-medium text-gray-400 text-center min-w-[100px]">
@@ -196,7 +196,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
               </thead>
               <tbody>
                 {groups.map((group) => (
-                  <tr key={group.id} className="border-b border-gray-800 hover:bg-gray-800/30">
+                  <tr key={group.id} className="border-b border-gray-800 hover:bg-white/[0.04]/30">
                     <td className="py-2 px-3">
                       <div className="flex items-center gap-2">
                         <div
@@ -222,7 +222,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
                                       : level === 'deny'
                                         ? 'bg-red-600 text-white'
                                         : 'bg-gray-600 text-white'
-                                    : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
+                                    : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.06]'
                                 }`}
                                 title={level.charAt(0).toUpperCase() + level.slice(1)}
                               >
@@ -242,7 +242,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
       ))}
 
       {/* Effective permissions note */}
-      <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700 flex items-start gap-2">
+      <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.08] flex items-start gap-2">
         <InformationCircleIcon className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-gray-400">
           <strong className="text-gray-300">Inheritance:</strong> &quot;Inherit&quot; means the permission falls through

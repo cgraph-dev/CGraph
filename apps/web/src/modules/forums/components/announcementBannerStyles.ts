@@ -50,7 +50,7 @@ const STYLE_CLASS_MAP: Record<AnnouncementStyle, AnnouncementStyleClasses> = {
     readMore: 'text-red-600 dark:text-red-400',
   },
   default: {
-    container: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+    container: 'bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08]',
     header: 'text-gray-800 dark:text-gray-200',
     title: 'text-gray-900 dark:text-gray-100',
     content: 'text-gray-700 dark:text-gray-300',

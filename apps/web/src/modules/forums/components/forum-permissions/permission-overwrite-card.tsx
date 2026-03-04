@@ -41,7 +41,7 @@ export function PermissionOverwriteCard({
         <div className="flex items-center gap-2">
           <UserGroupIcon className="h-4 w-4 text-primary-400" />
           <span className="text-sm font-medium text-white">{overwrite.group_name}</span>
-          <span className="rounded bg-dark-600 px-1.5 py-0.5 text-xs text-gray-400">
+          <span className="rounded bg-white/[0.08] px-1.5 py-0.5 text-xs text-gray-400">
             {overwrite.applies_to}
           </span>
         </div>

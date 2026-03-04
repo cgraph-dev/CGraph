@@ -59,7 +59,7 @@ export const ForumHeaderCompact = memo(function ForumHeaderCompact({
           onClick={onJoin}
           disabled={isJoining}
           className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
-            isMember ? 'bg-dark-600 text-gray-300' : ''
+            isMember ? 'bg-white/[0.08] text-gray-300' : ''
           }`}
           style={!isMember ? { backgroundColor: primaryColor } : {}}
         >

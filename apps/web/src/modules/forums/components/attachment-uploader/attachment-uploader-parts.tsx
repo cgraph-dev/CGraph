@@ -78,7 +78,7 @@ export function Dropzone({
       className={`relative cursor-pointer rounded-xl border-2 border-dashed p-8 transition-all duration-200 ${
         isDragging
           ? 'border-primary-500 bg-primary-500/10'
-          : 'border-dark-600 bg-dark-800/50 hover:border-primary-500/50'
+          : 'border-white/[0.08] bg-white/[0.04] hover:border-primary-500/50'
       } `}
     >
       <input
@@ -163,7 +163,7 @@ export function UploadProgressList({ progress }: { progress: Record<string, numb
                   <span className="text-sm text-white">Uploading...</span>
                   <span className="text-sm text-primary-400">{pct}%</span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-dark-700">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
                   <motion.div
                     className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
                     initial={{ width: 0 }}
@@ -217,7 +217,7 @@ export function AttachmentList({ attachments, onDelete }: AttachmentListProps) {
                       className="h-12 w-12 rounded object-cover"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded bg-dark-700">
+                    <div className="flex h-12 w-12 items-center justify-center rounded bg-white/[0.06]">
                       {isImage(attachment.fileType) ? (
                         <PhotoIcon className="h-6 w-6 text-gray-400" />
                       ) : (
@@ -247,7 +247,7 @@ export function AttachmentList({ attachments, onDelete }: AttachmentListProps) {
                       download={attachment.originalFilename}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="rounded-lg bg-dark-700/50 p-1.5 transition-colors hover:bg-primary-500/20"
+                      className="rounded-lg bg-white/[0.06] p-1.5 transition-colors hover:bg-primary-500/20"
                     >
                       <ArrowDownTrayIcon className="h-4 w-4 text-gray-400 hover:text-primary-400" />
                     </motion.a>
@@ -255,7 +255,7 @@ export function AttachmentList({ attachments, onDelete }: AttachmentListProps) {
                       onClick={() => onDelete(attachment.id)}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="rounded-lg bg-dark-700/50 p-1.5 transition-colors hover:bg-red-500/20"
+                      className="rounded-lg bg-white/[0.06] p-1.5 transition-colors hover:bg-red-500/20"
                     >
                       <XMarkIcon className="h-4 w-4 text-gray-400 hover:text-red-400" />
                     </motion.button>

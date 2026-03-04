@@ -16,13 +16,13 @@ export function AttachmentsList({ attachments, onRemove }: AttachmentsListProps)
   }
 
   return (
-    <div className="border-t border-dark-700 p-4">
+    <div className="border-t border-white/[0.06] p-4">
       <div className="mb-2 text-sm font-medium">Attachments ({attachments.length})</div>
       <div className="flex flex-wrap gap-2">
         {attachments.map((file, index) => (
           <div
             key={index}
-            className="flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-1.5 text-sm"
+            className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-1.5 text-sm"
           >
             <PaperClipIcon className="h-4 w-4 text-gray-400" />
             <span className="max-w-[150px] truncate">{file.name}</span>

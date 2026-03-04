@@ -172,13 +172,13 @@ export function PostContent({
 
       {/* Poll if present */}
       {post.poll && (
-        <div className="mt-4 rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+        <div className="mt-4 rounded-lg border border-white/[0.08] bg-white/[0.06] p-4">
           <h3 className="mb-3 font-medium">{post.poll.question}</h3>
         </div>
       )}
 
       {/* Stats Bar */}
-      <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-dark-700 pt-4 text-sm text-gray-400">
+      <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-white/[0.06] pt-4 text-sm text-gray-400">
         <span className="flex items-center gap-1">
           <EyeIcon className="h-4 w-4" />
           {post.views.toLocaleString()} views
@@ -221,7 +221,7 @@ export function PostContent({
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm ${
             isBookmarked
               ? 'bg-amber-500/20 text-amber-400'
-              : 'bg-dark-600 text-gray-300 hover:bg-dark-500'
+              : 'bg-white/[0.08] text-gray-300 hover:bg-white/[0.12]'
           }`}
         >
           {isBookmarked ? (
@@ -237,7 +237,7 @@ export function PostContent({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowShareMenu(!showShareMenu)}
-            className="flex items-center gap-2 rounded-lg bg-dark-600 px-4 py-2 text-sm text-gray-300 hover:bg-dark-500"
+            className="flex items-center gap-2 rounded-lg bg-white/[0.08] px-4 py-2 text-sm text-gray-300 hover:bg-white/[0.12]"
           >
             <ShareIcon className="h-4 w-4" />
             Share
@@ -255,7 +255,7 @@ export function PostContent({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowMoreMenu(!showMoreMenu)}
-              className="rounded-lg bg-dark-600 p-2 text-gray-300 hover:bg-dark-500"
+              className="rounded-lg bg-white/[0.08] p-2 text-gray-300 hover:bg-white/[0.12]"
             >
               •••
             </motion.button>

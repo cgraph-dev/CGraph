@@ -59,19 +59,19 @@ export function GlobalLeaderboardWidget({
     return (
       <div className="rounded-lg border border-primary-500/20 bg-gradient-to-br from-primary-900/30 to-purple-900/30 p-4">
         <div className="mb-4 flex items-center gap-2">
-          <div className="h-6 w-6 animate-pulse rounded bg-dark-600" />
-          <div className="h-4 w-32 animate-pulse rounded bg-dark-600" />
+          <div className="h-6 w-6 animate-pulse rounded bg-white/[0.08]" />
+          <div className="h-4 w-32 animate-pulse rounded bg-white/[0.08]" />
         </div>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex animate-pulse items-center gap-3">
-              <div className="h-6 w-6 rounded-full bg-dark-600" />
-              <div className="h-8 w-8 rounded-full bg-dark-600" />
+              <div className="h-6 w-6 rounded-full bg-white/[0.08]" />
+              <div className="h-8 w-8 rounded-full bg-white/[0.08]" />
               <div className="flex-1 space-y-1">
-                <div className="h-3 w-20 rounded bg-dark-600" />
-                <div className="h-2 w-12 rounded bg-dark-600" />
+                <div className="h-3 w-20 rounded bg-white/[0.08]" />
+                <div className="h-2 w-12 rounded bg-white/[0.08]" />
               </div>
-              <div className="h-4 w-10 rounded bg-dark-600" />
+              <div className="h-4 w-10 rounded bg-white/[0.08]" />
             </div>
           ))}
         </div>

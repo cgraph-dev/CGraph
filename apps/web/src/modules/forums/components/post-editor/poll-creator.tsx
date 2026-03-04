@@ -35,7 +35,7 @@ export function PollCreator({
       exit={{ opacity: 0, height: 0 }}
       className="overflow-hidden"
     >
-      <div className="border-t border-dark-700 bg-dark-800/50 p-4">
+      <div className="border-t border-white/[0.06] bg-white/[0.04] p-4">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="flex items-center gap-2 font-medium">
             <SparklesIcon className="h-5 w-5" style={{ color: primaryColor }} />
@@ -51,7 +51,7 @@ export function PollCreator({
           value={pollQuestion}
           onChange={(e) => setPollQuestion(e.target.value)}
           placeholder="Ask a question..."
-          className="mb-3 w-full rounded-lg bg-dark-700 p-3 outline-none focus:ring-2"
+          className="mb-3 w-full rounded-lg bg-white/[0.06] p-3 outline-none focus:ring-2"
            
           style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
         />
@@ -65,7 +65,7 @@ export function PollCreator({
                 value={option.text}
                 onChange={(e) => updatePollOption(option.id, e.target.value)}
                 placeholder={`Option ${index + 1}`}
-                className="flex-1 rounded-lg bg-dark-700 p-2 outline-none focus:ring-2"
+                className="flex-1 rounded-lg bg-white/[0.06] p-2 outline-none focus:ring-2"
                  
                 style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
               />
@@ -105,7 +105,7 @@ export function PollCreator({
           <select
             value={pollDuration ?? ''}
             onChange={(e) => setPollDuration(e.target.value ? Number(e.target.value) : undefined)}
-            className="rounded bg-dark-700 px-2 py-1 text-sm"
+            className="rounded bg-white/[0.06] px-2 py-1 text-sm"
           >
             {POLL_DURATION_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

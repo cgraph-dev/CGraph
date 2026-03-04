@@ -16,7 +16,7 @@ export const FormatSelector = memo(function FormatSelector({
   onFormatChange,
 }: FormatSelectorProps) {
   return (
-    <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+    <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-white/[0.04]">
       {FORMATS.map((format) => (
         <button
           key={format}
@@ -30,7 +30,7 @@ export const FormatSelector = memo(function FormatSelector({
           {selectedFormat === format && (
             <motion.div
               layoutId="format-selector"
-              className="absolute inset-0 rounded-md bg-white shadow-sm dark:bg-gray-700"
+              className="absolute inset-0 rounded-md bg-white shadow-sm dark:bg-white/[0.06]"
               initial={false}
               transition={springs.snappy}
             />

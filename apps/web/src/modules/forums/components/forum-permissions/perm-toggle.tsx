@@ -19,7 +19,7 @@ interface PermToggleProps {
 const TOGGLE_CONFIG = {
   inherit: {
     icon: MinusIcon,
-    bg: 'bg-dark-600',
+    bg: 'bg-white/[0.08]',
     text: 'text-gray-400',
   },
   allow: {

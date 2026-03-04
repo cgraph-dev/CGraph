@@ -121,13 +121,13 @@ export function QuickReply({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+      className={`rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.04] ${className}`}
     >
       {/* Header */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06]/50"
       >
         <span className="font-medium text-gray-900 dark:text-white">Quick Reply</span>
         {isExpanded ? (
@@ -162,7 +162,7 @@ export function QuickReply({
 
           {/* BBCode Toolbar */}
           {showToolbar && (
-            <div className="mb-2 flex flex-wrap gap-1 rounded bg-gray-50 p-2 dark:bg-gray-700/50">
+            <div className="mb-2 flex flex-wrap gap-1 rounded bg-gray-50 p-2 dark:bg-white/[0.06]/50">
               <ToolbarButton title="Bold" onClick={() => insertBBCode('b')}>
                 <span className="font-bold">B</span>
               </ToolbarButton>
@@ -212,7 +212,7 @@ export function QuickReply({
             placeholder={placeholder}
             disabled={disabled || isSubmitting}
             rows={4}
-            className="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
+            className="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[0.08] dark:bg-white/[0.06] dark:text-white dark:placeholder-white/30"
           />
 
           {/* Attachments Preview */}
@@ -221,7 +221,7 @@ export function QuickReply({
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-700"
+                  className="flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-sm dark:bg-white/[0.06]"
                 >
                   <span className="max-w-[100px] truncate">{file.name}</span>
                   <button
@@ -240,7 +240,7 @@ export function QuickReply({
           <div className="mt-3 flex items-center justify-between">
             {/* Left side - attachments */}
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer rounded p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+              <label className="cursor-pointer rounded p-2 transition-colors hover:bg-gray-100 dark:hover:bg-white/[0.06]">
                 <input
                   type="file"
                   multiple

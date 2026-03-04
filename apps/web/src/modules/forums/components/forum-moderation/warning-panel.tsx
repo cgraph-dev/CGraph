@@ -92,7 +92,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
           placeholder="Enter user ID…"
-          className="flex-1 rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+          className="flex-1 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
         />
         <button
           onClick={loadWarnings}
@@ -113,7 +113,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
                 ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                 : totalPoints >= 3
                   ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                  : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                  : 'bg-gray-100 text-gray-700 dark:bg-white/[0.04] dark:text-gray-300'
           }`}
         >
           Active warning points: {totalPoints}
@@ -125,14 +125,14 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
 
       {/* Issue Warning Form */}
       {userId.trim() && (
-        <div className="rounded-lg border p-4 dark:border-gray-700 space-y-3">
+        <div className="rounded-lg border p-4 dark:border-white/[0.08] space-y-3">
           <h4 className="font-medium text-gray-900 dark:text-white">Issue Warning</h4>
           <textarea
             value={warnReason}
             onChange={(e) => setWarnReason(e.target.value)}
             placeholder="Warning reason…"
             rows={3}
-            className="w-full rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+            className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
           />
           <div className="flex items-center gap-4">
             <div>
@@ -143,7 +143,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
                 max={5}
                 value={warnPoints}
                 onChange={(e) => setWarnPoints(Math.min(5, Math.max(1, Number(e.target.value))))}
-                className="w-20 rounded border p-2 text-sm dark:bg-gray-700 dark:border-gray-600"
+                className="w-20 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
               />
             </div>
             <button
@@ -164,7 +164,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
           {warnings.map((w) => (
             <div
               key={w.id}
-              className={`rounded-lg border p-3 dark:border-gray-700 ${
+              className={`rounded-lg border p-3 dark:border-white/[0.08] ${
                 w.revoked ? 'opacity-50' : ''
               }`}
             >

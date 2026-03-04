@@ -90,21 +90,21 @@ export function ForumLeaderboardWidget({
 
   if (isLoading) {
     return (
-      <div className="rounded-lg bg-dark-700 p-4">
+      <div className="rounded-lg bg-white/[0.06] p-4">
         <div className="mb-4 flex items-center gap-2">
-          <div className="h-6 w-6 animate-pulse rounded bg-dark-600" />
-          <div className="h-4 w-24 animate-pulse rounded bg-dark-600" />
+          <div className="h-6 w-6 animate-pulse rounded bg-white/[0.08]" />
+          <div className="h-4 w-24 animate-pulse rounded bg-white/[0.08]" />
         </div>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex animate-pulse items-center gap-3">
-              <div className="h-6 w-6 rounded-full bg-dark-600" />
-              <div className="h-8 w-8 rounded-full bg-dark-600" />
+              <div className="h-6 w-6 rounded-full bg-white/[0.08]" />
+              <div className="h-8 w-8 rounded-full bg-white/[0.08]" />
               <div className="flex-1 space-y-1">
-                <div className="h-3 w-20 rounded bg-dark-600" />
-                <div className="h-2 w-12 rounded bg-dark-600" />
+                <div className="h-3 w-20 rounded bg-white/[0.08]" />
+                <div className="h-2 w-12 rounded bg-white/[0.08]" />
               </div>
-              <div className="h-4 w-10 rounded bg-dark-600" />
+              <div className="h-4 w-10 rounded bg-white/[0.08]" />
             </div>
           ))}
         </div>
@@ -114,7 +114,7 @@ export function ForumLeaderboardWidget({
 
   if (contributors.length === 0) {
     return (
-      <div className="rounded-lg bg-dark-700 p-4">
+      <div className="rounded-lg bg-white/[0.06] p-4">
         <div className="mb-3 flex items-center gap-2">
           <TrophyIcon className="h-5 w-5 text-yellow-500" />
           <h3 className="text-sm font-semibold text-white">Top Contributors</h3>
@@ -125,7 +125,7 @@ export function ForumLeaderboardWidget({
   }
 
   return (
-    <div className="rounded-lg bg-dark-700 p-4">
+    <div className="rounded-lg bg-white/[0.06] p-4">
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export function ForumLeaderboardWidget({
       {/* View Full Leaderboard Link */}
       <Link
         to={`/forums/${forumSlug}/user-leaderboard`}
-        className="mt-3 flex items-center justify-center gap-1 border-t border-dark-600 pt-3 text-sm text-primary-400 transition-colors hover:text-primary-300"
+        className="mt-3 flex items-center justify-center gap-1 border-t border-white/[0.08] pt-3 text-sm text-primary-400 transition-colors hover:text-primary-300"
       >
         View full leaderboard
         <ChevronRightIcon className="h-4 w-4" />

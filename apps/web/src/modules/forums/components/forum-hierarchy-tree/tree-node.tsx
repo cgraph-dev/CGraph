@@ -75,7 +75,7 @@ export const TreeNode = memo(function TreeNode({
         animate={{
           backgroundColor: isSelected ? 'rgba(249, 115, 22, 0.1)' : 'transparent',
         }}
-        className={`group flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/50 ${isSelected ? 'ring-1 ring-orange-500/30' : ''} `}
+        className={`group flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-white/[0.06]/50 ${isSelected ? 'ring-1 ring-orange-500/30' : ''} `}
         style={{ paddingLeft: `${paddingLeft + 8}px` }}
         onClick={handleClick}
       >
@@ -83,7 +83,7 @@ export const TreeNode = memo(function TreeNode({
         {hasChildren ? (
           <button
             onClick={handleToggle}
-            className="rounded p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="rounded p-0.5 hover:bg-gray-200 dark:hover:bg-white/[0.10]"
           >
             {isExpanded ? (
               <ChevronDownIcon className="h-4 w-4 text-gray-500" />

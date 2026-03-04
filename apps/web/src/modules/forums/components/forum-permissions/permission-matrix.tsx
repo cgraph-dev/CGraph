@@ -33,7 +33,7 @@ type BoardPerms = Record<string, Record<string, Record<string, PermLevel>>>;
 const LEVEL_COLORS: Record<PermLevel, string> = {
   allow: 'bg-green-600/40 text-green-400',
   deny: 'bg-red-600/40 text-red-400',
-  inherit: 'bg-gray-700/40 text-gray-500',
+  inherit: 'bg-white/[0.06]/40 text-gray-500',
 };
 
 const LEVEL_LABELS: Record<PermLevel, string> = {
@@ -133,7 +133,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
         </div>
         <button
           onClick={exportCsv}
-          className="flex items-center gap-2 px-3 py-2 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-gray-300 border border-white/[0.08] rounded-lg hover:bg-white/[0.06] transition-colors"
         >
           <ArrowDownTrayIcon className="h-4 w-4" />
           Export CSV
@@ -149,7 +149,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search permissions..."
-            className="w-full pl-9 pr-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm"
+            className="w-full pl-9 pr-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
           <select
             value={selectedBoardId}
             onChange={(e) => setSelectedBoardId(e.target.value)}
-            className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm"
+            className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm"
           >
             <option value="">All Boards</option>
             {boards.map((b) => (
@@ -167,7 +167,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
           <select
             value={selectedGroupId}
             onChange={(e) => setSelectedGroupId(e.target.value)}
-            className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm"
+            className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm"
           >
             <option value="">All Groups</option>
             {groups.map((g) => (
@@ -186,7 +186,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
           <span className="w-4 h-4 rounded bg-red-600/40 text-red-400 inline-flex items-center justify-center text-xs">✗</span> Deny
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-4 h-4 rounded bg-gray-700/40 text-gray-500 inline-flex items-center justify-center text-xs">—</span> Inherit
+          <span className="w-4 h-4 rounded bg-white/[0.06]/40 text-gray-500 inline-flex items-center justify-center text-xs">—</span> Inherit
         </span>
       </div>
 
@@ -197,8 +197,8 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
             <h3 className="text-sm font-semibold text-gray-300 mb-2 px-1">{board.name}</h3>
             <table className="w-full text-xs border-collapse">
               <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-2 px-2 font-medium text-gray-400 sticky left-0 bg-gray-900 z-10 min-w-[120px]">
+                <tr className="border-b border-white/[0.08]">
+                  <th className="text-left py-2 px-2 font-medium text-gray-400 sticky left-0 bg-[rgb(30,32,40)] z-10 min-w-[120px]">
                     Group
                   </th>
                   {filteredPerms.map((p) => (
@@ -211,7 +211,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
               <tbody>
                 {filteredGroups.map((group) => (
                   <tr key={group.id} className="border-b border-gray-800">
-                    <td className="py-1.5 px-2 sticky left-0 bg-gray-900 z-10">
+                    <td className="py-1.5 px-2 sticky left-0 bg-[rgb(30,32,40)] z-10">
                       <div className="flex items-center gap-1.5">
                         <div
                           className="w-2 h-2 rounded-full"
@@ -240,7 +240,7 @@ export function PermissionMatrix({ forumId, boards }: PermissionMatrixProps) {
                             <motion.div
                               initial={{ opacity: 0, y: 4 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap shadow-lg"
+                              className="absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[rgb(30,32,40)] border border-white/[0.08] rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap shadow-lg"
                             >
                               <div><strong>{perm.label}</strong></div>
                               <div>Level: {level}</div>

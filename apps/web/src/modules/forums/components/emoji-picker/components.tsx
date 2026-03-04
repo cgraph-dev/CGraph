@@ -43,7 +43,7 @@ export const EmojiButton = memo(function EmojiButton({
         whileHover={{ scale: 1.15 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => onSelect(emoji)}
-        className={` ${buttonSizes[size]} rounded-lg transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:hover:bg-gray-700`}
+        className={` ${buttonSizes[size]} rounded-lg transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:hover:bg-white/[0.06]`}
         title={`:${emoji.shortcode}:`}
         aria-label={`${emoji.name} emoji`}
       >
@@ -98,7 +98,7 @@ export const UnicodeEmojiButton = memo(function UnicodeEmojiButton({
       whileHover={{ scale: 1.15 }}
       whileTap={{ scale: 0.95 }}
       onClick={() => onSelect(emoji)}
-      className={`rounded-lg p-1.5 ${fontSizes[size]} transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:hover:bg-gray-700`}
+      className={`rounded-lg p-1.5 ${fontSizes[size]} transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:hover:bg-white/[0.06]`}
       title={emoji}
       aria-label={`${emoji} emoji`}
     >
@@ -127,7 +127,7 @@ export const CategoryTab = memo(function CategoryTab({
       className={`rounded-lg p-2 text-lg transition-colors ${
         isActive
           ? 'bg-orange-100 dark:bg-orange-900/30'
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+          : 'hover:bg-gray-100 dark:hover:bg-white/[0.06]'
       } `}
       title={name}
       aria-label={name}
@@ -158,7 +158,7 @@ export const SearchInput = memo(function SearchInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700"
+        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-white/[0.08] dark:bg-white/[0.06]"
       />
       {value && (
         <button

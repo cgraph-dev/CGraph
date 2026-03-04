@@ -15,7 +15,7 @@ export function StatCard({
   iconColor = 'text-gray-500',
 }: StatCardProps) {
   return (
-    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50">
+    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3 dark:bg-white/[0.06]/50">
       <div className={iconColor}>{icon}</div>
       <div>
         <div className="text-2xl font-bold text-gray-900 dark:text-white">

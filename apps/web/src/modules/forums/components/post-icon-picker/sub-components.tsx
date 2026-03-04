@@ -28,7 +28,7 @@ export const IconButton = memo(function IconButton({
       className={` ${BUTTON_SIZES[size]} relative rounded-lg border-2 transition-colors ${
         isSelected
           ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30'
-          : 'border-transparent hover:bg-gray-100 dark:hover:bg-gray-700'
+          : 'border-transparent hover:bg-gray-100 dark:hover:bg-white/[0.06]'
       } `}
       title={icon.name}
       aria-label={`Select ${icon.name} icon`}
@@ -60,7 +60,7 @@ export const IconSearch = memo(function IconSearch({ value, onChange }: IconSear
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search icons..."
-        className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-800"
+        className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-white/[0.08] dark:bg-white/[0.04]"
       />
       {value && (
         <button

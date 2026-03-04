@@ -112,7 +112,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
             <motion.div
               key={tmpl.id}
               layout
-              className="bg-gray-800 rounded-lg border border-gray-700 p-4"
+              className="bg-white/[0.04] rounded-lg border border-white/[0.08] p-4"
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -140,7 +140,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                         ? 'bg-green-900/50 text-green-400'
                         : val === 'deny'
                           ? 'bg-red-900/50 text-red-400'
-                          : 'bg-gray-700 text-gray-400'
+                          : 'bg-white/[0.06] text-gray-400'
                     }`}
                   >
                     {key.replace(/^can_/, '')}
@@ -149,7 +149,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                 {Object.keys(tmpl.permissions).length > 6 && (
                   <button
                     onClick={() => setPreviewTemplate(tmpl)}
-                    className="px-1.5 py-0.5 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                    className="px-1.5 py-0.5 text-xs bg-white/[0.06] text-gray-300 rounded hover:bg-white/[0.10]"
                   >
                     +{Object.keys(tmpl.permissions).length - 6} more
                   </button>
@@ -170,7 +170,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                 )}
                 <button
                   onClick={() => handleDuplicate(tmpl)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-300 hover:text-white border border-gray-600 rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-300 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
                 >
                   <DocumentDuplicateIcon className="h-3 w-3" />
                   Duplicate
@@ -178,7 +178,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                 {!tmpl.isSystem && (
                   <button
                     onClick={() => handleDelete(tmpl)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-red-400 border border-gray-600 rounded-lg transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-red-400 border border-white/[0.08] rounded-lg transition-colors"
                   >
                     <TrashIcon className="h-3 w-3" />
                     Delete
@@ -243,7 +243,7 @@ function TemplatePreview({
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md max-h-[70vh] overflow-y-auto p-6"
+        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-md max-h-[70vh] overflow-y-auto p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">{template.name}</h3>
@@ -259,7 +259,7 @@ function TemplatePreview({
                     ? 'bg-green-900 text-green-400'
                     : val === 'deny'
                       ? 'bg-red-900 text-red-400'
-                      : 'bg-gray-700 text-gray-400'
+                      : 'bg-white/[0.06] text-gray-400'
                 }`}
               >
                 {val}
@@ -269,7 +269,7 @@ function TemplatePreview({
         </div>
         <button
           onClick={onClose}
-          className="mt-4 w-full px-4 py-2 text-gray-400 hover:text-white border border-gray-600 rounded-lg transition-colors"
+          className="mt-4 w-full px-4 py-2 text-gray-400 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
         >
           Close
         </button>
@@ -320,7 +320,7 @@ function CreateTemplateForm({
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-lg max-h-[80vh] overflow-y-auto p-6"
+        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-lg max-h-[80vh] overflow-y-auto p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-bold mb-4">Create Permission Template</h3>
@@ -331,7 +331,7 @@ function CreateTemplateForm({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
               required
             />
           </div>
@@ -341,12 +341,12 @@ function CreateTemplateForm({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"
+              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
             />
           </div>
 
           {/* Permission toggles */}
-          <div className="border-t border-gray-700 pt-4">
+          <div className="border-t border-white/[0.08] pt-4">
             <h4 className="text-sm font-semibold text-gray-300 mb-3">Permissions</h4>
             <div className="space-y-2">
               {BOARD_PERMISSIONS.map((def) => (
@@ -365,7 +365,7 @@ function CreateTemplateForm({
                               : level === 'deny'
                                 ? 'bg-red-600 text-white'
                                 : 'bg-gray-600 text-white'
-                            : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
+                            : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.06]'
                         }`}
                       >
                         {level}
@@ -377,7 +377,7 @@ function CreateTemplateForm({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
             <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
               Cancel
             </button>

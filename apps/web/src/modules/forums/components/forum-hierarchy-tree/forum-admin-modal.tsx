@@ -33,7 +33,7 @@ export function Modal({ onClose, title, children }: ModalProps): React.ReactElem
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 400 }}
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-dark-800 p-6 shadow-2xl"
+        className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">

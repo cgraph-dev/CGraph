@@ -34,7 +34,7 @@ export function EditorFooter({
   }
 
   return (
-    <div className="flex items-center justify-between border-t border-dark-500 bg-dark-700/50 px-4 py-2 text-xs">
+    <div className="flex items-center justify-between border-t border-dark-500 bg-white/[0.06] px-4 py-2 text-xs">
       {/* Validation errors */}
       {!validation.valid && (
         <div className="flex items-center gap-2 text-yellow-400">

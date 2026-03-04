@@ -82,7 +82,7 @@ export const ThreadedComment = memo(function ThreadedComment({
         className={`relative rounded-lg ${
           comment.isBestAnswer
             ? 'border border-green-500/30 bg-green-500/5'
-            : 'border border-dark-600 bg-dark-800/50'
+            : 'border border-white/[0.08] bg-white/[0.04]'
         } p-3`}
         style={{ marginLeft: indentSize }}
       >
