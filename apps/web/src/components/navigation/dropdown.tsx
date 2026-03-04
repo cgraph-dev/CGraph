@@ -4,6 +4,8 @@
  */
 import { useState, useRef, useEffect, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface DropdownProps {
   trigger: ReactNode;
@@ -25,6 +27,7 @@ export default function Dropdown({
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (isOpen && triggerRef.current) {
@@ -40,11 +43,11 @@ export default function Dropdown({
     const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-         
-        !dropdownRef.current.contains(e.target as Node) && // type assertion: EventTarget to Node for contains check
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- EventTarget to Node for contains check
+        !dropdownRef.current.contains(e.target as Node) &&
         triggerRef.current &&
-         
-        !triggerRef.current.contains(e.target as Node) // type assertion: EventTarget to Node for contains check
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- EventTarget to Node for contains check
+        !triggerRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -70,21 +73,30 @@ export default function Dropdown({
       <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)}>
         {trigger}
       </div>
-      {isOpen &&
-        createPortal(
-          <div
-            ref={dropdownRef}
-            className={`animate-scaleIn fixed z-50 min-w-[160px] origin-top rounded-lg border border-dark-600 bg-dark-800 py-1 shadow-xl ${className}`}
-            style={{
-              top: position.top,
-              left: align === 'right' ? 'auto' : position.left,
-              right: align === 'right' ? window.innerWidth - position.left : 'auto',
-            }}
-          >
-            {children}
-          </div>,
-          document.body
-        )}
+      {createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              ref={dropdownRef}
+              initial={reducedMotion ? undefined : { opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={
+                reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 30 }
+              }
+              className={`fixed z-50 min-w-[160px] origin-top rounded-lg border border-dark-600 bg-dark-800 py-1 shadow-xl ${className}`}
+              style={{
+                top: position.top,
+                left: align === 'right' ? 'auto' : position.left,
+                right: align === 'right' ? window.innerWidth - position.left : 'auto',
+              }}
+            >
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
