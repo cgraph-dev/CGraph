@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Font faces - Single source of truth for custom fonts */
+/* ── Inter font (from Google Fonts CDN) ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Legacy font faces (kept for backwards compat) ── */
 @font-face {
   font-family: 'Zentry';
   src: url('/fonts/zentry-regular.woff2') format('woff2');
@@ -35,7 +38,7 @@
   font-display: swap;
 }
 
-/* Base styles */
+/* ── Base styles — Liquid Glass pearl-white ── */
 * {
   margin: 0;
   padding: 0;
@@ -47,121 +50,49 @@ html {
 }
 
 body {
-  font-family: 'General', system-ui, sans-serif;
-  background-color: #0a0a0a;
-  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: rgb(250, 250, 252);
+  color: #1e293b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide scrollbar but allow scrolling */
+/* ── Scrollbar — light glass theme ── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: rgba(148, 163, 184, 0.6);
 }
 
-/* Clip path animations */
-.clip-path-hero {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+/* ── Glass utility layers ── */
+@layer utilities {
+  .glass-surface {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(203, 213, 225, 0.6);
+  }
+  .glass-elevated {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(203, 213, 225, 0.6);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
 }
-
-/* Glare effect for cards */
-.card-glare {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 45%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 55%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-}
-
-.card-3d:hover .card-glare {
-  opacity: 1;
-}
-
-/* Button text swap animation */
-.btn-swap {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-swap-text {
-  display: block;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.btn-swap:hover .btn-swap-text {
-  transform: translateY(-100%);
-}
-
-.btn-swap-hover {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.btn-swap:hover .btn-swap-hover {
-  transform: translateY(-100%);
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #a855f7, #22c55e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Animated gradient border */
-@keyframes gradient-border {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animated-border {
-  background: linear-gradient(90deg, #a855f7, #22c55e, #a855f7);
-  background-size: 200% 100%;
-  animation: gradient-border 3s ease infinite;
-}
-
-/* Feature card glow */
-.feature-glow {
-  position: relative;
-}
-
-.feature-glow::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(34, 197, 94, 0.3));
-  border-radius: inherit;
-  opacity: 0;
   transition: opacity 0.3s;
   z-index: -1;
-}
-
-.feature-glow:hover::before {
-  opacity: 1;
 }

@@ -4,6 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        /* ── Liquid Glass pearl-white palette ── */
+        pearl: 'rgb(250, 250, 252)',
+        glass: {
+          surface: 'rgba(255, 255, 255, 0.72)',
+          elevated: 'rgba(255, 255, 255, 0.82)',
+          border: 'rgba(203, 213, 225, 0.60)',
+        },
+        glow: {
+          blue: '#93C5FD',
+          purple: '#C4B5FD',
+          pink: '#F9A8D4',
+          green: '#86EFAC',
+        },
+        /* ── Keep legacy emerald for accent usage ── */
         primary: {
           50: '#ecfdf5',
           100: '#d1fae5',
@@ -16,24 +30,38 @@ export default {
           800: '#065f46',
           900: '#064e3b',
         },
-        dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        },
       },
       fontFamily: {
-        zentry: ['Zentry', 'sans-serif'],
-        general: ['General', 'sans-serif'],
-        robert: ['Robert', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+        '4xl': '2rem',
+      },
+      boxShadow: {
+        glass: '0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04)',
+        'glass-lg': '0 8px 30px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04)',
+        'glass-xl': '0 20px 40px rgba(0,0,0,0.10), 0 8px 16px rgba(0,0,0,0.06)',
+      },
+      backdropBlur: {
+        glass: '20px',
+        'glass-heavy': '24px',
+      },
+      animation: {
+        'glow-pulse': 'glow-pulse 4s ease-in-out infinite alternate',
+        float: 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        'glow-pulse': {
+          '0%': { opacity: '0.4' },
+          '100%': { opacity: '0.7' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-12px)' },
+        },
       },
     },
   },
