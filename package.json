@@ -65,8 +65,6 @@
     "overrides": {
       "react": "19.1.0",
       "react-dom": "19.1.0",
-      "@wagmi/core": "2.16.4",
-      "@wagmi/connectors": "5.7.7",
       "glob": "^11.0.0",
       "rimraf": "^6.0.0",
       "inflight": "npm:@pnpm/noop@1.0.0"
