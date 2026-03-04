@@ -2,9 +2,17 @@
  * Icon button component wrapping Ionicons with configurable size, variant, and badge support.
  * @module components/IconButton
  */
-import React from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  useReducedMotion,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import { springs } from '@cgraph/animation-constants';
 import { useThemeStore } from '@/stores';
 
 interface IconButtonProps {
@@ -33,7 +41,7 @@ const SIZES = {
 };
 
 /**
- *
+ * Icon button with haptic feedback and spring press animation.
  */
 export default function IconButton({
   icon,
@@ -47,6 +55,29 @@ export default function IconButton({
 }: IconButtonProps) {
   const { colors } = useThemeStore();
   const sizeConfig = SIZES[size];
+  const scale = useSharedValue(1);
+  const reducedMotion = useReducedMotion();
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = useCallback(() => {
+    if (!reducedMotion) {
+      scale.value = withSpring(0.9, {
+        stiffness: springs.snappy.stiffness,
+        damping: springs.snappy.damping,
+      });
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [reducedMotion, scale]);
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, {
+      stiffness: springs.snappy.stiffness,
+      damping: springs.snappy.damping,
+    });
+  }, [scale]);
 
   const getBackgroundColor = () => {
     if (disabled) return colors.surfaceSecondary;
@@ -77,26 +108,29 @@ export default function IconButton({
   };
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? icon.replace(/-/g, ' ')}
-      accessibilityState={{ disabled }}
-      style={[
-        styles.button,
-        {
-          width: sizeConfig.button,
-          height: sizeConfig.button,
-          borderRadius: sizeConfig.button / 2,
-          backgroundColor: getBackgroundColor(),
-        },
-        style,
-      ]}
-    >
-      <Ionicons name={icon} size={sizeConfig.icon} color={getIconColor()} />
-    </TouchableOpacity>
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? icon.replace(/-/g, ' ')}
+        accessibilityState={{ disabled }}
+        style={[
+          styles.button,
+          {
+            width: sizeConfig.button,
+            height: sizeConfig.button,
+            borderRadius: sizeConfig.button / 2,
+            backgroundColor: getBackgroundColor(),
+          },
+          style,
+        ]}
+      >
+        <Ionicons name={icon} size={sizeConfig.icon} color={getIconColor()} />
+      </Pressable>
+    </Animated.View>
   );
 }
 

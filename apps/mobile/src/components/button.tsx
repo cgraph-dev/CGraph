@@ -2,17 +2,24 @@
  * Reusable button component with multiple variants, sizes, loading state, and press animations.
  * @module components/Button
  */
-import React, { useRef, ReactNode } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   ActivityIndicator,
   ViewStyle,
   TextStyle,
-  Animated,
   View,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  useReducedMotion,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { springs } from '@cgraph/animation-constants';
 import { useThemeStore } from '@/stores';
 
 interface ButtonProps {
@@ -39,7 +46,7 @@ interface ButtonProps {
 }
 
 /**
- *
+ * Reusable button with haptic feedback and spring press animation.
  */
 export default function Button({
   children,
@@ -54,22 +61,29 @@ export default function Button({
   icon,
 }: ButtonProps) {
   const { colors } = useThemeStore();
-  const scaleValue = useRef(new Animated.Value(1)).current;
+  const scale = useSharedValue(1);
+  const reducedMotion = useReducedMotion();
 
-  const handlePressIn = () => {
-    Animated.spring(scaleValue, {
-      toValue: 0.96,
-      useNativeDriver: true,
-    }).start();
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
-  const handlePressOut = () => {
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      friction: 3,
-      useNativeDriver: true,
-    }).start();
-  };
+  const handlePressIn = useCallback(() => {
+    if (!reducedMotion) {
+      scale.value = withSpring(0.96, {
+        stiffness: springs.snappy.stiffness,
+        damping: springs.snappy.damping,
+      });
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [reducedMotion, scale]);
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, {
+      stiffness: springs.snappy.stiffness,
+      damping: springs.snappy.damping,
+    });
+  }, [scale]);
 
   const variantStyles: Record<NonNullable<ButtonProps['variant']>, ViewStyle> = {
     primary: { backgroundColor: disabled ? colors.primary + '80' : colors.primary },
@@ -100,13 +114,12 @@ export default function Button({
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-      <TouchableOpacity
+    <Animated.View style={animatedStyle}>
+      <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
-        activeOpacity={0.9}
         accessibilityRole="button"
         accessibilityLabel={children}
         accessibilityState={{ disabled: disabled || loading, busy: loading }}
@@ -134,7 +147,7 @@ export default function Button({
             </Text>
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }
