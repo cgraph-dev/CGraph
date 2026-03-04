@@ -1,10 +1,12 @@
 /**
  * Popover Component
- * 
+ *
  * Floating panel for contextual content.
  */
 
 import React, { ReactNode, createContext, use, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface PopoverContextValue {
   isOpen: boolean;
@@ -27,7 +29,7 @@ export interface PopoverProps {
  */
 export function Popover({ children, open: controlledOpen, onOpenChange }: PopoverProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  
+
   const isOpen = controlledOpen ?? internalOpen;
   const setIsOpen = (open: boolean) => {
     setInternalOpen(open);
@@ -54,14 +56,16 @@ export interface PopoverTriggerProps {
  */
 export function PopoverTrigger({ children, asChild }: PopoverTriggerProps) {
   const ctx = use(PopoverContext);
-  
+
   const handleClick = () => {
     ctx?.setIsOpen(!ctx.isOpen);
   };
-  
+
   if (asChild && React.isValidElement(children)) {
-     
-    return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, { onClick: handleClick }); // type assertion: children is single ReactElement for cloneElement
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- children is single ReactElement for cloneElement
+    return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, {
+      onClick: handleClick,
+    });
   }
   return (
     <button type="button" onClick={handleClick} className="inline-flex">
@@ -83,16 +87,15 @@ export interface PopoverContentProps {
 /**
  * Popover Content component.
  */
-export function PopoverContent({ 
-  children, 
+export function PopoverContent({
+  children,
   className = '',
   align = 'center',
-  sideOffset = 4 
+  sideOffset = 4,
 }: PopoverContentProps) {
   const ctx = use(PopoverContext);
-  
-  if (!ctx?.isOpen) return null;
-  
+  const reducedMotion = useReducedMotion();
+
   const alignClass = {
     start: 'left-0',
     center: 'left-1/2 -translate-x-1/2',
@@ -100,18 +103,21 @@ export function PopoverContent({
   }[align];
 
   return (
-    <div
-      className={`
-        absolute top-full mt-${sideOffset} z-50
-        ${alignClass}
-        min-w-[200px] rounded-lg
-        bg-surface border border-surfaceBorder shadow-lg
-        p-4 animate-in fade-in-0 zoom-in-95
-        ${className}
-      `}
-    >
-      {children}
-    </div>
+    <AnimatePresence>
+      {ctx?.isOpen && (
+        <motion.div
+          initial={reducedMotion ? undefined : { opacity: 0, scale: 0.95, y: -4 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -4 }}
+          transition={
+            reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 30 }
+          }
+          className={`absolute top-full mt-${sideOffset} z-50 ${alignClass} bg-surface border-surfaceBorder min-w-[200px] rounded-lg border p-4 shadow-lg ${className} `}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

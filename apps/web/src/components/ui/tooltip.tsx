@@ -4,6 +4,7 @@
  */
 import { ReactNode, useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface TooltipProps {
   children: ReactNode;
@@ -100,19 +101,26 @@ export default function Tooltip({
       >
         {children}
       </div>
-      {isVisible &&
-        createPortal(
-          <div
-            className={`animate-fadeIn pointer-events-none fixed z-[100] rounded bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-lg ${getTransformClass()}`}
-            style={{
-              left: coords.x,
-              top: coords.y,
-            }}
-          >
-            {content}
-          </div>,
-          document.body
-        )}
+      {createPortal(
+        <AnimatePresence>
+          {isVisible && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.15 }}
+              className={`pointer-events-none fixed z-[100] rounded bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-lg ${getTransformClass()}`}
+              style={{
+                left: coords.x,
+                top: coords.y,
+              }}
+            >
+              {content}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
