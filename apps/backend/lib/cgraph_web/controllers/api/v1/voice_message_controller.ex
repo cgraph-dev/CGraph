@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
   alias CGraph.Messaging.VoiceMessage
   alias CGraph.Repo
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -82,7 +83,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
       {:error, reason} ->
         Logger.error("voice_message_processing_failed", reason: inspect(reason))
-        {:error, :internal_server_error, "Failed to process voice message: #{inspect(reason)}"}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "voice_message")}
     end
   end
 

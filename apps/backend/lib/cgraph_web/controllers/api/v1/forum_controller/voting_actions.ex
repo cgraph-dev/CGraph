@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.ForumController.VotingActions do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Forums
+  alias CGraphWeb.ErrorHelpers
 
   @doc """
   Vote on a forum.
@@ -81,7 +82,7 @@ defmodule CGraphWeb.API.V1.ForumController.VotingActions do
         {:error, reason} ->
           conn
           |> put_status(:unprocessable_entity)
-          |> json(%{error: "Unable to vote: #{inspect(reason)}"})
+          |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "forum_vote")})
         end
       else
         {:error, :not_found} ->

@@ -26,6 +26,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
   alias CGraph.Crypto.E2EE
   alias CGraph.Crypto.E2EE.CrossSigning
   alias CGraph.Crypto.E2EE.KeySync
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -91,7 +92,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
           {:error, :unprocessable_entity, "Invalid key format"}
 
         {:error, reason} ->
-          {:error, :internal_server_error, "Failed to register keys: #{inspect(reason)}"}
+          {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_register_keys")}
       end
     else
       {:error, field, message} ->
@@ -134,7 +135,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         {:error, :not_found, "User has not registered a signed prekey"}
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_prekey_bundle")}
     end
   end
 
@@ -190,7 +191,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         render_data(conn, %{uploaded: count, total: total})
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_upload_prekeys")}
     end
   end
 
@@ -248,7 +249,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         {:error, :not_found, "Device not found"}
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_remove_device")}
     end
   end
 
@@ -280,7 +281,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         {:error, :not_found, "One or both users have not registered E2EE keys"}
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_safety_number")}
     end
   end
 
@@ -301,7 +302,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         {:error, :not_found, "Key not found"}
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_verify_key")}
     end
   end
 
@@ -339,7 +340,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         {:error, :not_found, "Key not found"}
 
       {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        {:error, :internal_server_error, ErrorHelpers.safe_error_message(reason, context: "e2ee_revoke_key")}
     end
   end
 
@@ -664,7 +665,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
     end)
     |> Enum.map_join(", ", fn {k, v} -> "#{k}: #{Enum.join(v, ", ")}" end)
   end
-  defp format_changeset_errors(error), do: inspect(error)
+  defp format_changeset_errors(error), do: ErrorHelpers.safe_error_message(error, context: "e2ee_changeset")
 
   # Verify that a device identity key belongs to the given user
   defp verify_device_ownership(nil, _user_id), do: {:error, "device_id is required"}

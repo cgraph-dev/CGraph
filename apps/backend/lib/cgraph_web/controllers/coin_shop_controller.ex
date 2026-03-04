@@ -16,6 +16,7 @@ defmodule CGraphWeb.CoinShopController do
 
   alias CGraph.Guardian
   alias CGraph.Shop.{CoinBundles, CoinCheckout}
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -64,7 +65,7 @@ defmodule CGraphWeb.CoinShopController do
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: "Failed to create checkout session", details: inspect(reason)})
+        |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "checkout_session")})
     end
   end
 

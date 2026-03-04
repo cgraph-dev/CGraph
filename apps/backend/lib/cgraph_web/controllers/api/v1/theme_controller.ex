@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Themes
+  alias CGraphWeb.ErrorHelpers
 
   plug :require_auth
 
@@ -51,7 +52,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
           render_error(conn, 404, "User not found")
 
         {:error, reason} ->
-          render_error(conn, 400, inspect(reason))
+          render_error(conn, 400, ErrorHelpers.safe_error_message(reason, context: "theme_update"))
       end
     end
   end
@@ -72,7 +73,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
           render_data(conn, %{theme: theme, reset: true})
 
         {:error, reason} ->
-          render_error(conn, 400, inspect(reason))
+          render_error(conn, 400, ErrorHelpers.safe_error_message(reason, context: "theme_reset"))
       end
     end
   end

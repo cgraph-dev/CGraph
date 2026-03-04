@@ -29,6 +29,7 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
   require Logger
 
   alias CGraph.{Messaging, Accounts, Groups}
+  alias CGraphWeb.ErrorHelpers
 
   # Table name → {context_module, query_function, serialize_function}
   @table_handlers %{
@@ -105,7 +106,7 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
         processed: results.ok,
         errors:
           Enum.map(results.errors, fn {table, reason} ->
-            %{table: table, error: inspect(reason)}
+            %{table: table, error: ErrorHelpers.safe_error_message(reason, context: "sync_push_#{table}")}
           end)
       })
     end

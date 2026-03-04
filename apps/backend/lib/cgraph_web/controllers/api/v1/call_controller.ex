@@ -8,6 +8,7 @@ defmodule CGraphWeb.API.V1.CallController do
   use CGraphWeb, :controller
 
   alias CGraph.WebRTC.Calls
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -52,7 +53,7 @@ defmodule CGraphWeb.API.V1.CallController do
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: inspect(reason)})
+        |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "call_history")})
     end
   end
 

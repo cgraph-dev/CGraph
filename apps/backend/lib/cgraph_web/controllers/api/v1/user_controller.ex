@@ -19,6 +19,7 @@ defmodule CGraphWeb.API.V1.UserController do
   alias CGraph.Accounts.Friends.Queries, as: FriendQueries
   alias CGraph.Accounts.User
   alias CGraph.Presence
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -355,7 +356,7 @@ defmodule CGraphWeb.API.V1.UserController do
       {:error, reason} ->
         conn
         |> put_status(:internal_server_error)
-        |> json(%{error: "Failed to start data export: #{inspect(reason)}"})
+        |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "data_export")})
     end
   end
 

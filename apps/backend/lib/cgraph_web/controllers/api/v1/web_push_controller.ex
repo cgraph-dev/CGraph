@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   alias CGraph.Notifications
   alias CGraph.Notifications.PushService.WebPushClient
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -84,7 +85,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
       end
     else
       {:error, reason} ->
-        render_error(conn, 400, "Invalid push subscription: #{inspect(reason)}")
+        render_error(conn, 400, ErrorHelpers.safe_error_message(reason, context: "push_subscribe"))
     end
   end
 
@@ -156,11 +157,11 @@ defmodule CGraphWeb.API.V1.WebPushController do
           render_error(conn, 410, "Push subscription has expired. Please resubscribe.")
 
         {:error, reason} ->
-          render_error(conn, 502, "Failed to send test notification: #{inspect(reason)}")
+          render_error(conn, 502, ErrorHelpers.safe_error_message(reason, context: "push_test"))
       end
     else
       {:error, reason} ->
-        render_error(conn, 400, "Invalid push subscription: #{inspect(reason)}")
+        render_error(conn, 400, ErrorHelpers.safe_error_message(reason, context: "push_test_validation"))
     end
   end
 

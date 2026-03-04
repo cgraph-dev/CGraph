@@ -20,6 +20,7 @@ defmodule CGraphWeb.MarketplaceController do
   alias CGraph.Gamification
   alias CGraph.Gamification.MarketplaceItem
   alias CGraph.Repo
+  alias CGraphWeb.ErrorHelpers
 
   import CGraphWeb.MarketplaceController.Helpers
 
@@ -277,7 +278,7 @@ defmodule CGraphWeb.MarketplaceController do
           {:error, reason} ->
             conn
             |> put_status(:bad_request)
-            |> json(%{error: "Purchase failed: #{inspect(reason)}"})
+            |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "marketplace_purchase")})
         end
     end
   end

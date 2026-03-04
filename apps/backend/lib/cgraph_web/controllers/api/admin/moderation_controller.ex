@@ -20,6 +20,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
 
   alias CGraph.Moderation
   alias CGraph.Moderation.{Appeal, Report}
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -164,7 +165,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
         })
 
       {:error, reason} ->
-        render_error(conn, :unprocessable_entity, "Batch review failed: #{inspect(reason)}")
+        render_error(conn, :unprocessable_entity, ErrorHelpers.safe_error_message(reason, context: "batch_review"))
     end
   end
 

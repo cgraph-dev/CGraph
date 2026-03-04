@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
   alias CGraph.Forums.Forum
   alias CGraph.Creators.PaidForumSubscription
   alias CGraph.Repo
+  alias CGraphWeb.ErrorHelpers
 
   # ── Connect Onboarding ──────────────────────────────────────────
 
@@ -27,7 +28,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: %{message: "Failed to create Connect account", detail: inspect(reason)}})
+        |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_onboard")}})
     end
   end
 
@@ -71,7 +72,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
         {:error, reason} ->
           conn
           |> put_status(:unprocessable_entity)
-          |> json(%{error: %{message: "Failed to create onboarding link", detail: inspect(reason)}})
+          |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_refresh_onboard")}})
       end
     end
   end
@@ -99,7 +100,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
         conn |> put_status(:forbidden) |> json(%{error: %{message: "Complete Stripe Connect onboarding first"}})
 
       {:error, changeset} ->
-        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: "Invalid params", details: inspect(changeset.errors)}})
+        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(changeset, context: "creator_monetization")}})
     end
   end
 
@@ -128,7 +129,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
         conn |> put_status(:conflict) |> json(%{error: %{message: "Already subscribed to this forum"}})
 
       {:error, reason} ->
-        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: inspect(reason)}})
+        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_subscribe")}})
     end
   end
 
@@ -150,7 +151,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
             json(conn, %{data: %{subscription_id: sub.id, status: sub.status, canceled_at: sub.canceled_at}})
 
           {:error, reason} ->
-            conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: inspect(reason)}})
+            conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_unsubscribe")}})
         end
     end
   end
@@ -189,7 +190,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
         conn |> put_status(:conflict) |> json(%{error: %{message: "A payout is already being processed"}})
 
       {:error, reason} ->
-        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: inspect(reason)}})
+        conn |> put_status(:unprocessable_entity) |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "creator_payout")}})
     end
   end
 

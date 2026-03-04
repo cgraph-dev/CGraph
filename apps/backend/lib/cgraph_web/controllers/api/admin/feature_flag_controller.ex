@@ -22,6 +22,7 @@ defmodule CGraphWeb.API.Admin.FeatureFlagController do
   use CGraphWeb, :controller
 
   alias CGraph.FeatureFlags
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -104,7 +105,7 @@ defmodule CGraphWeb.API.Admin.FeatureFlagController do
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: %{code: "invalid", message: inspect(reason)}})
+        |> json(%{error: %{code: "invalid", message: ErrorHelpers.safe_error_message(reason, context: "feature_flag_create")}})
     end
   end
 
@@ -142,7 +143,7 @@ defmodule CGraphWeb.API.Admin.FeatureFlagController do
         {:error, reason} ->
           conn
           |> put_status(:unprocessable_entity)
-          |> json(%{error: %{code: "invalid", message: inspect(reason)}})
+          |> json(%{error: %{code: "invalid", message: ErrorHelpers.safe_error_message(reason, context: "feature_flag_update")}})
       end
     end
   end

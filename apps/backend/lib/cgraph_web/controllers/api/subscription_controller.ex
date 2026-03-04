@@ -8,6 +8,7 @@ defmodule CGraphWeb.API.SubscriptionController do
 
   alias CGraph.Forums.SubscriptionService
   alias CGraphWeb.Validation.SubscriptionParams
+  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -150,7 +151,7 @@ defmodule CGraphWeb.API.SubscriptionController do
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: "Failed to toggle subscription", reason: inspect(reason)})
+        |> json(%{error: "Failed to toggle subscription", reason: ErrorHelpers.safe_error_message(reason, context: "toggle_subscription")})
     end
   end
 
