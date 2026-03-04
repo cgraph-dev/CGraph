@@ -56,7 +56,7 @@ export function ScanStep({
           {/* Manual Entry */}
           <motion.div variants={itemVariants}>
             <p className="mb-2 text-center text-sm text-gray-400">Or enter this code manually:</p>
-            <div className="flex items-center gap-2 rounded-xl bg-dark-800/50 p-3">
+            <div className="flex items-center gap-2 rounded-xl bg-white/[0.04] p-3">
               <code className="flex-1 text-center font-mono text-lg tracking-wider text-primary-400">
                 {setupData.secret.match(/.{1,4}/g)?.join(' ')}
               </code>

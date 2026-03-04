@@ -29,7 +29,7 @@ export function FeaturesStep() {
             key={feature.title}
             variants={itemVariants}
             custom={index}
-            className="group rounded-xl border border-dark-600 bg-dark-800/30 p-4 transition-all duration-200 hover:border-primary-500/50 hover:bg-dark-800/50"
+            className="group rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-200 hover:border-primary-500/50 hover:bg-white/[0.04]"
           >
             <span className="text-2xl">{feature.icon}</span>
             <h4 className="mt-2 font-medium text-foreground transition-colors group-hover:text-primary-400">

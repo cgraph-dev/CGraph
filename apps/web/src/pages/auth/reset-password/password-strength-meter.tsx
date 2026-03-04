@@ -26,7 +26,7 @@ export function PasswordStrengthMeter({ strength }: PasswordStrengthMeterProps) 
       className="mt-3"
     >
       <div className="mb-2 flex items-center gap-2">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-dark-700">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${(strength.score / 5) * 100}%` }}

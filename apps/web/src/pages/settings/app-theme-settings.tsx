@@ -78,21 +78,21 @@ export default function AppThemeSettings() {
 
       {/* Info Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
           <h3 className="mb-2 font-semibold">🎨 Complete UI Transformation</h3>
           <p className="text-sm text-foreground-muted">
             App themes change the entire look and feel of CGraph
           </p>
         </div>
 
-        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
           <h3 className="mb-2 font-semibold">✨ Your Customizations Preserved</h3>
           <p className="text-sm text-foreground-muted">
             Avatar borders and chat bubbles work with any theme
           </p>
         </div>
 
-        <div className="rounded-lg border border-dark-600 bg-dark-800/50 p-4">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
           <h3 className="mb-2 font-semibold">🔒 Premium Exclusives</h3>
           <p className="text-sm text-foreground-muted">
             Matrix and special themes require premium subscription
@@ -108,7 +108,7 @@ export default function AppThemeSettings() {
       />
 
       {/* Additional Info */}
-      <div className="mt-8 rounded-lg border border-dark-600 bg-dark-800/30 p-6">
+      <div className="mt-8 rounded-lg border border-white/[0.08] bg-white/[0.03] p-6">
         <h3 className="mb-4 font-semibold">About App Themes</h3>
 
         <div className="space-y-4 text-sm text-foreground-muted">

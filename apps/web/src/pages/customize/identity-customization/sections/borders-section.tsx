@@ -84,7 +84,7 @@ export function BordersSection({
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
             selectedTheme === 'all'
               ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg shadow-primary-500/25'
-              : 'border border-white/10 bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
+              : 'border border-white/10 bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]/50 hover:text-white'
           } `}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -101,7 +101,7 @@ export function BordersSection({
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
               selectedTheme === theme.id
                 ? 'text-white shadow-lg'
-                : 'border border-white/10 bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
+                : 'border border-white/10 bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]/50 hover:text-white'
             } `}
             style={{
               background:
@@ -129,7 +129,7 @@ export function BordersSection({
               type="checkbox"
               checked={showAnimations}
               onChange={(e) => setShowAnimations(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+              className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
             />
             Show Animations
           </label>

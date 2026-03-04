@@ -27,8 +27,8 @@ export function TitleCard({
     <motion.div
       className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isEquipped
-          ? 'border-purple-500 bg-gray-900 shadow-lg shadow-purple-500/50'
-          : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+          ? 'border-purple-500 bg-[rgb(30,32,40)] shadow-lg shadow-purple-500/50'
+          : 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.08]'
       }`}
       whileHover={{ scale: isUnlocked ? 1.02 : 1 }}
     >
@@ -53,7 +53,7 @@ export function TitleCard({
         <div className="flex gap-2">
           <button
             onClick={onPreview}
-            className="flex-1 rounded-lg bg-gray-700 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-600"
+            className="flex-1 rounded-lg bg-white/[0.06] px-3 py-2 text-sm text-white transition-colors hover:bg-white/[0.10]"
           >
             Preview
           </button>

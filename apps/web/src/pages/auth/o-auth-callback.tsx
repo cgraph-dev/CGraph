@@ -158,7 +158,7 @@ export function OAuthCallbackPage() {
   // Render loading state
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[rgb(30,32,40)]">
         <div className="text-center">
           <svg
             className="mx-auto h-12 w-12 animate-spin text-blue-600"
@@ -194,7 +194,7 @@ export function OAuthCallbackPage() {
   // Render error state
   if (status === 'error') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[rgb(30,32,40)]">
         <div className="max-w-md px-4 text-center">
           <div className="mx-auto h-12 w-12 text-red-500">
             <svg
@@ -228,7 +228,7 @@ export function OAuthCallbackPage() {
 
   // Render success state (redirect mode only - popup will close)
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[rgb(30,32,40)]">
       <div className="text-center">
         <div className="mx-auto h-12 w-12 text-green-500">
           <svg

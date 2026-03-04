@@ -79,7 +79,7 @@ export default function BlockedUsers() {
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
       {/* Stats */}
-      <div className="mb-6 flex items-center justify-between rounded-xl border border-dark-700 bg-dark-800/30 px-4 py-3">
+      <div className="mb-6 flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3">
         <span className="text-gray-400">
           {filteredUsers.length} {filteredUsers.length === 1 ? 'user' : 'users'} blocked
         </span>

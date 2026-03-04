@@ -128,7 +128,7 @@ export default function DataExport() {
 
       {/* Category Selection */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-dark-800/40 p-5 backdrop-blur-xl"
+        className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04]/40 p-5 backdrop-blur-xl"
         variants={entranceVariants.fadeUp}
         initial="hidden"
         animate="visible"
@@ -149,7 +149,7 @@ export default function DataExport() {
                 type="checkbox"
                 checked={cat.checked}
                 onChange={() => toggleCategory(cat.id)}
-                className="h-4 w-4 rounded border-white/20 bg-dark-800/60 text-emerald-500 focus:ring-emerald-500/30"
+                className="h-4 w-4 rounded border-white/20 bg-white/[0.04]/60 text-emerald-500 focus:ring-emerald-500/30"
               />
               <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06]">
                 {cat.icon}
@@ -185,7 +185,7 @@ export default function DataExport() {
         {status === 'requesting' && (
           <motion.div
             key="requesting"
-            className="flex items-center justify-center gap-3 rounded-xl border border-dark-700 bg-dark-800 p-4 text-dark-300"
+            className="flex items-center justify-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.04] p-4 text-dark-300"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -198,7 +198,7 @@ export default function DataExport() {
         {status === 'processing' && (
           <motion.div
             key="processing"
-            className="rounded-xl border border-dark-700 bg-dark-800 p-4"
+            className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -207,7 +207,7 @@ export default function DataExport() {
               <span className="text-dark-300">Processing your export…</span>
               <span className="font-mono text-emerald-400">{Math.round(progress)}%</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+            <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400"
                 initial={{ width: 0 }}
@@ -275,7 +275,7 @@ export default function DataExport() {
 
       {/* Info */}
       <motion.div
-        className="rounded-2xl border border-white/[0.06] bg-dark-800/40 p-5 text-xs text-white/40 backdrop-blur-xl"
+        className="rounded-2xl border border-white/[0.06] bg-white/[0.04]/40 p-5 text-xs text-white/40 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}

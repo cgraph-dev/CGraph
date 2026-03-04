@@ -53,7 +53,7 @@ export function LoginFormFields({
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="username"
-          className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder={t('login.email_placeholder')}
           whileFocus={reduced ? {} : { scale: 1.01 }}
         />
@@ -74,7 +74,7 @@ export function LoginFormFields({
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
             whileFocus={reduced ? {} : { scale: 1.01 }}
           />
@@ -89,7 +89,7 @@ export function LoginFormFields({
         <label className="group flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
+            className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
           />
           <span className="text-sm text-foreground-muted transition-colors group-hover:text-foreground-secondary">
             {t('login.remember_me')}

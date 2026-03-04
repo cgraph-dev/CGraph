@@ -43,7 +43,7 @@ export function IntroStep({ onContinue }: IntroStepProps) {
         {FEATURES.map((item) => (
           <div
             key={item.title}
-            className="flex items-start gap-4 rounded-xl border border-dark-600 bg-dark-800/30 p-4"
+            className="flex items-start gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4"
           >
             <span className="text-2xl">{item.icon}</span>
             <div>

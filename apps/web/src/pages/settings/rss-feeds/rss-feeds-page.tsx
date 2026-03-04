@@ -47,7 +47,7 @@ export default function RSSFeedsPage() {
               href={app.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 rounded-lg bg-dark-800/50 px-3 py-2.5 transition-colors hover:bg-dark-700/50"
+              className="group flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2.5 transition-colors hover:bg-white/[0.06]"
             >
               <Rss className="h-4 w-4 text-orange-400" />
               <div className="min-w-0 flex-1">
@@ -83,7 +83,7 @@ export default function RSSFeedsPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="rounded-xl bg-dark-800/30 p-5"
+        className="rounded-xl bg-white/[0.03] p-5"
       >
         <div className="mb-3 flex items-center gap-2">
           <HelpCircle className="h-4 w-4 text-white/40" />
@@ -91,25 +91,25 @@ export default function RSSFeedsPage() {
         </div>
         <ol className="space-y-2 text-xs leading-relaxed text-white/40">
           <li className="flex gap-2">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-dark-700 text-[10px] font-bold text-white/50">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-bold text-white/50">
               1
             </span>
             Copy the RSS feed URL above
           </li>
           <li className="flex gap-2">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-dark-700 text-[10px] font-bold text-white/50">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-bold text-white/50">
               2
             </span>
             Open your favorite RSS reader app
           </li>
           <li className="flex gap-2">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-dark-700 text-[10px] font-bold text-white/50">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-bold text-white/50">
               3
             </span>
             Add a new subscription and paste the URL
           </li>
           <li className="flex gap-2">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-dark-700 text-[10px] font-bold text-white/50">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-bold text-white/50">
               4
             </span>
             New content will appear automatically in your reader

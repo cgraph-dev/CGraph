@@ -132,7 +132,7 @@ export function StorageManagement() {
             <div key={cat.key} className="flex items-center gap-3">
               <cat.icon className="h-5 w-5 text-white/40" />
               <div className="min-w-[80px] text-sm text-white/60">{cat.label}</div>
-              <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-dark-700">
+              <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
                 <motion.div
                   className={`absolute inset-y-0 left-0 rounded-full ${cat.color}`}
                   initial={{ width: 0 }}
@@ -149,7 +149,7 @@ export function StorageManagement() {
       </div>
 
       {/* Clear cache */}
-      <div className="mb-8 rounded-xl border border-white/10 bg-dark-700/50 p-4">
+      <div className="mb-8 rounded-xl border border-white/10 bg-white/[0.06] p-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-medium text-white">Clear Cache</h3>
@@ -167,7 +167,7 @@ export function StorageManagement() {
       </div>
 
       {/* Auto-download settings */}
-      <div className="rounded-xl border border-white/10 bg-dark-700/50 p-4">
+      <div className="rounded-xl border border-white/10 bg-white/[0.06] p-4">
         <h3 className="mb-3 text-sm font-medium text-white">Auto-Download</h3>
         <div className="space-y-3">
           {(['images', 'videos', 'documents'] as const).map((type) => (
@@ -182,7 +182,7 @@ export function StorageManagement() {
                     [type]: e.target.value as AutoDownloadOption, // safe downcast – select event value
                   }))
                 }
-                className="rounded-lg border border-white/10 bg-dark-800 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
               >
                 <option value="always">Always</option>
                 <option value="wifi">Wi-Fi only</option>

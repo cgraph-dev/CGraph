@@ -134,7 +134,7 @@ export default function Settings() {
       ))}
 
       {/* Sidebar */}
-      <nav className="relative z-10 w-60 overflow-y-auto border-r border-white/[0.06] bg-dark-900/40 p-5 backdrop-blur-2xl">
+      <nav className="relative z-10 w-60 overflow-y-auto border-r border-white/[0.06] bg-[rgb(30,32,40)]/40 p-5 backdrop-blur-2xl">
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
         {/* Edge highlight */}

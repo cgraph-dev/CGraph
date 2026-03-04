@@ -161,7 +161,7 @@ export default function Login() {
           {/* Divider with matrix styling */}
           <motion.div variants={reduced ? {} : itemVariants} className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-dark-600/50" />
+              <div className="w-full border-t border-white/[0.08]/50" />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-transparent px-4 text-gray-500 backdrop-blur-sm">
@@ -190,7 +190,7 @@ export default function Login() {
                 reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(139, 92, 246, 0.5)' }
               }
               whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-violet-500/30 hover:bg-dark-700/80 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 font-medium text-white transition-all duration-300 hover:border-violet-500/30 hover:bg-white/[0.08]/80 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
             >
               <motion.svg
                 className="h-5 w-5"
@@ -229,7 +229,7 @@ export default function Login() {
                 reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(59, 130, 246, 0.5)' }
               }
               whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-2.5 text-sm font-medium text-gray-300 transition-all duration-300 hover:border-blue-500/30 hover:bg-dark-700/80 hover:text-white"
+              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-gray-300 transition-all duration-300 hover:border-blue-500/30 hover:bg-white/[0.08]/80 hover:text-white"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                 <path
@@ -248,7 +248,7 @@ export default function Login() {
                 reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(0, 82, 255, 0.5)' }
               }
               whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-2.5 text-sm font-medium text-gray-300 transition-all duration-300 hover:border-blue-600/30 hover:bg-dark-700/80 hover:text-white"
+              className="group flex w-full items-center justify-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-gray-300 transition-all duration-300 hover:border-blue-600/30 hover:bg-white/[0.08]/80 hover:text-white"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="12" fill="#0052FF" />

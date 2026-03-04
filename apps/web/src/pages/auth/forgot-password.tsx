@@ -83,7 +83,7 @@ export default function ForgotPassword() {
 
           <Link
             to="/login"
-            className="block w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-dark-700"
+            className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-center font-medium text-white transition-colors hover:bg-white/[0.08]"
           >
             {t('forgot_password.back_to_login')}
           </Link>
@@ -128,7 +128,7 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="you@example.com"
           />
         </div>

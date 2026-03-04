@@ -17,7 +17,7 @@ export function ChatTab() {
   return (
     <div className="space-y-6">
       {/* Bubble Style */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Bubble Style</h3>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {BUBBLE_STYLES.map((style) => (
@@ -27,7 +27,7 @@ export function ChatTab() {
               className={`rounded-lg border p-3 transition-all ${
                 theme.chatBubbleStyle === style.type
                   ? 'border-emerald-500 bg-emerald-500/10'
-                  : 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                  : 'border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.04]'
               }`}
             >
               {style.name}
@@ -37,7 +37,7 @@ export function ChatTab() {
       </div>
 
       {/* Border Radius */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Border Radius: {theme.bubbleBorderRadius}px</h3>
         <input
           type="range"
@@ -50,7 +50,7 @@ export function ChatTab() {
       </div>
 
       {/* Shadow Intensity */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">
           Shadow Intensity: {theme.bubbleShadowIntensity}%
         </h3>
@@ -65,10 +65,10 @@ export function ChatTab() {
       </div>
 
       {/* Options */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Options</h3>
         <div className="space-y-3">
-          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
+          <label className="flex items-center justify-between rounded-lg bg-white/[0.04] p-3">
             <span>Show Tail</span>
             <input
               type="checkbox"
@@ -77,7 +77,7 @@ export function ChatTab() {
               className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
+          <label className="flex items-center justify-between rounded-lg bg-white/[0.04] p-3">
             <span>Glass Effect</span>
             <input
               type="checkbox"
@@ -86,7 +86,7 @@ export function ChatTab() {
               className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
+          <label className="flex items-center justify-between rounded-lg bg-white/[0.04] p-3">
             <span>Hover Effect</span>
             <input
               type="checkbox"

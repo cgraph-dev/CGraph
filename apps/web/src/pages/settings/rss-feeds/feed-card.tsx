@@ -38,7 +38,7 @@ export default function FeedCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl bg-dark-800/50 p-5"
+      className="rounded-xl bg-white/[0.04] p-5"
     >
       {/* Header */}
       <div className="mb-3 flex items-center gap-3">
@@ -52,7 +52,7 @@ export default function FeedCard({
       </div>
 
       {/* URL bar */}
-      <div className="mb-3 flex items-center rounded-lg bg-dark-900/60 p-2.5">
+      <div className="mb-3 flex items-center rounded-lg bg-[rgb(30,32,40)]/60 p-2.5">
         <code className="flex-1 truncate text-xs text-white/50">{feed.url}</code>
       </div>
 
@@ -64,7 +64,7 @@ export default function FeedCard({
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors ${
             isCopied
               ? 'bg-emerald-500/20 text-emerald-400'
-              : 'bg-dark-700 text-white/60 hover:text-white'
+              : 'bg-white/[0.06] text-white/60 hover:text-white'
           }`}
         >
           {isCopied ? (
@@ -82,7 +82,7 @@ export default function FeedCard({
         <button
           type="button"
           onClick={() => onOpen(feed)}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-dark-700 py-2 text-xs font-medium text-white/60 transition-colors hover:text-white"
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/[0.06] py-2 text-xs font-medium text-white/60 transition-colors hover:text-white"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Open Feed

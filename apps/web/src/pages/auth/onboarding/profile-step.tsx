@@ -36,7 +36,7 @@ export function ProfileStep({ bio, theme, onBioChange, onThemeChange }: ProfileS
           placeholder="Tell us about yourself..."
           rows={4}
           maxLength={200}
-          className="w-full resize-none rounded-lg border border-dark-600 bg-dark-800/50 px-4 py-3 text-white placeholder-gray-500 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
         <p className="mt-1 text-right text-xs text-gray-500">{bio.length}/200</p>
       </motion.div>
@@ -53,7 +53,7 @@ export function ProfileStep({ bio, theme, onBioChange, onThemeChange }: ProfileS
               className={`rounded-xl border-2 p-4 transition-all duration-200 ${
                 theme === themeOption
                   ? 'border-primary-500 bg-primary-500/10'
-                  : 'border-dark-600 bg-dark-800/30 hover:border-dark-500'
+                  : 'border-white/[0.08] bg-white/[0.03] hover:border-dark-500'
               }`}
             >
               <div className="flex flex-col items-center gap-2">

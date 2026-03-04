@@ -76,7 +76,7 @@ export function AdvancedControlsSection({
             transition={springs.bouncy}
           >
             <div
-              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'border border-white/10 bg-dark-600/70 backdrop-blur-md' : 'bg-dark-600'}`}
+              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'border border-white/10 bg-white/[0.08]/70 backdrop-blur-md' : 'bg-white/[0.08]'}`}
               style={{
                 borderRadius: `${bubbleBorderRadius}px`,
                 boxShadow: shadowValue,
@@ -86,7 +86,7 @@ export function AdvancedControlsSection({
             </div>
             {enableBubbleTail && (
               <div
-                className="absolute -bottom-1 left-3 h-3 w-3 rotate-45 bg-dark-600"
+                className="absolute -bottom-1 left-3 h-3 w-3 rotate-45 bg-white/[0.08]"
                 style={{
                   borderRadius: `0 0 0 ${bubbleBorderRadius / 4}px`,
                   boxShadow: '-2px 2px 4px rgba(0,0,0,0.1)',

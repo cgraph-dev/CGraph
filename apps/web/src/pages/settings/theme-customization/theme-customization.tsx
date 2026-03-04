@@ -29,7 +29,7 @@ export default function ThemeCustomization() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
+      <div className="sticky top-0 z-10 border-b border-gray-800 bg-[rgb(30,32,40)]/50 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -40,13 +40,13 @@ export default function ThemeCustomization() {
             <div className="flex gap-2">
               <button
                 onClick={handleExport}
-                className="rounded-lg bg-gray-800 px-4 py-2 text-sm transition-colors hover:bg-gray-700"
+                className="rounded-lg bg-white/[0.04] px-4 py-2 text-sm transition-colors hover:bg-white/[0.06]"
               >
                 Export Theme
               </button>
               <button
                 onClick={handleImport}
-                className="rounded-lg bg-gray-800 px-4 py-2 text-sm transition-colors hover:bg-gray-700"
+                className="rounded-lg bg-white/[0.04] px-4 py-2 text-sm transition-colors hover:bg-white/[0.06]"
               >
                 Import Theme
               </button>
@@ -79,7 +79,7 @@ export default function ThemeCustomization() {
                   className={`whitespace-nowrap rounded-lg px-4 py-2 transition-all ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r text-white shadow-lg'
-                      : 'hover:bg-gray-750 bg-gray-800 text-gray-400'
+                      : 'hover:bg-gray-750 bg-white/[0.04] text-gray-400'
                   }`}
                   style={
                     activeTab === tab.id

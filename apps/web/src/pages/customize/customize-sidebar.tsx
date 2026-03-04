@@ -37,7 +37,7 @@ interface SidebarProps {
 
 export const Sidebar = memo(function Sidebar({ activeCategory, onCategoryChange }: SidebarProps) {
   return (
-    <aside className="flex h-full w-72 flex-col border-r border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
+    <aside className="flex h-full w-72 flex-col border-r border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] backdrop-blur-xl">
       <div className="flex-1 overflow-y-auto p-5">
         {/* Header */}
         <div className="mb-6">

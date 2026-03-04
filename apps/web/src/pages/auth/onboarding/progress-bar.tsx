@@ -28,7 +28,7 @@ export function ProgressBar({ currentStep }: ProgressBarProps) {
                 ? 'bg-primary-500 text-white shadow-glow-sm'
                 : step.id < currentStep
                   ? 'bg-primary-500/30 text-primary-400'
-                  : 'bg-dark-700 text-gray-500'
+                  : 'bg-white/[0.06] text-gray-500'
             }`}
           >
             {step.id < currentStep ? (
@@ -46,7 +46,7 @@ export function ProgressBar({ currentStep }: ProgressBarProps) {
           </div>
         ))}
       </div>
-      <div className="h-1 overflow-hidden rounded-full bg-dark-700">
+      <div className="h-1 overflow-hidden rounded-full bg-white/[0.06]">
         <motion.div
           className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
           initial={{ width: '0%' }}

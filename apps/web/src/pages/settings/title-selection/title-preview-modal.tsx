@@ -30,7 +30,7 @@ export function TitlePreviewModal({
           onClick={onClose}
         >
           <motion.div
-            className="w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6"
+            className="w-full max-w-md rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] p-6"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -38,7 +38,7 @@ export function TitlePreviewModal({
           >
             <h3 className="mb-4 text-xl font-bold">Title Preview</h3>
 
-            <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-gray-800 p-4">
+            <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-white/[0.04] p-4">
               <span className="text-lg font-semibold">{displayName}</span>
               <TitleBadge title={previewTitle.id} />
             </div>

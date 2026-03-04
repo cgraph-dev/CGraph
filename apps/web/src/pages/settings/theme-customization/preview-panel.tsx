@@ -19,7 +19,7 @@ export function PreviewPanel() {
 
   return (
     <motion.div
-      className="sticky top-24 rounded-xl border border-gray-800 bg-gray-900/50 p-6 backdrop-blur-sm"
+      className="sticky top-24 rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6 backdrop-blur-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -59,7 +59,7 @@ export function PreviewPanel() {
       </div>
 
       {/* Theme Info */}
-      <div className="mt-6 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+      <div className="mt-6 rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
         <div className="space-y-1 text-xs text-gray-400">
           <div className="flex justify-between">
             <span>Color:</span>

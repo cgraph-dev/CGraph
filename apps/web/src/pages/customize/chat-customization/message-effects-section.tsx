@@ -49,7 +49,7 @@ export function MessageEffectsSection({
           animationDirection="slide-left"
         >
           {/* Animation Preview */}
-          <div className="flex h-16 w-32 items-center justify-center rounded-lg bg-dark-800">
+          <div className="flex h-16 w-32 items-center justify-center rounded-lg bg-white/[0.04]">
             <motion.div
               className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs text-white"
               animate={getEffectAnimation(effect.animation)}

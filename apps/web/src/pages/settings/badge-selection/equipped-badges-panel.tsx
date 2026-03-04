@@ -38,7 +38,7 @@ export function EquippedBadgesPanel({
             return (
               <motion.div
                 key={badgeId}
-                className="flex items-center gap-2 rounded-lg border border-purple-500/50 bg-gray-800 px-3 py-2"
+                className="flex items-center gap-2 rounded-lg border border-purple-500/50 bg-white/[0.04] px-3 py-2"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}

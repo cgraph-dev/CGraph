@@ -77,7 +77,7 @@ export function CommunityStep() {
             <motion.div
               key={community.id}
               variants={itemVariants}
-              className="group flex flex-col rounded-xl border border-dark-600 bg-dark-800/30 p-4 transition-all duration-200 hover:border-primary-500/50 hover:bg-dark-800/50"
+              className="group flex flex-col rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-200 hover:border-primary-500/50 hover:bg-white/[0.04]"
             >
               <span className="text-2xl">{community.icon}</span>
               <h4 className="mt-2 font-medium text-foreground transition-colors group-hover:text-primary-400">
@@ -92,7 +92,7 @@ export function CommunityStep() {
                   onClick={() => handleJoin(community.id)}
                   className={`rounded-lg px-3 py-1 text-xs font-medium transition-all ${
                     isJoined
-                      ? 'bg-dark-700 text-gray-400'
+                      ? 'bg-white/[0.06] text-gray-400'
                       : 'bg-primary-500/20 text-primary-400 hover:bg-primary-500/30'
                   } disabled:cursor-not-allowed`}
                 >

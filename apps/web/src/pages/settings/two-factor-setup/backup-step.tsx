@@ -52,12 +52,12 @@ export function BackupStep({
       </motion.div>
 
       {/* Backup Codes Grid */}
-      <motion.div variants={itemVariants} className="rounded-xl bg-dark-800/50 p-4">
+      <motion.div variants={itemVariants} className="rounded-xl bg-white/[0.04] p-4">
         <div className="mb-4 grid grid-cols-2 gap-2">
           {backupCodes.map((code, index) => (
             <div
               key={index}
-              className="rounded-lg bg-dark-700 px-3 py-2 font-mono text-sm text-gray-300"
+              className="rounded-lg bg-white/[0.06] px-3 py-2 font-mono text-sm text-gray-300"
             >
               {code}
             </div>
@@ -66,7 +66,7 @@ export function BackupStep({
         <button
           type="button"
           onClick={onCopyBackupCodes}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dark-600 py-2 text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/[0.08] py-2 text-sm text-gray-400 transition-colors hover:bg-white/[0.08] hover:text-white"
         >
           {copiedBackup ? (
             <>

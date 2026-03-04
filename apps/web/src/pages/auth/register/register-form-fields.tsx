@@ -53,7 +53,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
           type="email"
           required
           autoComplete="email"
-          className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder="you@example.com"
           whileFocus={reduced ? {} : { scale: 1.01 }}
         />
@@ -72,7 +72,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
           minLength={3}
           maxLength={30}
           pattern="[a-zA-Z0-9_]+"
-          className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder="johndoe"
           whileFocus={reduced ? {} : { scale: 1.01 }}
         />
@@ -93,7 +93,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
             required
             minLength={8}
             autoComplete="new-password"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
             whileFocus={reduced ? {} : { scale: 1.01 }}
           />
@@ -116,7 +116,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
             type={props.showConfirmPassword ? 'text' : 'password'}
             required
             autoComplete="new-password"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
             whileFocus={reduced ? {} : { scale: 1.01 }}
           />
@@ -134,7 +134,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         <input
           type="checkbox"
           name="agreeToTerms"
-          className="mt-0.5 h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
+          className="mt-0.5 h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
         />
         <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">
           I agree to the{' '}

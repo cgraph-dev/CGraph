@@ -42,7 +42,7 @@ export function ConfirmUnblockModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md overflow-hidden rounded-2xl border border-dark-600 bg-dark-800 shadow-2xl"
+            className="w-full max-w-md overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.04] shadow-2xl"
           >
             <div className="p-6">
               <div className="mb-4 flex items-center gap-4">
@@ -77,7 +77,7 @@ export function ConfirmUnblockModal({
               <div className="flex gap-3">
                 <button
                   onClick={onDismiss}
-                  className="flex-1 rounded-xl bg-dark-700 py-2.5 text-gray-300 transition-colors hover:bg-dark-600"
+                  className="flex-1 rounded-xl bg-white/[0.06] py-2.5 text-gray-300 transition-colors hover:bg-white/[0.10]"
                 >
                   Cancel
                 </button>

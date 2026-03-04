@@ -31,8 +31,8 @@ export function BadgeCard({
     <motion.div
       className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isEquipped
-          ? 'border-purple-500 bg-gray-900 shadow-lg shadow-purple-500/50'
-          : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+          ? 'border-purple-500 bg-[rgb(30,32,40)] shadow-lg shadow-purple-500/50'
+          : 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.08]'
       } ${!isUnlocked ? 'opacity-50' : ''}`}
       whileHover={{ scale: isLocked ? 1 : 1.05 }}
     >
@@ -50,7 +50,7 @@ export function BadgeCard({
         <div className="flex gap-2">
           <button
             onClick={onPreview}
-            className="flex-1 rounded bg-gray-700 px-2 py-1.5 text-xs text-white transition-colors hover:bg-gray-600"
+            className="flex-1 rounded bg-white/[0.06] px-2 py-1.5 text-xs text-white transition-colors hover:bg-white/[0.10]"
           >
             View
           </button>
@@ -113,7 +113,7 @@ export function BadgeCard({
 
       {/* Progress Bar (for locked badges) */}
       {!isUnlocked && badge.progress !== undefined && (
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/[0.06]">
           <div
             className="h-full bg-purple-500 transition-all"
             style={{ width: `${badge.progress}%` }}

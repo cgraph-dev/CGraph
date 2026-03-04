@@ -26,7 +26,7 @@ export const CATEGORIES = ['social', 'content', 'mastery', 'event', 'premium'] a
 export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'] as const;
 
 export const RARITY_COLORS: Record<string, string> = {
-  common: 'text-gray-400 border-gray-600',
+  common: 'text-gray-400 border-white/[0.08]',
   uncommon: 'text-green-400 border-green-600',
   rare: 'text-blue-400 border-blue-600',
   epic: 'text-purple-400 border-purple-600',

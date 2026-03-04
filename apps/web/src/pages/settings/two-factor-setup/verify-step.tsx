@@ -57,7 +57,7 @@ export function VerifyStep({
             value={digit}
             onChange={(e) => onCodeChange(index, e.target.value)}
             onKeyDown={(e) => onKeyDown(index, e)}
-            className="h-14 w-12 rounded-xl border-2 border-dark-600 bg-dark-800/50 text-center text-2xl font-bold text-white transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
+            className="h-14 w-12 rounded-xl border-2 border-white/[0.08] bg-white/[0.04] text-center text-2xl font-bold text-white transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
           />
         ))}
       </motion.div>

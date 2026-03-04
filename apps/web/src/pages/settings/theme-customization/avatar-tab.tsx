@@ -18,7 +18,7 @@ export function AvatarTab() {
   return (
     <div className="space-y-6">
       {/* Border Style */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Border Style</h3>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {AVATAR_BORDERS.map((border) => (
@@ -28,7 +28,7 @@ export function AvatarTab() {
               className={`rounded-lg border p-3 transition-all ${
                 theme.avatarBorder === border.type
                   ? 'border-emerald-500 bg-emerald-500/10'
-                  : 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
+                  : 'border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.04]'
               }`}
             >
               <div className="text-sm font-medium">{border.name}</div>
@@ -39,7 +39,7 @@ export function AvatarTab() {
       </div>
 
       {/* Avatar Size */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Avatar Size</h3>
         <div className="flex gap-3">
           {(['sm', 'md', 'lg'] as const).map((size: AvatarSizeOption) => (
@@ -49,7 +49,7 @@ export function AvatarTab() {
               className={`rounded-lg border px-4 py-2 capitalize transition-all ${
                 theme.avatarSize === size
                   ? 'border-emerald-500 bg-emerald-500/10 text-white'
-                  : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:bg-gray-800'
+                  : 'border-white/[0.08] bg-white/[0.04] text-gray-400 hover:bg-white/[0.04]'
               }`}
             >
               {AVATAR_SIZE_LABELS[size]}

@@ -99,7 +99,7 @@ export function BadgesSection({
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                     {/* Badge name tooltip */}
-                    <div className="pointer-events-none absolute -bottom-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-dark-800 px-2 py-1 text-[10px] text-white/80 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="pointer-events-none absolute -bottom-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-white/[0.04] px-2 py-1 text-[10px] text-white/80 opacity-0 transition-opacity group-hover:opacity-100">
                       {badge.name}
                     </div>
                   </>

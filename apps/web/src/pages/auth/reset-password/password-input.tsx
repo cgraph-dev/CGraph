@@ -32,7 +32,7 @@ export function PasswordInput({
   isValid,
 }: PasswordInputProps) {
   const getBorderClass = () => {
-    if (!value) return 'border-dark-600 focus:border-primary-500 focus:ring-primary-500';
+    if (!value) return 'border-white/[0.08] focus:border-primary-500 focus:ring-primary-500';
     if (isValid) return 'border-green-500 focus:ring-green-500';
     return 'border-red-500 focus:ring-red-500';
   };
@@ -46,7 +46,7 @@ export function PasswordInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full rounded-lg border bg-dark-800/50 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-200 focus:ring-1 ${getBorderClass()}`}
+          className={`w-full rounded-lg border bg-white/[0.04] px-4 py-3 pr-12 text-white placeholder-white/30 transition-all duration-200 focus:ring-1 ${getBorderClass()}`}
         />
         <button
           type="button"

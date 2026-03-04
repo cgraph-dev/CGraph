@@ -60,7 +60,7 @@ export function LeaderboardsSection({
                         ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white'
                         : entry.rank === 3
                           ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white'
-                          : 'bg-dark-700 text-white/60'
+                          : 'bg-white/[0.06] text-white/60'
                   }`}
                 >
                   #{entry.rank}

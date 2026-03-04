@@ -70,7 +70,7 @@ export function FindFriendsStep() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by username or name…"
-            className="w-full rounded-lg border border-dark-600 bg-dark-800/50 py-3 pl-10 pr-4 text-white placeholder-gray-500 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] py-3 pl-10 pr-4 text-white placeholder-white/30 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
         </div>
       </motion.div>
@@ -93,7 +93,7 @@ export function FindFriendsStep() {
             <motion.div
               key={user.id}
               variants={itemVariants}
-              className="flex items-center gap-3 rounded-xl border border-dark-600 bg-dark-800/30 p-3 transition-colors hover:bg-dark-800/50"
+              className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 transition-colors hover:bg-white/[0.04]"
             >
               {/* Avatar */}
               <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary-600 to-purple-600">
@@ -119,7 +119,7 @@ export function FindFriendsStep() {
                 onClick={() => handleAddFriend(user.id)}
                 className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                   isSent
-                    ? 'bg-dark-700 text-gray-400'
+                    ? 'bg-white/[0.06] text-gray-400'
                     : 'bg-primary-500/20 text-primary-400 hover:bg-primary-500/30'
                 } disabled:cursor-not-allowed`}
               >

@@ -72,7 +72,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                     {achievement.progress}/{achievement.maxProgress}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+                <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                   <motion.div
                     className="h-full bg-gradient-to-r from-primary-600 to-purple-600"
                     initial={{ width: 0 }}

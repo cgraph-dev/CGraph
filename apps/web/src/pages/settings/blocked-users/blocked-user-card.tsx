@@ -26,7 +26,7 @@ export function BlockedUserCard({ block, unblockingId, onUnblockClick }: Blocked
       key={block.id}
       variants={itemVariants}
       layout
-      className="group flex items-center gap-4 rounded-xl border border-dark-700 bg-dark-800/30 p-4 transition-colors hover:border-dark-600"
+      className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 transition-colors hover:border-white/[0.08]"
     >
       {/* Avatar */}
       {block.blockedUser.avatarUrl ? (
@@ -60,7 +60,7 @@ export function BlockedUserCard({ block, unblockingId, onUnblockClick }: Blocked
       <button
         onClick={() => onUnblockClick(block)}
         disabled={unblockingId === block.blockedUserId}
-        className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-gray-300 transition-colors hover:bg-red-500/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-4 py-2 text-gray-300 transition-colors hover:bg-red-500/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {unblockingId === block.blockedUserId ? (
           <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">

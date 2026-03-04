@@ -159,7 +159,7 @@ export function TitlesSection({
             type="checkbox"
             checked={showAnimations}
             onChange={(e) => setShowAnimations(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+            className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.06] text-primary-500 focus:ring-primary-500"
           />
           Show Animations
         </label>

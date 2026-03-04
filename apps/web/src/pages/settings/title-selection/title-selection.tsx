@@ -64,7 +64,7 @@ export default function TitleSelection() {
             </div>
             <button
               onClick={() => equipTitle('')}
-              className="rounded-lg bg-gray-700 px-4 py-2 text-sm text-white transition-colors hover:bg-gray-600"
+              className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-white transition-colors hover:bg-white/[0.10]"
             >
               Unequip
             </button>
@@ -81,7 +81,7 @@ export default function TitleSelection() {
             placeholder="Search titles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
           />
         </div>
 
@@ -92,7 +92,7 @@ export default function TitleSelection() {
             className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
               selectedRarity === 'all'
                 ? 'bg-purple-500 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.06]'
             }`}
           >
             All Rarities
@@ -104,7 +104,7 @@ export default function TitleSelection() {
               className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors ${
                 selectedRarity === rarity
                   ? `bg-${getRarityColor(rarity).split('-')[1]}-500 text-white`
-                  : `${getRarityColor(rarity)} bg-gray-800 hover:bg-gray-700`
+                  : `${getRarityColor(rarity)} bg-white/[0.04] hover:bg-white/[0.06]`
               }`}
             >
               {rarity}

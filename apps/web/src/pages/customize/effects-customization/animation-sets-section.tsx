@@ -80,7 +80,7 @@ export function AnimationSetsSection({
 
                 <div className="flex items-center gap-3">
                   {/* Animation Preview */}
-                  <div className="flex h-16 w-32 items-center justify-center overflow-hidden rounded-lg bg-dark-800">
+                  <div className="flex h-16 w-32 items-center justify-center overflow-hidden rounded-lg bg-white/[0.04]">
                     <motion.div
                       className="h-8 w-8 rounded-lg bg-primary-600"
                       animate={{ x: [-20, 20, -20] }}

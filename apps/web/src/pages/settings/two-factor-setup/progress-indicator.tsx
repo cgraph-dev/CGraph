@@ -20,7 +20,7 @@ export function ProgressIndicator({ stepIndex }: ProgressIndicatorProps) {
         <div
           key={i}
           className={`h-1.5 rounded-full transition-all duration-300 ${
-            i <= stepIndex ? 'w-8 bg-primary-500' : 'w-4 bg-dark-600'
+            i <= stepIndex ? 'w-8 bg-primary-500' : 'w-4 bg-white/[0.08]'
           }`}
         />
       ))}

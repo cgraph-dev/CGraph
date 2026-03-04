@@ -16,7 +16,7 @@ function EmojiCard({ emoji, onDelete }: { emoji: CustomEmoji; onDelete: (id: str
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="group relative flex flex-col items-center rounded-xl bg-dark-800/50 p-4 transition-colors hover:bg-dark-700/50"
+      className="group relative flex flex-col items-center rounded-xl bg-white/[0.04] p-4 transition-colors hover:bg-white/[0.06]"
     >
       <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
         <img
@@ -98,10 +98,10 @@ export default function CustomEmojiPage() {
             placeholder="Search emoji..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg bg-dark-800/50 py-2 pl-10 pr-3 text-sm text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="w-full rounded-lg bg-white/[0.04] py-2 pl-10 pr-3 text-sm text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-emerald-500/50"
           />
         </div>
-        <div className="flex gap-1 overflow-x-auto rounded-lg bg-dark-800/50 p-1">
+        <div className="flex gap-1 overflow-x-auto rounded-lg bg-white/[0.04] p-1">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
@@ -109,7 +109,7 @@ export default function CustomEmojiPage() {
               onClick={() => setCategory(cat.value)}
               className={`whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 category === cat.value
-                  ? 'bg-dark-700 text-white'
+                  ? 'bg-white/[0.06] text-white'
                   : 'text-white/50 hover:text-white/70'
               }`}
             >
@@ -129,7 +129,7 @@ export default function CustomEmojiPage() {
       {/* Empty state */}
       {!isLoading && emojis.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-dark-800">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/[0.04]">
             <Smile className="h-10 w-10 text-white/20" />
           </div>
           <h3 className="text-lg font-semibold text-white/60">No emoji found</h3>

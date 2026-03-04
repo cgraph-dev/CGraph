@@ -34,7 +34,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search blocked users..."
-        className="w-full rounded-xl border border-dark-600 bg-dark-800/50 py-3 pl-12 pr-4 text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+        className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] py-3 pl-12 pr-4 text-white placeholder-white/30 transition-all focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
       />
       {value && (
         <button

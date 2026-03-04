@@ -118,7 +118,7 @@ export function TwoFactorForm({
             onChange={(e) => handleCodeChange(e.target.value)}
             disabled={isLoading}
             maxLength={useBackupCode ? 20 : 6}
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder={useBackupCode ? 'XXXX-XXXX' : '000000'}
             whileFocus={reduced ? {} : { scale: 1.01 }}
           />

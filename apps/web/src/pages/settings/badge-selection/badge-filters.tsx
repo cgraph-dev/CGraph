@@ -37,7 +37,7 @@ export function BadgeFilters({
           placeholder="Search badges..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full rounded-lg border border-gray-700 bg-gray-800 py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
         />
       </div>
 
@@ -48,7 +48,7 @@ export function BadgeFilters({
           className={`rounded-lg px-4 py-2 font-medium transition-colors ${
             selectedCategory === 'all'
               ? 'bg-purple-500 text-white'
-              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.06]'
           }`}
         >
           All
@@ -62,7 +62,7 @@ export function BadgeFilters({
               className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
                 selectedCategory === category
                   ? 'bg-purple-500 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.06]'
               }`}
             >
               {Icon && <Icon className="h-4 w-4" />}
@@ -79,7 +79,7 @@ export function BadgeFilters({
           className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
             selectedRarity === 'all'
               ? 'bg-purple-500 text-white'
-              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.06]'
           }`}
         >
           All Rarities
@@ -91,7 +91,7 @@ export function BadgeFilters({
             className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors ${
               selectedRarity === rarity
                 ? `${RARITY_BG_COLORS[rarity]} text-white`
-                : `${RARITY_COLORS[rarity]} bg-gray-800 hover:bg-gray-700`
+                : `${RARITY_COLORS[rarity]} bg-white/[0.04] hover:bg-white/[0.06]`
             }`}
           >
             {rarity}

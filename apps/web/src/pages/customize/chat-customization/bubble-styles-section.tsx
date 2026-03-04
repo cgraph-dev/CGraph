@@ -41,7 +41,7 @@ export function BubbleStylesSection({
               Your message
             </div>
             <div
-              className="w-2/3 bg-dark-700 px-3 py-2 text-xs text-white"
+              className="w-2/3 bg-white/[0.06] px-3 py-2 text-xs text-white"
               style={{
                 borderRadius: bubble.borderRadius,
                 boxShadow: bubble.shadow,

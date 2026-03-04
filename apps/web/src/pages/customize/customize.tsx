@@ -123,7 +123,7 @@ export default function Customize() {
       </main>
 
       {/* Right Panel - Live Preview */}
-      <aside className="w-80 overflow-y-auto border-l border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
+      <aside className="w-80 overflow-y-auto border-l border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] backdrop-blur-xl">
         <div className="p-4">
           <div className="mb-4">
             <h3 className="mb-1 text-sm font-semibold text-white">Live Preview</h3>

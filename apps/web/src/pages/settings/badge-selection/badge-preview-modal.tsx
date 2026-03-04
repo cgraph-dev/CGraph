@@ -26,7 +26,7 @@ export function BadgePreviewModal({ badge, onClose }: BadgePreviewModalProps) {
           onClick={onClose}
         >
           <motion.div
-            className="w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6"
+            className="w-full max-w-md rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] p-6"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -56,7 +56,7 @@ export function BadgePreviewModal({ badge, onClose }: BadgePreviewModalProps) {
                     <div className="mb-1 text-sm text-gray-400">
                       Progress: {Math.round(badge.progress)}%
                     </div>
-                    <div className="h-2 w-full rounded-full bg-gray-700">
+                    <div className="h-2 w-full rounded-full bg-white/[0.06]">
                       <div
                         className="h-2 rounded-full bg-purple-500 transition-all"
                         style={{ width: `${badge.progress}%` }}

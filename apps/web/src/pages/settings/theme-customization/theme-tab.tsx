@@ -18,14 +18,14 @@ export function ThemeTab() {
   return (
     <div className="space-y-6">
       {/* Quick Presets */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Quick Presets</h3>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {THEME_PRESETS.map((preset) => (
             <button
               key={preset.id}
               onClick={() => applyPreset(preset.id)}
-              className="rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-left transition-all hover:bg-gray-800"
+              className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4 text-left transition-all hover:bg-white/[0.04]"
             >
               <div className="mb-1 text-sm font-medium">{preset.name}</div>
               <div className="text-xs text-gray-400">{preset.description}</div>
@@ -35,7 +35,7 @@ export function ThemeTab() {
       </div>
 
       {/* Color Themes */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+      <div className="rounded-xl border border-gray-800 bg-[rgb(30,32,40)]/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Color Theme</h3>
         <div className="grid grid-cols-4 gap-3 md:grid-cols-6">
           { }

@@ -83,7 +83,7 @@ export function WelcomeStep({
           value={displayName}
           onChange={(e) => onDisplayNameChange(e.target.value)}
           placeholder="How should we call you?"
-          className="w-full rounded-lg border border-dark-600 bg-dark-800/50 px-4 py-3 text-white placeholder-gray-500 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </motion.div>
     </motion.div>
