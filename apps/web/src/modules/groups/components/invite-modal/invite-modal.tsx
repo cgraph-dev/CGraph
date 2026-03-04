@@ -2,7 +2,7 @@
  * Group invite modal dialog component.
  * @module
  */
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { LGModal, LGButton, springPreset } from '@/components/liquid-glass';
 import { useInviteManager } from './useInviteManager';

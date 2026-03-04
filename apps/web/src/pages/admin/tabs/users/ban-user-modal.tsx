@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { AdminUser } from '@/types/admin.types';
 
 interface BanUserModalProps {

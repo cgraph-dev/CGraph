@@ -2,7 +2,7 @@
  * CallControl component - single control button
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { CallControlProps } from './types';
 
 /**

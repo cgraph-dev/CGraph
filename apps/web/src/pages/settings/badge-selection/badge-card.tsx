@@ -2,7 +2,7 @@
  * Badge Card Component
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Lock, Sparkles } from 'lucide-react';
 import { RARITY_TEXT_COLORS } from './constants';
 import type { BadgeCardProps } from './types';

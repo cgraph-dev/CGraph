@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { InviteModal } from '../invite-modal';
 import type { InvitesTabProps } from './types';
 

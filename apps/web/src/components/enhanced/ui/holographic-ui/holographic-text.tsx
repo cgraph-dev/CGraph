@@ -2,7 +2,7 @@
  * Holographic-styled text component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicTextProps } from './types';

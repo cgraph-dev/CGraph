@@ -5,7 +5,7 @@
 
 import { useCallback, useState } from 'react';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { DashboardChart, MetricCard } from './shared-components';
 import { metricsApi } from '../../api/metricsApi';

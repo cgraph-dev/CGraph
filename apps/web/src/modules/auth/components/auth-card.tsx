@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { AuthLogo } from '@/modules/auth/components/auth-logo';
 import { AuthBackground } from '@/modules/auth/components/auth-backgrounds';

@@ -9,7 +9,7 @@
  */
 
 import { createContext, useState, useCallback, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 
 import { HapticFeedback } from '@/lib/animations/animation-engine';

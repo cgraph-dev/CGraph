@@ -2,7 +2,7 @@
  * Forum admin moderators management panel.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   PlusIcon,
   TrashIcon,

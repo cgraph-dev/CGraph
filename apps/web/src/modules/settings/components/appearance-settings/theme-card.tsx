@@ -6,7 +6,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SparklesIcon, TrashIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useReducedMotion } from '@/contexts/theme-context-enhanced';
 

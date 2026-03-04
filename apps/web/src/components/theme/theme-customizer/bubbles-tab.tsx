@@ -4,7 +4,7 @@
  * Chat bubble style and settings customization.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
  
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
 import { TierBadge } from '../premium-theme-gate';

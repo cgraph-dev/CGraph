@@ -5,7 +5,7 @@
  * value display, and theme-aware coloring.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useCallback, useState } from 'react';
 import { springs } from '@/lib/animation-presets';
 

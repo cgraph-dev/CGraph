@@ -12,7 +12,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { RARITY_COLORS, getTitleById } from '@/data/titles';

@@ -2,7 +2,7 @@
  * Lightbox Component - Fullscreen media viewer overlay
  * @module modules/chat/components/rich-media-embed
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 

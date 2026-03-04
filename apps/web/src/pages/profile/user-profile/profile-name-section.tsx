@@ -2,7 +2,7 @@
  * ProfileNameSection - Display name, verification badges, title, and status
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ShieldCheckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { UserProfileData } from '@/types/profile.types';

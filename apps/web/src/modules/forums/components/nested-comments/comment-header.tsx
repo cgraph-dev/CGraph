@@ -4,7 +4,7 @@
  * Displays author info, badges, and action buttons
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckBadgeIcon, StarIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { formatTimeAgo } from '@/lib/utils';

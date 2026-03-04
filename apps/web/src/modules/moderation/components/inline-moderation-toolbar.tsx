@@ -16,7 +16,7 @@ import {
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('InlineModerationToolbar');
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useModerationStore } from '@/modules/moderation/store';
 import { useForumStore } from '@/modules/forums/store';
 import { cn } from '@/lib/utils';

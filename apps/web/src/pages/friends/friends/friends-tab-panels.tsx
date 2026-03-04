@@ -2,7 +2,7 @@
  * Sub-components for the Friends list content area (tab panels)
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { UserPlusIcon, NoSymbolIcon, ClockIcon } from '@heroicons/react/24/outline';
 import type { Friend, FriendRequest } from '@/modules/social/store';
 

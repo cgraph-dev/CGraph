@@ -4,7 +4,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ParticleProps } from './types';
 import { ANIMATION_KEYFRAMES } from './animations';
 

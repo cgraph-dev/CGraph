@@ -16,7 +16,7 @@
  * @module modules/chat/components/conversation-list
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { BookmarkIcon as PinIcon } from '@heroicons/react/24/outline';
 import { tweens, staggerConfigs } from '@/lib/animation-presets';
 

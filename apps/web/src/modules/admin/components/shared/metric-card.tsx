@@ -1,5 +1,5 @@
 /** MetricCard — animated metric display with trend change indicator. */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import clsx from 'clsx';
 
 type ColorKey = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'indigo';

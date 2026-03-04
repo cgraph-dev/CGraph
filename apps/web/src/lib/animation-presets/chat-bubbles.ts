@@ -5,7 +5,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { type Transition, type TargetAndTransition } from 'framer-motion';
+import { type Transition, type TargetAndTransition } from 'motion/react';
 
 import { springs } from './presets';
 

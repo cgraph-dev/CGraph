@@ -10,7 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { THEME_COLORS } from '@/types/avatar-borders';
 import { useAvatarBorderStore } from '@/modules/gamification/store';

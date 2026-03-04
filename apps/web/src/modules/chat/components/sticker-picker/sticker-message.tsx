@@ -4,7 +4,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';
 import type { StickerMessageProps } from './types';

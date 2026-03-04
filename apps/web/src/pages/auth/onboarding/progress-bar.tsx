@@ -2,7 +2,7 @@
  * ProgressBar component - step progress indicator
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ONBOARDING_STEPS } from './constants';
 import { tweens } from '@/lib/animation-presets';
 

@@ -3,7 +3,7 @@
  * @module modules/settings/components/avatar-settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';

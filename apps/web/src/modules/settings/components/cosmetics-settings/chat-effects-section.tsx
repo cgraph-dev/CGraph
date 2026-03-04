@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useChatEffectsStore } from '@/modules/chat/store';
 
 import type { ChatEffectSubTab } from './types';

@@ -1,5 +1,5 @@
 /** ForumCategoryCard — displays a forum category with topic/post counts and description. */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FolderIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ForumCategory } from '@/modules/forums/store';

@@ -2,7 +2,7 @@
  * FilterBar component - search, category filter, and sort controls
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { FunnelIcon, MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { CATEGORY_ICONS, CATEGORIES } from './constants';
 import type { AchievementCategory, SortOption } from './types';

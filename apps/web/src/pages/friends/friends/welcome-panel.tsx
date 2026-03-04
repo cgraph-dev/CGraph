@@ -4,7 +4,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { tweens, loop, springs } from '@/lib/animation-presets';

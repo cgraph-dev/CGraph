@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { IncomingCallModal } from './incoming-call-modal';
 import { useIncomingCallStore } from '@/modules/calls/store';
 import { useChatStore } from '@/modules/chat/store';

@@ -2,7 +2,7 @@
  * Equipped Badges Panel
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { EquippedBadgesPanelProps } from './types';
 
 /**

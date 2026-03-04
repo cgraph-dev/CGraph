@@ -2,7 +2,7 @@
  * AchievementCard component - grid view card for an achievement
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   TrophyIcon,
   LockClosedIcon,

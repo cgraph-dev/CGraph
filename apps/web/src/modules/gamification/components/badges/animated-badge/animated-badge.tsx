@@ -14,7 +14,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { AnimatedBadgeProps } from './types';
 import { RARITY_COLORS, SIZE_CONFIG } from './constants';

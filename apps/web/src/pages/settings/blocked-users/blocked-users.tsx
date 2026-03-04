@@ -10,7 +10,7 @@
  * @since v0.9.2
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useBlockedUsers } from './hooks';
 import { containerVariants } from './animations';
 import { SearchBar } from './search-bar';

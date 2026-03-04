@@ -3,7 +3,7 @@
  * @module
  */
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface MessageParticlesProps {
   isOwnMessage: boolean;

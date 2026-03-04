@@ -2,7 +2,7 @@
  * FullQuestPanel Component - Full-size quest panel with detailed progress
  * @module modules/gamification/components/quest-panel
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckCircleIcon,
   ClockIcon,

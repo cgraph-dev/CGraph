@@ -4,7 +4,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import type { Variants } from 'framer-motion';
+import type { Variants } from 'motion/react';
 import type { ColorDefinition, SizeDimensions } from './types';
 import { springs } from '@/lib/animation-presets';
 

@@ -3,7 +3,7 @@
  * @module
  */
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { tweens, staggerConfigs } from '@/lib/animation-presets';
 
 const containerVariants = {

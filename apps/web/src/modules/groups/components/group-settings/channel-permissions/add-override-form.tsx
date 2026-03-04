@@ -4,7 +4,7 @@
  * @module modules/groups/components/group-settings/channel-permissions
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheckIcon, UserIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { RoleOption } from './types';

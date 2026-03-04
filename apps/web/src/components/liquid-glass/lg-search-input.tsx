@@ -7,7 +7,7 @@
  * @module components/liquid-glass/lg-search-input
  */
 import { type InputHTMLAttributes, useState, useId, type Ref } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';
 

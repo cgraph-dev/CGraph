@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react';
-import { motion, Reorder, useDragControls } from 'framer-motion';
+import { motion, Reorder, useDragControls } from 'motion/react';
 import {
   Bars3Icon,
   ChevronRightIcon,

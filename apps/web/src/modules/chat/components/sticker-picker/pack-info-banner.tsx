@@ -2,7 +2,7 @@
  * PackInfoBanner - Purchase prompt for unowned sticker packs
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import type { StickerPack } from '@/data/stickers';
 import { cn } from '@/lib/utils';

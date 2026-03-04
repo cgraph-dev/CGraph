@@ -2,7 +2,7 @@
  * ShopItemCard component - displays purchasable shop items
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CurrencyDollarIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { RARITY_COLORS } from './constants';

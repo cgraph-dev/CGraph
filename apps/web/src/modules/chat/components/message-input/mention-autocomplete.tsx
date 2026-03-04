@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { api } from '@/lib/api';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { MentionUser } from './types';

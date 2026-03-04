@@ -5,7 +5,7 @@
  * and linear (virtualized) or threaded comment display.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { ThreadedCommentTree } from '../../threaded-comment-tree';
 import type { Comment } from '@/modules/forums/store';

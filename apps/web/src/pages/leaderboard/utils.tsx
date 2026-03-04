@@ -3,7 +3,7 @@
  * @module pages/leaderboard
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, MinusIcon } from '@heroicons/react/24/outline';
 
 import type { LeaderboardEntry, LeaderboardData, RankConfig } from './types';

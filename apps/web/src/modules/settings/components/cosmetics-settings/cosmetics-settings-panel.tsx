@@ -16,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 import type { SettingsTab, ViewMode, FilterState } from './types';
 import { DEFAULT_FILTERS } from './constants';

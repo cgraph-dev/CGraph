@@ -3,7 +3,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useActiveBubbleStyle, useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageBubbleProps } from './types';

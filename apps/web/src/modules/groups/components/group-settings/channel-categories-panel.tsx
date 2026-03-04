@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, Reorder } from 'framer-motion';
+import { motion, Reorder } from 'motion/react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { asString, asNumber } from '@/lib/api-utils';

@@ -4,7 +4,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 /**
  * unknown for the groups module.

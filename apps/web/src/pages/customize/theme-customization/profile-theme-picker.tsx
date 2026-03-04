@@ -3,7 +3,7 @@
  * @module pages/customize/theme-customization
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   ALL_PROFILE_THEMES,
   PROFILE_THEME_CATEGORIES,

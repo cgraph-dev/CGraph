@@ -2,7 +2,7 @@
  * AttachmentMenu component - dropdown menu for attachment options
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { PlusCircleIcon, PhotoIcon, DocumentIcon, GifIcon } from '@heroicons/react/24/outline';
 import type { AttachmentMode } from './types';
 

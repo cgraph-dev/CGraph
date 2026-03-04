@@ -2,7 +2,7 @@
  * Layout settings tab for chat bubble customization.
  * @module modules/settings/components/chat-bubble-settings/layout-tab
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import type { TabProps } from './types';
 

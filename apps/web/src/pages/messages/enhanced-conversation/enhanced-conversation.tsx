@@ -5,7 +5,7 @@
  * AI-powered themes, and mobile-inspired interactions.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import ShaderBackground from '@/components/shaders/shader-background';
 import { useEnhancedConversation } from './useEnhancedConversation';
 import { EnhancedMessageBubble } from './enhanced-message-bubble';

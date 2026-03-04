@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { tweens } from '@/lib/animation-presets';

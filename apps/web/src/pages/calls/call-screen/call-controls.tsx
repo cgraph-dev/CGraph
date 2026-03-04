@@ -2,7 +2,7 @@
  * CallControls component - bottom control bar
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CallControl } from './call-control';
 import { controlVariants } from './constants';
 import type { CallType } from './types';

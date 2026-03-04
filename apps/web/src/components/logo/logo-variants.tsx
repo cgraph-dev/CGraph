@@ -12,7 +12,7 @@
  * @module components/logo/LogoVariants
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { memo } from 'react';
 import { colorPalettes } from './colors';
 import { LogoIcon } from './logo-icon';

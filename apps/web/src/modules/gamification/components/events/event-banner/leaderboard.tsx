@@ -3,7 +3,7 @@
  * @module modules/gamification/components/events/event-banner/leaderboard
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { EventLeaderboardProps, LeaderboardEntry } from './types';
 

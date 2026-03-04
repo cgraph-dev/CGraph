@@ -5,7 +5,7 @@
 import { useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { Message } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
 import { getMessageSenderId } from '@/lib/apiUtils';

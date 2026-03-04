@@ -6,7 +6,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { Border, Rarity } from '../types';
 import { MOCK_BORDERS } from '../constants';
 import {

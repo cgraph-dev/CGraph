@@ -2,7 +2,7 @@
  * Theme preview panel component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { ThemedChatBubble } from '@/components/theme/themed-chat-bubble';

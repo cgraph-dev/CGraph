@@ -4,7 +4,7 @@
  * Visual indicator of password strength with requirement checklist.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { PasswordStrength, PasswordRequirements } from './types';
 import { REQUIREMENT_CONFIG } from './utils';
 

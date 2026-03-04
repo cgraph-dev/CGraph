@@ -3,7 +3,7 @@
  * @module
  */
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { prefersReducedMotion, DEFAULT_AURORA_COLORS, DEFAULT_AURORA_SPEED } from './constants';
 import type { AuroraGlowProps } from './types';
 

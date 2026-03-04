@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckIcon, XMarkIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

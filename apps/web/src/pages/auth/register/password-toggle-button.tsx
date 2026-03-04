@@ -4,7 +4,7 @@
  * @module pages/auth/register/PasswordToggleButton
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 function prefersReducedMotion() {
   if (typeof window === 'undefined') return false;

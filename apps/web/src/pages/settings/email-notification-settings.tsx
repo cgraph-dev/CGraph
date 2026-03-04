@@ -7,7 +7,7 @@
  * - Toggle notifications for specific events
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { ToggleSwitch } from '@/pages/settings/toggle-switch';
 import { useEmailNotificationPreferences } from '@/pages/settings/useEmailNotificationPreferences';

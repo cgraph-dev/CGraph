@@ -8,7 +8,7 @@
  */
 
 import { useRef, useCallback, type ReactNode, type CSSProperties } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
 

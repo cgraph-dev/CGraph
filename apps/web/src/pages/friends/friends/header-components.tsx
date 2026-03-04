@@ -3,7 +3,7 @@
  * Includes AddFriendForm, FriendsTabBar, and FriendsSearchBar
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';

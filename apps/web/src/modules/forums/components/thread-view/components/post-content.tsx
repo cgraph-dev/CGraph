@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import DOMPurify from 'dompurify';
 import {
   ChatBubbleLeftIcon,

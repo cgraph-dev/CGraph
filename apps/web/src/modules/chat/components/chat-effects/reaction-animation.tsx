@@ -3,7 +3,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion, type TargetAndTransition } from 'framer-motion';
+import { motion, type TargetAndTransition } from 'motion/react';
 import type { ReactionAnimationProps } from './types';
 
 export const ReactionAnimation = memo(function ReactionAnimation({

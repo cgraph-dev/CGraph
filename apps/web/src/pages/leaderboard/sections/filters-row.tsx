@@ -3,7 +3,7 @@
  * @module pages/leaderboard/sections
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MagnifyingGlassIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 import { HapticFeedback } from '@/lib/animations/animation-engine';

@@ -2,7 +2,7 @@
  * AchievementModal component - detailed view modal
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import { RARITY_COLORS } from './constants';

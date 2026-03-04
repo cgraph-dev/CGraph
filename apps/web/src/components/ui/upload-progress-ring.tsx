@@ -5,7 +5,7 @@
  * @module components/ui
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { tweens, springs } from '@/lib/animation-presets';
 
 export interface UploadProgressRingProps {

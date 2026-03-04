@@ -4,7 +4,7 @@
  * Form for entering new password with strength validation.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import type { PasswordStrength } from './types';
 import { containerVariants, itemVariants } from './utils';

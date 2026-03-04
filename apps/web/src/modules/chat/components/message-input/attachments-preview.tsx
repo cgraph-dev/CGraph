@@ -2,7 +2,7 @@
  * AttachmentsPreview component - shows selected file attachments
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon, DocumentIcon } from '@heroicons/react/24/outline';
 
 interface AttachmentsPreviewProps {

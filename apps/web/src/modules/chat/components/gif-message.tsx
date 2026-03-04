@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import type { Message } from '@/modules/chat/store';
 import { tweens, loop } from '@/lib/animation-presets';

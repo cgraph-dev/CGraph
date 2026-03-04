@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback, useRef, useMemo } from 'react';
-import { motion, useSpring, useAnimation, AnimatePresence } from 'framer-motion';
+import { motion, useSpring, useAnimation, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { cn } from '@/lib/utils';
 import { useCustomizationStore } from '@/modules/settings/store/customization';

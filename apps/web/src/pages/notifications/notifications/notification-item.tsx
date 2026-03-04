@@ -4,7 +4,7 @@
  * Individual notification card with avatar, content, and actions.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckIcon, TrashIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';

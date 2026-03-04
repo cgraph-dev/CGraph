@@ -4,7 +4,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { HoloContainerProps } from '../types';
 import { getTheme, getIntensityMultiplier } from '../presets';

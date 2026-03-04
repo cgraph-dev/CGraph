@@ -10,7 +10,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

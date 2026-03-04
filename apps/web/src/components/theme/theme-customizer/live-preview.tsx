@@ -4,7 +4,7 @@
  * Real-time preview panel for theme changes.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '../themed-avatar';
 import { ThemedChatBubble } from '../themed-chat-bubble';
 

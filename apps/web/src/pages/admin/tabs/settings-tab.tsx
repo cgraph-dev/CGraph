@@ -3,7 +3,7 @@
  * @module
  */
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { adminApi } from '@/modules/admin/api';
 import { LoadingState, SettingToggle, SettingNumber } from '@/modules/admin/components';
 

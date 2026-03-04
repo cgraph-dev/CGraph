@@ -5,7 +5,7 @@
  */
 
 import { memo, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { DocumentArrowDownIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 import type { ExportModalProps, PDFExportOptions } from './types';

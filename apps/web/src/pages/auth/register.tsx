@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { OAuthButtonGroup } from '@/modules/auth/components/o-auth-buttons';
 import {
   TextScramble,

@@ -2,7 +2,7 @@
  * AdminContent component - renders the active tab content
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { ForumCategory, ForumModerator } from '@/modules/forums/store';
 import type {
   AdminTab,

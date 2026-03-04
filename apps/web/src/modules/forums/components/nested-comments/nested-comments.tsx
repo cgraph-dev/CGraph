@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useCallback, useOptimistic } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { CommentCard } from './comment-card';

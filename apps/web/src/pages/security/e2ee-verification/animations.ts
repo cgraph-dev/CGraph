@@ -2,7 +2,7 @@
  * E2EE verification page animations.
  * @module
  */
-import type { Variants } from 'framer-motion';
+import type { Variants } from 'motion/react';
 
 export const containerVariants: Variants = {
   hidden: { opacity: 0 },

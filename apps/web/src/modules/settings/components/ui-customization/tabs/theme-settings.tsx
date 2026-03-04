@@ -3,7 +3,7 @@
  * Allows users to customize base theme, background gradient, and color palette
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { SettingsTabProps } from './types';

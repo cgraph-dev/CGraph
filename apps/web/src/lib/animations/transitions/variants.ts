@@ -6,7 +6,7 @@
  * notifications, loading states, skeletons, and badges.
  */
 
-import { type Variants } from 'framer-motion';
+import { type Variants } from 'motion/react';
 
 import { durations, springs } from './core';
 

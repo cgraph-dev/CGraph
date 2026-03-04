@@ -2,7 +2,7 @@
  * DailyBonusBanner component - displays claimable daily bonus
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GiftIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { DailyBonus } from './types';

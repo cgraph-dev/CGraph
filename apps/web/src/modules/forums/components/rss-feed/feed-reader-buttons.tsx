@@ -5,7 +5,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FEED_READERS } from './constants';
 import type { FeedReaderButtonsProps } from './types';
 

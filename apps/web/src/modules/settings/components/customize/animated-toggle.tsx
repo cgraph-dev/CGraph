@@ -5,7 +5,7 @@
  * and theme-aware styling.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 
 interface AnimatedToggleProps {

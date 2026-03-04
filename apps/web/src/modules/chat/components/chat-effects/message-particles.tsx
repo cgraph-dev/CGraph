@@ -3,7 +3,7 @@
  */
 
 import { memo, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { MessageParticlesProps, Particle } from './types';
 import { shouldShowParticles } from './constants';
 

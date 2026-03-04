@@ -4,7 +4,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo, useRef } from 'react';
-import { motion, type TargetAndTransition } from 'framer-motion';
+import { motion, type TargetAndTransition } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
 import type { MessageWithEffectProps } from './types';

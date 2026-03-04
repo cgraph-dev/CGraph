@@ -3,7 +3,7 @@
  * @module pages/forums/moderation-queue
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface BulkActionsBarProps {

@@ -2,7 +2,7 @@
  * ProfileStep component - bio and theme selection
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants } from './animations';
 import type { ProfileData } from './types';
 

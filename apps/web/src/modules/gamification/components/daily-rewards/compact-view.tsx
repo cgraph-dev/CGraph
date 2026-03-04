@@ -4,7 +4,7 @@
  * Compact variant of daily rewards display
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ClockIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GiftIcon as GiftIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

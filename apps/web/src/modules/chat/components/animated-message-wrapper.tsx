@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useSpring, useTransform, AnimatePresence } from 'motion/react';
 import { useGesture } from '@use-gesture/react';
 import { AnimationEngine, HapticFeedback } from '@/lib/animations/animation-engine';
 import { useCustomizationStore } from '@/modules/settings/store/customization';

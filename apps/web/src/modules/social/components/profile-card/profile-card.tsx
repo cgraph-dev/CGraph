@@ -4,7 +4,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useActiveProfileTheme, useProfileCardConfig } from '@/stores/theme';
 import { SIZE_CONFIG, getHoverVariants, RADIUS_MAP } from './constants';

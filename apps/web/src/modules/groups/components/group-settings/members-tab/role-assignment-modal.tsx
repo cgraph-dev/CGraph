@@ -3,7 +3,7 @@
  * @module modules/groups/components/group-settings/members-tab
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { GroupMember, GroupRole } from './types';
 
 interface RoleAssignmentModalProps {

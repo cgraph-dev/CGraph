@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon, FlagIcon } from '@heroicons/react/24/outline';
 import { useForumStore, type Report } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

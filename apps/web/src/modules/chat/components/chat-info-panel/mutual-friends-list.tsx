@@ -2,7 +2,7 @@
  * MutualFriendsList - display mutual friends with avatars
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { MutualFriend } from './types';

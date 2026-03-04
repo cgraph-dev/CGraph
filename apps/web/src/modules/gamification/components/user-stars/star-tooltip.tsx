@@ -4,7 +4,7 @@
  * Tooltip showing tier details, progress, and posts to next tier.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { UserStarsTier } from './types';
 import { tweens } from '@/lib/animation-presets';
 

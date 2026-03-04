@@ -2,7 +2,7 @@
  * Theme customization settings page.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 import { useThemeCustomization } from './hooks';
 import { CategoryTabs } from './category-tabs';

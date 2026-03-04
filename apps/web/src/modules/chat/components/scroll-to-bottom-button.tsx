@@ -5,7 +5,7 @@
  * @module chat/components
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { tweens, springs, loop } from '@/lib/animation-presets';
 

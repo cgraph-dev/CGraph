@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import DOMPurify from 'dompurify';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { ThreadLine } from './thread-line';

@@ -15,7 +15,7 @@ import {
   type ReactNode,
   type KeyboardEvent,
 } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';
 

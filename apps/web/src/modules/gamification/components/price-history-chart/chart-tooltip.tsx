@@ -1,7 +1,7 @@
 /**
  * ChartTooltip - floating tooltip on hover
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { HoveredPointData, ChartDimensions } from './types';
 import { CURRENCY_ICONS } from './constants';
 

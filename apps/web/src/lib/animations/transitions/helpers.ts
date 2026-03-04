@@ -5,7 +5,7 @@
  * performance optimization constants, and accessibility helpers.
  */
 
-import { Variants, Transition } from 'framer-motion';
+import { Variants, Transition } from 'motion/react';
 
 import { easings, staggerConfigs } from './core';
 

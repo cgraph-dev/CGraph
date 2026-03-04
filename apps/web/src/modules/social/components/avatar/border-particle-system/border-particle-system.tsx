@@ -3,7 +3,7 @@
  * @module
  */
 import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { BorderParticleSystemProps, Particle } from './types';
 import { PARTICLE_PRESETS } from './presets';

@@ -14,7 +14,7 @@
  * @module modules/forums/components/forum-hierarchy-tree
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { FolderPlusIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ForumNode } from './types';

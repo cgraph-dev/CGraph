@@ -3,7 +3,7 @@
  * @module
  */
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import {

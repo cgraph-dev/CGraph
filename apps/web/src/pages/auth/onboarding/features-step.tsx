@@ -2,7 +2,7 @@
  * FeaturesStep component - feature highlights tour
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants } from './animations';
 import { FEATURES } from './constants';
 

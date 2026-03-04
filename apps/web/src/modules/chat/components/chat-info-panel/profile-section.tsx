@@ -2,7 +2,7 @@
  * ProfileSection - user avatar, name, status, level/XP
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { springs } from '@/lib/animations/transitions';

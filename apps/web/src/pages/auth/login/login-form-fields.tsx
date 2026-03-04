@@ -4,7 +4,7 @@
  * @module pages/auth/login/LoginFormFields
  */
 
-import { motion, type Variants } from 'framer-motion';
+import { motion, type Variants } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PasswordToggleButton } from '@/pages/auth/register/password-toggle-button';

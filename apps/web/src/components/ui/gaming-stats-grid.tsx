@@ -7,7 +7,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState } from 'react';
-import { motion, useMotionValue, animate } from 'framer-motion';
+import { motion, useMotionValue, animate } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import type { StatItem, GamingStatsGridProps } from './gaming-stats-grid.types';
 

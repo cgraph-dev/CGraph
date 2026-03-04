@@ -2,7 +2,7 @@
  * StickerGrid - Displays a grid of stickers or an empty state
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { type Sticker, getStickerPackById } from '@/data/stickers';
 import { StickerItem } from './sticker-item';

@@ -9,7 +9,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import {
   generateSnowParticles,

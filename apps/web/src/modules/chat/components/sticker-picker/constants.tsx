@@ -3,7 +3,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import type { TargetAndTransition } from 'framer-motion';
+import type { TargetAndTransition } from 'motion/react';
 import { SparklesIcon, StarIcon } from '@heroicons/react/24/outline';
 import type { StickerRarity } from '@/data/stickers';
 

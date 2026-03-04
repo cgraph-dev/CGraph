@@ -5,7 +5,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { AnimatedAvatar } from '../animated-avatar';
 import { ColorPickerGrid, SizeSelector, SectionHeader, OptionButton } from '../customization-ui';
 import {

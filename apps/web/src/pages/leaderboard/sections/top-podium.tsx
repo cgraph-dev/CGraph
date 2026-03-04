@@ -3,7 +3,7 @@
  * @module pages/leaderboard/sections
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { BoltIcon, StarIcon } from '@heroicons/react/24/outline';
 

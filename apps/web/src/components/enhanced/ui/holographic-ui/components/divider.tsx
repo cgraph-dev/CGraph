@@ -3,7 +3,7 @@
  * @module components/enhanced/ui/holographic-ui/components/divider
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { HoloDividerProps } from '../types';
 import { getTheme } from '../presets';

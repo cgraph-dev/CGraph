@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';

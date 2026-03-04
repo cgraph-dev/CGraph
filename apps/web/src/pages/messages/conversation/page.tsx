@@ -9,7 +9,7 @@
  */
 
 import { useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 
 import type { Message } from '@/modules/chat/store';
 import { useConversationPage } from './useConversationPage';

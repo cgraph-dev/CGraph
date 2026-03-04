@@ -2,7 +2,7 @@
  * CoinBundleCard component - displays purchasable coin bundles
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { CoinBundle } from './types';

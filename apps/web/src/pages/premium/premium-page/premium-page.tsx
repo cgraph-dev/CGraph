@@ -7,7 +7,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon, CurrencyDollarIcon, GiftIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

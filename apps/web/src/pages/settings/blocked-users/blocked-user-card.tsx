@@ -2,7 +2,7 @@
  * Card component for a single blocked user row
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { formatDistanceToNow } from 'date-fns';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { itemVariants } from './animations';

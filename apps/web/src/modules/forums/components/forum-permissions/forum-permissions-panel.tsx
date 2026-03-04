@@ -16,7 +16,7 @@
  * @module modules/forums/components/forum-permissions
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   ShieldCheckIcon,
   XMarkIcon,

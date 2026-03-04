@@ -16,7 +16,7 @@
  */
 
 import React, { memo } from 'react';
-import { Reorder, AnimatePresence, motion } from 'framer-motion';
+import { Reorder, AnimatePresence, motion } from 'motion/react';
 import type { ForumOrderingAdminProps } from './types';
 import { useForumOrdering } from './useForumOrdering';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';

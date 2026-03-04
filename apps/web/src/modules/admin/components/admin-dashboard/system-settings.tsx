@@ -3,7 +3,7 @@
  * Configure gamification, marketplace, and moderation settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { ToggleSwitch, SettingsSection, SettingRow } from './shared-components';
 

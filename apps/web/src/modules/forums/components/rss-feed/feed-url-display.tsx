@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useToast } from '@/shared/hooks';
 import type { FeedUrlDisplayProps } from './types';

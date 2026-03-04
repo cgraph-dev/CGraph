@@ -9,7 +9,7 @@
  * - Connection status indicators
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useCallScreen } from './useCallScreen';
 import { CallHeader } from './call-header';
 import { VideoTile } from './video-tile';

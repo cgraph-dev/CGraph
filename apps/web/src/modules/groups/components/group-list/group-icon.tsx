@@ -4,7 +4,7 @@
  * Circular group icon for the sidebar with active indicator and tooltip.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NavLink } from 'react-router-dom';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { GroupIconProps } from './types';

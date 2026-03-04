@@ -4,7 +4,7 @@
  * Color preset selection with visual swatches.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores';
 

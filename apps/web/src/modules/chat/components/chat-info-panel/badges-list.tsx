@@ -2,7 +2,7 @@
  * BadgesList - display user's top badges
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { springs } from '@/lib/animations/transitions';

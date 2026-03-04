@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { AnimatedForumTitleProps } from './types';
 import { DEFAULT_COLORS } from './constants';

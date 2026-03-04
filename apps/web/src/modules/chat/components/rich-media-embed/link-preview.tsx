@@ -2,7 +2,7 @@
  * LinkPreview Component - Open Graph link preview card
  * @module modules/chat/components/rich-media-embed
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

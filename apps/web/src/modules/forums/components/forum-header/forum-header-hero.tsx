@@ -5,7 +5,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { ForumIcon } from './forum-icon';

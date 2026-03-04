@@ -2,7 +2,7 @@
  * Scheduled message timing modal.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { useScheduleMessageModal } from '@/modules/chat/hooks/useScheduleMessageModal';

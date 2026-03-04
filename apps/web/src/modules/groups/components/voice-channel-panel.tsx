@@ -10,7 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   MicrophoneIcon,
   SpeakerWaveIcon,

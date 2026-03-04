@@ -2,7 +2,7 @@
  * Profile theme card visual effects.
  * @module
  */
-import { motion, type MotionValue } from 'framer-motion';
+import { motion, type MotionValue } from 'motion/react';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 import type { Particle } from './types';
 import { getOverlayStyles, getParticleAnimation } from './useThemeEffects';

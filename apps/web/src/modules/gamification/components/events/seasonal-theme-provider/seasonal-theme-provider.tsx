@@ -3,7 +3,7 @@
  * @module
  */
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { SeasonalTheme, SeasonalThemeContextValue, SeasonalThemeProviderProps } from './types';
 import { SEASONAL_THEMES } from './constants';
 import { detectSeasonalTheme } from './utils';

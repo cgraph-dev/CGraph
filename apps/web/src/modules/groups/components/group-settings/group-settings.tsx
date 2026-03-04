@@ -13,7 +13,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { RoleManager } from '../role-manager';
 import type { GroupSettingsProps } from './types';
 import { useGroupSettings } from './useGroupSettings';

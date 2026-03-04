@@ -1,7 +1,7 @@
 /** NotFound — 404 page with animated illustration and navigation links. */
 import { durations } from '@cgraph/animation-constants';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

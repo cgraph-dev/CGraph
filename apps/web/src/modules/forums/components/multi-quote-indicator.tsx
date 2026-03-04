@@ -3,7 +3,7 @@
  * Floating indicator showing selected posts for multi-quote reply
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useForumStore } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

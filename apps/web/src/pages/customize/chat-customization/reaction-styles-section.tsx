@@ -2,7 +2,7 @@
  * ReactionStylesSection - Grid of reaction animation presets
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import type { ReactionStylesSectionProps } from './types';
 import { tweens, loopWithDelay } from '@/lib/animation-presets';

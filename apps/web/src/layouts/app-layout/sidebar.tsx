@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { NavLink, type Location } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import AnimatedLogo from '@/components/navigation/animated-logo';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';

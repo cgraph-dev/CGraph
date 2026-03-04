@@ -5,7 +5,7 @@
  * Titles are visible to all users and appear next to username.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Search, Sparkles } from 'lucide-react';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';

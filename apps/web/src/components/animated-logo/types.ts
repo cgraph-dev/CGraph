@@ -3,7 +3,7 @@
  * Extracted from AnimatedLogo.tsx for modularity
  */
 
-import type { Variants } from 'framer-motion';
+import type { Variants } from 'motion/react';
 
 /**
  * Props for the AnimatedLogo component

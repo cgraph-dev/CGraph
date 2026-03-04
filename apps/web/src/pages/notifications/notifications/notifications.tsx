@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationStore, type Notification } from '@/modules/social/store';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { AmbientParticles } from './ambient-particles';
 import { NotificationHeader } from './notification-header';
 import { NotificationFilterTabs } from './notification-filter-tabs';

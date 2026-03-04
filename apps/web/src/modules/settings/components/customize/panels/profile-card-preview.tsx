@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { AnimatedAvatar } from '../animated-avatar';
 import {
   useCustomizationStore,

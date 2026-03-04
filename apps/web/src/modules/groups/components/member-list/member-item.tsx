@@ -2,7 +2,7 @@
  * MemberItem Component - Individual member row with context menu actions
  * @module modules/groups/components/member-list
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   UserPlusIcon,
   ShieldCheckIcon,

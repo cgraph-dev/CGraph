@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ChartBarIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { tweens } from '@/lib/animation-presets';

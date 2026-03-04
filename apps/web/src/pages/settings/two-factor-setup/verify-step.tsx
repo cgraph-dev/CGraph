@@ -3,7 +3,7 @@
  * @module pages/settings/two-factor-setup
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { containerVariants, itemVariants } from './constants';
 
 interface VerifyStepProps {

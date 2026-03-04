@@ -3,7 +3,7 @@
  * @module modules/chat/components/emoji-picker
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface EmojiGridProps {
   emojis: string[];

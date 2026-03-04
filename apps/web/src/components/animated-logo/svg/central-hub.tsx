@@ -7,7 +7,7 @@
  * @module components/animated-logo/svg/CentralHub
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NODE_APPEAR_VARIANTS } from '../constants';
 import type { SvgFilterIds } from '../types';
 import { tweens, loop } from '@/lib/animation-presets';

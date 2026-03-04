@@ -15,7 +15,7 @@
 
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 import {
   ArrowTrendingUpIcon,

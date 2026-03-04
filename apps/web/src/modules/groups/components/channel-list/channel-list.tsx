@@ -3,7 +3,7 @@
  * @module
  */
 import { useCallback } from 'react';
-import { AnimatePresence, LayoutGroup } from 'framer-motion';
+import { AnimatePresence, LayoutGroup } from 'motion/react';
 import {
   DndContext,
   closestCenter,

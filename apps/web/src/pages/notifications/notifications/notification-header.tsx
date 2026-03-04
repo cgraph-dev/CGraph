@@ -4,7 +4,7 @@
  * Page header with title, unread count, and mark all read button.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { NotificationHeaderProps } from './types';

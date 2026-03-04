@@ -3,7 +3,7 @@
  * @module components/ui/animated-avatar
  */
 
-import type { Transition, TargetAndTransition } from 'framer-motion';
+import type { Transition, TargetAndTransition } from 'motion/react';
 
 export type AnimationReturn = {
   animate?: TargetAndTransition;

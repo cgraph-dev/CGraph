@@ -5,7 +5,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { getEventEmoji } from './utils';
 import type { EventBannerProps, TimeRemaining } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CurrencyDollarIcon, ShoppingBagIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 import { eventsApi, type AdminEvent } from '../../api/eventsApi';
 import type { CreateEventModalProps } from './types';

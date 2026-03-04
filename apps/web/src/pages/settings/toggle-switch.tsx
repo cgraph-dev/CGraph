@@ -2,7 +2,7 @@
  * Animated toggle switch component used in settings pages.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 
 interface ToggleSwitchProps {

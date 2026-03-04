@@ -8,7 +8,7 @@
  * This file wraps them with Framer-Motion–specific fields (e.g. `type: 'spring'`).
  */
 
-import { type Transition, type Variants } from 'framer-motion';
+import { type Transition, type Variants } from 'motion/react';
 import {
   springs as sharedSprings,
   stagger as sharedStagger,

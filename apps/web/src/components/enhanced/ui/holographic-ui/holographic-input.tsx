@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';
 import type { HolographicInputProps } from './types';

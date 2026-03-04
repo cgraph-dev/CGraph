@@ -4,7 +4,7 @@
  * Visual effects, animation speed, and particle settings.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TierBadge } from '../premium-theme-gate';
 
 import type { EffectsTabProps } from './types';

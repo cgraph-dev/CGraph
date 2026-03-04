@@ -2,7 +2,7 @@
  * CallHeader component - displays recipient info and connection quality
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { CALL_STATES } from './constants';
 import type { CallUser, CallStatus } from './types';

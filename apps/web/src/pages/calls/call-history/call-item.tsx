@@ -3,7 +3,7 @@
  * @module
  */
 import { Phone, Video, PhoneIncoming, PhoneOutgoing, PhoneMissed, Trash2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { formatDuration, formatTimestamp } from './hooks';
 import { itemVariants } from './animations';

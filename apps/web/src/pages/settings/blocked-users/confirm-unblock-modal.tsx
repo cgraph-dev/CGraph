@@ -2,7 +2,7 @@
  * Confirmation modal for unblocking a user
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { BlockedUser } from './types';
 

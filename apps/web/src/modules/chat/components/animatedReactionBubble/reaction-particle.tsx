@@ -3,7 +3,7 @@
  * Supports standard and "super" (premium) mode with wider spread.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   PARTICLE_COUNT,
   SUPER_PARTICLE_COUNT,

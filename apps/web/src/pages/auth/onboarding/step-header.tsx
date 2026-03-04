@@ -2,7 +2,7 @@
  * StepHeader component - animated step title and icon
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ONBOARDING_STEPS } from './constants';
 import { springs } from '@/lib/animation-presets';
 

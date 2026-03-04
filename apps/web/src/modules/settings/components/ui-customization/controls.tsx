@@ -3,7 +3,7 @@
  * @module modules/settings/components/ui-customization
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { springs } from '@/lib/animation-presets';
 

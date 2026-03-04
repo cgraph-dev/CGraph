@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Palette, Download, Upload, Sparkles } from 'lucide-react';
 void Download; // Reserved for theme export feature
 void Upload; // Reserved for theme import feature

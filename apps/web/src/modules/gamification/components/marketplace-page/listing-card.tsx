@@ -1,5 +1,5 @@
 /** ListingCard — marketplace item listing with rarity and type labels. */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { ITEM_TYPE_LABELS, RARITY_COLORS, type ListingCardProps } from './types';
 

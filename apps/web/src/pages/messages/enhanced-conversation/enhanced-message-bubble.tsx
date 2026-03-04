@@ -3,7 +3,7 @@
  */
 
 import { useState, useRef, useOptimistic } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import { useChatStore } from '@/modules/chat/store';

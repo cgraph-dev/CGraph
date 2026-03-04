@@ -3,7 +3,7 @@
  * @module modules/settings/components/avatar-settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   UserCircleIcon,
   GlobeAltIcon,

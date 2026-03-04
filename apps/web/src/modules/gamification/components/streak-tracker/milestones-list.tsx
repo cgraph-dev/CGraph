@@ -4,7 +4,7 @@
  * Shows all milestones with their status
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircleIcon, GiftIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import type { MilestonesListProps } from './types';
 

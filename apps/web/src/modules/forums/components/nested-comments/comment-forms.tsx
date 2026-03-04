@@ -4,7 +4,7 @@
  * Reply and Edit forms for comments
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ReplyFormProps, EditFormProps } from './types';
 
 /**

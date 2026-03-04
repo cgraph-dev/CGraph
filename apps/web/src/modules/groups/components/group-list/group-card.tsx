@@ -4,7 +4,7 @@
  * Rich group card for grid view with banner and stats.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlobeAltIcon, LockClosedIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { GroupCardProps } from './types';

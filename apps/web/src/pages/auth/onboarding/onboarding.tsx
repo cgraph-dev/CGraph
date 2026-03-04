@@ -5,7 +5,7 @@
  * Features step-by-step wizard with animated transitions.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { useOnboarding } from './useOnboarding';
 import { ProgressBar } from './progress-bar';

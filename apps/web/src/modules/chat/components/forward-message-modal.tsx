@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { createLogger } from '@/lib/logger';
 import { springs } from '@/lib/animation-presets';
 

@@ -4,7 +4,7 @@
  */
 
 import type { ReactNode } from 'react';
-import type { MotionProps } from 'framer-motion';
+import type { MotionProps } from 'motion/react';
 
 // =============================================================================
 // THEME TYPES

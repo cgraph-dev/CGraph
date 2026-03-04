@@ -15,7 +15,7 @@
  * - Slash commands
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
 import { VoiceMessageRecorder } from '@/components/media/voice-message-recorder';

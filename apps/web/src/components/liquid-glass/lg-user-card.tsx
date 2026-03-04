@@ -7,7 +7,7 @@
  * @module components/liquid-glass/lg-user-card
  */
 import { type Ref, type ReactNode } from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'motion/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';

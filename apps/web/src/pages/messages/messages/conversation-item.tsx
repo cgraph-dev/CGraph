@@ -7,7 +7,7 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';

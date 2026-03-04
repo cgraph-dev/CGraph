@@ -5,7 +5,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useMemo, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 import type { AnimatedAvatarProps } from './types';
 import { SIZE_CONFIG, STATUS_COLORS } from './constants';

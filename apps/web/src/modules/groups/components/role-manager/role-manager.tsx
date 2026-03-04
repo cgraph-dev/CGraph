@@ -12,8 +12,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Reorder } from 'framer-motion';
+import { motion } from 'motion/react';
+import { Reorder } from 'motion/react';
 import { ShieldCheckIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useGroupStore, type Role } from '@/modules/groups/store';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

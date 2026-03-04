@@ -3,7 +3,7 @@
  * @module pages/search/search/result-components
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

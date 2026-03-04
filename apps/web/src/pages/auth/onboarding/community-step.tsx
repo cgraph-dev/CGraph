@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants } from './animations';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';

@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { DevicePhoneMobileIcon, ComputerDesktopIcon, DeviceTabletIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { asString, asBool } from '@/lib/api-utils';

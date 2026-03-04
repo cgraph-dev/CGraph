@@ -17,7 +17,7 @@
  * - Comprehensive data from collection files
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   MOCK_BORDERS,
   MOCK_TITLES,

@@ -4,7 +4,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FaceSmileIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { entranceVariants } from '@/lib/animation-presets';

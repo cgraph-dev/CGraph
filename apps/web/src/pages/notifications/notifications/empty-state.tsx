@@ -4,7 +4,7 @@
  * Displayed when there are no notifications to show.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { EmptyStateProps } from './types';

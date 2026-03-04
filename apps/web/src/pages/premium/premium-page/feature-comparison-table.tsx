@@ -4,7 +4,7 @@
  * Displays a side-by-side comparison of features across all premium tiers.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { PREMIUM_TIERS } from './constants';

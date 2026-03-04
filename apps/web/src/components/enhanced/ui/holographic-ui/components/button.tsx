@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { HoloButtonProps } from '../types';
 import { getTheme } from '../presets';

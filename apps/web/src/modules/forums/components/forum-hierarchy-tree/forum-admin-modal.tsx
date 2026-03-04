@@ -3,7 +3,7 @@
  * @module modules/forums/components/forum-hierarchy-tree
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ModalProps {

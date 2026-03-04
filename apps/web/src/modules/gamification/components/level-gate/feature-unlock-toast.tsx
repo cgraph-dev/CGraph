@@ -10,7 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   FEATURE_DISPLAY_NAMES,
   type FeatureGateKey,

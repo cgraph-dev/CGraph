@@ -12,7 +12,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ChevronRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { GiftIcon as GiftIconSolid, StarIcon } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

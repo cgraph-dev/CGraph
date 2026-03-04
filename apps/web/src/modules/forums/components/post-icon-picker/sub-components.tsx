@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MagnifyingGlassIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 import { BUTTON_SIZES, ICON_DISPLAY_SIZES } from './constants';

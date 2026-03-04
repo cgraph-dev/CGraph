@@ -3,7 +3,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useShallow } from 'zustand/react/shallow';
 import {
   useCustomizationStore,

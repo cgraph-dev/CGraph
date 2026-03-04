@@ -3,7 +3,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { Group } from '@/modules/groups/store';
 import type { TabId } from './types';
 import { SETTINGS_TABS } from './constants';

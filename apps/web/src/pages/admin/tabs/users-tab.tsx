@@ -2,7 +2,7 @@
  * Admin users management tab.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { LoadingState } from '@/modules/admin/components';
 import { useUsersTab } from '@/pages/admin/tabs/users/useUsersTab';
 import { UserSearchBar } from '@/pages/admin/tabs/users/user-search-bar';

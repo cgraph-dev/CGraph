@@ -7,7 +7,7 @@
  * @module gamification/components/badges/CompactBadgeShowcase
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './animated-badge';
 import type { Achievement } from '@/modules/gamification/store';

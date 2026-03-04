@@ -3,7 +3,7 @@
  * @module pages/leaderboard/sections
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { GlassCard, AnimatedAvatar } from '@/shared/components/ui';
 

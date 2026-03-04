@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 

@@ -4,7 +4,7 @@
  * Individual title card with equip/unequip/purchase functionality
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircleIcon, SparklesIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/glass-card';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';

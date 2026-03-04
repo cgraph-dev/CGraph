@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import {
   MagnifyingGlassIcon,

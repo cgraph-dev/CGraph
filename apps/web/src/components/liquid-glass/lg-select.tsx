@@ -16,7 +16,7 @@ import {
   type KeyboardEvent,
   type Ref,
 } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { springPreset, glassSurface } from './shared';
 

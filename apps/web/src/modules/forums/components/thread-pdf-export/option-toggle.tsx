@@ -5,7 +5,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import type { OptionToggleProps } from './types';
 

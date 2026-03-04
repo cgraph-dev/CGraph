@@ -4,7 +4,7 @@
  * Individual pricing tier card with features and CTA button.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { PremiumTier, BillingInterval } from './types';

@@ -5,7 +5,7 @@
  * particles, tier badges, and holographic shine effects.
  */
 
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useState, useRef } from 'react';
 import type { ProfileThemeCardProps } from './types';
 import { useParticles } from './useParticles';

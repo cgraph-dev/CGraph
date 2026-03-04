@@ -8,7 +8,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useSearch } from './useSearch';
 import { SearchHeader } from './search-header';
 import { IdSearchBar } from './id-search-bar';

@@ -2,7 +2,7 @@
  * ReactionPicker – quick-pick emoji bar for adding reactions.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { QUICK_REACTIONS } from '@/modules/chat/components/animatedReactionBubble/constants';
 import { springs } from '@/lib/animation-presets';

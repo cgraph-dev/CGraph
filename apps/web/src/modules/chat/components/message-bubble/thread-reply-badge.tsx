@@ -5,7 +5,7 @@
  * Opens ThreadPanel on click.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useThreadStore } from '@/modules/chat/store/threadStore';
 import type { Message } from '@/modules/chat/store';
 

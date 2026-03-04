@@ -2,7 +2,7 @@
  * Badge Preview Modal
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { RARITY_COLORS } from './constants';
 import type { BadgePreviewModalProps } from './types';
 

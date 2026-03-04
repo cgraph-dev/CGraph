@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { api } from '@/lib/api';
 import type { MembersTabProps } from './types';

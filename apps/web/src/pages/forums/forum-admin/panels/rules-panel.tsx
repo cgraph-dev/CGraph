@@ -2,7 +2,7 @@
  * Forum admin rules management panel.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ForumRule } from '../types';

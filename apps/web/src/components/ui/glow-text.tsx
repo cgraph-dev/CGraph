@@ -7,7 +7,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import type { ReactNode, CSSProperties } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface GlowTextProps {
   children: ReactNode;

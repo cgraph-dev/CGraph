@@ -2,7 +2,7 @@
  * Invite link creation tab component.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   ClockIcon,
   PlusIcon,

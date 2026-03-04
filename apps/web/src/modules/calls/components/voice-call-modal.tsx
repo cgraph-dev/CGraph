@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   PhoneXMarkIcon,
   MicrophoneIcon,

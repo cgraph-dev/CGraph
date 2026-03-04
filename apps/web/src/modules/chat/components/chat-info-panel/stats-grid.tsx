@@ -2,7 +2,7 @@
  * StatsGrid - karma and streak stats display
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 
 interface StatsGridProps {

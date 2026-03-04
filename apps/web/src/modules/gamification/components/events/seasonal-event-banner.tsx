@@ -3,7 +3,7 @@
  * @module
  */
 import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useSeasonalEventStore, useFeaturedEvent } from '@/modules/gamification/store';
 import { XMarkIcon, SparklesIcon, ClockIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

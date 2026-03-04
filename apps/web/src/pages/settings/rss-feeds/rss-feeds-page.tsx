@@ -3,7 +3,7 @@
  * @module
  */
 import { Rss, Info, HelpCircle, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PageContainer } from '@/components/layout';
 import { useRSSFeeds, RECOMMENDED_APPS } from './hooks';
 import FeedCard from './feed-card';

@@ -2,7 +2,7 @@
  * Video call modal dialog component.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 import { useVideoCall } from '@/modules/calls/hooks/useVideoCall';
 import { VideoCallTopBar } from '@/modules/calls/components/video-call-top-bar';

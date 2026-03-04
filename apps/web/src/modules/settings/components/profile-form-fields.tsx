@@ -2,7 +2,7 @@
  * Profile form input fields component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { User } from '@/modules/auth/store/authStore.types';

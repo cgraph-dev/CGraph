@@ -5,7 +5,7 @@
  */
 
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import type { ForumIconProps } from './types';
 

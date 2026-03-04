@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ModerationItem } from './types';
 import { RISK_COLORS } from './constants';
 import { springs } from '@/lib/animation-presets';

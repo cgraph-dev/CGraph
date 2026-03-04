@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { createLogger } from '@/lib/logger';
 import { ClipboardDocumentListIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

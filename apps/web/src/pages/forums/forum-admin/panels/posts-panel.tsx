@@ -2,7 +2,7 @@
  * Forum admin posts management panel.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { PostFlair } from '../types';

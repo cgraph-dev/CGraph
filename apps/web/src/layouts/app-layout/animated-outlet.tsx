@@ -9,7 +9,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useLocation, useOutlet } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { tweens } from '@/lib/animation-presets';
 
 const pageVariants = {

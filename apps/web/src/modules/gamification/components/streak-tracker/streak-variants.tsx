@@ -4,7 +4,7 @@
  * Widget and Compact variants of the StreakTracker
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GiftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

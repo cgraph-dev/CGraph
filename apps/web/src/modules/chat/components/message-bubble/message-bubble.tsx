@@ -1,7 +1,7 @@
 /** Message Bubble — memoized message display with media, reactions, and actions. */
 
 import { useState, memo, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { Lock, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '@/modules/auth/store';

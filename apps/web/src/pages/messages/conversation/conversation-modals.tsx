@@ -8,7 +8,7 @@
  * @module pages/messages/conversation/ConversationModals
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import E2EEConnectionTester from '@/modules/chat/components/e2-ee-connection-tester';
 import { E2EEErrorModal } from '@/modules/chat/components/e2-ee-error-modal';
 import ChatInfoPanel from '@/modules/chat/components/chat-info-panel';

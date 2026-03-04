@@ -10,7 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useRef, useState, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
 import { springs } from '@/lib/animation-presets';

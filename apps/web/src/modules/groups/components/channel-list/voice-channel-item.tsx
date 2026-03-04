@@ -8,7 +8,7 @@
  */
 
 import { useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SpeakerWaveIcon } from '@heroicons/react/24/outline';
 import { useVoiceStateStore, type VoiceMember } from '@/stores/voiceStateStore';
 import { useVoiceChannel } from '@/modules/calls/hooks/useVoiceChannel';

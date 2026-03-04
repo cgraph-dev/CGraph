@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { metricsApi } from '../../api/metricsApi';
 import { moderationApi } from '../../api/moderationApi';

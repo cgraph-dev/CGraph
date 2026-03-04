@@ -4,7 +4,7 @@
  * Success animation overlay after claiming reward
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import type { ClaimSuccessModalProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { UsersIcon, BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useFriendStore } from '@/modules/social/store';
 import { useNotificationStore } from '@/modules/social/store';

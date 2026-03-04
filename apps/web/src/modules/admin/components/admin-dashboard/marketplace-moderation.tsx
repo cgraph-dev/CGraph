@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { marketplaceApi, type FlaggedListing } from '../../api/marketplaceApi';
 import { RISK_COLORS } from './constants';

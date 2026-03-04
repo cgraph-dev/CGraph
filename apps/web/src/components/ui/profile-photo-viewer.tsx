@@ -3,7 +3,7 @@
  * Tap any avatar to smoothly expand to fullscreen via layoutId transition
  * @module components/ui
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {

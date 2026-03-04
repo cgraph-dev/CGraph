@@ -4,7 +4,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { BannerParticlesProps, Particle } from './types';
 
 export const BannerParticles = memo(function BannerParticles({ effect }: BannerParticlesProps) {

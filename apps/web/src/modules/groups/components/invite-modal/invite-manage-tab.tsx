@@ -2,7 +2,7 @@
  * Active invites management tab component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   LinkIcon,
   ClipboardDocumentIcon,

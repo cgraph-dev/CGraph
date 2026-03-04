@@ -2,7 +2,7 @@
  * ProfileAbout - Bio section with edit mode
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 
 interface ProfileAboutProps {

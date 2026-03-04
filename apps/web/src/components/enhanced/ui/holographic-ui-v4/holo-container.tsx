@@ -11,7 +11,7 @@ import {
   useSpring,
   AnimatePresence,
   MotionProps,
-} from 'framer-motion';
+} from 'motion/react';
 import { cn } from '@/lib/utils';
 import { HoloPreset, HoloConfig, getTheme, getIntensityMultiplier } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

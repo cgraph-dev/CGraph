@@ -9,7 +9,7 @@
  * @module pages/customize/effects-customization
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 import type { ParticleEffect, BackgroundEffect, AnimationSet } from './types';

@@ -2,7 +2,7 @@
  * AchievementListItem component - list view row for an achievement
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TrophyIcon, LockClosedIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { RARITY_COLORS } from './constants';
 import type { Achievement } from './types';

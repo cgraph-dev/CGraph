@@ -3,7 +3,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { AchievementRarity } from '@/modules/gamification/store';
 import type { RarityColorConfig, SizeConfig } from './types';
 import { OrbitingParticle } from './orbiting-particle';

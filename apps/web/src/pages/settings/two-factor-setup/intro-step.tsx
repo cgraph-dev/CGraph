@@ -3,7 +3,7 @@
  * @module pages/settings/two-factor-setup
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants, FEATURES } from './constants';
 
 interface IntroStepProps {

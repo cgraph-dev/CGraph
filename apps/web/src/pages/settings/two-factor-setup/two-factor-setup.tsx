@@ -11,7 +11,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { useTwoFactorSetup } from './useTwoFactorSetup';
 import { ProgressIndicator } from './progress-indicator';

@@ -3,7 +3,7 @@
  * @module modules/forums/components/thread-view/components/reply-indicator
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ReplyIndicatorProps {
   replyToId: string | undefined;

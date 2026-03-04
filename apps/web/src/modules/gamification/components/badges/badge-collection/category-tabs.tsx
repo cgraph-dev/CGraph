@@ -2,7 +2,7 @@
  * CategoryTabs - category filter tabs with counts
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { CATEGORY_ICONS, CATEGORY_LABELS } from './constants';

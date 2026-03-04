@@ -3,7 +3,7 @@
  * Allows users to customize glass effects, particle system, and visual effects
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import type { SettingsTabProps, UIPreferences } from './types';
 import { SliderControl, Select, Toggle } from './controls';

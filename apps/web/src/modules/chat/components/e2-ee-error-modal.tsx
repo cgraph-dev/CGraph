@@ -2,7 +2,7 @@
  * E2EE encryption error modal dialog.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import {
   ShieldExclamationIcon,

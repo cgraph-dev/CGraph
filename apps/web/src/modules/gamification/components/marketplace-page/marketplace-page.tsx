@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { MarketplaceTab } from './types';
 import { MarketplaceStats } from './marketplace-stats';
 import { BrowseSection } from './browse-section';

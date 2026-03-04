@@ -9,7 +9,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { getTitleById, RARITY_COLORS, type Title, type TitleRarity } from '@/data/titles';

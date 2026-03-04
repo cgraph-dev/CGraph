@@ -3,7 +3,7 @@
  * @module modules/groups/components/member-list
  */
 import { useState, useMemo } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 void EllipsisVerticalIcon; // Reserved for member context menu
 import { useGroupStore, type Member } from '@/modules/groups/store';

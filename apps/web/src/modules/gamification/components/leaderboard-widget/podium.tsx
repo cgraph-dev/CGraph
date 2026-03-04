@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { RANK_COLORS } from './constants';
 import { formatScore } from './utils';

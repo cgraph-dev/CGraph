@@ -6,7 +6,7 @@
  *
  * @module components/liquid-glass/shared
  */
-import type { Transition } from 'framer-motion';
+import type { Transition } from 'motion/react';
 
 /* ── Spring-physics transition presets ──────────────────────────────────────── */
 

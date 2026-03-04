@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getTheme, NOTIFICATION_THEMES } from './constants';
 import { HolographicContainer } from './holographic-container';

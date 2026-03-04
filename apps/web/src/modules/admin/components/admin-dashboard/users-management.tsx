@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { userManagementApi } from '../../api/userManagementApi';
 import type { AdminUser } from '../../api/types';

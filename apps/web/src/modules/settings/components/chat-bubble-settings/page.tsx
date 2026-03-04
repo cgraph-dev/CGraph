@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from '@/stores/theme';
 import { useChatCustomization } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';

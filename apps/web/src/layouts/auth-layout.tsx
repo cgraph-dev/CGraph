@@ -3,7 +3,7 @@
  * @module
  */
 import { ReactNode, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { LogoIcon } from '@/components/logo';
 import {
   CyberGrid,

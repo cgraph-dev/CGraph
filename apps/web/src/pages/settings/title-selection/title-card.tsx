@@ -2,7 +2,7 @@
  * TitleCard — a single title card with preview / equip actions
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Lock, Sparkles } from 'lucide-react';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleCardProps } from './types';

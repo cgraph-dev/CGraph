@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import {
   useMarketplaceStore,
   type ItemType,

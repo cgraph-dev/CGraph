@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { adminApi } from '@/modules/admin/api';
 import { format } from 'date-fns';
 import clsx from 'clsx';

@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, Reorder } from 'framer-motion';
+import { motion, Reorder } from 'motion/react';
 import {
   UsersIcon,
   PlusIcon,

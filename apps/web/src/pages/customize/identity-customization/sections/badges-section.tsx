@@ -4,7 +4,7 @@
  * Displays the badges selection grid with equipped badges management.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { LockClosedIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

@@ -10,7 +10,7 @@
 
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { PageTransition } from '@/shared/components/page-transition';
 import { AuthInitializer } from '@/routes/auth-initializer';
 import { AppRoutes } from '@/routes/app-routes';

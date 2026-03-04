@@ -2,7 +2,7 @@
  * Locked theme card overlay component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 

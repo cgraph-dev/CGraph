@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { LeaderboardEntry } from '@cgraph/shared-types';
 import { RankBadge } from './rank-badge';
 import { StarIcon } from '@heroicons/react/24/solid';

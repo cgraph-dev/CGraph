@@ -7,7 +7,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { springs } from '@/lib/animation-presets';
 

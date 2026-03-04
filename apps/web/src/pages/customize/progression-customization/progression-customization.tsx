@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useGamificationStore } from '@/modules/gamification/store';
 import { gamificationLogger as logger } from '@/lib/logger';
 import { api } from '@/lib/api';

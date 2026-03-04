@@ -4,7 +4,7 @@
  * @module quests-page/ObjectiveItem
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import type { QuestObjective } from '@/modules/gamification/store';
 import { tweens } from '@/lib/animation-presets';

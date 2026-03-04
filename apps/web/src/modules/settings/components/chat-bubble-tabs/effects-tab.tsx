@@ -2,7 +2,7 @@
  * Chat bubble effects settings tab.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import type { TabProps } from './types';
 

@@ -2,7 +2,7 @@
  * Settings sync status indicator.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircleIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export type SyncStatus = 'idle' | 'saving' | 'saved' | 'error';

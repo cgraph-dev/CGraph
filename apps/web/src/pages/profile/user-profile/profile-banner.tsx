@@ -2,7 +2,7 @@
  * ProfileBanner - Banner section with edit mode overlay
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PencilSquareIcon, CheckIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { tweens } from '@/lib/animation-presets';
 

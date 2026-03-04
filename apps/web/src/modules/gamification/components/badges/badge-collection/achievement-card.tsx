@@ -2,7 +2,7 @@
  * AchievementCard - grid and list item display for achievements
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip, RARITY_COLORS } from '../animated-badge';

@@ -2,7 +2,7 @@
  * Stat card component for the Gamification Hub.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 
 export interface StatCardProps {

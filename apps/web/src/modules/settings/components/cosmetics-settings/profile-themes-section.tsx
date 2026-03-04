@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useThemeStore } from '@/stores/theme';
 
 import type { SectionProps, ThemePresetWithId } from './types';

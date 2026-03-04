@@ -3,7 +3,7 @@
  * @module modules/premium/components/payment-modal
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Button } from '@/components';
 import type { PaymentItem } from './types';
 

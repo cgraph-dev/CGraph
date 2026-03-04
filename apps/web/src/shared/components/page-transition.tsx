@@ -8,7 +8,7 @@
  * @module shared/components/PageTransition
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import { transitions } from '@cgraph/animation-constants';
 

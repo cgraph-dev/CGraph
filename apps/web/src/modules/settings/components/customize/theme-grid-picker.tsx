@@ -5,7 +5,7 @@
  * glow effects, and hover previews.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckIcon, LockClosedIcon } from '@heroicons/react/24/solid';
 import { tweens, loop } from '@/lib/animation-presets';
 

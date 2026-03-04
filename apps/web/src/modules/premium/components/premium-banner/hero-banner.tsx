@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon, XMarkIcon, StarIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { ANIMATED_FEATURES } from './constants';

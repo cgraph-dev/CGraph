@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { entranceVariants, staggerConfigs } from '@/lib/animation-presets';
 import { ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';

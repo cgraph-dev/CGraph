@@ -2,7 +2,7 @@
  * Selected theme indicator component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 

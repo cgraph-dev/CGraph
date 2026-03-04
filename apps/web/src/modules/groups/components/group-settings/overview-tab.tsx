@@ -3,7 +3,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { OverviewTabProps } from './types';

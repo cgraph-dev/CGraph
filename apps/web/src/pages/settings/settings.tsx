@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { useParams, NavLink } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
   UserIcon,

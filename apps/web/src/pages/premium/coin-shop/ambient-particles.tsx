@@ -2,7 +2,7 @@
  * AmbientParticles component - decorative floating particles
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 const PARTICLE_COUNT = 15;
 

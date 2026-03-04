@@ -3,7 +3,7 @@
  * @module
  */
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { LogoIcon } from '@/components/logo';
 
 export type LogoSize = 'sm' | 'md' | 'lg';

@@ -12,7 +12,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   HomeIcon,

@@ -10,7 +10,7 @@
  */
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { useGamificationStore } from '@/modules/gamification/store';

@@ -1,7 +1,7 @@
 /** AdminDashboard — main admin dashboard page with metrics, tabs, and system controls. */
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   ChartBarIcon,
   UsersIcon,

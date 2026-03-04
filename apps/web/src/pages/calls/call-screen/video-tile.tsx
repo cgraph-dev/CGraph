@@ -3,7 +3,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { VideoTileProps, CallUser } from './types';
 

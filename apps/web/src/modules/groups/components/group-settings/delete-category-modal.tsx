@@ -4,7 +4,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface DeleteCategoryModalProps {
   deleteConfirmId: string | null;

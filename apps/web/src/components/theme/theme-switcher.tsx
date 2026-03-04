@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ThemeRegistry } from '@/themes/theme-registry';
 import type { AppTheme } from '@/themes/theme-types';
 import { CheckCircle, Sparkles, Lock } from 'lucide-react';

@@ -2,7 +2,7 @@
  * CoinBalanceCard component - displays user's coin balance
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens, loop } from '@/lib/animation-presets';

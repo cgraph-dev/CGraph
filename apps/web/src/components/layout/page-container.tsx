@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { tweens } from '@/lib/animation-presets';
 
 export interface PageContainerProps {

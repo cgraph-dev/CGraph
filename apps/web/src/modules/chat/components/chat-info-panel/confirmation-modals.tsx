@@ -2,7 +2,7 @@
  * ConfirmationModals - block and report confirmation modals
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface BlockConfirmModalProps {
   isOpen: boolean;

@@ -4,7 +4,7 @@
  * Displays avatars of users who have read the message.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ReadByEntry } from './types';
 import { tweens } from '@/lib/animation-presets';
 

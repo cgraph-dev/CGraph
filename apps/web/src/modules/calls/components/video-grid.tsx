@@ -4,7 +4,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MicrophoneIcon } from '@heroicons/react/24/outline';
 import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 import type { CallParticipant } from '@/modules/calls/types';

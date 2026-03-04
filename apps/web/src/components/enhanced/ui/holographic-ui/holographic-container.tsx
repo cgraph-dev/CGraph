@@ -3,7 +3,7 @@
  * @module
  */
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getTheme, INTENSITY_MULTIPLIERS } from './constants';
 import type { HolographicContainerProps, HolographicConfig, HolographicTheme } from './types';

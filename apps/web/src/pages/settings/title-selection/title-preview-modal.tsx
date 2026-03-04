@@ -2,7 +2,7 @@
  * TitlePreviewModal — modal overlay showing a title preview
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleRarity } from '@/data/titles';
 import type { TitlePreviewModalProps } from './types';

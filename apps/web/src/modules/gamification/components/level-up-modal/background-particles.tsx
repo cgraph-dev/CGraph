@@ -3,7 +3,7 @@
  * @module modules/gamification/components/level-up-modal/background-particles
  */
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 const PARTICLE_COLORS = ['#10b981', '#8b5cf6', '#ec4899', '#f59e0b'] as const;
 

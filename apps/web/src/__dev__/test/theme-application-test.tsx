@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard, Avatar } from '@/shared/components/ui';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import {

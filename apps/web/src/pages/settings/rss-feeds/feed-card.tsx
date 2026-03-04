@@ -1,6 +1,6 @@
 /** FeedCard — displays an RSS feed entry with copy-link and external-link actions. */
 import { Copy, Check, ExternalLink, Rss, MessageSquare, Megaphone, Hash } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { RSSFeed } from './types';
 
 const ICON_MAP = {

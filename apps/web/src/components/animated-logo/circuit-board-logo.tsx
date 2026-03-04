@@ -11,7 +11,7 @@
  * @module components/animated-logo/CircuitBoardLogo
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useId } from 'react';
 import type { CircuitBoardLogoProps, SvgFilterIds } from './types';
 import { COLOR_PALETTES } from './constants';

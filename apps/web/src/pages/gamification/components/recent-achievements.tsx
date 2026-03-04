@@ -3,7 +3,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TrophyIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Achievement } from '@/modules/gamification/store/gamificationStore.types';

@@ -3,7 +3,7 @@
  * Main export that wraps CircuitBoardLogo with text and effects
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import type { AnimatedLogoProps } from './types';
 import { SIZE_MAP, COLOR_PALETTES, SPLASH_TIMINGS } from './constants';

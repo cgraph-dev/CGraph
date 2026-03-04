@@ -4,7 +4,7 @@
  */
 
 import { ReactNode, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { HoloPreset, getTheme } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

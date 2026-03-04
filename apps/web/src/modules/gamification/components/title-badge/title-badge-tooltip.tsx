@@ -5,7 +5,7 @@
  * and unlock requirement on hover.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { Title, RARITY_COLORS } from '@/data/titles';
 

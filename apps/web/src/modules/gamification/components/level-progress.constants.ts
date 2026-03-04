@@ -3,7 +3,7 @@
  * @module
  */
 import { durations } from '@cgraph/animation-constants';
-import type { Transition } from 'framer-motion';
+import type { Transition } from 'motion/react';
 
 // ── XP Calculation ──────────────────────────────────────────────────
 

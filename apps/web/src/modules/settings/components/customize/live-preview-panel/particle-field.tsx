@@ -2,7 +2,7 @@
  * ParticleField - Renders animated particles and overlay effects for the profile card
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 import type { ParticleData, ParticleStyle } from './types';
 

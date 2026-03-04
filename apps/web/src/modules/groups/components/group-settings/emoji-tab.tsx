@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { asString } from '@/lib/api-utils';

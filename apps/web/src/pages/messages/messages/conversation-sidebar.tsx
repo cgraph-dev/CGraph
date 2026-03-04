@@ -4,7 +4,7 @@
  * Sidebar with search, conversation list, and actions.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   MagnifyingGlassIcon,
   PlusIcon,

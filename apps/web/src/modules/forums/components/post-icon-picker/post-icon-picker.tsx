@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo, memo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { FaceSmileIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 import { useLocalStorage } from '@/hooks/useLocalStorage';

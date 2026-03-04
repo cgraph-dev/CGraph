@@ -11,7 +11,7 @@
  */
 
 import { useCallback, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleLeftIcon as ChatBubbleSolidIcon } from '@heroicons/react/24/solid';
 import { useForumStore } from '@/modules/forums/store';

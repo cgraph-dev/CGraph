@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import type { BorderCategory } from './types';
 import { BORDER_STYLES, AVATAR_CATEGORIES } from './constants';

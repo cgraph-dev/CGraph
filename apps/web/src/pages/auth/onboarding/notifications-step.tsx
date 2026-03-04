@@ -2,7 +2,7 @@
  * NotificationsStep component - notification preferences
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants } from './animations';
 import { NOTIFICATION_OPTIONS } from './constants';
 import type { ProfileData, NotificationKey } from './types';

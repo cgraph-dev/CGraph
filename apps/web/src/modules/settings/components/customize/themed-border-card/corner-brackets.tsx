@@ -4,7 +4,7 @@
  * Animated corner brackets for selected state
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface CornerBracketsProps {
   color: string;

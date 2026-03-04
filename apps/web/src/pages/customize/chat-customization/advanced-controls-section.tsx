@@ -2,7 +2,7 @@
  * AdvancedControlsSection - Fine-tune controls, toggles, and live preview
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import RangeSliderControl from '@/modules/settings/components/customize/range-slider-control';

@@ -4,7 +4,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Outlet } from 'react-router-dom';
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

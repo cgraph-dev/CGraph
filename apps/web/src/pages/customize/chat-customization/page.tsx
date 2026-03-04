@@ -9,7 +9,7 @@
  * State & logic live in useChatCustomization hook.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { BubbleStyle, MessageEffect, ReactionStyle } from './types';
 import {

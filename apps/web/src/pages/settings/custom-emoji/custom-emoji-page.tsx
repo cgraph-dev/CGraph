@@ -2,7 +2,7 @@
  * Custom emoji management page component.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Search, Plus, Smile, Trash2, Sparkles } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
 import { useCustomEmoji, CATEGORIES } from './hooks';

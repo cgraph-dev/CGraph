@@ -3,7 +3,7 @@
  * @module pages/leaderboard/sections
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 import type { PaginationProps } from './types';

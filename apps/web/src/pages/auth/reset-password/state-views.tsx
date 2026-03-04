@@ -4,7 +4,7 @@
  * Different UI states for the password reset flow.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from './utils';
 import { springs } from '@/lib/animation-presets';

@@ -4,7 +4,7 @@
  * Shows progress toward the next milestone
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import type { MilestoneProgressProps } from './types';
 import { tweens } from '@/lib/animation-presets';

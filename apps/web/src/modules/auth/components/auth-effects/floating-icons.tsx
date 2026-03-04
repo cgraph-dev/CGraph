@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { prefersReducedMotion, DEFAULT_COLOR, SECURITY_ICONS } from './constants';
 import type { FloatingIconsProps } from './types';
 

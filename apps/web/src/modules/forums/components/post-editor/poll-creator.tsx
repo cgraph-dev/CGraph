@@ -3,7 +3,7 @@
  * @module
  */
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { MAX_POLL_OPTIONS, MIN_POLL_OPTIONS, POLL_DURATION_OPTIONS } from './constants';
 import type { PollCreatorProps } from './types';

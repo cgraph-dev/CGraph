@@ -4,7 +4,7 @@
  * Displays search results, recent searches, or empty states
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import { MessageSkeleton } from '@/components/ui/skeletons';
 import type { SearchResultsProps } from './types';

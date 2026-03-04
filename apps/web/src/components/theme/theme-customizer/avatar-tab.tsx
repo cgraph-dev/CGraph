@@ -4,7 +4,7 @@
  * Avatar border and glow customization.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
  
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
 import { PremiumThemeGate, TierBadge } from '../premium-theme-gate';

@@ -2,7 +2,7 @@
  * MessageInputArea - message input with sticker picker and send button
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PaperAirplaneIcon, PaperClipIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { StickerPicker, StickerButton } from '@/modules/chat/components/sticker-picker';

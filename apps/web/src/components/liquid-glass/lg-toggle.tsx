@@ -7,7 +7,7 @@
  * @module components/liquid-glass/lg-toggle
  */
 import { useId, type ComponentPropsWithoutRef, type Ref } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { springSnap } from './shared';
 

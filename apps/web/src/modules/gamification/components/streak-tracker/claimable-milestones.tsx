@@ -4,7 +4,7 @@
  * Shows milestones that are ready to be claimed
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TrophyIcon } from '@heroicons/react/24/outline';
 import type { ClaimableMilestonesProps } from './types';
 

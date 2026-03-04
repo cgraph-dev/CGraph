@@ -2,7 +2,7 @@
  * Scheduled message time preview display.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import { formatTimeUntil } from '@/modules/chat/components/scheduleMessageUtils';
 

@@ -4,7 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MoonIcon } from '@heroicons/react/24/outline';
 import { MoonIcon as MoonIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

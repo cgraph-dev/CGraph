@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useMarketplaceStore } from '@/modules/gamification/store';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { ITEM_TYPE_LABELS, RARITY_COLORS, type ListingDetailModalProps } from './types';

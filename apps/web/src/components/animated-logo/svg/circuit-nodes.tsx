@@ -7,7 +7,7 @@
  * @module components/animated-logo/svg/CircuitNodes
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NODE_APPEAR_VARIANTS, PULSE_VARIANTS } from '../constants';
 import type { SvgFilterIds } from '../types';
 

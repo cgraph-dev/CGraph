@@ -11,7 +11,7 @@
  */
 
 import { transitions } from '@cgraph/animation-constants';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
 interface PageSkeletonProps {

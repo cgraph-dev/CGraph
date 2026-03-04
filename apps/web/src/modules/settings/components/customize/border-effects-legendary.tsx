@@ -4,7 +4,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import type { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { BorderEffectParams } from '@/modules/settings/components/customize/border-effect-types';
 
 /**

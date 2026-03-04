@@ -4,7 +4,7 @@
  * Today's reward details with claim button
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GiftIcon, SparklesIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { RewardDetailsProps } from './types';

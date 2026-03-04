@@ -2,7 +2,7 @@
  * MessageEffectsSection - List of message entrance effect presets
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import type { MessageEffectsSectionProps } from './types';
 import { tweens, loopWithDelay } from '@/lib/animation-presets';

@@ -8,8 +8,8 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import { motion } from 'motion/react';
+import type { Variants } from 'motion/react';
 import { springs } from '@/lib/animation-presets';
 import type { ReactNode } from 'react';
 

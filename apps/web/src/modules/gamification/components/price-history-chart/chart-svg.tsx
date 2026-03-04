@@ -2,7 +2,7 @@
  * ChartSVG - the SVG chart rendering (grid, paths, volume bars, hover indicator)
  */
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { ChartDimensions, ChartMetrics, ChartPaths, HoveredPointData } from './types';
 import { GRID_PERCENTAGES, POSITIVE_COLOR, NEGATIVE_COLOR } from './constants';
 import { tweens } from '@/lib/animation-presets';

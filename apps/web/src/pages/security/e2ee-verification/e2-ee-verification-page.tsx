@@ -2,7 +2,7 @@
  * E2EE verification page component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   Shield,
   ShieldCheck,

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForumStore } from '@/modules/forums/store';
 import { useAuthStore } from '@/modules/auth/store';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ForumHeader } from './forum-header';
 import { SortControls } from './sort-controls';
 import { PostsList } from './posts-list';

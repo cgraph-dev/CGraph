@@ -3,7 +3,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { CALL_STATES, pulseAnimation } from './constants';
 import type { CallUser, CallStatus } from './types';

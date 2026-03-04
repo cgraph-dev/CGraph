@@ -5,7 +5,7 @@
  * a sticker selection interface for chat messaging.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon, SparklesIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';

@@ -4,7 +4,7 @@
  * Dropdown showing search results, loading state, and suggestions.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 const resultContainer = {

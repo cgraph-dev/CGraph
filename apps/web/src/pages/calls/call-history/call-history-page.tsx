@@ -2,7 +2,7 @@
  * Call history page component.
  * @module
  */
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Phone } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
 import { useCallHistory } from './hooks';

@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { asString, asNumber, asOptionalString } from '@/lib/api-utils';

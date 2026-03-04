@@ -4,7 +4,7 @@
  * Displays frequently asked questions about premium subscriptions.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { FAQ_ITEMS } from './constants';
 

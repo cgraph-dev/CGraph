@@ -11,7 +11,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'motion/react';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 
 // ============================================================================

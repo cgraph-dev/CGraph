@@ -3,7 +3,7 @@
 import { type RefObject, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { type Message } from '@/modules/chat/store';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { formatDateHeader } from '@/lib/chat/messageUtils';
 import type { MessageGroup } from '@/lib/chat/messageUtils';
 import { TypingIndicator } from '@/modules/chat/components';

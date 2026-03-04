@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { adminApi } from '@/modules/admin/api';
 import { formatTimeAgo } from '@/lib/utils';

@@ -3,7 +3,7 @@
  * @module modules/forums/components/thread-view/components/more-menu
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   PencilIcon,
   TrashIcon,

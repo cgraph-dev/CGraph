@@ -2,7 +2,7 @@
  * Empty state placeholder component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { springs, tweens, staggerConfigs } from '@/lib/animation-presets';
 import { 
   InboxIcon, 

@@ -1,5 +1,5 @@
 /** AmbientBackground — animated particle background for the chat interface. */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { UIPreferences } from './message-bubble';
 
 export interface AmbientBackgroundProps {

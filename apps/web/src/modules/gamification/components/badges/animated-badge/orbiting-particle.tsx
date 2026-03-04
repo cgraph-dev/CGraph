@@ -2,7 +2,7 @@
  * OrbitingParticle component - particle effect for epic+ badges
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ParticleProps } from './types';
 
 /**

@@ -7,7 +7,7 @@
  * @module components/liquid-glass/lg-text-input
  */
 import { type InputHTMLAttributes, type ReactNode, useState, useId, type Ref } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';

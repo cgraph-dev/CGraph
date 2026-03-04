@@ -4,7 +4,7 @@
  * Single row in the leaderboard list.
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

@@ -5,7 +5,7 @@
  * Used in profile pages and achievement galleries.
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useBadgeCollection } from './useBadgeCollection';
 import { CollectionHeader } from './collection-header';

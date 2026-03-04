@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { containerVariants, itemVariants } from './animations';
 import { useUserSearch } from '@/modules/social/hooks/useUserSearch';
 import { api } from '@/lib/api';

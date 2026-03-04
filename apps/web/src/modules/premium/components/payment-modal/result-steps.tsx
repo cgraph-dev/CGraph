@@ -3,7 +3,7 @@
  * @module modules/premium/components/payment-modal
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircleIcon, ExclamationTriangleIcon, GiftIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { calculateSavings } from './utils';

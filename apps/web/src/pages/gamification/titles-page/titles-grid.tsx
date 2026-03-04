@@ -4,7 +4,7 @@
  * Grid display of title cards with loading/empty states
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/glass-card';
 import { TitleCard } from './title-card';

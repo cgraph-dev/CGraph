@@ -4,7 +4,7 @@
  * Animated fire icon for streak display
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import { FIRE_COLORS, GLOW_COLOR } from './constants';
 import { tweens, loop } from '@/lib/animation-presets';

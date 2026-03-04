@@ -3,7 +3,7 @@
  * @module pages/groups
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NavLink } from 'react-router-dom';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ServerIconProps } from './types';

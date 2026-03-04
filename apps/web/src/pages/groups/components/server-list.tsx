@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { PlusIcon, ChatBubbleLeftRightIcon, TicketIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

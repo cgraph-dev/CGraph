@@ -2,7 +2,7 @@
  * PackTab - Sticker pack tab selector
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ClockIcon, LockClosedIcon, GiftIcon } from '@heroicons/react/24/outline';
 import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';

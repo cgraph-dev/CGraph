@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { PlusIcon, StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';

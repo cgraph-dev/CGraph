@@ -3,7 +3,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { TypingIndicatorProps } from './types';
 import { TYPING_SPEED_MAP, TYPING_SIZE_MAP } from './constants';
 

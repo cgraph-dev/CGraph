@@ -3,7 +3,7 @@
  * Orchestrates friend list, requests, and search functionality
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { FriendsHeader, AddFriendForm, FriendsTabBar, FriendsSearchBar } from './header-components';
 import { PendingTab, FriendsListTab, BlockedTab } from './friends-tab-panels';

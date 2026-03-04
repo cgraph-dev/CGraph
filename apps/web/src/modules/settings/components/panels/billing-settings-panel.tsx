@@ -3,7 +3,7 @@
  * @module
  */
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useAuthStore } from '@/modules/auth/store';
 import { usePremiumStore } from '@/modules/premium/store';
 import { api } from '@/lib/api';

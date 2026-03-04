@@ -2,7 +2,7 @@
  * Conversation info and settings modals.
  * @module
  */
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { Message } from '@/modules/chat/store';
 import E2EEConnectionTester from '@/modules/chat/components/e2-ee-connection-tester';
 import { E2EEErrorModal } from '@/modules/chat/components/e2-ee-error-modal';

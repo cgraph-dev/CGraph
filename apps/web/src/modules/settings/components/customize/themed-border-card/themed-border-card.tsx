@@ -5,7 +5,7 @@
  * rarity badges, and lock indicators.
  */
 
-import { motion, type TargetAndTransition, type Transition } from 'framer-motion';
+import { motion, type TargetAndTransition, type Transition } from 'motion/react';
 import { LockClosedIcon, CheckIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import { RARITY_COLORS, type BorderRarity } from '@/data/borderCollections';
 import type { ThemedBorderCardProps } from './types';

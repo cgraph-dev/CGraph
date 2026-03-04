@@ -1,7 +1,7 @@
 /** Collapsible sidebar navigation with groups, channels, and quick actions. */
 
 import React, { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { springPreset, glassSurface } from '@/components/liquid-glass/shared';
 import {

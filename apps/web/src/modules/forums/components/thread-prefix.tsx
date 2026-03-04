@@ -3,7 +3,7 @@
  * Displays colored prefix badges on thread titles (e.g., [SOLVED], [HELP], [BUG])
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ThreadPrefix as ThreadPrefixType } from '@/modules/forums/store';
 
 interface ThreadPrefixProps {

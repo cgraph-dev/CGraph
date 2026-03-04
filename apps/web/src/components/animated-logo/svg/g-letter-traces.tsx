@@ -7,7 +7,7 @@
  * @module components/animated-logo/svg/GLetterTraces
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TRACE_DRAW_VARIANTS } from '../constants';
 import type { SvgFilterIds } from '../types';
 

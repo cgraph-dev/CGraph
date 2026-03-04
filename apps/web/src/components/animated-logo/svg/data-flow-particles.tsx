@@ -8,7 +8,7 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import type { SvgFilterIds, ColorDefinition } from '../types';
 import { tweens, loopWithDelay } from '@/lib/animation-presets';
 

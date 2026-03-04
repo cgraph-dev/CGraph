@@ -2,7 +2,7 @@
  * EmptyState - displayed when no achievements match filters
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 interface EmptyStateProps {

@@ -3,7 +3,7 @@
  * @module
  */
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { TabType } from './types';
 import { TABS } from './constants';

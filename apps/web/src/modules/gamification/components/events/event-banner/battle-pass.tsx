@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { normalizeTiers } from './utils';
 import type { BattlePassProgressProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

@@ -3,7 +3,7 @@
  * @module modules/chat/components/conversation-list
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { FilterType } from './types';

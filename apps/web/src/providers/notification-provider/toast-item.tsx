@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { XMarkIcon, GiftIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 import { GlassCard } from '@/shared/components/ui';

@@ -9,7 +9,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { motion, type Variants } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { AuthErrorAlert } from '@/pages/auth/register/auth-error-alert';
 import { SubmitButton } from '@/components/ui/submit-button';

@@ -8,7 +8,7 @@
  * @module shared/components/ErrorFallback
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { transitions } from '@cgraph/animation-constants';
 
 // ── Types ───────────────────────────────────────────────────────────────

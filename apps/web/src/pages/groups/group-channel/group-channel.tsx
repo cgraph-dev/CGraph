@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { useGroupStore } from '@/modules/groups/store';
 import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';

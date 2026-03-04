@@ -2,7 +2,7 @@
  * ConversationHeader - glassmorphic header with user info and actions
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PhoneIcon, ShieldCheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCardNeon } from '@/shared/components/ui';
 import type { ConversationHeaderProps } from './types';

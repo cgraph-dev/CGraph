@@ -3,7 +3,7 @@
  * @module modules/forums/components/thread-view/components/rating-stars
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 

@@ -4,7 +4,7 @@
  * Button to load additional notifications with loading state.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { LoadMoreButtonProps } from './types';
 import { tweens, loop } from '@/lib/animation-presets';

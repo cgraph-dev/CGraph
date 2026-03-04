@@ -3,7 +3,7 @@
  * @module
  */
 import { durations } from '@cgraph/animation-constants';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getTheme, STATUS_COLORS } from './constants';
 import type { HolographicAvatarProps } from './types';

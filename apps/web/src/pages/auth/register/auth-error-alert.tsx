@@ -4,7 +4,7 @@
  * @module pages/auth/register/AuthErrorAlert
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface AuthErrorAlertProps {
   error: string | { message?: string } | null;

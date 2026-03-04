@@ -2,7 +2,7 @@
  * Daily rewards customization section.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FireIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

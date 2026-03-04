@@ -4,7 +4,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import type { ForumBannerProps } from './types';
 import { AnimatedForumTitle } from './animated-forum-title';

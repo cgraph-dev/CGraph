@@ -10,7 +10,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { api } from '@/lib/api';
 import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 

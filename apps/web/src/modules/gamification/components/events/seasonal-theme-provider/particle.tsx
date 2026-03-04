@@ -2,7 +2,7 @@
  * Seasonal particle effect component.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { ParticleProps } from './types';
 
 /**

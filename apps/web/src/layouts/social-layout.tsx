@@ -3,7 +3,7 @@
  * @module layouts/social-layout
  */
 import { Outlet } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 /**
  * SocialLayout Component

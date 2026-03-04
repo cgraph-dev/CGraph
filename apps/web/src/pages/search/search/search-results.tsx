@@ -7,7 +7,7 @@
  * @module pages/search/search/SearchResults
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { SearchCategory } from '@/modules/search/store';

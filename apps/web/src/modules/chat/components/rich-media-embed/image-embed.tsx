@@ -3,7 +3,7 @@
  * @module modules/chat/components/rich-media-embed
  */
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PhotoIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import type { LinkMetadata } from './types';
 

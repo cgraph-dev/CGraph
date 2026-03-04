@@ -9,7 +9,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   TrophyIcon,
   SparklesIcon,

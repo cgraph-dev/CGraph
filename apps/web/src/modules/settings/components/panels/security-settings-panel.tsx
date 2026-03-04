@@ -2,7 +2,7 @@
  * Security settings panel.
  * @module
  */
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
 import { tweens } from '@/lib/animation-presets';

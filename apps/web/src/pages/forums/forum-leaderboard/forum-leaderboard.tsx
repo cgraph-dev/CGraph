@@ -6,7 +6,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useForumStore, Forum } from '@/modules/forums/store';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';

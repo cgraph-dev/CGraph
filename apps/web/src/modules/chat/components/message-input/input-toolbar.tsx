@@ -2,7 +2,7 @@
  * InputToolbar component - emoji, sticker, voice, send buttons
  */
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PaperAirplaneIcon, FaceSmileIcon, MicrophoneIcon, GifIcon } from '@heroicons/react/24/outline';
 import type { AttachmentMode } from './types';
 
