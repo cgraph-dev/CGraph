@@ -3,6 +3,8 @@
  * @module
  */
 import React from 'react';
+import { motion } from 'motion/react';
+import { useMotionSafe } from '@/hooks/useMotionSafe';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
@@ -29,8 +31,10 @@ export function Button({
   ref,
   ...props
 }: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const { tapScale, hoverScale, springs } = useMotionSafe();
+
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]';
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles: Record<typeof variant, string> = {
     primary:
@@ -54,10 +58,13 @@ export function Button({
   };
 
   return (
-    <button
+    <motion.button
       ref={ref}
       disabled={disabled || isLoading}
       className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${fullWidth ? 'w-full' : ''} ${className} `}
+      whileTap={tapScale(0.97)}
+      whileHover={hoverScale(1.02)}
+      transition={springs.snappy}
       {...props}
     >
       {isLoading ? (
@@ -72,7 +79,7 @@ export function Button({
           {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
         </>
       )}
-    </button>
+    </motion.button>
   );
 }
 
@@ -133,6 +140,8 @@ export function IconButton({
   ref,
   ...props
 }: IconButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const { tapScale, hoverScale, springs } = useMotionSafe();
+
   const baseStyles =
     'inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -159,12 +168,15 @@ export function IconButton({
   };
 
   return (
-    <button
+    <motion.button
       ref={ref}
       disabled={disabled || isLoading}
       aria-label={label}
       title={label}
       className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className} `}
+      whileTap={tapScale(0.95)}
+      whileHover={hoverScale(1.05)}
+      transition={springs.snappy}
       {...props}
     >
       {isLoading ? (
@@ -172,7 +184,7 @@ export function IconButton({
       ) : (
         <span className={iconSizes[size]}>{icon}</span>
       )}
-    </button>
+    </motion.button>
   );
 }
 
