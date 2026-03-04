@@ -41,10 +41,10 @@ const Status = lazy(() => import('./pages/resources/Status'));
 // Loading fallback
 function PageLoader() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f]">
+    <div className="flex min-h-screen items-center justify-center bg-pearl">
       <div className="flex flex-col items-center gap-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500/30 border-t-emerald-500" />
-        <p className="text-sm text-gray-400">Loading...</p>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-glow-purple/30 border-t-glow-purple" />
+        <p className="text-sm text-slate-400">Loading...</p>
       </div>
     </div>
   );
