@@ -15,5 +15,5 @@ export type {
   ThemeCardProps,
   CategoryTab,
 } from './theme-customization/index';
-export { MOCK_THEMES, ThemeCard } from './theme-customization/index';
+export { ThemeCard } from './theme-customization/index';
 export { default } from './theme-customization/index';

@@ -8,7 +8,6 @@ import { durations } from '@cgraph/animation-constants';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Border, Rarity } from '../types';
-import { MOCK_BORDERS } from '../constants';
 import {
   ALL_BORDERS,
   BORDER_THEMES,
@@ -52,7 +51,7 @@ export function BordersSection({
   // Filter by search query from parent (using the borders prop for search results)
   const displayBorders = useMemo(() => {
     // If there's a search active (borders.length < total), use that
-    if (borders.length < MOCK_BORDERS.length) {
+    if (borders.length < ALL_BORDERS.length) {
       // Map old borders to new format for display
       return borders.map((b) => ({
         ...(themedBorders.find((tb) => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
