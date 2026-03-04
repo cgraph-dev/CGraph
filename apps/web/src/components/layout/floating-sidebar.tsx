@@ -5,7 +5,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { springs } from '@/lib/animation-presets';
+import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -13,7 +13,6 @@ import {
   CogIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
@@ -70,13 +69,13 @@ export function FloatingSidebar({
     >
       <motion.div
         animate={{ width: isCollapsed ? 64 : 256 }}
-        transition={{ ...springs.stiff, mass: 0.8 }}
+        transition={{ ...springPreset, mass: 0.8 }}
         className="h-full overflow-hidden"
       >
-        <GlassCard variant="crystal" className="flex h-full flex-col p-2">
+        <div className={`flex h-full flex-col rounded-2xl p-2 ${glassSurfaceElevated}`}>
           <button
             onClick={toggleCollapsed}
-            className="absolute -right-3 top-8 rounded-full border border-dark-600/30 bg-dark-800 p-1.5 hover:bg-dark-700"
+            className="absolute -right-3 top-8 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] hover:bg-white/[0.12] transition-colors"
           >
             {isCollapsed ? (
               <ChevronRightIcon className="h-4 w-4 text-white" />
@@ -117,7 +116,7 @@ export function FloatingSidebar({
                     <motion.div
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-dark-800 px-3 py-1.5 text-sm text-foreground"
+                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-[rgb(30,32,40)]/[0.90] px-3 py-1.5 text-sm text-foreground backdrop-blur-[16px] border border-white/[0.08] shadow-lg"
                     >
                       {group.name}
                     </motion.div>
@@ -165,7 +164,7 @@ export function FloatingSidebar({
                     size="medium"
                     avatarBorderId={getAvatarBorderId(user)}
                   />
-                  <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-800 bg-green-500" />
+                  <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[rgb(30,32,40)] bg-green-500" />
                 </div>
                 <AnimatePresence>
                   {!isCollapsed && (
@@ -207,7 +206,7 @@ export function FloatingSidebar({
           )}
 
           <CustomStatusModal isOpen={showStatusModal} onClose={() => setShowStatusModal(false)} />
-        </GlassCard>
+        </div>
       </motion.div>
     </motion.div>
   );

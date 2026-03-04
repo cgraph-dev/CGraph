@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { springs } from '@/lib/animation-presets';
+import { springPreset, glassSurface } from '@/components/liquid-glass/shared';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -111,13 +111,13 @@ export function Sidebar({
   return (
     <motion.aside
       animate={{ width: isCollapsed ? 64 : 256 }}
-      transition={{ ...springs.stiff, mass: 0.8 }}
-      className={`relative flex flex-col border-r border-dark-600/20 bg-dark-900 ${variant === 'compact' ? 'py-2' : 'py-4'} ${className} `}
+      transition={{ ...springPreset, mass: 0.8 }}
+      className={`relative flex flex-col ${glassSurface} border-r border-white/[0.06] dark:border-white/[0.06] ${variant === 'compact' ? 'py-2' : 'py-4'} ${className} `}
     >
       {/* Toggle button */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-6 z-10 rounded-full border border-dark-600/30 bg-dark-800 p-1.5 hover:bg-dark-700"
+        className="absolute -right-3 top-6 z-10 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] hover:bg-white/[0.12] transition-colors"
       >
         {isCollapsed ? (
           <ChevronRightIcon className="h-3 w-3 text-white" />
@@ -134,7 +134,7 @@ export function Sidebar({
               key={group.id}
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={springs.snappy}
+              transition={springPreset}
               whileHover={{ x: 2 }}
               onClick={() => handleGroupClick(group.id)}
               className={`flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-white/5`}
@@ -150,7 +150,7 @@ export function Sidebar({
 
       {/* User section */}
       {showUserStatus && user && (
-        <div className="border-t border-dark-600/20 px-2 pt-2">
+        <div className="border-t border-white/[0.06] px-2 pt-2">
           <NavLink
             to="/profile"
             className="flex items-center gap-3 rounded-lg p-2 hover:bg-white/5"

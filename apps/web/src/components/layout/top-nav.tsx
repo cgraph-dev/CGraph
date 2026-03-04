@@ -84,9 +84,9 @@ export function TopNav({
       case 'transparent':
         return 'bg-transparent';
       case 'solid':
-        return 'bg-dark-900';
+        return 'bg-[rgb(30,32,40)]/[0.95] backdrop-blur-[20px] backdrop-saturate-[1.4]';
       default:
-        return 'bg-dark-900/80 backdrop-blur-xl';
+        return 'bg-[rgb(30,32,40)]/[0.72] backdrop-blur-[20px] backdrop-saturate-[1.4]';
     }
   };
 
@@ -94,12 +94,12 @@ export function TopNav({
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`sticky top-0 z-30 border-b border-dark-600/20 ${getBackgroundClass()} ${className} `}
+      className={`sticky top-0 z-30 border-b border-white/[0.06] ${getBackgroundClass()} ${className} `}
     >
       <div className="flex h-16 items-center justify-between gap-4 px-4">
         {/* Left: menu toggle + breadcrumbs */}
         <div className="flex items-center gap-4">
-          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-dark-700/50 lg:hidden">
+          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-white/[0.08] transition-colors lg:hidden">
             {isMobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6 text-foreground" />
             ) : (
@@ -172,7 +172,7 @@ export function TopNav({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleDarkMode}
-            className="rounded-lg p-2 hover:bg-dark-700/50"
+            className="rounded-lg p-2 hover:bg-white/[0.08] transition-colors"
           >
             {isDarkMode ? (
               <SunIcon className="h-5 w-5 text-foreground-secondary" />

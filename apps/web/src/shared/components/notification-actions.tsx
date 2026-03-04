@@ -107,7 +107,7 @@ export function NotificationActions({
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Quick reply..."
-              className="flex-1 rounded-lg border border-white/10 bg-dark-700 px-3 py-1.5 text-xs text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
+              className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-1.5 text-xs text-white placeholder-white/30 focus:border-white/[0.16] focus:outline-none focus:ring-1 focus:ring-white/[0.08]"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && replyText.trim()) {

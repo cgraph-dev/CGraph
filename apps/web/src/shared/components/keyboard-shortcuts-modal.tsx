@@ -6,6 +6,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { entranceVariants, springs } from '@/lib/animation-presets';
+import { glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface Shortcut {
@@ -123,7 +124,7 @@ export function KeyboardShortcutsModal() {
             exit="initial"
             transition={springs.gentle}
             onClick={(e) => e.stopPropagation()}
-            className="relative mx-4 max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-dark-800 p-6 shadow-2xl"
+            className={`relative mx-4 max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-2xl p-6 ${glassSurfaceElevated}`}
           >
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">

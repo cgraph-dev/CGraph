@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { tweens, springs } from '@/lib/animation-presets';
+import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import {
   MagnifyingGlassIcon,
   ChatBubbleLeftRightIcon,
@@ -179,13 +179,13 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          transition={springs.snappy}
+          transition={springPreset}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-lg overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-2xl"
+          className={`w-full max-w-lg overflow-hidden rounded-xl ${glassSurfaceElevated}`}
         >
           {/* Search input */}
-          <div className="flex items-center gap-3 border-b border-gray-700/50 px-4 py-3">
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+          <div className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3">
+            <MagnifyingGlassIcon className="h-5 w-5 text-blue-400" />
             <input
               ref={inputRef}
               type="text"
@@ -195,7 +195,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
               placeholder="Where would you like to go?"
               className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none"
             />
-            <kbd className="rounded bg-dark-700 px-2 py-0.5 text-xs text-gray-500">ESC</kbd>
+            <kbd className="rounded bg-white/[0.08] px-2 py-0.5 text-xs text-gray-500 border border-white/[0.06]">ESC</kbd>
           </div>
 
           {/* Results with category headers */}
@@ -226,13 +226,13 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                       <motion.button
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ ...tweens.fast, delay: currentFlatIndex * 0.03 }}
+                        transition={{ delay: currentFlatIndex * 0.03, ...springPreset }}
                         onClick={() => handleSelect(item)}
                         onMouseEnter={() => setSelectedIndex(currentFlatIndex)}
                         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                           isSelected
-                            ? 'bg-primary-600/20 text-white'
-                            : 'text-gray-300 hover:bg-dark-700'
+                            ? 'bg-white/[0.10] text-white'
+                            : 'text-gray-300 hover:bg-white/[0.06]'
                         }`}
                       >
                         <Icon className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary-400' : 'text-gray-500'}`} />
@@ -242,7 +242,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                             <div className="truncate text-xs text-gray-500">{item.subtitle}</div>
                           )}
                         </div>
-                        <span className="shrink-0 rounded bg-dark-700 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">
+                        <span className="shrink-0 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] uppercase text-gray-500 border border-white/[0.06]">
                           {item.type}
                         </span>
                       </motion.button>
@@ -254,15 +254,15 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
           </div>
 
           {/* Footer */}
-          <div className="flex items-center gap-4 border-t border-gray-700/50 px-4 py-2 text-xs text-gray-500">
+          <div className="flex items-center gap-4 border-t border-white/[0.06] px-4 py-2 text-xs text-gray-500">
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-dark-700 px-1.5 py-0.5">↑↓</kbd> Navigate
+              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">↑↓</kbd> Navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-dark-700 px-1.5 py-0.5">↵</kbd> Open
+              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">↵</kbd> Open
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-dark-700 px-1.5 py-0.5">Esc</kbd> Close
+              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">Esc</kbd> Close
             </span>
           </div>
         </motion.div>

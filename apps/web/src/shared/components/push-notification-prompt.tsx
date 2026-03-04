@@ -80,7 +80,7 @@ export function PushNotificationPrompt() {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
         >
-          <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-dark-800/95 px-5 py-4 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-[rgb(30,32,40)]/[0.85] px-5 py-4 shadow-2xl backdrop-blur-[20px] backdrop-saturate-[1.4]">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-500/20">
               <BellAlertIcon className="h-5 w-5 text-primary-400" />
             </div>

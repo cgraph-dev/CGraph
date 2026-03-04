@@ -155,7 +155,7 @@ export function ErrorFallback({
         <button
           type="button"
           onClick={handleGoBack}
-          className="inline-flex items-center gap-2 rounded-lg border border-dark-600 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-dark-800 focus:outline-none focus:ring-2 focus:ring-dark-500/40"
+          className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] px-4 py-2.5 text-sm text-gray-300 transition-colors hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-white/[0.12]"
         >
           <ArrowLeftIcon className="h-4 w-4" />
           Go Back
@@ -178,7 +178,7 @@ export function ErrorFallback({
           <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-300">
             Error Details (Dev)
           </summary>
-          <pre className="mt-2 max-h-40 overflow-auto rounded-lg border border-dark-700 bg-dark-900 p-4 text-xs text-red-400">
+          <pre className="mt-2 max-h-40 overflow-auto rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)]/[0.85] p-4 text-xs text-red-400 backdrop-blur-[16px]">
             {error.stack ?? error.toString()}
           </pre>
         </details>

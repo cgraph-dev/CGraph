@@ -119,7 +119,7 @@ export function MobileNav({
         animate={{ y: 0, opacity: 1 }}
         className={`fixed bottom-4 left-4 right-4 z-50 ${className}`}
       >
-        <div className="rounded-2xl border border-dark-600/30 bg-dark-800/90 shadow-2xl backdrop-blur-xl">
+        <div className="rounded-2xl border border-white/[0.08] bg-[rgb(30,32,40)]/[0.82] shadow-2xl backdrop-blur-[20px] backdrop-saturate-[1.4]">
           <div className="flex items-center justify-around p-2">
             {navItems.map((item) => {
               const active = isActive(item.path);
@@ -175,7 +175,7 @@ export function MobileNav({
       <motion.nav
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-dark-600/20 bg-dark-900 ${className}`}
+        className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-[rgb(30,32,40)]/[0.95] backdrop-blur-[20px] backdrop-saturate-[1.4] ${className}`}
       >
         <div className="flex items-center justify-around px-1 py-2">
           {navItems.map((item) => {
@@ -214,7 +214,7 @@ export function MobileNav({
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-dark-600/30 bg-dark-900/95 backdrop-blur-xl ${className}`}
+      className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-[rgb(30,32,40)]/[0.85] backdrop-blur-[20px] backdrop-saturate-[1.4] ${className}`}
     >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {

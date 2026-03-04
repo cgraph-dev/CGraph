@@ -12,7 +12,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import { springs } from '@/lib/animation-presets';
+import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
 
 type PresenceStatus = 'online' | 'idle' | 'dnd' | 'invisible';
 
@@ -110,7 +110,7 @@ export function PresenceStatusSelector({
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         disabled={updating}
-        className={`flex items-center gap-2 rounded-lg transition-colors hover:bg-dark-700 ${
+        className={`flex items-center gap-2 rounded-lg transition-colors hover:bg-white/[0.08] ${
           compact ? 'p-1.5' : 'px-3 py-2'
         }`}
       >
@@ -126,9 +126,9 @@ export function PresenceStatusSelector({
               initial={{ opacity: 0, y: 5, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 5, scale: 0.95 }}
-              transition={springs.snappy}
+              transition={springPreset}
               style={{ bottom: menuPos.bottom, left: menuPos.left }}
-              className="fixed z-50 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
+              className={`fixed z-50 w-56 overflow-hidden rounded-xl ${glassSurfaceElevated}`}
             >
               <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Set Status
@@ -137,8 +137,8 @@ export function PresenceStatusSelector({
                 <button
                   key={option.value}
                   onClick={() => handleSelect(option.value)}
-                  className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-dark-700 ${
-                    status === option.value ? 'bg-dark-700/50' : ''
+                  className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.08] ${
+                    status === option.value ? 'bg-white/[0.06]' : ''
                   }`}
                 >
                   <span className={`h-3 w-3 rounded-full shadow-sm ${option.dotClass}`} />

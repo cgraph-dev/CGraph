@@ -15,7 +15,7 @@ import {
   ArrowRightOnRectangleIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { GlassCard } from '@/shared/components/ui';
+import { glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
@@ -75,8 +75,8 @@ export function UserDropdown() {
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             className="absolute right-0 mt-2 w-56"
           >
-            <GlassCard variant="crystal" className="p-2">
-              <div className="border-b border-white/10 p-3">
+            <div className={`rounded-xl p-2 ${glassSurfaceElevated}`}>
+              <div className="border-b border-white/[0.06] p-3">
                 <p className="font-medium text-white">{user.displayName || user.username}</p>
                 <p className="text-sm text-white/40">{user.email}</p>
               </div>
@@ -110,7 +110,7 @@ export function UserDropdown() {
                 )}
               </div>
 
-              <div className="border-t border-white/10 pt-1">
+              <div className="border-t border-white/[0.06] pt-1">
                 <button
                   onClick={handleLogout}
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-400 hover:bg-red-500/10"
@@ -119,7 +119,7 @@ export function UserDropdown() {
                   Sign Out
                 </button>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

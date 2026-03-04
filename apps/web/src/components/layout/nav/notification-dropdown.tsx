@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
-import { GlassCard } from '@/shared/components/ui';
+import { glassSurfaceElevated } from '@/components/liquid-glass/shared';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useNotificationStore } from '@/modules/social/store';
 
@@ -65,8 +65,8 @@ export function NotificationDropdown() {
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             className="absolute right-0 mt-2 w-80"
           >
-            <GlassCard variant="crystal" className="max-h-96 overflow-y-auto p-2">
-              <div className="flex items-center justify-between border-b border-white/10 p-2">
+            <div className={`max-h-96 overflow-y-auto rounded-xl p-2 ${glassSurfaceElevated}`}>
+              <div className="flex items-center justify-between border-b border-white/[0.06] p-2">
                 <h3 className="font-semibold text-white">Notifications</h3>
                 <button className="text-xs text-primary-400 hover:text-primary-300">
                   Mark all read
@@ -90,11 +90,11 @@ export function NotificationDropdown() {
               <Link
                 to="/notifications"
                 onClick={() => setOpen(false)}
-                className="block border-t border-white/10 p-2 text-center text-sm text-primary-400 hover:text-primary-300"
+                className="block border-t border-white/[0.06] p-2 text-center text-sm text-primary-400 hover:text-primary-300"
               >
                 View all notifications
               </Link>
-            </GlassCard>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -23,7 +23,7 @@ export default function CustomizeLayout() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex h-full w-full overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900"
+      className="flex h-full w-full overflow-hidden bg-[rgb(18,20,28)]/[0.95] backdrop-blur-[8px]"
     >
       {/* Main content area - child routes will render here */}
       <div className="flex-1 overflow-hidden">

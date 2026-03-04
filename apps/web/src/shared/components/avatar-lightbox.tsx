@@ -80,7 +80,7 @@ export function AvatarLightbox({
 
             {/* Close button */}
             <motion.button
-              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-dark-800/80 text-gray-300 transition-colors hover:bg-dark-700 hover:text-white"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[rgb(30,32,40)]/[0.72] text-gray-300 backdrop-blur-[12px] transition-colors hover:bg-white/[0.12] hover:text-white"
               onClick={close}
               initial={{ opacity: 0, rotate: -90 }}
               animate={{ opacity: 1, rotate: 0 }}
