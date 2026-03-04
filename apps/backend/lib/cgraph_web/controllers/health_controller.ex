@@ -133,11 +133,13 @@ defmodule CGraphWeb.HealthController do
         |> json(response)
 
       {:error, reason} ->
+        Logger.error("health_check_failed", reason: inspect(reason))
+
         conn
         |> put_status(503)
         |> json(%{
           status: "unhealthy",
-          error: inspect(reason),
+          error: "Service health check failed",
           timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
         })
     end
