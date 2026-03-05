@@ -2,11 +2,9 @@
  * Sidebar Component - Responsive navigation sidebar with badges
  * @module layouts/app-layout
  */
-import { LAYOUT_IDS } from '@cgraph/animation-constants';
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogoIcon } from '@/components/logo/logo-icon';
-import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -17,7 +15,6 @@ import type { NavItem } from './constants';
 import { loop, springs } from '@/lib/animation-presets';
 import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
 import type { FeatureGateKey } from '@cgraph/shared-types';
-import { useMotionSafe } from '@/hooks/useMotionSafe';
 import { useState } from 'react';
 
 /**
@@ -64,8 +61,6 @@ export default function Sidebar({
   unreadCount,
   navItems,
 }: SidebarProps) {
-  const { shouldAnimate } = useMotionSafe();
-
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
   return (
@@ -94,41 +89,60 @@ export default function Sidebar({
       {/* Subtle noise texture */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")' }} />
 
-      {/* Logo - Links back to landing page */}
-      <div className="relative mb-5">
-        <a href="https://www.cgraph.org" title="Back to Home">
-          <motion.div
-            whileHover={{
-              scale: 1.1,
-              filter: 'drop-shadow(0 0 12px rgba(16,185,129,0.5)) drop-shadow(0 0 24px rgba(139,92,246,0.3))',
-            }}
-            whileTap={{ scale: 0.92 }}
-            transition={springs.snappy}
+      {/* ── User Avatar (top) ── */}
+      <div className="relative z-10 mb-1" role="group" aria-label="User profile">
+        <motion.div
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          transition={springs.snappy}
+          className="relative"
+        >
+          <div
+            className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[2px]"
             role="img"
-            aria-label="CGraph logo - Click to go home"
-            className="relative"
+            aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
+            style={{
+              background: 'linear-gradient(135deg, rgba(16,185,129,0.7), rgba(139,92,246,0.7))',
+            }}
           >
-            {/* Ambient glow ring behind logo */}
-            <motion.div
-              className="absolute -inset-2 rounded-2xl"
-              style={{
-                background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)',
-              }}
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-                scale: [1, 1.05, 1],
-              }}
-              transition={loop({ duration: 3, ease: 'easeInOut' })}
-            />
-            <LogoIcon size={56} />
-          </motion.div>
-        </a>
+            {user?.avatarUrl ? (
+              <ThemedAvatar
+                src={user.avatarUrl}
+                alt={user.displayName || user.username || 'User avatar'}
+                size="medium"
+                className="h-full w-full rounded-[10px]"
+                avatarBorderId={getAvatarBorderId(user)}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[rgba(13,17,23,0.9)] text-base font-semibold text-gray-200">
+                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+
+          {/* Online ring pulse */}
+          <motion.div
+            className="pointer-events-none absolute -inset-0.5 rounded-xl"
+            animate={{
+              boxShadow: [
+                '0 0 0 0 rgba(16, 185, 129, 0.4)',
+                '0 0 0 6px rgba(16, 185, 129, 0)',
+              ],
+            }}
+            transition={loop({ duration: 2.5, ease: 'easeOut' })}
+          />
+        </motion.div>
+
+        {/* Presence Status Selector */}
+        <div className="mt-1.5">
+          <PresenceStatusSelector compact />
+        </div>
       </div>
 
       {/* Section divider */}
       <div className="mb-3 h-px w-10 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Navigation */}
+      {/* ── Navigation ── */}
       <nav className="relative z-10 flex flex-1 flex-col items-center gap-1.5" aria-label="Primary">
         {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
@@ -149,57 +163,76 @@ export default function Sidebar({
                 className="relative block"
               >
                 <motion.div
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.9 }}
+                  className="relative flex h-11 w-11 items-center justify-center rounded-xl"
+                  whileTap={{ scale: 0.88 }}
+                  animate={isActive
+                    ? { scale: 1 }
+                    : { scale: 1 }
+                  }
                   transition={springs.snappy}
-                  className="relative"
                 >
-                  {isActive ? (
-                    <GlassCard
-                      variant="neon"
-                      glow
-                      glowColor="rgba(16, 185, 129, 0.5)"
-                      className="flex h-11 w-11 items-center justify-center rounded-xl p-0"
-                    >
-                      <div className="relative z-10">
-                        <Icon
-                          className="h-5.5 w-5.5 text-white drop-shadow-lg"
-                          style={{
-                            filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.7))',
-                          }}
-                        />
-                      </div>
-                    </GlassCard>
-                  ) : (
-                    <div className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl text-gray-500 transition-colors duration-200 hover:text-gray-200">
-                      {/* Hover background */}
+                  {/* Active background — clean rounded rect, no glow */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-bg"
+                      className="absolute inset-0 rounded-xl bg-white/[0.1] ring-1 ring-white/[0.12]"
+                      initial={false}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 350,
+                        damping: 30,
+                        mass: 0.8,
+                      }}
+                    />
+                  )}
+
+                  {/* Hover background (inactive items only) */}
+                  {!isActive && (
+                    <>
                       <motion.div
                         className="absolute inset-0 rounded-xl"
                         initial={false}
                         animate={{
                           opacity: isHovered ? 1 : 0,
                           background: isHovered
-                            ? 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(139,92,246,0.06) 100%)'
+                            ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(139,92,246,0.04) 100%)'
                             : 'linear-gradient(135deg, transparent 0%, transparent 100%)',
                         }}
                         transition={{ duration: 0.2, ease: 'easeOut' }}
                       />
-                      {/* Hover border */}
                       <motion.div
                         className="absolute inset-0 rounded-xl border"
                         initial={false}
                         animate={{
-                          borderColor: isHovered ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0)',
+                          borderColor: isHovered ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0)',
                         }}
                         transition={{ duration: 0.2 }}
                       />
-                      <Icon className="relative z-10 h-[22px] w-[22px] transition-transform duration-200 group-hover:scale-110" />
-                    </div>
+                    </>
                   )}
+
+                  {/* Icon */}
+                  <motion.div
+                    className="relative z-10"
+                    animate={isActive
+                      ? { scale: 1, y: 0 }
+                      : { scale: 1, y: 0 }
+                    }
+                    initial={false}
+                  >
+                    <Icon
+                      className={`h-[22px] w-[22px] transition-colors duration-200 ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-gray-500 group-hover:text-gray-200'
+                      }`}
+                      style={isActive ? {} : undefined}
+                    />
+                  </motion.div>
 
                   {/* Tooltip label */}
                   <AnimatePresence>
-                    {isHovered && !isActive && (
+                    {isHovered && (
                       <motion.div
                         initial={{ opacity: 0, x: -4, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -248,19 +281,6 @@ export default function Sidebar({
                     )}
                   </AnimatePresence>
 
-                  {/* Active indicator pill */}
-                  {isActive && (
-                    <motion.div
-                      className="absolute -left-[14px] top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-emerald-400 via-primary-400 to-purple-500"
-                      layoutId={LAYOUT_IDS.sidebarActiveIndicator}
-                      initial={false}
-                      transition={shouldAnimate ? springs.bouncy : { duration: 0 }}
-                      style={{
-                        boxShadow: '0 0 12px rgba(16, 185, 129, 0.7), 0 0 4px rgba(139, 92, 246, 0.5)',
-                      }}
-                    />
-                  )}
-
                   {/* Level gate lock badge */}
                   {'featureGate' in item && item.featureGate && (
                     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: guarded by `in` check
@@ -276,8 +296,8 @@ export default function Sidebar({
       {/* Section divider */}
       <div className="mb-3 mt-auto h-px w-10 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* User Avatar & Logout */}
-      <div className="relative z-10 space-y-2" role="group" aria-label="User actions">
+      {/* ── Logout + Logo (bottom) ── */}
+      <div className="relative z-10 space-y-3" role="group" aria-label="Bottom actions">
         {/* Logout Button */}
         <motion.div
           whileHover={{ scale: 1.08 }}
@@ -293,7 +313,6 @@ export default function Sidebar({
             title="Logout"
             aria-label="Logout from your account"
           >
-            {/* Hover glow effect */}
             <motion.div
               className="absolute inset-0 rounded-xl bg-gradient-to-br from-red-600/10 via-pink-600/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               initial={false}
@@ -309,51 +328,34 @@ export default function Sidebar({
           </button>
         </motion.div>
 
-        {/* User Avatar */}
-        <motion.div
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          transition={springs.snappy}
-          className="relative"
-        >
-          <div
-            className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[2px]"
-            role="img"
-            aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.7), rgba(139,92,246,0.7))',
-            }}
-          >
-            {user?.avatarUrl ? (
-              <ThemedAvatar
-                src={user.avatarUrl}
-                alt={user.displayName || user.username || 'User avatar'}
-                size="medium"
-                className="h-full w-full rounded-[10px]"
-                avatarBorderId={getAvatarBorderId(user)}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[rgba(13,17,23,0.9)] text-base font-semibold text-gray-200">
-                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-
-          {/* Online ring pulse */}
+        {/* Logo */}
+        <a href="https://www.cgraph.org" title="Back to Home" className="block">
           <motion.div
-            className="pointer-events-none absolute -inset-0.5 rounded-xl"
-            animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(16, 185, 129, 0.4)',
-                '0 0 0 6px rgba(16, 185, 129, 0)',
-              ],
+            whileHover={{
+              scale: 1.1,
+              filter: 'drop-shadow(0 0 12px rgba(16,185,129,0.5)) drop-shadow(0 0 24px rgba(139,92,246,0.3))',
             }}
-            transition={loop({ duration: 2.5, ease: 'easeOut' })}
-          />
-        </motion.div>
-
-        {/* Presence Status Selector */}
-        <PresenceStatusSelector compact />
+            whileTap={{ scale: 0.92 }}
+            transition={springs.snappy}
+            role="img"
+            aria-label="CGraph logo - Click to go home"
+            className="relative"
+          >
+            {/* Ambient glow ring behind logo */}
+            <motion.div
+              className="absolute -inset-2 rounded-2xl"
+              style={{
+                background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)',
+              }}
+              animate={{
+                opacity: [0.5, 0.8, 0.5],
+                scale: [1, 1.05, 1],
+              }}
+              transition={loop({ duration: 3, ease: 'easeInOut' })}
+            />
+            <LogoIcon size={40} />
+          </motion.div>
+        </a>
       </div>
     </aside>
   );
