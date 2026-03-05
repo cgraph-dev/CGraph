@@ -23,6 +23,7 @@ export * as gamificationService from './gamificationService';
 export * as referralService from './referralService';
 export * as tierService from './tierService';
 export * as creatorService from './creatorService';
+export * as aiService from './aiService';
 
 // Push Notifications
 export * from './pushNotifications';
