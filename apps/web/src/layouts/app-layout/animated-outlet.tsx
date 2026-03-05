@@ -1,25 +1,23 @@
 /**
  * AnimatedOutlet Component
  *
- * Wraps React Router's Outlet with Framer Motion AnimatePresence
- * for smooth page transitions (fade + subtle slide).
+ * Wraps React Router's Outlet with a fast fade-in on route change.
+ * No exit animation — instant swap avoids the "flash" feeling.
  *
  * @module layouts/app-layout/AnimatedOutlet
  */
 
 import { useLocation, useOutlet } from 'react-router-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 
 const pageVariants = {
-  initial: { opacity: 0, y: 6 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
 };
 
-const pageSpringTransition = {
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 28,
+const pageTransition = {
+  duration: 0.15,
+  ease: 'easeOut',
 };
 
 const instantTransition = { duration: 0 };
@@ -36,18 +34,15 @@ export function AnimatedOutlet() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        className="flex flex-1 overflow-hidden"
-        variants={pageVariants}
-        initial={prefersReducedMotion ? false : 'initial'}
-        animate="animate"
-        exit="exit"
-        transition={prefersReducedMotion ? instantTransition : pageSpringTransition}
-      >
-        {outlet}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={location.pathname}
+      className="flex flex-1 overflow-hidden"
+      variants={pageVariants}
+      initial={prefersReducedMotion ? false : 'initial'}
+      animate="animate"
+      transition={prefersReducedMotion ? instantTransition : pageTransition}
+    >
+      {outlet}
+    </motion.div>
   );
 }

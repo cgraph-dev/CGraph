@@ -4,12 +4,11 @@
  */
 import { useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { categories, type CategoryId } from '@/pages/customize/customizeCategories';
 import { Sidebar, LoadingSkeleton } from '@/pages/customize/customize-sidebar';
-import { springs } from '@/lib/animation-presets';
 
 // Lazy load heavy customization components for better performance
 const IdentityCustomization = lazy(() => import('./identity-customization'));
@@ -99,14 +98,12 @@ export default function Customize() {
           </motion.div>
 
           {/* Content Area - Renders category-specific components */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={springs.stiff}
-            >
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+          >
               {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
               <GlassCard variant="frosted" hover3D={false} className="p-8">
                 <Suspense fallback={<LoadingSkeleton />}>
@@ -118,7 +115,6 @@ export default function Customize() {
                 </Suspense>
               </GlassCard>
             </motion.div>
-          </AnimatePresence>
         </div>
       </main>
 

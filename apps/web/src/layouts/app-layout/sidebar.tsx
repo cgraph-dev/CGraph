@@ -2,10 +2,10 @@
  * Sidebar Component - Responsive navigation sidebar with badges
  * @module layouts/app-layout
  */
-import { durations, LAYOUT_IDS } from '@cgraph/animation-constants';
+import { LAYOUT_IDS } from '@cgraph/animation-constants';
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import AnimatedLogo from '@/components/navigation/animated-logo';
+import { LogoIcon } from '@/components/logo/logo-icon';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';
@@ -14,7 +14,7 @@ import { ArrowRightOnRectangleIcon, LockClosedIcon } from '@heroicons/react/24/o
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
-import { tweens, loop, springs, staggerConfigs } from '@/lib/animation-presets';
+import { tweens, loop, springs } from '@/lib/animation-presets';
 import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
 import type { FeatureGateKey } from '@cgraph/shared-types';
 import { useMotionSafe } from '@/hooks/useMotionSafe';
@@ -85,69 +85,36 @@ export default function Sidebar({
       {/* Ambient glow effect */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgb(var(--lg-glow-blue))]/5 via-transparent to-[rgb(var(--lg-glow-purple))]/5" />
 
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="pointer-events-none absolute h-0.5 w-0.5 rounded-full bg-primary-400"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.1, 0.3, 0.1],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: durations.epic.ms / 1000 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 5,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
+      {/* Floating particles — disabled for performance */}
 
       {/* Logo - Links back to landing page */}
-      <motion.div
-        className="relative mb-6"
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ ...springs.bouncy, delay: 0.1 }}
-      >
+      <div className="relative mb-6">
         <a href="https://www.cgraph.org" title="Back to Home">
           <motion.div
             whileHover={{
-              scale: 1.1,
-              rotate: 5,
+              scale: 1.08,
               filter:
-                'drop-shadow(0 0 12px rgba(139,92,246,0.7)) drop-shadow(0 0 24px rgba(6,182,212,0.3))',
+                'drop-shadow(0 0 8px rgba(139,92,246,0.5))',
             }}
             whileTap={{ scale: 0.95 }}
             transition={springs.snappy}
             role="img"
             aria-label="CGraph logo - Click to go home"
           >
-            <AnimatedLogo size="sm" />
+            <LogoIcon size={48} />
           </motion.div>
         </a>
-      </motion.div>
+      </div>
 
       {/* Navigation */}
       <nav className="relative z-10 flex flex-1 flex-col items-center gap-2" aria-label="Primary">
-        {navItems.map((item, index) => {
+        {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           const Icon = isActive ? item.activeIcon : item.icon;
 
           return (
-            <motion.div
+            <div
               key={item.path}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                ...springs.bouncy,
-                delay: 0.1 + index * staggerConfigs.grid.staggerChildren,
-              }}
             >
               <NavLink
                 to={item.path}
@@ -244,7 +211,7 @@ export default function Sidebar({
                   )}
                 </motion.div>
               </NavLink>
-            </motion.div>
+            </div>
           );
         })}
       </nav>
