@@ -2,8 +2,9 @@
  * Messaging Hooks (Mobile)
  */
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import * as Haptics from 'expo-haptics';
+import { useVoiceRecorder } from '@/components/voice-message-recorder/use-voice-recorder';
 
 /**
  * Hook for message haptic feedback
@@ -34,15 +35,24 @@ export function useMessageHaptics() {
 }
 
 /**
- * Hook for voice message recording
+ * Hook for voice message recording.
+ * Wraps the real expo-audio based useVoiceRecorder and maps to the
+ * simplified interface expected by messaging consumers.
  */
 export function useVoiceRecording() {
-  // TODO: Implement with expo-av
-  return {
-    isRecording: false,
-    duration: 0,
-    start: async () => {},
-    stop: async () => null,
-    cancel: () => {},
-  };
+  const recorder = useVoiceRecorder({
+    onComplete: () => {},
+    onCancel: () => {},
+  });
+
+  return useMemo(
+    () => ({
+      isRecording: recorder.state === 'recording',
+      duration: recorder.duration,
+      start: recorder.startRecording,
+      stop: recorder.stopRecording,
+      cancel: recorder.handleCancel,
+    }),
+    [recorder.state, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.handleCancel]
+  );
 }
