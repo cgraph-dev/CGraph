@@ -15,7 +15,7 @@
 | 20 | Backend Safety Net | Fix all P0 security + crash bugs in backend APIs | 10 | 2 | ✅ Complete |
 | 21 | Web Wiring | Replace all mock data with real API calls in web app | 8 | 2 | ✅ Complete |
 | 22 | Mobile Wiring | Wire mobile stubs, facades, mocks to real stores/APIs | 12 | 3 | ✅ Complete |
-| 23 | Creator & Payments | End-to-end creator monetization + coin shop + IAP | 8 | 2 | Not started |
+| 23 | Creator & Payments | End-to-end creator monetization + coin shop + IAP | 8 | 2 | ✅ Complete |
 | 24 | Test Coverage | Creator tests, webhook tests, coverage baseline | 5 | 1 | Not started |
 | 25 | Infrastructure & Perf | PgBouncer, MeiliSearch, load tests, version sync | 6 | 1 | Not started |
 
@@ -88,22 +88,22 @@ has a working implementation.
 
 ---
 
-## Phase 23 — Creator & Payments End-to-End
+## Phase 23 — Creator & Payments End-to-End ✅
 
 **Goal**: Creator monetization, coin shop, and IAP work end-to-end from UI to database for both
 web and mobile.
 
-**Plan 23-01: Creator Monetization Service Layer**
-- [ ] Create web `creatorService.ts` (onboard, status, subscribe, balance, payout, analytics)
-- [ ] Create web creator store module with hooks
-- [ ] Wire Creator Dashboard pages to real API
-- [ ] Create mobile creator service (matching web)
+**Plan 23-01: Creator Monetization Service Layer** ✅
+- [x] Create web `creatorService.ts` (onboard, status, subscribe, balance, payout, analytics)
+- [x] Create web creator store module with hooks
+- [x] Wire Creator Dashboard pages to real API
+- [x] Create mobile creator service (matching web)
 
-**Plan 23-02: Coin Shop & IAP**
-- [ ] Create web `coinShopService.ts` (bundles, checkout)
-- [ ] Wire web gamification shop page to coin shop API
-- [ ] Wire mobile marketplace to coin shop API (IAP service exists, needs coin shop integration)
-- [ ] Create AI service layer for web + mobile (summarize, smart replies, moderate)
+**Plan 23-02: Coin Shop & IAP** ✅
+- [x] Create web `coinShopService.ts` (bundles, checkout)
+- [x] Wire web gamification shop page to coin shop API
+- [x] Wire mobile marketplace to coin shop API (IAP service exists, needs coin shop integration)
+- [x] Create AI service layer for web + mobile (summarize, smart replies, moderate)
 
 ---
 

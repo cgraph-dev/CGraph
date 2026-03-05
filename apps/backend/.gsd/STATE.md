@@ -14,29 +14,28 @@ Secure real-time communication that works end-to-end.
 
 ## Position
 
-- **Phase:** 22 of 25 — **Mobile Wiring** (Complete)
-- **Plan:** 3/3 plans executed in Phase 22
-- **Status:** ✅ Phase 22 complete — all mobile screens wired to real data
-- **Last activity:** Phase 22 executed — screen mocks removed, facades wired, X3DH DH4 implemented
+- **Phase:** 23 of 25 — **Creator & Payments** (Complete)
+- **Plan:** 2/2 plans executed in Phase 23
+- **Status:** ✅ Phase 23 complete — creator monetization + coin shop + AI wired end-to-end
+- **Last activity:** Phase 23 executed — service layers, stores, hooks, pages wired
 
 ## Plans
 
 | Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
 | ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
-| 22-01 | Mobile Screen Mock Data Replacement — Notifications, Wall, Forums, Calls | 1 | ✅      | 20-01, 20-02     | Complete  |
-| 22-02 | Mobile Store Facades & Hooks — Wire stubs to real stores             | 1    | ✅         | 22-01            | Complete  |
-| 22-03 | X3DH DH4 & WatermelonDB Message Bridge — Protocol completion        | 2    | ✅         | 22-01, 22-02     | Complete  |
+| 23-01 | Creator Monetization Service Layer — Web & Mobile End-to-End         | 1    | ✅         | 20-01            | Complete  |
+| 23-02 | Coin Shop & AI Services — End-to-End Wiring                         | 1    | ✅         | 20-02            | Complete  |
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 91%         |
-| Phases complete    | 22 / 25     |
-| Requirements done  | 172 / ~191  |
-| Current phase reqs | 12 / 12     |
+| Overall progress   | 95%         |
+| Phases complete    | 23 / 25     |
+| Requirements done  | 180 / ~191  |
+| Current phase reqs | 8 / 8       |
 
-█████████████████████████████████████░░░ 91%
+██████████████████████████████████████░░ 95%
 
 ## Phase Summary
 
@@ -64,23 +63,22 @@ Secure real-time communication that works end-to-end.
 | 20  | Backend Safety Net      | **Complete**              |
 | 21  | Web Wiring              | **Complete**              |
 | 22  | Mobile Wiring           | **Complete**              |
-| 23  | Creator & Payments      | Not started               |
+| 23  | Creator & Payments      | **Complete**              |
 | 24  | Test Coverage           | Not started               |
 | 25  | Infrastructure & Perf   | Not started               |
 
 ## Session Continuity
 
 Last session: current
-Stopped at: Phase 22 complete — ready for Phase 23 (Creator & Payments)
-Resume file: `.gsd/ROADMAP.md` → Phase 23 (Creator & Payments)
+Stopped at: Phase 23 complete — ready for Phase 24 (Test Coverage)
+Resume file: `.gsd/ROADMAP.md` → Phase 24 (Test Coverage)
 
 ## Last Action
 
-Phase 22 "Mobile Wiring" executed:
-- Plan 22-01: 4 screens wired — notifications inbox → useNotificationStore, user wall → API, forum list error handling fixed, call history auth from store. All getMockNotifications/MOCK_POSTS/getMockForums deleted.
-- Plan 22-02: 3 facades wired (community→forumStore, marketplace→gamificationStore, UI documented), useVoiceRecording→real expo-audio, VoiceMessageRecorder exported, forum hooks created, Math.random audio removed.
-- Plan 22-03: X3DH DH4 implemented (4th DH operation + OPK lifecycle), WatermelonDB schema v2 with sender profile columns, message bridge caches sender name/avatar.
-- Verification: 15/15 checks pass
+Phase 23 "Creator & Payments" executed:
+- Plan 23-01: Web creator module (service → store → hooks → barrel), 4 creator pages rewired from raw fetch() to Zustand store, routes added. Mobile creator service + store + dashboard screen created.
+- Plan 23-02: Web coin shop service + store, coin-shop page wired to real bundles API. Mobile premiumService updated with real endpoints. Mobile AI service created (4 endpoints). Web AI already existed.
+- Verification: 14/14 checks pass
 
 ---
 
