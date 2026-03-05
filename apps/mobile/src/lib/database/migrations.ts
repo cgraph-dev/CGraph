@@ -9,22 +9,24 @@
 import {
   schemaMigrations,
   // createTable,
-  // addColumns,
+  addColumns,
   // unsafeExecuteSql,
 } from '@nozbe/watermelondb/Schema/migrations';
 
 export default schemaMigrations({
   migrations: [
-    // Version 1 → initial creation (no-op: first install gets full schema)
-    // Future migrations go here, e.g.:
-    // {
-    //   toVersion: 2,
-    //   steps: [
-    //     addColumns({
-    //       table: 'messages',
-    //       columns: [{ name: 'thread_id', type: 'string', isOptional: true }],
-    //     }),
-    //   ],
-    // },
+    // Version 1 → 2: Add sender profile columns to messages table
+    {
+      toVersion: 2,
+      steps: [
+        addColumns({
+          table: 'messages',
+          columns: [
+            { name: 'sender_display_name', type: 'string', isOptional: true },
+            { name: 'sender_avatar_url', type: 'string', isOptional: true },
+          ],
+        }),
+      ],
+    },
   ],
 });

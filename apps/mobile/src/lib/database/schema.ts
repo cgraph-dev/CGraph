@@ -8,7 +8,7 @@
  */
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export default appSchema({
   version: SCHEMA_VERSION,
@@ -67,6 +67,8 @@ export default appSchema({
         { name: 'is_deleted', type: 'boolean' },
         { name: 'is_pinned', type: 'boolean' },
         { name: 'is_optimistic', type: 'boolean' },
+        { name: 'sender_display_name', type: 'string', isOptional: true },
+        { name: 'sender_avatar_url', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
       ],

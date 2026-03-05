@@ -41,6 +41,8 @@ export default class Message extends Model {
   @field('is_deleted') isDeleted!: boolean;
   @field('is_pinned') isPinned!: boolean;
   @field('is_optimistic') isOptimistic!: boolean;
+  @text('sender_display_name') senderDisplayName!: string | null;
+  @text('sender_avatar_url') senderAvatarUrl!: string | null;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
 
