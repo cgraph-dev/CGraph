@@ -237,3 +237,57 @@ export function isRareTitle(titleId: string | null): boolean {
 export function getTitleDisplay(titleId: string | null): TitleDisplay | null {
   return titleId ? (TITLE_DISPLAY_NAMES[titleId] ?? null) : null;
 }
+
+// =============================================================================
+// BADGE MAPPINGS
+// =============================================================================
+
+import { ALL_BADGES } from '@/data/badgesCollection';
+import type { BadgeRarity } from '@/data/badgesCollection';
+
+/**
+ * Hex colors for badge rarities, used in live preview rendering.
+ */
+export const BADGE_RARITY_HEX: Record<BadgeRarity, string> = {
+  common: '#9ca3af',
+  rare: '#3b82f6',
+  epic: '#8b5cf6',
+  legendary: '#f59e0b',
+  mythic: '#ec4899',
+};
+
+/**
+ * Badge display data for live preview rendering.
+ */
+export interface BadgeDisplay {
+  icon: string;
+  color: string;
+  name: string;
+  rarity: BadgeRarity;
+}
+
+/**
+ * Maps badge IDs to display data for the live preview.
+ * Generated dynamically from the static badges collection.
+ */
+export const BADGE_DISPLAY_MAP: Record<string, BadgeDisplay> = Object.fromEntries(
+  ALL_BADGES.map((b) => [
+    b.id,
+    {
+      icon: b.icon,
+      color: BADGE_RARITY_HEX[b.rarity],
+      name: b.name,
+      rarity: b.rarity,
+    },
+  ])
+);
+
+/**
+ * Resolves an array of badge IDs to their display data.
+ * Returns only badges that exist in the collection.
+ */
+export function resolveEquippedBadges(badgeIds: string[]): BadgeDisplay[] {
+  return badgeIds
+    .map((id) => BADGE_DISPLAY_MAP[id])
+    .filter((b): b is BadgeDisplay => b !== undefined);
+}

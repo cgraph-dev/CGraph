@@ -13,7 +13,9 @@ import type {
 import { springs, tweens, loop, loopWithDelay } from '@/lib/animation-presets';
 import { GlowText, FireText } from '@/shared/components/ui';
 import { PREVIEW_BADGES } from './constants';
-import type { ThemeColors } from './types';
+import { resolveEquippedBadges } from '@/modules/settings/store/customization/mappings';
+import type { BadgeDisplay } from '@/modules/settings/store/customization/mappings';
+import type { ThemeColors, PreviewBadge } from './types';
 
 interface ProfileContentProps {
   settings: {
@@ -29,6 +31,7 @@ interface ProfileContentProps {
   titleInfo: TitleDisplay | null;
   isLegendaryTitle: boolean;
   speedMultiplier: number;
+  equippedBadges?: string[];
 }
 
 /**
@@ -43,7 +46,13 @@ export function ProfileContent({
   titleInfo,
   isLegendaryTitle,
   speedMultiplier,
+  equippedBadges = [],
 }: ProfileContentProps) {
+  // Resolve equipped badge IDs to display data; fall back to default preview badges
+  const resolvedBadges: (BadgeDisplay | PreviewBadge)[] =
+    equippedBadges.length > 0
+      ? resolveEquippedBadges(equippedBadges)
+      : PREVIEW_BADGES;
   return (
     <div className="relative z-10 flex flex-col items-center">
       {/* Avatar */}
@@ -102,46 +111,57 @@ export function ProfileContent({
       </div>
 
       {/* Badges */}
-      {settings.showBadges && (
-        <div className="mt-3 flex gap-2">
-          {PREVIEW_BADGES.map((badge, i) => (
-            <motion.div
-              key={i}
-              className="relative flex h-8 w-8 items-center justify-center rounded-lg text-sm"
-              style={{
-                background: `${badge.color}30`,
-                boxShadow: settings.glowEnabled ? `0 0 10px ${badge.color}50` : 'none',
-              }}
-              animate={
-                settings.glowEnabled
-                  ? {
-                      boxShadow: [
-                        `0 0 10px ${badge.color}50`,
-                        `0 0 20px ${badge.color}70`,
-                        `0 0 10px ${badge.color}50`,
-                      ],
-                    }
-                  : undefined
-              }
-              whileHover={{ scale: 1.15, rotate: 5 }}
-              transition={{
-                ...springs.bouncy,
-                duration: durations.loop.ms / 1000,
-                repeat: settings.glowEnabled ? Infinity : 0,
-                delay: i * 0.3,
-              }}
-            >
+      {settings.showBadges && resolvedBadges.length > 0 && (
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          {resolvedBadges.map((badge, i) => {
+            const icon = 'icon' in badge ? badge.icon : badge.emoji;
+            const color = badge.color;
+            const name = 'name' in badge ? badge.name : undefined;
+            return (
               <motion.div
-                className="absolute -inset-1 rounded-lg opacity-50"
+                key={'name' in badge ? badge.name : i}
+                className="group relative flex h-8 w-8 items-center justify-center rounded-lg text-sm"
                 style={{
-                  background: `conic-gradient(from 0deg, transparent, ${badge.color}, transparent)`,
+                  background: `${color}30`,
+                  boxShadow: settings.glowEnabled ? `0 0 10px ${color}50` : 'none',
                 }}
-                animate={{ rotate: 360 }}
-                transition={loop(tweens.glacial)}
-              />
-              <span className="relative z-10">{badge.emoji}</span>
-            </motion.div>
-          ))}
+                animate={
+                  settings.glowEnabled
+                    ? {
+                        boxShadow: [
+                          `0 0 10px ${color}50`,
+                          `0 0 20px ${color}70`,
+                          `0 0 10px ${color}50`,
+                        ],
+                      }
+                    : undefined
+                }
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                transition={{
+                  ...springs.bouncy,
+                  duration: durations.loop.ms / 1000,
+                  repeat: settings.glowEnabled ? Infinity : 0,
+                  delay: i * 0.3,
+                }}
+              >
+                <motion.div
+                  className="absolute -inset-1 rounded-lg opacity-50"
+                  style={{
+                    background: `conic-gradient(from 0deg, transparent, ${color}, transparent)`,
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={loop(tweens.glacial)}
+                />
+                <span className="relative z-10">{icon}</span>
+                {/* Tooltip with badge name */}
+                {name && (
+                  <div className="pointer-events-none absolute -bottom-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded bg-black/80 px-1.5 py-0.5 text-[9px] text-white/90 opacity-0 transition-opacity group-hover:opacity-100">
+                    {name}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       )}
 

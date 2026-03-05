@@ -9,6 +9,8 @@ import { useAuthStore } from '@/modules/auth/store';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
+import { BADGE_DISPLAY_MAP } from '@/modules/settings/store/customization/mappings';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 import type { MiniProfileCardProps } from './types';
 
 export const MiniProfileCard = memo(function MiniProfileCard({
@@ -18,6 +20,7 @@ export const MiniProfileCard = memo(function MiniProfileCard({
 }: MiniProfileCardProps) {
   const { user: currentUser } = useAuthStore();
   const { getEquippedBorder } = useAvatarBorderStore();
+  const equippedBadgeIds = useCustomizationStore((s) => s.equippedBadges);
   const isOwnProfile = user.id === currentUser?.id;
 
   // Get the user's equipped border
@@ -65,6 +68,30 @@ export const MiniProfileCard = memo(function MiniProfileCard({
           <div className="text-white/60">Status</div>
         </div>
       </div>
+
+      {/* Equipped Badges */}
+      {(() => {
+        const badgeIds = isOwnProfile
+          ? equippedBadgeIds
+          : (user.equippedBadges ?? []).map((b) => b.id);
+        const resolved = badgeIds
+          .map((id) => BADGE_DISPLAY_MAP[id])
+          .filter((b): b is NonNullable<typeof b> => b !== undefined);
+        return resolved.length > 0 ? (
+          <div className="mb-3 flex flex-wrap justify-center gap-1.5">
+            {resolved.slice(0, 5).map((badge) => (
+              <div
+                key={badge.name}
+                className="flex h-7 w-7 items-center justify-center rounded-md text-sm"
+                style={{ background: `${badge.color}25`, border: `1px solid ${badge.color}40` }}
+                title={badge.name}
+              >
+                {badge.icon}
+              </div>
+            ))}
+          </div>
+        ) : null;
+      })()}
 
       {/* Mutual Friends */}
       {user.mutualFriends && user.mutualFriends.length > 0 && (

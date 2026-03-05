@@ -139,6 +139,7 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
           titleInfo={titleInfo}
           isLegendaryTitle={!!isLegendaryTitle}
           speedMultiplier={speedMultiplier}
+          equippedBadges={settings.equippedBadges}
         />
       </motion.div>
     </TiltCard>

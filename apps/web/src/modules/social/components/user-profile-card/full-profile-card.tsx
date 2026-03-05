@@ -18,6 +18,7 @@ import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
+import { BADGE_DISPLAY_MAP } from '@/modules/settings/store/customization/mappings';
 import {
   MAX_MUTUAL_FRIENDS_DISPLAY,
   MAX_BADGES_DISPLAY,
@@ -106,14 +107,25 @@ export const FullProfileCard = memo(function FullProfileCard({
           <div className="mb-4">
             <h3 className="mb-2 text-sm font-semibold text-white/70">Equipped Badges</h3>
             <div className="flex gap-2">
-              {user.equippedBadges.slice(0, MAX_BADGES_DISPLAY).map((badge) => (
-                <div
-                  key={badge.id}
-                  className="rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 px-3 py-1 text-xs font-medium text-yellow-400"
-                >
-                  {badge.title || badge.id}
-                </div>
-              ))}
+              {user.equippedBadges.slice(0, MAX_BADGES_DISPLAY).map((badge) => {
+                const staticBadge = BADGE_DISPLAY_MAP[badge.id];
+                const color = staticBadge ? staticBadge.color : '#f59e0b';
+                return (
+                  <div
+                    key={badge.id}
+                    className="group relative flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium"
+                    style={{
+                      borderColor: `${color}40`,
+                      background: `linear-gradient(135deg, ${color}15, ${color}25)`,
+                      color: color,
+                    }}
+                    title={staticBadge?.name || badge.description}
+                  >
+                    {staticBadge && <span className="text-sm">{staticBadge.icon}</span>}
+                    <span>{staticBadge?.name || badge.description || badge.id}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

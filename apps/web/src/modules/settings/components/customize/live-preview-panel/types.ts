@@ -27,6 +27,8 @@ export interface ParticleStyle {
 export interface PreviewBadge {
   emoji: string;
   color: string;
+  name?: string;
+  rarity?: string;
 }
 
 export interface ThemeColors {
