@@ -380,7 +380,20 @@ if config_env() == :prod do
 
   # --- New in v0.7.32: Search, WebRTC, Rate Limiter ---
 
-  # Meilisearch (Search Engine)
+  # ── MeiliSearch Configuration ──
+  # MeiliSearch auto-activates when MEILISEARCH_URL is set.
+  # Falls back to PostgreSQL ILIKE queries when not configured.
+  #
+  # Deployment:
+  #   fly secrets set MEILISEARCH_URL=https://your-meilisearch.example.com
+  #   fly secrets set MEILISEARCH_API_KEY=your_production_master_key
+  #
+  # First-time setup (after deploying with secrets):
+  #   fly ssh console -C "bin/cgraph eval 'Mix.Tasks.Search.Setup.run_setup()'"
+  #
+  # Or via mix: mix search.setup
+  # Health check: mix search.reindex --health
+  # Indexes are also auto-configured on application startup (async).
   config :cgraph, CGraph.Search.Engine,
     meilisearch_url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
     meilisearch_key: System.get_env("MEILISEARCH_API_KEY"),
