@@ -87,7 +87,8 @@ export function useProfileData({
 
       try {
         const response = await api.get(`/api/v1/users/${userId}`);
-        const userData = response.data.user || response.data;
+        // Backend wraps in { data: { ... } }, axios also puts body in .data
+        const userData = response.data?.data || response.data?.user || response.data;
 
         setProfile({
           id: userData.id,
@@ -107,9 +108,9 @@ export function useProfileData({
           website: userData.website,
           // Gamification stats (from API or own data if own profile)
           level: userData.level || (isOwnProfile ? myLevelRef.current : 1),
-          totalXP: userData.total_xp || (isOwnProfile ? myTotalXPRef.current : 0),
+          totalXP: userData.total_xp || userData.xp || (isOwnProfile ? myTotalXPRef.current : 0),
           currentXP: userData.current_xp || 0,
-          loginStreak: userData.login_streak || (isOwnProfile ? myStreakRef.current : 0),
+          loginStreak: userData.login_streak || userData.streak_days || (isOwnProfile ? myStreakRef.current : 0),
           achievementCount:
             userData.achievement_count || (isOwnProfile ? totalUnlockedRef.current : 0),
           totalAchievements: userData.total_achievements || achievements.length,
@@ -117,10 +118,21 @@ export function useProfileData({
           postsCreated: userData.posts_created || 0,
           friendsCount: userData.friends_count || 0,
           // Title system - equipped title ID
-          equippedTitle: userData.equipped_title || userData.title_id || null,
+          equippedTitle: userData.equipped_title || userData.equipped_title_id || userData.title_id || null,
         });
 
-        setFriendshipStatus(userData.friendship_status || 'none');
+        // Backend returns is_friend/friend_request_sent/friend_request_received booleans
+        // Derive friendship status string from them
+        const derivedStatus: FriendshipStatus = userData.friendship_status
+          ? userData.friendship_status
+          : userData.is_friend
+            ? 'friends'
+            : userData.friend_request_received
+              ? 'pending_received'
+              : userData.friend_request_sent
+                ? 'pending_sent'
+                : 'none';
+        setFriendshipStatus(derivedStatus);
       } catch (err) {
         logger.error('Failed to load profile:', err);
         setError('Failed to load user profile');

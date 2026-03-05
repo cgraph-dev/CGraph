@@ -5,9 +5,11 @@
 
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, UserPlusIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { useFriendStore } from '@/modules/social/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { getSearchResultIcon } from './utils';
 import type { DiscoverTabProps } from './types';
 
@@ -19,6 +21,8 @@ import type { DiscoverTabProps } from './types';
  */
 export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTabProps) {
   const navigate = useNavigate();
+  const { sendRequest, friends } = useFriendStore();
+  const { user: currentUser } = useAuthStore();
 
   return (
     <div className="space-y-6">
@@ -100,6 +104,35 @@ export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: Disc
                       </p>
                     )}
                   </div>
+                  {result.type === 'user' && result.id !== currentUser?.id && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const isFriend = friends.some((f) => f.id === result.id);
+                        if (!isFriend) {
+                          sendRequest(result.name);
+                          HapticFeedback.success();
+                        }
+                      }}
+                      className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                        friends.some((f) => f.id === result.id)
+                          ? 'bg-white/[0.06] text-white/60 ring-1 ring-white/[0.08]'
+                          : 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30'
+                      }`}
+                      disabled={friends.some((f) => f.id === result.id)}
+                    >
+                      {friends.some((f) => f.id === result.id) ? (
+                        'Friends'
+                      ) : (
+                        <>
+                          <UserPlusIcon className="h-4 w-4" />
+                          Add
+                        </>
+                      )}
+                    </motion.button>
+                  )}
                   {result.type !== 'user' && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
