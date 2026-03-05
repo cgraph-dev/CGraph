@@ -2,7 +2,7 @@
 # Multi-stage build for Elixir/Phoenix application
 
 # Build stage
-FROM hexpm/elixir:1.17.3-erlang-27.1.2-alpine-3.20.3 AS builder
+FROM hexpm/elixir:1.19.4-erlang-28.3-alpine-3.21.3 AS builder
 
 # Install build dependencies
 # Note: npm/nodejs intentionally excluded — Phoenix uses Elixir-native
@@ -42,7 +42,7 @@ RUN mix compile
 RUN mix release
 
 # Runtime stage - MUST match the Alpine version from build stage
-FROM alpine:3.20 AS runtime
+FROM alpine:3.21 AS runtime
 
 # Install runtime dependencies (including PgBouncer for sidecar mode)
 RUN apk add --no-cache \
