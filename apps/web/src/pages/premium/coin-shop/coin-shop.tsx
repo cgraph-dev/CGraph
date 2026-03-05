@@ -8,6 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CurrencyDollarIcon, ShoppingBagIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { Button } from '@/components';
+import { useCoinShopStore } from '@/modules/gamification/store/coinShopStore';
 import { COIN_BUNDLES, SHOP_ITEMS } from './constants';
 import { useCoinShop } from './useCoinShop';
 import { CoinBalanceCard } from './coin-balance-card';
@@ -26,6 +27,11 @@ export default function CoinShop() {
   useAuthStore(); // Ensure user is authenticated
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Fetch bundles from the backend API
+  const { bundles: apiBundles, loading: bundlesLoading, fetchBundles } = useCoinShopStore();
+  useEffect(() => { fetchBundles(); }, [fetchBundles]);
+  const displayBundles = apiBundles.length > 0 ? apiBundles : COIN_BUNDLES;
 
   const {
     coinBalance,
@@ -123,7 +129,7 @@ export default function CoinShop() {
           </h2>
 
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            {COIN_BUNDLES.map((bundle, index) => (
+            {displayBundles.map((bundle, index) => (
               <CoinBundleCard
                 key={bundle.id}
                 bundle={bundle}
