@@ -18,5 +18,5 @@ export { default as AnimatedReactionBubble } from '@/components/conversation/ani
 export { default as MessageInput } from '@/components/conversation/message-input';
 export { default as EmptyConversation } from '@/components/conversation/empty-conversation';
 
-// TODO: Create when needed
-// export { default as VoiceMessageRecorder } from '@/components/conversation/voice-message-recorder';
+// Voice recording
+export { VoiceMessageRecorder } from '@/components/voice-message-recorder';
