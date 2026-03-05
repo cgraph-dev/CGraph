@@ -34,7 +34,23 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Start Phoenix application (foreground — this is the main process)
+# 2. Start PgBouncer sidecar (if PGBOUNCER_DATABASE_URL is set)
 # ---------------------------------------------------------------------------
-echo "[app+alloy] Starting Phoenix application..."
+if [ -n "$PGBOUNCER_DATABASE_URL" ]; then
+  echo "[app+pgbouncer] Starting PgBouncer sidecar in background..."
+  /usr/local/bin/start-pgbouncer.sh &
+  PGBOUNCER_PID=$!
+  echo "[app+pgbouncer] PgBouncer started (PID $PGBOUNCER_PID)"
+  sleep 1  # Wait for PgBouncer to be ready before Phoenix connects
+
+  # Ensure PgBouncer is cleaned up when the app stops
+  trap "kill $PGBOUNCER_PID 2>/dev/null || true; kill $ALLOY_PID 2>/dev/null || true" EXIT TERM INT
+else
+  echo "[app+pgbouncer] PGBOUNCER_DATABASE_URL not set, skipping PgBouncer sidecar"
+fi
+
+# ---------------------------------------------------------------------------
+# 3. Start Phoenix application (foreground — this is the main process)
+# ---------------------------------------------------------------------------
+echo "[app] Starting Phoenix application..."
 exec bin/cgraph start
