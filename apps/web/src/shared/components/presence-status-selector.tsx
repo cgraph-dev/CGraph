@@ -10,6 +10,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { api } from '@/lib/api';
 import { springPreset, glassSurfaceElevated } from '@/components/liquid-glass/shared';
@@ -118,41 +119,53 @@ export function PresenceStatusSelector({
         {!compact && <span className="text-sm text-gray-300">{currentOption.label}</span>}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: 5, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 5, scale: 0.95 }}
-              transition={springPreset}
-              style={{ top: menuPos.top, left: menuPos.left }}
-              className={`fixed z-50 w-56 overflow-hidden rounded-xl ${glassSurfaceElevated}`}
-            >
-              <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
-                Set Status
-              </div>
-              {STATUS_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.08] ${
-                    status === option.value ? 'bg-white/[0.06]' : ''
-                  }`}
-                >
-                  <span className={`h-3 w-3 rounded-full shadow-sm ${option.dotClass}`} />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-white">{option.label}</div>
-                    <div className="text-xs text-gray-500">{option.description}</div>
-                  </div>
-                  {status === option.value && <span className="text-xs text-primary-400">✓</span>}
-                </button>
-              ))}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              <div className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)} />
+              <motion.div
+                initial={{ opacity: 0, x: -6, scale: 0.92 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -6, scale: 0.92 }}
+                transition={springPreset}
+                style={{ top: menuPos.top, left: menuPos.left }}
+                className={`fixed z-[9999] w-56 overflow-hidden rounded-xl border border-white/[0.08] shadow-2xl shadow-black/40 ${glassSurfaceElevated}`}
+              >
+                <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                  Set Status
+                </div>
+                <div className="mx-2 mb-1 h-px bg-white/[0.06]" />
+                {STATUS_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-all duration-150 hover:bg-white/[0.08] ${
+                      status === option.value ? 'bg-white/[0.06]' : ''
+                    }`}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full shadow-sm ${option.dotClass}`} />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-200">{option.label}</div>
+                      <div className="text-[11px] leading-tight text-gray-500">{option.description}</div>
+                    </div>
+                    {status === option.value && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="text-xs text-primary-400"
+                      >
+                        ✓
+                      </motion.span>
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   );
 }

@@ -75,7 +75,7 @@ export default function AppLayout() {
       {/* Main Content */}
       <main
         id="main-content"
-        className="z-10 flex flex-1 overflow-hidden"
+        className="z-0 flex flex-1 overflow-hidden"
         role="main"
         style={{
           background:
