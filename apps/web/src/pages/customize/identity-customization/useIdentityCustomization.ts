@@ -14,7 +14,8 @@ import {
   type ProfileCardStyle,
 } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
-import { ALL_BORDERS } from '@/data/borderCollections';
+import { ALL_BORDERS, type BorderDefinition } from '@/data/borderCollections';
+import { ALL_TITLES, type TitleDefinition } from '@/data/titlesCollection';
 import {
   fetchBorders,
   fetchTitles,
@@ -28,6 +29,31 @@ import {
 } from './constants';
 
 export type SectionId = 'borders' | 'titles' | 'badges' | 'layouts';
+
+/** Map static BorderDefinition to the component's Border type */
+function mapBorderDefinition(b: BorderDefinition): Border {
+  return {
+    id: b.id,
+    name: b.name,
+    rarity: b.rarity === 'free' ? 'common' : b.rarity as Rarity,
+    animation: b.animationType,
+    colors: b.colors,
+    unlocked: b.unlocked,
+    unlockRequirement: b.unlockRequirement,
+  };
+}
+
+/** Map static TitleDefinition to the component's Title type */
+function mapTitleDefinition(t: TitleDefinition): Title {
+  return {
+    id: t.id,
+    name: t.name,
+    animationType: t.animationType,
+    gradient: t.gradient,
+    unlocked: t.unlocked,
+    unlockRequirement: t.unlockRequirement,
+  };
+}
 
 /**
  * Hook for managing identity customization.
@@ -72,19 +98,32 @@ export function useIdentityCustomization() {
     }
   }, [user?.id, fetchCustomizations]);
 
-  // Fetch cosmetics data from API
+  // Fetch cosmetics data from API, fall back to static data
   useEffect(() => {
     let cancelled = false;
     setIsLoadingIdentity(true);
     Promise.all([fetchBorders(), fetchTitles(), fetchBadges()])
       .then(([bordersData, titlesData, badgesData]) => {
         if (cancelled) return;
-        setBorders(bordersData);
-        setTitles(titlesData);
+        // Fall back to static collections when API returns empty
+        if (bordersData.length > 0) {
+          setBorders(bordersData);
+        } else {
+          setBorders(ALL_BORDERS.map(mapBorderDefinition));
+        }
+        if (titlesData.length > 0) {
+          setTitles(titlesData);
+        } else {
+          setTitles(ALL_TITLES.map(mapTitleDefinition));
+        }
         setBadges(badgesData);
       })
       .catch(() => {
-        // Errors are logged in the fetch functions
+        // API failed — use static data as fallback
+        if (!cancelled) {
+          setBorders(ALL_BORDERS.map(mapBorderDefinition));
+          setTitles(ALL_TITLES.map(mapTitleDefinition));
+        }
       })
       .finally(() => {
         if (!cancelled) setIsLoadingIdentity(false);

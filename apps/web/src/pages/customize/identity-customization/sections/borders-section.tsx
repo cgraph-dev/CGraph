@@ -13,8 +13,6 @@ import {
   BORDER_THEMES,
   getBordersByTheme,
   type BorderTheme,
-  type BorderRarity,
-  type BorderAnimationType,
 } from '@/data/borderCollections';
 import ThemedBorderCard from '@/modules/settings/components/customize/themed-border-card';
 
@@ -23,6 +21,8 @@ export interface BordersSectionProps {
   selectedBorder: string | null;
   previewingBorder: string | null;
   onEquip: (borderId: string, border: Border) => void;
+  /** Whether the parent has an active search/rarity filter */
+  hasActiveFilter?: boolean;
 }
 
 /**
@@ -36,6 +36,7 @@ export function BordersSection({
   selectedBorder,
   previewingBorder,
   onEquip,
+  hasActiveFilter = false,
 }: BordersSectionProps) {
   const [selectedTheme, setSelectedTheme] = useState<BorderTheme | 'all'>('all');
   const [showAnimations, setShowAnimations] = useState(true);
@@ -50,29 +51,15 @@ export function BordersSection({
 
   // Filter by search query from parent (using the borders prop for search results)
   const displayBorders = useMemo(() => {
-    // If there's a search active (borders.length < total), use that
-    if (borders.length < ALL_BORDERS.length) {
-      // Map old borders to new format for display
-      return borders.map((b) => ({
-        ...(themedBorders.find((tb) => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
-          id: b.id,
-          name: b.name,
-           
-          theme: 'elemental' as BorderTheme, // safe downcast – structural boundary
-           
-          rarity: b.rarity as BorderRarity, // safe downcast – compatible rarity union
-           
-          animationType: b.animation as BorderAnimationType, // safe downcast – compatible animation union
-          colors: b.colors,
-          isPremium: !b.unlocked,
-          unlocked: b.unlocked,
-          unlockRequirement: b.unlockRequirement,
-          description: `${b.rarity} border`,
-        }),
-      }));
+    // If parent has an active search/rarity filter, cross-reference with themed borders
+    if (hasActiveFilter && borders.length > 0) {
+      const borderIds = new Set(borders.map((b) => b.id));
+      // Show only themed borders that match the parent filter
+      return themedBorders.filter((tb) => borderIds.has(tb.id));
     }
+    // No active filter — show all themed borders (respects theme selector)
     return themedBorders;
-  }, [borders, themedBorders]);
+  }, [borders, themedBorders, hasActiveFilter]);
 
   return (
     <div className="space-y-6">

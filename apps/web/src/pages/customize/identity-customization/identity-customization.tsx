@@ -119,6 +119,7 @@ export default function IdentityCustomization() {
               selectedBorder={avatarBorder}
               previewingBorder={previewingLockedItem}
               onEquip={handleEquipBorder}
+              hasActiveFilter={searchQuery.length > 0 || selectedRarity !== 'all'}
             />
           )}
           {activeSection === 'titles' && (
