@@ -151,11 +151,27 @@ defmodule CGraph.Notifications do
   @doc "Notify a user about a friend request."
   @spec notify_friend_request(User.t(), User.t()) :: {:ok, Notification.t()} | {:error, term()}
   def notify_friend_request(%User{} = recipient, %User{} = sender) do
+    # Dismiss any existing unread friend-request notifications from the same
+    # sender so that cancel-and-resend doesn't create duplicates.
+    dismiss_friend_request_notifications(recipient.id, sender.id)
+
     notify(recipient, :friend_request, "New friend request",
       body: "#{sender.username} wants to be your friend",
       actor: sender,
       data: %{sender_id: sender.id}
     )
+  end
+
+  @doc "Removes unread friend-request notifications from `sender_id` to `recipient_id`."
+  @spec dismiss_friend_request_notifications(String.t(), String.t()) :: {non_neg_integer(), nil}
+  def dismiss_friend_request_notifications(recipient_id, sender_id) do
+    from(n in Notification,
+      where: n.user_id == ^recipient_id,
+      where: n.actor_id == ^sender_id,
+      where: n.type == :friend_request,
+      where: is_nil(n.read_at)
+    )
+    |> Repo.delete_all()
   end
 
   @doc "Notify a user that their friend request was accepted."

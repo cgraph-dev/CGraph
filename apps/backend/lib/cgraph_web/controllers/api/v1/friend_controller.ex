@@ -186,6 +186,12 @@ defmodule CGraphWeb.API.V1.FriendController do
     with {:ok, friendship} <- Accounts.get_friend_request(user, friendship_id),
          :ok <- validate_is_recipient(user, friendship),
          {:ok, _} <- Accounts.decline_friend_request(friendship) do
+      # Clean up friend-request notification
+      CGraph.Notifications.dismiss_friend_request_notifications(
+        friendship.friend_id,
+        friendship.user_id
+      )
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -200,6 +206,14 @@ defmodule CGraphWeb.API.V1.FriendController do
 
     with {:ok, friendship} <- Accounts.get_friendship(user, friendship_id),
          {:ok, _} <- Accounts.remove_friendship(user, friendship) do
+      # Clean up any friend-request notifications associated with this friendship
+      if friendship.status == :pending do
+        CGraph.Notifications.dismiss_friend_request_notifications(
+          friendship.friend_id,
+          friendship.user_id
+        )
+      end
+
       send_resp(conn, :no_content, "")
     end
   end
