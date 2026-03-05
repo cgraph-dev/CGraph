@@ -131,7 +131,10 @@ export function UserProfile() {
                   isActioning={actions.isActioning}
                   onSendRequest={actions.handleSendRequest}
                   onAcceptRequest={actions.handleAcceptRequest}
+                  onDeclineRequest={actions.handleDeclineRequest}
+                  onCancelRequest={actions.handleCancelRequest}
                   onRemoveFriend={actions.handleRemoveFriend}
+                  onBlockUser={actions.handleBlockUser}
                   onMessage={actions.handleMessage}
                 />
               </div>

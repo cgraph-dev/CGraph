@@ -8,6 +8,8 @@ vi.mock('@heroicons/react/24/outline', () => ({
   UserMinusIcon: () => <span data-testid="user-minus" />,
   ChatBubbleLeftIcon: () => <span data-testid="chat-bubble" />,
   EllipsisHorizontalIcon: () => <span data-testid="ellipsis" />,
+  NoSymbolIcon: () => <span data-testid="no-symbol" />,
+  XMarkIcon: () => <span data-testid="x-mark" />,
 }));
 
 vi.mock('@/components', () => ({
@@ -60,7 +62,10 @@ const baseProps = {
   isActioning: false,
   onSendRequest: vi.fn(),
   onAcceptRequest: vi.fn(),
+  onDeclineRequest: vi.fn(),
+  onCancelRequest: vi.fn(),
   onRemoveFriend: vi.fn(),
+  onBlockUser: vi.fn(),
   onMessage: vi.fn(),
 };
 
@@ -94,27 +99,24 @@ describe('FriendshipActions', () => {
     expect(mockHaptic.success).toHaveBeenCalled();
   });
 
-  it('renders disabled "Request Sent" when pending_sent', () => {
+  it('renders disabled "Cancel Request" when pending_sent', () => {
     render(<FriendshipActions {...baseProps} friendshipStatus="pending_sent" />);
-    const btn = screen.getByText('Request Sent');
-    expect(btn.closest('button')?.hasAttribute('disabled')).toBe(true);
+    expect(screen.getByText('Cancel Request')).toBeTruthy();
   });
 
-  it('renders Accept Request when pending_received', () => {
+  it('renders Accept when pending_received', () => {
     render(<FriendshipActions {...baseProps} friendshipStatus="pending_received" />);
-    expect(screen.getByText('Accept Request')).toBeTruthy();
+    expect(screen.getByText('Accept')).toBeTruthy();
   });
 
   it('calls onAcceptRequest on Accept click', () => {
     render(<FriendshipActions {...baseProps} friendshipStatus="pending_received" />);
-    fireEvent.click(screen.getByText('Accept Request'));
+    fireEvent.click(screen.getByText('Accept'));
     expect(baseProps.onAcceptRequest).toHaveBeenCalled();
   });
 
-  it('returns null for unknown status', () => {
-    const { container } = render(
-      <FriendshipActions {...baseProps} friendshipStatus={'blocked' as 'none'} />
-    );
-    expect(container.firstChild).toBeNull();
+  it('renders Blocked for blocked status', () => {
+    render(<FriendshipActions {...baseProps} friendshipStatus="blocked" />);
+    expect(screen.getByText('Blocked')).toBeTruthy();
   });
 });

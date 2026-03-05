@@ -112,7 +112,7 @@ export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: Disc
                         e.stopPropagation();
                         const isFriend = friends.some((f) => f.id === result.id);
                         if (!isFriend) {
-                          sendRequest(result.name);
+                          sendRequest(result.id);
                           HapticFeedback.success();
                         }
                       }}

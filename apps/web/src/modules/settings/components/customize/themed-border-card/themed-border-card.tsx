@@ -28,8 +28,8 @@ export default function ThemedBorderCard({
 }: ThemedBorderCardProps) {
   const config = SIZE_CONFIG[size];
   // type assertion: border.rarity is a valid BorderRarity value from API
-   
-  const rarityColor = RARITY_COLORS[border.rarity as BorderRarity];
+  // Fallback for unknown rarity values to prevent crash
+  const rarityColor = RARITY_COLORS[border.rarity as BorderRarity] ?? RARITY_COLORS.common;
   const isLocked = !border.unlocked && !allowPreview;
   const canInteract = !isLocked;
 

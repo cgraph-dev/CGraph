@@ -60,7 +60,10 @@ export interface FriendshipActionsProps {
   isActioning: boolean;
   onSendRequest: () => void;
   onAcceptRequest: () => void;
+  onDeclineRequest: () => void;
+  onCancelRequest: () => void;
   onRemoveFriend: () => void;
+  onBlockUser: () => void;
   onMessage: () => void;
 }
 

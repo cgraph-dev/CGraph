@@ -37,7 +37,7 @@ export function useProfileActions({
   setFriendshipStatus,
 }: UseProfileActionsParams) {
   const navigate = useNavigate();
-  const { sendRequest, acceptRequest, removeFriend } = useFriendStore();
+  const { sendRequest, acceptRequest, declineRequest, removeFriend, blockUser } = useFriendStore();
 
   const [editMode, setEditMode] = useState(false);
   const [editedBio, setEditedBio] = useState('');
@@ -161,12 +161,52 @@ export function useProfileActions({
     }
   };
 
+  const handleDeclineRequest = async () => {
+    if (!profile) return;
+    setIsActioning(true);
+    try {
+      await declineRequest(profile.id);
+      setFriendshipStatus('none');
+    } catch {
+      // Error handled by store
+    } finally {
+      setIsActioning(false);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!profile) return;
+    setIsActioning(true);
+    try {
+      // Cancel sent request uses the same decline endpoint
+      await declineRequest(profile.id);
+      setFriendshipStatus('none');
+    } catch {
+      // Error handled by store
+    } finally {
+      setIsActioning(false);
+    }
+  };
+
   const handleRemoveFriend = async () => {
     if (!profile) return;
     setIsActioning(true);
     try {
       await removeFriend(profile.id);
       setFriendshipStatus('none');
+    } catch {
+      // Error handled by store
+    } finally {
+      setIsActioning(false);
+    }
+  };
+
+  const handleBlockUser = async () => {
+    if (!profile) return;
+    setIsActioning(true);
+    try {
+      await blockUser(profile.id);
+      setFriendshipStatus('blocked');
     } catch {
       // Error handled by store
     } finally {
@@ -224,7 +264,10 @@ export function useProfileActions({
     handleBannerChange,
     handleSendRequest,
     handleAcceptRequest,
+    handleDeclineRequest,
+    handleCancelRequest,
     handleRemoveFriend,
+    handleBlockUser,
     handleMessage,
     handleSaveProfile,
     handleCancelEdit,

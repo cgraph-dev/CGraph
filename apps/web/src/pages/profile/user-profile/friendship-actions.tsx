@@ -8,6 +8,8 @@ import {
   UserMinusIcon,
   ChatBubbleLeftIcon,
   EllipsisHorizontalIcon,
+  NoSymbolIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import Dropdown, { DropdownItem } from '@/components/navigation/dropdown';
@@ -19,13 +21,13 @@ interface FriendshipActionsProps {
   isActioning: boolean;
   onSendRequest: () => void;
   onAcceptRequest: () => void;
+  onDeclineRequest: () => void;
+  onCancelRequest: () => void;
   onRemoveFriend: () => void;
+  onBlockUser: () => void;
   onMessage: () => void;
 }
 
-/**
- * unknown for the profile module.
- */
 /**
  * Friendship Actions component.
  */
@@ -34,7 +36,10 @@ export function FriendshipActions({
   isActioning,
   onSendRequest,
   onAcceptRequest,
+  onDeclineRequest,
+  onCancelRequest,
   onRemoveFriend,
+  onBlockUser,
   onMessage,
 }: FriendshipActionsProps) {
   if (friendshipStatus === 'friends') {
@@ -70,6 +75,16 @@ export function FriendshipActions({
           >
             Remove Friend
           </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              onBlockUser();
+              HapticFeedback.medium();
+            }}
+            icon={<NoSymbolIcon className="h-4 w-4" />}
+            danger
+          >
+            Block User
+          </DropdownItem>
         </Dropdown>
       </>
     );
@@ -77,43 +92,135 @@ export function FriendshipActions({
 
   if (friendshipStatus === 'none') {
     return (
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          leftIcon={<UserPlusIcon className="h-5 w-5" />}
-          onClick={() => {
-            onSendRequest();
-            HapticFeedback.success();
-          }}
-          isLoading={isActioning}
+      <div className="flex items-center gap-2">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            leftIcon={<UserPlusIcon className="h-5 w-5" />}
+            onClick={() => {
+              onSendRequest();
+              HapticFeedback.success();
+            }}
+            isLoading={isActioning}
+          >
+            Add Friend
+          </Button>
+        </motion.div>
+        <Dropdown
+          trigger={
+            <Button variant="ghost">
+              <EllipsisHorizontalIcon className="h-5 w-5" />
+            </Button>
+          }
+          align="right"
         >
-          Add Friend
-        </Button>
-      </motion.div>
+          <DropdownItem
+            onClick={() => {
+              onBlockUser();
+              HapticFeedback.medium();
+            }}
+            icon={<NoSymbolIcon className="h-4 w-4" />}
+            danger
+          >
+            Block User
+          </DropdownItem>
+        </Dropdown>
+      </div>
     );
   }
 
   if (friendshipStatus === 'pending_sent') {
     return (
-      <Button variant="secondary" disabled>
-        Request Sent
-      </Button>
+      <div className="flex items-center gap-2">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="secondary"
+            leftIcon={<XMarkIcon className="h-5 w-5" />}
+            onClick={() => {
+              onCancelRequest();
+              HapticFeedback.medium();
+            }}
+            isLoading={isActioning}
+          >
+            Cancel Request
+          </Button>
+        </motion.div>
+        <Dropdown
+          trigger={
+            <Button variant="ghost">
+              <EllipsisHorizontalIcon className="h-5 w-5" />
+            </Button>
+          }
+          align="right"
+        >
+          <DropdownItem
+            onClick={() => {
+              onBlockUser();
+              HapticFeedback.medium();
+            }}
+            icon={<NoSymbolIcon className="h-4 w-4" />}
+            danger
+          >
+            Block User
+          </DropdownItem>
+        </Dropdown>
+      </div>
     );
   }
 
   if (friendshipStatus === 'pending_received') {
     return (
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          leftIcon={<UserPlusIcon className="h-5 w-5" />}
-          onClick={() => {
-            onAcceptRequest();
-            HapticFeedback.success();
-          }}
-          isLoading={isActioning}
+      <div className="flex items-center gap-2">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            leftIcon={<UserPlusIcon className="h-5 w-5" />}
+            onClick={() => {
+              onAcceptRequest();
+              HapticFeedback.success();
+            }}
+            isLoading={isActioning}
+          >
+            Accept
+          </Button>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              onDeclineRequest();
+              HapticFeedback.medium();
+            }}
+          >
+            Decline
+          </Button>
+        </motion.div>
+        <Dropdown
+          trigger={
+            <Button variant="ghost">
+              <EllipsisHorizontalIcon className="h-5 w-5" />
+            </Button>
+          }
+          align="right"
         >
-          Accept Request
-        </Button>
-      </motion.div>
+          <DropdownItem
+            onClick={() => {
+              onBlockUser();
+              HapticFeedback.medium();
+            }}
+            icon={<NoSymbolIcon className="h-4 w-4" />}
+            danger
+          >
+            Block User
+          </DropdownItem>
+        </Dropdown>
+      </div>
+    );
+  }
+
+  if (friendshipStatus === 'blocked') {
+    return (
+      <Button variant="secondary" disabled>
+        Blocked
+      </Button>
     );
   }
 
