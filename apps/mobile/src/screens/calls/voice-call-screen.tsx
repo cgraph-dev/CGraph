@@ -188,12 +188,22 @@ export default function VoiceCallScreen() {
         ])
       ).start();
 
-      // Simulate audio levels
+      // Audio levels — use WebRTC stats when available, zero fallback otherwise
       audioSimulatorRef.current = setInterval(() => {
-        const newLevels = Array(AUDIO_LEVELS_COUNT)
-          .fill(0)
-          .map(() => Math.random() * (isMuted ? 0.1 : 1));
-        setAudioLevels(newLevels);
+        const socket = socketManager.getSocket();
+        if (socket && !isMuted) {
+          const manager = getWebRTCManager(socket);
+          const stats = (manager as Record<string, unknown>).getAudioLevels;
+          if (typeof stats === 'function') {
+            const levels = stats();
+            if (Array.isArray(levels) && levels.length > 0) {
+              setAudioLevels(levels.slice(0, AUDIO_LEVELS_COUNT));
+              return;
+            }
+          }
+        }
+        // TODO: integrate real WebRTC getStats() audio levels
+        setAudioLevels(Array(AUDIO_LEVELS_COUNT).fill(0));
       }, 100);
 
       return () => {
