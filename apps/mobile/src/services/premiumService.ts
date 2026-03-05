@@ -195,22 +195,22 @@ export async function getCoinBalance(): Promise<CoinBalance> {
 }
 
 /**
- * Get available coin packages
+ * Get available coin packages (bundles)
  */
 export async function getCoinPackages(): Promise<CoinPackage[]> {
-  const response = await api.get('/api/v1/shop/coin-packages');
-  return (response.data.data || response.data.packages || []).map(transformCoinPackage);
+  const response = await api.get('/api/v1/shop/bundles');
+  return (response.data.data || response.data.bundles || []).map(transformCoinPackage);
 }
 
 /**
- * Purchase coin package
+ * Purchase coin package via Stripe Checkout
  */
 export async function purchaseCoinPackage(
   packageId: string,
   paymentMethodId: string
 ): Promise<{ clientSecret: string; transactionId: string }> {
-  const response = await api.post('/api/v1/shop/coin-packages/purchase', {
-    package_id: packageId,
+  const response = await api.post('/api/v1/shop/purchase-coins', {
+    bundle_id: packageId,
     payment_method_id: paymentMethodId,
   });
   return {
