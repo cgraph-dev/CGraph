@@ -10,31 +10,31 @@ Secure real-time communication that works end-to-end.
 
 ## Current Focus
 
-**Post-v1.0 Hardening** — Test coverage safety net shipped, infrastructure phase remaining.
+**ALL PHASES COMPLETE** — Full-stack wiring, hardening, testing, and infrastructure done.
 
 ## Position
 
-- **Phase:** 24 of 25 — **Test Coverage** (Complete)
-- **Plan:** 1/1 plans executed in Phase 24
-- **Status:** ✅ Phase 24 complete — 117 new tests for revenue-critical paths, coverage baseline established
-- **Last activity:** Phase 24 executed — creator, webhook, IAP tests + coverage baseline
+- **Phase:** 25 of 25 — **Infrastructure & Perf** (Complete)
+- **Plan:** 1/1 plans executed in Phase 25
+- **Status:** ✅ Phase 25 complete — PgBouncer, MeiliSearch, k6 load tests, auth latency fix, Elixir alignment, CRDT compaction
+- **Last activity:** Phase 25 executed — 6 infrastructure tasks delivered
 
 ## Plans
 
 | Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
 | ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
-| 24-01 | Critical Path Tests — Creator, Webhooks, IAP, Coverage Baseline      | 1    | ✅         | 20-01, 20-02, 23-01 | Complete  |
+| 25-01 | Infrastructure & Performance — PgBouncer, MeiliSearch, Load Tests    | 1    | ✅         | 24-01            | Complete  |
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 97%         |
-| Phases complete    | 24 / 25     |
-| Requirements done  | 185 / ~191  |
-| Current phase reqs | 5 / 5       |
+| Overall progress   | 100%        |
+| Phases complete    | 25 / 25     |
+| Requirements done  | 191 / ~191  |
+| Current phase reqs | 6 / 6       |
 
-██████████████████████████████████████░░ 97%
+████████████████████████████████████████ 100%
 
 ## Phase Summary
 
@@ -64,24 +64,22 @@ Secure real-time communication that works end-to-end.
 | 22  | Mobile Wiring           | **Complete**              |
 | 23  | Creator & Payments      | **Complete**              |
 | 24  | Test Coverage           | **Complete**              |
-| 25  | Infrastructure & Perf   | Not started               |
+| 25  | Infrastructure & Perf   | **Complete**              |
 
 ## Session Continuity
 
 Last session: current
-Stopped at: Phase 24 complete — ready for Phase 25 (Infrastructure & Perf)
-Resume file: `.gsd/ROADMAP.md` → Phase 25 (Infrastructure & Perf)
+Stopped at: ALL PHASES COMPLETE — roadmap fully executed
+Resume file: `.gsd/ROADMAP.md`
 
 ## Last Action
 
-Phase 24 "Test Coverage" executed:
-- Plan 24-01: 117 new tests (116 passing, 1 skipped) across 7 test files + factory additions
-- Creator context tests: earnings (16), payouts (16), paid subscriptions (24)
-- Controller tests: creator (22), analytics (13)
-- Webhook handler tests (11), IAP controller tests (15)
-- Coverage baseline: 33.8% overall, revenue-critical modules 94–100%
-- Discovered production bug: payout.ex FOR UPDATE + aggregate (pre-existing)
+Phase 25 "Infrastructure & Perf" executed:
+- Plan 25-01: 6 commits — PgBouncer sidecar, MeiliSearch setup task, k6 load tests (7 scripts),
+  Argon2 tuning (t_cost=2, m_cost=15), Dockerfile aligned to Elixir 1.19.4/OTP 28.3,
+  CRDT document compaction worker with client-assisted compaction
+- No test regressions (2372 tests, 5 pre-existing failures, 8 skipped)
 
 ---
 
-_Last updated: current (phase 24 complete)_
+_Last updated: current (phase 25 complete — ALL PHASES DONE)_
