@@ -331,29 +331,13 @@ export default function Sidebar({
         {/* Logo */}
         <a href="https://www.cgraph.org" title="Back to Home" className="block">
           <motion.div
-            whileHover={{
-              scale: 1.1,
-              filter: 'drop-shadow(0 0 12px rgba(16,185,129,0.5)) drop-shadow(0 0 24px rgba(139,92,246,0.3))',
-            }}
+            whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             transition={springs.snappy}
             role="img"
             aria-label="CGraph logo - Click to go home"
-            className="relative"
           >
-            {/* Ambient glow ring behind logo */}
-            <motion.div
-              className="absolute -inset-2 rounded-2xl"
-              style={{
-                background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)',
-              }}
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-                scale: [1, 1.05, 1],
-              }}
-              transition={loop({ duration: 3, ease: 'easeInOut' })}
-            />
-            <LogoIcon size={40} />
+            <LogoIcon size={52} />
           </motion.div>
         </a>
       </div>

@@ -76,14 +76,14 @@ export function PresenceStatusSelector({
   const [status, setStatus] = useState<PresenceStatus>(currentStatus);
   const [updating, setUpdating] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [menuPos, setMenuPos] = useState({ bottom: 0, left: 0 });
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setMenuPos({
-        bottom: window.innerHeight - rect.top + 4,
-        left: rect.left,
+        top: rect.top,
+        left: rect.right + 8,
       });
     }
   }, [isOpen]);
@@ -127,7 +127,7 @@ export function PresenceStatusSelector({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 5, scale: 0.95 }}
               transition={springPreset}
-              style={{ bottom: menuPos.bottom, left: menuPos.left }}
+              style={{ top: menuPos.top, left: menuPos.left }}
               className={`fixed z-50 w-56 overflow-hidden rounded-xl ${glassSurfaceElevated}`}
             >
               <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
