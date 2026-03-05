@@ -313,7 +313,7 @@ export function Social() {
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
                 <ContactsPresenceList
                   className="max-h-[calc(100vh-12rem)] overflow-y-auto"
-                  onContactClick={(friend) => navigate(`/messages?user=${friend.id}`)}
+                  onContactClick={(friend) => navigate(`/messages?userId=${friend.id}`)}
                 />
               </div>
             </aside>

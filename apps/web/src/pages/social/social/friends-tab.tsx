@@ -224,7 +224,7 @@ export function FriendsTab({
                       whileTap={{ scale: 0.9 }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/messages?user=${friend.id}`);
+                        navigate(`/messages?userId=${friend.id}`);
                         HapticFeedback.medium();
                       }}
                       className="rounded-xl bg-primary-500/10 p-2.5 text-primary-400 opacity-0 ring-1 ring-primary-500/20 transition-all hover:bg-primary-500/20 group-hover:opacity-100"
