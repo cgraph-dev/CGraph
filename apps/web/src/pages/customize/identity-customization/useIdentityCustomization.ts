@@ -16,6 +16,7 @@ import {
 import toast from 'react-hot-toast';
 import { ALL_BORDERS, type BorderDefinition } from '@/data/borderCollections';
 import { ALL_TITLES, type TitleDefinition } from '@/data/titlesCollection';
+import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
 import {
   fetchBorders,
   fetchTitles,
@@ -52,6 +53,19 @@ function mapTitleDefinition(t: TitleDefinition): Title {
     gradient: t.gradient,
     unlocked: t.unlocked,
     unlockRequirement: t.unlockRequirement,
+  };
+}
+
+/** Map static BadgeDefinition to the component's Badge type */
+function mapBadgeDefinition(b: BadgeDefinition): Badge {
+  return {
+    id: b.id,
+    name: b.name,
+    description: b.description,
+    icon: b.icon,
+    rarity: b.rarity as Rarity,
+    unlocked: b.unlocked,
+    unlockRequirement: b.unlockRequirement,
   };
 }
 
@@ -116,13 +130,18 @@ export function useIdentityCustomization() {
         } else {
           setTitles(ALL_TITLES.map(mapTitleDefinition));
         }
-        setBadges(badgesData);
+        if (badgesData.length > 0) {
+          setBadges(badgesData);
+        } else {
+          setBadges(ALL_BADGES.map(mapBadgeDefinition));
+        }
       })
       .catch(() => {
         // API failed — use static data as fallback
         if (!cancelled) {
           setBorders(ALL_BORDERS.map(mapBorderDefinition));
           setTitles(ALL_TITLES.map(mapTitleDefinition));
+          setBadges(ALL_BADGES.map(mapBadgeDefinition));
         }
       })
       .finally(() => {

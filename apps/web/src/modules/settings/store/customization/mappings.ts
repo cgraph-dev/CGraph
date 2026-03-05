@@ -143,6 +143,8 @@ export const EFFECT_ID_TO_ANIMATION: Record<string, BubbleAnimation> = {
 // TITLE MAPPINGS
 // =============================================================================
 
+import { ALL_TITLES } from '@/data/titlesCollection';
+
 /**
  * Title display configuration with name and gradient styling.
  */
@@ -153,35 +155,22 @@ export interface TitleDisplay {
 
 /**
  * Maps title IDs to display names and gradient classes.
+ * Generated dynamically from the static titles collection.
  */
-export const TITLE_DISPLAY_NAMES: Record<string, TitleDisplay> = {
-  t1: { name: 'Newbie', gradient: 'text-gray-400' },
-  t2: { name: 'Adventurer', gradient: 'text-blue-400' },
-  t3: {
-    name: 'Veteran',
-    gradient: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent',
-  },
-  t4: {
-    name: 'Elite',
-    gradient: 'bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent',
-  },
-  t5: {
-    name: 'Legend',
-    gradient: 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent',
-  },
-  t6: {
-    name: 'Mythic Hero',
-    gradient:
-      'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent',
-  },
-};
+export const TITLE_DISPLAY_NAMES: Record<string, TitleDisplay> = Object.fromEntries(
+  ALL_TITLES.map((t) => [t.id, { name: t.displayName, gradient: t.gradient }])
+);
 
 /**
  * Legendary and mythic title IDs for special rendering.
  */
-export const LEGENDARY_TITLE_IDS = ['t5', 't6'] as const;
-export const MYTHIC_TITLE_IDS = ['t14', 't15', 't16', 't17', 't18'] as const;
-export const RARE_TITLE_IDS = [...LEGENDARY_TITLE_IDS, ...MYTHIC_TITLE_IDS] as const;
+export const LEGENDARY_TITLE_IDS = ALL_TITLES
+  .filter((t) => t.rarity === 'legendary' || t.rarity === 'mythic')
+  .map((t) => t.id);
+export const MYTHIC_TITLE_IDS = ALL_TITLES
+  .filter((t) => t.rarity === 'mythic')
+  .map((t) => t.id);
+export const RARE_TITLE_IDS = [...LEGENDARY_TITLE_IDS] as const;
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -239,9 +228,7 @@ export function getChatThemeColor(chatThemeId: string | null): ThemePreset {
  * Checks if a title ID is legendary or mythic (special rendering).
  */
 export function isRareTitle(titleId: string | null): boolean {
-  // type assertion: widening readonly tuple to string[] for Array.includes() compatibility
-   
-  return titleId !== null && (RARE_TITLE_IDS as readonly string[]).includes(titleId);
+  return titleId !== null && RARE_TITLE_IDS.includes(titleId);
 }
 
 /**

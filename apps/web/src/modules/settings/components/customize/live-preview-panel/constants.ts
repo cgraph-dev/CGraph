@@ -37,5 +37,9 @@ export const PARTICLE_COLORS: Record<string, string> = {
   confetti: '#8b5cf6',
 };
 
+import { ALL_TITLES } from '@/data/titlesCollection';
+
 // Legendary/mythic title IDs for fire effect
-export const LEGENDARY_TITLE_IDS = ['t5', 't6', 't14', 't15', 't16', 't17', 't18'];
+export const LEGENDARY_TITLE_IDS = ALL_TITLES
+  .filter((t) => t.rarity === 'legendary' || t.rarity === 'mythic')
+  .map((t) => t.id);
