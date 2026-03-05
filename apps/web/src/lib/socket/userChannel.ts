@@ -12,6 +12,8 @@ import type { Socket, Channel } from 'phoenix';
 import { useChatStore, type Conversation } from '@/modules/chat/store';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { useIncomingCallStore, type IncomingCall } from '@/modules/calls/store';
+import { useNotificationStore, type Notification } from '@/modules/social/store';
+import { useFriendStore } from '@/modules/social/store';
 import { socketLogger as logger } from '../logger';
 import { normalizeConversation } from '../apiUtils';
 
@@ -48,6 +50,82 @@ export function joinUserChannel(
 
   channel.on('friend_request', (payload) => {
     logger.log('Friend request received:', payload);
+    // Refresh pending requests in real-time
+    useFriendStore.getState().fetchPendingRequests();
+  });
+
+  // Real-time notification delivery — backend broadcasts serialized notifications
+  channel.on('notification', (payload) => {
+    logger.log('Real-time notification received:', payload);
+    const data = payload as {
+      id: string;
+      type: string;
+      title: string;
+      body: string;
+      read: boolean;
+      data: Record<string, unknown>;
+      actor?: { id: string; username: string; avatar_url: string | null };
+      created_at: string;
+    };
+
+    const notification: Notification = {
+      id: data.id,
+      type: data.type as Notification['type'],
+      title: data.title,
+      body: data.body || '',
+      isRead: data.read ?? false,
+      data: data.data || {},
+      sender: data.actor
+        ? {
+            id: data.actor.id,
+            username: data.actor.username,
+            displayName: null,
+            avatarUrl: data.actor.avatar_url || null,
+          }
+        : undefined,
+      createdAt: data.created_at || new Date().toISOString(),
+    };
+
+    // Deduplicate: don't add if we already have this notification ID
+    const existing = useNotificationStore.getState().notifications;
+    if (!existing.some((n) => n.id === notification.id)) {
+      useNotificationStore.getState().addNotification(notification);
+    }
+  });
+
+  // Real-time notification dismissal — removes cancelled/declined friend request notifications
+  channel.on('notifications:dismissed', (payload) => {
+    logger.log('Notifications dismissed:', payload);
+    const data = payload as { notification_ids: string[]; reason: string };
+    const idsToRemove = new Set(data.notification_ids || []);
+
+    if (idsToRemove.size > 0) {
+      const store = useNotificationStore.getState();
+      const remaining = store.notifications.filter((n) => !idsToRemove.has(n.id));
+      const removedUnread = store.notifications.filter(
+        (n) => idsToRemove.has(n.id) && !n.isRead
+      ).length;
+
+      useNotificationStore.setState({
+        notifications: remaining,
+        unreadCount: Math.max(0, store.unreadCount - removedUnread),
+      });
+    }
+
+    // Also refresh friend lists since this likely means a request was cancelled
+    if (data.reason === 'friend_request_cancelled') {
+      useFriendStore.getState().fetchPendingRequests();
+    }
+  });
+
+  // Real-time friend list sync — any friend action (send/accept/decline/cancel/unfriend)
+  // triggers a refresh of the relevant stores
+  channel.on('friend_list:updated', (payload) => {
+    logger.log('Friend list updated:', payload);
+    const friendStore = useFriendStore.getState();
+    friendStore.fetchFriends();
+    friendStore.fetchPendingRequests();
+    friendStore.fetchSentRequests();
   });
 
   channel.on('message_preview', (payload) => {

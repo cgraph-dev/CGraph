@@ -100,6 +100,9 @@ defmodule CGraphWeb.API.V1.FriendController do
       # Notify target user
       Accounts.notify_friend_request(friendship)
 
+      # Broadcast friend list refresh to both users for real-time sync
+      broadcast_friend_list_update(user.id, target_user.id, "request_sent")
+
       conn
       |> put_status(:created)
       |> render(:show, friendship: friendship)
@@ -116,6 +119,7 @@ defmodule CGraphWeb.API.V1.FriendController do
          {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
       # Notify target user
       Accounts.notify_friend_request(friendship)
+      broadcast_friend_list_update(user.id, target_user.id, "request_sent")
 
       conn
       |> put_status(:created)
@@ -133,6 +137,7 @@ defmodule CGraphWeb.API.V1.FriendController do
          {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
       # Notify target user
       Accounts.notify_friend_request(friendship)
+      broadcast_friend_list_update(user.id, target_user.id, "request_sent")
 
       conn
       |> put_status(:created)
@@ -150,6 +155,7 @@ defmodule CGraphWeb.API.V1.FriendController do
          {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
       # Notify target user
       Accounts.notify_friend_request(friendship)
+      broadcast_friend_list_update(user.id, target_user.id, "request_sent")
 
       conn
       |> put_status(:created)
@@ -170,6 +176,8 @@ defmodule CGraphWeb.API.V1.FriendController do
          {:ok, updated_friendship} <- Accounts.accept_friend_request(friendship) do
       # Notify requester
       Accounts.notify_friend_accepted(updated_friendship)
+      # Broadcast friend list refresh to both users
+      broadcast_friend_list_update(friendship.user_id, user.id, "request_accepted")
 
       render(conn, :show, friendship: updated_friendship)
     end
@@ -191,6 +199,8 @@ defmodule CGraphWeb.API.V1.FriendController do
         friendship.friend_id,
         friendship.user_id
       )
+      # Broadcast friend list refresh to both users
+      broadcast_friend_list_update(friendship.user_id, friendship.friend_id, "request_declined")
 
       send_resp(conn, :no_content, "")
     end
@@ -213,6 +223,8 @@ defmodule CGraphWeb.API.V1.FriendController do
           friendship.user_id
         )
       end
+      # Broadcast friend list refresh to both users
+      broadcast_friend_list_update(friendship.user_id, friendship.friend_id, "request_cancelled")
 
       send_resp(conn, :no_content, "")
     end
@@ -228,6 +240,7 @@ defmodule CGraphWeb.API.V1.FriendController do
 
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
          {:ok, _} <- Accounts.unfriend(user, target_user) do
+      broadcast_friend_list_update(user.id, target_user.id, "unfriended")
       send_resp(conn, :no_content, "")
     end
   end
@@ -367,5 +380,14 @@ defmodule CGraphWeb.API.V1.FriendController do
     else
       {:error, :not_recipient}
     end
+  end
+
+  # Broadcasts a friend list update event to both users for real-time sync.
+  # Each user's frontend will refetch their friend/request lists.
+  defp broadcast_friend_list_update(user_id_a, user_id_b, action) do
+    payload = %{action: action, updated_at: DateTime.utc_now()}
+
+    CGraphWeb.Endpoint.broadcast("user:#{user_id_a}", "friend_list:updated", payload)
+    CGraphWeb.Endpoint.broadcast("user:#{user_id_b}", "friend_list:updated", payload)
   end
 end

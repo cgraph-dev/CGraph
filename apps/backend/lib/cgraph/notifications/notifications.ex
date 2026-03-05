@@ -165,13 +165,33 @@ defmodule CGraph.Notifications do
   @doc "Removes unread friend-request notifications from `sender_id` to `recipient_id`."
   @spec dismiss_friend_request_notifications(String.t(), String.t()) :: {non_neg_integer(), nil}
   def dismiss_friend_request_notifications(recipient_id, sender_id) do
-    from(n in Notification,
-      where: n.user_id == ^recipient_id,
-      where: n.actor_id == ^sender_id,
-      where: n.type == :friend_request,
-      where: is_nil(n.read_at)
-    )
-    |> Repo.delete_all()
+    # Collect IDs of notifications being dismissed so we can broadcast removal
+    notification_ids =
+      from(n in Notification,
+        where: n.user_id == ^recipient_id,
+        where: n.actor_id == ^sender_id,
+        where: n.type == :friend_request,
+        where: is_nil(n.read_at),
+        select: n.id
+      )
+      |> Repo.all()
+
+    result =
+      from(n in Notification,
+        where: n.id in ^notification_ids
+      )
+      |> Repo.delete_all()
+
+    # Broadcast real-time dismissal so the recipient's UI removes these notifications
+    if notification_ids != [] do
+      CGraphWeb.Endpoint.broadcast(
+        "user:#{recipient_id}",
+        "notifications:dismissed",
+        %{notification_ids: notification_ids, reason: "friend_request_cancelled"}
+      )
+    end
+
+    result
   end
 
   @doc "Notify a user that their friend request was accepted."
