@@ -14,10 +14,11 @@ import { ArrowRightOnRectangleIcon, LockClosedIcon } from '@heroicons/react/24/o
 import { PresenceStatusSelector } from '@/shared/components/presence-status-selector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
-import { tweens, loop, springs } from '@/lib/animation-presets';
+import { loop, springs } from '@/lib/animation-presets';
 import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
 import type { FeatureGateKey } from '@cgraph/shared-types';
 import { useMotionSafe } from '@/hooks/useMotionSafe';
+import { useState } from 'react';
 
 /**
  * Lock badge overlay for level-gated nav items.
@@ -65,68 +66,91 @@ export default function Sidebar({
 }: SidebarProps) {
   const { shouldAnimate } = useMotionSafe();
 
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null);
+
   return (
     <aside
-      className="relative z-10 flex w-20 flex-col items-center overflow-hidden border-r border-white/[0.06] bg-[rgba(13,17,23,0.85)] py-4 backdrop-blur-xl backdrop-saturate-[1.6]"
+      className="relative z-10 flex w-[72px] flex-col items-center overflow-hidden border-r border-white/[0.06] bg-[rgba(10,14,20,0.92)] py-4 backdrop-blur-2xl backdrop-saturate-[1.8]"
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Subtle glass edge highlight */}
+      {/* Glass edge highlight */}
       <div
         className="pointer-events-none absolute inset-y-0 right-0 z-20 w-px"
         style={{
           background:
-            'linear-gradient(180deg, transparent 0%, rgba(147,197,253,0.3) 25%, rgba(196,181,253,0.3) 50%, rgba(134,239,172,0.3) 75%, transparent 100%)',
+            'linear-gradient(180deg, transparent 0%, rgba(147,197,253,0.35) 20%, rgba(139,92,246,0.4) 50%, rgba(16,185,129,0.35) 80%, transparent 100%)',
           backgroundSize: '100% 200%',
           animation: 'sidebar-border-flow 4s linear infinite',
         }}
       />
 
-      {/* Ambient glow effect */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgb(var(--lg-glow-blue))]/5 via-transparent to-[rgb(var(--lg-glow-purple))]/5" />
+      {/* Inner edge shadow for depth */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-6 bg-gradient-to-l from-white/[0.02] to-transparent" />
 
-      {/* Floating particles — disabled for performance */}
+      {/* Ambient glow effect */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgb(var(--lg-glow-blue))]/8 via-transparent to-[rgb(var(--lg-glow-purple))]/6" />
+
+      {/* Subtle noise texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")' }} />
 
       {/* Logo - Links back to landing page */}
-      <div className="relative mb-6">
+      <div className="relative mb-5">
         <a href="https://www.cgraph.org" title="Back to Home">
           <motion.div
             whileHover={{
-              scale: 1.08,
-              filter:
-                'drop-shadow(0 0 8px rgba(139,92,246,0.5))',
+              scale: 1.1,
+              filter: 'drop-shadow(0 0 12px rgba(16,185,129,0.5)) drop-shadow(0 0 24px rgba(139,92,246,0.3))',
             }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.92 }}
             transition={springs.snappy}
             role="img"
             aria-label="CGraph logo - Click to go home"
+            className="relative"
           >
-            <LogoIcon size={48} />
+            {/* Ambient glow ring behind logo */}
+            <motion.div
+              className="absolute -inset-2 rounded-2xl"
+              style={{
+                background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)',
+              }}
+              animate={{
+                opacity: [0.5, 0.8, 0.5],
+                scale: [1, 1.05, 1],
+              }}
+              transition={loop({ duration: 3, ease: 'easeInOut' })}
+            />
+            <LogoIcon size={56} />
           </motion.div>
         </a>
       </div>
 
+      {/* Section divider */}
+      <div className="mb-3 h-px w-10 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
       {/* Navigation */}
-      <nav className="relative z-10 flex flex-1 flex-col items-center gap-2" aria-label="Primary">
+      <nav className="relative z-10 flex flex-1 flex-col items-center gap-1.5" aria-label="Primary">
         {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           const Icon = isActive ? item.activeIcon : item.icon;
+          const isHovered = hoveredNav === item.path;
 
           return (
             <div
               key={item.path}
+              onMouseEnter={() => setHoveredNav(item.path)}
+              onMouseLeave={() => setHoveredNav(null)}
             >
               <NavLink
                 to={item.path}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={() => HapticFeedback.light()}
-                title={item.label}
                 className="relative block"
               >
                 <motion.div
                   whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.9 }}
                   transition={springs.snappy}
                   className="relative"
                 >
@@ -134,28 +158,61 @@ export default function Sidebar({
                     <GlassCard
                       variant="neon"
                       glow
-                      glowColor="rgba(16, 185, 129, 0.6)"
-                      className="flex h-12 w-12 items-center justify-center rounded-xl p-0"
+                      glowColor="rgba(16, 185, 129, 0.5)"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl p-0"
                     >
                       <div className="relative z-10">
                         <Icon
-                          className="h-6 w-6 text-white drop-shadow-lg"
+                          className="h-5.5 w-5.5 text-white drop-shadow-lg"
                           style={{
-                            filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.8))',
+                            filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.7))',
                           }}
                         />
                       </div>
                     </GlassCard>
                   ) : (
-                    <div className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl text-gray-400 transition-all duration-200 hover:text-white">
-                      {/* Hover glow effect */}
+                    <div className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl text-gray-500 transition-colors duration-200 hover:text-gray-200">
+                      {/* Hover background */}
                       <motion.div
-                        className="absolute inset-0 rounded-xl border border-white/[0.04] bg-white/[0.06] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        className="absolute inset-0 rounded-xl"
                         initial={false}
+                        animate={{
+                          opacity: isHovered ? 1 : 0,
+                          background: isHovered
+                            ? 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(139,92,246,0.06) 100%)'
+                            : 'linear-gradient(135deg, transparent 0%, transparent 100%)',
+                        }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
                       />
-                      <Icon className="relative z-10 h-6 w-6 transition-transform group-hover:scale-110" />
+                      {/* Hover border */}
+                      <motion.div
+                        className="absolute inset-0 rounded-xl border"
+                        initial={false}
+                        animate={{
+                          borderColor: isHovered ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0)',
+                        }}
+                        transition={{ duration: 0.2 }}
+                      />
+                      <Icon className="relative z-10 h-[22px] w-[22px] transition-transform duration-200 group-hover:scale-110" />
                     </div>
                   )}
+
+                  {/* Tooltip label */}
+                  <AnimatePresence>
+                    {isHovered && !isActive && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -4, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: -4, scale: 0.95 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                        className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2"
+                      >
+                        <div className="whitespace-nowrap rounded-lg border border-white/10 bg-[rgba(20,24,33,0.95)] px-2.5 py-1 text-xs font-medium text-gray-300 shadow-xl backdrop-blur-sm">
+                          {item.label}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Badge for messages */}
                   <AnimatePresence>
@@ -191,15 +248,15 @@ export default function Sidebar({
                     )}
                   </AnimatePresence>
 
-                  {/* Active indicator line */}
+                  {/* Active indicator pill */}
                   {isActive && (
                     <motion.div
-                      className="absolute -left-3 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
+                      className="absolute -left-[14px] top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-emerald-400 via-primary-400 to-purple-500"
                       layoutId={LAYOUT_IDS.sidebarActiveIndicator}
                       initial={false}
                       transition={shouldAnimate ? springs.bouncy : { duration: 0 }}
                       style={{
-                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.8)',
+                        boxShadow: '0 0 12px rgba(16, 185, 129, 0.7), 0 0 4px rgba(139, 92, 246, 0.5)',
                       }}
                     />
                   )}
@@ -216,12 +273,15 @@ export default function Sidebar({
         })}
       </nav>
 
+      {/* Section divider */}
+      <div className="mb-3 mt-auto h-px w-10 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
       {/* User Avatar & Logout */}
-      <div className="relative z-10 mt-auto space-y-2" role="group" aria-label="User actions">
+      <div className="relative z-10 space-y-2" role="group" aria-label="User actions">
         {/* Logout Button */}
         <motion.div
           whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.9 }}
           transition={springs.snappy}
         >
           <button
@@ -229,28 +289,22 @@ export default function Sidebar({
               HapticFeedback.medium();
               handleLogout();
             }}
-            className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl text-gray-400 transition-all hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-dark-800"
+            className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl text-gray-500 transition-colors duration-200 hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-dark-800"
             title="Logout"
             aria-label="Logout from your account"
           >
             {/* Hover glow effect */}
             <motion.div
-              className="absolute inset-0 rounded-xl bg-gradient-to-br from-red-600/20 via-pink-600/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              className="absolute inset-0 rounded-xl bg-gradient-to-br from-red-600/10 via-pink-600/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              initial={false}
+            />
+            <motion.div
+              className="absolute inset-0 rounded-xl border border-red-500/0 transition-colors duration-300 group-hover:border-red-500/15"
               initial={false}
             />
             <ArrowRightOnRectangleIcon
-              className="relative z-10 h-6 w-6 transition-all group-hover:scale-110"
+              className="relative z-10 h-5 w-5 transition-all duration-200 group-hover:scale-110"
               aria-hidden="true"
-              style={{
-                filter: 'drop-shadow(0 0 0 transparent)',
-                transition: 'filter 0.3s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.filter = 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6))';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = 'drop-shadow(0 0 0 transparent)';
-              }}
             />
           </button>
         </motion.div>
@@ -258,37 +312,43 @@ export default function Sidebar({
         {/* User Avatar */}
         <motion.div
           whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.92 }}
           transition={springs.snappy}
           className="relative"
         >
           <div
-            className="h-12 w-12 cursor-pointer overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 p-0.5"
+            className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[2px]"
             role="img"
             aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
+            style={{
+              background: 'linear-gradient(135deg, rgba(16,185,129,0.7), rgba(139,92,246,0.7))',
+            }}
           >
             {user?.avatarUrl ? (
               <ThemedAvatar
                 src={user.avatarUrl}
                 alt={user.displayName || user.username || 'User avatar'}
                 size="medium"
-                className="h-full w-full rounded-lg"
+                className="h-full w-full rounded-[10px]"
                 avatarBorderId={getAvatarBorderId(user)}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-purple-700 text-lg font-bold">
+              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[rgba(13,17,23,0.9)] text-base font-semibold text-gray-200">
                 {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
               </div>
             )}
           </div>
 
-          {/* Pulsing glow around avatar */}
+          {/* Online ring pulse */}
           <motion.div
-            className="pointer-events-none absolute inset-0 rounded-xl border-2 border-primary-500/40"
+            className="pointer-events-none absolute -inset-0.5 rounded-xl"
             animate={{
-              boxShadow: ['0 0 0 0 rgba(16, 185, 129, 0.6)', '0 0 0 8px rgba(16, 185, 129, 0)'],
+              boxShadow: [
+                '0 0 0 0 rgba(16, 185, 129, 0.4)',
+                '0 0 0 6px rgba(16, 185, 129, 0)',
+              ],
             }}
-            transition={loop(tweens.ambientSlow)}
+            transition={loop({ duration: 2.5, ease: 'easeOut' })}
           />
         </motion.div>
 
