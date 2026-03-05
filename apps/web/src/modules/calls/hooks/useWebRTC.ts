@@ -72,6 +72,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
   const { conversationId: _conversationId, onCallConnected, onCallEnded, onError } = options;
   const socketManager = useSocket();
   const webrtcManagerRef = useRef<WebRTCManager | null>(null);
+  const isEndingRef = useRef(false);
 
   // Stable refs for callbacks to avoid re-running the setup effect
   const onCallConnectedRef = useRef(onCallConnected);
@@ -214,19 +215,25 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
   );
 
   /**
-   * End the current call
+   * End the current call (with re-entrancy guard to prevent mutual recursion
+   * with onCallEnded callbacks)
    */
   const endCall = useCallback(async () => {
-    if (!webrtcManagerRef.current) return;
+    if (!webrtcManagerRef.current || isEndingRef.current) return;
 
+    isEndingRef.current = true;
     try {
       logger.log('Ending call');
       await webrtcManagerRef.current.endCall();
       setRemoteStream(null);
       // Update state from manager
-      setCallState(webrtcManagerRef.current.getState());
+      if (webrtcManagerRef.current) {
+        setCallState(webrtcManagerRef.current.getState());
+      }
     } catch (error) {
       logger.error('Failed to end call:', error);
+    } finally {
+      isEndingRef.current = false;
     }
   }, []);
 

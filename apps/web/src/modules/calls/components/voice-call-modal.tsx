@@ -62,11 +62,15 @@ export function VoiceCallModal({
       toast.success('Call connected');
     },
     onCallEnded: (_reason) => {
-      handleEndCall();
+      // Only cleanup UI — do NOT call endWebRTCCall here to avoid
+      // mutual recursion: endCall → onCallEnded → handleEndCall → endCall
+      setDuration(0);
+      onClose();
     },
     onError: (error) => {
       toast.error(`Call error: ${error}`);
-      handleEndCall();
+      setDuration(0);
+      onClose();
     },
   });
 

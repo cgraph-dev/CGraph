@@ -54,11 +54,15 @@ export function useVideoCall({
       toast.success('Video call connected');
     },
     onCallEnded: (_reason) => {
-      handleEndCallRef.current?.();
+      // Only cleanup UI — do NOT call endWebRTCCall here to avoid
+      // mutual recursion: endCall → onCallEnded → handleEndCall → endCall
+      setDuration(0);
+      onClose();
     },
     onError: (error) => {
       toast.error(`Call error: ${error}`);
-      handleEndCallRef.current?.();
+      setDuration(0);
+      onClose();
     },
   });
 
