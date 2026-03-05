@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useCreator } from '@/modules/creator/hooks/useCreator';
+import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 
 /**
  * CreatorDashboard — main landing page for creator monetization.
@@ -7,81 +9,28 @@ import React, { useEffect, useState } from 'react';
  * Routes: /creator
  */
 
-interface CreatorStatus {
-  creator_status: 'none' | 'pending' | 'active' | 'suspended';
-  stripe_connect_id: boolean;
-  onboarded_at: string | null;
-}
-
-interface CreatorBalance {
-  total_earned_cents: number;
-  total_paid_out_cents: number;
-  available_balance_cents: number;
-}
-
-interface OverviewStats {
-  subscriber_count: number;
-  mrr_cents: number;
-  churn_rate: number;
-  platform_fee_percent: number;
-}
-
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
 export const CreatorDashboard: React.FC = () => {
-  const [status, setStatus] = useState<CreatorStatus | null>(null);
-  const [balance, setBalance] = useState<CreatorBalance | null>(null);
-  const [overview, setOverview] = useState<OverviewStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [onboardingUrl, setOnboardingUrl] = useState<string | null>(null);
+  const {
+    creatorStatus,
+    isLoading: statusLoading,
+    fetchStatus,
+    startOnboarding,
+    continueOnboarding,
+  } = useCreator();
+  const { balance, analyticsOverview: overview, fetchBalance, fetchAnalyticsOverview } =
+    useCreatorDashboard();
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    fetchStatus();
+    fetchBalance();
+    fetchAnalyticsOverview();
+  }, [fetchStatus, fetchBalance, fetchAnalyticsOverview]);
 
-  const fetchDashboardData = async () => {
-    try {
-      const [statusRes, balanceRes, overviewRes] = await Promise.all([
-        fetch('/api/v1/creator/status').then((r) => r.json()),
-        fetch('/api/v1/creator/balance').then((r) => r.json()).catch(() => null),
-        fetch('/api/v1/creator/analytics/overview').then((r) => r.json()).catch(() => null),
-      ]);
-      setStatus(statusRes.data);
-      if (balanceRes?.data) setBalance(balanceRes.data);
-      if (overviewRes?.data) setOverview(overviewRes.data);
-    } catch {
-      // Silently handle initial load errors
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStartOnboarding = async () => {
-    try {
-      const res = await fetch('/api/v1/creator/onboard', { method: 'POST' });
-      const data = await res.json();
-      if (data.data?.onboarding_url) {
-        setOnboardingUrl(data.data.onboarding_url);
-        window.location.href = data.data.onboarding_url;
-      }
-    } catch {
-      // Handle error
-    }
-  };
-
-  const handleRefreshOnboarding = async () => {
-    try {
-      const res = await fetch('/api/v1/creator/onboard/refresh', { method: 'POST' });
-      const data = await res.json();
-      if (data.data?.onboarding_url) {
-        window.location.href = data.data.onboarding_url;
-      }
-    } catch {
-      // Handle error
-    }
-  };
+  const loading = statusLoading && !creatorStatus;
 
   if (loading) {
     return (
@@ -92,7 +41,7 @@ export const CreatorDashboard: React.FC = () => {
   }
 
   // ── Not a creator yet ──────────────────────────────────────────
-  if (!status || status.creator_status === 'none') {
+  if (creatorStatus === 'none') {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 text-center">
         <div className="mb-6 text-6xl">🎨</div>
@@ -122,7 +71,7 @@ export const CreatorDashboard: React.FC = () => {
           </li>
         </ul>
         <button
-          onClick={handleStartOnboarding}
+          onClick={startOnboarding}
           className="rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Start Creator Onboarding
@@ -132,7 +81,7 @@ export const CreatorDashboard: React.FC = () => {
   }
 
   // ── Pending onboarding ─────────────────────────────────────────
-  if (status.creator_status === 'pending') {
+  if (creatorStatus === 'pending') {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 text-center">
         <div className="mb-6 text-6xl">⏳</div>
@@ -144,16 +93,11 @@ export const CreatorDashboard: React.FC = () => {
           onboarding process to start accepting payments.
         </p>
         <button
-          onClick={handleRefreshOnboarding}
+          onClick={continueOnboarding}
           className="rounded-lg bg-amber-500 px-8 py-3 font-semibold text-white shadow-sm transition hover:bg-amber-600"
         >
           Continue Onboarding →
         </button>
-        {onboardingUrl && (
-          <p className="mt-4 text-sm text-gray-500">
-            Redirecting to Stripe...
-          </p>
-        )}
       </div>
     );
   }
@@ -175,22 +119,22 @@ export const CreatorDashboard: React.FC = () => {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Subscribers"
-          value={overview?.subscriber_count?.toString() ?? '0'}
+          value={overview?.subscriberCount?.toString() ?? '0'}
           icon="👥"
         />
         <StatCard
           label="Monthly Revenue"
-          value={formatCents(overview?.mrr_cents ?? 0)}
+          value={formatCents(overview?.mrrCents ?? 0)}
           icon="📈"
         />
         <StatCard
           label="Available Balance"
-          value={formatCents(balance?.available_balance_cents ?? 0)}
+          value={formatCents(balance?.availableBalanceCents ?? 0)}
           icon="💰"
         />
         <StatCard
           label="Churn Rate"
-          value={`${overview?.churn_rate?.toFixed(1) ?? '0.0'}%`}
+          value={`${overview?.churnRate?.toFixed(1) ?? '0.0'}%`}
           icon="📉"
         />
       </div>
@@ -219,8 +163,8 @@ export const CreatorDashboard: React.FC = () => {
 
       {/* Fee transparency notice */}
       <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        CGraph takes a {overview?.platform_fee_percent ?? 15}% platform fee.
-        You keep {100 - (overview?.platform_fee_percent ?? 15)}% of every payment.
+        CGraph takes a {overview?.platformFeePercent ?? 15}% platform fee.
+        You keep {100 - (overview?.platformFeePercent ?? 15)}% of every payment.
       </p>
     </div>
   );

@@ -32,6 +32,11 @@ import {
   // Premium
   PremiumPage,
   CoinShop,
+  // Creator
+  CreatorDashboard,
+  CreatorEarnings,
+  CreatorPayouts,
+  CreatorAnalytics,
   // Hubs
   Customize,
   Social,
@@ -110,6 +115,12 @@ export function AppRoutes() {
         {/* Premium */}
         <Route path="premium" element={<PremiumPage />} />
         <Route path="premium/coins" element={<CoinShop />} />
+
+        {/* Creator */}
+        <Route path="creator" element={<CreatorDashboard />} />
+        <Route path="creator/earnings" element={<CreatorEarnings />} />
+        <Route path="creator/payouts" element={<CreatorPayouts />} />
+        <Route path="creator/analytics" element={<CreatorAnalytics />} />
 
         {/* Customize Hub */}
         <Route path="customize" element={<Navigate to="/customize/identity" replace />} />

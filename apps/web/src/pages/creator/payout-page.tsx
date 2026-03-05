@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 
 /**
  * PayoutPage — payout request and history.
@@ -11,20 +12,18 @@ import React, { useEffect, useState } from 'react';
  * Route: /creator/payouts
  */
 
-interface Balance {
-  total_earned_cents: number;
-  total_paid_out_cents: number;
-  available_balance_cents: number;
-}
-
-interface Payout {
+interface PayoutDisplay {
   id: string;
   amount_cents: number;
+  amountCents: number;
   currency: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   requested_at: string;
+  requestedAt: string;
   completed_at: string | null;
+  completedAt: string | null;
   failure_reason: string | null;
+  failureReason: string | null;
 }
 
 function formatCents(cents: number): string {
@@ -65,55 +64,36 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; icon: st
 const MINIMUM_PAYOUT_CENTS = 1000;
 
 export const PayoutPage: React.FC = () => {
-  const [balance, setBalance] = useState<Balance | null>(null);
-  const [payouts, setPayouts] = useState<Payout[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [requesting, setRequesting] = useState(false);
+  const {
+    balance,
+    payouts: rawPayouts,
+    isLoadingBalance,
+    isLoading: requesting,
+    fetchBalance,
+    fetchPayouts,
+    requestPayout,
+  } = useCreatorDashboard();
+  const payouts = (rawPayouts ?? []) as unknown as PayoutDisplay[];
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [balanceRes, payoutsRes] = await Promise.all([
-        fetch('/api/v1/creator/balance').then((r) => r.json()),
-        fetch('/api/v1/creator/payouts').then((r) => r.json()),
-      ]);
-      if (balanceRes.data) setBalance(balanceRes.data);
-      if (payoutsRes.data) setPayouts(payoutsRes.data);
-    } catch {
-      setError('Failed to load payout data');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchBalance();
+    fetchPayouts();
+  }, [fetchBalance, fetchPayouts]);
 
   const handleRequestPayout = async () => {
-    setRequesting(true);
     setError(null);
     setSuccess(null);
-
-    try {
-      const res = await fetch('/api/v1/creator/payout', { method: 'POST' });
-      const data = await res.json();
-
-      if (res.ok && data.data) {
-        setSuccess(`Payout of ${formatCents(data.data.amount_cents)} initiated!`);
-        await fetchData();
-      } else {
-        setError(data.error?.message ?? 'Failed to request payout');
-      }
-    } catch {
-      setError('Network error. Please try again.');
-    } finally {
-      setRequesting(false);
+    const result = await requestPayout();
+    if (result) {
+      setSuccess(`Payout of ${formatCents((result as any).amountCents || (result as any).amount_cents || 0)} initiated!`);
+    } else {
+      setError('Failed to request payout');
     }
   };
 
-  if (loading) {
+  const loading = isLoadingBalance && !balance;
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -121,7 +101,7 @@ export const PayoutPage: React.FC = () => {
     );
   }
 
-  const canPayout = balance && balance.available_balance_cents >= MINIMUM_PAYOUT_CENTS;
+  const canPayout = balance && balance.availableBalanceCents >= MINIMUM_PAYOUT_CENTS;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -136,7 +116,7 @@ export const PayoutPage: React.FC = () => {
         <div className="mb-4 flex items-baseline gap-2">
           <span className="text-sm text-gray-500 dark:text-gray-400">Available:</span>
           <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-            {formatCents(balance?.available_balance_cents ?? 0)}
+            {formatCents(balance?.availableBalanceCents ?? 0)}
           </span>
         </div>
 
@@ -157,7 +137,7 @@ export const PayoutPage: React.FC = () => {
           disabled={!canPayout || requesting}
           className="w-full rounded-lg bg-green-600 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {requesting ? 'Processing…' : `Withdraw ${formatCents(balance?.available_balance_cents ?? 0)}`}
+          {requesting ? 'Processing…' : `Withdraw ${formatCents(balance?.availableBalanceCents ?? 0)}`}
         </button>
 
         {!canPayout && (
@@ -219,10 +199,10 @@ export const PayoutPage: React.FC = () => {
                   return (
                     <tr key={payout.id}>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                        {formatDate(payout.requested_at)}
+                        {formatDate(payout.requestedAt || payout.requested_at)}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                        {formatCents(payout.amount_cents)}
+                        {formatCents(payout.amountCents || payout.amount_cents)}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <span
@@ -233,10 +213,10 @@ export const PayoutPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {payout.completed_at ? formatDate(payout.completed_at) : '—'}
+                        {(payout.completedAt || payout.completed_at) ? formatDate((payout.completedAt || payout.completed_at)!) : '—'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {payout.failure_reason ?? '—'}
+                        {payout.failureReason ?? payout.failure_reason ?? '—'}
                       </td>
                     </tr>
                   );

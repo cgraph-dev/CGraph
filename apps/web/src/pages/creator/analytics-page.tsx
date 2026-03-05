@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 
 /**
  * AnalyticsPage — creator analytics dashboard.
@@ -6,30 +7,6 @@ import React, { useEffect, useState } from 'react';
  * Shows subscriber count, MRR, churn rate, earnings over time, and top forums.
  * Route: /creator/analytics
  */
-
-interface AnalyticsOverview {
-  subscriber_count: number;
-  mrr_cents: number;
-  churn_rate: number;
-  platform_fee_percent: number;
-}
-
-interface EarningMonth {
-  month: string;
-  net_cents: number;
-}
-
-interface TopForum {
-  forum_id: string;
-  name: string;
-  subscribers: number;
-  mrr_cents: number;
-}
-
-interface EarningsData {
-  earnings_over_time: EarningMonth[];
-  top_forums: TopForum[];
-}
 
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
@@ -43,30 +20,21 @@ function formatMonth(iso: string): string {
 type Period = '7d' | '30d' | '90d';
 
 export const AnalyticsPage: React.FC = () => {
-  const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
-  const [earningsData, setEarningsData] = useState<EarningsData | null>(null);
+  const {
+    analyticsOverview: overview,
+    earningsData,
+    isLoadingAnalytics,
+    fetchAnalyticsOverview,
+    fetchAnalyticsEarnings,
+  } = useCreatorDashboard();
   const [period, setPeriod] = useState<Period>('30d');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
-  }, [period]);
+    fetchAnalyticsOverview({ period });
+    fetchAnalyticsEarnings({ period });
+  }, [period, fetchAnalyticsOverview, fetchAnalyticsEarnings]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [overviewRes, earningsRes] = await Promise.all([
-        fetch(`/api/v1/creator/analytics/overview?period=${period}`).then((r) => r.json()),
-        fetch(`/api/v1/creator/analytics/earnings?period=${period}`).then((r) => r.json()),
-      ]);
-      if (overviewRes.data) setOverview(overviewRes.data);
-      if (earningsRes.data) setEarningsData(earningsRes.data);
-    } catch {
-      // Handle error
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = isLoadingAnalytics;
 
   if (loading && !overview) {
     return (
@@ -102,42 +70,42 @@ export const AnalyticsPage: React.FC = () => {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label="Subscribers"
-          value={overview?.subscriber_count?.toString() ?? '0'}
+          value={overview?.subscriberCount?.toString() ?? '0'}
           description="Active paid subscribers"
         />
         <MetricCard
           label="MRR"
-          value={formatCents(overview?.mrr_cents ?? 0)}
+          value={formatCents(overview?.mrrCents ?? 0)}
           description="Monthly recurring revenue"
         />
         <MetricCard
           label="Churn Rate"
-          value={`${overview?.churn_rate?.toFixed(1) ?? '0.0'}%`}
+          value={`${overview?.churnRate?.toFixed(1) ?? '0.0'}%`}
           description="Cancellations in period"
         />
         <MetricCard
           label="Your Share"
-          value={`${100 - (overview?.platform_fee_percent ?? 15)}%`}
-          description={`CGraph takes ${overview?.platform_fee_percent ?? 15}% platform fee`}
+          value={`${100 - (overview?.platformFeePercent ?? 15)}%`}
+          description={`CGraph takes ${overview?.platformFeePercent ?? 15}% platform fee`}
         />
       </div>
 
       {/* Earnings over time — simple bar chart */}
-      {earningsData?.earnings_over_time && earningsData.earnings_over_time.length > 0 && (
+      {earningsData?.earningsOverTime && earningsData.earningsOverTime.length > 0 && (
         <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             Earnings Over Time
           </h2>
           <div className="flex items-end gap-2" style={{ height: 200 }}>
-            {earningsData.earnings_over_time.map((m) => {
+            {earningsData.earningsOverTime.map((m) => {
               const maxVal = Math.max(
-                ...earningsData.earnings_over_time.map((e) => e.net_cents),
+                ...earningsData.earningsOverTime.map((e) => e.netCents),
                 1
               );
-              const height = Math.max((m.net_cents / maxVal) * 100, 4);
+              const height = Math.max((m.netCents / maxVal) * 100, 4);
               return (
                 <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
-                  <span className="text-xs text-gray-500">{formatCents(m.net_cents)}</span>
+                  <span className="text-xs text-gray-500">{formatCents(m.netCents)}</span>
                   <div
                     className="w-full rounded-t bg-blue-500 transition-all"
                     style={{ height: `${height}%` }}
@@ -151,7 +119,7 @@ export const AnalyticsPage: React.FC = () => {
       )}
 
       {/* Top performing forums */}
-      {earningsData?.top_forums && earningsData.top_forums.length > 0 && (
+      {earningsData?.topForums && earningsData.topForums.length > 0 && (
         <div className="rounded-lg border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <div className="border-b border-gray-200 px-6 py-4 dark:border-white/[0.08]">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -168,8 +136,8 @@ export const AnalyticsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {earningsData.top_forums.map((f) => (
-                  <tr key={f.forum_id}>
+                {earningsData.topForums.map((f) => (
+                  <tr key={f.forumId}>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                       {f.name}
                     </td>
@@ -177,7 +145,7 @@ export const AnalyticsPage: React.FC = () => {
                       {f.subscribers}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                      {formatCents(f.mrr_cents)}
+                      {formatCents(f.mrrCents)}
                     </td>
                   </tr>
                 ))}
@@ -189,8 +157,8 @@ export const AnalyticsPage: React.FC = () => {
 
       {/* Fee transparency */}
       <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        CGraph takes {overview?.platform_fee_percent ?? 15}% platform fee. You keep{' '}
-        {100 - (overview?.platform_fee_percent ?? 15)}%.
+        CGraph takes {overview?.platformFeePercent ?? 15}% platform fee. You keep{' '}
+        {100 - (overview?.platformFeePercent ?? 15)}%.
       </p>
     </div>
   );

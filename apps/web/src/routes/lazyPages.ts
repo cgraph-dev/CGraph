@@ -69,6 +69,12 @@ export const CallHistory = lazy(() => import('@/pages/calls/call-history'));
 export const PremiumPage = lazy(() => import('@/pages/premium/premium-page'));
 export const CoinShop = lazy(() => import('@/pages/premium/coin-shop'));
 
+// ── Creator ────────────────────────────────────────────────────────────
+export const CreatorDashboard = lazy(() => import('@/pages/creator/creator-dashboard'));
+export const CreatorEarnings = lazy(() => import('@/pages/creator/earnings-page'));
+export const CreatorPayouts = lazy(() => import('@/pages/creator/payout-page'));
+export const CreatorAnalytics = lazy(() => import('@/pages/creator/analytics-page'));
+
 // ── Hub Pages ──────────────────────────────────────────────────────────
 export const Customize = lazy(() => import('@/pages/customize/customize'));
 export const Social = lazy(() => import('@/pages/social/social'));

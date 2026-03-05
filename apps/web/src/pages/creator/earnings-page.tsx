@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 
 /**
  * EarningsPage — detailed earnings breakdown and payout requests.
@@ -12,31 +13,17 @@ import React, { useEffect, useState } from 'react';
  * Route: /creator/earnings
  */
 
-interface Earning {
-  id: string;
-  forum_name?: string;
-  subscriber_name?: string;
-  gross_amount_cents: number;
-  platform_fee_cents: number;
-  net_amount_cents: number;
-  period_start: string;
-  period_end: string;
-  inserted_at: string;
-}
-
-interface Balance {
-  total_earned_cents: number;
-  total_paid_out_cents: number;
-  available_balance_cents: number;
-}
-
 interface Payout {
   id: string;
   amount_cents: number;
+  amountCents: number;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   requested_at: string;
+  requestedAt: string;
   completed_at: string | null;
+  completedAt: string | null;
   failure_reason?: string | null;
+  failureReason?: string | null;
 }
 
 function formatCents(cents: number): string {
@@ -61,47 +48,27 @@ const STATUS_COLORS: Record<string, string> = {
 const MINIMUM_PAYOUT_CENTS = 1000; // $10
 
 export const EarningsPage: React.FC = () => {
-  const [_earnings, _setEarnings] = useState<Earning[]>([]);
-  const [balance, setBalance] = useState<Balance | null>(null);
-  const [payouts, setPayouts] = useState<Payout[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [payoutLoading, setPayoutLoading] = useState(false);
+  const {
+    balance,
+    payouts: rawPayouts,
+    isLoadingBalance,
+    isLoading: payoutLoading,
+    fetchBalance,
+    fetchPayouts,
+    requestPayout,
+  } = useCreatorDashboard();
+  const payouts = (rawPayouts ?? []) as unknown as Payout[];
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [balanceRes, payoutsRes] = await Promise.all([
-        fetch('/api/v1/creator/balance').then((r) => r.json()),
-        fetch('/api/v1/creator/payouts').then((r) => r.json()),
-      ]);
-      if (balanceRes.data) setBalance(balanceRes.data);
-      if (payoutsRes.data) setPayouts(payoutsRes.data);
-    } catch {
-      // Handle error
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchBalance();
+    fetchPayouts();
+  }, [fetchBalance, fetchPayouts]);
 
   const handleRequestPayout = async () => {
-    setPayoutLoading(true);
-    try {
-      const res = await fetch('/api/v1/creator/payout', { method: 'POST' });
-      const data = await res.json();
-      if (data.data) {
-        await fetchData(); // Refresh
-      }
-    } catch {
-      // Handle error
-    } finally {
-      setPayoutLoading(false);
-    }
+    await requestPayout();
   };
 
-  if (loading) {
+  const loading = isLoadingBalance && !balance;
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -110,7 +77,7 @@ export const EarningsPage: React.FC = () => {
   }
 
   const canPayout =
-    balance && balance.available_balance_cents >= MINIMUM_PAYOUT_CENTS;
+    balance && balance.availableBalanceCents >= MINIMUM_PAYOUT_CENTS;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -123,19 +90,19 @@ export const EarningsPage: React.FC = () => {
         <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Earned</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {formatCents(balance?.total_earned_cents ?? 0)}
+            {formatCents(balance?.totalEarnedCents ?? 0)}
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Paid Out</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {formatCents(balance?.total_paid_out_cents ?? 0)}
+            {formatCents(balance?.totalPaidOutCents ?? 0)}
           </p>
         </div>
         <div className="rounded-lg border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-900/20">
           <p className="text-sm text-green-600 dark:text-green-400">Available Balance</p>
           <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-            {formatCents(balance?.available_balance_cents ?? 0)}
+            {formatCents(balance?.availableBalanceCents ?? 0)}
           </p>
           <button
             onClick={handleRequestPayout}
@@ -172,10 +139,10 @@ export const EarningsPage: React.FC = () => {
                 {payouts.map((p) => (
                   <tr key={p.id}>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                      {formatDate(p.requested_at)}
+                      {formatDate(p.requestedAt || p.requested_at)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                      {formatCents(p.amount_cents)}
+                      {formatCents(p.amountCents || p.amount_cents)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ''}`}>
@@ -183,7 +150,7 @@ export const EarningsPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {p.completed_at ? formatDate(p.completed_at) : '—'}
+                      {(p.completedAt || p.completed_at) ? formatDate((p.completedAt || p.completed_at)!) : '—'}
                     </td>
                   </tr>
                 ))}
