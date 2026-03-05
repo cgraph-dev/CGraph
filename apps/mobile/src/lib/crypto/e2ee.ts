@@ -548,7 +548,12 @@ export function formatKeysForRegistration(
 export async function x3dhInitiate(
   identityKeyPair: IdentityKeyPair,
   recipientBundle: ServerPrekeyBundle
-): Promise<{ sharedSecret: Uint8Array; ephemeralPublic: Uint8Array }> {
+): Promise<{
+  sharedSecret: Uint8Array;
+  ephemeralPublic: Uint8Array;
+  usedOneTimePrekey: boolean;
+  oneTimePreKeyId?: string;
+}> {
   // Generate ephemeral ECDH key pair
   const ephemeralKey = await generatePreKeyPair();
 
@@ -582,14 +587,27 @@ export async function x3dhInitiate(
   const dh2 = await ecdhDerive(ephemeralPrivate, bobIdentityPub); // DH(EK_A, IK_B)
   const dh3 = await ecdhDerive(ephemeralPrivate, bobSignedPreKeyPub); // DH(EK_A, SPK_B)
 
-  // TODO: DH4 = ECDH(EK_A, OPK_B) when one-time prekey private storage is implemented
-  // Currently one-time prekey privates are lost after generateKeyBundle() — tracked as tech debt
+  // DH4 = ECDH(EK_A, OPK_B) — optional, only when bundle includes a one-time prekey
+  let dh4: Uint8Array | null = null;
+  let usedOneTimePrekey = false;
+  if (recipientBundle.one_time_prekey) {
+    const recipientOneTimePrekey = new Uint8Array(
+      Buffer.from(recipientBundle.one_time_prekey, 'base64')
+    );
+    const bobOneTimePrekeyPub = await importPublicKeyForECDH(recipientOneTimePrekey);
+    dh4 = await ecdhDerive(ephemeralPrivate, bobOneTimePrekeyPub); // DH(EK_A, OPK_B)
+    usedOneTimePrekey = true;
+  }
 
-  // Concatenate DH results
-  const dhConcat = new Uint8Array(dh1.length + dh2.length + dh3.length);
+  // Concatenate DH results (3-DH or 4-DH depending on OPK availability)
+  const totalLength = dh1.length + dh2.length + dh3.length + (dh4 ? dh4.length : 0);
+  const dhConcat = new Uint8Array(totalLength);
   dhConcat.set(dh1, 0);
   dhConcat.set(dh2, dh1.length);
   dhConcat.set(dh3, dh1.length + dh2.length);
+  if (dh4) {
+    dhConcat.set(dh4, dh1.length + dh2.length + dh3.length);
+  }
 
   // KDF — zero salt per X3DH spec
   const salt = new Uint8Array(32);
@@ -599,6 +617,8 @@ export async function x3dhInitiate(
   return {
     sharedSecret,
     ephemeralPublic: ephemeralKey.publicKey,
+    usedOneTimePrekey,
+    oneTimePreKeyId: usedOneTimePrekey ? recipientBundle.one_time_prekey_id : undefined,
   };
 }
 
@@ -609,18 +629,21 @@ export async function x3dhInitiate(
  *   DH1 = ECDH(SPK_B, IK_A)
  *   DH2 = ECDH(IK_B, EK_A)
  *   DH3 = ECDH(SPK_B, EK_A)
- *   SK  = HKDF(DH1 || DH2 || DH3)
+ *   DH4 = ECDH(OPK_B, EK_A)  (optional, when one-time prekey was used)
+ *   SK  = HKDF(DH1 || DH2 || DH3 [|| DH4])
  *
  * @param identityKeyPair       - Bob's identity key pair (from SecureStore)
  * @param signedPreKeyPkcs8     - Bob's signed prekey private (PKCS8, from SecureStore)
  * @param senderIdentityKeyRaw  - Alice's identity public key (raw, from message envelope)
  * @param senderEphemeralKeyRaw - Alice's ephemeral public key (raw, from message envelope)
+ * @param oneTimePreKeyPkcs8    - Bob's one-time prekey private (PKCS8, optional — only if initiator used OPK)
  */
 export async function x3dhRespond(
   identityKeyPair: IdentityKeyPair,
   signedPreKeyPkcs8: Uint8Array,
   senderIdentityKeyRaw: Uint8Array,
-  senderEphemeralKeyRaw: Uint8Array
+  senderEphemeralKeyRaw: Uint8Array,
+  oneTimePreKeyPkcs8?: Uint8Array
 ): Promise<{ sharedSecret: Uint8Array }> {
   // Import keys for ECDH
   const ourIdentityPrivate = await importPrivateKeyForECDH(identityKeyPair.privateKey);
@@ -633,11 +656,22 @@ export async function x3dhRespond(
   const dh2 = await ecdhDerive(ourIdentityPrivate, aliceEphemeralPub);
   const dh3 = await ecdhDerive(ourSignedPreKeyPrivate, aliceEphemeralPub);
 
+  // DH4 = ECDH(OPK_B, EK_A) — only when one-time prekey was used by initiator
+  let dh4: Uint8Array | null = null;
+  if (oneTimePreKeyPkcs8) {
+    const ourOneTimePreKeyPrivate = await importPrivateKeyForECDH(oneTimePreKeyPkcs8);
+    dh4 = await ecdhDerive(ourOneTimePreKeyPrivate, aliceEphemeralPub);
+  }
+
   // Same concatenation and HKDF as initiator
-  const dhConcat = new Uint8Array(dh1.length + dh2.length + dh3.length);
+  const totalLength = dh1.length + dh2.length + dh3.length + (dh4 ? dh4.length : 0);
+  const dhConcat = new Uint8Array(totalLength);
   dhConcat.set(dh1, 0);
   dhConcat.set(dh2, dh1.length);
   dhConcat.set(dh3, dh1.length + dh2.length);
+  if (dh4) {
+    dhConcat.set(dh4, dh1.length + dh2.length + dh3.length);
+  }
 
   const salt = new Uint8Array(32);
   const info = textEncoder.encode('CGraph E2EE v1');
