@@ -66,37 +66,44 @@ import {
 // Initialization (token handlers + safety timeout)
 import { initializeAuthStore } from './auth-init';
 
+// Capture set from the store creator so onRehydrateStorage can use it
+// without referencing useAuthStore (which isn't assigned yet during create()).
+let _storeSet: ((partial: Partial<AuthState>) => void) | null = null;
+
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      (set, get) => ({
-        user: null,
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-        isLoading: false, // Start with false - checkAuth will handle loading state
-        error: null,
+      (set, get) => {
+        _storeSet = set;
+        return {
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isLoading: false, // Start with false - checkAuth will handle loading state
+          error: null,
 
-        login: createLoginAction(set, get),
-        verifyLoginTwoFactor: createVerifyLoginTwoFactorAction(set, get),
-        getWalletChallenge: createGetWalletChallengeAction(set, get),
-        loginWithWallet: createLoginWithWalletAction(set, get),
-        register: createRegisterAction(set, get),
-        logout: createLogoutAction(set, get),
-        refreshSession: createRefreshSessionAction(set, get),
-        updateUser: createUpdateUserAction(set, get),
-        clearError: () => set({ error: null }),
-        checkAuth: createCheckAuthAction(set, get),
-        reset: () =>
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          }),
-      }),
+          login: createLoginAction(set, get),
+          verifyLoginTwoFactor: createVerifyLoginTwoFactorAction(set, get),
+          getWalletChallenge: createGetWalletChallengeAction(set, get),
+          loginWithWallet: createLoginWithWalletAction(set, get),
+          register: createRegisterAction(set, get),
+          logout: createLogoutAction(set, get),
+          refreshSession: createRefreshSessionAction(set, get),
+          updateUser: createUpdateUserAction(set, get),
+          clearError: () => set({ error: null }),
+          checkAuth: createCheckAuthAction(set, get),
+          reset: () =>
+            set({
+              user: null,
+              token: null,
+              refreshToken: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+            }),
+        };
+      },
       {
         name: 'cgraph-auth-v2',
         storage: createJSONStorage(() => safeStorage),
@@ -106,7 +113,9 @@ export const useAuthStore = create<AuthState>()(
           user: state.user,
           isAuthenticated: state.isAuthenticated,
         }),
-        // Critical: Handle rehydration to fix isLoading state
+        // Critical: Handle rehydration to fix isLoading state.
+        // Uses captured _storeSet instead of useAuthStore.setState to avoid
+        // "can't access lexical declaration before initialization" error.
         onRehydrateStorage: () => {
           authLogger.debug('onRehydrateStorage called');
           return (state, error) => {
@@ -114,7 +123,7 @@ export const useAuthStore = create<AuthState>()(
             if (error) {
               authLogger.error('Auth store rehydration failed:', error);
               // On error, reset to safe state
-              useAuthStore.setState({
+              _storeSet?.({
                 isLoading: false,
                 isAuthenticated: false,
                 user: null,
@@ -125,13 +134,13 @@ export const useAuthStore = create<AuthState>()(
               // Rehydration successful - mark loading as complete
               // Don't block on token validation - let the app render
               authLogger.debug('Rehydration complete - hasToken:', !!state.token);
-              useAuthStore.setState({
+              _storeSet?.({
                 isLoading: false, // Never block - checkAuth runs in background
               });
             } else {
               // No state to rehydrate
               authLogger.debug('No state to rehydrate');
-              useAuthStore.setState({ isLoading: false });
+              _storeSet?.({ isLoading: false });
             }
           };
         },

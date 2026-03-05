@@ -57,26 +57,30 @@ export function useAppLayout() {
 
   // Initialize socket and fetch data on mount
   useEffect(() => {
+    if (!user?.id) return; // Don't initialize if not authenticated
+
     const initializeApp = async () => {
-      await socketManager.connect();
-
-      // Join user's personal channel for real-time notifications
-      if (user?.id) {
+      try {
+        await socketManager.connect();
         socketManager.joinUserChannel(user.id);
-      }
 
-      fetchConversations();
-      fetchGroups();
-      fetchNotifications();
+        // Fire data fetches in parallel — errors are non-fatal
+        await Promise.allSettled([
+          fetchConversations(),
+          fetchGroups(),
+          fetchNotifications(),
+        ]);
+      } catch (err) {
+        // Socket connect failure is non-fatal — app still works without real-time
+        // eslint-disable-next-line no-console
+        console.warn('[AppLayout] initializeApp error:', err);
+      }
     };
 
     initializeApp();
 
     return () => {
-      // Leave user channel on unmount but keep socket alive
-      if (user?.id) {
-        socketManager.leaveUserChannel(user.id);
-      }
+      socketManager.leaveUserChannel(user.id);
     };
   }, [fetchConversations, fetchGroups, fetchNotifications, user?.id]);
 
