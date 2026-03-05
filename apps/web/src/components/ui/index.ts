@@ -4,6 +4,7 @@
  */
 // UI Components
 export { default as Avatar, AvatarGroup } from './avatar';
+export { StatusIndicator } from './status-indicator';
 export {
   default as Badge,
   NewBadge,
@@ -50,6 +51,20 @@ export {
 } from './empty-state';
 export { default as ToastContainer, toast, useToastStore } from './toast';
 export { default as Tooltip } from './tooltip';
+export {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
+  ContextMenuGroup,
+} from './context-menu';
+export { ScrollArea, ScrollBar } from './scroll-area';
+export { Divider } from './divider';
 
 // Form components
 export {

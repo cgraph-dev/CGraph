@@ -4,7 +4,6 @@
  */
 import { ReactNode } from 'react';
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu';
-import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 /* ─── Root ─────────────────────────────────────────────────────────────────── */
@@ -32,7 +31,6 @@ export function ContextMenuContent({ children, className }: ContextMenuContentPr
           'animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95',
           className,
         )}
-        sideOffset={5}
       >
         {children}
       </ContextMenuPrimitive.Content>
