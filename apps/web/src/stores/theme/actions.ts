@@ -105,9 +105,15 @@ export const createThemeActions: StateCreator<ThemeStore, [], [], ThemeStore> = 
           isLoading: false,
           lastSyncedAt: Date.now(),
         });
+      } else {
+        set({ isLoading: false });
       }
     } catch (error) {
-      logger.warn('Failed to sync theme:', error);
+      // Silently handle 404 — endpoint may not be deployed yet
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      if (status !== 404) {
+        logger.warn('Failed to sync theme:', error);
+      }
       set({ isLoading: false });
     }
   },

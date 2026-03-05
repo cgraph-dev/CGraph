@@ -106,7 +106,13 @@ export function createMessageOpsActions(set: Set, get: Get) {
       try {
         await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
       } catch (error: unknown) {
-        // Rollback on error
+        // Don't rollback on 422 — likely means reaction already exists on server
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        if (status === 422 || status === 409) {
+          // Optimistic state is correct, server already has this reaction
+          return;
+        }
+        // Rollback on other errors (network, 5xx, etc.)
         set({ messages: previousMessages });
         throw error;
       }
@@ -128,7 +134,12 @@ export function createMessageOpsActions(set: Set, get: Get) {
       try {
         await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
       } catch (error: unknown) {
-        // Rollback on error
+        // Don't rollback on 404/422 — reaction may already be removed on server
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        if (status === 404 || status === 422) {
+          return;
+        }
+        // Rollback on other errors
         set({ messages: previousMessages });
         throw error;
       }

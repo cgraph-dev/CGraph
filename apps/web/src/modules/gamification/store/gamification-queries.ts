@@ -29,15 +29,20 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
   return async (): Promise<void> => {
     set({ isLoading: true });
     try {
-      const [statsRes, achievementsRes, questsRes] = await Promise.all([
+      // Use allSettled so one failing endpoint doesn't block the others
+      const [statsResult, achievementsResult, questsResult] = await Promise.allSettled([
         api.get('/api/v1/gamification/stats'),
         api.get('/api/v1/gamification/achievements'),
         api.get('/api/v1/quests/active'),
       ]);
 
-      const stats = statsRes.data?.data || statsRes.data;
-      const achievements = achievementsRes.data?.data || [];
-      const quests = questsRes.data?.data || [];
+      const statsRes = statsResult.status === 'fulfilled' ? statsResult.value : null;
+      const achievementsRes = achievementsResult.status === 'fulfilled' ? achievementsResult.value : null;
+      const questsRes = questsResult.status === 'fulfilled' ? questsResult.value : null;
+
+      const stats = statsRes?.data?.data || statsRes?.data || {};
+      const achievements = achievementsRes?.data?.data || [];
+      const quests = questsRes?.data?.data || [];
 
       set({
         level: stats.level || 1,
@@ -151,15 +156,15 @@ export function createFetchAchievements(set: StoreSet, _get: StoreGet) {
 export function createFetchQuests(set: StoreSet, _get: StoreGet) {
   return async (): Promise<void> => {
     try {
-      const [activeRes, dailyRes, weeklyRes] = await Promise.all([
+      const [activeResult, dailyResult, weeklyResult] = await Promise.allSettled([
         api.get('/api/v1/quests/active'),
         api.get('/api/v1/quests/daily'),
         api.get('/api/v1/quests/weekly'),
       ]);
 
-      const activeQuests = activeRes.data?.data || [];
-      const dailyQuests = dailyRes.data?.data || [];
-      const weeklyQuests = weeklyRes.data?.data || [];
+      const activeQuests = activeResult.status === 'fulfilled' ? (activeResult.value.data?.data || []) : [];
+      const dailyQuests = dailyResult.status === 'fulfilled' ? (dailyResult.value.data?.data || []) : [];
+      const weeklyQuests = weeklyResult.status === 'fulfilled' ? (weeklyResult.value.data?.data || []) : [];
 
       // Combine all quests, filtering for accepted ones
       const allActive = [
