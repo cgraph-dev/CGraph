@@ -18,7 +18,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { MicrophoneIcon as MicOffIcon } from '@heroicons/react/24/outline';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '@/components/ui/tooltip';
 import { ServerHeader } from './server-header';
 import { ServerBanner } from './server-banner';
 import { cn } from '@/lib/utils';

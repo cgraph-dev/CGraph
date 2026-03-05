@@ -51,7 +51,7 @@ export function ProfileHeader({
   onEditProfile,
   onAddFriend,
   onMessage,
-  onBlock,
+  onBlock: _onBlock,
   className,
 }: ProfileHeaderProps) {
   return (

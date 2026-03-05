@@ -11,14 +11,13 @@
  * @module shared/components/call-overlay
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowsPointingInIcon,
   ArrowsPointingOutIcon,
   XMarkIcon,
   MicrophoneIcon,
-  VideoCameraIcon,
   VideoCameraSlashIcon,
   ComputerDesktopIcon,
 } from '@heroicons/react/24/solid';

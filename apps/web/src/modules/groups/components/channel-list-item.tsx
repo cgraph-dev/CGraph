@@ -28,7 +28,7 @@ import {
   UserPlusIcon,
   Cog6ToothIcon,
 } from '@heroicons/react/24/solid';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '@/components/ui/tooltip';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
 

@@ -14,18 +14,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ChatBubbleLeftRightIcon,
   UserGroupIcon,
-  MagnifyingGlassIcon,
   PlusIcon,
   MicrophoneIcon,
   SpeakerWaveIcon,
   Cog6ToothIcon,
   SignalIcon,
 } from '@heroicons/react/24/solid';
-import {
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline';
+// ChevronDownIcon removed — unused
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -75,9 +71,9 @@ const statusColors: Record<string, string> = {
 export function NavigationSidebar({
   user,
   privateChannels = [],
-  unreadDmCount = 0,
+  unreadDmCount: _unreadDmCount = 0,
   pendingFriendCount = 0,
-  onDmsClick,
+  onDmsClick: _onDmsClick,
   onFriendsClick,
   onChannelClick,
   onNewDm,

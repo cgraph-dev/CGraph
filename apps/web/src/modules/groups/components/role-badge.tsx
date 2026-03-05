@@ -9,7 +9,7 @@
  */
 
 import { motion } from 'motion/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -74,22 +74,8 @@ export function RoleBadge({
   );
 
   if (permissions && permissions.length > 0) {
-    const tooltipContent = (
-      <div className="space-y-0.5">
-        <p className="font-semibold" style={{ color }}>{name}</p>
-        <div className="text-[10px] text-gray-400">
-          {permissions.slice(0, 5).map((perm) => (
-            <p key={perm}>• {perm}</p>
-          ))}
-          {permissions.length > 5 && (
-            <p className="text-gray-500">+{permissions.length - 5} more</p>
-          )}
-        </div>
-      </div>
-    );
-
     return (
-      <Tooltip content={tooltipContent} side="top">
+      <Tooltip content={name} side="top">
         {badge}
       </Tooltip>
     );

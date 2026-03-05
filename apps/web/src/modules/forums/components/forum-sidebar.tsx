@@ -12,7 +12,7 @@
  * @module modules/forums/components/forum-sidebar
  */
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -20,10 +20,9 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   ChatBubbleLeftRightIcon,
-  HashtagIcon,
 } from '@heroicons/react/24/outline';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '@/components/ui/tooltip';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
 
@@ -89,7 +88,7 @@ function BoardItem({ board, isActive }: { board: Board; isActive: boolean }) {
 
   if (board.description) {
     return (
-      <Tooltip content={board.description} side="right" sideOffset={8}>
+      <Tooltip content={board.description} side="right">
         {content}
       </Tooltip>
     );

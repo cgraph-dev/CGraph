@@ -21,7 +21,7 @@ import {
   GlobeAltIcon,
 } from '@heroicons/react/24/solid';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '@/components/ui/tooltip';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
 
@@ -73,7 +73,7 @@ function ServerIcon({
   isActive: boolean;
 }) {
   return (
-    <Tooltip content={server.name} side="right" sideOffset={12}>
+    <Tooltip content={server.name} side="right">
       <NavLink
         to={`/groups/${server.id}`}
         className="group relative flex items-center justify-center"
@@ -146,7 +146,7 @@ function ActionButton({
   colorClass?: string;
 }) {
   return (
-    <Tooltip content={label} side="right" sideOffset={12}>
+    <Tooltip content={label} side="right">
       <motion.button
         onClick={onClick}
         whileHover={{ borderRadius: '35%' }}
@@ -189,7 +189,7 @@ export function ServerIconBar({ className }: ServerIconBarProps) {
       )}
     >
       {/* Home / DMs button */}
-      <Tooltip content="Direct Messages" side="right" sideOffset={12}>
+      <Tooltip content="Direct Messages" side="right">
         <motion.button
           onClick={handleHome}
           whileHover={{ borderRadius: '35%' }}

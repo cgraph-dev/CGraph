@@ -164,7 +164,7 @@ export function CallControls({
 function ControlButton({
   icon,
   label,
-  active,
+  active: _active,
   danger,
   highlight,
   onClick,

@@ -21,7 +21,6 @@ import {
   Cog6ToothIcon,
   ClockIcon,
   ArrowRightIcon,
-  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 

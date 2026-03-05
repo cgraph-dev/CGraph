@@ -29,7 +29,7 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isStarting, setIsStarting] = useState(false);
   const [users, setUsers] = useState<MockUser[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [_isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
   const { createConversation } = useChatStore();

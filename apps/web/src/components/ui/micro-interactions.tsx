@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 // ── Reduced Motion ─────────────────────────────────────────────────────
@@ -113,6 +113,7 @@ export function PulseBadge({
       return () => clearTimeout(t);
     }
     prevRef.current = count;
+    return undefined;
   }, [count]);
 
   if (count <= 0) return null;

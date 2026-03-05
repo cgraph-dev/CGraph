@@ -23,7 +23,7 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline';
 import { ThreadCard } from './thread-card';
-import { Skeleton } from '@/components/ui/skeleton';
+import Skeleton from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ function ThreadSkeleton({ compact }: { compact: boolean }) {
   if (compact) {
     return (
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <Skeleton shape="circle" className="h-8 w-11" />
+        <Skeleton variant="circular" className="h-8 w-11" />
         <div className="flex-1 space-y-1">
           <Skeleton className="h-3.5 w-3/4" />
           <Skeleton className="h-2.5 w-1/3" />
@@ -87,7 +87,7 @@ function ThreadSkeleton({ compact }: { compact: boolean }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-4">
       <div className="flex items-center gap-2">
-        <Skeleton shape="circle" className="h-6 w-6" />
+        <Skeleton variant="circular" className="h-6 w-6" />
         <Skeleton className="h-3 w-24" />
       </div>
       <Skeleton className="mt-3 h-4 w-4/5" />

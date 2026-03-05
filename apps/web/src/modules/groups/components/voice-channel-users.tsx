@@ -9,7 +9,6 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  MicrophoneIcon,
   SpeakerXMarkIcon,
   VideoCameraIcon,
   ComputerDesktopIcon,

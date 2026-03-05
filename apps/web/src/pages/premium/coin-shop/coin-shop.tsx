@@ -29,7 +29,7 @@ export default function CoinShop() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetch bundles from the backend API
-  const { bundles: apiBundles, loading: bundlesLoading, fetchBundles } = useCoinShopStore();
+  const { bundles: apiBundles, loading: _bundlesLoading, fetchBundles } = useCoinShopStore();
   useEffect(() => { fetchBundles(); }, [fetchBundles]);
   const displayBundles = apiBundles.length > 0 ? apiBundles : COIN_BUNDLES;
 
