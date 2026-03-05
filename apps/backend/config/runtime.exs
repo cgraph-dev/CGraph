@@ -134,6 +134,15 @@ if config_env() == :prod do
     IO.puts("[Oban] Using PG notifier (PgBouncer-compatible)")
   end
 
+  # ── Argon2 Password Hashing (Production Tuning) ──
+  # Default: t_cost=3, m_cost=16 (64MB) → ~300-400ms on 2-core perf CPUs
+  # Tuned:  t_cost=2, m_cost=15 (32MB) → ~100-150ms on 2-core perf CPUs
+  # Override via ARGON2_T_COST / ARGON2_M_COST env vars if needed.
+  config :argon2_elixir,
+    t_cost: String.to_integer(System.get_env("ARGON2_T_COST") || "2"),
+    m_cost: String.to_integer(System.get_env("ARGON2_M_COST") || "15"),
+    parallelism: 4
+
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """

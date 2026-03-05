@@ -35,6 +35,9 @@ config :cgraph, CGraph.Mailer, adapter: Swoosh.Adapters.Test
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
+# Fast Argon2 hashing for tests (avoid ~300ms per hash in test suite)
+config :argon2_elixir, t_cost: 1, m_cost: 8
+
 # Suppress all logging during test (prevent Meilisearch/Redis error spam)
 config :logger, level: :none
 
