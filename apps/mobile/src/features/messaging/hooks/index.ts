@@ -6,6 +6,9 @@ import { useCallback, useMemo } from 'react';
 import * as Haptics from 'expo-haptics';
 import { useVoiceRecorder } from '@/components/voice-message-recorder/use-voice-recorder';
 
+// Re-export AI hook
+export { useAI } from './useAI';
+
 /**
  * Hook for message haptic feedback
  */
