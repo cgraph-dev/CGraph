@@ -150,9 +150,10 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.delete(`/api/v1/friends/${friendId}`);
-      // Update friends list optimistically
+      // Update friends list optimistically — friendId is the friendship record ID
       set((state) => ({
-        friends: state.friends.filter((f) => f.id !== friendId),
+        friends: state.friends.filter((f) => f.friendshipId !== friendId),
+        sentRequests: state.sentRequests.filter((r) => r.id !== friendId),
         isLoading: false,
       }));
     } catch (error: unknown) {

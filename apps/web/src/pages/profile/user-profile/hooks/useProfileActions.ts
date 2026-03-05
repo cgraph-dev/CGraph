@@ -37,7 +37,7 @@ export function useProfileActions({
   setFriendshipStatus,
 }: UseProfileActionsParams) {
   const navigate = useNavigate();
-  const { sendRequest, acceptRequest, declineRequest, removeFriend, blockUser } = useFriendStore();
+  const { sendRequest, acceptRequest, declineRequest, removeFriend, blockUser, sentRequests, pendingRequests, friends, fetchSentRequests, fetchPendingRequests } = useFriendStore();
 
   const [editMode, setEditMode] = useState(false);
   const [editedBio, setEditedBio] = useState('');
@@ -54,6 +54,14 @@ export function useProfileActions({
       setEditedBio(profile.bio);
     }
   }, [profile?.bio]);
+
+  // Ensure sent/pending requests are loaded for friendship ID lookups
+  useEffect(() => {
+    if (!isOwnProfile && profile) {
+      fetchSentRequests();
+      fetchPendingRequests();
+    }
+  }, [isOwnProfile, profile, fetchSentRequests, fetchPendingRequests]);
 
   // File upload handler
   const handleFileUpload = useCallback(
@@ -152,7 +160,13 @@ export function useProfileActions({
     if (!profile) return;
     setIsActioning(true);
     try {
-      await acceptRequest(profile.id);
+      // Look up the friendship ID from pending requests (backend requires friendship ID, not user ID)
+      const pendingReq = pendingRequests.find((r) => r.user.id === profile.id);
+      if (!pendingReq) {
+        toast.error('Friend request not found. Try refreshing the page.');
+        return;
+      }
+      await acceptRequest(pendingReq.id);
       setFriendshipStatus('friends');
     } catch {
       // Error handled by store
@@ -165,7 +179,13 @@ export function useProfileActions({
     if (!profile) return;
     setIsActioning(true);
     try {
-      await declineRequest(profile.id);
+      // Look up the friendship ID from pending requests (backend requires friendship ID, not user ID)
+      const pendingReq = pendingRequests.find((r) => r.user.id === profile.id);
+      if (!pendingReq) {
+        toast.error('Friend request not found. Try refreshing the page.');
+        return;
+      }
+      await declineRequest(pendingReq.id);
       setFriendshipStatus('none');
     } catch {
       // Error handled by store
@@ -178,8 +198,15 @@ export function useProfileActions({
     if (!profile) return;
     setIsActioning(true);
     try {
-      // Cancel sent request uses the same decline endpoint
-      await declineRequest(profile.id);
+      // Cancel a sent request: look up the friendship ID from sentRequests,
+      // then use DELETE /friends/:id (removeFriend) — the sender cannot use decline (recipient-only)
+      const sentReq = sentRequests.find((r) => r.user.id === profile.id);
+      if (!sentReq) {
+        toast.error('Sent request not found. Try refreshing the page.');
+        return;
+      }
+      await removeFriend(sentReq.id);
+      await fetchSentRequests();
       setFriendshipStatus('none');
     } catch {
       // Error handled by store
@@ -192,7 +219,13 @@ export function useProfileActions({
     if (!profile) return;
     setIsActioning(true);
     try {
-      await removeFriend(profile.id);
+      // Look up the friendship ID (backend DELETE /friends/:id expects the friendship record ID, not user ID)
+      const friend = friends.find((f) => f.id === profile.id);
+      if (!friend?.friendshipId) {
+        toast.error('Friend not found. Try refreshing the page.');
+        return;
+      }
+      await removeFriend(friend.friendshipId);
       setFriendshipStatus('none');
     } catch {
       // Error handled by store

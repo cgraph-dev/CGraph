@@ -38,6 +38,7 @@ export function Social() {
     error,
     fetchFriends,
     fetchPendingRequests,
+    fetchSentRequests,
     acceptRequest,
     declineRequest,
     clearError,
@@ -67,8 +68,9 @@ export function Social() {
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
+    fetchSentRequests();
     fetchNotifications();
-  }, [fetchFriends, fetchPendingRequests, fetchNotifications]);
+  }, [fetchFriends, fetchPendingRequests, fetchSentRequests, fetchNotifications]);
 
   // Adapt store notifications → UI Notification type
   const notifications: Notification[] = useMemo(
