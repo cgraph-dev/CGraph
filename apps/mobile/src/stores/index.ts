@@ -113,6 +113,7 @@ import { useChatStore as _useChat } from './chatStore';
 import { useGroupStore as _useGroup } from './groupStore';
 import { useGamificationStore as _useGamification } from './gamificationStore';
 import { useMarketplaceStore as _useMarketplace } from './marketplaceStore';
+import { useForumStore as _useForum } from './forumStore';
 
 /**
  * Auth facade — auth, user, wallet, session.
@@ -180,6 +181,7 @@ export function useCommunityFacade() {
   const joinGroup = _useGroup((s) => s.joinGroup);
   const leaveGroup = _useGroup((s) => s.leaveGroup);
   const setActiveChannel = _useGroup((s) => s.setActiveChannel);
+  const forums = _useForum((s) => s.forums);
 
   return useMemo(
     () => ({
@@ -190,14 +192,14 @@ export function useCommunityFacade() {
             ?.channels as unknown[]) || []
         : [],
        
-      forums: [] as unknown[], // TODO: wire to forum store
+      forums,
       activeGroup: activeGroupId ? groups.find((g) => g.id === activeGroupId) || null : null,
       activeChannel: activeChannelId,
       joinGroup,
       leaveGroup,
       setActiveChannel,
     }),
-    [groups, activeGroupId, activeChannelId, joinGroup, leaveGroup, setActiveChannel]
+    [groups, activeGroupId, activeChannelId, joinGroup, leaveGroup, setActiveChannel, forums]
   );
 }
 
