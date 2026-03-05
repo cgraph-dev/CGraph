@@ -285,6 +285,10 @@ export function useMarketplaceFacade() {
 
 /**
  * UI facade — theme, sidebar, modals, toasts.
+ *
+ * Sidebar and modal methods are no-ops on mobile:
+ * - Sidebar: Web-only layout concept; mobile uses bottom tabs / drawer navigation.
+ * - Modals: Managed by React Navigation modal stack, not global store state.
  */
 export function useUIFacade() {
   const isDark = _useTheme((s) => s.colorScheme === 'dark');
@@ -298,13 +302,19 @@ export function useUIFacade() {
       colorScheme,
       setThemePreference,
       customization,
-      // Stub: sidebar/modal/toast state
+      // Web-only: sidebar is a desktop layout concept; mobile uses bottom tabs / drawer nav
       isSidebarOpen: false,
-      setSidebarOpen: (_open: boolean) => {},
-       
+      setSidebarOpen: (_open: boolean) => {
+        /* no-op — mobile uses React Navigation drawer instead */
+      },
+      // Mobile: modals are managed by React Navigation modal stack
       activeModal: null as string | null,
-      showModal: (_id: string) => {},
-      hideModal: () => {},
+      showModal: (_id: string) => {
+        /* no-op — use navigation.navigate() with modal presentation */
+      },
+      hideModal: () => {
+        /* no-op — use navigation.goBack() to dismiss modals */
+      },
     }),
     [isDark, colorScheme, setThemePreference, customization]
   );
