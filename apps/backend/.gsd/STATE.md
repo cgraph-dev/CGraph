@@ -14,28 +14,29 @@ Secure real-time communication that works end-to-end.
 
 ## Position
 
-- **Phase:** 21 of 25 — **Web Wiring** (Complete)
-- **Plan:** 2/2 plans executed in Phase 21
-- **Status:** ✅ Phase 21 complete — all web pages wired to real backend APIs
-- **Last activity:** Phase 21 executed — mock data removed, real API calls wired
+- **Phase:** 22 of 25 — **Mobile Wiring** (Complete)
+- **Plan:** 3/3 plans executed in Phase 22
+- **Status:** ✅ Phase 22 complete — all mobile screens wired to real data
+- **Last activity:** Phase 22 executed — screen mocks removed, facades wired, X3DH DH4 implemented
 
 ## Plans
 
 | Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
 | ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
-| 21-01 | Web Customization Pages & Forum Admin — Replace mock data with API   | 1    | ✅         | 20-01, 20-02     | Complete  |
-| 21-02 | Web Admin Dashboard & Mock Data Audit — Remove all remaining mocks   | 1    | ✅         | 21-01            | Complete  |
+| 22-01 | Mobile Screen Mock Data Replacement — Notifications, Wall, Forums, Calls | 1 | ✅      | 20-01, 20-02     | Complete  |
+| 22-02 | Mobile Store Facades & Hooks — Wire stubs to real stores             | 1    | ✅         | 22-01            | Complete  |
+| 22-03 | X3DH DH4 & WatermelonDB Message Bridge — Protocol completion        | 2    | ✅         | 22-01, 22-02     | Complete  |
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 87%         |
-| Phases complete    | 21 / 25     |
-| Requirements done  | 160 / ~191  |
-| Current phase reqs | 8 / 8       |
+| Overall progress   | 91%         |
+| Phases complete    | 22 / 25     |
+| Requirements done  | 172 / ~191  |
+| Current phase reqs | 12 / 12     |
 
-██████████████████████████████████░░░░░░ 87%
+█████████████████████████████████████░░░ 91%
 
 ## Phase Summary
 
@@ -62,7 +63,7 @@ Secure real-time communication that works end-to-end.
 | 19  | Launch                  | **Complete** (2025-07-24) |
 | 20  | Backend Safety Net      | **Complete**              |
 | 21  | Web Wiring              | **Complete**              |
-| 22  | Mobile Wiring           | Not started               |
+| 22  | Mobile Wiring           | **Complete**              |
 | 23  | Creator & Payments      | Not started               |
 | 24  | Test Coverage           | Not started               |
 | 25  | Infrastructure & Perf   | Not started               |
@@ -70,15 +71,16 @@ Secure real-time communication that works end-to-end.
 ## Session Continuity
 
 Last session: current
-Stopped at: Phase 21 complete — ready for Phase 22 (Mobile Wiring)
-Resume file: `.gsd/ROADMAP.md` → Phase 22 (Mobile Wiring)
+Stopped at: Phase 22 complete — ready for Phase 23 (Creator & Payments)
+Resume file: `.gsd/ROADMAP.md` → Phase 23 (Creator & Payments)
 
 ## Last Action
 
-Phase 21 "Web Wiring" executed:
-- Plan 21-01: 17 files modified — progression, identity, theme customization pages + forum admin + chat wired to real APIs. 8 gamification fetch functions added. All MOCK_ data constants removed.
-- Plan 21-02: Admin dashboard mock fallbacks removed (5 store action files), full codebase mock audit complete, PREVIEW_ rename for cosmetic data.
-- Verification: 10/10 checks pass — zero MOCK_ in production code
+Phase 22 "Mobile Wiring" executed:
+- Plan 22-01: 4 screens wired — notifications inbox → useNotificationStore, user wall → API, forum list error handling fixed, call history auth from store. All getMockNotifications/MOCK_POSTS/getMockForums deleted.
+- Plan 22-02: 3 facades wired (community→forumStore, marketplace→gamificationStore, UI documented), useVoiceRecording→real expo-audio, VoiceMessageRecorder exported, forum hooks created, Math.random audio removed.
+- Plan 22-03: X3DH DH4 implemented (4th DH operation + OPK lifecycle), WatermelonDB schema v2 with sender profile columns, message bridge caches sender name/avatar.
+- Verification: 15/15 checks pass
 
 ---
 

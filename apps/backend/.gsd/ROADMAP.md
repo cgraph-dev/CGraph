@@ -14,7 +14,7 @@
 |---|-------|------|-------|-------|--------|
 | 20 | Backend Safety Net | Fix all P0 security + crash bugs in backend APIs | 10 | 2 | ✅ Complete |
 | 21 | Web Wiring | Replace all mock data with real API calls in web app | 8 | 2 | ✅ Complete |
-| 22 | Mobile Wiring | Wire mobile stubs, facades, mocks to real stores/APIs | 12 | 3 | Not started |
+| 22 | Mobile Wiring | Wire mobile stubs, facades, mocks to real stores/APIs | 12 | 3 | ✅ Complete |
 | 23 | Creator & Payments | End-to-end creator monetization + coin shop + IAP | 8 | 2 | Not started |
 | 24 | Test Coverage | Creator tests, webhook tests, coverage baseline | 5 | 1 | Not started |
 | 25 | Infrastructure & Perf | PgBouncer, MeiliSearch, load tests, version sync | 6 | 1 | Not started |
@@ -63,28 +63,28 @@ fallbacks, no TODO comments.
 
 ---
 
-## Phase 22 — Mobile Wiring
+## Phase 22 — Mobile Wiring ✅
 
 **Goal**: Every mobile screen uses real data, every facade resolves to a real store, every hook
 has a working implementation.
 
-**Plan 22-01: Screen Mock Data Replacement**
-- [ ] Wire Notifications Inbox → `useNotificationStore` → `GET /api/v1/notifications`
-- [ ] Wire User Wall → user wall API → `GET /api/v1/users/:id/wall`
-- [ ] Remove mock forum fallback — show error state on API failure
-- [ ] Fix `currentUserId = 'current-user'` in Call History → `useAuthStore().user.id`
+**Plan 22-01: Screen Mock Data Replacement** ✅
+- [x] Wire Notifications Inbox → `useNotificationStore` → `GET /api/v1/notifications`
+- [x] Wire User Wall → user wall API → `GET /api/v1/users/:id/wall`
+- [x] Remove mock forum fallback — show error state on API failure
+- [x] Fix `currentUserId = 'current-user'` in Call History → `useAuthStore().user.id`
 
-**Plan 22-02: Store Facades & Hooks**
-- [ ] Wire `useCommunityFacade().forums` → `forumStore.forums`
-- [ ] Wire `useMarketplaceFacade().balance` → `gamificationStore.coins`
-- [ ] Wire `useUIFacade()` methods to UI state management (or remove mobile-irrelevant ones)
-- [ ] Implement `useVoiceRecording()` with `expo-av` Audio API
-- [ ] Create `VoiceMessageRecorder` component
-- [ ] Create `features/forums/hooks/` directory with forum-specific hooks
+**Plan 22-02: Store Facades & Hooks** ✅
+- [x] Wire `useCommunityFacade().forums` → `forumStore.forums`
+- [x] Wire `useMarketplaceFacade().balance` → `gamificationStore.coins`
+- [x] Wire `useUIFacade()` methods to UI state management (or remove mobile-irrelevant ones)
+- [x] Implement `useVoiceRecording()` with `expo-audio` Audio API
+- [x] Create `VoiceMessageRecorder` component export
+- [x] Create `features/forums/hooks/` directory with forum-specific hooks
 
-**Plan 22-03: Protocol & Infrastructure**
-- [ ] Implement X3DH DH4 (one-time prekey computation) for full forward secrecy
-- [ ] Expand WatermelonDB message sender stub (cache sender profile data)
+**Plan 22-03: Protocol & Infrastructure** ✅
+- [x] Implement X3DH DH4 (one-time prekey computation) for full forward secrecy
+- [x] Expand WatermelonDB message sender stub (cache sender profile data)
 
 ---
 
