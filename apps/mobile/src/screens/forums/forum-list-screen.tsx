@@ -21,7 +21,6 @@ import GlassCard from '../../components/ui/glass-card';
 import { ForumCardSkeleton } from '../../components/skeleton';
 import api from '../../lib/api';
 import { ForumsStackParamList, Forum } from '../../types';
-import { getMockForums } from './forum-list-screen/helpers';
 import { styles } from './forum-list-screen/styles';
 import { AnimatedForumItem } from './forum-list-screen/components/animated-forum-item';
 
@@ -37,6 +36,7 @@ export default function ForumListScreen({ navigation }: Props) {
   const [forums, setForums] = useState<Forum[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const headerTranslateY = useRef(new Animated.Value(-30)).current;
@@ -55,11 +55,12 @@ export default function ForumListScreen({ navigation }: Props) {
 
   const fetchForums = async () => {
     try {
+      setError(null);
       const response = await api.get('/api/v1/forums');
       setForums(response.data.data || []);
-    } catch (error) {
-      console.error('Error fetching forums:', error);
-      setForums(getMockForums());
+    } catch (err) {
+      console.error('Error fetching forums:', err);
+      setError('Failed to load forums. Pull down to retry.');
     } finally {
       setIsLoading(false);
     }
@@ -79,26 +80,51 @@ export default function ForumListScreen({ navigation }: Props) {
     />
   );
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <LinearGradient colors={['#6366f1', '#8b5cf6', '#a855f7']} start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }} style={styles.emptyIconContainer}>
-        <Ionicons name="newspaper" size={48} color="#fff" />
-      </LinearGradient>
-      <Text style={[styles.emptyTitle, { color: colors.text }]}>No Forums Yet</Text>
-      <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-        Be the first to create a community!
-      </Text>
-      <View style={styles.emptyButtons}>
-        <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('CreateForum'); }}>
-          <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.emptyButton}>
-            <Ionicons name="add" size={20} color="#fff" />
-            <Text style={styles.emptyButtonText}>Create Forum</Text>
+  const renderEmptyState = () => {
+    if (error) {
+      return (
+        <View style={styles.emptyState}>
+          <LinearGradient colors={['#ef4444', '#f87171', '#fca5a5']} start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }} style={styles.emptyIconContainer}>
+            <Ionicons name="cloud-offline" size={48} color="#fff" />
           </LinearGradient>
-        </TouchableOpacity>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Something went wrong</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            {error}
+          </Text>
+          <View style={styles.emptyButtons}>
+            <TouchableOpacity onPress={() => { setIsLoading(true); fetchForums(); }}>
+              <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.emptyButton}>
+                <Ionicons name="refresh" size={20} color="#fff" />
+                <Text style={styles.emptyButtonText}>Retry</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.emptyState}>
+        <LinearGradient colors={['#6366f1', '#8b5cf6', '#a855f7']} start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }} style={styles.emptyIconContainer}>
+          <Ionicons name="newspaper" size={48} color="#fff" />
+        </LinearGradient>
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>No Forums Yet</Text>
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+          Be the first to create a community!
+        </Text>
+        <View style={styles.emptyButtons}>
+          <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('CreateForum'); }}>
+            <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.emptyButton}>
+              <Ionicons name="add" size={20} color="#fff" />
+              <Text style={styles.emptyButtonText}>Create Forum</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderHeader = () => (
     <Animated.View style={[styles.headerContainer, { opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>

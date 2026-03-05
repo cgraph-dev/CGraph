@@ -169,8 +169,8 @@ export default {
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
         shimmer: {
-          '0%': { backgroundPosition: '-1000px 0' },
-          '100%': { backgroundPosition: '1000px 0' },
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
         },
         glowGreen: {
           '0%': { boxShadow: '0 0 5px rgba(16, 185, 129, 0.4)' },
