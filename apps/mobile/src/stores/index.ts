@@ -264,12 +264,13 @@ export function useMarketplaceFacade() {
   const purchaseListing = _useMarketplace((s) => s.purchaseListing);
   const fetchMyListings = _useMarketplace((s) => s.fetchMyListings);
   const fetchListings = _useMarketplace((s) => s.fetchListings);
+  const coins = _useGamification((s) => s.coins);
 
   return useMemo(
     () => ({
       items: listings,
       inventory: myListings,
-      balance: 0, // TODO: wire to gamification store coins
+      balance: coins,
       purchaseItem: async (itemId: string) => {
         await purchaseListing(itemId);
       },
@@ -278,7 +279,7 @@ export function useMarketplaceFacade() {
       },
       fetchListings,
     }),
-    [listings, myListings, purchaseListing, fetchMyListings, fetchListings]
+    [listings, myListings, purchaseListing, fetchMyListings, fetchListings, coins]
   );
 }
 
