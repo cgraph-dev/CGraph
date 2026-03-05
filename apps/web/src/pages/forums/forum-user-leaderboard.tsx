@@ -97,7 +97,7 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex items-center gap-3 rounded-lg bg-white/[0.04]/60 px-4 py-3 transition-colors hover:bg-white/[0.08]/60"
+      className="flex items-center gap-3 rounded-lg bg-white/[0.04] px-4 py-3 transition-colors hover:bg-white/[0.08]"
     >
       {/* Position */}
       <span className="w-8 text-center text-sm font-bold text-gray-400">
@@ -230,7 +230,7 @@ function RanksSidebar({ ranks }: { ranks: ForumRank[] }) {
   if (ranks.length === 0) return null;
 
   return (
-    <div className="rounded-xl bg-white/[0.04]/60 p-4">
+    <div className="rounded-xl bg-white/[0.04] p-4">
       <h3 className="mb-3 text-sm font-semibold text-gray-300">Rank Tiers</h3>
       <div className="space-y-2">
         {ranks.map((r) => (

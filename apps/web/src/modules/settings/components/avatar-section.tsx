@@ -25,7 +25,7 @@ export function AvatarSection({ user }: AvatarSectionProps) {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
       <label className="mb-4 block text-sm font-semibold text-white/70">Profile Picture</label>
       <div className="flex items-center gap-5">
-        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-white/[0.04]/60 shadow-lg shadow-black/20 ring-2 ring-white/[0.08] transition-all duration-200 hover:ring-primary-500/40">
+        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-white/[0.04] shadow-lg shadow-black/20 ring-2 ring-white/[0.08] transition-all duration-200 hover:ring-primary-500/40">
           {user?.avatarUrl ? (
             <ThemedAvatar
               src={user.avatarUrl}

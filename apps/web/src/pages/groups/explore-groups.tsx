@@ -143,7 +143,7 @@ export default function ExploreGroups() {
                 key={group.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="cursor-pointer rounded-xl border border-white/10 bg-white/[0.04]/60 p-4 transition-colors hover:border-primary-500/30 hover:bg-white/[0.04]"
+                className="cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] p-4 transition-colors hover:border-primary-500/30 hover:bg-white/[0.04]"
                 onClick={() => navigate(`/groups/${group.id}`)}
               >
                 {/* Group Banner / Icon */}

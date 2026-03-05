@@ -45,7 +45,7 @@ export function ProfileFormFields({
           name="displayName"
           defaultValue={user?.displayName || ''}
           placeholder="How should we call you?"
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         />
       </GlassCard>
 
@@ -59,7 +59,7 @@ export function ProfileFormFields({
           placeholder="Tell others about yourself..."
           maxLength={300}
           rows={3}
-          className="w-full resize-none rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full resize-none rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         />
       </GlassCard>
 
@@ -70,7 +70,7 @@ export function ProfileFormFields({
         <select
           name="pronouns"
           defaultValue={user?.pronouns || ''}
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 text-white transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         >
           <option value="">Prefer not to say</option>
           <option value="he/him">he/him</option>
@@ -87,7 +87,7 @@ export function ProfileFormFields({
       <GlassCard variant="crystal" glow className="relative mb-5 overflow-hidden p-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
         <label className="mb-3 block text-sm font-semibold text-white/70">Profile Banner</label>
-        <div className="relative h-36 overflow-hidden rounded-xl bg-white/[0.04]/60 ring-1 ring-white/[0.06]">
+        <div className="relative h-36 overflow-hidden rounded-xl bg-white/[0.04] ring-1 ring-white/[0.06]">
           {user?.bannerUrl ? (
             <img src={user.bannerUrl} alt="Banner" className="h-full w-full object-cover" />
           ) : (
@@ -135,7 +135,7 @@ export function ProfileFormFields({
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 transition-all focus:border-primary-500/40 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         />
       </GlassCard>
 
@@ -149,7 +149,7 @@ export function ProfileFormFields({
               type="text"
               value={user.walletAddress}
               disabled
-              className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 font-mono text-sm text-gray-400 shadow-inner shadow-black/20"
+              className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 font-mono text-sm text-gray-400 shadow-inner shadow-black/20"
             />
             <button
               type="button"
@@ -161,7 +161,7 @@ export function ProfileFormFields({
         ) : (
           <button
             type="button"
-            className="rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-5 py-3 text-sm font-medium text-white shadow-inner shadow-black/20 transition-all hover:border-primary-500/30 hover:bg-white/[0.06] hover:shadow-primary-500/5"
+            className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3 text-sm font-medium text-white shadow-inner shadow-black/20 transition-all hover:border-primary-500/30 hover:bg-white/[0.06] hover:shadow-primary-500/5"
           >
             Connect Wallet
           </button>

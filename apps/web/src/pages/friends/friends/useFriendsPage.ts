@@ -42,12 +42,14 @@ export function useFriendsPage() {
     removeFriend,
     blockUser,
     clearError,
+    fetchSentRequests,
   } = useFriendStore();
 
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
-  }, [fetchFriends, fetchPendingRequests]);
+    fetchSentRequests();
+  }, [fetchFriends, fetchPendingRequests, fetchSentRequests]);
 
   useEffect(() => {
     let isMounted = true;

@@ -149,7 +149,7 @@ export default function DataExport() {
                 type="checkbox"
                 checked={cat.checked}
                 onChange={() => toggleCategory(cat.id)}
-                className="h-4 w-4 rounded border-white/20 bg-white/[0.04]/60 text-emerald-500 focus:ring-emerald-500/30"
+                className="h-4 w-4 rounded border-white/20 bg-white/[0.04] text-emerald-500 focus:ring-emerald-500/30"
               />
               <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06]">
                 {cat.icon}

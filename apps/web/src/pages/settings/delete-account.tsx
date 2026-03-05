@@ -121,7 +121,7 @@ export function DeleteAccount() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={t('delete_account.enter_password')}
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-white placeholder-white/30 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
                   />
                 </div>
 
@@ -136,7 +136,7 @@ export function DeleteAccount() {
                     value={confirmText}
                     onChange={(e) => setConfirmText(e.target.value)}
                     placeholder="DELETE"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/60 px-4 py-3 font-mono text-white placeholder-white/30 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 font-mono text-white placeholder-white/30 shadow-inner shadow-black/20 outline-none ring-0 focus:ring-2 focus:ring-red-500/40"
                   />
                 </div>
 
