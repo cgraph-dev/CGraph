@@ -782,4 +782,85 @@ defmodule CGraph.Factory do
 
     %{sellers: sellers, listings: listings}
   end
+
+  # ============================================================================
+  # Creator Monetization Factories
+  # ============================================================================
+
+  @doc "User with active Stripe Connect account (creator)."
+  def creator_user_factory do
+    build(:user,
+      stripe_connect_id: sequence(:stripe_connect_id, &"acct_test_#{&1}"),
+      creator_status: "active",
+      creator_onboarded_at: DateTime.truncate(DateTime.utc_now(), :second)
+    )
+  end
+
+  @doc "Forum with monetization enabled."
+  def monetized_forum_factory do
+    build(:forum,
+      monetization_enabled: true,
+      subscription_price_cents: 999,
+      subscription_currency: "usd"
+    )
+  end
+
+  @doc "Paid forum subscription record."
+  def paid_forum_subscription_factory do
+    now = DateTime.truncate(DateTime.utc_now(), :second)
+
+    %CGraph.Creators.PaidForumSubscription{
+      forum: build(:forum),
+      subscriber: build(:user),
+      creator: build(:user),
+      stripe_subscription_id: sequence(:stripe_subscription_id, &"sub_test_#{&1}"),
+      status: "active",
+      price_cents: 999,
+      current_period_start: now,
+      current_period_end: DateTime.add(now, 30, :day)
+    }
+  end
+
+  @doc "Creator earning ledger entry."
+  def creator_earning_factory do
+    gross = 999
+    fee = div(gross * 15, 100)
+    net = gross - fee
+
+    %CGraph.Creators.CreatorEarning{
+      creator: build(:user),
+      gross_amount_cents: gross,
+      platform_fee_cents: fee,
+      net_amount_cents: net,
+      currency: "usd",
+      stripe_payment_intent_id: sequence(:stripe_pi, &"pi_test_#{&1}")
+    }
+  end
+
+  @doc "Creator payout (withdrawal) record."
+  def creator_payout_factory do
+    now = DateTime.truncate(DateTime.utc_now(), :second)
+
+    %CGraph.Creators.CreatorPayout{
+      creator: build(:user),
+      amount_cents: 5000,
+      currency: "usd",
+      stripe_transfer_id: sequence(:stripe_transfer_id, &"tr_test_#{&1}"),
+      status: "pending",
+      requested_at: now
+    }
+  end
+
+  @doc "Coin purchase record."
+  def coin_purchase_factory do
+    %CGraph.Shop.CoinPurchase{
+      user_id: nil,
+      bundle_id: "starter",
+      coins_awarded: 100,
+      price_cents: 99,
+      currency: "usd",
+      stripe_session_id: sequence(:stripe_session_id, &"cs_test_#{&1}"),
+      status: "pending"
+    }
+  end
 end
