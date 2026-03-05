@@ -100,7 +100,14 @@ export {
 
 // ─── Customization ──────────────────────────────────────────────────────────
 export { useCustomizationStore } from './customizationStore';
-
+// ─── Creator ─────────────────────────────────────────────────────────
+export {
+  useCreatorStore,
+  useIsCreator,
+  useCreatorStatus,
+  useCreatorBalance,
+  useCreatorPayouts,
+} from './creatorStore';
 // =============================================================================
 // FACADE HOOKS — 7-domain API matching web architecture
 // =============================================================================
