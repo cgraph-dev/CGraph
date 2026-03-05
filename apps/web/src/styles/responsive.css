@@ -1,0 +1,162 @@
+/* ── Responsive Utilities ─────────────────────────────────────────────────
+ *
+ * Breakpoints: compact (<768px), normal (768-1200px), wide (>1200px)
+ * Container query support where available, media query fallback.
+ *
+ * @module styles/responsive
+ */
+
+/* ── Container Query Definitions ─────────────────────────────────── */
+
+.responsive-root {
+  container-type: inline-size;
+  container-name: app-root;
+}
+
+.responsive-main {
+  container-type: inline-size;
+  container-name: main-content;
+}
+
+/* ── Visibility Utilities (Media Query) ──────────────────────────── */
+
+/* Hide on compact (< 768px) */
+@media (max-width: 767px) {
+  .hide-compact {
+    display: none !important;
+  }
+}
+
+/* Show only on compact */
+.show-compact-only {
+  display: none !important;
+}
+@media (max-width: 767px) {
+  .show-compact-only {
+    display: initial !important;
+  }
+}
+
+/* Hide on wide (> 1200px) */
+@media (min-width: 1201px) {
+  .hide-wide {
+    display: none !important;
+  }
+}
+
+/* Show only on wide */
+.show-wide-only {
+  display: none !important;
+}
+@media (min-width: 1201px) {
+  .show-wide-only {
+    display: initial !important;
+  }
+}
+
+/* ── Sidebar Behavior ────────────────────────────────────────────── */
+
+/* Compact: sidebar overlays content */
+@media (max-width: 767px) {
+  .responsive-sidebar {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 200ms ease-out;
+  }
+
+  .responsive-sidebar[data-open="true"] {
+    transform: translateX(0);
+  }
+
+  .responsive-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Normal: sidebar fixed, member list hidden */
+@media (min-width: 768px) and (max-width: 1200px) {
+  .responsive-sidebar {
+    position: relative;
+    width: 240px;
+    flex-shrink: 0;
+  }
+
+  .responsive-member-list {
+    display: none;
+  }
+}
+
+/* Wide: 3-column layout (sidebar + content + member list) */
+@media (min-width: 1201px) {
+  .responsive-sidebar {
+    position: relative;
+    width: 240px;
+    flex-shrink: 0;
+  }
+
+  .responsive-member-list {
+    display: flex;
+    width: 240px;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Container Query Overrides (progressive enhancement) ─────────── */
+
+@container app-root (max-width: 767px) {
+  .cq-hide-compact {
+    display: none !important;
+  }
+}
+
+@container app-root (min-width: 1201px) {
+  .cq-show-wide-only {
+    display: initial !important;
+  }
+}
+
+/* ── Layout Transitions ──────────────────────────────────────────── */
+
+.responsive-sidebar,
+.responsive-member-list,
+.responsive-content {
+  transition:
+    width 200ms ease-out,
+    transform 200ms ease-out,
+    opacity 150ms ease-out;
+}
+
+/* ── Compact Mobile Helpers ──────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .responsive-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Stack layout — full width panels */
+  .responsive-stack > * {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* Hamburger trigger area */
+  .responsive-hamburger-trigger {
+    display: flex;
+    padding: 8px;
+    cursor: pointer;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-hamburger-trigger {
+    display: none;
+  }
+}
