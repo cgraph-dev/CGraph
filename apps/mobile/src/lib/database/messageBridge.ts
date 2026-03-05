@@ -42,12 +42,12 @@ export function watermelonToMessage(record: WMDBMessage): Message {
     return new Date(ts).toISOString();
   };
 
-  // Build a minimal sender stub — WatermelonDB doesn't store sender details
+  // Build sender stub — use cached display name / avatar when available
   const senderStub: MessageSender = {
     id: record.senderId || '',
     username: '',
-    displayName: null,
-    avatarUrl: null,
+    displayName: record.senderDisplayName || null,
+    avatarUrl: record.senderAvatarUrl || null,
   };
 
   // Convert WatermelonDB reactions (Record<emoji, userId[]>) to chatStore Reaction[]
@@ -149,6 +149,9 @@ function applyMessageToRaw(
   raw.reactions_json = JSON.stringify(message.reactions || []);
   raw.metadata_json = JSON.stringify(message.metadata || {});
   raw.updated_at = toEpoch(message.updatedAt);
+  // Cache sender profile for offline display
+  raw.sender_display_name = message.sender?.displayName || null;
+  raw.sender_avatar_url = message.sender?.avatarUrl || null;
 }
 
 /**
