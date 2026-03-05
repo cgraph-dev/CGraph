@@ -1,51 +1,72 @@
 /**
- * Skeleton loading placeholder component.
+ * Skeleton loading placeholder component with shimmer animation.
  * @module
  */
+import { cn } from '@/lib/utils';
+
+type SkeletonShape = 'text' | 'avatar' | 'card' | 'message' | 'thumbnail';
+
 interface SkeletonProps {
   className?: string;
+  /** Legacy variant API — still supported */
   variant?: 'text' | 'circular' | 'rectangular';
+  /** New shape API — Discord/Instagram patterns */
+  shape?: SkeletonShape;
   width?: string | number;
   height?: string | number;
   lines?: number;
+  /** Repeat count for shape-based skeletons */
+  count?: number;
 }
 
+const shimmerClass =
+  'relative overflow-hidden bg-white/[0.06] before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/[0.04] before:to-transparent';
+
 /**
- * Skeleton - A loading placeholder component with shimmer animation.
- * 
- * Use for loading states to improve perceived performance.
+ * Skeleton — loading placeholder with shimmer animation.
  */
 export default function Skeleton({
   className = '',
-  variant = 'rectangular',
+  variant,
+  shape,
   width,
   height,
   lines = 1,
+  count = 1,
 }: SkeletonProps) {
-  const baseStyles = 'bg-white/[0.06] animate-pulse';
+  // --- Shape-based API ---
+  if (shape) {
+    const items = Array.from({ length: count });
+    return (
+      <div className={cn('space-y-3', className)}>
+        {items.map((_, i) => (
+          <SkeletonShape key={i} shape={shape} />
+        ))}
+      </div>
+    );
+  }
 
+  // --- Legacy variant API ---
   const variantStyles = {
     text: 'rounded h-4',
     circular: 'rounded-full',
     rectangular: 'rounded-lg',
   };
+  const v = variant ?? 'rectangular';
 
   const style: React.CSSProperties = {
-    width: width || (variant === 'circular' ? height : '100%'),
-    height: height || (variant === 'text' ? '1rem' : variant === 'circular' ? width : '100%'),
+    width: width ?? (v === 'circular' ? height : '100%'),
+    height: height ?? (v === 'text' ? '1rem' : v === 'circular' ? width : '100%'),
   };
 
-  if (variant === 'text' && lines > 1) {
+  if (v === 'text' && lines > 1) {
     return (
-      <div className={`space-y-2 ${className}`}>
+      <div className={cn('space-y-2', className)}>
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
-            className={`${baseStyles} ${variantStyles[variant]}`}
-            style={{
-              ...style,
-              width: i === lines - 1 ? '75%' : '100%',
-            }}
+            className={cn(shimmerClass, variantStyles[v])}
+            style={{ ...style, width: i === lines - 1 ? '75%' : '100%' }}
           />
         ))}
       </div>
@@ -54,10 +75,47 @@ export default function Skeleton({
 
   return (
     <div
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={cn(shimmerClass, variantStyles[v], className)}
       style={style}
     />
   );
+}
+
+function SkeletonShape({ shape }: { shape: SkeletonShape }) {
+  switch (shape) {
+    case 'text':
+      return (
+        <div className="space-y-1.5">
+          <div className={cn(shimmerClass, 'h-3.5 w-full rounded')} />
+          <div className={cn(shimmerClass, 'h-3.5 w-4/5 rounded')} />
+          <div className={cn(shimmerClass, 'h-3.5 w-3/5 rounded')} />
+        </div>
+      );
+    case 'avatar':
+      return <div className={cn(shimmerClass, 'h-10 w-10 rounded-full')} />;
+    case 'card':
+      return (
+        <div className={cn(shimmerClass, 'h-24 w-full rounded-lg')} />
+      );
+    case 'message':
+      return (
+        <div className="flex gap-3 py-2">
+          <div className={cn(shimmerClass, 'h-10 w-10 shrink-0 rounded-full')} />
+          <div className="flex-1 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className={cn(shimmerClass, 'h-3.5 w-24 rounded')} />
+              <div className={cn(shimmerClass, 'h-3 w-14 rounded')} />
+            </div>
+            <div className={cn(shimmerClass, 'h-3.5 w-full max-w-xs rounded')} />
+            <div className={cn(shimmerClass, 'h-3.5 w-3/4 max-w-[200px] rounded')} />
+          </div>
+        </div>
+      );
+    case 'thumbnail':
+      return (
+        <div className={cn(shimmerClass, 'aspect-video w-full rounded-lg')} />
+      );
+  }
 }
 
 // Post card skeleton

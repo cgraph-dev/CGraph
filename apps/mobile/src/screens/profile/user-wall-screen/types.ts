@@ -27,31 +27,6 @@ export interface Comment {
   isLiked: boolean;
 }
 
-export const MOCK_POSTS: WallPost[] = [
-  {
-    id: '1', userId: 'user1', userName: 'CyberNinja', userLevel: 42, isPremium: true,
-    content: 'Just hit level 42! 🎉 The grind was worth it. Thanks to everyone who supported me along the way!',
-    likesCount: 156, commentsCount: 23, sharesCount: 5, isLiked: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30),
-    reactions: [{ emoji: '🔥', count: 45 }, { emoji: '👏', count: 32 }, { emoji: '❤️', count: 79 }],
-  },
-  {
-    id: '2', userId: 'user2', userName: 'PixelDragon', userLevel: 28, isPremium: false,
-    content: 'New achievement unlocked: "Night Owl" 🦉 Stayed up way too late but totally worth it!',
-    imageUrl: 'https://picsum.photos/400/300',
-    likesCount: 89, commentsCount: 12, sharesCount: 2, isLiked: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    reactions: [{ emoji: '😂', count: 15 }, { emoji: '🎉', count: 24 }],
-  },
-  {
-    id: '3', userId: 'user3', userName: 'MatrixHawk', userLevel: 55, isPremium: true,
-    content: 'Pro tip: Use the keyboard shortcuts to navigate faster! Game changer 🚀',
-    likesCount: 234, commentsCount: 45, sharesCount: 18, isLiked: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
-    reactions: [{ emoji: '🧠', count: 67 }, { emoji: '💯', count: 89 }, { emoji: '🚀', count: 78 }],
-  },
-];
-
 export function formatTimestamp(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();

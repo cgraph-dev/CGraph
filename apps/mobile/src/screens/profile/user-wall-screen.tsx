@@ -22,8 +22,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 
 import { Colors } from '@/lib/design/design-system';
-import { useThemeStore } from '@/stores';
-import { MOCK_POSTS, type WallPost } from './user-wall-screen/types';
+import { useThemeStore, useAuthStore } from '@/stores';
+import api from '@/lib/api';
+import { type WallPost } from './user-wall-screen/types';
 import { styles } from './user-wall-screen/styles';
 import { WallPostItem } from './user-wall-screen/components/wall-post-item';
 import { PostComposer } from './user-wall-screen/components/post-composer';
@@ -34,8 +35,11 @@ import { PostComposer } from './user-wall-screen/components/post-composer';
 export default function UserWallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { colors } = useThemeStore();
-  const [posts, setPosts] = useState<WallPost[]>(MOCK_POSTS);
+  const currentUserId = useAuthStore((s) => s.user?.id) ?? '';
+  const [posts, setPosts] = useState<WallPost[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [newPostText, setNewPostText] = useState('');
   const [showComposer, setShowComposer] = useState(false);
 
@@ -59,6 +63,25 @@ export default function UserWallScreen() {
     ]).start();
   }, []);
 
+  // Fetch wall posts from API
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!currentUserId) return;
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await api.get(`/api/v1/users/${currentUserId}/posts`);
+        setPosts(response.data?.data || response.data?.posts || []);
+      } catch (err) {
+        console.error('Error fetching wall posts:', err);
+        setError('Failed to load posts');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPosts();
+  }, [currentUserId]);
+
   useEffect(() => {
     Animated.timing(composerAnim, {
       toValue: showComposer ? 1 : 0,
@@ -67,11 +90,19 @@ export default function UserWallScreen() {
     }).start();
   }, [showComposer]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    try {
+      const response = await api.get(`/api/v1/users/${currentUserId}/posts`);
+      setPosts(response.data?.data || response.data?.posts || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error refreshing wall posts:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [currentUserId]);
 
   const handleLike = useCallback((postId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -88,7 +119,7 @@ export default function UserWallScreen() {
     if (!newPostText.trim()) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const newPost: WallPost = {
-      id: Date.now().toString(), userId: 'currentUser', userName: 'You',
+      id: Date.now().toString(), userId: currentUserId, userName: 'You',
       userLevel: 15, isPremium: false, content: newPostText,
       likesCount: 0, commentsCount: 0, sharesCount: 0,
       isLiked: false, createdAt: new Date(), reactions: [],
