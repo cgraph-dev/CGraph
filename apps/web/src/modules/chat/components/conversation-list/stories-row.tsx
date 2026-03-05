@@ -2,11 +2,9 @@
  * StoriesRow — Instagram DM-style stories/status row at the top of conversation list.
  * @module modules/chat/components/conversation-list/stories-row
  */
-import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui';
-import { ScrollArea } from '@/components/ui';
 
 interface StoryUser {
   id: string;
