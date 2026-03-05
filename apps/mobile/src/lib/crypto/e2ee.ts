@@ -333,6 +333,104 @@ export async function clearKEMPreKey(): Promise<void> {
   await SecureStore.deleteItemAsync(KEM_PREKEY_SIGNATURE);
 }
 
+// =============================================================================
+// One-Time Prekey (OPK) Lifecycle Management
+// =============================================================================
+
+/** SecureStore key for persisted OPK private keys (JSON map of keyId → base64 PKCS8) */
+const OPK_PRIVATE_KEYS = 'e2ee_opk_private_keys';
+/** SecureStore key for remaining OPK count */
+const OPK_COUNT = 'e2ee_opk_count';
+/** Minimum OPK threshold before replenishment is recommended */
+const OPK_REPLENISH_THRESHOLD = 10;
+
+/**
+ * Store one-time prekey private keys in SecureStore.
+ * Called after generateKeyBundle() so OPK privates survive across sessions.
+ */
+export async function storeOneTimePreKeyPrivates(
+  oneTimePreKeys: OneTimePreKey[]
+): Promise<void> {
+  const existing = await loadOneTimePreKeyPrivates();
+  for (const opk of oneTimePreKeys) {
+    existing.set(opk.keyId, opk.privateKey);
+  }
+  const serialized: Record<string, string> = {};
+  for (const [keyId, pkcs8] of existing) {
+    serialized[keyId] = Buffer.from(pkcs8).toString('base64');
+  }
+  await SecureStore.setItemAsync(OPK_PRIVATE_KEYS, JSON.stringify(serialized));
+  await SecureStore.setItemAsync(OPK_COUNT, String(existing.size));
+}
+
+/**
+ * Load all stored OPK private keys.
+ * Returns a Map of keyId → PKCS8 Uint8Array.
+ */
+export async function loadOneTimePreKeyPrivates(): Promise<Map<string, Uint8Array>> {
+  const json = await SecureStore.getItemAsync(OPK_PRIVATE_KEYS);
+  if (!json) return new Map();
+  try {
+    const parsed = JSON.parse(json) as Record<string, string>;
+    const map = new Map<string, Uint8Array>();
+    for (const [keyId, b64] of Object.entries(parsed)) {
+      map.set(keyId, new Uint8Array(Buffer.from(b64, 'base64')));
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
+/**
+ * Load a specific OPK private key by key ID.
+ * Used by the responder to compute DH4.
+ */
+export async function loadOneTimePreKeyPrivate(
+  keyId: string
+): Promise<Uint8Array | null> {
+  const all = await loadOneTimePreKeyPrivates();
+  return all.get(keyId) ?? null;
+}
+
+/**
+ * Delete a consumed one-time prekey after it has been used in X3DH.
+ * Per the Signal spec, OPKs MUST be deleted after a single use.
+ */
+export async function deleteConsumedOneTimePreKey(keyId: string): Promise<void> {
+  const all = await loadOneTimePreKeyPrivates();
+  all.delete(keyId);
+  const serialized: Record<string, string> = {};
+  for (const [id, pkcs8] of all) {
+    serialized[id] = Buffer.from(pkcs8).toString('base64');
+  }
+  await SecureStore.setItemAsync(OPK_PRIVATE_KEYS, JSON.stringify(serialized));
+  await SecureStore.setItemAsync(OPK_COUNT, String(all.size));
+  logger.info(`Deleted consumed OPK ${keyId}, ${all.size} remaining`);
+}
+
+/**
+ * Check whether OPK replenishment is needed.
+ * Returns true when the count falls below the threshold (default 10).
+ */
+export async function needsOneTimePreKeyReplenishment(
+  threshold: number = OPK_REPLENISH_THRESHOLD
+): Promise<{ needed: boolean; remaining: number; threshold: number }> {
+  const countStr = await SecureStore.getItemAsync(OPK_COUNT);
+  const remaining = countStr ? parseInt(countStr, 10) : 0;
+  return {
+    needed: remaining < threshold,
+    remaining,
+    threshold,
+  };
+}
+
+/** Clear all stored one-time prekey private keys */
+export async function clearOneTimePreKeys(): Promise<void> {
+  await SecureStore.deleteItemAsync(OPK_PRIVATE_KEYS);
+  await SecureStore.deleteItemAsync(OPK_COUNT);
+}
+
 /**
  * Generate a random key ID (fingerprint)
  */
@@ -887,6 +985,8 @@ export async function clearE2EEData(): Promise<void> {
   await SecureStore.deleteItemAsync(SESSIONS_KEY);
   // Clear PQ KEM prekey data
   await clearKEMPreKey();
+  // Clear one-time prekey private keys
+  await clearOneTimePreKeys();
 }
 
 /**
@@ -921,4 +1021,10 @@ export default {
   clearKEMPreKey,
   bundleSupportsPQ,
   CryptoProtocol,
+  // OPK lifecycle
+  storeOneTimePreKeyPrivates,
+  loadOneTimePreKeyPrivate,
+  deleteConsumedOneTimePreKey,
+  needsOneTimePreKeyReplenishment,
+  clearOneTimePreKeys,
 };
