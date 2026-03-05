@@ -1,11 +1,15 @@
 /**
- * Avatar image display component.
+ * Avatar image display component with Discord/Instagram-style features.
  * @module
  */
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 import { getAvatarBorderStyle } from '@/modules/settings/hooks/useCustomizationApplication';
 
-type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+type AvatarStatus = 'online' | 'offline' | 'idle' | 'dnd' | 'invisible';
+type AvatarVariant = 'circle' | 'square';
 
 interface AvatarProps {
   src?: string | null;
@@ -14,12 +18,72 @@ interface AvatarProps {
   size?: AvatarSize;
   className?: string;
   badge?: ReactNode;
-  status?: 'online' | 'offline' | 'away' | 'busy';
+  status?: AvatarStatus;
+  /** Show animated gradient ring like Instagram stories */
+  storyRing?: boolean;
+  /** Show animated typing dots overlay */
+  typing?: boolean;
+  /** circle (default) or square for server icons */
+  variant?: AvatarVariant;
   borderId?: string | null;
 }
 
+const sizeConfig: Record<AvatarSize, { px: number; container: string; text: string; statusDot: string; statusRing: string }> = {
+  xs:  { px: 16, container: 'h-4 w-4',   text: 'text-[7px]',  statusDot: 'h-1.5 w-1.5', statusRing: 'ring-1' },
+  sm:  { px: 24, container: 'h-6 w-6',   text: 'text-[9px]',  statusDot: 'h-2 w-2',     statusRing: 'ring-[1.5px]' },
+  md:  { px: 32, container: 'h-8 w-8',   text: 'text-[11px]', statusDot: 'h-2.5 w-2.5', statusRing: 'ring-2' },
+  lg:  { px: 40, container: 'h-10 w-10', text: 'text-xs',     statusDot: 'h-3 w-3',     statusRing: 'ring-2' },
+  xl:  { px: 56, container: 'h-14 w-14', text: 'text-base',   statusDot: 'h-3.5 w-3.5', statusRing: 'ring-2' },
+  '2xl': { px: 80, container: 'h-20 w-20', text: 'text-xl',   statusDot: 'h-4 w-4',     statusRing: 'ring-[3px]' },
+  '3xl': { px: 120, container: 'h-[120px] w-[120px]', text: 'text-3xl', statusDot: 'h-5 w-5', statusRing: 'ring-[3px]' },
+};
+
+const statusColors: Record<AvatarStatus, string> = {
+  online:    'bg-green-500',
+  offline:   'bg-gray-500',
+  idle:      'bg-yellow-500',
+  dnd:       'bg-red-500',
+  invisible: 'bg-gray-500',
+};
+
+const GRADIENT_PALETTE = [
+  'from-red-500 to-orange-500',
+  'from-orange-500 to-amber-500',
+  'from-amber-500 to-yellow-500',
+  'from-green-500 to-emerald-500',
+  'from-teal-500 to-cyan-500',
+  'from-cyan-500 to-blue-500',
+  'from-blue-500 to-indigo-500',
+  'from-indigo-500 to-violet-500',
+  'from-violet-500 to-purple-500',
+  'from-purple-500 to-fuchsia-500',
+  'from-fuchsia-500 to-pink-500',
+  'from-pink-500 to-rose-500',
+];
+
+function hashName(name: string): number {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash);
+}
+
+function getGradient(name: string): string {
+  return GRADIENT_PALETTE[hashName(name) % GRADIENT_PALETTE.length]!;
+}
+
+function getInitials(name: string): string {
+  if (!name) return '?';
+  const parts = name.trim().split(' ').filter((p) => p.length > 0);
+  if (parts.length >= 2 && parts[0]?.[0] && parts[1]?.[0]) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+  return name.charAt(0).toUpperCase();
+}
+
 /**
- * Avatar - A user avatar component with fallback to initials.
+ * Avatar — Discord/Instagram-quality avatar with status, story ring, typing indicator.
  */
 export default function Avatar({
   src,
@@ -29,96 +93,99 @@ export default function Avatar({
   className = '',
   badge,
   status,
+  storyRing = false,
+  typing = false,
+  variant = 'circle',
   borderId,
 }: AvatarProps) {
-  const sizeStyles: Record<AvatarSize, { container: string; text: string; status: string }> = {
-    xs: { container: 'h-6 w-6', text: 'text-[10px]', status: 'h-2 w-2' },
-    sm: { container: 'h-8 w-8', text: 'text-xs', status: 'h-2.5 w-2.5' },
-    md: { container: 'h-10 w-10', text: 'text-sm', status: 'h-3 w-3' },
-    lg: { container: 'h-12 w-12', text: 'text-base', status: 'h-3.5 w-3.5' },
-    xl: { container: 'h-16 w-16', text: 'text-xl', status: 'h-4 w-4' },
-  };
-
-  const statusColors = {
-    online: 'bg-green-500',
-    offline: 'bg-gray-500',
-    away: 'bg-yellow-500',
-    busy: 'bg-red-500',
-  };
-
-  const getInitials = (name: string) => {
-    if (!name) return '?';
-    const parts = name
-      .trim()
-      .split(' ')
-      .filter((p) => p.length > 0);
-    if (parts.length >= 2 && parts[0]?.[0] && parts[1]?.[0]) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return name.charAt(0).toUpperCase();
-  };
-
-  // Generate a consistent color based on name
-  const getColorFromName = (name: string) => {
-    const colors = [
-      'bg-red-600',
-      'bg-orange-600',
-      'bg-amber-600',
-      'bg-yellow-600',
-      'bg-lime-600',
-      'bg-green-600',
-      'bg-emerald-600',
-      'bg-teal-600',
-      'bg-cyan-600',
-      'bg-sky-600',
-      'bg-blue-600',
-      'bg-indigo-600',
-      'bg-violet-600',
-      'bg-purple-600',
-      'bg-fuchsia-600',
-      'bg-pink-600',
-      'bg-rose-600',
-    ];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
-  };
-
+  const cfg = sizeConfig[size];
+  const rounding = variant === 'square' ? 'rounded-lg' : 'rounded-full';
+  const gradient = useMemo(() => getGradient(name), [name]);
   const borderStyle = borderId ? getAvatarBorderStyle(borderId) : { className: '' };
 
   return (
-    <div className={`relative inline-block ${className}`}>
-      <div
-        className={`${sizeStyles[size].container} flex items-center justify-center overflow-hidden rounded-full ${
-          !src ? getColorFromName(name) : 'bg-white/[0.06]'
-        } ${borderStyle.className}`}
-        style={borderStyle.style}
-      >
-        {src ? (
-          <img src={src} alt={alt || name} className="h-full w-full object-cover" />
-        ) : (
-          <span className={`font-semibold text-white ${sizeStyles[size].text}`}>
-            {getInitials(name)}
-          </span>
-        )}
-      </div>
-
-      {/* Status indicator */}
-      {status && (
-        <span
-          className={`absolute bottom-0 right-0 ${sizeStyles[size].status} rounded-full ${statusColors[status]} ring-2 ring-[rgb(30,32,40)]`}
+    <div className={cn('relative inline-flex shrink-0', className)}>
+      {/* Story ring */}
+      {storyRing && (
+        <div
+          className={cn(
+            'absolute -inset-[3px] rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500 animate-[spin_4s_linear_infinite]',
+            variant === 'square' && 'rounded-xl'
+          )}
         />
       )}
 
-      {/* Badge */}
+      {/* Avatar image / initials */}
+      <div
+        className={cn(
+          cfg.container,
+          'relative flex items-center justify-center overflow-hidden',
+          rounding,
+          storyRing && 'ring-2 ring-[rgb(15,15,20)]',
+          !src && `bg-gradient-to-br ${gradient}`,
+          src && 'bg-white/[0.06]',
+          borderStyle.className,
+        )}
+        style={borderStyle.style}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt={alt || name}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <span className={cn('font-semibold text-white select-none', cfg.text)}>
+            {getInitials(name)}
+          </span>
+        )}
+
+        {/* Typing indicator overlay */}
+        {typing && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="flex gap-0.5">
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="h-1 w-1 rounded-full bg-white"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                    ease: 'easeInOut',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Status indicator dot — Discord style */}
+      {status && status !== 'invisible' && (
+        <span
+          className={cn(
+            'absolute bottom-0 right-0',
+            cfg.statusDot,
+            'rounded-full',
+            statusColors[status],
+            cfg.statusRing,
+            'ring-[rgb(15,15,20)]',
+            status === 'dnd' && 'after:absolute after:inset-x-[2px] after:top-1/2 after:-translate-y-1/2 after:h-[2px] after:bg-[rgb(15,15,20)] after:rounded-full',
+          )}
+        />
+      )}
+
+      {/* Badge slot */}
       {badge && <span className="absolute -right-1 -top-1">{badge}</span>}
     </div>
   );
 }
 
-// Avatar group component
+// ---------- AvatarGroup ----------
+
 interface AvatarGroupProps {
   children: ReactNode;
   max?: number;
@@ -126,41 +193,55 @@ interface AvatarGroupProps {
 }
 
 /**
- * unknown for the ui module.
+ * AvatarGroup — stacked avatars with +N overflow pill.
  */
-/**
- * Avatar Group component.
- */
-export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps) {
+export function AvatarGroup({ children, max = 3, size = 'md' }: AvatarGroupProps) {
   const childArray = Array.isArray(children) ? children : [children];
-  const visibleAvatars = childArray.slice(0, max);
-  const overflowCount = childArray.length - max;
+  const visible = childArray.slice(0, max);
+  const overflow = childArray.length - max;
 
-  const overlapStyles: Record<AvatarSize, string> = {
-    xs: '-ml-2',
-    sm: '-ml-2.5',
-    md: '-ml-3',
-    lg: '-ml-4',
-    xl: '-ml-5',
+  const overlap: Record<AvatarSize, string> = {
+    xs: '-ml-1.5',
+    sm: '-ml-2',
+    md: '-ml-2.5',
+    lg: '-ml-3',
+    xl: '-ml-4',
+    '2xl': '-ml-5',
+    '3xl': '-ml-6',
   };
 
   return (
     <div className="flex items-center">
-      {visibleAvatars.map((child, index) => (
+      {visible.map((child, i) => (
         <div
-          key={index}
-          className={`relative rounded-full ring-2 ring-[rgb(30,32,40)] ${index > 0 ? overlapStyles[size] : ''}`}
-          style={{ zIndex: visibleAvatars.length - index }}
+          key={i}
+          className={cn(
+            'relative rounded-full ring-2 ring-[rgb(15,15,20)]',
+            i > 0 && overlap[size],
+          )}
+          style={{ zIndex: visible.length - i }}
         >
           {child}
         </div>
       ))}
-      {overflowCount > 0 && (
+      {overflow > 0 && (
         <div
-          className={`${overlapStyles[size]} relative rounded-full ring-2 ring-[rgb(30,32,40)]`}
+          className={cn(
+            overlap[size],
+            'relative rounded-full ring-2 ring-[rgb(15,15,20)]',
+          )}
           style={{ zIndex: 0 }}
         >
-          <Avatar name={`+${overflowCount}`} size={size} />
+          <div
+            className={cn(
+              sizeConfig[size].container,
+              'flex items-center justify-center rounded-full bg-white/[0.1]',
+              sizeConfig[size].text,
+              'font-semibold text-white/70',
+            )}
+          >
+            +{overflow}
+          </div>
         </div>
       )}
     </div>

@@ -20,7 +20,8 @@ import { useSharedValue, withTiming, withSpring } from 'react-native-reanimated'
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
-import type { Notification, TabType, getMockNotifications } from './types';
+import { useNotificationStore } from '@/stores/notificationStore';
+import type { Notification, TabType } from './types';
 import {
   SwipeableNotificationItem,
   NotificationTabs,
@@ -34,10 +35,11 @@ import {
  */
 export default function NotificationsInboxScreen() {
   const { colors, isDark } = useThemeStore();
+  const notifications = useNotificationStore((s) => s.notifications) as unknown as Notification[];
+  const isLoading = useNotificationStore((s) => s.isLoading);
+  const { fetchNotifications, markAsRead, markAllAsRead, deleteNotification } = useNotificationStore();
 
   // State
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('all');
 
@@ -65,42 +67,33 @@ export default function NotificationsInboxScreen() {
 
   // Load notifications
   useEffect(() => {
-    const loadNotifications = async () => {
-      setIsLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setNotifications(getMockNotifications());
-      setIsLoading(false);
-
+    fetchNotifications(true).then(() => {
       // Animate header in
       headerOpacity.value = withTiming(1, { duration: durations.smooth.ms });
       headerTranslateY.value = withSpring(0, { stiffness: 80, damping: 10 });
-    };
-
-    loadNotifications();
+    });
   }, []);
 
   // Handlers
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setNotifications(getMockNotifications());
+    await fetchNotifications(true);
     setIsRefreshing(false);
-  }, []);
+  }, [fetchNotifications]);
 
   const handleMarkRead = useCallback((id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  }, []);
+    markAsRead(id);
+  }, [markAsRead]);
 
   const handleMarkAllRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllAsRead();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, []);
+  }, [markAllAsRead]);
 
   const handleDelete = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, []);
+    deleteNotification(id);
+  }, [deleteNotification]);
 
   const handleNotificationPress = useCallback(
     (notification: Notification) => {

@@ -1,0 +1,18 @@
+/* ============================================================================
+ * CGraph Layout & Spacing System
+ * Panel widths, sidebar dimensions, layout containers
+ * ============================================================================ */
+
+:root {
+  /* ── Layout Containers ───────────────────────────────────────────────────── */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 72px;
+  --member-list-width: 240px;
+  --chat-max-width: 100%;
+  --header-height: 48px;
+
+  /* ── Panel Widths ────────────────────────────────────────────────────────── */
+  --panel-sm: 320px;
+  --panel-md: 400px;
+  --panel-lg: 480px;
+}

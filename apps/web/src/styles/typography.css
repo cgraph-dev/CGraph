@@ -1,0 +1,35 @@
+/* ============================================================================
+ * CGraph Typography System
+ * Discord-density font scale: 13-16px base range with tight line-heights
+ * ============================================================================ */
+
+:root {
+  /* ── Type Scale ──────────────────────────────────────────────────────────── */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 20px;
+  --text-3xl: 24px;
+  --text-4xl: 32px;
+
+  /* ── Line Heights ────────────────────────────────────────────────────────── */
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
+  --leading-normal: 1.375;
+  --leading-relaxed: 1.5;
+
+  /* ── Font Weights ────────────────────────────────────────────────────────── */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ── Letter Spacing ──────────────────────────────────────────────────────── */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+}
