@@ -73,6 +73,14 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
   const socketManager = useSocket();
   const webrtcManagerRef = useRef<WebRTCManager | null>(null);
 
+  // Stable refs for callbacks to avoid re-running the setup effect
+  const onCallConnectedRef = useRef(onCallConnected);
+  const onCallEndedRef = useRef(onCallEnded);
+  const onErrorRef = useRef(onError);
+  onCallConnectedRef.current = onCallConnected;
+  onCallEndedRef.current = onCallEnded;
+  onErrorRef.current = onError;
+
   const [callState, setCallState] = useState<CallState>({
     roomId: null,
     status: 'idle',
@@ -87,7 +95,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
 
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
-  // Initialize WebRTC manager
+  // Initialize WebRTC manager — only runs when socket changes, NOT on callback changes
   useEffect(() => {
     const socket = socketManager.getSocket();
     if (!socket) {
@@ -98,18 +106,18 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
     if (!webrtcManagerRef.current) {
       webrtcManagerRef.current = new WebRTCManager(socket);
 
-      // Register event handlers
+      // Register event handlers (use refs so callbacks are always current)
       const handlers: CallEventHandler = {
         onCallConnected: () => {
           logger.log('WebRTC call connected');
           toast.success('Call connected');
-          onCallConnected?.();
+          onCallConnectedRef.current?.();
           // Update state from manager
           setCallState(webrtcManagerRef.current!.getState());
         },
         onCallEnded: (reason: string) => {
           logger.log('WebRTC call ended:', reason);
-          onCallEnded?.(reason);
+          onCallEndedRef.current?.(reason);
           // Update state from manager
           setCallState(webrtcManagerRef.current!.getState());
         },
@@ -122,7 +130,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
         onError: (error: string) => {
           logger.error('WebRTC error:', error);
           toast.error(`Call error: ${error}`);
-          onError?.(error);
+          onErrorRef.current?.(error);
           // Update state from manager
           setCallState(webrtcManagerRef.current!.getState());
         },
@@ -132,12 +140,14 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
     }
 
     return () => {
-      // Cleanup on unmount
+      // Only clean up the manager if we're truly unmounting, not on callback changes.
+      // The manager persists in the ref and is cleaned up when the component unmounts.
       if (webrtcManagerRef.current) {
         webrtcManagerRef.current.endCall();
+        webrtcManagerRef.current = null;
       }
     };
-  }, [socketManager, onCallConnected, onCallEnded, onError]);
+  }, [socketManager]); // Only depends on socket — NOT on callbacks
 
   /**
    * Start a new call with a target user
