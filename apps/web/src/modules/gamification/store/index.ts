@@ -115,5 +115,8 @@ export interface GamificationData {
   referralCount: number;
 }
 
+// Re-export coin shop store
+export { useCoinShopStore } from './coinShopStore';
+
 // Re-export avatar border store
 export * from './avatarBorderStore.impl';
