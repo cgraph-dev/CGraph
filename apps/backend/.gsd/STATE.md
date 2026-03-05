@@ -8,33 +8,30 @@
 
 Secure real-time communication that works end-to-end.
 
-## Current Focus
+## Project Reference
 
-**ALL PHASES COMPLETE** — Full-stack wiring, hardening, testing, and infrastructure done.
+See: `.gsd/PROJECT.md` (updated 2026-03-05)
+
+**Core value:** Every API request is authenticated, rate-limited, validated, and auditable
+**Current focus:** Ongoing maintenance — no active milestone
 
 ## Position
 
-- **Phase:** 25 of 25 — **Infrastructure & Perf** (Complete)
-- **Plan:** 1/1 plans executed in Phase 25
-- **Status:** ✅ Phase 25 complete — PgBouncer, MeiliSearch, k6 load tests, auth latency fix, Elixir alignment, CRDT compaction
-- **Last activity:** Phase 25 executed — 6 infrastructure tasks delivered
-
-## Plans
-
-| Plan  | Objective                                                            | Wave | Autonomous | Depends On       | Status    |
-| ----- | -------------------------------------------------------------------- | ---- | ---------- | ---------------- | --------- |
-| 25-01 | Infrastructure & Performance — PgBouncer, MeiliSearch, Load Tests    | 1    | ✅         | 24-01            | Complete  |
+- **Milestone:** v1.0.0 MVP — ✅ SHIPPED 2026-03-05
+- **Phase:** No active phase
+- **Status:** Maintenance mode — bug fixes and incremental improvements
+- **Last activity:** v1.0.0 milestone completed and archived
 
 ## Progress
 
 | Metric             | Value       |
 | ------------------ | ----------- |
-| Overall progress   | 100%        |
-| Phases complete    | 25 / 25     |
-| Requirements done  | 191 / ~191  |
-| Current phase reqs | 6 / 6       |
+| v1.0.0 progress    | 100%        |
+| Phases shipped     | 25 / 25     |
+| Plans shipped      | 87 / 87     |
+| Tests passing      | 2,372       |
 
-████████████████████████████████████████ 100%
+████████████████████████████████████████ 100% — v1.0.0 SHIPPED
 
 ## Phase Summary
 
@@ -68,18 +65,20 @@ Secure real-time communication that works end-to-end.
 
 ## Session Continuity
 
-Last session: current
-Stopped at: ALL PHASES COMPLETE — roadmap fully executed
-Resume file: `.gsd/ROADMAP.md`
+Last session: 2026-03-05
+Stopped at: v1.0.0 milestone completed and archived
+Resume: `/new-milestone` to start v1.1, or maintenance as needed
 
 ## Last Action
 
-Phase 25 "Infrastructure & Perf" executed:
-- Plan 25-01: 6 commits — PgBouncer sidecar, MeiliSearch setup task, k6 load tests (7 scripts),
-  Argon2 tuning (t_cost=2, m_cost=15), Dockerfile aligned to Elixir 1.19.4/OTP 28.3,
-  CRDT document compaction worker with client-assisted compaction
-- No test regressions (2372 tests, 5 pre-existing failures, 8 skipped)
+v1.0.0 milestone completed:
+- All 25 phases (87 plans, ~373 tasks) shipped and archived
+- MILESTONES.md entry created
+- PROJECT.md full evolution review completed
+- ROADMAP.md archived to milestones/v1.0.0-ROADMAP.md
+- REQUIREMENTS.md archived to milestones/v1.0.0-REQUIREMENTS.md
+- Git tag: v1.0.0
 
 ---
 
-_Last updated: current (phase 25 complete — ALL PHASES DONE)_
+_Last updated: 2026-03-05 — v1.0.0 milestone shipped_
