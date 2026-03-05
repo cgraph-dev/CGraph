@@ -106,19 +106,23 @@ export function PostCard({ post, onVote }: PostCardProps) {
           <div className="flex-1 p-3">
             {/* Meta */}
             <div className="mb-2 flex items-center gap-2 text-xs text-gray-400">
-              <Link
-                to={`/forums/${post.forum.slug}`}
-                className="flex items-center gap-1 hover:underline"
-              >
-                <div className="h-5 w-5 overflow-hidden rounded-full bg-white/[0.08]">
-                  {post.forum.iconUrl ? (
-                    <img src={post.forum.iconUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-[10px]">{post.forum.name.charAt(0)}</span>
-                  )}
-                </div>
-                <span className="font-medium text-gray-300">c/{post.forum.slug}</span>
-              </Link>
+              {post.forum ? (
+                <Link
+                  to={`/forums/${post.forum.slug}`}
+                  className="flex items-center gap-1 hover:underline"
+                >
+                  <div className="h-5 w-5 overflow-hidden rounded-full bg-white/[0.08]">
+                    {post.forum.iconUrl ? (
+                      <img src={post.forum.iconUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-[10px]">{post.forum.name.charAt(0)}</span>
+                    )}
+                  </div>
+                  <span className="font-medium text-gray-300">c/{post.forum.slug}</span>
+                </Link>
+              ) : (
+                <span className="font-medium text-gray-500">Unknown forum</span>
+              )}
               <span>•</span>
               <span>
                 Posted by{' '}
@@ -134,7 +138,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
             </div>
 
             {/* Title */}
-            <Link to={`/forums/${post.forum.slug}/post/${post.id}`}>
+            <Link to={post.forum ? `/forums/${post.forum.slug}/post/${post.id}` : '#'}>
               <div className="mb-2">
                 <div className="mb-1 flex flex-wrap items-center gap-2">
                   {post.isPinned && (
@@ -208,7 +212,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
             <div className="flex items-center gap-4 text-gray-400">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  to={`/forums/${post.forum.slug}/post/${post.id}`}
+                  to={post.forum ? `/forums/${post.forum.slug}/post/${post.id}` : '#'}
                   onClick={() => HapticFeedback.light()}
                   className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:bg-white/[0.08]/80 hover:text-primary-400"
                   style={{

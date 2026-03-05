@@ -261,14 +261,15 @@ export default function Sidebar({
 
       {/* ── User Avatar (top) ── */}
       <div className="relative z-10 mb-2" role="group" aria-label="User profile">
-        <motion.div
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.94 }}
-          transition={springs.snappy}
-          className="relative"
-        >
-          <div
-            className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[1.5px]"
+        <NavLink to="/customize">
+          <motion.div
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.88 }}
+            transition={springs.snappy}
+            className="relative"
+          >
+            <div
+              className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[1.5px]"
             role="img"
             aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
             style={{
@@ -302,6 +303,7 @@ export default function Sidebar({
             transition={loop({ duration: 3, ease: 'easeOut' })}
           />
         </motion.div>
+        </NavLink>
 
         {/* Presence Status Selector */}
         <div className="mt-1.5">
