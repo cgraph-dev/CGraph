@@ -77,7 +77,9 @@ config :cgraph, Oban,
       # Update forum rankings hourly
       {"0 * * * *", CGraph.Workers.RankingUpdateWorker},
       # Reset weekly forum scores every Monday at 00:00 UTC
-      {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}}
+      {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}},
+      # CRDT document compaction check every 15 minutes
+      {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}

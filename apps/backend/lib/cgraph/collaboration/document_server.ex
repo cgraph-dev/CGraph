@@ -77,6 +77,17 @@ defmodule CGraph.Collaboration.DocumentServer do
     :exit, _ -> :ok
   end
 
+  @doc """
+  Replaces the document state with a compacted version from the client.
+
+  Called when a client responds to a compaction request by running
+  `Y.mergeUpdates()` and sending back the merged state.
+  """
+  @spec replace_state(String.t(), binary()) :: :ok
+  def replace_state(document_id, compacted_state) when is_binary(compacted_state) do
+    GenServer.cast(via(document_id), {:replace_state, compacted_state})
+  end
+
   # ---------------------------------------------------------------------------
   # GenServer Implementation
   # ---------------------------------------------------------------------------
@@ -168,6 +179,27 @@ defmodule CGraph.Collaboration.DocumentServer do
     )
 
     {:noreply, %{state | connected_clients: clients, awareness: awareness}}
+  end
+
+  @impl true
+  def handle_cast({:replace_state, compacted_state}, state) when is_binary(compacted_state) do
+    # Client-initiated compaction: replace current state with merged/compacted version
+    old_size = byte_size(state.yjs_state)
+    new_size = byte_size(compacted_state)
+
+    Logger.info(
+      "documentserver_state_compacted",
+      document_id: state.document_id,
+      old_size: old_size,
+      new_size: new_size,
+      savings_pct: if(old_size > 0, do: Float.round((1 - new_size / old_size) * 100, 1), else: 0.0)
+    )
+
+    {:noreply, %{state |
+      yjs_state: compacted_state,
+      pending_updates: [{compacted_state, "compaction", System.monotonic_time(:millisecond)}],
+      last_activity: System.monotonic_time(:millisecond)
+    }}
   end
 
   @doc "Handles synchronous call messages."
@@ -288,14 +320,45 @@ defmodule CGraph.Collaboration.DocumentServer do
   end
 
   defp compact_updates(state) do
-    # TODO(P2): Implement server-side Yjs state compaction.
-    # Currently the server concatenates binary updates, which causes O(n) growth.
-    # Full compaction requires either:
-    #   1. A Yjs NIF (Rust y-crdt via Rustler)
-    #   2. A sidecar JS worker running Yjs merge
-    # Until then, clients reconcile via Yjs CRDT merge on pull.
-    Logger.debug("compaction_check_for_updates_bytes", state_document_id: state.document_id, state_update_count: state.update_count, detail_2: byte_size(state.yjs_state))
-    state
+    state_size = byte_size(state.yjs_state)
+
+    cond do
+      state_size > 512 * 1024 ->
+        # Over 512KB — broadcast compaction request to connected clients
+        Logger.info(
+          "documentserver_requesting_compaction",
+          document_id: state.document_id,
+          size_kb: div(state_size, 1024),
+          connected_clients: MapSet.size(state.connected_clients)
+        )
+
+        if MapSet.size(state.connected_clients) > 0 do
+          Phoenix.PubSub.broadcast(
+            CGraph.PubSub,
+            "document:#{state.document_id}",
+            {:compaction_request, %{
+              document_id: state.document_id,
+              current_size: state_size,
+              reason: "periodic_check"
+            }}
+          )
+        end
+
+        state
+
+      state_size > 256 * 1024 ->
+        # Over 256KB — log warning for monitoring
+        Logger.debug(
+          "documentserver_state_growing",
+          document_id: state.document_id,
+          size_kb: div(state_size, 1024),
+          update_count: state.update_count
+        )
+        state
+
+      true ->
+        state
+    end
   end
 
   defp merge_yjs_update(existing_state, new_update) do

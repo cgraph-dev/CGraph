@@ -105,7 +105,9 @@ config :cgraph, Oban,
        # Generate monthly quests on the 1st at midnight UTC
        {"0 0 1 * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "monthly"}},
        # Check event lifecycle every 15 minutes (auto-activate/end events)
-       {"*/15 * * * *", CGraph.Gamification.EventLifecycleWorker, args: %{action: "check_lifecycle"}}
+       {"*/15 * * * *", CGraph.Gamification.EventLifecycleWorker, args: %{action: "check_lifecycle"}},
+       # CRDT document compaction check every 15 minutes
+       {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker}
      ]}
   ],
   queues: [
