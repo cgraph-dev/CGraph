@@ -32,6 +32,7 @@ import AnimatedAvatar from '@/components/ui/animated-avatar';
 import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
 import { HapticFeedback, getStaggerDelay } from '@/lib/animations/animation-engine';
 import { useCallStore } from '@/stores/callStore';
+import { useAuthStore } from '@/stores';
 import type { CallHistoryRecord } from '@/services/callService';
 
 type CallType = 'voice' | 'video';
@@ -83,8 +84,7 @@ export default function CallHistoryScreen() {
   const { callHistory, isLoading, hasMore, fetchCallHistory } = useCallStore();
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<'all' | 'missed'>('all');
-  // TODO: get from auth store in production
-  const currentUserId = 'current-user';
+  const currentUserId = useAuthStore((s) => s.user?.id) ?? '';
 
   const calls: CallRecord[] = callHistory.map((r) => mapApiToCallRecord(r, currentUserId));
 
