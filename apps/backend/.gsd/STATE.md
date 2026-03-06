@@ -12,26 +12,27 @@ Secure real-time communication that works end-to-end.
 
 See: `.gsd/PROJECT.md` (updated 2026-03-05)
 
-**Core value:** Every API request is authenticated, rate-limited, validated, and auditable
-**Current focus:** Ongoing maintenance — no active milestone
+**Core value:** Every API request is authenticated, rate-limited, validated, and auditable **Current
+focus:** v1.1 Chat Superpowers — Phase 26
 
 ## Position
 
-- **Milestone:** v1.0.0 MVP — ✅ SHIPPED 2026-03-05
-- **Phase:** No active phase
-- **Status:** Maintenance mode — bug fixes and incremental improvements
-- **Last activity:** v1.0.0 milestone completed and archived
+- **Milestone:** v1.1.0 Chat Superpowers — 🔄 ACTIVE
+- **Phase:** 26-chat-superpowers (planning complete, ready for execution)
+- **Status:** Planning complete — 10 plans in 5 waves
+- **Last activity:** Phase 26 planning completed
 
 ## Progress
 
-| Metric             | Value       |
-| ------------------ | ----------- |
-| v1.0.0 progress    | 100%        |
-| Phases shipped     | 25 / 25     |
-| Plans shipped      | 87 / 87     |
-| Tests passing      | 2,372       |
+| Metric          | Value  |
+| --------------- | ------ |
+| v1.1.0 progress | 0%     |
+| Phases active   | 26     |
+| Plans created   | 10     |
+| Plans executed  | 0 / 10 |
+| Tests passing   | 2,372  |
 
-████████████████████████████████████████ 100% — v1.0.0 SHIPPED
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0% — Planning complete, execution next
 
 ## Phase Summary
 
@@ -62,23 +63,24 @@ See: `.gsd/PROJECT.md` (updated 2026-03-05)
 | 23  | Creator & Payments      | **Complete**              |
 | 24  | Test Coverage           | **Complete**              |
 | 25  | Infrastructure & Perf   | **Complete**              |
+| 26  | Chat Superpowers        | **🔄 Active** (Planning)  |
 
 ## Session Continuity
 
-Last session: 2026-03-05
-Stopped at: v1.0.0 milestone completed and archived
-Resume: `/new-milestone` to start v1.1, or maintenance as needed
+Last session: current Stopped at: Phase 26 planning complete — 10 plans created in 5 waves Resume:
+`/execute-phase 26` to begin execution
 
 ## Last Action
 
-v1.0.0 milestone completed:
-- All 25 phases (87 plans, ~373 tasks) shipped and archived
-- MILESTONES.md entry created
-- PROJECT.md full evolution review completed
-- ROADMAP.md archived to milestones/v1.0.0-ROADMAP.md
-- REQUIREMENTS.md archived to milestones/v1.0.0-REQUIREMENTS.md
-- Git tag: v1.0.0
+Phase 26 "Chat Superpowers" planned:
+
+- 10 plans created across 5 execution waves
+- Wave 1: Secret Chat + Stickers (parallel)
+- Wave 2: E2EE Hardening + File Transfer (parallel)
+- Wave 3: Voice/Video Calls + Emoji 2026 (parallel)
+- Wave 4: Chat Completeness + DM E2EE Wiring (parallel)
+- Wave 5: Competitive Features + Integration Tests (parallel)
 
 ---
 
-_Last updated: 2026-03-05 — v1.0.0 milestone shipped_
+_Last updated: current — Phase 26 planning complete, ready for execution_
