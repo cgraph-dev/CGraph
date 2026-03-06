@@ -145,12 +145,12 @@ export default function Download() {
 
           <div className="mx-auto grid max-w-2xl gap-8 md:grid-cols-2">
             {[
-              { name: 'iOS', icon: '📱', badge: 'Beta', note: 'Coming to App Store with v1.0' },
+              { name: 'iOS', icon: '📱', badge: 'Beta', note: 'Coming to App Store soon' },
               {
                 name: 'Android',
                 icon: '🤖',
                 badge: 'Beta',
-                note: 'Coming to Google Play with v1.0',
+                note: 'Coming to Google Play soon',
               },
             ].map((app, index) => (
               <motion.div
@@ -196,8 +196,8 @@ export default function Download() {
             className="mt-8 text-center text-sm"
             style={{ color: 'var(--color-gray)' }}
           >
-            Mobile beta targets public TestFlight & Play Store availability with the v1.0 launch in
-            Q2 2026.
+            Mobile apps are in beta, built with React Native + Expo SDK 54. Public TestFlight and
+            Google Play availability coming soon.
           </motion.p>
         </div>
       </section>

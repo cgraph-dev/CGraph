@@ -16,15 +16,15 @@ const platforms = [
   {
     name: 'App Store',
     icon: '🍎',
-    description: 'iOS 15+',
-    href: 'https://apps.apple.com/app/cgraph/id0000000000', // Placeholder until approved
+    description: 'iOS 15+ (Coming Soon)',
+    href: '/download',
     badge: 'Download on the',
   },
   {
     name: 'Google Play',
     icon: '🤖',
-    description: 'Android 10+',
-    href: 'https://play.google.com/store/apps/details?id=org.cgraph.app', // Placeholder
+    description: 'Android 10+ (Coming Soon)',
+    href: '/download',
     badge: 'Get it on',
   },
   {

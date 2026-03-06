@@ -160,6 +160,7 @@ export default function Navigation({
             <>
               <NavLink href="#features">Features</NavLink>
               <NavLink href="#security">Security</NavLink>
+              <NavLink href="#pricing">Pricing</NavLink>
               <NavLink to="/about">About</NavLink>
             </>
           ) : (
@@ -250,6 +251,13 @@ export default function Navigation({
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Security
+                  </a>
+                  <a
+                    href="#pricing"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Pricing
                   </a>
                   <Link
                     to="/about"

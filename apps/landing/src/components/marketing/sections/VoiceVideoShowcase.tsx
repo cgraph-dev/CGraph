@@ -11,7 +11,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { SectionHeader } from '../ui/SectionHeader';
 
 const features = [
-  { icon: '👥', label: 'Group Calls', desc: 'Up to 50 participants with LiveKit SFU' },
+  { icon: '👥', label: 'Group Calls', desc: 'Up to 50 participants with WebRTC' },
   { icon: '🖥️', label: 'Screen Sharing', desc: 'Share your screen with one click' },
   { icon: '🔒', label: 'E2EE Calls', desc: 'End-to-end encrypted indicator for every call' },
   { icon: '🎙️', label: 'Voice Channels', desc: 'Always-on voice rooms for your community' },
