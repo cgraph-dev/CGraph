@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Message } from '@/modules/chat/store';
-import { createLogger } from '@/lib/logger';
 import { getMessageSenderId } from '@/lib/apiUtils';
 import { formatDateHeader, groupMessagesByDate } from '@/lib/chat/messageUtils';
 import { handleAddReaction } from '@/lib/chat/reactionUtils';
@@ -18,7 +17,6 @@ import { AnimatedReactionBubble } from './animated-reaction-bubble';
 import { TypingIndicator } from './typing-indicator';
 import { MessageBubble, type UIPreferences } from './message-bubble';
 
-const logger = createLogger('MessageList');
 
 // ============================================================================
 // Types
@@ -148,15 +146,6 @@ export function MessageList({
          
         getMessageSenderId(message as unknown as Record<string, unknown>) || ''; // type assertion: narrowing for helper function
       const currentUserId = userId || '';
-
-      if (import.meta.env.DEV && msgIndex === 0) {
-        logger.debug('[Web] First message debug:', {
-          messageId: message.id,
-          messageSenderId,
-          currentUserId,
-          isEqual: messageSenderId === currentUserId,
-        });
-      }
 
       const isOwn =
         messageSenderId.length > 0 && currentUserId.length > 0 && messageSenderId === currentUserId;

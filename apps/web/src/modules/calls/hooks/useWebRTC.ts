@@ -130,7 +130,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
         },
         onError: (error: string) => {
           logger.error('WebRTC error:', error);
-          toast.error(`Call error: ${error}`);
+          // Don't toast here — let the consuming component decide what to show
           onErrorRef.current?.(error);
           // Update state from manager
           setCallState(webrtcManagerRef.current!.getState());
@@ -171,12 +171,14 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
           logger.log('Call initiated, room ID:', roomId);
           // Update state from manager
           setCallState(webrtcManagerRef.current.getState());
-        } else {
-          toast.error('Failed to start call');
         }
+        // If roomId is null, onError callback already fired from WebRTCManager
       } catch (error) {
         logger.error('Failed to start call:', error);
-        toast.error('Failed to start call');
+        // Only toast if onError didn't already handle it
+        if (!onErrorRef.current) {
+          toast.error('Failed to start call');
+        }
       }
     },
     []

@@ -8,12 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import type { Message } from '@/modules/chat/store';
 import { getMessageSenderId } from '@/lib/apiUtils';
 import { handleAddReaction } from '@/lib/chat/reactionUtils';
-import { createLogger } from '@/lib/logger';
 import { AnimatedMessageWrapper, AnimatedReactionBubble } from '@/modules/chat/components';
 import { MessageBubble } from '@/modules/chat/components';
 import type { UIPreferences } from './types';
-
-const logger = createLogger('MessageRow');
 
 interface MessageRowProps {
   message: Message;
@@ -69,15 +66,6 @@ export function MessageRow({
       message as unknown as Record<string, unknown> /* safe downcast – polymorphic message access */
     ) || '';
   const currentUserId = user?.id || '';
-
-  if (import.meta.env.DEV && msgIndex === 0) {
-    logger.debug('Web] First message debug:', {
-      messageId: message.id,
-      messageSenderId,
-      currentUserId,
-      isEqual: messageSenderId === currentUserId,
-    });
-  }
 
   const isOwn =
     messageSenderId.length > 0 && currentUserId.length > 0 && messageSenderId === currentUserId;

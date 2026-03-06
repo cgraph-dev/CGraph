@@ -74,14 +74,26 @@ export function VoiceCallModal({
     },
   });
 
-  // Start call when modal opens
+  // Track whether we've already attempted in this modal session to prevent
+  // the effect from retrying after a failed call (status returns to idle).
+  const hasAttemptedRef = useRef(false);
+
+  // Reset attempt flag when modal opens/closes
   useEffect(() => {
-    if (isOpen && !isCallActive && !incomingRoomId) {
-      // Start outgoing call
-      startCall(otherParticipantId, { video: false, audio: true });
-    } else if (isOpen && !isCallActive && incomingRoomId) {
-      // Answer incoming call
+    if (!isOpen) {
+      hasAttemptedRef.current = false;
+    }
+  }, [isOpen]);
+
+  // Start call when modal opens (once per modal session)
+  useEffect(() => {
+    if (!isOpen || isCallActive || hasAttemptedRef.current) return;
+    hasAttemptedRef.current = true;
+
+    if (incomingRoomId) {
       answerCall(incomingRoomId, { video: false, audio: true });
+    } else {
+      startCall(otherParticipantId, { video: false, audio: true });
     }
   }, [isOpen, isCallActive, incomingRoomId, otherParticipantId, startCall, answerCall]);
 
