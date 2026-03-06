@@ -20,6 +20,7 @@ defmodule CGraphWeb.ConversationChannel do
   alias CGraphWeb.Channels.Backpressure
 
   @typing_timeout 5_000
+  @url_regex ~r/https?:\/\/[^\s<]+/
 
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
@@ -209,14 +210,19 @@ defmodule CGraphWeb.ConversationChannel do
   @impl true
   def handle_in("mark_read", %{"message_id" => message_id}, socket) do
     user = socket.assigns.current_user
-    _conversation_id = socket.assigns.conversation_id
 
     case Messaging.mark_message_read(message_id, user.id) do
       {:ok, _receipt} ->
-        broadcast_from!(socket, "message_read", %{
-          user_id: user.id,
-          message_id: message_id
-        })
+        # Only broadcast read receipt if user has read receipts enabled
+        case CGraph.Accounts.Settings.get_settings(user) do
+          {:ok, %{show_read_receipts: true}} ->
+            broadcast_from!(socket, "message_read", %{
+              user_id: user.id,
+              message_id: message_id,
+              read_at: DateTime.utc_now() |> DateTime.to_iso8601()
+            })
+          _ -> :ok
+        end
         {:reply, :ok, socket}
 
       {:error, _reason} ->
@@ -244,22 +250,37 @@ defmodule CGraphWeb.ConversationChannel do
   end
 
   @impl true
-  def handle_in("delete_message", %{"message_id" => message_id}, socket) do
+  def handle_in("delete_message", %{"message_id" => message_id} = params, socket) do
     user = socket.assigns.current_user
+    mode = Map.get(params, "mode", "for_everyone")
 
-    case Messaging.delete_message(message_id, user.id) do
-      {:ok, _message} ->
-        broadcast!(socket, "message_deleted", %{
-          message_id: message_id,
-          deleted_by: user.id
-        })
-        {:reply, :ok, socket}
+    case mode do
+      "for_me" ->
+        # Delete for requesting user only — no broadcast
+        case Messaging.delete_message(message_id, user.id) do
+          {:ok, _message} ->
+            {:reply, :ok, socket}
 
-      {:error, reason} when is_atom(reason) ->
-        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+          {:error, _reason} ->
+            {:reply, {:error, %{reason: "failed"}}, socket}
+        end
 
-      {:error, _} ->
-        {:reply, {:error, %{reason: "failed"}}, socket}
+      _ ->
+        # Default: delete for everyone with broadcast
+        case Messaging.delete_message(message_id, user.id) do
+          {:ok, _message} ->
+            broadcast!(socket, "message_deleted", %{
+              message_id: message_id,
+              deleted_by: user.id
+            })
+            {:reply, :ok, socket}
+
+          {:error, reason} when is_atom(reason) ->
+            {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+          {:error, _} ->
+            {:reply, {:error, %{reason: "failed"}}, socket}
+        end
     end
   end
 
@@ -345,6 +366,52 @@ defmodule CGraphWeb.ConversationChannel do
     end
   end
 
+  @impl true
+  def handle_in("forward_message", %{"message_id" => message_id, "to_conversation_id" => target_id}, socket) do
+    user = socket.assigns.current_user
+
+    case Messaging.forward_message(user, message_id, [target_id]) do
+      {:ok, [forwarded]} ->
+        # Broadcast to target conversation
+        forwarded = CGraph.Repo.preload(forwarded, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])
+        serialized = MessageJSON.message_data(forwarded)
+
+        CGraphWeb.Endpoint.broadcast(
+          "conversation:#{target_id}",
+          "new_message",
+          %{message: serialized}
+        )
+        {:reply, {:ok, %{message_id: forwarded.id}}, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "forward_failed"}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("stop_typing", _params, socket) do
+    user = socket.assigns.current_user
+
+    Presence.update(socket, user.id, fn meta ->
+      meta
+      |> Map.put(:typing, false)
+      |> Map.put(:typing_started_at, nil)
+    end)
+
+    broadcast_from!(socket, "typing", %{
+      user_id: user.id,
+      username: user.username,
+      is_typing: false,
+      typing: false,
+      started_at: nil
+    })
+
+    {:noreply, socket}
+  end
+
   # Catch-all for unhandled events — prevents FunctionClauseError crashes
   def handle_in(event, _payload, socket) do
     require Logger
@@ -388,6 +455,9 @@ defmodule CGraphWeb.ConversationChannel do
             serialized = MessageJSON.message_data(message)
 
             broadcast!(socket, "new_message", %{message: serialized})
+
+            # Enqueue link preview fetching for URLs in message content
+            maybe_enqueue_link_preview(message)
 
             # Notify offline participants via push notifications
             notify_offline_participants(user, message, conversation_id)
@@ -433,6 +503,18 @@ defmodule CGraphWeb.ConversationChannel do
 
       _ -> :ok
     end
+  end
+
+  # Enqueue link preview Oban job when message contains URLs
+  @spec maybe_enqueue_link_preview(struct()) :: :ok
+  defp maybe_enqueue_link_preview(message) do
+    content = message.content || ""
+    if Regex.match?(@url_regex, content) do
+      %{message_id: message.id}
+      |> CGraph.Workers.FetchLinkPreview.new()
+      |> Oban.insert()
+    end
+    :ok
   end
 
   # Rate limiting: sliding window implementation
