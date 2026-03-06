@@ -178,18 +178,18 @@ Unicode 16.0 emojis, and competitive edge features (polls, scheduling, themes, t
 
 Plans:
 
-- [ ] 26-01-PLAN.md — Secret Chat Infrastructure (DB + API + Channel)
-- [ ] 26-02-PLAN.md — Sticker System (store, packs, download, send)
-- [ ] 26-03-PLAN.md — E2EE Hardening & Triple Ratchet (session tracking, ratchet state, safety
+- [x] 26-01-PLAN.md — Secret Chat Infrastructure (DB + API + Channel)
+- [x] 26-02-PLAN.md — Sticker System (store, packs, download, send)
+- [x] 26-03-PLAN.md — E2EE Hardening & Triple Ratchet (session tracking, ratchet state, safety
       numbers)
-- [ ] 26-04-PLAN.md — File Transfer System (chunked upload, download tokens, tier quotas)
-- [ ] 26-05-PLAN.md — Voice & Video Call Fixes (state machine, quality metrics, push notifications)
-- [ ] 26-06-PLAN.md — Emoji 2026 Expansion (Unicode 16.0, search, skin tones)
-- [ ] 26-07-PLAN.md — Chat Feature Completeness (edit, delete, reply, forward, typing, link preview,
+- [x] 26-04-PLAN.md — File Transfer System (chunked upload, download tokens, tier quotas)
+- [x] 26-05-PLAN.md — Voice & Video Call Fixes (state machine, quality metrics, push notifications)
+- [x] 26-06-PLAN.md — Emoji 2026 Expansion (Unicode 16.0, search, skin tones)
+- [x] 26-07-PLAN.md — Chat Feature Completeness (edit, delete, reply, forward, typing, link preview,
       receipts)
-- [ ] 26-08-PLAN.md — DM E2EE Integration (bootstrap, pre-key bundles, ratchet header forwarding)
-- [ ] 26-09-PLAN.md — Competitive Edge Features (scheduling, polls, themes, translation)
-- [ ] 26-10-PLAN.md — Integration Testing & Regression Fix
+- [x] 26-08-PLAN.md — DM E2EE Integration (bootstrap, pre-key bundles, ratchet header forwarding)
+- [x] 26-09-PLAN.md — Competitive Edge Features (scheduling, polls, themes, translation)
+- [x] 26-10-PLAN.md — Integration Testing & Regression Fix
 
 ---
 
