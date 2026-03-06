@@ -21,6 +21,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   use CGraphWeb, :controller
   import CGraphWeb.ControllerHelpers, only: [render_data: 2]
+  require Logger
 
   alias CGraph.Accounts.Friends
   alias CGraph.Crypto.E2EE
@@ -53,6 +54,10 @@ defmodule CGraphWeb.API.V1.E2EEController do
         render_data(conn, %{status: "needs_prekeys", prekey_count: count})
 
       {:error, :no_identity_key} ->
+        render_data(conn, %{status: "no_identity_key", prekey_count: 0})
+
+      {:error, reason} ->
+        Logger.warning("e2ee_bootstrap_check_failed", user_id: user.id, reason: inspect(reason))
         render_data(conn, %{status: "no_identity_key", prekey_count: 0})
     end
   end
@@ -270,6 +275,13 @@ defmodule CGraphWeb.API.V1.E2EEController do
   """
   @spec replenish_prekeys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def replenish_prekeys(conn, params), do: upload_prekeys(conn, params)
+
+  # Fallback when "prekeys" key is missing from params
+  def upload_prekeys(conn, params) do
+    # Try alternative key names the client might send
+    prekeys = params["one_time_prekeys"] || params["preKeys"] || params["pre_keys"] || []
+    upload_prekeys(conn, Map.put(params, "prekeys", prekeys))
+  end
 
   @doc """
   List all registered devices for the current user.

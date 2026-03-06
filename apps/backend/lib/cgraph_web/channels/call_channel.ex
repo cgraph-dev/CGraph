@@ -84,7 +84,8 @@ defmodule CGraphWeb.CallChannel do
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("call:" <> room_id, params, socket) do
-    user_id = socket.assigns.user_id
+    user_id = socket.assigns.current_user.id
+    socket = assign(socket, :user_id, user_id)
 
     device = Map.get(params, "device", "unknown")
     media = Map.get(params, "media", %{"audio" => true, "video" => false})
