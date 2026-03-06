@@ -72,8 +72,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
     user = conn.assigns.current_user
 
     with :ok <- validate_base64_key(params["identity_key"], "identity_key", 32),
-         :ok <- validate_base64_key(params["signed_prekey"], "signed_prekey", 32),
-         :ok <- validate_base64_key(params["prekey_signature"], "prekey_signature", 64),
+         :ok <- validate_signed_prekey(params["signed_prekey"], params["prekey_signature"]),
          :ok <- validate_device_id(params["device_id"]) do
       keys = %{
         identity_key: params["identity_key"],
@@ -607,6 +606,25 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   defp validate_base64_key(_, field, _expected_bytes),
     do: {:error, field, "must be a string"}
+
+  # Validate signed_prekey — can be a base64 string (flat format) or a map (nested format)
+  defp validate_signed_prekey(%{"public_key" => pk, "signature" => sig}, _prekey_signature)
+       when is_binary(pk) and is_binary(sig) do
+    with {:ok, _} <- Base.decode64(pk),
+         {:ok, _} <- Base.decode64(sig) do
+      :ok
+    else
+      _ -> {:error, "signed_prekey", "contains invalid base64 in public_key or signature"}
+    end
+  end
+  defp validate_signed_prekey(value, prekey_signature) when is_binary(value) do
+    with :ok <- validate_base64_key(value, "signed_prekey", 32),
+         :ok <- validate_base64_key(prekey_signature, "prekey_signature", 64) do
+      :ok
+    end
+  end
+  defp validate_signed_prekey(nil, _), do: {:error, "signed_prekey", "is required"}
+  defp validate_signed_prekey(_, _), do: {:error, "signed_prekey", "must be a string or map with public_key and signature"}
 
   defp validate_device_id(nil), do: {:error, "device_id", "is required"}
 
