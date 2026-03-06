@@ -135,6 +135,14 @@ defmodule CGraphWeb.Router.MessagingRoutes do
 
         # LiveKit SFU (group voice/video calls)
         post "/livekit/token", LiveKitController, :create_token
+
+        # Unicode Emoji Catalog (distinct from custom emojis at /emojis)
+        scope "/unicode-emojis" do
+          get "/", EmojiController, :categories
+          get "/search", EmojiController, :search
+          get "/trending", EmojiController, :trending
+          get "/category/:name", EmojiController, :category
+        end
       end
     end
   end
