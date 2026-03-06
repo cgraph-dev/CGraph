@@ -257,6 +257,112 @@ defmodule CGraph.Crypto.E2EETest do
     end
   end
 
+  describe "check_bootstrap_status/1" do
+    test "returns :no_identity_key for new user" do
+      user = create_user()
+      assert {:error, :no_identity_key} = E2EE.check_bootstrap_status(user.id)
+    end
+
+    test "returns :ready when user has identity key and sufficient prekeys" do
+      user = create_user()
+      {:ok, bundle} = E2EE.generate_key_bundle("test_device")
+
+      keys = %{
+        "identity_key" => Base.encode64(bundle.identity_key.public),
+        "key_id" => bundle.identity_key.key_id,
+        "device_id" => bundle.device_id,
+        "signed_prekey" => %{
+          "public_key" => Base.encode64(bundle.signed_prekey.public),
+          "signature" => Base.encode64(bundle.signed_prekey.signature),
+          "key_id" => bundle.signed_prekey.key_id
+        },
+        "one_time_prekeys" => Enum.take(bundle.one_time_prekeys, 15) |> Enum.map(fn pk ->
+          %{"public_key" => Base.encode64(pk.public), "key_id" => pk.key_id}
+        end)
+      }
+
+      {:ok, _} = E2EE.register_keys(user.id, keys)
+      assert {:ok, :ready} = E2EE.check_bootstrap_status(user.id)
+    end
+
+    test "returns :needs_prekeys when prekey count is below 10" do
+      user = create_user()
+      {:ok, bundle} = E2EE.generate_key_bundle("test_device")
+
+      keys = %{
+        "identity_key" => Base.encode64(bundle.identity_key.public),
+        "key_id" => bundle.identity_key.key_id,
+        "device_id" => bundle.device_id,
+        "signed_prekey" => %{
+          "public_key" => Base.encode64(bundle.signed_prekey.public),
+          "signature" => Base.encode64(bundle.signed_prekey.signature),
+          "key_id" => bundle.signed_prekey.key_id
+        },
+        "one_time_prekeys" => Enum.take(bundle.one_time_prekeys, 3) |> Enum.map(fn pk ->
+          %{"public_key" => Base.encode64(pk.public), "key_id" => pk.key_id}
+        end)
+      }
+
+      {:ok, _} = E2EE.register_keys(user.id, keys)
+      assert {:ok, :needs_prekeys, 3} = E2EE.check_bootstrap_status(user.id)
+    end
+  end
+
+  describe "key backup" do
+    alias CGraph.Crypto.E2EE.KeySync
+
+    test "store and retrieve encrypted key backup" do
+      user = create_user()
+      backup_data = :crypto.strong_rand_bytes(256)
+
+      assert {:ok, backup} = KeySync.store_encrypted_key_backup(user.id, "device-001", backup_data)
+      assert backup.device_id == "device-001"
+
+      assert {:ok, retrieved} = KeySync.get_encrypted_key_backup(user.id, "device-001")
+      assert retrieved.encrypted_backup == backup_data
+    end
+
+    test "upserts backup for same device" do
+      user = create_user()
+      backup1 = :crypto.strong_rand_bytes(128)
+      backup2 = :crypto.strong_rand_bytes(128)
+
+      {:ok, _} = KeySync.store_encrypted_key_backup(user.id, "device-001", backup1)
+      {:ok, _} = KeySync.store_encrypted_key_backup(user.id, "device-001", backup2)
+
+      {:ok, retrieved} = KeySync.get_encrypted_key_backup(user.id, "device-001")
+      assert retrieved.encrypted_backup == backup2
+    end
+
+    test "enforces max 5 backups per user" do
+      user = create_user()
+
+      for i <- 1..5 do
+        {:ok, _} = KeySync.store_encrypted_key_backup(user.id, "device-#{i}", :crypto.strong_rand_bytes(64))
+      end
+
+      assert {:error, :max_backups_reached} =
+        KeySync.store_encrypted_key_backup(user.id, "device-6", :crypto.strong_rand_bytes(64))
+    end
+
+    test "returns :not_found for missing backup" do
+      user = create_user()
+      assert {:error, :not_found} = KeySync.get_encrypted_key_backup(user.id, "nonexistent")
+    end
+
+    test "lists devices with backups" do
+      user = create_user()
+
+      {:ok, _} = KeySync.store_encrypted_key_backup(user.id, "phone", :crypto.strong_rand_bytes(64))
+      {:ok, _} = KeySync.store_encrypted_key_backup(user.id, "tablet", :crypto.strong_rand_bytes(64))
+
+      {:ok, devices} = KeySync.list_devices_with_backup(user.id)
+      device_ids = Enum.map(devices, & &1.device_id)
+      assert "phone" in device_ids
+      assert "tablet" in device_ids
+    end
+  end
+
   # Helper functions
 
   defp create_user do

@@ -159,8 +159,11 @@ defmodule CGraphWeb.Router.UserRoutes do
         delete "/emojis/categories/:id", CustomEmojiController, :delete_category
 
         # E2EE Key Management
+        get "/e2ee/bootstrap", E2EEController, :bootstrap
         post "/e2ee/keys", E2EEController, :register_keys
         post "/e2ee/keys/prekeys", E2EEController, :replenish_prekeys
+        post "/e2ee/keys/backup", E2EEController, :store_backup
+        get "/e2ee/keys/backup/:device_id", E2EEController, :get_backup
         get "/e2ee/keys/count", E2EEController, :prekey_count
         get "/e2ee/keys/:user_id", E2EEController, :get_prekey_bundle
         get "/e2ee/devices", E2EEController, :list_devices

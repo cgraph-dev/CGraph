@@ -33,6 +33,75 @@ defmodule CGraphWeb.API.V1.E2EEController do
   plug :ensure_authenticated
 
   @doc """
+  Check E2EE bootstrap status for the authenticated user.
+
+  Returns the current state so the client knows what setup steps are needed:
+  - `ready` — keys registered, sufficient pre-keys
+  - `needs_prekeys` — keys exist but pre-keys running low
+  - `no_identity_key` — user needs full E2EE setup
+  """
+  @spec bootstrap(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def bootstrap(conn, _params) do
+    user = conn.assigns.current_user
+
+    case E2EE.check_bootstrap_status(user.id) do
+      {:ok, :ready} ->
+        count = E2EE.one_time_prekey_count(user.id)
+        render_data(conn, %{status: "ready", prekey_count: count})
+
+      {:ok, :needs_prekeys, count} ->
+        render_data(conn, %{status: "needs_prekeys", prekey_count: count})
+
+      {:error, :no_identity_key} ->
+        render_data(conn, %{status: "no_identity_key", prekey_count: 0})
+    end
+  end
+
+  @doc """
+  Store encrypted key backup for cross-device sync.
+
+  The backup is encrypted client-side with the user's password-derived key.
+  Server stores it as an opaque blob. Max 5 device backups per user.
+  """
+  @spec store_backup(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def store_backup(conn, %{"device_id" => device_id, "encrypted_backup" => backup_b64}) do
+    user = conn.assigns.current_user
+
+    with {:ok, encrypted_data} <- decode_base64(backup_b64, "encrypted_backup") do
+      case KeySync.store_encrypted_key_backup(user.id, device_id, encrypted_data) do
+        {:ok, backup} ->
+          render_data(conn, %{id: backup.id, device_id: device_id, stored: true})
+
+        {:error, :max_backups_reached} ->
+          {:error, :unprocessable_entity, "Maximum 5 device backups allowed"}
+
+        {:error, changeset} ->
+          {:error, :unprocessable_entity, format_changeset_errors(changeset)}
+      end
+    end
+  end
+
+  @doc """
+  Retrieve encrypted key backup for a specific device.
+  """
+  @spec get_backup(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_backup(conn, %{"device_id" => device_id}) do
+    user = conn.assigns.current_user
+
+    case KeySync.get_encrypted_key_backup(user.id, device_id) do
+      {:ok, backup} ->
+        render_data(conn, %{
+          device_id: device_id,
+          encrypted_backup: Base.encode64(backup.encrypted_backup),
+          updated_at: backup.updated_at
+        })
+
+      {:error, :not_found} ->
+        {:error, :not_found, "No backup found for this device"}
+    end
+  end
+
+  @doc """
   Register or update E2EE keys.
 
   Called when:

@@ -63,6 +63,9 @@ defmodule CGraphWeb.API.V1.MessageJSON do
       fileSize: msg.file_size,
       fileMimeType: msg.file_mime_type,
       linkPreview: build_link_preview(msg.link_preview),
+      # E2EE ratchet header (opaque to server, forwarded to recipient)
+      ratchetHeader: msg.ratchet_header,
+      sessionId: msg.session_id,
       sender: sender_data(msg.sender),
       attachment: build_attachment(msg),
       reactions: reaction_summary(msg.reactions),

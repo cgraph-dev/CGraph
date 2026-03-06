@@ -65,6 +65,11 @@ defmodule CGraph.Messaging.Message do
     # Link preview metadata
     field :link_preview, :map
 
+    # E2EE ratchet header (opaque to server — forwarded as-is to recipient)
+    field :ratchet_header, :map
+    # E2EE session identifier
+    field :session_id, :string
+
     # Associations
     belongs_to :sender, CGraph.Accounts.User
     belongs_to :conversation, CGraph.Messaging.Conversation
@@ -95,7 +100,8 @@ defmodule CGraph.Messaging.Message do
       :file_url, :file_name, :file_size, :file_mime_type,
       :thumbnail_url, :link_preview, :client_message_id,
       :scheduled_at, :schedule_status, :expires_at,
-      :forwarded_from_id, :forwarded_from_user_id
+      :forwarded_from_id, :forwarded_from_user_id,
+      :ratchet_header, :session_id
     ])
     |> validate_required([:content, :sender_id])
     |> maybe_assign_snowflake_id()

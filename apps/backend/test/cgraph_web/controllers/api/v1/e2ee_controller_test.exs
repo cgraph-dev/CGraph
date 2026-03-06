@@ -698,6 +698,75 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
   # ===========================================================================
   # Helper Functions
   # ===========================================================================
+  # Bootstrap Tests
+  # ===========================================================================
+
+  describe "GET /api/v1/e2ee/bootstrap" do
+    test "returns no_identity_key for new user", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/e2ee/bootstrap")
+      assert %{"data" => %{"status" => "no_identity_key", "prekey_count" => 0}} =
+        json_response(conn, 200)
+    end
+
+    test "returns ready for user with keys and prekeys", %{conn: conn} do
+      register_keys_for_user(conn)
+
+      conn = get(conn, ~p"/api/v1/e2ee/bootstrap")
+      assert %{"data" => %{"status" => "ready"}} = json_response(conn, 200)
+      assert %{"data" => %{"prekey_count" => count}} = json_response(conn, 200)
+      assert count > 0
+    end
+
+    test "rejects unauthenticated request" do
+      conn =
+        build_conn()
+        |> put_req_header("accept", "application/json")
+        |> get(~p"/api/v1/e2ee/bootstrap")
+
+      assert json_response(conn, 401)
+    end
+  end
+
+  # ===========================================================================
+  # Key Backup Tests
+  # ===========================================================================
+
+  describe "POST /api/v1/e2ee/keys/backup" do
+    test "stores encrypted key backup", %{conn: conn} do
+      backup_data = Base.encode64(:crypto.strong_rand_bytes(128))
+
+      conn = post(conn, ~p"/api/v1/e2ee/keys/backup", %{
+        device_id: "phone-001",
+        encrypted_backup: backup_data
+      })
+
+      assert %{"data" => %{"stored" => true, "device_id" => "phone-001"}} =
+        json_response(conn, 200)
+    end
+  end
+
+  describe "GET /api/v1/e2ee/keys/backup/:device_id" do
+    test "retrieves stored backup", %{conn: conn} do
+      backup_data = Base.encode64(:crypto.strong_rand_bytes(128))
+
+      post(conn, ~p"/api/v1/e2ee/keys/backup", %{
+        device_id: "phone-001",
+        encrypted_backup: backup_data
+      })
+
+      conn = get(conn, ~p"/api/v1/e2ee/keys/backup/phone-001")
+
+      assert %{"data" => %{"device_id" => "phone-001", "encrypted_backup" => ^backup_data}} =
+        json_response(conn, 200)
+    end
+
+    test "returns 404 for missing backup", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/e2ee/keys/backup/nonexistent")
+      assert json_response(conn, 404)
+    end
+  end
+
+  # ===========================================================================
 
   defp register_keys_for_user(conn) do
     keys = generate_key_bundle("device-001")

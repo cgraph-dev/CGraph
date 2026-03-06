@@ -35,7 +35,14 @@ defmodule CGraph.Crypto.E2EE.KeyOperations do
 
         # Add one-time prekey if available
         bundle = case one_time_prekey do
-          nil -> bundle
+          nil ->
+            # No one-time pre-keys left — notify client
+            Phoenix.PubSub.broadcast(
+              CGraph.PubSub,
+              "user:#{user_id}",
+              {:prekey_exhaustion, %{count: 0}}
+            )
+            bundle
           otpk -> Map.merge(bundle, %{
             one_time_prekey: Base.encode64(otpk.public_key),
             one_time_prekey_id: otpk.key_id

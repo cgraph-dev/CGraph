@@ -444,6 +444,8 @@ defmodule CGraphWeb.ConversationChannel do
           content_type: Map.get(params, "content_type", "text"),
           reply_to_id: Map.get(params, "reply_to_id"),
           is_encrypted: Map.get(params, "is_encrypted", true),
+          ratchet_header: Map.get(params, "ratchet_header"),
+          session_id: Map.get(params, "session_id"),
           file_url: Map.get(params, "file_url"),
           file_name: Map.get(params, "file_name"),
           file_size: Map.get(params, "file_size"),

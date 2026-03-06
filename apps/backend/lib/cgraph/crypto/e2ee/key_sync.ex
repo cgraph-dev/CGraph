@@ -86,6 +86,43 @@ defmodule CGraph.Crypto.E2EE.KeySync do
   end
 
   # ============================================================================
+  # Ecto Schema — Key Backup
+  # ============================================================================
+
+  defmodule KeyBackup do
+    @moduledoc """
+    Encrypted key backup for cross-device key sync.
+
+    The encrypted_backup field contains opaque ciphertext encrypted client-side
+    with the user's password-derived key. Server stores it as a blind blob.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    @foreign_key_type :binary_id
+    @timestamps_opts [type: :utc_datetime_usec]
+
+    schema "e2ee_key_backups" do
+      field :device_id, :string
+      field :encrypted_backup, :binary
+
+      belongs_to :user, CGraph.Accounts.User
+
+      timestamps()
+    end
+
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
+    def changeset(backup, attrs) do
+      backup
+      |> cast(attrs, [:user_id, :device_id, :encrypted_backup])
+      |> validate_required([:user_id, :device_id, :encrypted_backup])
+      |> unique_constraint([:user_id, :device_id])
+      |> foreign_key_constraint(:user_id)
+    end
+  end
+
+  # ============================================================================
   # Public API
   # ============================================================================
 
@@ -174,6 +211,78 @@ defmodule CGraph.Crypto.E2EE.KeySync do
         |> SyncPackage.changeset(%{status: "completed"})
         |> Repo.update()
     end
+  end
+
+  # ============================================================================
+  # Key Backup API
+  # ============================================================================
+
+  @max_backups_per_user 5
+
+  @doc """
+  Store encrypted key backup for a device.
+
+  The backup is encrypted client-side with the user's password-derived key.
+  Server stores it as an opaque blob. Max 5 device backups per user.
+  Upserts if a backup for the same user+device already exists.
+  """
+  @spec store_encrypted_key_backup(String.t(), String.t(), binary()) ::
+          {:ok, KeyBackup.t()} | {:error, :max_backups_reached | Ecto.Changeset.t()}
+  def store_encrypted_key_backup(user_id, device_id, encrypted_backup) do
+    # Check if this device already has a backup (upsert case)
+    existing = Repo.get_by(KeyBackup, user_id: user_id, device_id: device_id)
+
+    if existing do
+      # Upsert: update existing backup
+      existing
+      |> KeyBackup.changeset(%{encrypted_backup: encrypted_backup})
+      |> Repo.update()
+    else
+      # Check max backups limit
+      count =
+        from(kb in KeyBackup, where: kb.user_id == ^user_id, select: count())
+        |> Repo.one()
+
+      if count >= @max_backups_per_user do
+        {:error, :max_backups_reached}
+      else
+        %KeyBackup{}
+        |> KeyBackup.changeset(%{
+          user_id: user_id,
+          device_id: device_id,
+          encrypted_backup: encrypted_backup
+        })
+        |> Repo.insert()
+      end
+    end
+  end
+
+  @doc """
+  Retrieve encrypted key backup for a specific device.
+  """
+  @spec get_encrypted_key_backup(String.t(), String.t()) ::
+          {:ok, KeyBackup.t()} | {:error, :not_found}
+  def get_encrypted_key_backup(user_id, device_id) do
+    case Repo.get_by(KeyBackup, user_id: user_id, device_id: device_id) do
+      nil -> {:error, :not_found}
+      backup -> {:ok, backup}
+    end
+  end
+
+  @doc """
+  List devices that have key backups for a user.
+  """
+  @spec list_devices_with_backup(String.t()) :: {:ok, list(map())}
+  def list_devices_with_backup(user_id) do
+    devices =
+      from(kb in KeyBackup,
+        where: kb.user_id == ^user_id,
+        select: %{device_id: kb.device_id, updated_at: kb.updated_at},
+        order_by: [desc: kb.updated_at]
+      )
+      |> Repo.all()
+
+    {:ok, devices}
   end
 
   # ============================================================================

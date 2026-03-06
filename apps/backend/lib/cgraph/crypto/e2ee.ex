@@ -320,4 +320,31 @@ defmodule CGraph.Crypto.E2EE do
   defdelegate safety_number(user1_id, user2_id), to: __MODULE__.KeyOperations
   defdelegate list_user_devices(user_id), to: __MODULE__.KeyOperations
   defdelegate remove_device(user_id, device_id), to: __MODULE__.KeyOperations
+
+  @doc """
+  Check E2EE bootstrap status for a user.
+
+  Returns the current state of the user's E2EE setup:
+  - `{:ok, :ready}` — identity key registered, ≥10 pre-keys available
+  - `{:ok, :needs_prekeys, count}` — identity key exists but pre-keys running low (<10)
+  - `{:error, :no_identity_key}` — user has not registered E2EE keys yet
+
+  Called after authentication to tell the client what bootstrap steps to perform.
+  """
+  @spec check_bootstrap_status(String.t()) :: {:ok, :ready} | {:ok, :needs_prekeys, non_neg_integer()} | {:error, :no_identity_key}
+  def check_bootstrap_status(user_id) do
+    case get_user_identity_key(user_id) do
+      {:error, :no_identity_key} ->
+        {:error, :no_identity_key}
+
+      {:ok, _identity_key} ->
+        count = one_time_prekey_count(user_id)
+
+        if count >= 10 do
+          {:ok, :ready}
+        else
+          {:ok, :needs_prekeys, count}
+        end
+    end
+  end
 end
