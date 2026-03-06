@@ -162,7 +162,7 @@ defmodule CGraph.Crypto.E2EE do
     schema "e2ee_signed_prekeys" do
       field :public_key, :binary
       field :signature, :binary  # Ed25519 signature from identity key
-      field :key_id, :integer
+      field :key_id, :string
       field :expires_at, :utc_datetime
       field :is_current, :boolean, default: true
 
@@ -210,7 +210,7 @@ defmodule CGraph.Crypto.E2EE do
 
     schema "e2ee_one_time_prekeys" do
       field :public_key, :binary
-      field :key_id, :integer
+      field :key_id, :string
       field :used_at, :utc_datetime
       field :used_by_id, :binary_id  # User who consumed this key
 
@@ -266,7 +266,7 @@ defmodule CGraph.Crypto.E2EE do
     schema "e2ee_kyber_prekeys" do
       field :public_key, :binary
       field :signature, :binary
-      field :key_id, :integer
+      field :key_id, :string
       field :is_current, :boolean, default: true
       field :used_at, :utc_datetime
       field :used_by_id, :binary_id

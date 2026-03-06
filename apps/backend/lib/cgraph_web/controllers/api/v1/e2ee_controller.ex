@@ -721,10 +721,10 @@ defmodule CGraphWeb.API.V1.E2EEController do
   defp parse_prekey_list(prekeys) when is_list(prekeys) do
     Enum.map(prekeys, fn
       [key_id, public_key] when is_integer(key_id) and is_binary(public_key) ->
-        {key_id, public_key}
+        {to_string(key_id), public_key}
 
       %{"key_id" => key_id, "public_key" => public_key} ->
-        {key_id, public_key}
+        {to_string(key_id), public_key}
 
       _ ->
         nil

@@ -282,7 +282,7 @@ defmodule CGraph.Crypto.E2EE.KeyOperations do
             user_id: user_id,
             identity_key_id: identity_key.id,
             public_key: prekey.public_key,
-            key_id: prekey.key_id,
+            key_id: to_string(prekey.key_id),
             inserted_at: now,
             updated_at: now
           }

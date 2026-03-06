@@ -73,7 +73,7 @@ defmodule CGraph.Crypto.E2EE.KeyRegistration do
           id: Ecto.UUID.generate(),
           user_id: user_id,
           identity_key_id: identity_key_id,
-          key_id: key_id,
+          key_id: to_string(key_id),
           public_key: public_key,
           inserted_at: DateTime.utc_now(),
           updated_at: DateTime.utc_now()
@@ -199,7 +199,7 @@ defmodule CGraph.Crypto.E2EE.KeyRegistration do
       identity_key_id: identity_key.id,
       public_key: public_key,
       signature: signature,
-      key_id: prekey_id,
+      key_id: to_string(prekey_id),
       is_current: true,
       expires_at: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), 30, :day)
     }
@@ -249,7 +249,7 @@ defmodule CGraph.Crypto.E2EE.KeyRegistration do
             identity_key_id: identity_key_id,
             public_key: public_key,
             signature: signature,
-            key_id: kyber_key_id,
+            key_id: to_string(kyber_key_id),
             is_current: true
           }
 
