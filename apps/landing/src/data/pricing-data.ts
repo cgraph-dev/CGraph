@@ -62,7 +62,7 @@ export const pricingTiers: readonly PricingTier[] = [
     annualPrice: 24.99,
     description: 'For organizations that need more.',
     cta: 'Contact Us',
-    ctaLink: 'https://cgraph.org/contact',
+    ctaLink: '/contact',
     highlighted: false,
     features: [
       'Everything in Premium',

@@ -76,7 +76,7 @@ export const features: readonly FeatureData[] = [
     icon: '📞',
     title: 'Voice & Video Calls',
     description:
-      'Group calls with screen sharing, E2EE indicators, and voice channels — powered by LiveKit SFU.',
+      'Group calls with screen sharing, E2EE indicators, and voice channels — powered by WebRTC with Phoenix Channels signaling.',
   },
   {
     icon: '💰',
@@ -212,7 +212,7 @@ export const footerLinks = {
   ],
   resources: [
     { label: 'Documentation', to: '/docs' },
-    { label: 'API Reference', to: '/docs' },
+    { label: 'API Reference', to: '/docs#api' },
     { label: 'Status', to: '/status' },
     { label: 'Blog', to: '/blog' },
   ],
