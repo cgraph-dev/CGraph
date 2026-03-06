@@ -15,10 +15,10 @@ import { MarketingLayout } from '@/components/marketing';
 import { NeonIcon } from '@/components/marketing/ui';
 
 const platformStats = [
-  { label: 'Features Shipped', value: '55+', detail: 'of 69 tracked' },
-  { label: 'Database Tables', value: '91', detail: 'PostgreSQL 16' },
-  { label: 'Passing Tests', value: '1,342', detail: 'across all apps' },
-  { label: 'Shared Packages', value: '12', detail: 'monorepo modules' },
+  { label: 'Features Shipped', value: '142', detail: '19 phases complete' },
+  { label: 'Database Tables', value: '91', detail: 'PostgreSQL 16 + Supabase' },
+  { label: 'Passing Tests', value: '1,342', detail: 'across web, mobile & backend' },
+  { label: 'Shared Packages', value: '7', detail: 'monorepo modules' },
 ];
 
 const capabilities = [
@@ -76,7 +76,7 @@ const techStack = [
       { name: 'React 19 / TypeScript 5.8', role: 'Web application' },
       { name: 'React Native 0.81 / Expo 54', role: 'iOS & Android' },
       { name: 'Zustand 5', role: '7 facade stores, Composition' },
-      { name: 'Vite 6.3', role: '168 optimized chunks, 62 lazy-loaded pages' },
+      { name: 'Vite 6.4', role: '168 optimized chunks, 62 lazy-loaded pages' },
     ],
   },
   {
@@ -133,12 +133,20 @@ const milestones = [
     completed: true,
   },
   {
-    version: 'v1.0.0',
-    date: 'Target: Mar 2026',
-    title: 'Public Beta Launch',
+    version: 'v0.9.26',
+    date: 'Feb 15, 2026',
+    title: 'Architecture Refactor',
     description:
-      'Public discoverable servers, shareable invite links, forum channels, mobile beta on TestFlight & Play Store.',
-    completed: false,
+      'Router split into 7 domain modules. 28 components organized. Turborepo remote caching. Architecture score: 9.2/10.',
+    completed: true,
+  },
+  {
+    version: 'v1.0.0',
+    date: 'Mar 4, 2026',
+    title: 'v1.0 Release',
+    description:
+      'All 19 phases complete. 142 requirements shipped. Full E2EE, forums, gamification, voice/video, monetization, and mobile parity.',
+    completed: true,
   },
 ];
 
@@ -177,7 +185,7 @@ const values = [
     icon: '🏗️',
     title: 'Engineering Excellence',
     description:
-      '9.0/10 architecture score. Strict TypeScript, 0 ESLint errors, conventional commits, automated quality gates, and comprehensive CI pipeline.',
+      '9.2/10 architecture score. Strict TypeScript, 0 ESLint errors, conventional commits, automated quality gates, and comprehensive CI pipeline.',
   },
 ];
 
@@ -643,8 +651,8 @@ export default function About() {
           >
             <h2 className="marketing-section__title">What's Next</h2>
             <p className="marketing-section__desc mx-auto max-w-2xl" style={{ lineHeight: 1.8 }}>
-              Public beta is targeting Q2 2026. After that: message threads, SSO/SAML for teams,
-              desktop apps, and more. The roadmap goes through 2027.
+              v1.0 is live. Next up: message threads, SSO/SAML for teams, desktop apps, and
+              scaling. The roadmap goes through 2027.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <a
