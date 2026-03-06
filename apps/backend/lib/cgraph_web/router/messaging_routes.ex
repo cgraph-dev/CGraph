@@ -116,6 +116,17 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         resources "/secret-chats", SecretChatController, only: [:index, :show, :create, :delete]
         put "/secret-chats/:id/timer", SecretChatController, :set_timer
 
+        # File Transfers (chat file sharing)
+        scope "/transfers" do
+          post "/upload", FileTransferController, :initiate
+          get "/usage", FileTransferController, :storage_usage
+          get "/:id", FileTransferController, :status
+          put "/:id/chunks/:chunk_number", FileTransferController, :upload_chunk
+          post "/:id/complete", FileTransferController, :complete
+          get "/:id/download", FileTransferController, :download
+          delete "/:id", FileTransferController, :cancel
+        end
+
         # Call History (voice/video calls)
         resources "/calls", CallController, only: [:index, :show]
 

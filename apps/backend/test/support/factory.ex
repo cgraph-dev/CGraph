@@ -181,6 +181,21 @@ defmodule CGraph.Factory do
     }
   end
 
+  def file_transfer_factory do
+    %CGraph.Messaging.FileTransfer.Transfer{
+      user: build(:user),
+      file_name: sequence(:file_name, &"document_#{&1}.pdf"),
+      file_size: 1024 * 100,
+      file_mime_type: "application/pdf",
+      file_extension: ".pdf",
+      storage_key: sequence(:storage_key, &"files/test/#{&1}.pdf"),
+      status: "pending",
+      upload_type: "direct",
+      is_encrypted: false,
+      download_count: 0
+    }
+  end
+
   # ============================================================================
   # Messaging Factories
   # ============================================================================

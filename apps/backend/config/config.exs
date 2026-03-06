@@ -109,7 +109,9 @@ config :cgraph, Oban,
        # CRDT document compaction check every 15 minutes
        {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker},
        # Delete expired secret messages every minute (privacy-critical)
-       {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages}
+       {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages},
+       # Clean up abandoned/expired file transfers hourly
+       {"0 * * * *", CGraph.Workers.FileCleanupWorker}
      ]}
   ],
   queues: [
