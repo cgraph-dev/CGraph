@@ -27,7 +27,7 @@ type Get = () => ChatState;
  * Attempt to decrypt an encrypted message using available methods.
  * Tries Double Ratchet (session manager) first, then falls back to legacy X3DH.
  */
-async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Promise<string> {
+export async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Promise<string> {
   const metadata: Record<string, unknown> = message.metadata || {};
 
   // Try Double Ratchet / session manager first if a session exists
@@ -98,52 +98,71 @@ async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Promise<s
  * On success updates the placeholder message via updateMessage.
  */
 async function retryDecryptAfterInit(message: Message, get: Get) {
-  const MAX_RETRIES = 10;
-  const RETRY_DELAY_MS = 500;
+  const TIMEOUT_MS = 15_000; // 15s timeout (E2EE auto-bootstrap can take time)
 
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-    const e2eeStore = useE2EEStore.getState();
-    if (!e2eeStore.isInitialized) continue;
+  return new Promise<void>((resolve) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    // E2EE ready — attempt decryption
-    try {
-      const plaintext = await attemptDecrypt(message, e2eeStore);
-      let protocolVersion: string | undefined;
-      try {
-        const proto = e2eeStore.getSessionProtocol(message.senderId);
-        if (proto) protocolVersion = String(proto);
-      } catch {
-        // Non-critical
-      }
-      get().updateMessage({
-        ...message,
-        content: plaintext,
-        isEncrypted: true,
-        decryptionFailed: false,
-        protocolVersion,
-      });
-      logger.log('Retried and decrypted queued E2EE message');
-      return;
-    } catch (error: unknown) {
-      logger.error('Retry decryption failed:', error);
+    const tryDecrypt = (state: E2EEState) => {
+      attemptDecrypt(message, state)
+        .then((plaintext) => {
+          let protocolVersion: string | undefined;
+          try {
+            const proto = state.getSessionProtocol(message.senderId);
+            if (proto) protocolVersion = String(proto);
+          } catch { /* Non-critical */ }
+
+          get().updateMessage({
+            ...message,
+            content: plaintext,
+            isEncrypted: true,
+            decryptionFailed: false,
+            protocolVersion,
+          });
+          logger.log('Decrypted queued E2EE message after init');
+        })
+        .catch((error: unknown) => {
+          logger.error('Retry decryption failed after init:', error);
+          get().updateMessage({
+            ...message,
+            content: '⚠️ Unable to decrypt this message',
+            isEncrypted: true,
+            decryptionFailed: true,
+          });
+        })
+        .finally(resolve);
+    };
+
+    const unsubscribe = useE2EEStore.subscribe((state) => {
+      if (!state.isInitialized) return;
+
+      // E2EE ready — attempt decryption
+      unsubscribe();
+      clearTimeout(timeoutId);
+      tryDecrypt(state);
+    });
+
+    // Timeout: if E2EE never initializes, mark as failed
+    timeoutId = setTimeout(() => {
+      unsubscribe();
+      logger.error('E2EE did not initialize within timeout, marking message as decrypt-failed');
       get().updateMessage({
         ...message,
         content: '⚠️ Unable to decrypt this message',
         isEncrypted: true,
         decryptionFailed: true,
       });
-      return;
-    }
-  }
+      resolve();
+    }, TIMEOUT_MS);
 
-  // Max retries exhausted — E2EE never initialized in time
-  logger.error('E2EE did not initialize in time, marking message as decrypt-failed');
-  get().updateMessage({
-    ...message,
-    content: '⚠️ Unable to decrypt this message',
-    isEncrypted: true,
-    decryptionFailed: true,
+    // Check if already initialized (race condition: init completed between
+    // the if-check in decryptAndAddMessage and subscribing here)
+    const currentState = useE2EEStore.getState();
+    if (currentState.isInitialized) {
+      unsubscribe();
+      clearTimeout(timeoutId);
+      tryDecrypt(currentState);
+    }
   });
 }
 

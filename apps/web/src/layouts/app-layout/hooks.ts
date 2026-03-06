@@ -10,6 +10,7 @@ import { useGroupStore } from '@/modules/groups/store';
 import { useNotificationStore } from '@/modules/social/store';
 import { useThemeEnhanced } from '@/contexts/theme-context-enhanced';
 import { socketManager } from '@/lib/socket';
+import { useE2EEStore, usePreKeyReplenishment } from '@/lib/crypto/e2eeStore';
 
 /**
  * unknown.
@@ -20,6 +21,9 @@ import { socketManager } from '@/lib/socket';
 export function useAppLayout() {
   const location = useLocation();
   const { user, logout } = useAuthStore();
+
+  // Auto-replenish prekeys when running low
+  usePreKeyReplenishment();
   const { fetchConversations, conversations } = useChatStore();
   const { fetchGroups } = useGroupStore();
   const { fetchNotifications, unreadCount } = useNotificationStore();
@@ -63,6 +67,12 @@ export function useAppLayout() {
       try {
         await socketManager.connect();
         socketManager.joinUserChannel(user.id);
+
+        // Initialize E2EE (non-blocking — runs in background)
+        useE2EEStore.getState().initialize().catch((err) => {
+          // eslint-disable-next-line no-console
+          console.warn('[AppLayout] E2EE initialization error:', err);
+        });
 
         // Fire data fetches in parallel — errors are non-fatal
         await Promise.allSettled([
