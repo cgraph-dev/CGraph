@@ -229,6 +229,74 @@ defmodule CGraph.Crypto.E2EE.KeyOperations do
     end
   end
 
+  @doc """
+  Checks the pre-key watermark for a user.
+
+  Counts remaining one-time prekeys and returns whether the count is
+  below the low watermark (default: 25). When below, the client should
+  upload more prekeys.
+
+  Returns `{:ok, %{count: integer, below_watermark: boolean}}`.
+  """
+  @spec check_prekey_watermark(String.t()) :: {:ok, map()}
+  def check_prekey_watermark(user_id) do
+    count = one_time_prekey_count(user_id)
+    watermark = 25
+
+    below = count < watermark
+
+    if below do
+      # Broadcast to user's channel so client can upload more
+      Phoenix.PubSub.broadcast(
+        CGraph.PubSub,
+        "user:#{user_id}",
+        {:prekey_low, %{remaining: count, watermark: watermark}}
+      )
+    end
+
+    {:ok, %{count: count, below_watermark: below}}
+  end
+
+  @doc """
+  Replenishes one-time prekeys for a user.
+
+  Accepts a list of prekey maps and inserts them. Updates the identity key's
+  prekey count and replenish timestamp.
+  """
+  @spec replenish_prekeys(String.t(), list(map())) :: {:ok, integer()} | {:error, term()}
+  def replenish_prekeys(user_id, new_prekeys) when is_list(new_prekeys) do
+    with {:ok, identity_key} <- get_current_identity_key(user_id) do
+      now = DateTime.utc_now() |> DateTime.truncate(:microsecond)
+
+      entries =
+        Enum.map(new_prekeys, fn prekey ->
+          %{
+            id: Ecto.UUID.generate(),
+            user_id: user_id,
+            identity_key_id: identity_key.id,
+            public_key: prekey.public_key,
+            key_id: prekey.key_id,
+            inserted_at: now,
+            updated_at: now
+          }
+        end)
+
+      {inserted, _} = Repo.insert_all(OneTimePrekey, entries)
+
+      # Update identity key's prekey count
+      new_count = one_time_prekey_count(user_id)
+
+      identity_key
+      |> IdentityKey.changeset(%{
+        one_time_prekey_count: new_count,
+        last_prekey_replenish_at: now
+      })
+      |> Repo.update()
+
+      {:ok, inserted}
+    end
+  end
+
   # ============================================================================
   # Private Functions
   # ============================================================================

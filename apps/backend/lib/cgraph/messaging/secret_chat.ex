@@ -313,16 +313,10 @@ defmodule CGraph.Messaging.SecretChat do
   defp maybe_set_expiry(attrs, %SecretConversation{self_destruct_seconds: nil}), do: attrs
   defp maybe_set_expiry(attrs, %SecretConversation{self_destruct_seconds: 0}), do: attrs
 
-  defp maybe_set_expiry(attrs, %SecretConversation{self_destruct_seconds: seconds})
-       when is_integer(seconds) and seconds > 0 do
-    # For self-destruct messages, expiry starts from send time
-    # (will be updated to read_time + seconds when marked as read)
-    expires_at =
-      DateTime.utc_now()
-      |> DateTime.add(seconds, :second)
-      |> DateTime.truncate(:microsecond)
-
-    Map.put(attrs, :expires_at, expires_at)
+  defp maybe_set_expiry(attrs, %SecretConversation{self_destruct_seconds: _seconds}) do
+    # Self-destruct timer starts when message is READ, not when sent.
+    # We don't set expires_at here — mark_secret_message_read/2 will compute it.
+    attrs
   end
 
   defp compute_expiry(_read_at, nil), do: nil

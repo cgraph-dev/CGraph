@@ -107,7 +107,9 @@ config :cgraph, Oban,
        # Check event lifecycle every 15 minutes (auto-activate/end events)
        {"*/15 * * * *", CGraph.Gamification.EventLifecycleWorker, args: %{action: "check_lifecycle"}},
        # CRDT document compaction check every 15 minutes
-       {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker}
+       {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker},
+       # Delete expired secret messages every minute (privacy-critical)
+       {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages}
      ]}
   ],
   queues: [

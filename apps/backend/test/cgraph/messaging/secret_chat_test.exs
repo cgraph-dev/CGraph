@@ -217,7 +217,7 @@ defmodule CGraph.Messaging.SecretChatTest do
       assert msg.secret_conversation_id == convo.id
     end
 
-    test "sets expiry when conversation has self-destruct timer" do
+    test "does not set expiry on send when conversation has self-destruct timer" do
       user1 = insert(:user)
       user2 = insert(:user)
 
@@ -231,8 +231,8 @@ defmodule CGraph.Messaging.SecretChatTest do
                  ratchet_header: :crypto.strong_rand_bytes(16)
                })
 
-      assert msg.expires_at != nil
-      assert DateTime.compare(msg.expires_at, DateTime.utc_now()) == :gt
+      # Expiry is NOT set on send — only on read
+      assert msg.expires_at == nil
     end
 
     test "returns error for terminated conversation" do
