@@ -99,6 +99,58 @@ defmodule CGraph.Factory do
   end
 
   # ============================================================================
+  # Sticker Factories
+  # ============================================================================
+
+  def sticker_pack_factory do
+    %CGraph.Stickers.StickerPack{
+      name: sequence(:sticker_pack_name, &"pack_#{&1}"),
+      title: sequence(:sticker_pack_title, &"Sticker Pack #{&1}"),
+      description: "A test sticker pack",
+      author: "CGraph Team",
+      thumbnail_url: "https://cdn.example.com/stickers/thumb.webp",
+      category: "emotions",
+      sticker_type: "static",
+      is_premium: false,
+      is_animated: false,
+      coin_price: 0,
+      download_count: 0,
+      sticker_count: 0,
+      sort_order: 0,
+      published: true
+    }
+  end
+
+  def premium_sticker_pack_factory do
+    build(:sticker_pack,
+      is_premium: true,
+      coin_price: 100
+    )
+  end
+
+  def sticker_factory do
+    %CGraph.Stickers.Sticker{
+      emoji_shortcode: sequence(:emoji_shortcode, &":sticker_#{&1}:"),
+      file_url: sequence(:sticker_file_url, &"https://cdn.example.com/stickers/sticker_#{&1}.webp"),
+      thumbnail_url: "https://cdn.example.com/stickers/thumb.webp",
+      file_type: "webp",
+      file_size: 24_576,
+      width: 512,
+      height: 512,
+      sort_order: 0,
+      sticker_pack: build(:sticker_pack)
+    }
+  end
+
+  def user_sticker_pack_factory do
+    %CGraph.Stickers.UserStickerPack{
+      sort_order: 0,
+      user: build(:user),
+      sticker_pack: build(:sticker_pack)
+    }
+  end
+
+  # ============================================================================
   # Messaging Factories
   # ============================================================================
 

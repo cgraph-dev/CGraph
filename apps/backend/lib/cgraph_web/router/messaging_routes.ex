@@ -99,6 +99,19 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         post "/conversations/:conversation_id/messages/:message_id/reactions", ReactionController, :create
         delete "/conversations/:conversation_id/messages/:message_id/reactions/:emoji", ReactionController, :delete
 
+        # Sticker System
+        scope "/stickers" do
+          get "/store", StickerController, :store
+          get "/search", StickerController, :search
+          get "/categories", StickerController, :categories
+          get "/trending", StickerController, :trending
+          get "/my-packs", StickerController, :my_packs
+          get "/recent", StickerController, :recently_used
+          get "/packs/:id", StickerController, :show_pack
+          post "/packs/:id/add", StickerController, :add_pack
+          delete "/packs/:id/remove", StickerController, :remove_pack
+        end
+
         # Call History (voice/video calls)
         resources "/calls", CallController, only: [:index, :show]
 
