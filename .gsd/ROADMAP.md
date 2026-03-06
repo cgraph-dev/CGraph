@@ -1127,4 +1127,17 @@ Plans:
 
 ---
 
-_Roadmap: 22 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-05_
+### Phase 23: E2EE Fix — Encryption/Decryption Reliability
+
+**Goal:** End-to-end encrypted messages decrypt reliably in real-time without requiring page refresh. E2EE initializes automatically on login.
+
+**Depends on:** Phase 7 (E2EE & Mobile Security)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — Bootstrap E2EE on app startup + event-driven decrypt retry
+- [ ] 23-02-PLAN.md — Decrypt encrypted messages loaded via REST API (fetchMessages)
+
+---
+
+_Roadmap: 23 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-06_
