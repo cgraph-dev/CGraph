@@ -12,6 +12,13 @@ import { NeonIcon } from '@/components/marketing/ui';
 
 const pressReleases = [
   {
+    date: 'March 2026',
+    title: 'CGraph v1.0: 19 Phases Complete, Full Platform Live',
+    summary:
+      'CGraph reaches v1.0 with end-to-end encrypted messaging, community forums, gamification, voice & video calls, and full mobile parity. 142 requirements shipped across 19 development phases.',
+    link: '/press-kit/press-release-2026-03.md',
+  },
+  {
     date: 'January 2026',
     title: 'CGraph Launches: Customizable Community Platform',
     summary:
@@ -64,8 +71,8 @@ const companyFacts = [
   { label: 'Founded', value: '2026' },
   { label: 'Headquarters', value: 'Georgia' },
   { label: 'Team Size', value: 'Solo Founder' },
-  { label: 'Stage', value: 'Active Development' },
-  { label: 'Core Product', value: 'Privacy-First Community Platform' },
+  { label: 'Stage', value: 'v1.0 Released' },
+  { label: 'Core Product', value: 'E2EE Messaging & Community Platform' },
   { label: 'Primary Contact', value: 'press@cgraph.org' },
   { label: 'Website', value: 'cgraph.org' },
 ];
