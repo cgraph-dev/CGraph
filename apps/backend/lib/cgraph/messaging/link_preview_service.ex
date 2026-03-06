@@ -16,7 +16,7 @@ defmodule CGraph.Messaging.LinkPreviewService do
 
   require Logger
 
-  @url_regex ~r{https?://[^\s<>"')\]]+}i
+  defp url_regex, do: ~r{https?://[^\s<>"')\]]+}i
   @max_body_bytes 1_048_576
   @request_timeout 5_000
   @max_redirects 3
@@ -32,7 +32,7 @@ defmodule CGraph.Messaging.LinkPreviewService do
   @spec extract_urls(String.t() | nil) :: [String.t()]
   def extract_urls(nil), do: []
   def extract_urls(text) when is_binary(text) do
-    @url_regex
+    url_regex()
     |> Regex.scan(text)
     |> List.flatten()
     |> Enum.map(&clean_url/1)

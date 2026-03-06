@@ -179,20 +179,22 @@ defmodule CGraphWeb.API.V1.TelemetryController do
   defp sanitize_value(v) when is_map(v), do: sanitize_metadata(v)
   defp sanitize_value(_), do: "[redacted]"
 
-  @secret_patterns [
-    ~r/password/i,
-    ~r/secret/i,
-    ~r/token/i,
-    ~r/apikey/i,
-    ~r/api_key/i,
-    ~r/authorization/i,
-    ~r/bearer/i,
-    ~r/eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/,  # JWT
-    ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/  # Email
-  ]
+  defp secret_patterns do
+    [
+      ~r/password/i,
+      ~r/secret/i,
+      ~r/token/i,
+      ~r/apikey/i,
+      ~r/api_key/i,
+      ~r/authorization/i,
+      ~r/bearer/i,
+      ~r/eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/,  # JWT
+      ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/  # Email
+    ]
+  end
 
   defp strip_potential_secrets(str) when is_binary(str) do
-    Enum.reduce(@secret_patterns, str, fn pattern, acc ->
+    Enum.reduce(secret_patterns(), str, fn pattern, acc ->
       String.replace(acc, pattern, "[REDACTED]")
     end)
   end
