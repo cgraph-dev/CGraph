@@ -112,6 +112,10 @@ defmodule CGraphWeb.Router.MessagingRoutes do
           delete "/packs/:id/remove", StickerController, :remove_pack
         end
 
+        # Secret Chats (Telegram-style device-bound E2EE)
+        resources "/secret-chats", SecretChatController, only: [:index, :show, :create, :delete]
+        put "/secret-chats/:id/timer", SecretChatController, :set_timer
+
         # Call History (voice/video calls)
         resources "/calls", CallController, only: [:index, :show]
 

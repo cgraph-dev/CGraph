@@ -151,6 +151,37 @@ defmodule CGraph.Factory do
   end
 
   # ============================================================================
+  # Secret Chat Factories
+  # ============================================================================
+
+  def secret_conversation_factory do
+    %CGraph.Messaging.SecretConversation{
+      status: "active",
+      self_destruct_seconds: nil,
+      initiator_device_id: sequence(:device_id, &"device_#{&1}"),
+      recipient_device_id: nil,
+      initiator_fingerprint: sequence(:fingerprint, &"fp_#{&1}"),
+      recipient_fingerprint: nil,
+      initiator: build(:user),
+      recipient: build(:user)
+    }
+  end
+
+  def secret_message_factory do
+    %CGraph.Messaging.SecretMessage{
+      ciphertext: :crypto.strong_rand_bytes(64),
+      content_type: "text",
+      nonce: :crypto.strong_rand_bytes(12),
+      ratchet_header: :crypto.strong_rand_bytes(32),
+      expires_at: nil,
+      read_at: nil,
+      file_metadata: nil,
+      secret_conversation: build(:secret_conversation),
+      sender: build(:user)
+    }
+  end
+
+  # ============================================================================
   # Messaging Factories
   # ============================================================================
 
