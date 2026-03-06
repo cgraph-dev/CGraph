@@ -439,4 +439,37 @@ defmodule CGraphWeb.API.V1.MessageController do
         end
     end
   end
+
+  @doc """
+  Translate a message to a target language.
+  POST /api/v1/messages/:id/translate
+  """
+  def translate(conn, %{"id" => message_id} = params) do
+    target = params["target_language"] || params["target"]
+
+    case CGraph.Messaging.MessageTranslation.translate(
+           get_message_content(message_id),
+           target || ""
+         ) do
+      {:ok, translated} ->
+        json(conn, %{data: %{translated_text: translated, target_language: target}})
+
+      {:error, :unsupported_language} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "Unsupported target language. Supported: #{inspect(CGraph.Messaging.MessageTranslation.supported_languages())}"})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> json(%{error: "Translation failed: #{reason}"})
+    end
+  end
+
+  defp get_message_content(message_id) do
+    case CGraph.Repo.get(CGraph.Messaging.Message, message_id) do
+      nil -> ""
+      msg -> msg.content || ""
+    end
+  end
 end

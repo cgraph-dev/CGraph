@@ -221,4 +221,42 @@ defmodule CGraph.Messaging do
   defdelegate list_deleted_message_ids_since(user, since), to: SyncQueries
   defdelegate list_participants_since(user, since), to: SyncQueries
   defdelegate list_removed_participant_ids_since(user, since), to: SyncQueries
+
+  # ============================================================================
+  # Competitive Features (Phase 26-09)
+  # ============================================================================
+
+  # Scheduled Messages (standalone table + Oban)
+  defdelegate schedule_message(sender_id, conv_id, content, at, opts \\ []),
+    to: CGraph.Messaging.ScheduledMessage
+  defdelegate cancel_scheduled(msg_id, user_id),
+    to: CGraph.Messaging.ScheduledMessage, as: :cancel
+  defdelegate list_pending_scheduled(user_id, conv_id),
+    to: CGraph.Messaging.ScheduledMessage, as: :list_pending
+
+  # Chat Polls
+  defdelegate create_chat_poll(creator_id, conv_id, question, options, opts \\ []),
+    to: CGraph.Messaging.ChatPoll, as: :create_poll
+  defdelegate vote_chat_poll(poll_id, user_id, option_id),
+    to: CGraph.Messaging.ChatPoll, as: :vote
+  defdelegate retract_chat_poll_vote(poll_id, user_id, option_id),
+    to: CGraph.Messaging.ChatPoll, as: :retract_vote
+  defdelegate close_chat_poll(poll_id, user_id),
+    to: CGraph.Messaging.ChatPoll, as: :close_poll
+  defdelegate get_chat_poll_results(poll_id),
+    to: CGraph.Messaging.ChatPoll, as: :get_poll_results
+
+  # Chat Themes
+  defdelegate set_chat_theme(user_id, conv_id, theme),
+    to: CGraph.Messaging.ChatTheme, as: :set_theme
+  defdelegate get_chat_theme(user_id, conv_id),
+    to: CGraph.Messaging.ChatTheme, as: :get_theme
+  defdelegate delete_chat_theme(user_id, conv_id),
+    to: CGraph.Messaging.ChatTheme, as: :delete_theme
+  defdelegate list_preset_themes(),
+    to: CGraph.Messaging.ChatTheme
+
+  # Message Translation
+  defdelegate translate_message(text, target_lang),
+    to: CGraph.Messaging.MessageTranslation, as: :translate
 end

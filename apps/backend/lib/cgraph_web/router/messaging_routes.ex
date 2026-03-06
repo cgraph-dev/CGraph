@@ -143,6 +143,26 @@ defmodule CGraphWeb.Router.MessagingRoutes do
           get "/trending", EmojiController, :trending
           get "/category/:name", EmojiController, :category
         end
+
+        # ── Competitive Features (Phase 26-09) ──────────────
+
+        # Chat Polls (conversation-scoped creation)
+        post "/conversations/:conversation_id/polls", ChatPollController, :create
+
+        # Chat Polls (standalone)
+        get "/chat-polls/:id", ChatPollController, :show
+        post "/chat-polls/:id/vote", ChatPollController, :vote
+        delete "/chat-polls/:id/vote/:option_id", ChatPollController, :retract_vote
+        post "/chat-polls/:id/close", ChatPollController, :close
+
+        # Chat Themes
+        put "/conversations/:conversation_id/theme", ChatThemeController, :update
+        get "/conversations/:conversation_id/theme", ChatThemeController, :show
+        delete "/conversations/:conversation_id/theme", ChatThemeController, :delete
+        get "/themes/presets", ChatThemeController, :presets
+
+        # Message Translation
+        post "/messages/:id/translate", MessageController, :translate
       end
     end
   end
