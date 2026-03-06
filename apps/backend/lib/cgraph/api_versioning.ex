@@ -48,16 +48,18 @@ defmodule CGraph.ApiVersioning do
   @transformers_table :cgraph_api_transformers
   @versions_table :cgraph_api_versions
 
-  @default_config %{
-    current_version: 1,
-    minimum_version: 1,
-    default_version: 1,
-    strategy: :path,
-    version_header: "X-API-Version",
-    deprecation_header: "X-API-Deprecated",
-    sunset_header: "Sunset",
-    version_pattern: ~r/^v?(\d+)$/
-  }
+  defp default_config do
+    %{
+      current_version: 1,
+      minimum_version: 1,
+      default_version: 1,
+      strategy: :path,
+      version_header: "X-API-Version",
+      deprecation_header: "X-API-Deprecated",
+      sunset_header: "Sunset",
+      version_pattern: ~r/^v?(\d+)$/
+    }
+  end
 
   # ---------------------------------------------------------------------------
   # Version Detection (delegated)
@@ -216,12 +218,12 @@ defmodule CGraph.ApiVersioning do
 
   defp load_config do
     app_config = Application.get_env(:cgraph, __MODULE__, [])
-    Map.merge(@default_config, Map.new(app_config))
+    Map.merge(default_config(), Map.new(app_config))
   end
 
   defp get_config(key) do
     app_config = Application.get_env(:cgraph, __MODULE__, [])
-    Keyword.get(app_config, key, Map.get(@default_config, key))
+    Keyword.get(app_config, key, Map.get(default_config(), key))
   end
 
   defp register_default_versions do

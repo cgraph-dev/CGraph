@@ -1,14 +1,16 @@
 defmodule CGraph.ApiVersioning.Detection do
   @moduledoc false
 
-  @default_config %{
-    current_version: 1,
-    minimum_version: 1,
-    default_version: 1,
-    strategy: :path,
-    version_header: "X-API-Version",
-    version_pattern: ~r/^v?(\d+)$/
-  }
+  defp default_config do
+    %{
+      current_version: 1,
+      minimum_version: 1,
+      default_version: 1,
+      strategy: :path,
+      version_header: "X-API-Version",
+      version_pattern: ~r/^v?(\d+)$/
+    }
+  end
 
   # ---------------------------------------------------------------------------
   # Version Detection
@@ -146,6 +148,6 @@ defmodule CGraph.ApiVersioning.Detection do
 
   defp get_config(key) do
     app_config = Application.get_env(:cgraph, CGraph.ApiVersioning, [])
-    Keyword.get(app_config, key, Map.get(@default_config, key))
+    Keyword.get(app_config, key, Map.get(default_config(), key))
   end
 end
