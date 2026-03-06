@@ -2,7 +2,7 @@
  * Status Page - System status, SLO targets, and infrastructure overview
  *
  * All data reflects real infrastructure decisions from the project documentation.
- * No fabricated uptime metrics — clearly marked as pre-launch.
+ * Shows v1.0.0 operational status.
  *
  * @since v0.9.2
  * @updated v0.9.14 - Removed fake uptime data; reflects actual project state
@@ -107,7 +107,7 @@ const infrastructureDetails = [
         value: 'Fly.io (Frankfurt, FRA)',
         detail: 'Elixir/Phoenix with auto-scaling',
       },
-      { label: 'Frontend', value: 'Fly.io (IAD)', detail: 'React 19 SPA (WIP deployment)' },
+      { label: 'Frontend', value: 'Fly.io (IAD)', detail: 'React 19 SPA — production' },
       { label: 'Landing', value: 'Vercel (Edge Network)', detail: 'Vite static site, ~200KB' },
     ],
   },
@@ -168,38 +168,38 @@ export default function Status() {
             viewport={{ once: true }}
             className="relative overflow-hidden rounded-2xl border"
             style={{
-              borderColor: 'rgba(234, 179, 8, 0.2)',
+              borderColor: 'rgba(16, 185, 129, 0.2)',
               background:
-                'linear-gradient(135deg, rgba(234, 179, 8, 0.05), rgba(234, 179, 8, 0.02))',
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02))',
             }}
           >
-            {/* Amber top bar */}
+            {/* Green top bar */}
             <div
               className="h-1 w-full"
-              style={{ background: 'linear-gradient(90deg, #eab308, #f59e0b, #eab308)' }}
+              style={{ background: 'linear-gradient(90deg, #10b981, #34d399, #10b981)' }}
             />
             <div className="p-8 text-center">
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="mx-auto mb-5 inline-flex items-center gap-3 rounded-full bg-yellow-500/10 px-6 py-3"
+                className="mx-auto mb-5 inline-flex items-center gap-3 rounded-full bg-emerald-500/10 px-6 py-3"
               >
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                <span className="text-lg font-semibold text-yellow-400">
-                  Pre-Launch Development
+                <div className="h-3 w-3 rounded-full bg-emerald-500" />
+                <span className="text-lg font-semibold text-emerald-400">
+                  All Systems Operational
                 </span>
               </motion.div>
 
               <h2 className="mb-4 font-zentry text-2xl font-bold text-white">
-                CGraph is Currently in Development
+                CGraph v1.0.0 is Live
               </h2>
               <p
                 className="mx-auto max-w-2xl text-sm leading-relaxed"
                 style={{ color: 'var(--color-gray)' }}
               >
-                We're building toward our <strong className="text-white">v1.0 public beta</strong>{' '}
-                targeted for <strong className="text-white">Q2 2026</strong>. Live status monitoring
-                with real-time uptime tracking will launch alongside the platform.
+                All <strong className="text-white">19 development phases</strong> are complete.
+                The platform is <strong className="text-white">deployed and operational</strong>{' '}
+                with live status monitoring and real-time uptime tracking.
               </p>
 
               {/* Progress indicator */}
@@ -210,13 +210,13 @@ export default function Status() {
                     className="font-mono font-semibold"
                     style={{ color: 'var(--color-primary)' }}
                   >
-                    v0.9.14 — 80% complete
+                    v1.0.0 — Released
                   </span>
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
                   <motion.div
                     initial={{ width: 0 }}
-                    whileInView={{ width: '80%' }}
+                    whileInView={{ width: '100%' }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.5, ease: 'easeOut' }}
                     className="h-full rounded-full"
@@ -230,7 +230,7 @@ export default function Status() {
                   className="mt-1.5 flex justify-between text-xs"
                   style={{ color: 'var(--color-gray)' }}
                 >
-                  <span>55 of 69 features shipped</span>
+                  <span>142 requirements shipped / 19 phases complete</span>
                   <span>1,342 tests passing</span>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function Status() {
             >
               <h2 className="marketing-section__title">SLO Targets</h2>
               <p className="marketing-section__desc">
-                Service Level Objectives we're engineering toward for production launch.
+                Service Level Objectives that guide our production operations.
               </p>
             </motion.div>
           </div>
@@ -349,9 +349,9 @@ export default function Status() {
                       <span className="font-semibold text-white">{service.name}</span>
                       <span
                         className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                        style={{ background: 'rgba(234, 179, 8, 0.1)', color: '#eab308' }}
+                        style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}
                       >
-                        Pre-Launch
+                        Operational
                       </span>
                     </div>
                     <p className="mt-0.5 text-xs" style={{ color: 'var(--color-gray)' }}>

@@ -252,9 +252,6 @@ export default function Documentation() {
                             </span>
                             <span className="text-sm text-white">{article.title}</span>
                           </div>
-                          <span className="shrink-0 text-xs" style={{ color: 'var(--color-gray)' }}>
-                            {article.time}
-                          </span>
                         </Link>
                       ))}
                   </div>

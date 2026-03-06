@@ -72,12 +72,12 @@ export default function BlogArticle() {
   return (
     <MarketingLayout
       title={article.title}
-      subtitle={`${article.date} · ${article.readTime}`}
+      subtitle={`${article.date}`}
       eyebrow={article.category}
     >
       <SEO
         title={article.title}
-        description={`${article.category} — ${article.date}. ${article.readTime} read.`}
+        description={`${article.category} — ${article.date}.`}
         path={`/blog/${slug}`}
         type="article"
       />
@@ -149,8 +149,6 @@ export default function BlogArticle() {
                   style={{ color: 'var(--color-gray)' }}
                 >
                   <span>{article.date}</span>
-                  <span className="opacity-40">·</span>
-                  <span>{article.readTime}</span>
                 </div>
               </div>
             </div>
@@ -287,8 +285,6 @@ export default function BlogArticle() {
                           style={{ color: 'var(--color-gray)' }}
                         >
                           <span>{rel.date}</span>
-                          <span className="opacity-40">·</span>
-                          <span>{rel.readTime}</span>
                         </div>
                       </div>
                     </Link>

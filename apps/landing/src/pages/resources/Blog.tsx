@@ -56,21 +56,22 @@ export default function Blog() {
               <div className="flex-1">
                 <div className="mb-3 flex items-center gap-3">
                   <span className="blog-release-badge">Latest Release</span>
-                  <span className="font-mono text-sm text-gray-400">v0.9.26</span>
+                  <span className="font-mono text-sm text-gray-400">v1.0.0</span>
                 </div>
                 <h3 className="blog-release-title mb-2 text-xl font-bold text-white md:text-2xl">
-                  Architecture Refactor Complete
+                  v1.0.0 — All 19 Phases Complete
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                  Router split into 7 domain modules (989→122 lines), 28 components organized into 6
-                  directories, Turborepo remote caching, bundle size monitoring. Score: 9.2/10.
+                  Every planned phase shipped. 142 requirements across E2EE messaging, forums,
+                  gamification, voice & video, monetization, and mobile parity. All packages synced
+                  to v1.0.0. Production deployed on Fly.io, Vercel, and Supabase.
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">
                 <div className="blog-release-icon flex items-center justify-center">
-                  <NeonIcon symbol="🏗️" size={40} title="Architecture refactor" />
+                  <NeonIcon symbol="🚀" size={40} title="v1.0.0 release" />
                 </div>
-                <span className="text-xs text-gray-500">Feb 15, 2026</span>
+                <span className="text-xs text-gray-500">Mar 4, 2026</span>
               </div>
             </div>
           </motion.div>
@@ -201,8 +202,6 @@ export default function Blog() {
                             style={{ color: 'var(--color-gray)' }}
                           >
                             <span>{post.date}</span>
-                            <span className="opacity-40">·</span>
-                            <span>{post.readTime}</span>
                           </div>
                         </div>
                       </div>
@@ -267,15 +266,6 @@ export default function Blog() {
                           </span>
                           <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
                             {post.date}
-                          </span>
-                          <span
-                            className="text-xs opacity-40"
-                            style={{ color: 'var(--color-gray)' }}
-                          >
-                            ·
-                          </span>
-                          <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                            {post.readTime}
                           </span>
                         </div>
                         <h3 className="mb-2 text-base font-bold leading-snug text-white transition-colors group-hover:text-emerald-300">

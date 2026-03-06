@@ -51,12 +51,12 @@ export default function DocArticle() {
   return (
     <MarketingLayout
       title={article.title}
-      subtitle={`${article.category} · ${article.readTime}`}
+      subtitle={`${article.category}`}
       eyebrow="Documentation"
     >
       <SEO
         title={`${article.title} — Docs`}
-        description={`${article.category} documentation — ${article.readTime} read.`}
+        description={`${article.category} documentation.`}
         path={`/docs/${slug}`}
         type="article"
       />
@@ -108,9 +108,6 @@ export default function DocArticle() {
                 }}
               >
                 {article.category}
-              </span>
-              <span className="ml-3 text-sm" style={{ color: 'var(--color-gray)' }}>
-                {article.readTime}
               </span>
             </div>
           </motion.div>
