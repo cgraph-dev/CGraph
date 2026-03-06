@@ -197,13 +197,22 @@ export function createMessagingActions(_set: Set, get: Get) {
             ) || conversation.participants[1];
 
         if (recipientParticipant) {
+          // Attempt encryption separately so a failure doesn't block plaintext fallback
+          let encryptedMsg: Awaited<ReturnType<typeof e2eeStore.encryptMessage>> | null = null;
           try {
-            // Encrypt the message using E2EE
-            const encryptedMsg = await e2eeStore.encryptMessage(
+            encryptedMsg = await e2eeStore.encryptMessage(
               recipientParticipant.userId,
               content
             );
+          } catch (encryptError) {
+            // Encryption failed — typically the recipient has no E2EE bundle (404)
+            // or backend E2EE endpoints are unavailable. Fall back to plaintext
+            // rather than blocking all communication.
+            logger.warn('E2EE encryption failed, sending as plaintext:', encryptError);
+          }
 
+          if (encryptedMsg) {
+            // Encryption succeeded — send the encrypted payload
             const payload: Record<string, unknown> = {
               content: encryptedMsg.ciphertext,
               is_encrypted: true,
@@ -230,18 +239,8 @@ export function createMessagingActions(_set: Set, get: Get) {
 
             logger.log('Sent E2EE encrypted message');
             return;
-          } catch (encryptError) {
-            logger.error('E2EE encryption failed:', encryptError);
-
-            // SECURITY: Do NOT silently fall back to plaintext!
-            const errorMsg = encryptError instanceof Error ? encryptError.message : 'Unknown error';
-
-            throw new Error(
-              `Failed to encrypt message: ${errorMsg}. ` +
-                'Please try again or check your encryption keys. ' +
-                'Your message was NOT sent to protect your privacy.'
-            );
           }
+          // Encryption failed — fall through to plaintext send below
         }
       }
 

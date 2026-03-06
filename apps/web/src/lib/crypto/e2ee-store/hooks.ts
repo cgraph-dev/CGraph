@@ -19,9 +19,12 @@ import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
  */
 export function usePreKeyReplenishment(threshold: number = 20) {
   const { isInitialized, getPrekeyCount, uploadMorePrekeys } = useE2EEStore();
+  const failCountRef = React.useRef(0);
 
   const checkAndReplenish = React.useCallback(async () => {
     if (!isInitialized) return;
+    // Back off after repeated failures (backend may not support E2EE endpoints)
+    if (failCountRef.current >= 2) return;
     try {
       const count = await getPrekeyCount();
       if (count < threshold) {
@@ -29,8 +32,12 @@ export function usePreKeyReplenishment(threshold: number = 20) {
         await uploadMorePrekeys(toUpload);
         logger.log(`Replenished ${toUpload} one-time prekeys`);
       }
-    } catch (err) {
-      logger.error('Error replenishing prekeys:', err);
+      failCountRef.current = 0;
+    } catch {
+      failCountRef.current++;
+      if (failCountRef.current < 2) {
+        logger.warn('Prekey replenishment failed, will retry once');
+      }
     }
   }, [isInitialized, threshold, getPrekeyCount, uploadMorePrekeys]);
 
