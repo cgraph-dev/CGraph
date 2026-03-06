@@ -12,6 +12,7 @@ export const categoryColors: Record<string, CategoryColor> = {
   Security: { bg: 'rgba(239, 68, 68, 0.12)', text: '#f87171' },
   Architecture: { bg: 'rgba(16, 185, 129, 0.12)', text: '#34d399' },
   Product: { bg: 'rgba(234, 179, 8, 0.12)', text: '#fbbf24' },
+  Release: { bg: 'rgba(14, 165, 233, 0.12)', text: '#38bdf8' },
 } as const;
 
 /** Default fallback color for unknown categories */
@@ -22,6 +23,7 @@ export const defaultCategoryColor: CategoryColor = categoryColors.Engineering ??
 
 /** Ordered list of all article slugs (newest first) */
 export const articleSlugs = [
+  'v1-release',
   'architecture-refactor',
   'compliance-pass',
   'platform-parity',
@@ -36,4 +38,4 @@ export const articleSlugs = [
 ] as const;
 
 /** Available filter categories for the blog listing */
-export const categories = ['All', 'Engineering', 'Security', 'Architecture', 'Product'] as const;
+export const categories = ['All', 'Engineering', 'Security', 'Architecture', 'Product', 'Release'] as const;
