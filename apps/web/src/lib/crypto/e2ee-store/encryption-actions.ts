@@ -163,7 +163,7 @@ export const createUploadMorePrekeys =
       });
     }
 
-    const response = await api.post('/api/v1/e2ee/prekeys', { prekeys });
+    const response = await api.post('/api/v1/e2ee/keys/prekeys', { prekeys });
     const uploadedCount = response.data.data?.count || count;
 
     set((state) => ({ prekeyCount: state.prekeyCount + uploadedCount }));
@@ -175,7 +175,7 @@ export const createUploadMorePrekeys =
  */
 export const createGetPrekeyCount = (set: Set) => async (): Promise<number> => {
   try {
-    const response = await api.get('/api/v1/e2ee/prekeys/count');
+    const response = await api.get('/api/v1/e2ee/keys/count');
     const count = response.data.data?.count || 0;
     set({ prekeyCount: count });
     return count;
@@ -225,7 +225,7 @@ export const createGetDevices =
 export const createRevokeDevice =
   (set: Set, get: Get) =>
   async (deviceId: string): Promise<void> => {
-    await api.delete(`/api/v1/e2ee/keys/${deviceId}`);
+    await api.delete(`/api/v1/e2ee/devices/${deviceId}`);
 
     if (get().deviceId === deviceId) {
       clearE2EEData();

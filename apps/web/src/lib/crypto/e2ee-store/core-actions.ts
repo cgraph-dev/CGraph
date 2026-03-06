@@ -178,7 +178,7 @@ export const createResetE2EE = (set: Set, get: Get) => async (): Promise<void> =
 
     if (deviceId) {
       try {
-        await api.delete(`/api/v1/e2ee/keys/${deviceId}`);
+        await api.delete(`/api/v1/e2ee/devices/${deviceId}`);
       } catch {
         // Ignore error if already revoked
       }
@@ -217,7 +217,7 @@ export const createGetRecipientBundle =
       return cached.bundle;
     }
 
-    const response = await api.get(`/api/v1/e2ee/bundle/${recipientId}`);
+    const response = await api.get(`/api/v1/e2ee/keys/${recipientId}`);
     const bundle = response.data.data || response.data;
 
     bundleCache.set(recipientId, {
