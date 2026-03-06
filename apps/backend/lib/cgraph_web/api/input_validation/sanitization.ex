@@ -7,23 +7,25 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   """
 
   # ---------------------------------------------------------------------------
-  # Format Patterns
+  # Format Patterns (functions to avoid Elixir 1.18 module attribute restriction)
   # ---------------------------------------------------------------------------
 
-  @email_pattern ~r/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-  @url_pattern ~r/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/
-  @uuid_pattern ~r/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-  @ulid_pattern ~r/^[0-7][0-9A-HJKMNP-TV-Z]{25}$/
-  @slug_pattern ~r/^[a-z0-9]+(?:-[a-z0-9]+)*$/
-  @phone_pattern ~r/^\+?[1-9]\d{1,14}$/
-  @hex_color_pattern ~r/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
-  @ethereum_address_pattern ~r/^0x[a-fA-F0-9]{40}$/
+  defp email_pattern, do: ~r/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+  defp url_pattern, do: ~r/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/
+  defp uuid_pattern, do: ~r/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  defp ulid_pattern, do: ~r/^[0-7][0-9A-HJKMNP-TV-Z]{25}$/
+  defp slug_pattern, do: ~r/^[a-z0-9]+(?:-[a-z0-9]+)*$/
+  defp phone_pattern, do: ~r/^\+?[1-9]\d{1,14}$/
+  defp hex_color_pattern, do: ~r/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+  defp ethereum_address_pattern, do: ~r/^0x[a-fA-F0-9]{40}$/
 
   # Dangerous patterns for injection detection
-  @sql_injection_patterns [
-    ~r/(\b(select|insert|update|delete|drop|union|exec|execute)\b.*\b(from|into|where|table)\b)/i,
-    ~r/(;|--|\|\||\/\*|\*\/)/
-  ]
+  defp sql_injection_patterns do
+    [
+      ~r/(\b(select|insert|update|delete|drop|union|exec|execute)\b.*\b(from|into|where|table)\b)/i,
+      ~r/(;|--|\|\||\/\*|\*\/)/
+    ]
+  end
 
   @max_string_length 10_000
 
@@ -36,7 +38,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   def check_format(value, nil), do: {:ok, value}
 
   def check_format(value, :email) when is_binary(value) do
-    if Regex.match?(@email_pattern, value) do
+    if Regex.match?(email_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid email format"]}
@@ -44,7 +46,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :url) when is_binary(value) do
-    if Regex.match?(@url_pattern, value) do
+    if Regex.match?(url_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid URL format"]}
@@ -52,7 +54,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :uuid) when is_binary(value) do
-    if Regex.match?(@uuid_pattern, value) do
+    if Regex.match?(uuid_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid UUID format"]}
@@ -60,7 +62,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :ulid) when is_binary(value) do
-    if Regex.match?(@ulid_pattern, value) do
+    if Regex.match?(ulid_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid ULID format"]}
@@ -68,7 +70,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :slug) when is_binary(value) do
-    if Regex.match?(@slug_pattern, value) do
+    if Regex.match?(slug_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid slug format (lowercase letters, numbers, hyphens only)"]}
@@ -76,7 +78,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :phone) when is_binary(value) do
-    if Regex.match?(@phone_pattern, value) do
+    if Regex.match?(phone_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid phone format"]}
@@ -84,7 +86,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :hex_color) when is_binary(value) do
-    if Regex.match?(@hex_color_pattern, value) do
+    if Regex.match?(hex_color_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid hex color format"]}
@@ -92,7 +94,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
   end
 
   def check_format(value, :ethereum_address) when is_binary(value) do
-    if Regex.match?(@ethereum_address_pattern, value) do
+    if Regex.match?(ethereum_address_pattern(), value) do
       {:ok, value}
     else
       {:error, ["has invalid Ethereum address format"]}
@@ -126,7 +128,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
 
   @spec contains_injection_pattern?(String.t()) :: boolean()
   defp contains_injection_pattern?(value) do
-    Enum.any?(@sql_injection_patterns, fn pattern ->
+    Enum.any?(sql_injection_patterns(), fn pattern ->
       Regex.match?(pattern, value)
     end)
   end

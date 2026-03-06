@@ -41,39 +41,45 @@ defmodule CGraph.Security.InputValidator do
   @max_email_length 254
 
   # Dangerous SQL patterns
-  @sql_injection_patterns [
-    ~r/(\s|^)(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE|EXEC|EXECUTE)\s/i,
-    ~r/\b(UNION\s+ALL|UNION\s+SELECT)\b/i,
-    ~r/(--|#|\/\*|\*\/)/,  # SQL comments
-    ~r/(\bOR\b|\bAND\b)\s+\d+\s*=\s*\d+/i,  # OR 1=1, AND 2=2
-    ~r/\bSLEEP\s*\(/i,  # Time-based injection
-    ~r/\bBENCHMARK\s*\(/i,
-    ~r/\bWAITFOR\s+DELAY\b/i
-  ]
+  defp sql_injection_patterns do
+    [
+      ~r/(\s|^)(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE|EXEC|EXECUTE)\s/i,
+      ~r/\b(UNION\s+ALL|UNION\s+SELECT)\b/i,
+      ~r/(--|#|\/\*|\*\/)/,  # SQL comments
+      ~r/(\bOR\b|\bAND\b)\s+\d+\s*=\s*\d+/i,  # OR 1=1, AND 2=2
+      ~r/\bSLEEP\s*\(/i,  # Time-based injection
+      ~r/\bBENCHMARK\s*\(/i,
+      ~r/\bWAITFOR\s+DELAY\b/i
+    ]
+  end
 
   # XSS patterns
-  @xss_patterns [
-    ~r/<script\b[^>]*>.*?<\/script>/is,
-    ~r/javascript\s*:/i,
-    ~r/vbscript\s*:/i,
-    ~r/data\s*:[^,]*base64/i,
-    ~r/on\w+\s*=/i,  # onclick=, onerror=, etc.
-    ~r/<iframe\b/i,
-    ~r/<object\b/i,
-    ~r/<embed\b/i,
-    ~r/<form\b/i,
-    ~r/<meta\b[^>]*http-equiv/i
-  ]
+  defp xss_patterns do
+    [
+      ~r/<script\b[^>]*>.*?<\/script>/is,
+      ~r/javascript\s*:/i,
+      ~r/vbscript\s*:/i,
+      ~r/data\s*:[^,]*base64/i,
+      ~r/on\w+\s*=/i,  # onclick=, onerror=, etc.
+      ~r/<iframe\b/i,
+      ~r/<object\b/i,
+      ~r/<embed\b/i,
+      ~r/<form\b/i,
+      ~r/<meta\b[^>]*http-equiv/i
+    ]
+  end
 
   # Path traversal patterns
-  @path_traversal_patterns [
-    ~r/\.\.\//,
-    ~r/\.\.\\/,
-    ~r/%2e%2e%2f/i,
-    ~r/%2e%2e\//i,
-    ~r/\.\.%2f/i,
-    ~r/%252e%252e%252f/i  # Double-encoded
-  ]
+  defp path_traversal_patterns do
+    [
+      ~r/\.\.\//,
+      ~r/\.\.\\/,
+      ~r/%2e%2e%2f/i,
+      ~r/%2e%2e\//i,
+      ~r/\.\.%2f/i,
+      ~r/%252e%252e%252f/i  # Double-encoded
+    ]
+  end
 
   # Note: Command injection patterns reserved for future shell command validation
   # @command_injection_patterns [
@@ -286,7 +292,7 @@ defmodule CGraph.Security.InputValidator do
   end
 
   defp check_sql_injection(text) do
-    if Enum.any?(@sql_injection_patterns, &Regex.match?(&1, text)) do
+    if Enum.any?(sql_injection_patterns(), &Regex.match?(&1, text)) do
       {:error, :sql_injection_detected}
     else
       :ok
@@ -294,7 +300,7 @@ defmodule CGraph.Security.InputValidator do
   end
 
   defp check_xss(text, allow_html) do
-    if not allow_html and Enum.any?(@xss_patterns, &Regex.match?(&1, text)) do
+    if not allow_html and Enum.any?(xss_patterns(), &Regex.match?(&1, text)) do
       {:error, :xss_detected}
     else
       :ok
@@ -302,7 +308,7 @@ defmodule CGraph.Security.InputValidator do
   end
 
   defp check_path_traversal(text) do
-    if Enum.any?(@path_traversal_patterns, &Regex.match?(&1, text)) do
+    if Enum.any?(path_traversal_patterns(), &Regex.match?(&1, text)) do
       {:error, :path_traversal_detected}
     else
       :ok

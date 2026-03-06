@@ -59,7 +59,8 @@ defmodule CGraphWeb.Plugs.RequestId do
   @request_id_header "x-request-id"
   @correlation_id_header "x-correlation-id"
   @max_id_length 128
-  @id_pattern ~r/^[a-zA-Z0-9_-]+$/
+
+  defp id_pattern, do: ~r/^[a-zA-Z0-9_-]+$/
 
   @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
@@ -100,7 +101,7 @@ defmodule CGraphWeb.Plugs.RequestId do
   end
 
   defp valid_id?(id) do
-    byte_size(id) <= @max_id_length and Regex.match?(@id_pattern, id)
+    byte_size(id) <= @max_id_length and Regex.match?(id_pattern(), id)
   end
 
   defp generate_request_id do
