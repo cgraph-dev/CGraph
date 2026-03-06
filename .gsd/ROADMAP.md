@@ -1140,4 +1140,21 @@ Plans:
 
 ---
 
-_Roadmap: 23 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-06_
+### Phase 24: Landing Page Update — Accurate v1.0.0 Information
+
+**Goal:** All landing page content matches the actual v1.0.0 state — version numbers, feature descriptions, stats, milestones, status page, blog, download links, navigation, and company subpages are accurate.
+
+**Depends on:** —
+**Plans:** 6 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Core data files (landing-data.ts, pricing-data.ts) + version sync to 1.0.0
+- [ ] 24-02-PLAN.md — About page comprehensive update (stats, milestones, tech stack, vision)
+- [ ] 24-03-PLAN.md — Status page (live banner) + Blog (v1.0.0 release post)
+- [ ] 24-04-PLAN.md — Download pages + Navigation + VoiceVideoShowcase accuracy
+- [ ] 24-05-PLAN.md — Press, Careers, Contact subpages accuracy pass
+- [ ] 24-06-PLAN.md — Visual verification checkpoint (human browsing)
+
+---
+
+_Roadmap: 24 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-06_
