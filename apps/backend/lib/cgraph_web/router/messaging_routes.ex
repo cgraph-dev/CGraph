@@ -128,6 +128,9 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         end
 
         # Call History (voice/video calls)
+        get "/calls/missed-count", CallController, :missed_count
+        post "/calls/missed-seen", CallController, :missed_seen
+        get "/calls/ice-servers", CallController, :ice_servers
         resources "/calls", CallController, only: [:index, :show]
 
         # LiveKit SFU (group voice/video calls)

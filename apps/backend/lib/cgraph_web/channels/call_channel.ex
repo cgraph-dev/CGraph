@@ -298,6 +298,64 @@ defmodule CGraphWeb.CallChannel do
   end
 
   # ---------------------------------------------------------------------------
+  # Client Events - Quality & Connection State
+  # ---------------------------------------------------------------------------
+
+  @impl true
+  def handle_in("quality_report", metrics, socket) when is_map(metrics) do
+    room_id = socket.assigns.room_id
+    user_id = socket.assigns.user_id
+    CGraph.WebRTC.CallQuality.report_metrics(room_id, user_id, metrics)
+    {:reply, :ok, socket}
+  end
+
+  @impl true
+  def handle_in("connection_state", %{"state" => ice_state}, socket) do
+    room_id = socket.assigns.room_id
+    user_id = socket.assigns.user_id
+
+    case ice_state do
+      "failed" ->
+        # Notify peer to attempt ICE restart
+        broadcast_from!(socket, "ice:restart_needed", %{participant_id: user_id})
+        {:reply, :ok, socket}
+
+      "disconnected" ->
+        # Notify peer that reconnection is happening
+        broadcast_from!(socket, "participant:reconnecting", %{participant_id: user_id})
+        {:reply, :ok, socket}
+
+      "connected" ->
+        broadcast_from!(socket, "participant:connected", %{participant_id: user_id})
+        {:reply, :ok, socket}
+
+      _ ->
+        Logger.debug("ice_connection_state_change",
+          room_id: room_id,
+          user_id: user_id,
+          state: ice_state
+        )
+        {:reply, :ok, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("screen_share_start", _payload, socket) do
+    broadcast_from!(socket, "screen_share_started", %{
+      participant_id: socket.assigns.user_id
+    })
+    handle_in("media:update", %{"media" => %{"screen" => true}}, socket)
+  end
+
+  @impl true
+  def handle_in("screen_share_stop", _payload, socket) do
+    broadcast_from!(socket, "screen_share_stopped", %{
+      participant_id: socket.assigns.user_id
+    })
+    handle_in("media:update", %{"media" => %{"screen" => false}}, socket)
+  end
+
+  # ---------------------------------------------------------------------------
   # Client Events - Call Control
   # ---------------------------------------------------------------------------
 

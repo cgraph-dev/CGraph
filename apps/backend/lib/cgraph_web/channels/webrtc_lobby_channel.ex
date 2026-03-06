@@ -57,6 +57,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   require Logger
 
   alias CGraph.WebRTC
+  alias CGraph.Notifications.Notifications
 
   @impl true
   @doc "Handles a client joining the channel."
@@ -108,6 +109,27 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
           case WebRTC.ring(room.id, target_ids) do
             :ok ->
               Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
+
+              # Send push notifications to callees
+              caller = CGraph.Accounts.get_user(user_id)
+              call_type_label = if call_type == :video, do: "video", else: "voice"
+
+              Enum.each(target_ids, fn target_id ->
+                case CGraph.Accounts.get_user(target_id) do
+                  nil -> :ok
+                  callee ->
+                    Notifications.notify(callee, :incoming_call,
+                      "Incoming #{call_type_label} call from #{caller && caller.username || "Unknown"}",
+                      body: "Tap to answer",
+                      actor: caller,
+                      data: %{
+                        "call_id" => room.id,
+                        "call_type" => call_type_label,
+                        "room_id" => room.id
+                      }
+                    )
+                end
+              end)
 
             {:error, reason} ->
               Logger.warning("webrtc_ring_failed", reason: inspect(reason))

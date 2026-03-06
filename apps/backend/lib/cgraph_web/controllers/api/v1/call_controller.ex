@@ -8,6 +8,7 @@ defmodule CGraphWeb.API.V1.CallController do
   use CGraphWeb, :controller
 
   alias CGraph.WebRTC.Calls
+  alias CGraph.WebRTC.Signaling
   alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
@@ -75,6 +76,41 @@ defmodule CGraphWeb.API.V1.CallController do
         |> put_status(:not_found)
         |> json(%{error: "Call not found"})
     end
+  end
+
+  @doc """
+  Get unacknowledged missed call count.
+
+  GET /api/v1/calls/missed-count
+  """
+  @spec missed_count(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def missed_count(conn, _params) do
+    user = conn.assigns.current_user
+    count = Calls.get_missed_call_count(user.id)
+    json(conn, %{missed_count: count})
+  end
+
+  @doc """
+  Mark all missed calls as seen.
+
+  POST /api/v1/calls/missed-seen
+  """
+  @spec missed_seen(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def missed_seen(conn, _params) do
+    user = conn.assigns.current_user
+    {updated, _} = Calls.mark_missed_calls_seen(user.id)
+    json(conn, %{updated: updated})
+  end
+
+  @doc """
+  Return ICE server configuration for WebRTC clients.
+
+  GET /api/v1/calls/ice-servers
+  """
+  @spec ice_servers(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def ice_servers(conn, _params) do
+    servers = Signaling.get_ice_servers()
+    json(conn, %{ice_servers: servers})
   end
 
   # ── Private helpers ──────────────────────────────────────────────────

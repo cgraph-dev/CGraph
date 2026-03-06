@@ -16,7 +16,8 @@ defmodule CGraph.WebRTC.CallHistory do
   @derive {Jason.Encoder, only: [
     :id, :room_id, :type, :creator_id, :group_id, :state,
     :participant_ids, :max_participants, :started_at, :ended_at,
-    :duration_seconds, :inserted_at
+    :duration_seconds, :quality_summary, :end_reason, :missed_seen,
+    :conversation_id, :inserted_at
   ]}
 
   schema "call_history" do
@@ -28,9 +29,13 @@ defmodule CGraph.WebRTC.CallHistory do
     field :started_at, :utc_datetime_usec
     field :ended_at, :utc_datetime_usec
     field :duration_seconds, :integer
+    field :quality_summary, :map, default: %{}
+    field :end_reason, :string
+    field :missed_seen, :boolean, default: false
 
     belongs_to :creator, CGraph.Accounts.User
     belongs_to :group, CGraph.Groups.Group
+    belongs_to :conversation, CGraph.Messaging.Conversation
 
     timestamps()
   end
@@ -42,10 +47,12 @@ defmodule CGraph.WebRTC.CallHistory do
     |> cast(attrs, [
       :room_id, :type, :creator_id, :group_id, :state,
       :participant_ids, :max_participants, :started_at, :ended_at,
-      :duration_seconds
+      :duration_seconds, :quality_summary, :end_reason, :missed_seen,
+      :conversation_id
     ])
     |> validate_required([:room_id, :type, :state])
     |> validate_inclusion(:type, ~w(audio video screen_share))
-    |> validate_inclusion(:state, ~w(waiting active ended))
+    |> validate_inclusion(:state, ~w(waiting active ended ringing))
+    |> validate_inclusion(:end_reason, ~w(completed rejected missed timeout failed busy), message: "invalid end reason")
   end
 end

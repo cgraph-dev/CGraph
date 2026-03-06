@@ -196,6 +196,25 @@ defmodule CGraph.Factory do
     }
   end
 
+  def call_history_factory do
+    user = build(:user)
+
+    %CGraph.WebRTC.CallHistory{
+      room_id: Ecto.UUID.generate(),
+      type: "audio",
+      state: "ended",
+      creator: user,
+      participant_ids: [user.id || Ecto.UUID.generate()],
+      max_participants: 2,
+      started_at: DateTime.utc_now() |> DateTime.add(-60, :second),
+      ended_at: DateTime.utc_now(),
+      duration_seconds: 60,
+      end_reason: "completed",
+      missed_seen: false,
+      quality_summary: %{}
+    }
+  end
+
   # ============================================================================
   # Messaging Factories
   # ============================================================================
