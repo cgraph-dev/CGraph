@@ -43,27 +43,43 @@ export const PricingSection = memo(function PricingSection() {
 
       {/* Monthly / Annual Toggle */}
       <div className="mx-auto mb-12 flex items-center justify-center gap-4">
-        <span className={`text-sm font-medium ${!annual ? 'text-white' : 'text-gray-500'}`}>
+        <span
+          className={`text-sm font-medium transition-colors duration-300 ${!annual ? 'text-white' : 'text-gray-500'}`}
+        >
           Monthly
         </span>
         <button
           onClick={() => setAnnual(!annual)}
-          className={`relative h-7 w-14 rounded-full transition-colors ${
-            annual ? 'bg-emerald-600' : 'bg-dark-600'
-          }`}
+          className="group relative h-8 w-[52px] rounded-full border border-white/10 bg-dark-800 p-[3px] transition-all duration-300 hover:border-emerald-500/30"
           aria-label="Toggle annual billing"
         >
-          <span
-            className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-              annual ? 'translate-x-7' : 'translate-x-0.5'
-            }`}
+          {/* Animated glow track when annual is active */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-600/80 to-emerald-500/60"
+            initial={false}
+            animate={{ opacity: annual ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+          />
+          {/* Knob */}
+          <motion.span
+            className="relative z-10 block h-[22px] w-[22px] rounded-full bg-white shadow-md"
+            initial={false}
+            animate={{ x: annual ? 22 : 0 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           />
         </button>
-        <span className={`text-sm font-medium ${annual ? 'text-white' : 'text-gray-500'}`}>
+        <span
+          className={`text-sm font-medium transition-colors duration-300 ${annual ? 'text-white' : 'text-gray-500'}`}
+        >
           Annual
-          <span className="ml-1.5 rounded bg-emerald-900/50 px-1.5 py-0.5 text-xs text-emerald-400">
+          <motion.span
+            className="ml-1.5 inline-block rounded bg-emerald-900/50 px-1.5 py-0.5 text-xs text-emerald-400"
+            initial={false}
+            animate={{ scale: annual ? 1 : 0.95, opacity: annual ? 1 : 0.5 }}
+            transition={{ duration: 0.2 }}
+          >
             Save 17%
-          </span>
+          </motion.span>
         </span>
       </div>
 
@@ -98,9 +114,15 @@ export const PricingSection = memo(function PricingSection() {
 
               <div className="mt-6 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-white">
-                  {price === 0 ? 'Free' : `$${price.toFixed(2)}`}
+                  {tier.name === 'Enterprise'
+                    ? 'Contact Us'
+                    : price === 0
+                      ? 'Free'
+                      : `$${price.toFixed(2)}`}
                 </span>
-                {price > 0 && <span className="text-gray-500">/mo</span>}
+                {price > 0 && tier.name !== 'Enterprise' && (
+                  <span className="text-gray-500">/mo</span>
+                )}
               </div>
 
               <div className="mt-8">

@@ -28,7 +28,7 @@ export const pricingTiers: readonly PricingTier[] = [
     highlighted: false,
     features: [
       'E2E encrypted messaging',
-      'Up to 5 forums',
+      'Up to 1 forum',
       '25 MB file uploads',
       'Voice & video calls',
       'Basic gamification (XP, levels)',
@@ -38,15 +38,15 @@ export const pricingTiers: readonly PricingTier[] = [
   },
   {
     name: 'Premium',
-    price: 14.99,
-    annualPrice: 12.49,
+    price: 4.99,
+    annualPrice: 4.15,
     description: 'For power users and growing communities.',
     cta: 'Start Free Trial',
     ctaLink: 'https://web.cgraph.org/register?plan=premium',
     highlighted: true,
     features: [
       'Everything in Free',
-      'Unlimited forums',
+      'Up to 5 forums',
       '500 MB file uploads',
       'Scheduled messages',
       'Advanced search & filters',
@@ -58,8 +58,8 @@ export const pricingTiers: readonly PricingTier[] = [
   },
   {
     name: 'Enterprise',
-    price: 29.99,
-    annualPrice: 24.99,
+    price: 0,
+    annualPrice: 0,
     description: 'For organizations that need more.',
     cta: 'Contact Us',
     ctaLink: '/contact',

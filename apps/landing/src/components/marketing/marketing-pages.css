@@ -1273,9 +1273,7 @@
   letter-spacing: 0.05em;
   text-decoration: none;
   transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-  box-shadow:
-    0 0 20px -4px rgba(16, 185, 129, 0.3),
-    0 0 14px -7px rgba(139, 92, 246, 0.25);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -1361,9 +1359,7 @@
 .gl-nav-unified__cta:hover {
   border-color: rgba(16, 185, 129, 0.5);
   transform: translateY(-1px);
-  box-shadow:
-    0 0 30px -4px rgba(16, 185, 129, 0.46),
-    0 0 16px -2px rgba(139, 92, 246, 0.28);
+  box-shadow: none;
 }
 
 .gl-nav-unified__cta:hover .gl-nav-unified__cta-ring {
