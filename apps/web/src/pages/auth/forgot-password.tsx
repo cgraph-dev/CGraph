@@ -42,7 +42,7 @@ export default function ForgotPassword() {
         {/* Mobile Logo */}
         <div className="text-center lg:hidden">
           <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
-            <LogoIcon size={64} color="gradient" showGlow={false} />
+            <LogoIcon size={96} color="gradient" showGlow={false} />
           </a>
         </div>
 
@@ -96,7 +96,7 @@ export default function ForgotPassword() {
       {/* Mobile Logo */}
       <div className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
-          <LogoIcon size={64} color="gradient" showGlow={false} />
+          <LogoIcon size={96} color="gradient" showGlow={false} />
         </a>
       </div>
 

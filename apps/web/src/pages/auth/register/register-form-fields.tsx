@@ -55,7 +55,6 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
           autoComplete="email"
           className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder="you@example.com"
-          whileFocus={reduced ? {} : { scale: 1.01 }}
         />
       </motion.div>
 
@@ -74,7 +73,6 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
           pattern="[a-zA-Z0-9_]+"
           className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder="johndoe"
-          whileFocus={reduced ? {} : { scale: 1.01 }}
         />
         <p className="mt-1 text-xs text-gray-500">
           Letters, numbers, and underscores only. 3-30 characters.
@@ -95,7 +93,6 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
             autoComplete="new-password"
             className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
-            whileFocus={reduced ? {} : { scale: 1.01 }}
           />
           <PasswordToggleButton
             show={props.showPassword}
@@ -118,7 +115,6 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
             autoComplete="new-password"
             className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-white placeholder-white/30 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
-            whileFocus={reduced ? {} : { scale: 1.01 }}
           />
           <PasswordToggleButton
             show={props.showConfirmPassword}

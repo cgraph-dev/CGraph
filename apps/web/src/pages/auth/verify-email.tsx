@@ -38,7 +38,7 @@ export default function VerifyEmail() {
           {/* Logo */}
           <div className="mb-6 text-center">
             <a href="https://www.cgraph.org" className="inline-flex items-center gap-2">
-              <LogoIcon size={64} color="gradient" showGlow={false} />
+              <LogoIcon size={96} color="gradient" showGlow={false} />
             </a>
           </div>
 

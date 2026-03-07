@@ -295,35 +295,6 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .auth-cta-button::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(16, 185, 129, 0.6) 25%,
-      rgba(139, 92, 246, 0.6) 50%,
-      rgba(16, 185, 129, 0.6) 75%,
-      transparent
-    );
-    background-size: 200% 100%;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0.5;
-    animation: auth-border-flow 4s linear infinite;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  .auth-cta-button:hover::before {
-    opacity: 1;
-  }
-
   .auth-cta-button:hover {
     border-color: rgba(16, 185, 129, 0.5);
     transform: translateY(-1px);
