@@ -112,13 +112,15 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
               Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
 
               # Send push notifications to callees
-              caller = CGraph.Accounts.get_user(user_id)
+              caller = case CGraph.Accounts.get_user(user_id) do
+                {:ok, u} -> u
+                _ -> nil
+              end
               call_type_label = if call_type == :video, do: "video", else: "voice"
 
               Enum.each(target_ids, fn target_id ->
                 case CGraph.Accounts.get_user(target_id) do
-                  nil -> :ok
-                  callee ->
+                  {:ok, callee} ->
                     Notifications.notify(callee, :incoming_call,
                       "Incoming #{call_type_label} call from #{caller && caller.username || "Unknown"}",
                       body: "Tap to answer",
@@ -129,6 +131,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
                         "room_id" => room.id
                       }
                     )
+                  _ -> :ok
                 end
               end)
 
