@@ -1,9 +1,11 @@
 /**
- * ReactionAnimation - Animated reaction effects
+ * ReactionAnimation - Animated reaction effects with Lottie support.
  */
 
 import { memo, useMemo } from 'react';
 import { motion, type TargetAndTransition } from 'motion/react';
+import { LottieRenderer } from '@/lib/lottie';
+import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 import type { ReactionAnimationProps } from './types';
 
 export const ReactionAnimation = memo(function ReactionAnimation({
@@ -120,7 +122,23 @@ export const ReactionAnimation = memo(function ReactionAnimation({
       }}
       onAnimationComplete={onComplete}
     >
-      {emoji}
+      {(() => {
+        const anim = getReactionAnimation(emoji);
+        if (anim) {
+          return (
+            <LottieRenderer
+              codepoint={anim.codepoint}
+              emoji={emoji}
+              size={fontSize}
+              autoplay
+              loop={false}
+              playOnHover={false}
+              fallbackSrc={anim.webp}
+            />
+          );
+        }
+        return emoji;
+      })()}
     </motion.div>
   );
 });

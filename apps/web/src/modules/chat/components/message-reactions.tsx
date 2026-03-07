@@ -7,6 +7,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FaceSmileIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { LottieRenderer } from '@/lib/lottie';
+import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 
 /**
  * Message Reactions Component
@@ -81,8 +83,8 @@ export default function MessageReactions({
   // Close picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-       
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) { // type assertion: EventTarget to Node for contains check
+      const target = event.target;
+      if (pickerRef.current && target instanceof Node && !pickerRef.current.contains(target)) {
         setShowPicker(false);
       }
     };
@@ -150,7 +152,23 @@ export default function MessageReactions({
               />
             )}
 
-            <span className="relative text-base leading-none">{reaction.emoji}</span>
+            <span className="relative text-base leading-none">
+              {(() => {
+                const anim = getReactionAnimation(reaction.emoji);
+                if (anim) {
+                  return (
+                    <LottieRenderer
+                      codepoint={anim.codepoint}
+                      emoji={reaction.emoji}
+                      size={24}
+                      playOnHover
+                      fallbackSrc={anim.webp}
+                    />
+                  );
+                }
+                return reaction.emoji;
+              })()}
+            </span>
             {reaction.count > 1 && (
               <span
                 className={`relative font-medium ${reaction.hasReacted ? 'text-primary-200' : 'text-gray-300'}`}
@@ -235,22 +253,24 @@ export default function MessageReactions({
 
               {/* Category tabs */}
               <div className="mb-2 flex gap-1 border-t border-dark-700 pt-2">
-                { }
-                {(Object.keys(EMOJI_CATEGORIES) as Array<keyof typeof EMOJI_CATEGORIES>).map( // type assertion: Object.keys returns string[], narrowing to known keys
-                  (category) => (
-                    <button
-                      key={category}
-                      onClick={() => setActiveCategory(category)}
-                      className={`rounded px-2 py-1 text-xs transition-colors ${
-                        activeCategory === category
-                          ? 'bg-primary-500/20 text-primary-300'
-                          : 'text-gray-400 hover:bg-white/[0.06] hover:text-gray-300'
-                      } `}
-                    >
-                      {category}
-                    </button>
-                  )
-                )}
+                {}
+                {(
+                  ['Emotions', 'Reactions', 'Objects', 'Symbols'] satisfies Array<
+                    keyof typeof EMOJI_CATEGORIES
+                  >
+                ).map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className={`rounded px-2 py-1 text-xs transition-colors ${
+                      activeCategory === category
+                        ? 'bg-primary-500/20 text-primary-300'
+                        : 'text-gray-400 hover:bg-white/[0.06] hover:text-gray-300'
+                    } `}
+                  >
+                    {category}
+                  </button>
+                ))}
               </div>
 
               {/* Emoji grid */}

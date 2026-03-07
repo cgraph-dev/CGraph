@@ -5,6 +5,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
+import { LottieRenderer } from '@/lib/lottie';
+import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 
 const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥'] as const;
 
@@ -12,27 +14,126 @@ const EMOJI_CATEGORIES: { label: string; emojis: string[] }[] = [
   {
     label: 'Smileys',
     emojis: [
-      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊',
-      '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😋', '😛', '😜',
-      '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🫡', '🤐', '🤨',
-      '😐', '😑', '😶', '🫥', '😏', '😒', '🙄', '😬', '🫠', '😮‍💨',
+      '😀',
+      '😃',
+      '😄',
+      '😁',
+      '😆',
+      '😅',
+      '🤣',
+      '😂',
+      '🙂',
+      '😊',
+      '😇',
+      '🥰',
+      '😍',
+      '🤩',
+      '😘',
+      '😗',
+      '😚',
+      '😋',
+      '😛',
+      '😜',
+      '🤪',
+      '😝',
+      '🤑',
+      '🤗',
+      '🤭',
+      '🤫',
+      '🤔',
+      '🫡',
+      '🤐',
+      '🤨',
+      '😐',
+      '😑',
+      '😶',
+      '🫥',
+      '😏',
+      '😒',
+      '🙄',
+      '😬',
+      '🫠',
+      '😮‍💨',
     ],
   },
   {
     label: 'Gestures',
     emojis: [
-      '👋', '🤚', '🖐️', '✋', '🖖', '🫱', '🫲', '👌', '🤌', '🤏',
-      '✌️', '🤞', '🫰', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇',
-      '☝️', '🫵', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌',
-      '🫶', '🤝', '🙏', '💪', '🦾', '❤️', '🔥', '⭐', '💯', '✅',
+      '👋',
+      '🤚',
+      '🖐️',
+      '✋',
+      '🖖',
+      '🫱',
+      '🫲',
+      '👌',
+      '🤌',
+      '🤏',
+      '✌️',
+      '🤞',
+      '🫰',
+      '🤟',
+      '🤘',
+      '🤙',
+      '👈',
+      '👉',
+      '👆',
+      '👇',
+      '☝️',
+      '🫵',
+      '👍',
+      '👎',
+      '✊',
+      '👊',
+      '🤛',
+      '🤜',
+      '👏',
+      '🙌',
+      '🫶',
+      '🤝',
+      '🙏',
+      '💪',
+      '🦾',
+      '❤️',
+      '🔥',
+      '⭐',
+      '💯',
+      '✅',
     ],
   },
   {
     label: 'Objects',
     emojis: [
-      '💡', '🎉', '🎊', '🥳', '🏆', '🎮', '🎯', '🎵', '🎶', '☕',
-      '🍕', '🍔', '🌮', '🍿', '🧁', '🍩', '🧋', '🍷', '🍻', '🥂',
-      '💻', '📱', '⌨️', '🖥️', '🔒', '🔑', '⚡', '💎', '🚀', '🌈',
+      '💡',
+      '🎉',
+      '🎊',
+      '🥳',
+      '🏆',
+      '🎮',
+      '🎯',
+      '🎵',
+      '🎶',
+      '☕',
+      '🍕',
+      '🍔',
+      '🌮',
+      '🍿',
+      '🧁',
+      '🍩',
+      '🧋',
+      '🍷',
+      '🍻',
+      '🥂',
+      '💻',
+      '📱',
+      '⌨️',
+      '🖥️',
+      '🔒',
+      '🔑',
+      '⚡',
+      '💎',
+      '🚀',
+      '🌈',
     ],
   },
 ];
@@ -48,12 +149,7 @@ interface ReactionPickerProps {
  * ReactionPicker — Discord-style emoji picker with quick-react row,
  * categories, and search.
  */
-export function ReactionPicker({
-  onSelect,
-  onClose,
-  isOpen,
-  className,
-}: ReactionPickerProps) {
+export function ReactionPicker({ onSelect, onClose, isOpen, className }: ReactionPickerProps) {
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,7 +158,7 @@ export function ReactionPicker({
       onSelect(emoji);
       onClose();
     },
-    [onSelect, onClose],
+    [onSelect, onClose]
   );
 
   return (
@@ -70,10 +166,7 @@ export function ReactionPicker({
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-[var(--z-popover,500)]"
-            onClick={onClose}
-          />
+          <div className="fixed inset-0 z-[var(--z-popover,500)]" onClick={onClose} />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
@@ -86,21 +179,34 @@ export function ReactionPicker({
               'bg-[rgb(18,18,24)]/95 backdrop-blur-xl',
               'border border-white/[0.06] shadow-2xl',
               'overflow-hidden',
-              className,
+              className
             )}
           >
             {/* Quick reactions row */}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2">
-              {QUICK_REACTIONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => handleSelect(emoji)}
-                  className="flex h-8 w-8 items-center justify-center rounded-md text-lg transition-transform hover:scale-125 hover:bg-white/[0.06]"
-                >
-                  {emoji}
-                </button>
-              ))}
+              {QUICK_REACTIONS.map((emoji) => {
+                const anim = getReactionAnimation(emoji);
+                return (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => handleSelect(emoji)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md text-lg transition-transform hover:scale-125 hover:bg-white/[0.06]"
+                  >
+                    {anim ? (
+                      <LottieRenderer
+                        codepoint={anim.codepoint}
+                        emoji={emoji}
+                        size={24}
+                        playOnHover
+                        fallbackSrc={anim.webp}
+                      />
+                    ) : (
+                      emoji
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Search */}
@@ -115,7 +221,7 @@ export function ReactionPicker({
                   'w-full rounded-md px-2.5 py-1.5 text-xs',
                   'bg-white/[0.04] text-white/80 placeholder-white/30',
                   'border border-white/[0.06] outline-none',
-                  'focus:border-[var(--color-brand-purple)]/40',
+                  'focus:border-[var(--color-brand-purple)]/40'
                 )}
               />
             </div>
@@ -126,7 +232,7 @@ export function ReactionPicker({
                 const filtered = search
                   ? cat.emojis.filter(() =>
                       // Simple: show all in a matching category, or none
-                      cat.label.toLowerCase().includes(search.toLowerCase()),
+                      cat.label.toLowerCase().includes(search.toLowerCase())
                     )
                   : cat.emojis;
 
@@ -156,12 +262,8 @@ export function ReactionPicker({
               {/* No results */}
               {search &&
                 EMOJI_CATEGORIES.every(
-                  (cat) => !cat.label.toLowerCase().includes(search.toLowerCase()),
-                ) && (
-                  <p className="py-4 text-center text-xs text-white/30">
-                    No emojis found
-                  </p>
-                )}
+                  (cat) => !cat.label.toLowerCase().includes(search.toLowerCase())
+                ) && <p className="py-4 text-center text-xs text-white/30">No emojis found</p>}
             </div>
           </motion.div>
         </>

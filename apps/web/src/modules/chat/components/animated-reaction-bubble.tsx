@@ -12,6 +12,8 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 import { motion, useSpring, useAnimation, AnimatePresence } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { cn } from '@/lib/utils';
+import { LottieRenderer } from '@/lib/lottie';
+import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { getReactionStyleClass } from '@/modules/settings/hooks/useCustomizationApplication';
 import { ReactionParticle } from '@/modules/chat/components/animatedReactionBubble/reaction-particle';
@@ -93,15 +95,11 @@ export function AnimatedReactionBubble({
   const handlePress = useCallback(() => {
     HapticFeedback.medium();
 
-    const duration = isSuperReaction
-      ? SUPER_PARTICLE_DURATION_MS
-      : PARTICLE_DURATION_MS;
+    const duration = isSuperReaction ? SUPER_PARTICLE_DURATION_MS : PARTICLE_DURATION_MS;
     setShowParticles(true);
     setTimeout(() => setShowParticles(false), duration);
 
-    controls.start(
-      isSuperReaction ? SUPER_BOUNCE_ANIMATION : BOUNCE_ANIMATION
-    );
+    controls.start(isSuperReaction ? SUPER_BOUNCE_ANIMATION : BOUNCE_ANIMATION);
     onPress();
   }, [controls, onPress, isSuperReaction]);
 
@@ -148,16 +146,14 @@ export function AnimatedReactionBubble({
       <AnimatePresence>
         {showParticles && (
           <div className="absolute inset-0">
-            {[...Array(isSuperReaction ? SUPER_PARTICLE_COUNT : PARTICLE_COUNT)].map(
-              (_, i) => (
-                <ReactionParticle
-                  key={i}
-                  emoji={reaction.emoji}
-                  index={i}
-                  isSuper={isSuperReaction}
-                />
-              )
-            )}
+            {[...Array(isSuperReaction ? SUPER_PARTICLE_COUNT : PARTICLE_COUNT)].map((_, i) => (
+              <ReactionParticle
+                key={i}
+                emoji={reaction.emoji}
+                index={i}
+                isSuper={isSuperReaction}
+              />
+            ))}
           </div>
         )}
       </AnimatePresence>
@@ -184,13 +180,27 @@ export function AnimatedReactionBubble({
         />
       )}
 
-      {/* Emoji with bounce animation */}
+      {/* Emoji with bounce animation — Lottie if available */}
       <motion.span
         className="relative z-10 text-lg"
         animate={isPressed ? { scale: [1, 0.8, 1], rotateZ: [0, -15, 15, 0] } : {}}
         transition={tweens.standard}
       >
-        {reaction.emoji}
+        {(() => {
+          const anim = getReactionAnimation(reaction.emoji);
+          if (anim) {
+            return (
+              <LottieRenderer
+                codepoint={anim.codepoint}
+                emoji={reaction.emoji}
+                size={20}
+                playOnHover
+                fallbackSrc={anim.webp}
+              />
+            );
+          }
+          return reaction.emoji;
+        })()}
       </motion.span>
 
       {/* Count badge */}
