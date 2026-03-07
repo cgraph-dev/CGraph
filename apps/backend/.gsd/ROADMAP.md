@@ -19,7 +19,7 @@
 | 24  | Test Coverage         | Ship safety net — catch regressions in revenue-critical and security-critical paths                                 | 5     | 1     | ✅ Complete |
 | 25  | Infrastructure & Perf | Production-ready infrastructure for real user traffic                                                               | 6     | 1     | ✅ Complete |
 | 26  | Chat Superpowers      | Complete DM experience: secret chat, stickers, E2EE Triple Ratchet, file transfer, calls, emojis, polls, scheduling | 20    | 10    | ✅ Complete |
-| 27  | Lottie Emoji Upgrade  | Replace static emojis with animated Noto Emoji (Lottie), Lottie borders, full-stack Lottie infra                    | 33    | 5     | 🔄 Active   |
+| 27  | Lottie Emoji Upgrade  | Replace static emojis with animated Noto Emoji (Lottie), Lottie borders, full-stack Lottie infra                    | 33    | 5     | ✅ Complete |
 
 > **Total**: ~102 tasks across 8 phases, 26 plan files
 
@@ -193,7 +193,7 @@ Plans:
 
 ---
 
-## Phase 27 — Lottie Emoji Upgrade 🔄
+## Phase 27 — Lottie Emoji Upgrade ✅
 
 **Goal**: Replace static Unicode emoji with animated Noto Emoji (Lottie), add Lottie-based avatar
 borders, prepare full-stack Lottie infrastructure. Use Google Fonts CDN animated emojis from
@@ -205,11 +205,11 @@ caching, updated emoji pickers, reaction animations, avatar borders, custom emoj
 
 Plans:
 
-- [ ] 27-01-PLAN.md — Backend Lottie Infrastructure (schemas, context, API, caching, migrations)
-- [ ] 27-02-PLAN.md — Noto Emoji Animation Manifest (CDN scraper, manifest JSON, seed task)
-- [ ] 27-03-PLAN.md — Web Lottie Integration (lottie-web, renderer, emoji picker, reactions, forums)
-- [ ] 27-04-PLAN.md — Lottie Avatar Borders & Effects (border renderer, cosmetics, deprecation)
-- [ ] 27-05-PLAN.md — Mobile Lottie Integration (lottie-react-native, emoji picker, reactions,
+- [x] 27-01-PLAN.md — Backend Lottie Infrastructure (schemas, context, API, caching, migrations)
+- [x] 27-02-PLAN.md — Noto Emoji Animation Manifest (CDN scraper, manifest JSON, seed task)
+- [x] 27-03-PLAN.md — Web Lottie Integration (lottie-web, renderer, emoji picker, reactions, forums)
+- [x] 27-04-PLAN.md — Lottie Avatar Borders & Effects (border renderer, cosmetics, deprecation)
+- [x] 27-05-PLAN.md — Mobile Lottie Integration (lottie-react-native, emoji picker, reactions,
       borders)
 
 ---
@@ -225,4 +225,4 @@ Plans:
 
 ---
 
-_Last updated: 2026-03-07 — Phase 27 active (Lottie Emoji Upgrade)_
+_Last updated: 2026-03-07 — Phase 27 complete (Lottie Emoji Upgrade)_
