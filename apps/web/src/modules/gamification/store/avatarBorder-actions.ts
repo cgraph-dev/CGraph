@@ -264,9 +264,7 @@ export function createHandleAchievementUnlock(set: SetState, get: GetState) {
           ...bordersToUnlock.map((b) => ({
             borderId: b.id,
             unlockedAt: new Date().toISOString(),
-            // type assertion: hardcoded string literal matches BorderUnlockType union
-             
-            unlockSource: 'achievement' as BorderUnlockType,
+            unlockSource: 'achievement' satisfies BorderUnlockType,
             achievementId,
           })),
         ],
@@ -304,6 +302,68 @@ export function createHandleEventReward(set: SetState, get: GetState) {
           },
         ],
       });
+    }
+  };
+}
+
+// ==================== fetchLottieBorders ====================
+
+/**
+ * Fetches Lottie borders from the API and merges them into the border catalog.
+ * Lottie borders are not hardcoded — they come from GET /api/v1/cosmetics/borders?animation_type=lottie
+ */
+export function createFetchLottieBorders(set: SetState, get: GetState) {
+  return async () => {
+    const { lottieBordersFetched, allBorders } = get();
+    if (lottieBordersFetched) return; // Already fetched
+
+    try {
+      const response = await api.get('/api/v1/cosmetics/borders', {
+        params: { animation_type: 'lottie' },
+      });
+      const lottieBordersData = response.data?.data || [];
+
+      // Map API response to AvatarBorderConfig
+      const lottieBorders = lottieBordersData.map(
+        (b: {
+          id: string;
+          name: string;
+          rarity: string;
+          theme: string;
+          lottie_url: string;
+          lottie_asset_id: string;
+          lottie_config: { loop?: boolean; speed?: number; segment?: [number, number] };
+          unlock_condition: string;
+          price_coins: number;
+        }) => ({
+          id: b.id,
+          type: b.id,
+          name: b.name,
+          description: `${b.name} Lottie border`,
+          theme: b.theme,
+          rarity: b.rarity,
+          unlockType: b.unlock_condition?.startsWith('level_') ? 'level' : 'purchase',
+          primaryColor: '#ffffff',
+          isPremium: true,
+          coinCost: b.price_coins,
+          tags: ['lottie', b.theme],
+          lottieUrl: b.lottie_url,
+          lottieAssetId: b.lottie_asset_id,
+          lottieConfig: b.lottie_config,
+        })
+      );
+
+      const existingIds = new Set(allBorders.map((b) => b.id));
+      const newBorders = lottieBorders.filter((b: { id: string }) => !existingIds.has(b.id));
+
+      set({
+        lottieBorders,
+        lottieBordersFetched: true,
+        allBorders: [...allBorders, ...newBorders],
+      });
+    } catch (error) {
+      logger.warn('Failed to fetch Lottie borders:', error);
+      set({ lottieBordersFetched: true }); // Don't retry on failure
     }
   };
 }

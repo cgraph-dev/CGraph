@@ -11,32 +11,32 @@
 // ==================== BORDER THEMES ====================
 
 export type BorderTheme =
-  | 'free'           // Free tier borders
-  | 'premium'       // Premium subscription
-  | 'enterprise'    // Enterprise subscription
-  | 'legendary'     // Achievement-locked
-  | 'mythic'        // Special events/Top 100
-  | '8bit'          // Retro gaming aesthetic
-  | 'japanese'      // Japanese traditional
-  | 'chinese'       // Chinese traditional
-  | 'anime'         // Anime/manga style
-  | 'cyberpunk'     // Futuristic cyberpunk
-  | 'gothic'        // Gothic/dark aesthetic
-  | 'kawaii'        // Cute Japanese style
-  | 'steampunk'     // Victorian + industrial
-  | 'vaporwave'     // 80s/90s aesthetic
-  | 'cosmic'        // Space/galaxy theme
-  | 'fantasy'       // Medieval fantasy
-  | 'nature'        // Natural elements
-  | 'tribal'        // Tribal patterns
-  | 'geometric'     // Mathematical patterns
-  | 'holographic'   // Futuristic holo
-  | 'elemental'     // Fire/Water/Earth/Air
-  | 'scifi'         // Science fiction
-  | 'minimal'       // Minimalist design
-  | 'gaming'        // Gaming themed
-  | 'seasonal'      // Seasonal events
-  | 'achievement';  // Achievement rewards
+  | 'free' // Free tier borders
+  | 'premium' // Premium subscription
+  | 'enterprise' // Enterprise subscription
+  | 'legendary' // Achievement-locked
+  | 'mythic' // Special events/Top 100
+  | '8bit' // Retro gaming aesthetic
+  | 'japanese' // Japanese traditional
+  | 'chinese' // Chinese traditional
+  | 'anime' // Anime/manga style
+  | 'cyberpunk' // Futuristic cyberpunk
+  | 'gothic' // Gothic/dark aesthetic
+  | 'kawaii' // Cute Japanese style
+  | 'steampunk' // Victorian + industrial
+  | 'vaporwave' // 80s/90s aesthetic
+  | 'cosmic' // Space/galaxy theme
+  | 'fantasy' // Medieval fantasy
+  | 'nature' // Natural elements
+  | 'tribal' // Tribal patterns
+  | 'geometric' // Mathematical patterns
+  | 'holographic' // Futuristic holo
+  | 'elemental' // Fire/Water/Earth/Air
+  | 'scifi' // Science fiction
+  | 'minimal' // Minimalist design
+  | 'gaming' // Gaming themed
+  | 'seasonal' // Seasonal events
+  | 'achievement'; // Achievement rewards
 
 // ==================== BORDER TYPES ====================
 
@@ -205,14 +205,14 @@ export type BorderRarity =
   | 'mythic';
 
 export type BorderUnlockType =
-  | 'default'           // Available to all
-  | 'subscription'      // Requires active subscription
-  | 'achievement'       // Unlocked via achievement
-  | 'leaderboard'       // Top 100 in category
-  | 'event'            // Special event reward
-  | 'purchase'         // Buy with coins
-  | 'level'            // Reach specific level
-  | 'prestige';        // Prestige system
+  | 'default' // Available to all
+  | 'subscription' // Requires active subscription
+  | 'achievement' // Unlocked via achievement
+  | 'leaderboard' // Top 100 in category
+  | 'event' // Special event reward
+  | 'purchase' // Buy with coins
+  | 'level' // Reach specific level
+  | 'prestige'; // Prestige system
 
 // ==================== BORDER CONFIGURATION ====================
 
@@ -274,6 +274,21 @@ export interface AvatarBorderConfig {
 
   /** Tags for filtering */
   tags: string[];
+
+  // ---- Lottie border fields (optional) ----
+
+  /** Lottie animation URL (CDN-hosted JSON) */
+  lottieUrl?: string;
+
+  /** Lottie asset ID for referencing backend manifest */
+  lottieAssetId?: string;
+
+  /** Lottie playback configuration */
+  lottieConfig?: {
+    loop?: boolean;
+    speed?: number;
+    segment?: [number, number];
+  };
 }
 
 // ==================== PARTICLE TYPES ====================
@@ -332,11 +347,15 @@ export type BorderAnimationType =
   | 'breathe'
   | 'flicker'
   | 'cascade'
-  | 'ripple';
+  | 'ripple'
+  | 'lottie';
 
 // ==================== THEME COLORS ====================
 
-export const THEME_COLORS: Record<BorderTheme, { primary: string; secondary: string; accent: string }> = {
+export const THEME_COLORS: Record<
+  BorderTheme,
+  { primary: string; secondary: string; accent: string }
+> = {
   free: {
     primary: '#9ca3af',
     secondary: '#6b7280',

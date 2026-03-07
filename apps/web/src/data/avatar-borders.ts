@@ -1512,6 +1512,13 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     animationSpeed: 'slow',
     tags: ['kawaii', 'teddy', 'love'],
   },
+
+  // --- Lottie Borders (loaded dynamically from API) ---
+  // Lottie borders are not hardcoded here — they come from:
+  // GET /api/v1/cosmetics/borders?animation_type=lottie
+  // The fetchLottieBorders() action in avatarBorder-actions.ts loads them at runtime
+  // and merges them into `allBorders`. See priv/data/lottie_borders/manifest.json
+  // for the registry of available Lottie borders.
 ];
 
 // ==================== HELPER FUNCTIONS ====================

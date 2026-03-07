@@ -59,10 +59,15 @@ export interface AvatarBorderState {
   isSaving: boolean;
   /** Error state */
   error: string | null;
+  /** Lottie borders loaded from API */
+  lottieBorders: AvatarBorderConfig[];
+  /** Whether Lottie borders have been fetched */
+  lottieBordersFetched: boolean;
   /** Filter state for UI */
   filters: {
     theme: BorderTheme | 'all';
     rarity: BorderRarity | 'all';
+    animationType: 'all' | 'css' | 'lottie';
     showLocked: boolean;
     searchQuery: string;
   };
@@ -104,6 +109,8 @@ export interface AvatarBorderState {
   handleAchievementUnlock: (achievementId: string) => void;
   /** Handle event reward (called from event system) */
   handleEventReward: (eventId: string, borderId: string) => void;
+  /** Fetch Lottie borders from API and merge into allBorders */
+  fetchLottieBorders: () => Promise<void>;
   reset: () => void;
 }
 
@@ -120,6 +127,7 @@ export const DEFAULT_PREFERENCES: BorderPreference = {
 export const DEFAULT_FILTERS: AvatarBorderState['filters'] = {
   theme: 'all',
   rarity: 'all',
+  animationType: 'all',
   showLocked: true,
   searchQuery: '',
 };

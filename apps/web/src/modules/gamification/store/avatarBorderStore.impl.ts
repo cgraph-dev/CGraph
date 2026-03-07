@@ -34,6 +34,7 @@ import {
   createUpdatePreferences,
   createHandleAchievementUnlock,
   createHandleEventReward,
+  createFetchLottieBorders,
 } from './avatarBorder-actions';
 
 /**
@@ -65,6 +66,8 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
       isLoading: false,
       isSaving: false,
       error: null,
+      lottieBorders: [],
+      lottieBordersFetched: false,
       filters: DEFAULT_FILTERS,
 
       // ==================== COMPUTED GETTERS ====================
@@ -91,6 +94,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
       },
       handleAchievementUnlock: createHandleAchievementUnlock(set, get),
       handleEventReward: createHandleEventReward(set, get),
+      fetchLottieBorders: createFetchLottieBorders(set, get),
 
       reset: () =>
         set({
@@ -114,6 +118,8 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
           isLoading: false,
           isSaving: false,
           error: null,
+          lottieBorders: [],
+          lottieBordersFetched: false,
           filters: DEFAULT_FILTERS,
         }),
     }),
