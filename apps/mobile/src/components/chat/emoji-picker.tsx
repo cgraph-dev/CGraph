@@ -21,6 +21,7 @@ import {
   Animated,
   Dimensions,
   Modal,
+  Image,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +29,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl, preloadAnimations } from '@/lib/lottie';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -168,6 +170,8 @@ export default function EmojiPicker({
   const [skinTone, setSkinTone] = useState(0);
   const [showSkinTones, setShowSkinTones] = useState(false);
 
+  const [longPressEmoji, setLongPressEmoji] = useState<string | null>(null);
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(anchor === 'bottom' ? 300 : -300)).current;
 
@@ -244,6 +248,21 @@ export default function EmojiPicker({
     setSearchQuery('');
   }, []);
 
+  /** Long-press to preview Lottie animation */
+  const handleLongPress = useCallback((emoji: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setLongPressEmoji(emoji);
+  }, []);
+
+  /** Preload first visible emojis on open */
+  useEffect(() => {
+    if (visible && filteredEmojis.length > 0) {
+      const first30 = filteredEmojis.slice(0, 30);
+      const codepoints = first30.map((e) => emojiToCodepoint(e)).filter(Boolean);
+      preloadAnimations(codepoints);
+    }
+  }, [visible, activeCategory]);
+
   const filteredEmojis = useMemo(() => {
     let emojis = activeCategory === 'recent' ? recentEmojis : EMOJIS[activeCategory];
 
@@ -258,16 +277,26 @@ export default function EmojiPicker({
   }, [activeCategory, searchQuery, recentEmojis]);
 
   const renderEmoji = useCallback(
-    ({ item }: { item: string }) => (
-      <TouchableOpacity
-        style={styles.emojiButton}
-        onPress={() => handleSelectEmoji(item)}
-        activeOpacity={0.6}
-      >
-        <Text style={styles.emoji}>{item}</Text>
-      </TouchableOpacity>
-    ),
-    [handleSelectEmoji]
+    ({ item }: { item: string }) => {
+      const cp = emojiToCodepoint(item);
+      return (
+        <TouchableOpacity
+          style={styles.emojiButton}
+          onPress={() => handleSelectEmoji(item)}
+          onLongPress={() => handleLongPress(item)}
+          delayLongPress={350}
+          activeOpacity={0.6}
+        >
+          <Image
+            source={{ uri: getWebPFallbackUrl(cp, 512) }}
+            style={{ width: 28, height: 28 }}
+            resizeMode="contain"
+            defaultSource={{ uri: '' }}
+          />
+        </TouchableOpacity>
+      );
+    },
+    [handleSelectEmoji, handleLongPress]
   );
 
   const renderCategory = useCallback(
@@ -386,6 +415,25 @@ export default function EmojiPicker({
           </TouchableOpacity>
         </Animated.View>
       </TouchableOpacity>
+
+      {/* Lottie long-press preview overlay */}
+      {longPressEmoji && (
+        <TouchableOpacity
+          style={styles.lottiePreviewOverlay}
+          activeOpacity={1}
+          onPress={() => setLongPressEmoji(null)}
+        >
+          <View style={styles.lottiePreviewCard}>
+            <LottieRenderer
+              emoji={longPressEmoji}
+              size={120}
+              autoplay
+              loop
+            />
+            <Text style={styles.lottiePreviewEmoji}>{longPressEmoji}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
     </Modal>
   );
 }
@@ -534,5 +582,25 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: Typography.fontSize.base,
     color: Colors.dark[500],
+  },
+
+  // Lottie preview overlay
+  lottiePreviewOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
+  lottiePreviewCard: {
+    backgroundColor: Colors.dark[800],
+    borderRadius: BorderRadius['2xl'],
+    padding: Spacing[6],
+    alignItems: 'center',
+    gap: Spacing[3],
+  },
+  lottiePreviewEmoji: {
+    fontSize: 14,
+    color: Colors.dark[400],
   },
 });
