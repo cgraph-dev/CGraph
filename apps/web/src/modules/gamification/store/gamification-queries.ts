@@ -29,20 +29,29 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
   return async (): Promise<void> => {
     set({ isLoading: true });
     try {
-      // Use allSettled so one failing endpoint doesn't block the others
-      const [statsResult, achievementsResult, questsResult] = await Promise.allSettled([
+      // Fetch stats and achievements first (always available)
+      const [statsResult, achievementsResult] = await Promise.allSettled([
         api.get('/api/v1/gamification/stats'),
         api.get('/api/v1/gamification/achievements'),
-        api.get('/api/v1/quests/active'),
       ]);
 
       const statsRes = statsResult.status === 'fulfilled' ? statsResult.value : null;
       const achievementsRes = achievementsResult.status === 'fulfilled' ? achievementsResult.value : null;
-      const questsRes = questsResult.status === 'fulfilled' ? questsResult.value : null;
 
       const stats = statsRes?.data?.data || statsRes?.data || {};
       const achievements = achievementsRes?.data?.data || [];
-      const quests = questsRes?.data?.data || [];
+
+      // Quests are level-gated (level 3+). Only fetch if the user qualifies.
+      const userLevel = stats.level || 1;
+      let quests: Record<string, unknown>[] = [];
+      if (userLevel >= 3) {
+        try {
+          const questsRes = await api.get('/api/v1/quests/active');
+          quests = questsRes?.data?.data || [];
+        } catch {
+          // Silently handle — quests are non-critical
+        }
+      }
 
       set({
         level: stats.level || 1,
@@ -152,9 +161,16 @@ export function createFetchAchievements(set: StoreSet, _get: StoreGet) {
 
 /**
  * Fetch active and available quests.
+ * Quests are level-gated (level 3+); skips fetch if user is below required level.
  */
-export function createFetchQuests(set: StoreSet, _get: StoreGet) {
+export function createFetchQuests(set: StoreSet, get: StoreGet) {
   return async (): Promise<void> => {
+    // Skip if user hasn't reached quest unlock level
+    const currentLevel = get().level || 1;
+    if (currentLevel < 3) {
+      set({ activeQuests: [] });
+      return;
+    }
     try {
       const [activeResult, dailyResult, weeklyResult] = await Promise.allSettled([
         api.get('/api/v1/quests/active'),
@@ -330,18 +346,19 @@ export async function fetchAchievementsList() {
 
 /**
  * Fetch quests list (standalone, not store action).
+ * Uses Promise.allSettled to gracefully handle 403 from level gate.
  */
 export async function fetchQuestsList() {
   try {
-    const [activeRes, dailyRes, weeklyRes] = await Promise.all([
+    const [activeRes, dailyRes, weeklyRes] = await Promise.allSettled([
       api.get('/api/v1/quests/active'),
       api.get('/api/v1/quests/daily'),
       api.get('/api/v1/quests/weekly'),
     ]);
     return [
-      ...(activeRes.data?.data || []),
-      ...(dailyRes.data?.data || []),
-      ...(weeklyRes.data?.data || []),
+      ...(activeRes.status === 'fulfilled' ? activeRes.value.data?.data || [] : []),
+      ...(dailyRes.status === 'fulfilled' ? dailyRes.value.data?.data || [] : []),
+      ...(weeklyRes.status === 'fulfilled' ? weeklyRes.value.data?.data || [] : []),
     ];
   } catch (error: unknown) {
     logger.error('Failed to fetch quests:', error);

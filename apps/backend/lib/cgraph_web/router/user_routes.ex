@@ -44,6 +44,8 @@ defmodule CGraphWeb.Router.UserRoutes do
         delete "/settings/dnd", SettingsController, :clear_dnd
 
         # Theme Endpoints (Global Theme System)
+        get "/me/theme", ThemeController, :me_show
+        put "/me/theme", ThemeController, :me_update
         get "/users/:id/theme", ThemeController, :show
         put "/users/:id/theme", ThemeController, :update
         post "/users/:id/theme/reset", ThemeController, :reset

@@ -21,6 +21,38 @@ defmodule CGraphWeb.API.V1.ThemeController do
   action_fallback CGraphWeb.FallbackController
 
   @doc """
+  GET /api/v1/me/theme
+  Get the current user's theme preferences.
+  """
+  @spec me_show(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def me_show(conn, _params) do
+    user_id = conn.assigns.current_user.id
+    theme = Themes.get_theme(user_id)
+    render_data(conn, %{theme: theme})
+  end
+
+  @doc """
+  PUT /api/v1/me/theme
+  Update the current user's theme preferences.
+  """
+  @spec me_update(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def me_update(conn, params) do
+    user_id = conn.assigns.current_user.id
+    theme_params = params["theme"] || params
+
+    case Themes.update_theme(user_id, theme_params) do
+      {:ok, theme} ->
+        render_data(conn, %{theme: theme})
+
+      {:error, :user_not_found} ->
+        render_error(conn, 404, "User not found")
+
+      {:error, reason} ->
+        render_error(conn, 400, ErrorHelpers.safe_error_message(reason, context: "theme_update"))
+    end
+  end
+
+  @doc """
   GET /api/v1/users/:id/theme
   Get a user's theme preferences.
   """
