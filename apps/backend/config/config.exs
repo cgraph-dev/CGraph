@@ -63,6 +63,10 @@ config :logger, :console,
     :affected_users, :component, :message, :error_id, :level, :url
   ]
 
+# Lottie Emoji Animation CDN base URL (Noto Emoji)
+config :cgraph, :lottie_cdn_base_url,
+  "https://fonts.gstatic.com/s/e/notoemoji/latest"
+
 # Use Jason for JSON parsing
 config :phoenix, :json_library, Jason
 
