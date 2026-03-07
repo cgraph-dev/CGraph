@@ -195,6 +195,51 @@ defmodule CGraph.Messaging.Emoji do
   @spec skin_tone_modifiers() :: [String.t()]
   def skin_tone_modifiers, do: @skin_tone_modifiers
 
+  # ============================================================================
+  # Lottie Animation Enrichment
+  # ============================================================================
+
+  @doc """
+  Enriches an emoji map with Lottie animation URLs.
+
+  Delegates to `CGraph.Animations.LottieManifest.enrich_emoji/1`.
+  """
+  @spec with_animations(map()) :: map()
+  def with_animations(emoji_map) do
+    CGraph.Animations.LottieManifest.enrich_emoji(emoji_map)
+  end
+
+  @doc """
+  Returns only emojis that have Lottie animations available.
+  """
+  @spec animated_emojis(keyword()) :: [map()]
+  def animated_emojis(opts \\ []) do
+    limit = Keyword.get(opts, :limit, 100)
+
+    @emoji_data
+    |> Enum.filter(fn e ->
+      cp = CGraph.Animations.LottieManifest.emoji_to_codepoint(e.emoji)
+      cp != nil and CGraph.Animations.LottieManifest.has_animation?(cp)
+    end)
+    |> Enum.take(limit)
+    |> Enum.map(&with_animations/1)
+  end
+
+  @doc """
+  Checks whether the given emoji string has a Lottie animation.
+
+  Converts the emoji to its codepoint and checks the manifest.
+  """
+  @spec has_animation?(String.t()) :: boolean()
+  def has_animation?(emoji) when is_binary(emoji) do
+    case CGraph.Animations.LottieManifest.emoji_to_codepoint(emoji) do
+      nil -> false
+      cp -> CGraph.Animations.LottieManifest.has_animation?(cp)
+    end
+  end
+
+  def has_animation?(_), do: false
+
   # -- Private --
 
   defp strip_skin_tone(emoji) do
