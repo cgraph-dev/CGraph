@@ -59,6 +59,10 @@ defmodule CGraph.Forums.CustomEmoji do
     # Aliases
     field :aliases, {:array, :string}, default: []
 
+    # Lottie animation
+    field :lottie_url, :string
+    field :animation_format, :string
+
     # Ordering
     field :display_order, :integer, default: 0
 
@@ -82,7 +86,7 @@ defmodule CGraph.Forums.CustomEmoji do
       :shortcode, :name, :description, :image_url, :image_type,
       :file_size, :width, :height, :is_animated, :category_id,
       :forum_id, :created_by_id, :pack_id, :aliases, :display_order,
-      :is_nsfw
+      :is_nsfw, :lottie_url, :animation_format
     ])
     |> validate_required([:shortcode, :name, :image_url])
     |> validate_shortcode()
@@ -102,7 +106,8 @@ defmodule CGraph.Forums.CustomEmoji do
     emoji
     |> cast(attrs, [
       :name, :description, :image_url, :image_type,
-      :category_id, :aliases, :display_order, :is_nsfw, :is_active
+      :category_id, :aliases, :display_order, :is_nsfw, :is_active,
+      :lottie_url, :animation_format
     ])
     |> validate_shortcode()
     |> validate_image()

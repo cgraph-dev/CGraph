@@ -17,6 +17,8 @@ defmodule CGraph.Groups.CustomEmoji do
     field :image_url, :string
     field :is_animated, :boolean, default: false
     field :is_available, :boolean, default: true
+    field :lottie_url, :string
+    field :animation_format, :string
 
     timestamps()
   end
@@ -25,7 +27,7 @@ defmodule CGraph.Groups.CustomEmoji do
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(emoji, attrs) do
     emoji
-    |> cast(attrs, [:group_id, :uploaded_by_id, :name, :image_url, :is_animated])
+    |> cast(attrs, [:group_id, :uploaded_by_id, :name, :image_url, :is_animated, :lottie_url, :animation_format])
     |> validate_required([:group_id, :uploaded_by_id, :name, :image_url])
     |> validate_format(:name, ~r/^[a-zA-Z0-9_]+$/, message: "can only contain letters, numbers, and underscores")
     |> validate_length(:name, min: 2, max: 32)
