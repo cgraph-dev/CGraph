@@ -9,6 +9,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { LottieRenderer } from '@/lib/lottie';
 import type { CustomEmoji } from './types';
 import { styles } from './styles';
 
@@ -36,7 +37,15 @@ export function EmojiItem({ emoji, onPress, onLongPress }: EmojiItemProps) {
       activeOpacity={0.7}
     >
       <View style={styles.emojiPreview}>
-        {emoji.imageUrl ? (
+        {emoji.animationFormat === 'lottie' && emoji.lottieUrl ? (
+          <LottieRenderer
+            url={emoji.lottieUrl}
+            size={48}
+            autoplay
+            loop
+            fallbackSrc={emoji.imageUrl || undefined}
+          />
+        ) : emoji.imageUrl ? (
           <Image source={{ uri: emoji.imageUrl }} style={styles.emojiImage} />
         ) : (
           <LinearGradient colors={['#10b981', '#059669']} style={styles.emojiPlaceholder}>
@@ -45,7 +54,11 @@ export function EmojiItem({ emoji, onPress, onLongPress }: EmojiItemProps) {
         )}
         {emoji.isAnimated && (
           <View style={styles.animatedBadge}>
-            <Ionicons name="play" size={8} color="#fff" />
+            {emoji.animationFormat === 'lottie' ? (
+              <Text style={{ fontSize: 6, color: '#fff', fontWeight: '700' }}>L</Text>
+            ) : (
+              <Ionicons name="play" size={8} color="#fff" />
+            )}
           </View>
         )}
       </View>

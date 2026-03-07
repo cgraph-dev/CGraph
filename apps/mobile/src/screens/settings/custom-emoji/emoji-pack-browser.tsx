@@ -27,6 +27,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { LottieRenderer } from '@/lib/lottie';
 import api from '../../../lib/api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -49,6 +50,8 @@ interface PackEmoji {
   shortcode: string;
   image_url: string;
   is_animated: boolean;
+  /** Lottie JSON URL for animated emojis */
+  lottie_url?: string;
 }
 
 type TabType = 'installed' | 'marketplace' | 'favorites';
@@ -176,8 +179,24 @@ export default function EmojiPackBrowser() {
                   onLongPress={() => handleLongPress(emoji)}
                   delayLongPress={300}
                 >
-                  <Image source={{ uri: emoji.image_url }} style={styles.emojiImage} />
-                  {emoji.is_animated && <View style={styles.animatedDot} />}
+                  {emoji.is_animated && emoji.lottie_url ? (
+                    <LottieRenderer
+                      url={emoji.lottie_url}
+                      size={32}
+                      autoplay
+                      loop
+                      fallbackSrc={emoji.image_url}
+                    />
+                  ) : (
+                    <Image source={{ uri: emoji.image_url }} style={styles.emojiImage} />
+                  )}
+                  {emoji.is_animated && (
+                    <View style={styles.animatedDot}>
+                      {emoji.lottie_url ? (
+                        <Text style={{ fontSize: 4, color: '#fff', fontWeight: '700' }}>L</Text>
+                      ) : null}
+                    </View>
+                  )}
                   <Text style={styles.emojiLabel} numberOfLines={1}>
                     :{emoji.shortcode}:
                   </Text>
@@ -258,14 +277,26 @@ export default function EmojiPackBrowser() {
       {previewEmoji && (
         <Pressable style={styles.previewOverlay} onPress={() => setPreviewEmoji(null)}>
           <View style={styles.previewCard}>
-            <Image
-              source={{ uri: previewEmoji.image_url }}
-              style={styles.previewImage}
-              resizeMode="contain"
-            />
+            {previewEmoji.is_animated && previewEmoji.lottie_url ? (
+              <LottieRenderer
+                url={previewEmoji.lottie_url}
+                size={96}
+                autoplay
+                loop
+                fallbackSrc={previewEmoji.image_url}
+              />
+            ) : (
+              <Image
+                source={{ uri: previewEmoji.image_url }}
+                style={styles.previewImage}
+                resizeMode="contain"
+              />
+            )}
             <Text style={styles.previewLabel}>:{previewEmoji.shortcode}:</Text>
             {previewEmoji.is_animated && (
-              <Text style={styles.previewAnimated}>Animated</Text>
+              <Text style={styles.previewAnimated}>
+                {previewEmoji.lottie_url ? 'Lottie' : 'Animated'}
+              </Text>
             )}
           </View>
         </Pressable>

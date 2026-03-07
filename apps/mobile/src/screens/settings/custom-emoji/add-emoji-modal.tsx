@@ -10,13 +10,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import type { EmojiCategory } from './types';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import { LottieRenderer } from '@/lib/lottie';
+import type { EmojiCategory, AnimationFormat } from './types';
 import { styles } from './styles';
 
 interface AddEmojiModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (name: string, shortcode: string, imageUri: string, category: string) => void;
+  onSubmit: (
+    name: string,
+    shortcode: string,
+    imageUri: string,
+    category: string,
+    animationFormat?: AnimationFormat,
+  ) => void;
   categories: EmojiCategory[];
 }
 
@@ -28,6 +37,8 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
   const [shortcode, setShortcode] = useState('');
   const [imageUri, setImageUri] = useState('');
   const [category, setCategory] = useState('custom');
+  const [animationFormat, setAnimationFormat] = useState<AnimationFormat>(null);
+  const [lottieJsonUri, setLottieJsonUri] = useState<string | null>(null);
 
   const handlePickImage = async () => {
     try {
@@ -60,11 +71,13 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
       return;
     }
 
-    onSubmit(name.trim(), shortcode.trim().toLowerCase(), imageUri, category);
+    onSubmit(name.trim(), shortcode.trim().toLowerCase(), lottieJsonUri || imageUri, category, animationFormat);
     setName('');
     setShortcode('');
     setImageUri('');
     setCategory('custom');
+    setAnimationFormat(null);
+    setLottieJsonUri(null);
   };
 
   const filteredCategories = categories.filter((c) => c.id !== 'all');
@@ -82,7 +95,9 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
 
           {/* Image Picker */}
           <TouchableOpacity style={styles.imagePicker} onPress={handlePickImage}>
-            {imageUri ? (
+            {lottieJsonUri ? (
+              <LottieRenderer url={lottieJsonUri} size={80} autoplay loop />
+            ) : imageUri ? (
               <Image source={{ uri: imageUri }} style={styles.pickedImage} />
             ) : (
               <View style={styles.imagePickerPlaceholder}>
@@ -90,6 +105,41 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
                 <Text style={styles.imagePickerText}>Tap to select image</Text>
               </View>
             )}
+          </TouchableOpacity>
+
+          {/* Lottie JSON picker */}
+          <TouchableOpacity
+            style={[styles.imagePicker, { marginTop: 8, paddingVertical: 10 }]}
+            onPress={async () => {
+              try {
+                const result = await DocumentPicker.getDocumentAsync({
+                  type: 'application/json',
+                  copyToCacheDirectory: true,
+                });
+                if (!result.canceled && result.assets?.[0]) {
+                  const asset = result.assets[0];
+                  // Validate Lottie JSON structure
+                  const content = await FileSystem.readAsStringAsync(asset.uri);
+                  const parsed = JSON.parse(content);
+                  if (!parsed.v || !parsed.layers) {
+                    Alert.alert('Invalid Lottie', 'The file does not appear to be a valid Lottie JSON animation.');
+                    return;
+                  }
+                  setLottieJsonUri(asset.uri);
+                  setAnimationFormat('lottie');
+                  setImageUri('');
+                }
+              } catch {
+                Alert.alert('Error', 'Failed to pick Lottie JSON file');
+              }
+            }}
+          >
+            <View style={styles.imagePickerPlaceholder}>
+              <Ionicons name="code-slash" size={24} color="#6b7280" />
+              <Text style={[styles.imagePickerText, { fontSize: 12 }]}>
+                {lottieJsonUri ? '✓ Lottie JSON selected' : 'Or pick Lottie JSON (.json)'}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           {/* Name Input */}

@@ -8,6 +8,9 @@
 // TYPES
 // ============================================================================
 
+/** Supported animation formats for custom emojis */
+export type AnimationFormat = 'gif' | 'apng' | 'webp' | 'lottie' | null;
+
 export interface CustomEmoji {
   id: string;
   name: string;
@@ -18,6 +21,10 @@ export interface CustomEmoji {
   createdAt: string;
   usageCount: number;
   isAnimated: boolean;
+  /** URL to Lottie JSON animation (when animationFormat is 'lottie') */
+  lottieUrl?: string;
+  /** Format of the animation */
+  animationFormat?: AnimationFormat;
 }
 
 export interface EmojiCategory {
