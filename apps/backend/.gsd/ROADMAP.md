@@ -1,10 +1,10 @@
-# CGraph Roadmap — v1.1 Chat Superpowers
+# CGraph Roadmap — v1.2 Lottie Emoji Upgrade
 
-> Generated: 2026-03-04 | Updated: current | Phases: 7 | Scope: Backend (v1.1 milestone)
+> Generated: 2026-03-04 | Updated: 2026-03-07 | Phases: 8 | Scope: Full-stack (v1.2 milestone)
 >
-> v1.0.0 shipped (Phases 1–25). Phase 26 adds chat superpowers: secret chat, stickers, E2EE
-> hardening, file transfer, voice/video call fixes, emoji 2026, chat completeness, Triple Ratchet
-> integration, competitive features, and integration testing.
+> v1.0.0 shipped (Phases 1–25). v1.1-chat-superpowers shipped (Phase 26). Phase 27 upgrades the
+> entire emoji, reaction, and animation system to Lottie-based Noto Emoji Animation from Google
+> Fonts, adds Lottie avatar borders, and prepares the codebase for Lottie-first animations.
 
 ---
 
@@ -18,9 +18,10 @@
 | 23  | Creator & Payments    | End-to-end creator monetization + coin shop + IAP                                                                   | 8     | 2     | ✅ Complete |
 | 24  | Test Coverage         | Ship safety net — catch regressions in revenue-critical and security-critical paths                                 | 5     | 1     | ✅ Complete |
 | 25  | Infrastructure & Perf | Production-ready infrastructure for real user traffic                                                               | 6     | 1     | ✅ Complete |
-| 26  | Chat Superpowers      | Complete DM experience: secret chat, stickers, E2EE Triple Ratchet, file transfer, calls, emojis, polls, scheduling | 20    | 10    | 🔄 Active   |
+| 26  | Chat Superpowers      | Complete DM experience: secret chat, stickers, E2EE Triple Ratchet, file transfer, calls, emojis, polls, scheduling | 20    | 10    | ✅ Complete |
+| 27  | Lottie Emoji Upgrade  | Replace static emojis with animated Noto Emoji (Lottie), Lottie borders, full-stack Lottie infra                    | 33    | 5     | 🔄 Active   |
 
-> **Total**: ~69 tasks across 7 phases, 21 plan files
+> **Total**: ~102 tasks across 8 phases, 26 plan files
 
 ---
 
@@ -156,21 +157,20 @@ Phase 20 (Backend Safety) ✅ COMPLETE
   └─→ Phase 23 (Creator/Pay)     ✅ COMPLETE
         └─→ Phase 24 (Tests)     ✅ COMPLETE
               └─→ Phase 25 (Infra) ✅ COMPLETE
-                    └─→ Phase 26 (Chat Superpowers) 🔄 ACTIVE
+                    └─→ Phase 26 (Chat Superpowers) ✅ COMPLETE
+                          └─→ Phase 27 (Lottie Emoji Upgrade) 🔄 ACTIVE
 
-Phase 26 Internal Waves:
-  Wave 1: 26-01 (Secret Chat), 26-02 (Stickers) [parallel]
-  Wave 2: 26-03 (E2EE Hardening), 26-04 (File Transfer) [parallel]
-  Wave 3: 26-05 (Voice/Video Calls), 26-06 (Emoji 2026) [parallel]
-  Wave 4: 26-07 (Chat Completeness), 26-08 (DM E2EE Wiring) [parallel]
-  Wave 5: 26-09 (Competitive Features), 26-10 (Integration Tests) [parallel]
+Phase 27 Internal Waves:
+  Wave 1: 27-01 (Backend Lottie Infra), 27-02 (Noto Manifest) [parallel]
+  Wave 2: 27-03 (Web Lottie Renderer) [depends on 27-01, 27-02]
+  Wave 3: 27-04 (Avatar Border Lottie), 27-05 (Mobile Lottie) [parallel, depend on 27-01]
 ```
 
-**25/26 PHASES COMPLETE** — Phase 26 active.
+**27/27 COMPLETED PHASES** — Phase 27 active.
 
 ---
 
-## Phase 26 — Chat Superpowers 🔄
+## Phase 26 — Chat Superpowers ✅
 
 **Goal**: Ship the complete direct messaging experience — secret chats more secure than Telegram,
 sticker store, robust E2EE with Triple Ratchet, chunked file transfer, voice/video call fixes,
@@ -193,13 +193,36 @@ Plans:
 
 ---
 
+## Phase 27 — Lottie Emoji Upgrade 🔄
+
+**Goal**: Replace static Unicode emoji with animated Noto Emoji (Lottie), add Lottie-based avatar
+borders, prepare full-stack Lottie infrastructure. Use Google Fonts CDN animated emojis from
+`https://googlefonts.github.io/noto-emoji-animation/` as our standard emoji set.
+
+**Scope**: ~95 files across backend, web, mobile, and shared packages. New `CGraph.Animations`
+context, `lottie-web` + `lottie-react-native` dependencies, Noto CDN manifest, IndexedDB/filesystem
+caching, updated emoji pickers, reaction animations, avatar borders, custom emoji uploads.
+
+Plans:
+
+- [ ] 27-01-PLAN.md — Backend Lottie Infrastructure (schemas, context, API, caching, migrations)
+- [ ] 27-02-PLAN.md — Noto Emoji Animation Manifest (CDN scraper, manifest JSON, seed task)
+- [ ] 27-03-PLAN.md — Web Lottie Integration (lottie-web, renderer, emoji picker, reactions, forums)
+- [ ] 27-04-PLAN.md — Lottie Avatar Borders & Effects (border renderer, cosmetics, deprecation)
+- [ ] 27-05-PLAN.md — Mobile Lottie Integration (lottie-react-native, emoji picker, reactions,
+      borders)
+
+---
+
 ## Reference
 
 - **Discovery analysis**: `.gsd/DISCOVERY.md` (full gap inventory)
 - **Codebase docs**: `.gsd/codebase/` (7 files, 6,384 lines)
 - **Detailed concerns**: `.gsd/codebase/CONCERNS.md` (48 action items, score 7.3/10)
 - **Prior roadmap**: Phases 1–19 completed (v0.9.47 → v1.0.0), archived in `.gsd/phases/`
+- **Noto Emoji Animation**: `https://googlefonts.github.io/noto-emoji-animation/`
+- **CDN base**: `https://fonts.gstatic.com/s/e/notoemoji/latest/{codepoint}/lottie.json`
 
 ---
 
-_Last updated: current — Phase 26 active (Chat Superpowers)_
+_Last updated: 2026-03-07 — Phase 27 active (Lottie Emoji Upgrade)_

@@ -17,22 +17,22 @@ focus:** v1.1 Chat Superpowers — Phase 26
 
 ## Position
 
-- **Milestone:** v1.1.0 Chat Superpowers — ✅ COMPLETE
-- **Phase:** 26-chat-superpowers — **COMPLETE**
-- **Status:** All 10 plans executed across 5 waves
-- **Last activity:** Phase 26 execution complete
+- **Milestone:** v1.2.0 Lottie Emoji Upgrade — 🔄 PLANNING
+- **Phase:** 27-lottie-emoji-upgrade — **PLANNED (5 plans)**
+- **Status:** Plans written, ready for execution
+- **Last activity:** Phase 27 planning complete
 
 ## Progress
 
-| Metric          | Value   |
-| --------------- | ------- |
-| v1.1.0 progress | 100%    |
-| Phases active   | none    |
-| Plans created   | 10      |
-| Plans executed  | 10 / 10 |
-| Tests passing   | 2,703   |
+| Metric          | Value |
+| --------------- | ----- |
+| v1.2.0 progress | 0%    |
+| Phases active   | 27    |
+| Plans created   | 5     |
+| Plans executed  | 0 / 5 |
+| Tests passing   | 2,703 |
 
-████████████████████████████████████████ 100% — Phase 26 complete
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0% — Phase 27 planned
 
 ## Phase Summary
 
@@ -64,23 +64,25 @@ focus:** v1.1 Chat Superpowers — Phase 26
 | 24  | Test Coverage           | **Complete**              |
 | 25  | Infrastructure & Perf   | **Complete**              |
 | 26  | Chat Superpowers        | **Complete**              |
+| 27  | Lottie Emoji Upgrade    | **Planned** (5 plans)     |
 
 ## Session Continuity
 
-Last session: Phase 26 execution complete — all 10 plans shipped Resume: `/complete-milestone v1.1`
-or plan next milestone
+Last session: Phase 27 planning complete — 5 plans written, ready for wave 1 execution Resume:
+`/execute-phase 27` or start with `27-01` + `27-02` (wave 1, parallel)
 
 ## Last Action
 
-Phase 26 "Chat Superpowers" fully executed:
+Phase 27 "Lottie Emoji Upgrade" planned:
 
-- 10 plans completed across 5 execution waves
-- Wave 1: Secret Chat + Stickers ✅
-- Wave 2: E2EE Hardening + File Transfer ✅
-- Wave 3: Voice/Video Calls + Emoji 2026 ✅
-- Wave 4: Chat Completeness + DM E2EE Wiring ✅
-- Wave 5: Competitive Features + Integration Tests ✅
-- 331 new tests added (2372 → 2703)
+- 5 plans across 3 execution waves
+- Wave 1: 27-01 (Backend Lottie Infra) + 27-02 (Noto Manifest) [parallel]
+- Wave 2: 27-03 (Web Lottie Renderer) [depends on wave 1]
+- Wave 3: 27-04 (Avatar Border Lottie) + 27-05 (Mobile Lottie) [parallel]
+- ~33 tasks total, ~95 files affected across all apps
+- Uses Google Fonts CDN: fonts.gstatic.com/s/e/notoemoji/latest/{cp}/lottie.json
+- New deps: lottie-web (web), lottie-react-native (mobile)
+- New context: CGraph.Animations (Lottie schema, manifest, cache)
 
 ---
 
