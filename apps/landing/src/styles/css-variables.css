@@ -172,12 +172,8 @@ html.site-ready {
 
 /* Subtle badge pulse animation for section badges */
 @keyframes badge-subtle-pulse {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.15), 0 0 24px rgba(168, 85, 247, 0.08);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(168, 85, 247, 0.22), 0 0 32px rgba(168, 85, 247, 0.12);
-  }
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: none; }
 }
 
 .demo-landing .font-display {

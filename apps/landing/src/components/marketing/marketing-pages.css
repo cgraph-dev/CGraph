@@ -270,19 +270,12 @@
     radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 42%),
     linear-gradient(140deg, rgba(2, 6, 23, 0.75) 0%, rgba(3, 7, 18, 0.62) 100%);
 
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 0 18px -2px var(--eyebrow-glow-1),
-    0 0 34px -4px var(--eyebrow-glow-2),
-    0 0 72px -8px var(--eyebrow-glow-1);
+  box-shadow: none;
 
   transition:
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.35s ease;
-  animation:
-    marketing-eyebrow-pulse 2.8s ease-in-out infinite,
-    marketing-eyebrow-float-shift 6s ease-in-out infinite;
+  animation: marketing-eyebrow-float-shift 6s ease-in-out infinite;
 }
 
 .marketing-hero__eyebrow-chrome {
@@ -315,7 +308,7 @@
   height: 6px;
   border-radius: 50%;
   background: linear-gradient(120deg, var(--eyebrow-color-1), var(--eyebrow-color-2));
-  box-shadow: 0 0 8px var(--eyebrow-glow-1), 0 0 16px var(--eyebrow-glow-2);
+  box-shadow: none;
   flex-shrink: 0;
   animation: marketing-eyebrow-dot-pulse 1.8s ease-in-out infinite;
 }
@@ -329,34 +322,18 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.12), 0 0 14px var(--eyebrow-glow-2);
+  text-shadow: none;
 }
 
 .marketing-hero__eyebrow:hover {
   transform: translateY(-2px) scale(1.04);
   border-color: rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.09),
-    0 0 26px -1px var(--eyebrow-glow-1),
-    0 0 54px -2px var(--eyebrow-glow-2),
-    0 0 88px -6px var(--eyebrow-glow-1);
+  box-shadow: none;
 }
 
 @keyframes marketing-eyebrow-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05),
-      0 0 18px -2px var(--eyebrow-glow-1),
-      0 0 34px -4px var(--eyebrow-glow-2),
-      0 0 72px -8px var(--eyebrow-glow-1);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.08),
-      0 0 24px 0 var(--eyebrow-glow-1),
-      0 0 52px -2px var(--eyebrow-glow-2),
-      0 0 94px -4px var(--eyebrow-glow-1);
-  }
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: none; }
 }
 
 @keyframes marketing-eyebrow-chrome-spin {

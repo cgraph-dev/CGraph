@@ -39,17 +39,12 @@
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
 
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 0 9px -2px var(--badge-glow-1),
-    0 0 17px -4px var(--badge-glow-2),
-    0 0 34px -8px var(--badge-glow-1);
+  box-shadow: none;
 
   transition:
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.35s ease;
-  animation: badge-glow-pulse 2.7s ease-in-out infinite, badge-float-shift 6s ease-in-out infinite;
+  animation: badge-float-shift 6s ease-in-out infinite;
 }
 
 .section-header__badge::before {
@@ -96,9 +91,7 @@
   flex-shrink: 0;
   border-radius: 9999px;
   background: linear-gradient(120deg, var(--badge-color-1), var(--badge-color-2));
-  box-shadow:
-    0 0 5px var(--badge-glow-1),
-    0 0 9px var(--badge-glow-2);
+  box-shadow: none;
   animation: badge-dot-pulse 1.8s ease-in-out infinite;
 }
 
@@ -113,9 +106,7 @@
   letter-spacing: 0.065em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.95);
-  text-shadow:
-    0 0 4px rgba(255, 255, 255, 0.1),
-    0 0 7px var(--badge-glow-2);
+  text-shadow: none;
 }
 
 .section-header__badge-text::after {
@@ -124,30 +115,14 @@
 
 .section-header__badge:hover {
   transform: translateY(-2px) scale(1.048);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.09),
-    0 0 13px -1px var(--badge-glow-1),
-    0 0 27px -2px var(--badge-glow-2),
-    0 0 43px -6px var(--badge-glow-1);
+  box-shadow: none;
   border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* ---- Animations ---- */
 @keyframes badge-glow-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05),
-      0 0 9px -2px var(--badge-glow-1),
-      0 0 17px -4px var(--badge-glow-2),
-      0 0 34px -8px var(--badge-glow-1);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.08),
-      0 0 12px 0 var(--badge-glow-1),
-      0 0 26px -2px var(--badge-glow-2),
-      0 0 46px -4px var(--badge-glow-1);
-  }
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: none; }
 }
 
 @keyframes badge-float-shift {
@@ -175,10 +150,7 @@
 @media (prefers-reduced-motion: reduce) {
   .section-header__badge {
     animation: none;
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 0 15px -2px var(--badge-glow-1),
-      0 0 30px -4px var(--badge-glow-2);
+    box-shadow: none;
   }
   .section-header__badge-chrome,
   .section-header__badge-dot,

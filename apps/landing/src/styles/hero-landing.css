@@ -495,29 +495,17 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   margin-bottom: 2rem;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 24px rgba(139, 92, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, transform 0.3s ease;
   cursor: default;
-  animation: eyebrow-subtle-pulse 4s ease-in-out infinite;
 }
 
-/* Subtle continuous glow pulse */
-@keyframes eyebrow-subtle-pulse {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 24px rgba(139, 92, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(16, 185, 129, 0.22), 0 0 32px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-}
-
-/* Enhanced glow on hover */
+/* Hover */
 .hero__eyebrow:hover {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(16, 185, 129, 0.6);
   transform: scale(1.02);
-  animation: none;
 }
 
 /* Shimmer sweep effect - only on hover */

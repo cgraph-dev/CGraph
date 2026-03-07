@@ -67,7 +67,7 @@
   border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 9999px;
   margin-bottom: 1rem;
-  animation: badge-subtle-pulse 4s ease-in-out infinite;
+  box-shadow: none;
 }
 
 .showcase-header__title {

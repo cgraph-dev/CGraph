@@ -91,7 +91,7 @@
   padding: 0.25rem 1rem;
   border-radius: 9999px;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+  box-shadow: none;
 }
 
 .pricing__name {
