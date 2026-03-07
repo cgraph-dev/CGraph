@@ -29,7 +29,9 @@ defmodule CGraphWeb.API.V1.CustomEmojiJSON do
       group_id: Map.get(emoji, :group_id),
       creator_id: Map.get(emoji, :creator_id),
       is_animated: Map.get(emoji, :is_animated, false),
-      usage_count: Map.get(emoji, :usage_count, 0)
+      usage_count: Map.get(emoji, :usage_count, 0),
+      lottie_url: Map.get(emoji, :lottie_url),
+      animation_format: Map.get(emoji, :animation_format)
     }
   end
 end

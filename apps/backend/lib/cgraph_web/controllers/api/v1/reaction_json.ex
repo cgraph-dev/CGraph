@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
   """
 
   alias CGraphWeb.API.V1.UserJSON
+  alias CGraph.Animations.LottieManifest
 
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
@@ -59,10 +60,24 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
       message_id: reaction.message_id,
       user_id: reaction.user_id,
       user: render_user(reaction.user),
+      animation: build_animation(reaction.emoji),
       created_at: reaction.inserted_at
     }
   end
 
   defp render_user(nil), do: nil
   defp render_user(user), do: UserJSON.user_data(user)
+
+  defp build_animation(emoji) when is_binary(emoji) do
+    case LottieManifest.emoji_to_codepoint(emoji) do
+      nil -> nil
+      cp ->
+        %{
+          lottie: LottieManifest.get_url(cp, :lottie),
+          webp: LottieManifest.get_url(cp, :webp)
+        }
+    end
+  end
+
+  defp build_animation(_), do: nil
 end
