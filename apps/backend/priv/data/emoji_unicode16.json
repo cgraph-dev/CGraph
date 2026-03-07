@@ -1,1713 +1,2864 @@
 [
   {
     "name": "grinning face",
-    "keywords": ["grin", "happy", "smile", "face"],
+    "keywords": [
+      "grin",
+      "happy",
+      "smile",
+      "face"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😀",
     "subcategory": "face-smiling",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f600"
   },
   {
     "name": "grinning face with big eyes",
-    "keywords": ["happy", "joy", "smile"],
+    "keywords": [
+      "happy",
+      "joy",
+      "smile"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😃",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f603"
   },
   {
     "name": "grinning face with smiling eyes",
-    "keywords": ["happy", "joy", "laugh"],
+    "keywords": [
+      "happy",
+      "joy",
+      "laugh"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😄",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f604"
   },
   {
     "name": "beaming face with smiling eyes",
-    "keywords": ["grin", "happy"],
+    "keywords": [
+      "grin",
+      "happy"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😁",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f601"
   },
   {
     "name": "grinning face with sweat",
-    "keywords": ["hot", "happy", "laugh", "sweat"],
+    "keywords": [
+      "hot",
+      "happy",
+      "laugh",
+      "sweat"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😅",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f605"
   },
   {
     "name": "rolling on the floor laughing",
-    "keywords": ["laugh", "lol", "rofl"],
+    "keywords": [
+      "laugh",
+      "lol",
+      "rofl"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤣",
     "subcategory": "face-smiling",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f923"
   },
   {
     "name": "face with tears of joy",
-    "keywords": ["cry", "happy", "laugh", "tears"],
+    "keywords": [
+      "cry",
+      "happy",
+      "laugh",
+      "tears"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😂",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f602"
   },
   {
     "name": "slightly smiling face",
-    "keywords": ["smile"],
+    "keywords": [
+      "smile"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🙂",
     "subcategory": "face-smiling",
     "unicode_version": "7.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f642"
   },
   {
     "name": "smiling face with smiling eyes",
-    "keywords": ["blush", "crush", "embarrassed"],
+    "keywords": [
+      "blush",
+      "crush",
+      "embarrassed"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😊",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f60a"
   },
   {
     "name": "smiling face with halo",
-    "keywords": ["angel", "halo", "innocent"],
+    "keywords": [
+      "angel",
+      "halo",
+      "innocent"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😇",
     "subcategory": "face-smiling",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f607"
   },
   {
     "name": "smiling face with hearts",
-    "keywords": ["adore", "crush", "hearts", "love"],
+    "keywords": [
+      "adore",
+      "crush",
+      "hearts",
+      "love"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🥰",
     "subcategory": "face-affection",
     "unicode_version": "11.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f970"
   },
   {
     "name": "smiling face with heart-eyes",
-    "keywords": ["crush", "heart", "love"],
+    "keywords": [
+      "crush",
+      "heart",
+      "love"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😍",
     "subcategory": "face-affection",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f60d"
   },
   {
     "name": "star-struck",
-    "keywords": ["eyes", "grinning", "star", "starry"],
+    "keywords": [
+      "eyes",
+      "grinning",
+      "star",
+      "starry"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤩",
     "subcategory": "face-affection",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f929"
   },
   {
     "name": "face blowing a kiss",
-    "keywords": ["kiss", "love"],
+    "keywords": [
+      "kiss",
+      "love"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😘",
     "subcategory": "face-affection",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f618"
   },
   {
     "name": "kissing face",
-    "keywords": ["kiss"],
+    "keywords": [
+      "kiss"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😗",
     "subcategory": "face-affection",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f617"
   },
   {
     "name": "kissing face with closed eyes",
-    "keywords": ["kiss", "love"],
+    "keywords": [
+      "kiss",
+      "love"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😚",
     "subcategory": "face-affection",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f61a"
   },
   {
     "name": "kissing face with smiling eyes",
-    "keywords": ["kiss"],
+    "keywords": [
+      "kiss"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😙",
     "subcategory": "face-affection",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f619"
   },
   {
     "name": "face savoring food",
-    "keywords": ["delicious", "face", "savoring", "yum"],
+    "keywords": [
+      "delicious",
+      "face",
+      "savoring",
+      "yum"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😋",
     "subcategory": "face-tongue",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f60b"
   },
   {
     "name": "face with tongue",
-    "keywords": ["tongue"],
+    "keywords": [
+      "tongue"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😛",
     "subcategory": "face-tongue",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f61b"
   },
   {
     "name": "winking face with tongue",
-    "keywords": ["joke", "tongue", "wink"],
+    "keywords": [
+      "joke",
+      "tongue",
+      "wink"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😜",
     "subcategory": "face-tongue",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f61c"
   },
   {
     "name": "zany face",
-    "keywords": ["crazy", "goofy", "large"],
+    "keywords": [
+      "crazy",
+      "goofy",
+      "large"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤪",
     "subcategory": "face-tongue",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f92a"
   },
   {
     "name": "squinting face with tongue",
-    "keywords": ["horrible", "taste", "tongue"],
+    "keywords": [
+      "horrible",
+      "taste",
+      "tongue"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😝",
     "subcategory": "face-tongue",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f61d"
   },
   {
     "name": "smiling face with open hands",
-    "keywords": ["hug", "hugging"],
+    "keywords": [
+      "hug",
+      "hugging"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤗",
     "subcategory": "face-hand",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f917"
   },
   {
     "name": "face with hand over mouth",
-    "keywords": ["whoops"],
+    "keywords": [
+      "whoops"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤭",
     "subcategory": "face-hand",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f92d"
   },
   {
     "name": "face with open eyes and hand over mouth",
-    "keywords": ["amazed", "shocked", "surprise"],
+    "keywords": [
+      "amazed",
+      "shocked",
+      "surprise"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫢",
     "subcategory": "face-hand",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1fae2"
   },
   {
     "name": "face with peeking eye",
-    "keywords": ["captivated", "peeking", "staring"],
+    "keywords": [
+      "captivated",
+      "peeking",
+      "staring"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫣",
     "subcategory": "face-hand",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1fae3"
   },
   {
     "name": "shushing face",
-    "keywords": ["quiet", "shush"],
+    "keywords": [
+      "quiet",
+      "shush"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤫",
     "subcategory": "face-hand",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f92b"
   },
   {
     "name": "thinking face",
-    "keywords": ["face", "thinking"],
+    "keywords": [
+      "face",
+      "thinking"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤔",
     "subcategory": "face-hand",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f914"
   },
   {
     "name": "saluting face",
-    "keywords": ["ok", "salute", "troops", "yes"],
+    "keywords": [
+      "ok",
+      "salute",
+      "troops",
+      "yes"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫡",
     "subcategory": "face-hand",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1fae1"
   },
   {
     "name": "zipper-mouth face",
-    "keywords": ["mouth", "zipper"],
+    "keywords": [
+      "mouth",
+      "zipper"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤐",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f910"
   },
   {
     "name": "face with raised eyebrow",
-    "keywords": ["distrust", "skeptic"],
+    "keywords": [
+      "distrust",
+      "skeptic"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤨",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f928"
   },
   {
     "name": "neutral face",
-    "keywords": ["deadpan", "meh", "neutral"],
+    "keywords": [
+      "deadpan",
+      "meh",
+      "neutral"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😐",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f610"
   },
   {
     "name": "expressionless face",
-    "keywords": ["expressionless", "inexpressive", "unexpressive"],
+    "keywords": [
+      "expressionless",
+      "inexpressive",
+      "unexpressive"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😑",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f611"
   },
   {
     "name": "face without mouth",
-    "keywords": ["mouth", "quiet", "silent"],
+    "keywords": [
+      "mouth",
+      "quiet",
+      "silent"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😶",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f636"
   },
   {
     "name": "dotted line face",
-    "keywords": ["depressed", "disappear", "hide", "introvert"],
+    "keywords": [
+      "depressed",
+      "disappear",
+      "hide",
+      "introvert"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫥",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "smirking face",
-    "keywords": ["smirk"],
+    "keywords": [
+      "smirk"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😏",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f60f"
   },
   {
     "name": "unamused face",
-    "keywords": ["unhappy", "unamused"],
+    "keywords": [
+      "unhappy",
+      "unamused"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😒",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f612"
   },
   {
     "name": "face with rolling eyes",
-    "keywords": ["eyeroll", "rolling"],
+    "keywords": [
+      "eyeroll",
+      "rolling"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🙄",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f644"
   },
   {
     "name": "grimacing face",
-    "keywords": ["grimace"],
+    "keywords": [
+      "grimace"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😬",
     "subcategory": "face-neutral-skeptical",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f62c"
   },
   {
     "name": "relieved face",
-    "keywords": ["relieved"],
+    "keywords": [
+      "relieved"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😌",
     "subcategory": "face-sleepy",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f60c"
   },
   {
     "name": "sleeping face",
-    "keywords": ["sleep", "zzz"],
+    "keywords": [
+      "sleep",
+      "zzz"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😴",
     "subcategory": "face-sleepy",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f634"
   },
   {
     "name": "yawning face",
-    "keywords": ["bored", "tired", "yawn"],
+    "keywords": [
+      "bored",
+      "tired",
+      "yawn"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🥱",
     "subcategory": "face-sleepy",
     "unicode_version": "12.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f971"
   },
   {
     "name": "face with medical mask",
-    "keywords": ["cold", "doctor", "mask", "sick"],
+    "keywords": [
+      "cold",
+      "doctor",
+      "mask",
+      "sick"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😷",
     "subcategory": "face-unwell",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f637"
   },
   {
     "name": "face with thermometer",
-    "keywords": ["face", "ill", "sick", "thermometer"],
+    "keywords": [
+      "face",
+      "ill",
+      "sick",
+      "thermometer"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤒",
     "subcategory": "face-unwell",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f912"
   },
   {
     "name": "face vomiting",
-    "keywords": ["puke", "sick", "vomit"],
+    "keywords": [
+      "puke",
+      "sick",
+      "vomit"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤮",
     "subcategory": "face-unwell",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f92e"
   },
   {
     "name": "nauseated face",
-    "keywords": ["nauseated", "vomit"],
+    "keywords": [
+      "nauseated",
+      "vomit"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤢",
     "subcategory": "face-unwell",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f922"
   },
   {
     "name": "face with open mouth",
-    "keywords": ["open", "sympathy"],
+    "keywords": [
+      "open",
+      "sympathy"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😮",
     "subcategory": "face-concerned",
     "unicode_version": "6.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f62e"
   },
   {
     "name": "crying face",
-    "keywords": ["cry", "sad", "tear"],
+    "keywords": [
+      "cry",
+      "sad",
+      "tear"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😢",
     "subcategory": "face-concerned",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f622"
   },
   {
     "name": "loudly crying face",
-    "keywords": ["cry", "sad", "sob", "tears"],
+    "keywords": [
+      "cry",
+      "sad",
+      "sob",
+      "tears"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😭",
     "subcategory": "face-concerned",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f62d"
   },
   {
     "name": "face screaming in fear",
-    "keywords": ["fear", "munch", "scared", "scream"],
+    "keywords": [
+      "fear",
+      "munch",
+      "scared",
+      "scream"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😱",
     "subcategory": "face-concerned",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f631"
   },
   {
     "name": "anxious face with sweat",
-    "keywords": ["anxious", "nervous", "sweat"],
+    "keywords": [
+      "anxious",
+      "nervous",
+      "sweat"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😰",
     "subcategory": "face-concerned",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f630"
   },
   {
     "name": "pleading face",
-    "keywords": ["begging", "mercy", "puppy"],
+    "keywords": [
+      "begging",
+      "mercy",
+      "puppy"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🥺",
     "subcategory": "face-concerned",
     "unicode_version": "11.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f97a"
   },
   {
     "name": "smiling face with tear",
-    "keywords": ["grateful", "proud", "relieved", "smiling", "tear", "touched"],
+    "keywords": [
+      "grateful",
+      "proud",
+      "relieved",
+      "smiling",
+      "tear",
+      "touched"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🥲",
     "subcategory": "face-concerned",
     "unicode_version": "13.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f972"
   },
   {
     "name": "enraged face",
-    "keywords": ["angry", "mad", "rage", "red"],
+    "keywords": [
+      "angry",
+      "mad",
+      "rage",
+      "red"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😡",
     "subcategory": "face-negative",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f621"
   },
   {
     "name": "angry face",
-    "keywords": ["angry", "mad"],
+    "keywords": [
+      "angry",
+      "mad"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😠",
     "subcategory": "face-negative",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f620"
   },
   {
     "name": "face with symbols on mouth",
-    "keywords": ["cursing", "swearing"],
+    "keywords": [
+      "cursing",
+      "swearing"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤬",
     "subcategory": "face-negative",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f92c"
   },
   {
     "name": "smiling face with horns",
-    "keywords": ["devil", "horns"],
+    "keywords": [
+      "devil",
+      "horns"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "😈",
     "subcategory": "face-negative",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f608"
   },
   {
     "name": "skull",
-    "keywords": ["death", "monster", "skull"],
+    "keywords": [
+      "death",
+      "monster",
+      "skull"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💀",
     "subcategory": "face-costume",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f480"
   },
   {
     "name": "ghost",
-    "keywords": ["creature", "ghost", "monster"],
+    "keywords": [
+      "creature",
+      "ghost",
+      "monster"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "👻",
     "subcategory": "face-costume",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f47b"
   },
   {
     "name": "alien",
-    "keywords": ["alien", "creature", "extraterrestrial", "ufo"],
+    "keywords": [
+      "alien",
+      "creature",
+      "extraterrestrial",
+      "ufo"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "👽",
     "subcategory": "face-costume",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f47d"
   },
   {
     "name": "clown face",
-    "keywords": ["clown", "face"],
+    "keywords": [
+      "clown",
+      "face"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤡",
     "subcategory": "face-costume",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f921"
   },
   {
     "name": "pile of poo",
-    "keywords": ["dung", "monster", "poo", "poop"],
+    "keywords": [
+      "dung",
+      "monster",
+      "poo",
+      "poop"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💩",
     "subcategory": "face-costume",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a9"
   },
   {
     "name": "see-no-evil monkey",
-    "keywords": ["evil", "face", "forbidden", "monkey", "see"],
+    "keywords": [
+      "evil",
+      "face",
+      "forbidden",
+      "monkey",
+      "see"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🙈",
     "subcategory": "monkey-face",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f648"
   },
   {
     "name": "hear-no-evil monkey",
-    "keywords": ["evil", "face", "forbidden", "hear", "monkey"],
+    "keywords": [
+      "evil",
+      "face",
+      "forbidden",
+      "hear",
+      "monkey"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🙉",
     "subcategory": "monkey-face",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f649"
   },
   {
     "name": "speak-no-evil monkey",
-    "keywords": ["evil", "face", "forbidden", "monkey", "speak"],
+    "keywords": [
+      "evil",
+      "face",
+      "forbidden",
+      "monkey",
+      "speak"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🙊",
     "subcategory": "monkey-face",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f64a"
   },
   {
     "name": "red heart",
-    "keywords": ["heart", "love", "red"],
+    "keywords": [
+      "heart",
+      "love",
+      "red"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "❤️",
     "subcategory": "emotion",
     "unicode_version": "1.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2764"
   },
   {
     "name": "orange heart",
-    "keywords": ["heart", "orange"],
+    "keywords": [
+      "heart",
+      "orange"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🧡",
     "subcategory": "emotion",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f9e1"
   },
   {
     "name": "yellow heart",
-    "keywords": ["heart", "yellow"],
+    "keywords": [
+      "heart",
+      "yellow"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💛",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f49b"
   },
   {
     "name": "green heart",
-    "keywords": ["green", "heart"],
+    "keywords": [
+      "green",
+      "heart"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💚",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f49a"
   },
   {
     "name": "blue heart",
-    "keywords": ["blue", "heart"],
+    "keywords": [
+      "blue",
+      "heart"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💙",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f499"
   },
   {
     "name": "purple heart",
-    "keywords": ["heart", "purple"],
+    "keywords": [
+      "heart",
+      "purple"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💜",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f49c"
   },
   {
     "name": "black heart",
-    "keywords": ["black", "evil", "heart", "wicked"],
+    "keywords": [
+      "black",
+      "evil",
+      "heart",
+      "wicked"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🖤",
     "subcategory": "emotion",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f5a4"
   },
   {
     "name": "white heart",
-    "keywords": ["heart", "white"],
+    "keywords": [
+      "heart",
+      "white"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🤍",
     "subcategory": "emotion",
     "unicode_version": "12.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f90d"
   },
   {
     "name": "pink heart",
-    "keywords": ["cute", "heart", "like", "love", "pink"],
+    "keywords": [
+      "cute",
+      "heart",
+      "like",
+      "love",
+      "pink"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🩷",
     "subcategory": "emotion",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1fa77"
   },
   {
     "name": "light blue heart",
-    "keywords": ["cyan", "heart", "light blue", "teal"],
+    "keywords": [
+      "cyan",
+      "heart",
+      "light blue",
+      "teal"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🩵",
     "subcategory": "emotion",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "grey heart",
-    "keywords": ["grey", "heart", "silver", "slate"],
+    "keywords": [
+      "grey",
+      "heart",
+      "silver",
+      "slate"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🩶",
     "subcategory": "emotion",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "broken heart",
-    "keywords": ["break", "broken", "heart"],
+    "keywords": [
+      "break",
+      "broken",
+      "heart"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💔",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f494"
   },
   {
     "name": "fire",
-    "keywords": ["fire", "flame", "hot", "lit"],
+    "keywords": [
+      "fire",
+      "flame",
+      "hot",
+      "lit"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🔥",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f525"
   },
   {
     "name": "hundred points",
-    "keywords": ["100", "full", "hundred", "score"],
+    "keywords": [
+      "100",
+      "full",
+      "hundred",
+      "score"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💯",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4af"
   },
   {
     "name": "sparkles",
-    "keywords": ["sparkle", "star"],
+    "keywords": [
+      "sparkle",
+      "star"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "✨",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2728"
   },
   {
     "name": "zzz",
-    "keywords": ["comic", "sleep", "zzz"],
+    "keywords": [
+      "comic",
+      "sleep",
+      "zzz"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💤",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a4"
   },
   {
     "name": "anger symbol",
-    "keywords": ["anger", "angry", "comic", "mad"],
+    "keywords": [
+      "anger",
+      "angry",
+      "comic",
+      "mad"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💢",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a2"
   },
   {
     "name": "collision",
-    "keywords": ["boom", "collision", "comic"],
+    "keywords": [
+      "boom",
+      "collision",
+      "comic"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💥",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a5"
   },
   {
     "name": "sweat droplets",
-    "keywords": ["comic", "splashing", "sweat"],
+    "keywords": [
+      "comic",
+      "splashing",
+      "sweat"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "💦",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a6"
   },
   {
     "name": "musical note",
-    "keywords": ["music", "note"],
+    "keywords": [
+      "music",
+      "note"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🎵",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3b5"
   },
   {
     "name": "musical notes",
-    "keywords": ["music", "notes"],
+    "keywords": [
+      "music",
+      "notes"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🎶",
     "subcategory": "emotion",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3b6"
   },
   {
     "name": "face with bags under eyes",
-    "keywords": ["bags", "exhausted", "eyebags", "tired", "weary"],
+    "keywords": [
+      "bags",
+      "exhausted",
+      "eyebags",
+      "tired",
+      "weary"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫩",
     "subcategory": "face-unwell",
     "unicode_version": "16.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "waving hand",
-    "keywords": ["hand", "wave", "waving"],
+    "keywords": [
+      "hand",
+      "wave",
+      "waving"
+    ],
     "category": "People & Body",
     "emoji": "👋",
     "subcategory": "hand-fingers-open",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44b"
   },
   {
     "name": "raised back of hand",
-    "keywords": ["backhand", "raised"],
+    "keywords": [
+      "backhand",
+      "raised"
+    ],
     "category": "People & Body",
     "emoji": "🤚",
     "subcategory": "hand-fingers-open",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91a"
   },
   {
     "name": "hand with fingers splayed",
-    "keywords": ["finger", "hand", "splayed"],
+    "keywords": [
+      "finger",
+      "hand",
+      "splayed"
+    ],
     "category": "People & Body",
     "emoji": "🖐️",
     "subcategory": "hand-fingers-open",
     "unicode_version": "7.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f590"
   },
   {
     "name": "raised hand",
-    "keywords": ["hand", "high five"],
+    "keywords": [
+      "hand",
+      "high five"
+    ],
     "category": "People & Body",
     "emoji": "✋",
     "subcategory": "hand-fingers-open",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "270b"
   },
   {
     "name": "vulcan salute",
-    "keywords": ["finger", "hand", "spock", "vulcan"],
+    "keywords": [
+      "finger",
+      "hand",
+      "spock",
+      "vulcan"
+    ],
     "category": "People & Body",
     "emoji": "🖖",
     "subcategory": "hand-fingers-open",
     "unicode_version": "7.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f596"
   },
   {
     "name": "OK hand",
-    "keywords": ["hand", "ok"],
+    "keywords": [
+      "hand",
+      "ok"
+    ],
     "category": "People & Body",
     "emoji": "👌",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44c"
   },
   {
     "name": "pinched fingers",
-    "keywords": ["fingers", "hand gesture", "interrogation", "italian", "pinched", "sarcastic"],
+    "keywords": [
+      "fingers",
+      "hand gesture",
+      "interrogation",
+      "italian",
+      "pinched",
+      "sarcastic"
+    ],
     "category": "People & Body",
     "emoji": "🤌",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "13.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f90c"
   },
   {
     "name": "pinching hand",
-    "keywords": ["small amount"],
+    "keywords": [
+      "small amount"
+    ],
     "category": "People & Body",
     "emoji": "🤏",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "12.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f90f"
   },
   {
     "name": "victory hand",
-    "keywords": ["hand", "v", "victory"],
+    "keywords": [
+      "hand",
+      "v",
+      "victory"
+    ],
     "category": "People & Body",
     "emoji": "✌️",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "1.1",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "270c"
   },
   {
     "name": "crossed fingers",
-    "keywords": ["cross", "finger", "hand", "luck"],
+    "keywords": [
+      "cross",
+      "finger",
+      "hand",
+      "luck"
+    ],
     "category": "People & Body",
     "emoji": "🤞",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91e"
   },
   {
     "name": "love-you gesture",
-    "keywords": ["hand", "ILY"],
+    "keywords": [
+      "hand",
+      "ILY"
+    ],
     "category": "People & Body",
     "emoji": "🤟",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "10.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91f"
   },
   {
     "name": "sign of the horns",
-    "keywords": ["finger", "hand", "horns", "rock"],
+    "keywords": [
+      "finger",
+      "hand",
+      "horns",
+      "rock"
+    ],
     "category": "People & Body",
     "emoji": "🤘",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "8.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f918"
   },
   {
     "name": "call me hand",
-    "keywords": ["call", "hand", "shaka"],
+    "keywords": [
+      "call",
+      "hand",
+      "shaka"
+    ],
     "category": "People & Body",
     "emoji": "🤙",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f919"
   },
   {
     "name": "backhand index pointing left",
-    "keywords": ["backhand", "finger", "index", "point"],
+    "keywords": [
+      "backhand",
+      "finger",
+      "index",
+      "point"
+    ],
     "category": "People & Body",
     "emoji": "👈",
     "subcategory": "hand-single-finger",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f448"
   },
   {
     "name": "backhand index pointing right",
-    "keywords": ["backhand", "finger", "index", "point"],
+    "keywords": [
+      "backhand",
+      "finger",
+      "index",
+      "point"
+    ],
     "category": "People & Body",
     "emoji": "👉",
     "subcategory": "hand-single-finger",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f449"
   },
   {
     "name": "backhand index pointing up",
-    "keywords": ["backhand", "finger", "point", "up"],
+    "keywords": [
+      "backhand",
+      "finger",
+      "point",
+      "up"
+    ],
     "category": "People & Body",
     "emoji": "👆",
     "subcategory": "hand-single-finger",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f446"
   },
   {
     "name": "backhand index pointing down",
-    "keywords": ["backhand", "down", "finger", "point"],
+    "keywords": [
+      "backhand",
+      "down",
+      "finger",
+      "point"
+    ],
     "category": "People & Body",
     "emoji": "👇",
     "subcategory": "hand-single-finger",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f447"
   },
   {
     "name": "middle finger",
-    "keywords": ["finger", "hand", "middle finger"],
+    "keywords": [
+      "finger",
+      "hand",
+      "middle finger"
+    ],
     "category": "People & Body",
     "emoji": "🖕",
     "subcategory": "hand-single-finger",
     "unicode_version": "7.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": false
   },
   {
     "name": "thumbs up",
-    "keywords": ["+1", "hand", "thumb", "up"],
+    "keywords": [
+      "+1",
+      "hand",
+      "thumb",
+      "up"
+    ],
     "category": "People & Body",
     "emoji": "👍",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44d"
   },
   {
     "name": "thumbs down",
-    "keywords": ["-1", "down", "hand", "thumb"],
+    "keywords": [
+      "-1",
+      "down",
+      "hand",
+      "thumb"
+    ],
     "category": "People & Body",
     "emoji": "👎",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44e"
   },
   {
     "name": "raised fist",
-    "keywords": ["clenched", "fist", "hand", "punch"],
+    "keywords": [
+      "clenched",
+      "fist",
+      "hand",
+      "punch"
+    ],
     "category": "People & Body",
     "emoji": "✊",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "270a"
   },
   {
     "name": "oncoming fist",
-    "keywords": ["clenched", "fist", "hand", "punch"],
+    "keywords": [
+      "clenched",
+      "fist",
+      "hand",
+      "punch"
+    ],
     "category": "People & Body",
     "emoji": "👊",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44a"
   },
   {
     "name": "left-facing fist",
-    "keywords": ["fist", "leftwards"],
+    "keywords": [
+      "fist",
+      "leftwards"
+    ],
     "category": "People & Body",
     "emoji": "🤛",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91b"
   },
   {
     "name": "right-facing fist",
-    "keywords": ["fist", "rightwards"],
+    "keywords": [
+      "fist",
+      "rightwards"
+    ],
     "category": "People & Body",
     "emoji": "🤜",
     "subcategory": "hand-fingers-closed",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91c"
   },
   {
     "name": "clapping hands",
-    "keywords": ["clap", "hand"],
+    "keywords": [
+      "clap",
+      "hand"
+    ],
     "category": "People & Body",
     "emoji": "👏",
     "subcategory": "hands",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f44f"
   },
   {
     "name": "raising hands",
-    "keywords": ["celebration", "gesture", "hand", "hooray", "raised"],
+    "keywords": [
+      "celebration",
+      "gesture",
+      "hand",
+      "hooray",
+      "raised"
+    ],
     "category": "People & Body",
     "emoji": "🙌",
     "subcategory": "hands",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f64c"
   },
   {
     "name": "handshake",
-    "keywords": ["agreement", "hand", "meeting", "shake"],
+    "keywords": [
+      "agreement",
+      "hand",
+      "meeting",
+      "shake"
+    ],
     "category": "People & Body",
     "emoji": "🤝",
     "subcategory": "hands",
     "unicode_version": "9.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f91d"
   },
   {
     "name": "folded hands",
-    "keywords": ["ask", "hand", "please", "pray", "thanks"],
+    "keywords": [
+      "ask",
+      "hand",
+      "please",
+      "pray",
+      "thanks"
+    ],
     "category": "People & Body",
     "emoji": "🙏",
     "subcategory": "hands",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f64f"
   },
   {
     "name": "flexed biceps",
-    "keywords": ["biceps", "comic", "flex", "muscle", "strong"],
+    "keywords": [
+      "biceps",
+      "comic",
+      "flex",
+      "muscle",
+      "strong"
+    ],
     "category": "People & Body",
     "emoji": "💪",
     "subcategory": "body-parts",
     "unicode_version": "6.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": true,
+    "animation_codepoint": "1f4aa"
   },
   {
     "name": "eyes",
-    "keywords": ["eye", "face"],
+    "keywords": [
+      "eye",
+      "face"
+    ],
     "category": "People & Body",
     "emoji": "👀",
     "subcategory": "body-parts",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f440"
   },
   {
     "name": "fingerprint",
-    "keywords": ["identity", "security", "touch", "unique", "fingerprint"],
+    "keywords": [
+      "identity",
+      "security",
+      "touch",
+      "unique",
+      "fingerprint"
+    ],
     "category": "People & Body",
     "emoji": "🫆",
     "subcategory": "body-parts",
     "unicode_version": "16.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "dog face",
-    "keywords": ["dog", "face", "pet"],
+    "keywords": [
+      "dog",
+      "face",
+      "pet"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐶",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f436"
   },
   {
     "name": "cat face",
-    "keywords": ["cat", "face", "pet"],
+    "keywords": [
+      "cat",
+      "face",
+      "pet"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐱",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f431"
   },
   {
     "name": "mouse face",
-    "keywords": ["face", "mouse"],
+    "keywords": [
+      "face",
+      "mouse"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐭",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f42d"
   },
   {
     "name": "rabbit face",
-    "keywords": ["bunny", "face", "pet", "rabbit"],
+    "keywords": [
+      "bunny",
+      "face",
+      "pet",
+      "rabbit"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐰",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f430"
   },
   {
     "name": "fox",
-    "keywords": ["face", "fox"],
+    "keywords": [
+      "face",
+      "fox"
+    ],
     "category": "Animals & Nature",
     "emoji": "🦊",
     "subcategory": "animal-mammal",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f98a"
   },
   {
     "name": "bear",
-    "keywords": ["bear", "face"],
+    "keywords": [
+      "bear",
+      "face"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐻",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f43b"
   },
   {
     "name": "panda",
-    "keywords": ["face", "panda"],
+    "keywords": [
+      "face",
+      "panda"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐼",
     "subcategory": "animal-mammal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f43c"
   },
   {
     "name": "frog",
-    "keywords": ["face", "frog"],
+    "keywords": [
+      "face",
+      "frog"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐸",
     "subcategory": "animal-amphibian",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f438"
   },
   {
     "name": "snake",
-    "keywords": ["bearer", "ophiuchus", "serpent", "snake", "zodiac"],
+    "keywords": [
+      "bearer",
+      "ophiuchus",
+      "serpent",
+      "snake",
+      "zodiac"
+    ],
     "category": "Animals & Nature",
     "emoji": "🐍",
     "subcategory": "animal-reptile",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f40d"
   },
   {
     "name": "butterfly",
-    "keywords": ["butterfly", "insect", "pretty"],
+    "keywords": [
+      "butterfly",
+      "insect",
+      "pretty"
+    ],
     "category": "Animals & Nature",
     "emoji": "🦋",
     "subcategory": "animal-bug",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f98b"
   },
   {
     "name": "cherry blossom",
-    "keywords": ["blossom", "cherry", "flower"],
+    "keywords": [
+      "blossom",
+      "cherry",
+      "flower"
+    ],
     "category": "Animals & Nature",
     "emoji": "🌸",
     "subcategory": "plant-flower",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f338"
   },
   {
     "name": "rose",
-    "keywords": ["flower", "rose"],
+    "keywords": [
+      "flower",
+      "rose"
+    ],
     "category": "Animals & Nature",
     "emoji": "🌹",
     "subcategory": "plant-flower",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f339"
   },
   {
     "name": "sunflower",
-    "keywords": ["flower", "sun", "sunflower"],
+    "keywords": [
+      "flower",
+      "sun",
+      "sunflower"
+    ],
     "category": "Animals & Nature",
     "emoji": "🌻",
     "subcategory": "plant-flower",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f33b"
   },
   {
     "name": "evergreen tree",
-    "keywords": ["evergreen", "tree"],
+    "keywords": [
+      "evergreen",
+      "tree"
+    ],
     "category": "Animals & Nature",
     "emoji": "🌲",
     "subcategory": "plant-other",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "four leaf clover",
-    "keywords": ["4", "clover", "four", "leaf", "luck"],
+    "keywords": [
+      "4",
+      "clover",
+      "four",
+      "leaf",
+      "luck"
+    ],
     "category": "Animals & Nature",
     "emoji": "🍀",
     "subcategory": "plant-other",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f340"
   },
   {
     "name": "hyacinth",
-    "keywords": ["bluebonnet", "flower", "hyacinth", "lavender", "lupine", "snapdragon"],
+    "keywords": [
+      "bluebonnet",
+      "flower",
+      "hyacinth",
+      "lavender",
+      "lupine",
+      "snapdragon"
+    ],
     "category": "Animals & Nature",
     "emoji": "🪻",
     "subcategory": "plant-flower",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "leafless tree",
-    "keywords": ["bare", "dead", "leafless", "tree", "winter"],
+    "keywords": [
+      "bare",
+      "dead",
+      "leafless",
+      "tree",
+      "winter"
+    ],
     "category": "Animals & Nature",
     "emoji": "🪾",
     "subcategory": "plant-other",
     "unicode_version": "16.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "red apple",
-    "keywords": ["apple", "fruit", "red"],
+    "keywords": [
+      "apple",
+      "fruit",
+      "red"
+    ],
     "category": "Food & Drink",
     "emoji": "🍎",
     "subcategory": "food-fruit",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f34e"
   },
   {
     "name": "pizza",
-    "keywords": ["cheese", "pizza", "slice"],
+    "keywords": [
+      "cheese",
+      "pizza",
+      "slice"
+    ],
     "category": "Food & Drink",
     "emoji": "🍕",
     "subcategory": "food-prepared",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f355"
   },
   {
     "name": "hamburger",
-    "keywords": ["burger", "hamburger"],
+    "keywords": [
+      "burger",
+      "hamburger"
+    ],
     "category": "Food & Drink",
     "emoji": "🍔",
     "subcategory": "food-prepared",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f354"
   },
   {
     "name": "french fries",
-    "keywords": ["french", "fries"],
+    "keywords": [
+      "french",
+      "fries"
+    ],
     "category": "Food & Drink",
     "emoji": "🍟",
     "subcategory": "food-prepared",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f35f"
   },
   {
     "name": "taco",
-    "keywords": ["mexican", "taco"],
+    "keywords": [
+      "mexican",
+      "taco"
+    ],
     "category": "Food & Drink",
     "emoji": "🌮",
     "subcategory": "food-prepared",
     "unicode_version": "8.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f32e"
   },
   {
     "name": "soft ice cream",
-    "keywords": ["cream", "dessert", "ice", "icecream", "soft", "sweet"],
+    "keywords": [
+      "cream",
+      "dessert",
+      "ice",
+      "icecream",
+      "soft",
+      "sweet"
+    ],
     "category": "Food & Drink",
     "emoji": "🍦",
     "subcategory": "food-sweet",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f366"
   },
   {
     "name": "birthday cake",
-    "keywords": ["birthday", "cake", "celebration", "dessert", "pastry", "sweet"],
+    "keywords": [
+      "birthday",
+      "cake",
+      "celebration",
+      "dessert",
+      "pastry",
+      "sweet"
+    ],
     "category": "Food & Drink",
     "emoji": "🎂",
     "subcategory": "food-sweet",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f382"
   },
   {
     "name": "hot beverage",
-    "keywords": ["beverage", "coffee", "drink", "hot", "steaming", "tea"],
+    "keywords": [
+      "beverage",
+      "coffee",
+      "drink",
+      "hot",
+      "steaming",
+      "tea"
+    ],
     "category": "Food & Drink",
     "emoji": "☕",
     "subcategory": "drink",
     "unicode_version": "4.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2615"
   },
   {
     "name": "beer mug",
-    "keywords": ["bar", "beer", "drink", "mug"],
+    "keywords": [
+      "bar",
+      "beer",
+      "drink",
+      "mug"
+    ],
     "category": "Food & Drink",
     "emoji": "🍺",
     "subcategory": "drink",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f37a"
   },
   {
     "name": "wine glass",
-    "keywords": ["bar", "beverage", "drink", "glass", "wine"],
+    "keywords": [
+      "bar",
+      "beverage",
+      "drink",
+      "glass",
+      "wine"
+    ],
     "category": "Food & Drink",
     "emoji": "🍷",
     "subcategory": "drink",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f377"
   },
   {
     "name": "pea pod",
-    "keywords": ["edamame", "legume", "pea", "pod", "vegetable"],
+    "keywords": [
+      "edamame",
+      "legume",
+      "pea",
+      "pod",
+      "vegetable"
+    ],
     "category": "Food & Drink",
     "emoji": "🫛",
     "subcategory": "food-vegetable",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "ginger root",
-    "keywords": ["beer", "ginger", "root", "spice"],
+    "keywords": [
+      "beer",
+      "ginger",
+      "root",
+      "spice"
+    ],
     "category": "Food & Drink",
     "emoji": "🫚",
     "subcategory": "food-vegetable",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "root vegetable",
-    "keywords": ["beet", "parsnip", "radish", "root", "turnip", "vegetable"],
+    "keywords": [
+      "beet",
+      "parsnip",
+      "radish",
+      "root",
+      "turnip",
+      "vegetable"
+    ],
     "category": "Food & Drink",
     "emoji": "🫜",
     "subcategory": "food-vegetable",
     "unicode_version": "16.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "automobile",
-    "keywords": ["automobile", "car"],
+    "keywords": [
+      "automobile",
+      "car"
+    ],
     "category": "Travel & Places",
     "emoji": "🚗",
     "subcategory": "transport-ground",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f697"
   },
   {
     "name": "airplane",
-    "keywords": ["aeroplane", "airplane"],
+    "keywords": [
+      "aeroplane",
+      "airplane"
+    ],
     "category": "Travel & Places",
     "emoji": "✈️",
     "subcategory": "transport-air",
     "unicode_version": "1.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "house",
-    "keywords": ["home", "house"],
+    "keywords": [
+      "home",
+      "house"
+    ],
     "category": "Travel & Places",
     "emoji": "🏠",
     "subcategory": "place-building",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3e0"
   },
   {
     "name": "office building",
-    "keywords": ["building", "office"],
+    "keywords": [
+      "building",
+      "office"
+    ],
     "category": "Travel & Places",
     "emoji": "🏢",
     "subcategory": "place-building",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "mountain",
-    "keywords": ["mountain"],
+    "keywords": [
+      "mountain"
+    ],
     "category": "Travel & Places",
     "emoji": "⛰️",
     "subcategory": "place-geographic",
     "unicode_version": "5.2",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "sunrise",
-    "keywords": ["morning", "sun", "sunrise"],
+    "keywords": [
+      "morning",
+      "sun",
+      "sunrise"
+    ],
     "category": "Travel & Places",
     "emoji": "🌅",
     "subcategory": "place-other",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f305"
   },
   {
     "name": "rainbow",
-    "keywords": ["rain", "rainbow"],
+    "keywords": [
+      "rain",
+      "rainbow"
+    ],
     "category": "Travel & Places",
     "emoji": "🌈",
     "subcategory": "sky-weather",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f308"
   },
   {
     "name": "globe showing Europe-Africa",
-    "keywords": ["africa", "earth", "europe", "globe", "world"],
+    "keywords": [
+      "africa",
+      "earth",
+      "europe",
+      "globe",
+      "world"
+    ],
     "category": "Travel & Places",
     "emoji": "🌍",
     "subcategory": "place-map",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "crescent moon",
-    "keywords": ["crescent", "moon"],
+    "keywords": [
+      "crescent",
+      "moon"
+    ],
     "category": "Travel & Places",
     "emoji": "🌙",
     "subcategory": "sky-weather",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f319"
   },
   {
     "name": "star",
-    "keywords": ["star"],
+    "keywords": [
+      "star"
+    ],
     "category": "Travel & Places",
     "emoji": "⭐",
     "subcategory": "sky-weather",
     "unicode_version": "5.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2b50"
   },
   {
     "name": "soccer ball",
-    "keywords": ["ball", "football", "soccer"],
+    "keywords": [
+      "ball",
+      "football",
+      "soccer"
+    ],
     "category": "Activities",
     "emoji": "⚽",
     "subcategory": "sport",
     "unicode_version": "5.2",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "26bd"
   },
   {
     "name": "basketball",
-    "keywords": ["ball", "basketball", "hoop"],
+    "keywords": [
+      "ball",
+      "basketball",
+      "hoop"
+    ],
     "category": "Activities",
     "emoji": "🏀",
     "subcategory": "sport",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3c0"
   },
   {
     "name": "video game",
-    "keywords": ["controller", "game", "video game"],
+    "keywords": [
+      "controller",
+      "game",
+      "video game"
+    ],
     "category": "Activities",
     "emoji": "🎮",
     "subcategory": "game",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3ae"
   },
   {
     "name": "game die",
-    "keywords": ["dice", "die", "game"],
+    "keywords": [
+      "dice",
+      "die",
+      "game"
+    ],
     "category": "Activities",
     "emoji": "🎲",
     "subcategory": "game",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "bullseye",
-    "keywords": ["bullseye", "dart", "direct hit", "game", "hit", "target"],
+    "keywords": [
+      "bullseye",
+      "dart",
+      "direct hit",
+      "game",
+      "hit",
+      "target"
+    ],
     "category": "Activities",
     "emoji": "🎯",
     "subcategory": "game",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3af"
   },
   {
     "name": "party popper",
-    "keywords": ["celebration", "party", "popper", "tada"],
+    "keywords": [
+      "celebration",
+      "party",
+      "popper",
+      "tada"
+    ],
     "category": "Activities",
     "emoji": "🎉",
     "subcategory": "event",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f389"
   },
   {
     "name": "confetti ball",
-    "keywords": ["ball", "celebration", "confetti"],
+    "keywords": [
+      "ball",
+      "celebration",
+      "confetti"
+    ],
     "category": "Activities",
     "emoji": "🎊",
     "subcategory": "event",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f38a"
   },
   {
     "name": "trophy",
-    "keywords": ["prize", "trophy"],
+    "keywords": [
+      "prize",
+      "trophy"
+    ],
     "category": "Activities",
     "emoji": "🏆",
     "subcategory": "award-medal",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3c6"
   },
   {
     "name": "1st place medal",
-    "keywords": ["first", "gold", "medal"],
+    "keywords": [
+      "first",
+      "gold",
+      "medal"
+    ],
     "category": "Activities",
     "emoji": "🥇",
     "subcategory": "award-medal",
     "unicode_version": "9.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f947"
   },
   {
     "name": "performing arts",
-    "keywords": ["art", "mask", "performing", "theater", "theatre"],
+    "keywords": [
+      "art",
+      "mask",
+      "performing",
+      "theater",
+      "theatre"
+    ],
     "category": "Activities",
     "emoji": "🎭",
     "subcategory": "arts-crafts",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f3ad"
   },
   {
     "name": "maracas",
-    "keywords": ["instrument", "maracas", "music", "rattle", "shake"],
+    "keywords": [
+      "instrument",
+      "maracas",
+      "music",
+      "rattle",
+      "shake"
+    ],
     "category": "Activities",
     "emoji": "🪇",
     "subcategory": "musical-instrument",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flute",
-    "keywords": ["fife", "flute", "instrument", "music", "pipe", "recorder"],
+    "keywords": [
+      "fife",
+      "flute",
+      "instrument",
+      "music",
+      "pipe",
+      "recorder"
+    ],
     "category": "Activities",
     "emoji": "🪈",
     "subcategory": "musical-instrument",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "harp",
-    "keywords": ["harp", "instrument", "lyre", "music", "strings"],
+    "keywords": [
+      "harp",
+      "instrument",
+      "lyre",
+      "music",
+      "strings"
+    ],
     "category": "Activities",
     "emoji": "🪿",
     "subcategory": "musical-instrument",
     "unicode_version": "16.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "mobile phone",
-    "keywords": ["cell", "mobile", "phone", "telephone"],
+    "keywords": [
+      "cell",
+      "mobile",
+      "phone",
+      "telephone"
+    ],
     "category": "Objects",
     "emoji": "📱",
     "subcategory": "phone",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4f1"
   },
   {
     "name": "laptop",
-    "keywords": ["computer", "laptop", "pc", "personal"],
+    "keywords": [
+      "computer",
+      "laptop",
+      "pc",
+      "personal"
+    ],
     "category": "Objects",
     "emoji": "💻",
     "subcategory": "computer",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4bb"
   },
   {
     "name": "keyboard",
-    "keywords": ["computer", "keyboard"],
+    "keywords": [
+      "computer",
+      "keyboard"
+    ],
     "category": "Objects",
     "emoji": "⌨️",
     "subcategory": "computer",
     "unicode_version": "1.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "light bulb",
-    "keywords": ["bulb", "comic", "electric", "idea", "light"],
+    "keywords": [
+      "bulb",
+      "comic",
+      "electric",
+      "idea",
+      "light"
+    ],
     "category": "Objects",
     "emoji": "💡",
     "subcategory": "light-video",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4a1"
   },
   {
     "name": "key",
-    "keywords": ["key", "lock", "password"],
+    "keywords": [
+      "key",
+      "lock",
+      "password"
+    ],
     "category": "Objects",
     "emoji": "🔑",
     "subcategory": "lock",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f511"
   },
   {
     "name": "locked",
-    "keywords": ["closed", "locked"],
+    "keywords": [
+      "closed",
+      "locked"
+    ],
     "category": "Objects",
     "emoji": "🔒",
     "subcategory": "lock",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "bell",
-    "keywords": ["bell"],
+    "keywords": [
+      "bell"
+    ],
     "category": "Objects",
     "emoji": "🔔",
     "subcategory": "sound",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f514"
   },
   {
     "name": "e-mail",
-    "keywords": ["e-mail", "email", "letter", "mail"],
+    "keywords": [
+      "e-mail",
+      "email",
+      "letter",
+      "mail"
+    ],
     "category": "Objects",
     "emoji": "📧",
     "subcategory": "mail",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "1f4e7"
   },
   {
     "name": "paperclip",
-    "keywords": ["paperclip"],
+    "keywords": [
+      "paperclip"
+    ],
     "category": "Objects",
     "emoji": "📎",
     "subcategory": "office",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "spiral calendar",
-    "keywords": ["calendar", "pad", "spiral"],
+    "keywords": [
+      "calendar",
+      "pad",
+      "spiral"
+    ],
     "category": "Objects",
     "emoji": "🗓️",
     "subcategory": "office",
     "unicode_version": "7.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "wing",
-    "keywords": ["angel", "bird", "flying", "wing"],
+    "keywords": [
+      "angel",
+      "bird",
+      "flying",
+      "wing"
+    ],
     "category": "Objects",
     "emoji": "🪽",
     "subcategory": "other-object",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "moose",
-    "keywords": ["antlers", "elk", "moose"],
+    "keywords": [
+      "antlers",
+      "elk",
+      "moose"
+    ],
     "category": "Animals & Nature",
     "emoji": "🫎",
     "subcategory": "animal-mammal",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "hair pick",
-    "keywords": ["afro", "comb", "hair", "pick"],
+    "keywords": [
+      "afro",
+      "comb",
+      "hair",
+      "pick"
+    ],
     "category": "Objects",
     "emoji": "🪮",
     "subcategory": "other-object",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "donkey",
-    "keywords": ["ass", "burro", "donkey", "mule", "stubborn"],
+    "keywords": [
+      "ass",
+      "burro",
+      "donkey",
+      "mule",
+      "stubborn"
+    ],
     "category": "Animals & Nature",
     "emoji": "🫏",
     "subcategory": "animal-mammal",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "folding hand fan",
-    "keywords": ["cooling", "dance", "fan", "flutter", "hot"],
+    "keywords": [
+      "cooling",
+      "dance",
+      "fan",
+      "flutter",
+      "hot"
+    ],
     "category": "Objects",
     "emoji": "🪭",
     "subcategory": "other-object",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "jellyfish",
-    "keywords": ["burn", "jelly", "jellyfish", "marine", "ouch", "sting"],
+    "keywords": [
+      "burn",
+      "jelly",
+      "jellyfish",
+      "marine",
+      "ouch",
+      "sting"
+    ],
     "category": "Animals & Nature",
     "emoji": "🪼",
     "subcategory": "animal-marine",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "rightwards pushing hand",
-    "keywords": ["high five", "push", "refuse", "rightward", "stop", "wait"],
+    "keywords": [
+      "high five",
+      "push",
+      "refuse",
+      "rightward",
+      "stop",
+      "wait"
+    ],
     "category": "People & Body",
     "emoji": "🫸",
     "subcategory": "hand-fingers-open",
     "unicode_version": "15.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": false
   },
   {
     "name": "leftwards pushing hand",
-    "keywords": ["high five", "leftward", "push", "refuse", "stop", "wait"],
+    "keywords": [
+      "high five",
+      "leftward",
+      "push",
+      "refuse",
+      "stop",
+      "wait"
+    ],
     "category": "People & Body",
     "emoji": "🫷",
     "subcategory": "hand-fingers-open",
     "unicode_version": "15.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": false
   },
   {
     "name": "heart on fire",
-    "keywords": ["burn", "heart", "love", "lust", "sacred"],
+    "keywords": [
+      "burn",
+      "heart",
+      "love",
+      "lust",
+      "sacred"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "❤️‍🔥",
     "subcategory": "emotion",
     "unicode_version": "13.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2764_200d_1f525"
   },
   {
     "name": "mending heart",
@@ -1724,339 +2875,563 @@
     "emoji": "❤️‍🩹",
     "subcategory": "emotion",
     "unicode_version": "13.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2764_200d_1fa79"
   },
   {
     "name": "check box with check",
-    "keywords": ["box", "check", "tick"],
+    "keywords": [
+      "box",
+      "check",
+      "tick"
+    ],
     "category": "Symbols",
     "emoji": "☑️",
     "subcategory": "other-symbol",
     "unicode_version": "1.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "check mark button",
-    "keywords": ["button", "check", "mark", "tick"],
+    "keywords": [
+      "button",
+      "check",
+      "mark",
+      "tick"
+    ],
     "category": "Symbols",
     "emoji": "✅",
     "subcategory": "other-symbol",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2705"
   },
   {
     "name": "cross mark",
-    "keywords": ["cancel", "cross", "mark", "multiplication", "multiply", "x"],
+    "keywords": [
+      "cancel",
+      "cross",
+      "mark",
+      "multiplication",
+      "multiply",
+      "x"
+    ],
     "category": "Symbols",
     "emoji": "❌",
     "subcategory": "other-symbol",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "274c"
   },
   {
     "name": "red question mark",
-    "keywords": ["?", "mark", "punctuation", "question", "red"],
+    "keywords": [
+      "?",
+      "mark",
+      "punctuation",
+      "question",
+      "red"
+    ],
     "category": "Symbols",
     "emoji": "❓",
     "subcategory": "other-symbol",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2753"
   },
   {
     "name": "red exclamation mark",
-    "keywords": ["!", "exclamation", "mark", "punctuation", "red"],
+    "keywords": [
+      "!",
+      "exclamation",
+      "mark",
+      "punctuation",
+      "red"
+    ],
     "category": "Symbols",
     "emoji": "❗",
     "subcategory": "other-symbol",
     "unicode_version": "5.2",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "2757"
   },
   {
     "name": "right arrow",
-    "keywords": ["arrow", "cardinal", "direction", "east", "right"],
+    "keywords": [
+      "arrow",
+      "cardinal",
+      "direction",
+      "east",
+      "right"
+    ],
     "category": "Symbols",
     "emoji": "➡️",
     "subcategory": "arrow",
     "unicode_version": "1.1",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "left arrow",
-    "keywords": ["arrow", "cardinal", "direction", "left", "west"],
+    "keywords": [
+      "arrow",
+      "cardinal",
+      "direction",
+      "left",
+      "west"
+    ],
     "category": "Symbols",
     "emoji": "⬅️",
     "subcategory": "arrow",
     "unicode_version": "4.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "up arrow",
-    "keywords": ["arrow", "cardinal", "direction", "north", "up"],
+    "keywords": [
+      "arrow",
+      "cardinal",
+      "direction",
+      "north",
+      "up"
+    ],
     "category": "Symbols",
     "emoji": "⬆️",
     "subcategory": "arrow",
     "unicode_version": "4.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "down arrow",
-    "keywords": ["arrow", "cardinal", "direction", "down", "south"],
+    "keywords": [
+      "arrow",
+      "cardinal",
+      "direction",
+      "down",
+      "south"
+    ],
     "category": "Symbols",
     "emoji": "⬇️",
     "subcategory": "arrow",
     "unicode_version": "4.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "red circle",
-    "keywords": ["circle", "geometric", "red"],
+    "keywords": [
+      "circle",
+      "geometric",
+      "red"
+    ],
     "category": "Symbols",
     "emoji": "🔴",
     "subcategory": "geometric",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "green circle",
-    "keywords": ["circle", "geometric", "green"],
+    "keywords": [
+      "circle",
+      "geometric",
+      "green"
+    ],
     "category": "Symbols",
     "emoji": "🟢",
     "subcategory": "geometric",
     "unicode_version": "12.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "blue circle",
-    "keywords": ["blue", "circle", "geometric"],
+    "keywords": [
+      "blue",
+      "circle",
+      "geometric"
+    ],
     "category": "Symbols",
     "emoji": "🔵",
     "subcategory": "geometric",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "warning",
-    "keywords": ["warning"],
+    "keywords": [
+      "warning"
+    ],
     "category": "Symbols",
     "emoji": "⚠️",
     "subcategory": "warning",
     "unicode_version": "4.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": true,
+    "animation_codepoint": "26a0"
   },
   {
     "name": "prohibited",
-    "keywords": ["entry", "forbidden", "no", "not", "prohibited"],
+    "keywords": [
+      "entry",
+      "forbidden",
+      "no",
+      "not",
+      "prohibited"
+    ],
     "category": "Symbols",
     "emoji": "🚫",
     "subcategory": "warning",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "recycling symbol",
-    "keywords": ["recycle", "recycling"],
+    "keywords": [
+      "recycle",
+      "recycling"
+    ],
     "category": "Symbols",
     "emoji": "♻️",
     "subcategory": "other-symbol",
     "unicode_version": "3.2",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "rainbow flag",
-    "keywords": ["flag", "pride", "rainbow"],
+    "keywords": [
+      "flag",
+      "pride",
+      "rainbow"
+    ],
     "category": "Flags",
     "emoji": "🏳️‍🌈",
     "subcategory": "flag",
     "unicode_version": "7.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "transgender flag",
-    "keywords": ["flag", "light blue", "pink", "transgender", "white"],
+    "keywords": [
+      "flag",
+      "light blue",
+      "pink",
+      "transgender",
+      "white"
+    ],
     "category": "Flags",
     "emoji": "🏳️‍⚧️",
     "subcategory": "flag",
     "unicode_version": "13.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "pirate flag",
-    "keywords": ["jolly roger", "pirate", "plunder", "treasure"],
+    "keywords": [
+      "jolly roger",
+      "pirate",
+      "plunder",
+      "treasure"
+    ],
     "category": "Flags",
     "emoji": "🏴‍☠️",
     "subcategory": "flag",
     "unicode_version": "11.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: United States",
-    "keywords": ["flag", "united states"],
+    "keywords": [
+      "flag",
+      "united states"
+    ],
     "category": "Flags",
     "emoji": "🇺🇸",
     "subcategory": "country-flag",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: United Kingdom",
-    "keywords": ["flag", "united kingdom"],
+    "keywords": [
+      "flag",
+      "united kingdom"
+    ],
     "category": "Flags",
     "emoji": "🇬🇧",
     "subcategory": "country-flag",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: Japan",
-    "keywords": ["flag", "japan"],
+    "keywords": [
+      "flag",
+      "japan"
+    ],
     "category": "Flags",
     "emoji": "🇯🇵",
     "subcategory": "country-flag",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: France",
-    "keywords": ["flag", "france"],
+    "keywords": [
+      "flag",
+      "france"
+    ],
     "category": "Flags",
     "emoji": "🇫🇷",
     "subcategory": "country-flag",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: Germany",
-    "keywords": ["flag", "germany"],
+    "keywords": [
+      "flag",
+      "germany"
+    ],
     "category": "Flags",
     "emoji": "🇩🇪",
     "subcategory": "country-flag",
     "unicode_version": "6.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "flag: Scotland",
-    "keywords": ["flag", "scotland"],
+    "keywords": [
+      "flag",
+      "scotland"
+    ],
     "category": "Flags",
     "emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
     "subcategory": "subdivision-flag",
     "unicode_version": "10.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "melting face",
-    "keywords": ["disappear", "dissolve", "liquid", "melt", "sarcasm"],
+    "keywords": [
+      "disappear",
+      "dissolve",
+      "liquid",
+      "melt",
+      "sarcasm"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫠",
     "subcategory": "face-smiling",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "heart hands",
-    "keywords": ["heart hands", "love"],
+    "keywords": [
+      "heart hands",
+      "love"
+    ],
     "category": "People & Body",
     "emoji": "🫶",
     "subcategory": "hands",
     "unicode_version": "14.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": false
   },
   {
     "name": "hand with index finger and thumb crossed",
-    "keywords": ["expensive", "heart", "love", "money", "snap"],
+    "keywords": [
+      "expensive",
+      "heart",
+      "love",
+      "money",
+      "snap"
+    ],
     "category": "People & Body",
     "emoji": "🫰",
     "subcategory": "hand-fingers-partial",
     "unicode_version": "14.0",
-    "skin_tone_support": true
+    "skin_tone_support": true,
+    "has_animation": false
   },
   {
     "name": "hamsa",
-    "keywords": ["amulet", "fatima", "hand", "hamsa", "mary", "miriam", "protection"],
+    "keywords": [
+      "amulet",
+      "fatima",
+      "hand",
+      "hamsa",
+      "mary",
+      "miriam",
+      "protection"
+    ],
     "category": "Objects",
     "emoji": "🪬",
     "subcategory": "other-object",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "x-ray",
-    "keywords": ["bones", "doctor", "medical", "skeleton", "x-ray"],
+    "keywords": [
+      "bones",
+      "doctor",
+      "medical",
+      "skeleton",
+      "x-ray"
+    ],
     "category": "Objects",
     "emoji": "🩻",
     "subcategory": "medical",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "jar",
-    "keywords": ["condiment", "container", "empty", "jar", "sauce", "store"],
+    "keywords": [
+      "condiment",
+      "container",
+      "empty",
+      "jar",
+      "sauce",
+      "store"
+    ],
     "category": "Food & Drink",
     "emoji": "🫙",
     "subcategory": "food-prepared",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "beans",
-    "keywords": ["beans", "food", "kidney", "legume"],
+    "keywords": [
+      "beans",
+      "food",
+      "kidney",
+      "legume"
+    ],
     "category": "Food & Drink",
     "emoji": "🫘",
     "subcategory": "food-vegetable",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "nest with eggs",
-    "keywords": ["egg", "nest", "nesting"],
+    "keywords": [
+      "egg",
+      "nest",
+      "nesting"
+    ],
     "category": "Animals & Nature",
     "emoji": "🪺",
     "subcategory": "animal-bird",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "bubbles",
-    "keywords": ["bubbles", "burp", "clean", "soap", "underwater"],
+    "keywords": [
+      "bubbles",
+      "burp",
+      "clean",
+      "soap",
+      "underwater"
+    ],
     "category": "Objects",
     "emoji": "🫧",
     "subcategory": "other-object",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "wheel",
-    "keywords": ["circle", "tire", "turn", "wheel"],
+    "keywords": [
+      "circle",
+      "tire",
+      "turn",
+      "wheel"
+    ],
     "category": "Travel & Places",
     "emoji": "🛞",
     "subcategory": "transport-ground",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "playground slide",
-    "keywords": ["amusement park", "play", "playground", "slide"],
+    "keywords": [
+      "amusement park",
+      "play",
+      "playground",
+      "slide"
+    ],
     "category": "Travel & Places",
     "emoji": "🛝",
     "subcategory": "place-other",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "crutch",
-    "keywords": ["crutch", "disability", "hurt", "mobility aid", "stick"],
+    "keywords": [
+      "crutch",
+      "disability",
+      "hurt",
+      "mobility aid",
+      "stick"
+    ],
     "category": "Objects",
     "emoji": "🩼",
     "subcategory": "medical",
     "unicode_version": "14.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   },
   {
     "name": "shaking face",
-    "keywords": ["earthquake", "face", "shock", "vibrate"],
+    "keywords": [
+      "earthquake",
+      "face",
+      "shock",
+      "vibrate"
+    ],
     "category": "Smileys & Emotion",
     "emoji": "🫨",
     "subcategory": "face-concerned",
     "unicode_version": "15.0",
-    "skin_tone_support": false
+    "skin_tone_support": false,
+    "has_animation": false
   }
 ]

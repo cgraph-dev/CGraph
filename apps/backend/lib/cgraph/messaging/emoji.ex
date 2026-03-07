@@ -33,7 +33,9 @@ defmodule CGraph.Messaging.Emoji do
                   subcategory: e["subcategory"],
                   keywords: e["keywords"],
                   unicode_version: e["unicode_version"],
-                  skin_tone_support: e["skin_tone_support"]
+                  skin_tone_support: e["skin_tone_support"],
+                  has_animation: e["has_animation"] || false,
+                  animation_codepoint: e["animation_codepoint"]
                 }
               end)
 
