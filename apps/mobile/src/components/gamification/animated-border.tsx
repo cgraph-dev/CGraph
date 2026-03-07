@@ -27,6 +27,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import LottieView from 'lottie-react-native';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -43,7 +44,8 @@ export type BorderAnimationType =
   | 'particles'
   | 'glow'
   | 'flow'
-  | 'spark';
+  | 'spark'
+  | 'lottie';
 
 export interface AnimatedBorderProps {
   /** Animation type */
@@ -58,6 +60,8 @@ export interface AnimatedBorderProps {
   size?: number;
   /** Border width in pixels */
   borderWidth?: number;
+  /** Lottie JSON URL for lottie animation type */
+  lottieUrl?: string;
   /** Content to render inside */
   children: React.ReactNode;
 }
@@ -247,6 +251,7 @@ export default function AnimatedBorder({
   borderColorAccent,
   size = 80,
   borderWidth = 3,
+  lottieUrl,
   children,
 }: AnimatedBorderProps) {
   const isReducedMotion = useReducedMotion();
@@ -276,6 +281,31 @@ export default function AnimatedBorder({
     }),
     [size],
   );
+
+  // Lottie border: render LottieView behind avatar
+  if (animationType === 'lottie' && lottieUrl && !isReducedMotion) {
+    return (
+      <View style={containerStyle}>
+        <LottieView
+          source={{ uri: lottieUrl }}
+          style={[StyleSheet.absoluteFill, { width: size, height: size }]}
+          autoPlay
+          loop
+          renderMode="AUTOMATIC"
+        />
+        <View
+          style={{
+            width: innerSize,
+            height: innerSize,
+            borderRadius: innerSize / 2,
+            overflow: 'hidden',
+          }}
+        >
+          {children}
+        </View>
+      </View>
+    );
+  }
 
   // For non-animated types, render a simple View
   if (animationType === 'none') {

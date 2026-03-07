@@ -9,6 +9,7 @@ import { View, Image, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-n
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/animation-engine';
+import LottieView from 'lottie-react-native';
 
 type BorderAnimation =
   | 'none'
@@ -31,7 +32,8 @@ type BorderAnimation =
   | 'black_hole'
   | 'quantum'
   | 'void'
-  | 'celestial';
+  | 'celestial'
+  | 'lottie';
 
 type AvatarShape = 'circle' | 'rounded-square' | 'hexagon' | 'octagon' | 'shield' | 'diamond';
 
@@ -48,6 +50,8 @@ interface AnimatedAvatarProps {
   levelBadge?: number;
   isPremium?: boolean;
   glowIntensity?: number;
+  /** URL to a Lottie JSON for the border (used when borderAnimation='lottie') */
+  lottieBorderUrl?: string;
   style?: ViewStyle;
 }
 
@@ -65,6 +69,7 @@ export default function AnimatedAvatar({
   levelBadge,
   isPremium = false,
   glowIntensity = 0.5,
+  lottieBorderUrl,
   style,
 }: AnimatedAvatarProps) {
   const rotationAnim = useSharedValue(0);
@@ -137,6 +142,9 @@ export default function AnimatedAvatar({
 
   const getBorderColors = (): readonly [string, string, ...string[]] => {
     switch (borderAnimation) {
+      case 'lottie':
+        // Lottie borders don't use gradient colors — handled separately
+        return [AnimationColors.primary, AnimationColors.primary];
       case 'gradient':
         return [AnimationColors.primary, AnimationColors.purple];
       case 'rainbow':
@@ -248,7 +256,18 @@ export default function AnimatedAvatar({
           borderContainerAnimatedStyle,
         ]}
       >
-        {borderAnimation !== 'none' && borderAnimation !== 'solid' ? (
+        {borderAnimation === 'lottie' && lottieBorderUrl ? (
+          <LottieView
+            source={{ uri: lottieBorderUrl }}
+            style={[
+              StyleSheet.absoluteFill,
+              { width: size + borderWidth * 2, height: size + borderWidth * 2 },
+            ]}
+            autoPlay
+            loop
+            renderMode="AUTOMATIC"
+          />
+        ) : borderAnimation !== 'none' && borderAnimation !== 'solid' ? (
           <LinearGradient
             colors={getBorderColors()}
             start={{ x: 0, y: 0 }}
