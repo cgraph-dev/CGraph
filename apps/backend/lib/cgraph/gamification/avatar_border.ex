@@ -15,7 +15,7 @@ defmodule CGraph.Gamification.AvatarBorder do
 
   @rarities ~w(common uncommon rare epic legendary mythic unique seasonal event)
   @themes ~w(basic gradient glow animated retro neon cyberpunk fantasy minimal nature ocean space fire ice pixel vaporwave 8bit steampunk anime cosmic ethereal)
-  @animation_types ~w(none static pulse rotate shimmer wave breathe spin rainbow particles glow flow spark)
+  @animation_types ~w(none static pulse rotate shimmer wave breathe spin rainbow particles glow flow spark lottie)
   @unlock_types ~w(default achievement level purchase event season gift prestige)
 
   schema "avatar_borders" do
@@ -33,6 +33,11 @@ defmodule CGraph.Gamification.AvatarBorder do
     field :colors, {:array, :string}, default: []
     field :particle_config, :map, default: %{}
     field :glow_config, :map, default: %{}
+
+    # Lottie animation configuration
+    field :lottie_asset_id, :binary_id
+    field :lottie_url, :string
+    field :lottie_config, :map, default: %{}
 
     # Unlock configuration
     field :unlock_type, :string
@@ -66,6 +71,7 @@ defmodule CGraph.Gamification.AvatarBorder do
       :slug, :name, :description, :theme, :rarity,
       :border_style, :animation_type, :animation_speed, :animation_intensity,
       :colors, :particle_config, :glow_config,
+      :lottie_asset_id, :lottie_url, :lottie_config,
       :unlock_type, :unlock_requirement, :is_purchasable, :coin_cost, :gem_cost,
       :season_id, :event_id, :available_from, :available_until,
       :sort_order, :is_active, :preview_url
@@ -80,6 +86,26 @@ defmodule CGraph.Gamification.AvatarBorder do
     |> validate_number(:animation_speed, greater_than: 0, less_than_or_equal_to: 5)
     |> validate_number(:animation_intensity, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
     |> unique_constraint(:slug)
+    |> validate_lottie_fields()
+  end
+
+  defp validate_lottie_fields(changeset) do
+    case get_field(changeset, :animation_type) do
+      "lottie" ->
+        changeset
+        |> validate_required_one_of([:lottie_url, :lottie_asset_id])
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp validate_required_one_of(changeset, fields) do
+    if Enum.any?(fields, &get_field(changeset, &1)) do
+      changeset
+    else
+      add_error(changeset, hd(fields), "at least one of #{inspect(fields)} is required for lottie animation type")
+    end
   end
 
   @doc "Returns the list of available rarity levels."
