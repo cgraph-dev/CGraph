@@ -123,26 +123,33 @@ export function aggregateReactionsSimple(
 const LOTTIE_CDN_BASE = 'https://fonts.gstatic.com/s/e/notoemoji/latest';
 
 /**
+ * Static lookup map: emoji character → codepoint hex.
+ * Built lazily from the static catalog on first access.
+ */
+import { ANIMATED_EMOJI_CATALOG } from '@/lib/lottie/animated-emoji-catalog';
+
+let _emojiToCodepoint: Map<string, string> | null = null;
+function getEmojiMap(): Map<string, string> {
+  if (!_emojiToCodepoint) {
+    _emojiToCodepoint = new Map(ANIMATED_EMOJI_CATALOG.map((e) => [e.e, e.c]));
+  }
+  return _emojiToCodepoint;
+}
+
+/**
  * Checks whether the given emoji has an animated Noto Lottie variant.
- * Uses the cached animated emoji catalog from the emoji picker module.
+ * Uses the static embedded catalog — no API or localStorage needed.
  *
  * @param emoji - The emoji character to check
  * @returns True if a Lottie animation is available for this emoji
  */
 export function isAnimatedReaction(emoji: string): boolean {
-  try {
-    // Attempt to read catalog from localStorage (set by emoji picker)
-    const stored = localStorage.getItem('cgraph_animated_emoji_catalog');
-    if (!stored) return false;
-    const items: Array<{ emoji: string; hasAnimation: boolean }> = JSON.parse(stored);
-    return items.some((e) => e.emoji === emoji && e.hasAnimation);
-  } catch {
-    return false;
-  }
+  return getEmojiMap().has(emoji);
 }
 
 /**
  * Returns Lottie and WebP animation URLs for a reaction emoji.
+ * Uses the static embedded catalog — no API or localStorage needed.
  *
  * @param emoji - The emoji character
  * @returns CDN URLs for lottie.json and 512.webp, or null if not animated
@@ -150,21 +157,13 @@ export function isAnimatedReaction(emoji: string): boolean {
 export function getReactionAnimation(
   emoji: string
 ): { lottie: string; webp: string; codepoint: string } | null {
-  try {
-    const stored = localStorage.getItem('cgraph_animated_emoji_catalog');
-    if (!stored) return null;
-    const items: Array<{ emoji: string; codepoint: string; hasAnimation: boolean }> =
-      JSON.parse(stored);
-    const match = items.find((e) => e.emoji === emoji && e.hasAnimation);
-    if (!match) return null;
-    return {
-      lottie: `${LOTTIE_CDN_BASE}/${match.codepoint}/lottie.json`,
-      webp: `${LOTTIE_CDN_BASE}/${match.codepoint}/512.webp`,
-      codepoint: match.codepoint,
-    };
-  } catch {
-    return null;
-  }
+  const codepoint = getEmojiMap().get(emoji);
+  if (!codepoint) return null;
+  return {
+    lottie: `${LOTTIE_CDN_BASE}/${codepoint}/lottie.json`,
+    webp: `${LOTTIE_CDN_BASE}/${codepoint}/512.webp`,
+    codepoint,
+  };
 }
 
 /**

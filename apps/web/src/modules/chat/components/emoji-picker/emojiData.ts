@@ -4,6 +4,7 @@
  */
 
 import type { AnimatedEmoji } from '@/lib/lottie';
+import { ANIMATED_EMOJI_CATALOG, NOTO_CDN } from '@/lib/lottie/animated-emoji-catalog';
 import type { EmojiCategories, EmojiItem } from './types';
 
 export const EMOJI_CATEGORIES: EmojiCategories = {
@@ -466,40 +467,32 @@ export const DISPLAY_RECENT_COUNT = 10;
 
 // ── Animated emoji catalog ─────────────────────────────────────────
 
-const ANIM_CACHE_KEY = 'cgraph_animated_emoji_catalog';
 let animatedCatalog: Map<string, AnimatedEmoji> | null = null;
 
-/** Fetch animated emoji catalog from backend (cached in memory + localStorage). */
+/**
+ * Returns the animated emoji catalog, built from the static embedded data.
+ * No network requests needed — the catalog is bundled in the JS.
+ */
 export async function fetchAnimatedEmojiCatalog(): Promise<Map<string, AnimatedEmoji>> {
   if (animatedCatalog) return animatedCatalog;
 
-  // Try localStorage first
-  try {
-    const stored = localStorage.getItem(ANIM_CACHE_KEY);
-    if (stored) {
-      const parsed: AnimatedEmoji[] = JSON.parse(stored);
-      animatedCatalog = new Map(parsed.map((e) => [e.emoji, e]));
-      return animatedCatalog;
-    }
-  } catch {
-    // Ignore parse errors
-  }
-
-  // Fetch from backend
-  try {
-    const res = await fetch('/api/v1/animations/emojis');
-    if (res.ok) {
-      const json = await res.json();
-      const items: AnimatedEmoji[] = json.data ?? json ?? [];
-      animatedCatalog = new Map(items.map((e) => [e.emoji, e]));
-      localStorage.setItem(ANIM_CACHE_KEY, JSON.stringify(items));
-      return animatedCatalog;
-    }
-  } catch {
-    // Offline or API unavailable
-  }
-
-  animatedCatalog = new Map();
+  animatedCatalog = new Map(
+    ANIMATED_EMOJI_CATALOG.map((entry): [string, AnimatedEmoji] => [
+      entry.e,
+      {
+        codepoint: entry.c,
+        emoji: entry.e,
+        name: entry.n,
+        category: '',
+        hasAnimation: true,
+        animations: {
+          lottie: `${NOTO_CDN}/${entry.c}/lottie.json`,
+          webp: `${NOTO_CDN}/${entry.c}/512.webp`,
+          gif: `${NOTO_CDN}/${entry.c}/512.gif`,
+        },
+      },
+    ])
+  );
   return animatedCatalog;
 }
 
