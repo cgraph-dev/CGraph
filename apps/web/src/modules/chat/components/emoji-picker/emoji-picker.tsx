@@ -14,7 +14,7 @@
  * @module modules/chat/components/emoji-picker
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -24,7 +24,6 @@ import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { EmojiPickerProps, EmojiCategory } from './types';
 import {
   useRecentEmojis,
-  useClickOutside,
   useFilteredEmojis,
   useAnimatedEmojiCatalog,
 } from './useEmojiPicker';
@@ -36,36 +35,72 @@ import { springs } from '@/lib/animation-presets';
 /**
  * Emoji Picker with Lottie animated emoji support.
  */
-export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: EmojiPickerProps) {
+export function EmojiPicker({ isOpen, onClose, onSelect, className: _className = '' }: EmojiPickerProps) {
   const [activeCategory, setActiveCategory] = useState<EmojiCategory>('Frequently Used');
   const [searchQuery, setSearchQuery] = useState('');
   const [animatedOnly, setAnimatedOnly] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const [pickerPos, setPickerPos] = useState<{ bottom: number; left: number } | null>(null);
 
   const { addRecentEmoji } = useRecentEmojis();
-  useClickOutside(pickerRef, isOpen, onClose);
   const filteredEmojis = useFilteredEmojis(searchQuery, activeCategory);
   const { catalog, loading } = useAnimatedEmojiCatalog(isOpen);
 
-  const handleEmojiClick = (emoji: string) => {
-    onSelect(emoji);
-    HapticFeedback.light();
-    addRecentEmoji(emoji);
-    onClose();
-  };
+  // Compute position by finding the emoji button in the DOM
+  useEffect(() => {
+    if (!isOpen) return;
+    // Find the emoji button (the one with title="Add emoji")
+    const btn = document.querySelector('button[title="Add emoji"]');
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      // Place picker above the button, aligned to the right edge
+      setPickerPos({
+        bottom: window.innerHeight - rect.top + 8,
+        left: Math.max(8, rect.right - 320), // 320 = picker width (w-80)
+      });
+    }
+  }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  const handleEmojiClick = useCallback(
+    (emoji: string) => {
+      onSelect(emoji);
+      HapticFeedback.light();
+      addRecentEmoji(emoji);
+      onClose();
+    },
+    [onSelect, addRecentEmoji, onClose]
+  );
 
   return (
     <AnimatePresence>
       {isOpen &&
         createPortal(
-          <motion.div
-            ref={pickerRef}
-            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 10 }}
-            transition={springs.stiff}
-            className="fixed bottom-24 left-4 z-[9999]"
-          >
+          <>
+            {/* Backdrop — closes picker on click outside */}
+            <div
+              className="fixed inset-0 z-[9998]"
+              onClick={onClose}
+              aria-hidden="true"
+            />
+            <motion.div
+              ref={pickerRef}
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              transition={springs.stiff}
+              className="fixed z-[9999]"
+              style={pickerPos ? { bottom: pickerPos.bottom, left: pickerPos.left } : { bottom: 96, left: 280 }}
+            >
             <GlassCard className="w-80 p-0">
               <EmojiSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
@@ -102,7 +137,8 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: Emoji
                 animatedOnly={animatedOnly}
               />
             </GlassCard>
-          </motion.div>,
+            </motion.div>
+          </>,
           document.body
         )}
     </AnimatePresence>

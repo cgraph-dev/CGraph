@@ -7,8 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import type { Message } from '@/modules/chat/store';
 import { getMessageSenderId } from '@/lib/apiUtils';
-import { handleAddReaction } from '@/lib/chat/reactionUtils';
-import { AnimatedMessageWrapper, AnimatedReactionBubble } from '@/modules/chat/components';
+import { AnimatedMessageWrapper } from '@/modules/chat/components';
 import { MessageBubble } from '@/modules/chat/components';
 import type { UIPreferences } from './types';
 
@@ -110,28 +109,6 @@ export function MessageRow({
         onSaveEdit={onSaveEdit}
         onCancelEdit={onCancelEdit}
       />
-      {message.reactions && message.reactions.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {Object.entries(
-            message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>(
-              (acc, r) => {
-                const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
-                entry.count++;
-                if (user && r.userId === user.id) entry.hasReacted = true;
-                return acc;
-              },
-              {}
-            )
-          ).map(([emoji, { count, hasReacted }]) => (
-            <AnimatedReactionBubble
-              key={emoji}
-              reaction={{ emoji, count, hasReacted }}
-              isOwnMessage={isOwn}
-              onPress={() => handleAddReaction(message.id, emoji)}
-            />
-          ))}
-        </div>
-      )}
     </AnimatedMessageWrapper>
   );
 }
