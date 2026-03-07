@@ -5,6 +5,8 @@
  */
 
 export { LottieRenderer } from './lottie-renderer';
+export { LottieBorderRenderer } from './lottie-border-renderer';
+export type { LottieBorderProps, LottieBorderConfig } from './lottie-border-renderer';
 export { useLottie } from './use-lottie';
 export {
   lottieCache,
