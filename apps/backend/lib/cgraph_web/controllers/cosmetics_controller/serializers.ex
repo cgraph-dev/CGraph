@@ -14,7 +14,7 @@ defmodule CGraphWeb.CosmeticsController.Serializers do
   @doc "Serialize an avatar border."
   @spec serialize_border(term()) :: map()
   def serialize_border(border) do
-    %{
+    base = %{
       id: border.id,
       slug: border.slug,
       name: border.name,
@@ -33,6 +33,16 @@ defmodule CGraphWeb.CosmeticsController.Serializers do
       gemCost: border.gem_cost,
       previewUrl: border.preview_url
     }
+
+    # Include Lottie fields when animation type is lottie
+    if border.animation_type == "lottie" do
+      base
+      |> Map.put(:lottieUrl, Map.get(border, :lottie_url))
+      |> Map.put(:lottieAssetId, Map.get(border, :lottie_asset_id))
+      |> Map.put(:lottieConfig, Map.get(border, :lottie_config))
+    else
+      base
+    end
   end
 
   @doc "Serialize a user's unlocked avatar border."

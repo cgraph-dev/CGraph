@@ -46,6 +46,7 @@ defmodule CGraphWeb.CosmeticsController do
   def list_borders(conn, params) do
     theme = params["theme"]
     rarity = params["rarity"]
+    animation_type = params["animation_type"]
 
     query = from b in AvatarBorder,
       where: b.is_active == true,
@@ -53,6 +54,7 @@ defmodule CGraphWeb.CosmeticsController do
 
     query = if theme, do: from(b in query, where: b.theme == ^theme), else: query
     query = if rarity, do: from(b in query, where: b.rarity == ^rarity), else: query
+    query = if animation_type, do: from(b in query, where: b.animation_type == ^animation_type), else: query
 
     borders = Repo.all(query)
 
@@ -153,7 +155,9 @@ defmodule CGraphWeb.CosmeticsController do
         animation_speed: border.animation_speed,
         animation_intensity: border.animation_intensity,
         particle_config: border.particle_config,
-        glow_config: border.glow_config
+        glow_config: border.glow_config,
+        lottie_url: Map.get(border, :lottie_url),
+        lottie_config: Map.get(border, :lottie_config)
       },
       avatar_border_equipped_at: DateTime.utc_now()
     })

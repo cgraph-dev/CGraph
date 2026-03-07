@@ -4,7 +4,7 @@
  * Manages avatar border selection, filtering, and equipping.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
@@ -31,14 +31,28 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
     getFilteredBorders,
     equipBorder,
     purchaseBorder,
+    fetchLottieBorders,
   } = useAvatarBorderStore();
 
   const equippedBorderId = preferences.equippedBorderId;
   const [selectedBorder, setSelectedBorder] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [animTypeFilter, setAnimTypeFilter] = useState<'all' | 'css' | 'lottie'>('all');
+
+  // Fetch Lottie borders on mount
+  useEffect(() => {
+    void fetchLottieBorders();
+  }, [fetchLottieBorders]);
 
   const filteredBorders = useMemo(() => {
     let result = getFilteredBorders();
+
+    // Apply animation type filter
+    if (animTypeFilter === 'lottie') {
+      result = result.filter((b) => b.lottieUrl);
+    } else if (animTypeFilter === 'css') {
+      result = result.filter((b) => !b.lottieUrl);
+    }
 
     // Apply additional filters from props
     if (filters.theme !== 'all') {
@@ -61,7 +75,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
     }
 
     return result;
-  }, [getFilteredBorders, filters, unlockedBorders]);
+  }, [getFilteredBorders, filters, unlockedBorders, animTypeFilter]);
 
   const handleEquip = useCallback(
     async (borderId: string) => {
@@ -103,11 +117,10 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
         {/* Theme Filter */}
         <select
           value={filters.theme}
-          onChange={(e) =>
-            // type assertion: select element value matches filter union type
-             
-            setFilters((f) => ({ ...f, theme: e.target.value as typeof filters.theme }))
-          }
+          onChange={(e) => {
+            const value = e.target.value;
+            setFilters((f) => ({ ...f, theme: value satisfies typeof filters.theme }));
+          }}
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
         >
           <option value="all">All Themes</option>
@@ -122,11 +135,10 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
         {/* Rarity Filter */}
         <select
           value={filters.rarity}
-          onChange={(e) =>
-            // type assertion: select element value matches filter union type
-             
-            setFilters((f) => ({ ...f, rarity: e.target.value as typeof filters.rarity }))
-          }
+          onChange={(e) => {
+            const value = e.target.value;
+            setFilters((f) => ({ ...f, rarity: value satisfies typeof filters.rarity }));
+          }}
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
         >
           <option value="all">All Rarities</option>
@@ -137,6 +149,23 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           <option value="legendary">Legendary</option>
           <option value="mythic">Mythic</option>
         </select>
+
+        {/* Animation Type Filter */}
+        <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
+          {(['all', 'css', 'lottie'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setAnimTypeFilter(t)}
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                animTypeFilter === t
+                  ? 'bg-cyan-500/20 text-cyan-400'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {t === 'all' ? 'All' : t === 'css' ? 'CSS' : 'Lottie'}
+            </button>
+          ))}
+        </div>
 
         {/* View Toggle */}
         <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">

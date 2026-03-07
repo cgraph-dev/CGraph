@@ -75,6 +75,11 @@ export function AnimationSetsSection({
                     <span className="text-white/60">
                       Easing: <span className="font-medium text-primary-400">{anim.easing}</span>
                     </span>
+                    {anim.source === 'lottie' && (
+                      <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] font-semibold text-purple-300">
+                        LOTTIE
+                      </span>
+                    )}
                   </div>
                 </div>
 

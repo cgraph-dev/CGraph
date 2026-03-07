@@ -57,6 +57,14 @@ export function ChatEffectsSection() {
         ))}
       </div>
 
+      {/* Lottie Effects Banner */}
+      <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 px-4 py-3">
+        <p className="text-sm text-purple-300">
+          ✨ <strong>Lottie effects coming soon</strong> — Animated reaction bursts, typing
+          indicators, and message send effects powered by Lottie.
+        </p>
+      </div>
+
       {/* Message Effects */}
       {activeSubTab === 'message' && (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

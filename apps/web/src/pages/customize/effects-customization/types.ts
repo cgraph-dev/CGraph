@@ -36,6 +36,10 @@ export interface AnimationSet {
   easing: string;
   unlocked: boolean;
   unlockRequirement?: string;
+  /** Animation source: CSS-based or Lottie-based */
+  source?: 'css' | 'lottie';
+  /** Lottie animation URL (when source is 'lottie') */
+  lottieUrl?: string;
 }
 
 // Particle data types for preview component
