@@ -158,13 +158,8 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         type="submit"
         disabled={props.isLoading}
         variants={reduced ? {} : itemVariants}
-        whileHover={
-          reduced || props.isLoading
-            ? {}
-            : { scale: 1.02, boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)' }
-        }
         whileTap={reduced || props.isLoading ? {} : { scale: 0.98 }}
-        className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+        className="auth-cta-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {props.isLoading ? (
           <>

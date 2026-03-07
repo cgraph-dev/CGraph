@@ -36,10 +36,10 @@ export const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   logoImage: {
-    width: 120,
-    height: 120,
+    width: 200,
+    height: 200,
     marginBottom: 12,
-    borderRadius: 24,
+    borderRadius: 32,
   },
   subtitle: {
     fontSize: 24,

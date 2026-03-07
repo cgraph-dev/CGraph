@@ -268,7 +268,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
                     disabled={isLoading}
                   >
                     <LinearGradient
-                      colors={['#059669', '#047857', '#065f46']}
+                      colors={['rgba(16,185,129,0.18)', 'rgba(139,92,246,0.18)']}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                       style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -406,11 +406,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: 'rgba(16, 185, 129, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.34)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   buttonDisabled: {
     opacity: 0.7,

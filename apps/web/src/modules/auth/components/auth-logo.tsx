@@ -9,9 +9,9 @@ import { LogoIcon } from '@/components/logo';
 export type LogoSize = 'sm' | 'md' | 'lg';
 
 const LOGO_SIZES: Record<LogoSize, number> = {
-  sm: 64,
-  md: 80,
-  lg: 96,
+  sm: 96,
+  md: 128,
+  lg: 192,
 };
 
 const LOGO_TEXT_SIZES: Record<LogoSize, string> = {

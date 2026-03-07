@@ -71,7 +71,7 @@ export default function Register() {
             whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
             whileTap={reduced ? {} : { scale: 0.95 }}
           >
-            <LogoIcon size={96} color="gradient" showGlow={false} />
+            <LogoIcon size={192} color="gradient" showGlow={false} />
           </motion.div>
         </a>
       </motion.div>

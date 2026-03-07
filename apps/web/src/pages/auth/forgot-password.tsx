@@ -42,7 +42,7 @@ export default function ForgotPassword() {
         {/* Mobile Logo */}
         <div className="text-center lg:hidden">
           <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
-            <LogoIcon size={96} color="gradient" showGlow={false} />
+            <LogoIcon size={192} color="gradient" showGlow={false} />
           </a>
         </div>
 
@@ -96,7 +96,7 @@ export default function ForgotPassword() {
       {/* Mobile Logo */}
       <div className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
-          <LogoIcon size={96} color="gradient" showGlow={false} />
+          <LogoIcon size={192} color="gradient" showGlow={false} />
         </a>
       </div>
 
@@ -131,7 +131,7 @@ export default function ForgotPassword() {
           />
         </div>
 
-        <SubmitButton pendingText="Sending...">{t('forgot_password.submit')}</SubmitButton>
+        <SubmitButton pendingText="Sending..." className="auth-cta-button w-full py-3">{t('forgot_password.submit')}</SubmitButton>
       </form>
 
       {/* Back to Login */}
