@@ -1,0 +1,2982 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-03-07T00:00:00Z",
+  "cdn_base": "https://fonts.gstatic.com/s/e/notoemoji/latest",
+  "source": "curated",
+  "description": "Manually curated list of Noto Emoji animations known to exist on the Google Fonts CDN. Run NotoScraper.build_manifest/0 to verify and refresh from the live CDN.",
+  "total_animated": 164,
+  "emojis": [
+    {
+      "codepoint": "1f600",
+      "emoji": "😀",
+      "name": "grinning face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "grin",
+        "happy",
+        "smile",
+        "face"
+      ],
+      "formats": {
+        "lottie": "1f600/lottie.json",
+        "webp": "1f600/512.webp",
+        "gif": "1f600/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f603",
+      "emoji": "😃",
+      "name": "grinning face with big eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "happy",
+        "joy",
+        "smile"
+      ],
+      "formats": {
+        "lottie": "1f603/lottie.json",
+        "webp": "1f603/512.webp",
+        "gif": "1f603/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f604",
+      "emoji": "😄",
+      "name": "grinning face with smiling eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "happy",
+        "joy",
+        "laugh"
+      ],
+      "formats": {
+        "lottie": "1f604/lottie.json",
+        "webp": "1f604/512.webp",
+        "gif": "1f604/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f601",
+      "emoji": "😁",
+      "name": "beaming face with smiling eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "grin",
+        "happy"
+      ],
+      "formats": {
+        "lottie": "1f601/lottie.json",
+        "webp": "1f601/512.webp",
+        "gif": "1f601/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f605",
+      "emoji": "😅",
+      "name": "grinning face with sweat",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "hot",
+        "happy",
+        "laugh",
+        "sweat"
+      ],
+      "formats": {
+        "lottie": "1f605/lottie.json",
+        "webp": "1f605/512.webp",
+        "gif": "1f605/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f923",
+      "emoji": "🤣",
+      "name": "rolling on the floor laughing",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "laugh",
+        "lol",
+        "rofl"
+      ],
+      "formats": {
+        "lottie": "1f923/lottie.json",
+        "webp": "1f923/512.webp",
+        "gif": "1f923/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f602",
+      "emoji": "😂",
+      "name": "face with tears of joy",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "cry",
+        "happy",
+        "laugh",
+        "tears"
+      ],
+      "formats": {
+        "lottie": "1f602/lottie.json",
+        "webp": "1f602/512.webp",
+        "gif": "1f602/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f642",
+      "emoji": "🙂",
+      "name": "slightly smiling face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "smile"
+      ],
+      "formats": {
+        "lottie": "1f642/lottie.json",
+        "webp": "1f642/512.webp",
+        "gif": "1f642/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f60a",
+      "emoji": "😊",
+      "name": "smiling face with smiling eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "blush",
+        "crush",
+        "embarrassed"
+      ],
+      "formats": {
+        "lottie": "1f60a/lottie.json",
+        "webp": "1f60a/512.webp",
+        "gif": "1f60a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f607",
+      "emoji": "😇",
+      "name": "smiling face with halo",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-smiling",
+      "keywords": [
+        "angel",
+        "halo",
+        "innocent"
+      ],
+      "formats": {
+        "lottie": "1f607/lottie.json",
+        "webp": "1f607/512.webp",
+        "gif": "1f607/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f970",
+      "emoji": "🥰",
+      "name": "smiling face with hearts",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "adore",
+        "crush",
+        "hearts",
+        "love"
+      ],
+      "formats": {
+        "lottie": "1f970/lottie.json",
+        "webp": "1f970/512.webp",
+        "gif": "1f970/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f60d",
+      "emoji": "😍",
+      "name": "smiling face with heart-eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "crush",
+        "heart",
+        "love"
+      ],
+      "formats": {
+        "lottie": "1f60d/lottie.json",
+        "webp": "1f60d/512.webp",
+        "gif": "1f60d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f929",
+      "emoji": "🤩",
+      "name": "star-struck",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "eyes",
+        "grinning",
+        "star",
+        "starry"
+      ],
+      "formats": {
+        "lottie": "1f929/lottie.json",
+        "webp": "1f929/512.webp",
+        "gif": "1f929/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f618",
+      "emoji": "😘",
+      "name": "face blowing a kiss",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "kiss",
+        "love"
+      ],
+      "formats": {
+        "lottie": "1f618/lottie.json",
+        "webp": "1f618/512.webp",
+        "gif": "1f618/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f617",
+      "emoji": "😗",
+      "name": "kissing face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "kiss"
+      ],
+      "formats": {
+        "lottie": "1f617/lottie.json",
+        "webp": "1f617/512.webp",
+        "gif": "1f617/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f61a",
+      "emoji": "😚",
+      "name": "kissing face with closed eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "kiss",
+        "love"
+      ],
+      "formats": {
+        "lottie": "1f61a/lottie.json",
+        "webp": "1f61a/512.webp",
+        "gif": "1f61a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f619",
+      "emoji": "😙",
+      "name": "kissing face with smiling eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-affection",
+      "keywords": [
+        "kiss"
+      ],
+      "formats": {
+        "lottie": "1f619/lottie.json",
+        "webp": "1f619/512.webp",
+        "gif": "1f619/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f60b",
+      "emoji": "😋",
+      "name": "face savoring food",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-tongue",
+      "keywords": [
+        "delicious",
+        "face",
+        "savoring",
+        "yum"
+      ],
+      "formats": {
+        "lottie": "1f60b/lottie.json",
+        "webp": "1f60b/512.webp",
+        "gif": "1f60b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f61b",
+      "emoji": "😛",
+      "name": "face with tongue",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-tongue",
+      "keywords": [
+        "tongue"
+      ],
+      "formats": {
+        "lottie": "1f61b/lottie.json",
+        "webp": "1f61b/512.webp",
+        "gif": "1f61b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f61c",
+      "emoji": "😜",
+      "name": "winking face with tongue",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-tongue",
+      "keywords": [
+        "joke",
+        "tongue",
+        "wink"
+      ],
+      "formats": {
+        "lottie": "1f61c/lottie.json",
+        "webp": "1f61c/512.webp",
+        "gif": "1f61c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f92a",
+      "emoji": "🤪",
+      "name": "zany face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-tongue",
+      "keywords": [
+        "crazy",
+        "goofy",
+        "large"
+      ],
+      "formats": {
+        "lottie": "1f92a/lottie.json",
+        "webp": "1f92a/512.webp",
+        "gif": "1f92a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f61d",
+      "emoji": "😝",
+      "name": "squinting face with tongue",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-tongue",
+      "keywords": [
+        "horrible",
+        "taste",
+        "tongue"
+      ],
+      "formats": {
+        "lottie": "1f61d/lottie.json",
+        "webp": "1f61d/512.webp",
+        "gif": "1f61d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f917",
+      "emoji": "🤗",
+      "name": "smiling face with open hands",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "hug",
+        "hugging"
+      ],
+      "formats": {
+        "lottie": "1f917/lottie.json",
+        "webp": "1f917/512.webp",
+        "gif": "1f917/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f92d",
+      "emoji": "🤭",
+      "name": "face with hand over mouth",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "whoops"
+      ],
+      "formats": {
+        "lottie": "1f92d/lottie.json",
+        "webp": "1f92d/512.webp",
+        "gif": "1f92d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1fae2",
+      "emoji": "🫢",
+      "name": "face with open eyes and hand over mouth",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "amazed",
+        "shocked",
+        "surprise"
+      ],
+      "formats": {
+        "lottie": "1fae2/lottie.json",
+        "webp": "1fae2/512.webp",
+        "gif": "1fae2/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1fae3",
+      "emoji": "🫣",
+      "name": "face with peeking eye",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "captivated",
+        "peeking",
+        "staring"
+      ],
+      "formats": {
+        "lottie": "1fae3/lottie.json",
+        "webp": "1fae3/512.webp",
+        "gif": "1fae3/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f92b",
+      "emoji": "🤫",
+      "name": "shushing face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "quiet",
+        "shush"
+      ],
+      "formats": {
+        "lottie": "1f92b/lottie.json",
+        "webp": "1f92b/512.webp",
+        "gif": "1f92b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f914",
+      "emoji": "🤔",
+      "name": "thinking face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "face",
+        "thinking"
+      ],
+      "formats": {
+        "lottie": "1f914/lottie.json",
+        "webp": "1f914/512.webp",
+        "gif": "1f914/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1fae1",
+      "emoji": "🫡",
+      "name": "saluting face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-hand",
+      "keywords": [
+        "ok",
+        "salute",
+        "troops",
+        "yes"
+      ],
+      "formats": {
+        "lottie": "1fae1/lottie.json",
+        "webp": "1fae1/512.webp",
+        "gif": "1fae1/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f910",
+      "emoji": "🤐",
+      "name": "zipper-mouth face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "mouth",
+        "zipper"
+      ],
+      "formats": {
+        "lottie": "1f910/lottie.json",
+        "webp": "1f910/512.webp",
+        "gif": "1f910/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f928",
+      "emoji": "🤨",
+      "name": "face with raised eyebrow",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "distrust",
+        "skeptic"
+      ],
+      "formats": {
+        "lottie": "1f928/lottie.json",
+        "webp": "1f928/512.webp",
+        "gif": "1f928/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f610",
+      "emoji": "😐",
+      "name": "neutral face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "deadpan",
+        "meh",
+        "neutral"
+      ],
+      "formats": {
+        "lottie": "1f610/lottie.json",
+        "webp": "1f610/512.webp",
+        "gif": "1f610/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f611",
+      "emoji": "😑",
+      "name": "expressionless face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "expressionless",
+        "inexpressive",
+        "unexpressive"
+      ],
+      "formats": {
+        "lottie": "1f611/lottie.json",
+        "webp": "1f611/512.webp",
+        "gif": "1f611/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f636",
+      "emoji": "😶",
+      "name": "face without mouth",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "mouth",
+        "quiet",
+        "silent"
+      ],
+      "formats": {
+        "lottie": "1f636/lottie.json",
+        "webp": "1f636/512.webp",
+        "gif": "1f636/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f60f",
+      "emoji": "😏",
+      "name": "smirking face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "smirk"
+      ],
+      "formats": {
+        "lottie": "1f60f/lottie.json",
+        "webp": "1f60f/512.webp",
+        "gif": "1f60f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f612",
+      "emoji": "😒",
+      "name": "unamused face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "unhappy",
+        "unamused"
+      ],
+      "formats": {
+        "lottie": "1f612/lottie.json",
+        "webp": "1f612/512.webp",
+        "gif": "1f612/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f644",
+      "emoji": "🙄",
+      "name": "face with rolling eyes",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "eyeroll",
+        "rolling"
+      ],
+      "formats": {
+        "lottie": "1f644/lottie.json",
+        "webp": "1f644/512.webp",
+        "gif": "1f644/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f62c",
+      "emoji": "😬",
+      "name": "grimacing face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-neutral-skeptical",
+      "keywords": [
+        "grimace"
+      ],
+      "formats": {
+        "lottie": "1f62c/lottie.json",
+        "webp": "1f62c/512.webp",
+        "gif": "1f62c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f60c",
+      "emoji": "😌",
+      "name": "relieved face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-sleepy",
+      "keywords": [
+        "relieved"
+      ],
+      "formats": {
+        "lottie": "1f60c/lottie.json",
+        "webp": "1f60c/512.webp",
+        "gif": "1f60c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f634",
+      "emoji": "😴",
+      "name": "sleeping face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-sleepy",
+      "keywords": [
+        "sleep",
+        "zzz"
+      ],
+      "formats": {
+        "lottie": "1f634/lottie.json",
+        "webp": "1f634/512.webp",
+        "gif": "1f634/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f971",
+      "emoji": "🥱",
+      "name": "yawning face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-sleepy",
+      "keywords": [
+        "bored",
+        "tired",
+        "yawn"
+      ],
+      "formats": {
+        "lottie": "1f971/lottie.json",
+        "webp": "1f971/512.webp",
+        "gif": "1f971/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f637",
+      "emoji": "😷",
+      "name": "face with medical mask",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-unwell",
+      "keywords": [
+        "cold",
+        "doctor",
+        "mask",
+        "sick"
+      ],
+      "formats": {
+        "lottie": "1f637/lottie.json",
+        "webp": "1f637/512.webp",
+        "gif": "1f637/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f912",
+      "emoji": "🤒",
+      "name": "face with thermometer",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-unwell",
+      "keywords": [
+        "face",
+        "ill",
+        "sick",
+        "thermometer"
+      ],
+      "formats": {
+        "lottie": "1f912/lottie.json",
+        "webp": "1f912/512.webp",
+        "gif": "1f912/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f92e",
+      "emoji": "🤮",
+      "name": "face vomiting",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-unwell",
+      "keywords": [
+        "puke",
+        "sick",
+        "vomit"
+      ],
+      "formats": {
+        "lottie": "1f92e/lottie.json",
+        "webp": "1f92e/512.webp",
+        "gif": "1f92e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f922",
+      "emoji": "🤢",
+      "name": "nauseated face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-unwell",
+      "keywords": [
+        "nauseated",
+        "vomit"
+      ],
+      "formats": {
+        "lottie": "1f922/lottie.json",
+        "webp": "1f922/512.webp",
+        "gif": "1f922/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f62e",
+      "emoji": "😮",
+      "name": "face with open mouth",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "open",
+        "sympathy"
+      ],
+      "formats": {
+        "lottie": "1f62e/lottie.json",
+        "webp": "1f62e/512.webp",
+        "gif": "1f62e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f622",
+      "emoji": "😢",
+      "name": "crying face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "cry",
+        "sad",
+        "tear"
+      ],
+      "formats": {
+        "lottie": "1f622/lottie.json",
+        "webp": "1f622/512.webp",
+        "gif": "1f622/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f62d",
+      "emoji": "😭",
+      "name": "loudly crying face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "cry",
+        "sad",
+        "sob",
+        "tears"
+      ],
+      "formats": {
+        "lottie": "1f62d/lottie.json",
+        "webp": "1f62d/512.webp",
+        "gif": "1f62d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f631",
+      "emoji": "😱",
+      "name": "face screaming in fear",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "fear",
+        "munch",
+        "scared",
+        "scream"
+      ],
+      "formats": {
+        "lottie": "1f631/lottie.json",
+        "webp": "1f631/512.webp",
+        "gif": "1f631/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f630",
+      "emoji": "😰",
+      "name": "anxious face with sweat",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "anxious",
+        "nervous",
+        "sweat"
+      ],
+      "formats": {
+        "lottie": "1f630/lottie.json",
+        "webp": "1f630/512.webp",
+        "gif": "1f630/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f97a",
+      "emoji": "🥺",
+      "name": "pleading face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "begging",
+        "mercy",
+        "puppy"
+      ],
+      "formats": {
+        "lottie": "1f97a/lottie.json",
+        "webp": "1f97a/512.webp",
+        "gif": "1f97a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f972",
+      "emoji": "🥲",
+      "name": "smiling face with tear",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-concerned",
+      "keywords": [
+        "grateful",
+        "proud",
+        "relieved",
+        "smiling",
+        "tear",
+        "touched"
+      ],
+      "formats": {
+        "lottie": "1f972/lottie.json",
+        "webp": "1f972/512.webp",
+        "gif": "1f972/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f621",
+      "emoji": "😡",
+      "name": "enraged face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-negative",
+      "keywords": [
+        "angry",
+        "mad",
+        "rage",
+        "red"
+      ],
+      "formats": {
+        "lottie": "1f621/lottie.json",
+        "webp": "1f621/512.webp",
+        "gif": "1f621/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f620",
+      "emoji": "😠",
+      "name": "angry face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-negative",
+      "keywords": [
+        "angry",
+        "mad"
+      ],
+      "formats": {
+        "lottie": "1f620/lottie.json",
+        "webp": "1f620/512.webp",
+        "gif": "1f620/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f92c",
+      "emoji": "🤬",
+      "name": "face with symbols on mouth",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-negative",
+      "keywords": [
+        "cursing",
+        "swearing"
+      ],
+      "formats": {
+        "lottie": "1f92c/lottie.json",
+        "webp": "1f92c/512.webp",
+        "gif": "1f92c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f608",
+      "emoji": "😈",
+      "name": "smiling face with horns",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-negative",
+      "keywords": [
+        "devil",
+        "horns"
+      ],
+      "formats": {
+        "lottie": "1f608/lottie.json",
+        "webp": "1f608/512.webp",
+        "gif": "1f608/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f480",
+      "emoji": "💀",
+      "name": "skull",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-costume",
+      "keywords": [
+        "death",
+        "monster",
+        "skull"
+      ],
+      "formats": {
+        "lottie": "1f480/lottie.json",
+        "webp": "1f480/512.webp",
+        "gif": "1f480/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f47b",
+      "emoji": "👻",
+      "name": "ghost",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-costume",
+      "keywords": [
+        "creature",
+        "ghost",
+        "monster"
+      ],
+      "formats": {
+        "lottie": "1f47b/lottie.json",
+        "webp": "1f47b/512.webp",
+        "gif": "1f47b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f47d",
+      "emoji": "👽",
+      "name": "alien",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-costume",
+      "keywords": [
+        "alien",
+        "creature",
+        "extraterrestrial",
+        "ufo"
+      ],
+      "formats": {
+        "lottie": "1f47d/lottie.json",
+        "webp": "1f47d/512.webp",
+        "gif": "1f47d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f921",
+      "emoji": "🤡",
+      "name": "clown face",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-costume",
+      "keywords": [
+        "clown",
+        "face"
+      ],
+      "formats": {
+        "lottie": "1f921/lottie.json",
+        "webp": "1f921/512.webp",
+        "gif": "1f921/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a9",
+      "emoji": "💩",
+      "name": "pile of poo",
+      "category": "Smileys & Emotion",
+      "subcategory": "face-costume",
+      "keywords": [
+        "dung",
+        "monster",
+        "poo",
+        "poop"
+      ],
+      "formats": {
+        "lottie": "1f4a9/lottie.json",
+        "webp": "1f4a9/512.webp",
+        "gif": "1f4a9/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f648",
+      "emoji": "🙈",
+      "name": "see-no-evil monkey",
+      "category": "Smileys & Emotion",
+      "subcategory": "monkey-face",
+      "keywords": [
+        "evil",
+        "face",
+        "forbidden",
+        "monkey",
+        "see"
+      ],
+      "formats": {
+        "lottie": "1f648/lottie.json",
+        "webp": "1f648/512.webp",
+        "gif": "1f648/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f649",
+      "emoji": "🙉",
+      "name": "hear-no-evil monkey",
+      "category": "Smileys & Emotion",
+      "subcategory": "monkey-face",
+      "keywords": [
+        "evil",
+        "face",
+        "forbidden",
+        "hear",
+        "monkey"
+      ],
+      "formats": {
+        "lottie": "1f649/lottie.json",
+        "webp": "1f649/512.webp",
+        "gif": "1f649/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f64a",
+      "emoji": "🙊",
+      "name": "speak-no-evil monkey",
+      "category": "Smileys & Emotion",
+      "subcategory": "monkey-face",
+      "keywords": [
+        "evil",
+        "face",
+        "forbidden",
+        "monkey",
+        "speak"
+      ],
+      "formats": {
+        "lottie": "1f64a/lottie.json",
+        "webp": "1f64a/512.webp",
+        "gif": "1f64a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2764",
+      "emoji": "❤️",
+      "name": "red heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "heart",
+        "love",
+        "red"
+      ],
+      "formats": {
+        "lottie": "2764/lottie.json",
+        "webp": "2764/512.webp",
+        "gif": "2764/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f9e1",
+      "emoji": "🧡",
+      "name": "orange heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "heart",
+        "orange"
+      ],
+      "formats": {
+        "lottie": "1f9e1/lottie.json",
+        "webp": "1f9e1/512.webp",
+        "gif": "1f9e1/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f49b",
+      "emoji": "💛",
+      "name": "yellow heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "heart",
+        "yellow"
+      ],
+      "formats": {
+        "lottie": "1f49b/lottie.json",
+        "webp": "1f49b/512.webp",
+        "gif": "1f49b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f49a",
+      "emoji": "💚",
+      "name": "green heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "green",
+        "heart"
+      ],
+      "formats": {
+        "lottie": "1f49a/lottie.json",
+        "webp": "1f49a/512.webp",
+        "gif": "1f49a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f499",
+      "emoji": "💙",
+      "name": "blue heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "blue",
+        "heart"
+      ],
+      "formats": {
+        "lottie": "1f499/lottie.json",
+        "webp": "1f499/512.webp",
+        "gif": "1f499/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f49c",
+      "emoji": "💜",
+      "name": "purple heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "heart",
+        "purple"
+      ],
+      "formats": {
+        "lottie": "1f49c/lottie.json",
+        "webp": "1f49c/512.webp",
+        "gif": "1f49c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f5a4",
+      "emoji": "🖤",
+      "name": "black heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "black",
+        "evil",
+        "heart",
+        "wicked"
+      ],
+      "formats": {
+        "lottie": "1f5a4/lottie.json",
+        "webp": "1f5a4/512.webp",
+        "gif": "1f5a4/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f90d",
+      "emoji": "🤍",
+      "name": "white heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "heart",
+        "white"
+      ],
+      "formats": {
+        "lottie": "1f90d/lottie.json",
+        "webp": "1f90d/512.webp",
+        "gif": "1f90d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1fa77",
+      "emoji": "🩷",
+      "name": "pink heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "cute",
+        "heart",
+        "like",
+        "love",
+        "pink"
+      ],
+      "formats": {
+        "lottie": "1fa77/lottie.json",
+        "webp": "1fa77/512.webp",
+        "gif": "1fa77/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f494",
+      "emoji": "💔",
+      "name": "broken heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "break",
+        "broken",
+        "heart"
+      ],
+      "formats": {
+        "lottie": "1f494/lottie.json",
+        "webp": "1f494/512.webp",
+        "gif": "1f494/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2764_200d_1f525",
+      "emoji": "❤️‍🔥",
+      "name": "heart on fire",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "burn",
+        "heart",
+        "love",
+        "lust",
+        "sacred"
+      ],
+      "formats": {
+        "lottie": "2764_200d_1f525/lottie.json",
+        "webp": "2764_200d_1f525/512.webp",
+        "gif": "2764_200d_1f525/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2764_200d_1fa79",
+      "emoji": "❤️‍🩹",
+      "name": "mending heart",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "healthier",
+        "heart",
+        "improving",
+        "mending",
+        "recovering",
+        "recuperating",
+        "well"
+      ],
+      "formats": {
+        "lottie": "2764_200d_1fa79/lottie.json",
+        "webp": "2764_200d_1fa79/512.webp",
+        "gif": "2764_200d_1fa79/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f525",
+      "emoji": "🔥",
+      "name": "fire",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "fire",
+        "flame",
+        "hot",
+        "lit"
+      ],
+      "formats": {
+        "lottie": "1f525/lottie.json",
+        "webp": "1f525/512.webp",
+        "gif": "1f525/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4af",
+      "emoji": "💯",
+      "name": "hundred points",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "100",
+        "full",
+        "hundred",
+        "score"
+      ],
+      "formats": {
+        "lottie": "1f4af/lottie.json",
+        "webp": "1f4af/512.webp",
+        "gif": "1f4af/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2728",
+      "emoji": "✨",
+      "name": "sparkles",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "sparkle",
+        "star"
+      ],
+      "formats": {
+        "lottie": "2728/lottie.json",
+        "webp": "2728/512.webp",
+        "gif": "2728/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a4",
+      "emoji": "💤",
+      "name": "zzz",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "comic",
+        "sleep",
+        "zzz"
+      ],
+      "formats": {
+        "lottie": "1f4a4/lottie.json",
+        "webp": "1f4a4/512.webp",
+        "gif": "1f4a4/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a2",
+      "emoji": "💢",
+      "name": "anger symbol",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "anger",
+        "angry",
+        "comic",
+        "mad"
+      ],
+      "formats": {
+        "lottie": "1f4a2/lottie.json",
+        "webp": "1f4a2/512.webp",
+        "gif": "1f4a2/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a5",
+      "emoji": "💥",
+      "name": "collision",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "boom",
+        "collision",
+        "comic"
+      ],
+      "formats": {
+        "lottie": "1f4a5/lottie.json",
+        "webp": "1f4a5/512.webp",
+        "gif": "1f4a5/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a6",
+      "emoji": "💦",
+      "name": "sweat droplets",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "comic",
+        "splashing",
+        "sweat"
+      ],
+      "formats": {
+        "lottie": "1f4a6/lottie.json",
+        "webp": "1f4a6/512.webp",
+        "gif": "1f4a6/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3b5",
+      "emoji": "🎵",
+      "name": "musical note",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "music",
+        "note"
+      ],
+      "formats": {
+        "lottie": "1f3b5/lottie.json",
+        "webp": "1f3b5/512.webp",
+        "gif": "1f3b5/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3b6",
+      "emoji": "🎶",
+      "name": "musical notes",
+      "category": "Smileys & Emotion",
+      "subcategory": "emotion",
+      "keywords": [
+        "music",
+        "notes"
+      ],
+      "formats": {
+        "lottie": "1f3b6/lottie.json",
+        "webp": "1f3b6/512.webp",
+        "gif": "1f3b6/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44b",
+      "emoji": "👋",
+      "name": "waving hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-open",
+      "keywords": [
+        "hand",
+        "wave",
+        "waving"
+      ],
+      "formats": {
+        "lottie": "1f44b/lottie.json",
+        "webp": "1f44b/512.webp",
+        "gif": "1f44b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91a",
+      "emoji": "🤚",
+      "name": "raised back of hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-open",
+      "keywords": [
+        "backhand",
+        "raised"
+      ],
+      "formats": {
+        "lottie": "1f91a/lottie.json",
+        "webp": "1f91a/512.webp",
+        "gif": "1f91a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f590",
+      "emoji": "🖐️",
+      "name": "hand with fingers splayed",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-open",
+      "keywords": [
+        "finger",
+        "hand",
+        "splayed"
+      ],
+      "formats": {
+        "lottie": "1f590/lottie.json",
+        "webp": "1f590/512.webp",
+        "gif": "1f590/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "270b",
+      "emoji": "✋",
+      "name": "raised hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-open",
+      "keywords": [
+        "hand",
+        "high five"
+      ],
+      "formats": {
+        "lottie": "270b/lottie.json",
+        "webp": "270b/512.webp",
+        "gif": "270b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f596",
+      "emoji": "🖖",
+      "name": "vulcan salute",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-open",
+      "keywords": [
+        "finger",
+        "hand",
+        "spock",
+        "vulcan"
+      ],
+      "formats": {
+        "lottie": "1f596/lottie.json",
+        "webp": "1f596/512.webp",
+        "gif": "1f596/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44c",
+      "emoji": "👌",
+      "name": "OK hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "hand",
+        "ok"
+      ],
+      "formats": {
+        "lottie": "1f44c/lottie.json",
+        "webp": "1f44c/512.webp",
+        "gif": "1f44c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f90c",
+      "emoji": "🤌",
+      "name": "pinched fingers",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "fingers",
+        "hand gesture",
+        "interrogation",
+        "italian",
+        "pinched",
+        "sarcastic"
+      ],
+      "formats": {
+        "lottie": "1f90c/lottie.json",
+        "webp": "1f90c/512.webp",
+        "gif": "1f90c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f90f",
+      "emoji": "🤏",
+      "name": "pinching hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "small amount"
+      ],
+      "formats": {
+        "lottie": "1f90f/lottie.json",
+        "webp": "1f90f/512.webp",
+        "gif": "1f90f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "270c",
+      "emoji": "✌️",
+      "name": "victory hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "hand",
+        "v",
+        "victory"
+      ],
+      "formats": {
+        "lottie": "270c/lottie.json",
+        "webp": "270c/512.webp",
+        "gif": "270c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91e",
+      "emoji": "🤞",
+      "name": "crossed fingers",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "cross",
+        "finger",
+        "hand",
+        "luck"
+      ],
+      "formats": {
+        "lottie": "1f91e/lottie.json",
+        "webp": "1f91e/512.webp",
+        "gif": "1f91e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91f",
+      "emoji": "🤟",
+      "name": "love-you gesture",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "hand",
+        "ILY"
+      ],
+      "formats": {
+        "lottie": "1f91f/lottie.json",
+        "webp": "1f91f/512.webp",
+        "gif": "1f91f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f918",
+      "emoji": "🤘",
+      "name": "sign of the horns",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "finger",
+        "hand",
+        "horns",
+        "rock"
+      ],
+      "formats": {
+        "lottie": "1f918/lottie.json",
+        "webp": "1f918/512.webp",
+        "gif": "1f918/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f919",
+      "emoji": "🤙",
+      "name": "call me hand",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-partial",
+      "keywords": [
+        "call",
+        "hand",
+        "shaka"
+      ],
+      "formats": {
+        "lottie": "1f919/lottie.json",
+        "webp": "1f919/512.webp",
+        "gif": "1f919/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f448",
+      "emoji": "👈",
+      "name": "backhand index pointing left",
+      "category": "People & Body",
+      "subcategory": "hand-single-finger",
+      "keywords": [
+        "backhand",
+        "finger",
+        "index",
+        "point"
+      ],
+      "formats": {
+        "lottie": "1f448/lottie.json",
+        "webp": "1f448/512.webp",
+        "gif": "1f448/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f449",
+      "emoji": "👉",
+      "name": "backhand index pointing right",
+      "category": "People & Body",
+      "subcategory": "hand-single-finger",
+      "keywords": [
+        "backhand",
+        "finger",
+        "index",
+        "point"
+      ],
+      "formats": {
+        "lottie": "1f449/lottie.json",
+        "webp": "1f449/512.webp",
+        "gif": "1f449/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f446",
+      "emoji": "👆",
+      "name": "backhand index pointing up",
+      "category": "People & Body",
+      "subcategory": "hand-single-finger",
+      "keywords": [
+        "backhand",
+        "finger",
+        "point",
+        "up"
+      ],
+      "formats": {
+        "lottie": "1f446/lottie.json",
+        "webp": "1f446/512.webp",
+        "gif": "1f446/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f447",
+      "emoji": "👇",
+      "name": "backhand index pointing down",
+      "category": "People & Body",
+      "subcategory": "hand-single-finger",
+      "keywords": [
+        "backhand",
+        "down",
+        "finger",
+        "point"
+      ],
+      "formats": {
+        "lottie": "1f447/lottie.json",
+        "webp": "1f447/512.webp",
+        "gif": "1f447/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44d",
+      "emoji": "👍",
+      "name": "thumbs up",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "+1",
+        "hand",
+        "thumb",
+        "up"
+      ],
+      "formats": {
+        "lottie": "1f44d/lottie.json",
+        "webp": "1f44d/512.webp",
+        "gif": "1f44d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44e",
+      "emoji": "👎",
+      "name": "thumbs down",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "-1",
+        "down",
+        "hand",
+        "thumb"
+      ],
+      "formats": {
+        "lottie": "1f44e/lottie.json",
+        "webp": "1f44e/512.webp",
+        "gif": "1f44e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "270a",
+      "emoji": "✊",
+      "name": "raised fist",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "clenched",
+        "fist",
+        "hand",
+        "punch"
+      ],
+      "formats": {
+        "lottie": "270a/lottie.json",
+        "webp": "270a/512.webp",
+        "gif": "270a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44a",
+      "emoji": "👊",
+      "name": "oncoming fist",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "clenched",
+        "fist",
+        "hand",
+        "punch"
+      ],
+      "formats": {
+        "lottie": "1f44a/lottie.json",
+        "webp": "1f44a/512.webp",
+        "gif": "1f44a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91b",
+      "emoji": "🤛",
+      "name": "left-facing fist",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "fist",
+        "leftwards"
+      ],
+      "formats": {
+        "lottie": "1f91b/lottie.json",
+        "webp": "1f91b/512.webp",
+        "gif": "1f91b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91c",
+      "emoji": "🤜",
+      "name": "right-facing fist",
+      "category": "People & Body",
+      "subcategory": "hand-fingers-closed",
+      "keywords": [
+        "fist",
+        "rightwards"
+      ],
+      "formats": {
+        "lottie": "1f91c/lottie.json",
+        "webp": "1f91c/512.webp",
+        "gif": "1f91c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f44f",
+      "emoji": "👏",
+      "name": "clapping hands",
+      "category": "People & Body",
+      "subcategory": "hands",
+      "keywords": [
+        "clap",
+        "hand"
+      ],
+      "formats": {
+        "lottie": "1f44f/lottie.json",
+        "webp": "1f44f/512.webp",
+        "gif": "1f44f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f64c",
+      "emoji": "🙌",
+      "name": "raising hands",
+      "category": "People & Body",
+      "subcategory": "hands",
+      "keywords": [
+        "celebration",
+        "gesture",
+        "hand",
+        "hooray",
+        "raised"
+      ],
+      "formats": {
+        "lottie": "1f64c/lottie.json",
+        "webp": "1f64c/512.webp",
+        "gif": "1f64c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f91d",
+      "emoji": "🤝",
+      "name": "handshake",
+      "category": "People & Body",
+      "subcategory": "hands",
+      "keywords": [
+        "agreement",
+        "hand",
+        "meeting",
+        "shake"
+      ],
+      "formats": {
+        "lottie": "1f91d/lottie.json",
+        "webp": "1f91d/512.webp",
+        "gif": "1f91d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f64f",
+      "emoji": "🙏",
+      "name": "folded hands",
+      "category": "People & Body",
+      "subcategory": "hands",
+      "keywords": [
+        "ask",
+        "hand",
+        "please",
+        "pray",
+        "thanks"
+      ],
+      "formats": {
+        "lottie": "1f64f/lottie.json",
+        "webp": "1f64f/512.webp",
+        "gif": "1f64f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4aa",
+      "emoji": "💪",
+      "name": "flexed biceps",
+      "category": "People & Body",
+      "subcategory": "body-parts",
+      "keywords": [
+        "biceps",
+        "comic",
+        "flex",
+        "muscle",
+        "strong"
+      ],
+      "formats": {
+        "lottie": "1f4aa/lottie.json",
+        "webp": "1f4aa/512.webp",
+        "gif": "1f4aa/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f440",
+      "emoji": "👀",
+      "name": "eyes",
+      "category": "People & Body",
+      "subcategory": "body-parts",
+      "keywords": [
+        "eye",
+        "face"
+      ],
+      "formats": {
+        "lottie": "1f440/lottie.json",
+        "webp": "1f440/512.webp",
+        "gif": "1f440/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f436",
+      "emoji": "🐶",
+      "name": "dog face",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "dog",
+        "face",
+        "pet"
+      ],
+      "formats": {
+        "lottie": "1f436/lottie.json",
+        "webp": "1f436/512.webp",
+        "gif": "1f436/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f431",
+      "emoji": "🐱",
+      "name": "cat face",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "cat",
+        "face",
+        "pet"
+      ],
+      "formats": {
+        "lottie": "1f431/lottie.json",
+        "webp": "1f431/512.webp",
+        "gif": "1f431/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f42d",
+      "emoji": "🐭",
+      "name": "mouse face",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "face",
+        "mouse"
+      ],
+      "formats": {
+        "lottie": "1f42d/lottie.json",
+        "webp": "1f42d/512.webp",
+        "gif": "1f42d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f430",
+      "emoji": "🐰",
+      "name": "rabbit face",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "bunny",
+        "face",
+        "pet",
+        "rabbit"
+      ],
+      "formats": {
+        "lottie": "1f430/lottie.json",
+        "webp": "1f430/512.webp",
+        "gif": "1f430/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f98a",
+      "emoji": "🦊",
+      "name": "fox",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "face",
+        "fox"
+      ],
+      "formats": {
+        "lottie": "1f98a/lottie.json",
+        "webp": "1f98a/512.webp",
+        "gif": "1f98a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f43b",
+      "emoji": "🐻",
+      "name": "bear",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "bear",
+        "face"
+      ],
+      "formats": {
+        "lottie": "1f43b/lottie.json",
+        "webp": "1f43b/512.webp",
+        "gif": "1f43b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f43c",
+      "emoji": "🐼",
+      "name": "panda",
+      "category": "Animals & Nature",
+      "subcategory": "animal-mammal",
+      "keywords": [
+        "face",
+        "panda"
+      ],
+      "formats": {
+        "lottie": "1f43c/lottie.json",
+        "webp": "1f43c/512.webp",
+        "gif": "1f43c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f438",
+      "emoji": "🐸",
+      "name": "frog",
+      "category": "Animals & Nature",
+      "subcategory": "animal-amphibian",
+      "keywords": [
+        "face",
+        "frog"
+      ],
+      "formats": {
+        "lottie": "1f438/lottie.json",
+        "webp": "1f438/512.webp",
+        "gif": "1f438/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f40d",
+      "emoji": "🐍",
+      "name": "snake",
+      "category": "Animals & Nature",
+      "subcategory": "animal-reptile",
+      "keywords": [
+        "bearer",
+        "ophiuchus",
+        "serpent",
+        "snake",
+        "zodiac"
+      ],
+      "formats": {
+        "lottie": "1f40d/lottie.json",
+        "webp": "1f40d/512.webp",
+        "gif": "1f40d/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f98b",
+      "emoji": "🦋",
+      "name": "butterfly",
+      "category": "Animals & Nature",
+      "subcategory": "animal-bug",
+      "keywords": [
+        "butterfly",
+        "insect",
+        "pretty"
+      ],
+      "formats": {
+        "lottie": "1f98b/lottie.json",
+        "webp": "1f98b/512.webp",
+        "gif": "1f98b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f338",
+      "emoji": "🌸",
+      "name": "cherry blossom",
+      "category": "Animals & Nature",
+      "subcategory": "plant-flower",
+      "keywords": [
+        "blossom",
+        "cherry",
+        "flower"
+      ],
+      "formats": {
+        "lottie": "1f338/lottie.json",
+        "webp": "1f338/512.webp",
+        "gif": "1f338/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f339",
+      "emoji": "🌹",
+      "name": "rose",
+      "category": "Animals & Nature",
+      "subcategory": "plant-flower",
+      "keywords": [
+        "flower",
+        "rose"
+      ],
+      "formats": {
+        "lottie": "1f339/lottie.json",
+        "webp": "1f339/512.webp",
+        "gif": "1f339/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f33b",
+      "emoji": "🌻",
+      "name": "sunflower",
+      "category": "Animals & Nature",
+      "subcategory": "plant-flower",
+      "keywords": [
+        "flower",
+        "sun",
+        "sunflower"
+      ],
+      "formats": {
+        "lottie": "1f33b/lottie.json",
+        "webp": "1f33b/512.webp",
+        "gif": "1f33b/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f340",
+      "emoji": "🍀",
+      "name": "four leaf clover",
+      "category": "Animals & Nature",
+      "subcategory": "plant-other",
+      "keywords": [
+        "4",
+        "clover",
+        "four",
+        "leaf",
+        "luck"
+      ],
+      "formats": {
+        "lottie": "1f340/lottie.json",
+        "webp": "1f340/512.webp",
+        "gif": "1f340/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f34e",
+      "emoji": "🍎",
+      "name": "red apple",
+      "category": "Food & Drink",
+      "subcategory": "food-fruit",
+      "keywords": [
+        "apple",
+        "fruit",
+        "red"
+      ],
+      "formats": {
+        "lottie": "1f34e/lottie.json",
+        "webp": "1f34e/512.webp",
+        "gif": "1f34e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f355",
+      "emoji": "🍕",
+      "name": "pizza",
+      "category": "Food & Drink",
+      "subcategory": "food-prepared",
+      "keywords": [
+        "cheese",
+        "pizza",
+        "slice"
+      ],
+      "formats": {
+        "lottie": "1f355/lottie.json",
+        "webp": "1f355/512.webp",
+        "gif": "1f355/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f354",
+      "emoji": "🍔",
+      "name": "hamburger",
+      "category": "Food & Drink",
+      "subcategory": "food-prepared",
+      "keywords": [
+        "burger",
+        "hamburger"
+      ],
+      "formats": {
+        "lottie": "1f354/lottie.json",
+        "webp": "1f354/512.webp",
+        "gif": "1f354/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f35f",
+      "emoji": "🍟",
+      "name": "french fries",
+      "category": "Food & Drink",
+      "subcategory": "food-prepared",
+      "keywords": [
+        "french",
+        "fries"
+      ],
+      "formats": {
+        "lottie": "1f35f/lottie.json",
+        "webp": "1f35f/512.webp",
+        "gif": "1f35f/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f32e",
+      "emoji": "🌮",
+      "name": "taco",
+      "category": "Food & Drink",
+      "subcategory": "food-prepared",
+      "keywords": [
+        "mexican",
+        "taco"
+      ],
+      "formats": {
+        "lottie": "1f32e/lottie.json",
+        "webp": "1f32e/512.webp",
+        "gif": "1f32e/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f366",
+      "emoji": "🍦",
+      "name": "soft ice cream",
+      "category": "Food & Drink",
+      "subcategory": "food-sweet",
+      "keywords": [
+        "cream",
+        "dessert",
+        "ice",
+        "icecream",
+        "soft",
+        "sweet"
+      ],
+      "formats": {
+        "lottie": "1f366/lottie.json",
+        "webp": "1f366/512.webp",
+        "gif": "1f366/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f382",
+      "emoji": "🎂",
+      "name": "birthday cake",
+      "category": "Food & Drink",
+      "subcategory": "food-sweet",
+      "keywords": [
+        "birthday",
+        "cake",
+        "celebration",
+        "dessert",
+        "pastry",
+        "sweet"
+      ],
+      "formats": {
+        "lottie": "1f382/lottie.json",
+        "webp": "1f382/512.webp",
+        "gif": "1f382/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2615",
+      "emoji": "☕",
+      "name": "hot beverage",
+      "category": "Food & Drink",
+      "subcategory": "drink",
+      "keywords": [
+        "beverage",
+        "coffee",
+        "drink",
+        "hot",
+        "steaming",
+        "tea"
+      ],
+      "formats": {
+        "lottie": "2615/lottie.json",
+        "webp": "2615/512.webp",
+        "gif": "2615/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f37a",
+      "emoji": "🍺",
+      "name": "beer mug",
+      "category": "Food & Drink",
+      "subcategory": "drink",
+      "keywords": [
+        "bar",
+        "beer",
+        "drink",
+        "mug"
+      ],
+      "formats": {
+        "lottie": "1f37a/lottie.json",
+        "webp": "1f37a/512.webp",
+        "gif": "1f37a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f377",
+      "emoji": "🍷",
+      "name": "wine glass",
+      "category": "Food & Drink",
+      "subcategory": "drink",
+      "keywords": [
+        "bar",
+        "beverage",
+        "drink",
+        "glass",
+        "wine"
+      ],
+      "formats": {
+        "lottie": "1f377/lottie.json",
+        "webp": "1f377/512.webp",
+        "gif": "1f377/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "26bd",
+      "emoji": "⚽",
+      "name": "soccer ball",
+      "category": "Activities",
+      "subcategory": "sport",
+      "keywords": [
+        "ball",
+        "football",
+        "soccer"
+      ],
+      "formats": {
+        "lottie": "26bd/lottie.json",
+        "webp": "26bd/512.webp",
+        "gif": "26bd/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3c0",
+      "emoji": "🏀",
+      "name": "basketball",
+      "category": "Activities",
+      "subcategory": "sport",
+      "keywords": [
+        "ball",
+        "basketball",
+        "hoop"
+      ],
+      "formats": {
+        "lottie": "1f3c0/lottie.json",
+        "webp": "1f3c0/512.webp",
+        "gif": "1f3c0/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3ae",
+      "emoji": "🎮",
+      "name": "video game",
+      "category": "Activities",
+      "subcategory": "game",
+      "keywords": [
+        "controller",
+        "game",
+        "video game"
+      ],
+      "formats": {
+        "lottie": "1f3ae/lottie.json",
+        "webp": "1f3ae/512.webp",
+        "gif": "1f3ae/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3af",
+      "emoji": "🎯",
+      "name": "bullseye",
+      "category": "Activities",
+      "subcategory": "game",
+      "keywords": [
+        "bullseye",
+        "dart",
+        "direct hit",
+        "game",
+        "hit",
+        "target"
+      ],
+      "formats": {
+        "lottie": "1f3af/lottie.json",
+        "webp": "1f3af/512.webp",
+        "gif": "1f3af/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f389",
+      "emoji": "🎉",
+      "name": "party popper",
+      "category": "Activities",
+      "subcategory": "event",
+      "keywords": [
+        "celebration",
+        "party",
+        "popper",
+        "tada"
+      ],
+      "formats": {
+        "lottie": "1f389/lottie.json",
+        "webp": "1f389/512.webp",
+        "gif": "1f389/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f38a",
+      "emoji": "🎊",
+      "name": "confetti ball",
+      "category": "Activities",
+      "subcategory": "event",
+      "keywords": [
+        "ball",
+        "celebration",
+        "confetti"
+      ],
+      "formats": {
+        "lottie": "1f38a/lottie.json",
+        "webp": "1f38a/512.webp",
+        "gif": "1f38a/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3c6",
+      "emoji": "🏆",
+      "name": "trophy",
+      "category": "Activities",
+      "subcategory": "award-medal",
+      "keywords": [
+        "prize",
+        "trophy"
+      ],
+      "formats": {
+        "lottie": "1f3c6/lottie.json",
+        "webp": "1f3c6/512.webp",
+        "gif": "1f3c6/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f947",
+      "emoji": "🥇",
+      "name": "1st place medal",
+      "category": "Activities",
+      "subcategory": "award-medal",
+      "keywords": [
+        "first",
+        "gold",
+        "medal"
+      ],
+      "formats": {
+        "lottie": "1f947/lottie.json",
+        "webp": "1f947/512.webp",
+        "gif": "1f947/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3ad",
+      "emoji": "🎭",
+      "name": "performing arts",
+      "category": "Activities",
+      "subcategory": "arts-crafts",
+      "keywords": [
+        "art",
+        "mask",
+        "performing",
+        "theater",
+        "theatre"
+      ],
+      "formats": {
+        "lottie": "1f3ad/lottie.json",
+        "webp": "1f3ad/512.webp",
+        "gif": "1f3ad/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f697",
+      "emoji": "🚗",
+      "name": "automobile",
+      "category": "Travel & Places",
+      "subcategory": "transport-ground",
+      "keywords": [
+        "automobile",
+        "car"
+      ],
+      "formats": {
+        "lottie": "1f697/lottie.json",
+        "webp": "1f697/512.webp",
+        "gif": "1f697/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f3e0",
+      "emoji": "🏠",
+      "name": "house",
+      "category": "Travel & Places",
+      "subcategory": "place-building",
+      "keywords": [
+        "home",
+        "house"
+      ],
+      "formats": {
+        "lottie": "1f3e0/lottie.json",
+        "webp": "1f3e0/512.webp",
+        "gif": "1f3e0/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f305",
+      "emoji": "🌅",
+      "name": "sunrise",
+      "category": "Travel & Places",
+      "subcategory": "place-other",
+      "keywords": [
+        "morning",
+        "sun",
+        "sunrise"
+      ],
+      "formats": {
+        "lottie": "1f305/lottie.json",
+        "webp": "1f305/512.webp",
+        "gif": "1f305/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f308",
+      "emoji": "🌈",
+      "name": "rainbow",
+      "category": "Travel & Places",
+      "subcategory": "sky-weather",
+      "keywords": [
+        "rain",
+        "rainbow"
+      ],
+      "formats": {
+        "lottie": "1f308/lottie.json",
+        "webp": "1f308/512.webp",
+        "gif": "1f308/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f319",
+      "emoji": "🌙",
+      "name": "crescent moon",
+      "category": "Travel & Places",
+      "subcategory": "sky-weather",
+      "keywords": [
+        "crescent",
+        "moon"
+      ],
+      "formats": {
+        "lottie": "1f319/lottie.json",
+        "webp": "1f319/512.webp",
+        "gif": "1f319/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2b50",
+      "emoji": "⭐",
+      "name": "star",
+      "category": "Travel & Places",
+      "subcategory": "sky-weather",
+      "keywords": [
+        "star"
+      ],
+      "formats": {
+        "lottie": "2b50/lottie.json",
+        "webp": "2b50/512.webp",
+        "gif": "2b50/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4f1",
+      "emoji": "📱",
+      "name": "mobile phone",
+      "category": "Objects",
+      "subcategory": "phone",
+      "keywords": [
+        "cell",
+        "mobile",
+        "phone",
+        "telephone"
+      ],
+      "formats": {
+        "lottie": "1f4f1/lottie.json",
+        "webp": "1f4f1/512.webp",
+        "gif": "1f4f1/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4bb",
+      "emoji": "💻",
+      "name": "laptop",
+      "category": "Objects",
+      "subcategory": "computer",
+      "keywords": [
+        "computer",
+        "laptop",
+        "pc",
+        "personal"
+      ],
+      "formats": {
+        "lottie": "1f4bb/lottie.json",
+        "webp": "1f4bb/512.webp",
+        "gif": "1f4bb/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4a1",
+      "emoji": "💡",
+      "name": "light bulb",
+      "category": "Objects",
+      "subcategory": "light-video",
+      "keywords": [
+        "bulb",
+        "comic",
+        "electric",
+        "idea",
+        "light"
+      ],
+      "formats": {
+        "lottie": "1f4a1/lottie.json",
+        "webp": "1f4a1/512.webp",
+        "gif": "1f4a1/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f511",
+      "emoji": "🔑",
+      "name": "key",
+      "category": "Objects",
+      "subcategory": "lock",
+      "keywords": [
+        "key",
+        "lock",
+        "password"
+      ],
+      "formats": {
+        "lottie": "1f511/lottie.json",
+        "webp": "1f511/512.webp",
+        "gif": "1f511/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f514",
+      "emoji": "🔔",
+      "name": "bell",
+      "category": "Objects",
+      "subcategory": "sound",
+      "keywords": [
+        "bell"
+      ],
+      "formats": {
+        "lottie": "1f514/lottie.json",
+        "webp": "1f514/512.webp",
+        "gif": "1f514/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "1f4e7",
+      "emoji": "📧",
+      "name": "e-mail",
+      "category": "Objects",
+      "subcategory": "mail",
+      "keywords": [
+        "e-mail",
+        "email",
+        "letter",
+        "mail"
+      ],
+      "formats": {
+        "lottie": "1f4e7/lottie.json",
+        "webp": "1f4e7/512.webp",
+        "gif": "1f4e7/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2705",
+      "emoji": "✅",
+      "name": "check mark button",
+      "category": "Symbols",
+      "subcategory": "other-symbol",
+      "keywords": [
+        "button",
+        "check",
+        "mark",
+        "tick"
+      ],
+      "formats": {
+        "lottie": "2705/lottie.json",
+        "webp": "2705/512.webp",
+        "gif": "2705/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "274c",
+      "emoji": "❌",
+      "name": "cross mark",
+      "category": "Symbols",
+      "subcategory": "other-symbol",
+      "keywords": [
+        "cancel",
+        "cross",
+        "mark",
+        "multiplication",
+        "multiply",
+        "x"
+      ],
+      "formats": {
+        "lottie": "274c/lottie.json",
+        "webp": "274c/512.webp",
+        "gif": "274c/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2753",
+      "emoji": "❓",
+      "name": "red question mark",
+      "category": "Symbols",
+      "subcategory": "other-symbol",
+      "keywords": [
+        "?",
+        "mark",
+        "punctuation",
+        "question",
+        "red"
+      ],
+      "formats": {
+        "lottie": "2753/lottie.json",
+        "webp": "2753/512.webp",
+        "gif": "2753/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "2757",
+      "emoji": "❗",
+      "name": "red exclamation mark",
+      "category": "Symbols",
+      "subcategory": "other-symbol",
+      "keywords": [
+        "!",
+        "exclamation",
+        "mark",
+        "punctuation",
+        "red"
+      ],
+      "formats": {
+        "lottie": "2757/lottie.json",
+        "webp": "2757/512.webp",
+        "gif": "2757/512.gif"
+      },
+      "file_size_bytes": null
+    },
+    {
+      "codepoint": "26a0",
+      "emoji": "⚠️",
+      "name": "warning",
+      "category": "Symbols",
+      "subcategory": "warning",
+      "keywords": [
+        "warning"
+      ],
+      "formats": {
+        "lottie": "26a0/lottie.json",
+        "webp": "26a0/512.webp",
+        "gif": "26a0/512.gif"
+      },
+      "file_size_bytes": null
+    }
+  ]
+}
