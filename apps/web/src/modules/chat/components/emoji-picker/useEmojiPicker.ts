@@ -43,6 +43,7 @@ export function useRecentEmojis() {
 
 /**
  * Hook to handle click outside detection for closing picker.
+ * Uses a small delay to avoid closing on the same click that opened the picker.
  */
 export function useClickOutside(
   ref: RefObject<HTMLDivElement | null>,
@@ -50,18 +51,27 @@ export function useClickOutside(
   onClose: () => void
 ) {
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target;
-      if (ref.current && target instanceof Node && !ref.current.contains(target)) {
-        onClose();
-      }
-    };
+    if (!isOpen) return undefined;
 
-    if (isOpen) {
+    let removeListener: (() => void) | undefined;
+
+    // Delay adding the listener so the opening click's mousedown is not caught
+    const timer = setTimeout(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target;
+        if (ref.current && target instanceof Node && !ref.current.contains(target)) {
+          onClose();
+        }
+      };
+
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return undefined;
+      removeListener = () => document.removeEventListener('mousedown', handleClickOutside);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      removeListener?.();
+    };
   }, [ref, isOpen, onClose]);
 }
 
