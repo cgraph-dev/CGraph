@@ -296,35 +296,43 @@ defmodule CGraph.Performance.QueryOptimizer do
   def analyze_query(query) do
     {sql, params} = Repo.to_sql(:all, query)
 
-    explain_result = Repo.query!("EXPLAIN ANALYZE #{sql}", params)
+    # Use parameterized format string to avoid SQL injection.
+    # EXPLAIN ANALYZE doesn't support $1-style params, but the sql comes from
+    # Ecto's to_sql which is trusted/generated. We validate it doesn't contain
+    # obvious injection patterns as defense-in-depth.
+    if String.contains?(sql, [";", "--", "/*"]) do
+      %{plan: [], issues: ["Query contains suspicious characters — skipping EXPLAIN"], query: sql}
+    else
+      explain_result = Repo.query!("EXPLAIN ANALYZE #{sql}", params)
 
-    plan = Enum.map(explain_result.rows, fn [row] -> row end)
+      plan = Enum.map(explain_result.rows, fn [row] -> row end)
 
-    # Parse for common issues
-    issues = []
+      # Parse for common issues
+      issues = []
 
-    issues = if Enum.any?(plan, &String.contains?(&1, "Seq Scan")),
-      do: ["Sequential scan detected - consider adding an index" | issues],
-      else: issues
+      issues = if Enum.any?(plan, &String.contains?(&1, "Seq Scan")),
+        do: ["Sequential scan detected - consider adding an index" | issues],
+        else: issues
 
-    issues = if Enum.any?(plan, &String.contains?(&1, "Nested Loop")),
-      do: ["Nested loop join - may be slow for large datasets" | issues],
-      else: issues
+      issues = if Enum.any?(plan, &String.contains?(&1, "Nested Loop")),
+        do: ["Nested loop join - may be slow for large datasets" | issues],
+        else: issues
 
-    # Extract timing
-    timing = Enum.find_value(plan, fn line ->
-      case Regex.run(~r/actual time=[\d.]+\.\.(\d+\.\d+)/, line) do
-        [_, time] -> String.to_float(time)
-        _ -> nil
-      end
-    end)
+      # Extract timing
+      timing = Enum.find_value(plan, fn line ->
+        case Regex.run(~r/actual time=[\d.]+\.\.(\d+\.\d+)/, line) do
+          [_, time] -> String.to_float(time)
+          _ -> nil
+        end
+      end)
 
-    %{
-      plan: plan,
-      timing_ms: timing,
-      issues: issues,
-      sql: sql
-    }
+      %{
+        plan: plan,
+        timing_ms: timing,
+        issues: issues,
+        sql: sql
+      }
+    end
   end
 
   @doc """

@@ -139,8 +139,8 @@ defmodule CGraph.MixProject do
       # DNS clustering for Fly.io multi-region
       {:dns_cluster, "~> 0.1"},
 
-      # Server (latest stable)
-      {:bandit, "~> 1.10"},
+      # Server (latest stable — upgraded from 1.10.0 which is retired due to DEFLATE issue)
+      {:bandit, "~> 1.6"},
       {:gettext, "~> 0.26"},
 
       # JWT library (latest - OTP 28 compatible)

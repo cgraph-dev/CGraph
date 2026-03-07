@@ -1783,14 +1783,14 @@
 .gl-footer-unified__aurora::before {
   bottom: -40px;
   left: -10%;
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(16, 185, 129, 0.1), transparent);
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.08), rgba(16, 185, 129, 0.05), transparent);
   animation-delay: 0s;
 }
 
 .gl-footer-unified__aurora::after {
   bottom: -20px;
   right: -10%;
-  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.12));
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.05), rgba(139, 92, 246, 0.06));
   animation-delay: 4s;
 }
 

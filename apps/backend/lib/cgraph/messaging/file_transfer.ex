@@ -312,7 +312,19 @@ defmodule CGraph.Messaging.FileTransfer do
          }}
 
       {:ok, %Transfer{status: status}} ->
-        {:error, :"transfer_#{status}"}
+        # Map known statuses to atoms instead of interpolating arbitrary strings
+        error_atom = case status do
+          :expired -> :transfer_expired
+          :cancelled -> :transfer_cancelled
+          :deleted -> :transfer_deleted
+          :failed -> :transfer_failed
+          "expired" -> :transfer_expired
+          "cancelled" -> :transfer_cancelled
+          "deleted" -> :transfer_deleted
+          "failed" -> :transfer_failed
+          _ -> :transfer_unavailable
+        end
+        {:error, error_atom}
 
       {:error, :not_found} ->
         {:error, :not_found}

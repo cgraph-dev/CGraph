@@ -104,6 +104,17 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
     end
   end
 
+  # Known audit event types — prevents atom table exhaustion from arbitrary paths.
+  @known_event_types ~w(
+    post_auth_login post_auth_register post_auth_logout post_auth_refresh
+    post_auth_wallet_challenge post_auth_wallet_verify
+    get_users_me patch_users_me delete_users_me
+    post_conversations get_conversations post_messages
+    post_forums get_forums post_groups get_groups
+    post_uploads delete_uploads
+    post_admin get_admin patch_admin delete_admin
+  )a
+
   defp derive_event_type(conn) do
     # Build event type from HTTP method + first meaningful path segment
     # POST /api/v1/auth/login → :post_auth_login
@@ -115,7 +126,14 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
       |> Enum.join("_")
 
     method = conn.method |> String.downcase()
-    :"#{method}_#{segments}"
+    event_string = "#{method}_#{segments}"
+
+    # Use to_existing_atom to prevent atom table exhaustion from arbitrary paths.
+    try do
+      String.to_existing_atom(event_string)
+    rescue
+      ArgumentError -> :unknown_event
+    end
   end
 
   defp phoenix_action(conn) do

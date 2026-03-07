@@ -136,16 +136,17 @@ defmodule CGraph.Uploads do
   end
 
   defp do_store_file(user, upload, context, skip_optimization) do
-    # Generate unique filename
-    ext = Path.extname(upload.filename)
+    # Generate unique filename — sanitize the extension to prevent traversal
+    ext = upload.filename |> Path.extname() |> sanitize_extension()
     filename = "#{Ecto.UUID.generate()}#{ext}"
 
     # Ensure upload directory exists
     upload_path = Path.join([@upload_dir, context])
     File.mkdir_p!(upload_path)
 
-    # Copy file
+    # Copy file — validate destination stays within upload directory
     dest_path = Path.join(upload_path, filename)
+    :ok = validate_path_within!(dest_path, @upload_dir)
     File.cp!(upload.path, dest_path)
 
     # Get file info
@@ -208,9 +209,14 @@ defmodule CGraph.Uploads do
   """
   @spec delete_file(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def delete_file(file) do
-    # Delete physical file
+    # Delete physical file — validate path stays within uploads dir
     file_path = Path.join(["priv/static", file.url])
-    File.rm(file_path)
+    resolved = Path.expand(file_path)
+    base = Path.expand("priv/static/uploads")
+
+    if String.starts_with?(resolved, base) do
+      File.rm(file_path)
+    end
 
     # Delete record
     Repo.delete(file)
@@ -479,5 +485,31 @@ defmodule CGraph.Uploads do
       "application/xml",
       "text/xml"
     ]
+  end
+
+  # ---------------------------------------------------------------------------
+  # Path Traversal Protection
+  # ---------------------------------------------------------------------------
+
+  # Sanitize file extension to prevent directory traversal via crafted filenames.
+  # Only allows alphanumeric characters and dots in extensions.
+  defp sanitize_extension(""), do: ""
+  defp sanitize_extension("." <> ext) do
+    clean = String.replace(ext, ~r/[^a-zA-Z0-9]/, "")
+    if clean == "", do: "", else: ".#{clean}"
+  end
+  defp sanitize_extension(_), do: ""
+
+  # Validates that the resolved path stays within the allowed base directory.
+  # Raises ArgumentError if a traversal attempt is detected.
+  defp validate_path_within!(path, base_dir) do
+    resolved = Path.expand(path)
+    base = Path.expand(base_dir)
+
+    unless String.starts_with?(resolved, base <> "/") or resolved == base do
+      raise ArgumentError, "Path traversal detected: #{path} escapes #{base_dir}"
+    end
+
+    :ok
   end
 end

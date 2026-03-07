@@ -67,7 +67,7 @@ export const FooterCyberGrid = memo(function FooterCyberGrid() {
 
       // Grid lines
       ctx.lineWidth = 0.5;
-      ctx.globalAlpha = 0.1 * pulse;
+      ctx.globalAlpha = 0.05 * pulse;
       ctx.strokeStyle = COLOR;
 
       for (let x = 0; x <= w; x += CELL) {
@@ -87,7 +87,7 @@ export const FooterCyberGrid = memo(function FooterCyberGrid() {
       for (let x = CELL; x < w; x += CELL * 3) {
         for (let y = CELL; y < h; y += CELL * 3) {
           const nPulse = Math.sin((elapsed / 1500 + x + y) * 0.01) * 0.5 + 0.5;
-          ctx.globalAlpha = 0.35 * nPulse * pulse;
+          ctx.globalAlpha = 0.18 * nPulse * pulse;
           ctx.beginPath();
           ctx.arc(x, y, 2 * nPulse + 1, 0, Math.PI * 2);
           ctx.fillStyle = (x + y) % (CELL * 6) < CELL * 3 ? COLOR : COLOR_ALT;
@@ -113,7 +113,7 @@ export const FooterCyberGrid = memo(function FooterCyberGrid() {
         style={{
           position: 'absolute',
           inset: 0,
-          opacity: 0.06,
+          opacity: 0.03,
           backgroundImage:
             'linear-gradient(rgba(139,92,246,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.25) 1px, transparent 1px)',
           backgroundSize: '55px 55px',
@@ -186,7 +186,7 @@ export const FooterParticleField = memo(function FooterParticleField() {
           vy: (Math.random() - 0.5) * SPEED,
           size: Math.random() * 2 + 1,
           color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
-          alpha: Math.random() * 0.5 + 0.3,
+          alpha: Math.random() * 0.25 + 0.15,
         });
       }
     };
@@ -242,7 +242,7 @@ export const FooterParticleField = memo(function FooterParticleField() {
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < CONNECTION_DIST) {
-            const opacity = (1 - dist / CONNECTION_DIST) * 0.15;
+            const opacity = (1 - dist / CONNECTION_DIST) * 0.08;
             const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
             grad.addColorStop(0, a.color);
             grad.addColorStop(1, b.color);
@@ -261,7 +261,7 @@ export const FooterParticleField = memo(function FooterParticleField() {
         const mdy = a.y - mouse.y;
         const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
         if (mDist < CONNECTION_DIST * 1.5) {
-          const opacity = (1 - mDist / (CONNECTION_DIST * 1.5)) * 0.3;
+          const opacity = (1 - mDist / (CONNECTION_DIST * 1.5)) * 0.15;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(mouse.x, mouse.y);

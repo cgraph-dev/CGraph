@@ -27,7 +27,6 @@ import { GlobalBackground } from '../components/marketing/layout/GlobalBackgroun
 import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
 import { PricingSection } from '../components/marketing/sections/Pricing';
-import { VoiceVideoShowcase } from '../components/marketing/sections/VoiceVideoShowcase';
 import { DownloadCTA } from '../components/marketing/sections/DownloadCTA';
 import { SectionHeader } from '../components/marketing/ui/SectionHeader';
 import SEO from '../components/SEO';
@@ -212,9 +211,6 @@ export default function LandingPage() {
 
         {/* Features */}
         <Features />
-
-        {/* Voice & Video Showcase (NEW — v1.0) */}
-        <VoiceVideoShowcase />
 
         {/* Customization Demo */}
         <section className="showcase-section zoom-section">

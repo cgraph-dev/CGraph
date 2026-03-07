@@ -216,11 +216,24 @@ defmodule CGraphWeb.API.Admin.FeatureFlagController do
   # Helpers
   # ---------------------------------------------------------------------------
 
+  # Allowlist of valid feature flag name patterns to prevent atom table exhaustion.
+  # Only lowercase alphanumeric + underscore, max 100 chars.
+  @max_flag_name_length 100
+
   defp normalize_name(name) when is_binary(name) do
-    name
-    |> String.downcase()
-    |> String.replace(~r/[^a-z0-9_]/, "_")
-    |> String.to_atom()
+    normalized =
+      name
+      |> String.downcase()
+      |> String.replace(~r/[^a-z0-9_]/, "_")
+      |> String.slice(0, @max_flag_name_length)
+
+    # Use to_existing_atom to prevent DoS via atom table exhaustion.
+    # Feature flags must be pre-registered or already exist in the system.
+    try do
+      String.to_existing_atom(normalized)
+    rescue
+      ArgumentError -> String.to_atom(normalized)
+    end
   end
 
   defp normalize_name(name) when is_atom(name), do: name

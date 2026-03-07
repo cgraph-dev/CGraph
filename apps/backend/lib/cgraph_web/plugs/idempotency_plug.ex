@@ -41,7 +41,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
       {:ok, true} ->
         conn
         |> put_status(:conflict)
-        |> put_resp_header("content-type", "application/json")
+        |> put_resp_content_type("application/json")
         |> send_resp(409, Jason.encode!(%{
           error: %{
             code: "idempotency_conflict",
