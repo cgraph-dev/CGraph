@@ -3,7 +3,8 @@
  * @module modules/chat/components/emoji-picker
  */
 
-import type { EmojiCategories } from './types';
+import type { AnimatedEmoji } from '@/lib/lottie';
+import type { EmojiCategories, EmojiItem } from './types';
 
 export const EMOJI_CATEGORIES: EmojiCategories = {
   'Frequently Used': ['😊', '❤️', '😂', '👍', '🎉', '🔥', '✨', '💯', '🙏', '👀'],
@@ -462,3 +463,63 @@ export const EMOJI_CATEGORIES: EmojiCategories = {
 export const INITIAL_FREQUENTLY_USED = EMOJI_CATEGORIES['Frequently Used'];
 export const MAX_RECENT_EMOJIS = 30;
 export const DISPLAY_RECENT_COUNT = 10;
+
+// ── Animated emoji catalog ─────────────────────────────────────────
+
+const ANIM_CACHE_KEY = 'cgraph_animated_emoji_catalog';
+let animatedCatalog: Map<string, AnimatedEmoji> | null = null;
+
+/** Fetch animated emoji catalog from backend (cached in memory + localStorage). */
+export async function fetchAnimatedEmojiCatalog(): Promise<Map<string, AnimatedEmoji>> {
+  if (animatedCatalog) return animatedCatalog;
+
+  // Try localStorage first
+  try {
+    const stored = localStorage.getItem(ANIM_CACHE_KEY);
+    if (stored) {
+      const parsed: AnimatedEmoji[] = JSON.parse(stored);
+      animatedCatalog = new Map(parsed.map((e) => [e.emoji, e]));
+      return animatedCatalog;
+    }
+  } catch {
+    // Ignore parse errors
+  }
+
+  // Fetch from backend
+  try {
+    const res = await fetch('/api/v1/animations/emojis');
+    if (res.ok) {
+      const json = await res.json();
+      const items: AnimatedEmoji[] = json.data ?? json ?? [];
+      animatedCatalog = new Map(items.map((e) => [e.emoji, e]));
+      localStorage.setItem(ANIM_CACHE_KEY, JSON.stringify(items));
+      return animatedCatalog;
+    }
+  } catch {
+    // Offline or API unavailable
+  }
+
+  animatedCatalog = new Map();
+  return animatedCatalog;
+}
+
+/** Enrich a plain emoji string with animation metadata from the catalog. */
+export function enrichEmoji(emoji: string, catalog: Map<string, AnimatedEmoji>): EmojiItem {
+  const animated = catalog.get(emoji);
+  if (animated) {
+    return {
+      emoji: animated.emoji,
+      name: animated.name,
+      category: animated.category,
+      keywords: [animated.name],
+      hasAnimation: true,
+      animations: animated.animations,
+    };
+  }
+  return { emoji, name: emoji, category: '', keywords: [], hasAnimation: false };
+}
+
+/** Get the animated catalog (synchronous; returns null if not yet loaded). */
+export function getAnimatedCatalog(): Map<string, AnimatedEmoji> | null {
+  return animatedCatalog;
+}
