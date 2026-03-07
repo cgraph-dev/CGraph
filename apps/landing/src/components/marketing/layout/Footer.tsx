@@ -44,6 +44,18 @@ export default function Footer() {
 
   return (
     <footer className="gl-footer-unified">
+      {/* Blend gradient — seamless transition from page bg */}
+      <div className="gl-footer-unified__blend" />
+
+      {/* 3D perspective terrain grid */}
+      <div className="gl-footer-unified__terrain" />
+
+      {/* Aurora glow bands */}
+      <div className="gl-footer-unified__aurora" />
+
+      {/* Floating particles */}
+      <div className="gl-footer-unified__particles" />
+
       {/* Animated gradient top border */}
       <div className="gl-footer-unified__border" />
 

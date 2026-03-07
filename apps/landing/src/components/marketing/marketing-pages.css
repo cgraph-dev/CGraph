@@ -1748,13 +1748,143 @@
 }
 
 /* ==========================================================================
-   UNIFIED FOOTER - Matches landing page style
+   UNIFIED FOOTER - Matches landing page style with 3D terrain background
    ========================================================================== */
 .gl-footer-unified {
   padding: 5rem 2rem 3rem;
-  background: radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+  background: 
+    radial-gradient(ellipse at 30% 90%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
   position: relative;
   overflow: hidden;
+}
+
+/* 3D perspective grid terrain */
+.gl-footer-unified__terrain {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  right: -10%;
+  height: 70%;
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px);
+  background-size: 60px 40px;
+  transform: perspective(400px) rotateX(55deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 40%, transparent 65%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 40%, transparent 65%);
+  pointer-events: none;
+  animation: footer-terrain-scroll 20s linear infinite;
+}
+
+@keyframes footer-terrain-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 40px; }
+}
+
+/* Aurora glow bands */
+.gl-footer-unified__aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gl-footer-unified__aurora::before,
+.gl-footer-unified__aurora::after {
+  content: '';
+  position: absolute;
+  width: 120%;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  animation: footer-aurora 8s ease-in-out infinite;
+}
+
+.gl-footer-unified__aurora::before {
+  bottom: -40px;
+  left: -10%;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(16, 185, 129, 0.1), transparent);
+  animation-delay: 0s;
+}
+
+.gl-footer-unified__aurora::after {
+  bottom: -20px;
+  right: -10%;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.12));
+  animation-delay: 4s;
+}
+
+@keyframes footer-aurora {
+  0%, 100% { opacity: 0; transform: translateX(-5%); }
+  30%, 70% { opacity: 1; }
+  50% { opacity: 1; transform: translateX(5%); }
+}
+
+/* Floating particles (CSS-only) */
+.gl-footer-unified__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gl-footer-unified__particles::before,
+.gl-footer-unified__particles::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.5);
+  box-shadow:
+    120px 80px 0 rgba(139, 92, 246, 0.4),
+    240px 140px 0 rgba(16, 185, 129, 0.3),
+    380px 60px 0 rgba(139, 92, 246, 0.35),
+    500px 180px 0 rgba(16, 185, 129, 0.25),
+    650px 100px 0 rgba(139, 92, 246, 0.3),
+    800px 160px 0 rgba(16, 185, 129, 0.4),
+    950px 40px 0 rgba(139, 92, 246, 0.25),
+    1100px 120px 0 rgba(16, 185, 129, 0.35);
+  animation: footer-particles-drift 12s ease-in-out infinite;
+}
+
+.gl-footer-unified__particles::after {
+  top: 30px;
+  left: 60px;
+  background: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    100px 120px 0 rgba(16, 185, 129, 0.3),
+    280px 50px 0 rgba(139, 92, 246, 0.35),
+    430px 170px 0 rgba(16, 185, 129, 0.25),
+    580px 90px 0 rgba(139, 92, 246, 0.4),
+    720px 150px 0 rgba(16, 185, 129, 0.3),
+    870px 30px 0 rgba(139, 92, 246, 0.35),
+    1020px 110px 0 rgba(16, 185, 129, 0.2);
+  animation-delay: -6s;
+  animation-direction: reverse;
+}
+
+@keyframes footer-particles-drift {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.5; }
+  25% { transform: translateY(-8px) translateX(4px); opacity: 0.8; }
+  50% { transform: translateY(-3px) translateX(-3px); opacity: 0.6; }
+  75% { transform: translateY(-10px) translateX(2px); opacity: 0.9; }
+}
+
+/* Fade-in blend at the top of footer — seamless transition from page content */
+.gl-footer-unified__blend {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--page-bg, #030712) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* Animated top border */

@@ -94,7 +94,7 @@ export default function Login() {
       {/* Header with cyberpunk text effect */}
       <motion.div variants={reduced ? {} : headerVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
-          <GlitchText text={t('login.title')} className="matrix-glow" />
+          <GlitchText text={t('login.title')} />
         </h2>
         <p className="mt-2 text-gray-400">
           <TextScramble text={t('login.subtitle')} delay={1000} scrambleSpeed={80} />

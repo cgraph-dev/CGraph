@@ -76,7 +76,7 @@ export default function Register() {
       {/* Header with cyberpunk text effect */}
       <motion.div variants={reduced ? {} : headerVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
-          <GlitchText text="Create your account" className="matrix-glow" />
+          <GlitchText text="Create your account" />
         </h2>
         <p className="mt-2 text-foreground-muted">
           <TextScramble
