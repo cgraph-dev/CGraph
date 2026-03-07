@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-03-07T00:00:00Z",
+  "description": "Registry of Lottie-based avatar border animations. Borders are loaded dynamically and displayed as circular Lottie overlays around user avatars.",
+  "cdn_base": "https://cdn.cgraph.org/borders",
+  "borders": [
+    {
+      "id": "fire-ring",
+      "name": "Fire Ring",
+      "rarity": "legendary",
+      "theme": "elemental",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "fire-ring.json",
+      "preview_path": "fire-ring-preview.webp",
+      "config": { "loop": true, "speed": 1.0 },
+      "unlock_condition": "level_50",
+      "price_coins": 5000
+    },
+    {
+      "id": "lightning-aura",
+      "name": "Lightning Aura",
+      "rarity": "legendary",
+      "theme": "elemental",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "lightning-aura.json",
+      "preview_path": "lightning-aura-preview.webp",
+      "config": { "loop": true, "speed": 1.2 },
+      "unlock_condition": "level_75",
+      "price_coins": 7500
+    },
+    {
+      "id": "aurora-borealis",
+      "name": "Aurora Borealis",
+      "rarity": "epic",
+      "theme": "nature",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "aurora-borealis.json",
+      "preview_path": "aurora-borealis-preview.webp",
+      "config": { "loop": true, "speed": 0.8 },
+      "unlock_condition": "level_30",
+      "price_coins": 3000
+    },
+    {
+      "id": "neon-pulse",
+      "name": "Neon Pulse",
+      "rarity": "rare",
+      "theme": "cyber",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "neon-pulse.json",
+      "preview_path": "neon-pulse-preview.webp",
+      "config": { "loop": true, "speed": 1.0 },
+      "unlock_condition": "level_20",
+      "price_coins": 2000
+    },
+    {
+      "id": "sakura-petals",
+      "name": "Sakura Petals",
+      "rarity": "epic",
+      "theme": "nature",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "sakura-petals.json",
+      "preview_path": "sakura-petals-preview.webp",
+      "config": { "loop": true, "speed": 0.6 },
+      "unlock_condition": "seasonal_spring",
+      "price_coins": 4000
+    },
+    {
+      "id": "cosmic-swirl",
+      "name": "Cosmic Swirl",
+      "rarity": "legendary",
+      "theme": "space",
+      "animation_type": "lottie",
+      "source": "cdn",
+      "lottie_path": "cosmic-swirl.json",
+      "preview_path": "cosmic-swirl-preview.webp",
+      "config": { "loop": true, "speed": 0.7 },
+      "unlock_condition": "level_100",
+      "price_coins": 10000
+    }
+  ]
+}
