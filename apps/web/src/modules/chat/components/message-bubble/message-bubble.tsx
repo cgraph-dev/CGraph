@@ -2,7 +2,7 @@
 
 import { useState, memo, useMemo, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { ClockIcon } from '@heroicons/react/24/outline';
 import { Lock, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
@@ -319,12 +319,6 @@ export const MessageBubble = memo(function MessageBubble({
                 title="Reply"
               >
                 <ReplyIcon />
-              </button>
-              <button
-                className="rounded p-1 text-gray-500 transition-colors hover:bg-white/[0.08] hover:text-white dark:hover:bg-white/[0.10]"
-                title="React"
-              >
-                <FaceSmileIcon className="h-4 w-4" />
               </button>
             </div>
           )}

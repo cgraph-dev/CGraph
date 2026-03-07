@@ -50,6 +50,8 @@ export interface UseLottieConfig {
   playOnHover?: boolean;
   /** Replay animation from start every N milliseconds. 0 = disabled. @default 0 */
   replayInterval?: number;
+  /** Whether the hook should actually load and play. @default true */
+  enabled?: boolean;
 }
 
 export interface UseLottieReturn {
@@ -70,6 +72,7 @@ export function useLottie({
   loop = false,
   playOnHover = true,
   replayInterval = 0,
+  enabled = true,
 }: UseLottieConfig): UseLottieReturn {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -79,6 +82,7 @@ export function useLottie({
 
   // Load animation data and initialise lottie-web player
   useEffect(() => {
+    if (!enabled) return;
     if (prefersReducedMotion) return;
     if (!containerRef.current) return;
 
@@ -143,7 +147,7 @@ export function useLottie({
       setIsLoaded(false);
       setIsPlaying(false);
     };
-  }, [codepoint, containerRef, autoplay, loop, playOnHover, prefersReducedMotion]);
+  }, [codepoint, containerRef, autoplay, loop, playOnHover, prefersReducedMotion, enabled]);
 
   // Periodic replay — restarts animation every `replayInterval` ms
   useEffect(() => {

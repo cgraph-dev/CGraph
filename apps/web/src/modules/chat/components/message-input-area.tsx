@@ -13,7 +13,6 @@ import {
   ClockIcon,
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/media/voice-message-recorder';
-import { GlassCard } from '@/shared/components/ui';
 import { StickerPicker, StickerButton } from '@/modules/chat/components/sticker-picker';
 import { GifPicker, type GifResult } from '@/modules/chat/components/gif-picker';
 import { EmojiPicker } from '@/modules/chat/components/emoji-picker';
@@ -76,14 +75,8 @@ export function MessageInputArea({
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="z-10 p-4">
-      <GlassCard
-        variant={uiPreferences.glassEffect}
-        glow={uiPreferences.enableGlow}
-        hover3D={false}
-        borderGradient
-        className="rounded-2xl p-2"
-      >
+    <div className="relative z-10 px-4 pb-4 pt-2">
+      <div className="rounded-2xl border border-white/10 bg-[rgb(22,24,30)]/90 p-2 shadow-lg backdrop-blur-xl">
         {/* Sticker & GIF Pickers - positioned above input */}
         <div className="relative" ref={inputContainerRef}>
           <StickerPicker
@@ -132,7 +125,7 @@ export function MessageInputArea({
             </motion.button>
 
             {/* Text input */}
-            <div className="flex-1 rounded-xl border border-primary-500/20 bg-[rgb(30,32,40)]/[0.50] transition-all focus-within:border-primary-500/50">
+            <div className="flex-1 rounded-xl border border-white/10 bg-[rgb(30,32,40)]/70 transition-all focus-within:border-primary-500/50 focus-within:ring-1 focus-within:ring-primary-500/20">
               <textarea
                 value={messageInput}
                 onChange={(e) => {
@@ -142,8 +135,8 @@ export function MessageInputArea({
                 onKeyDown={onKeyPress}
                 placeholder="Type a message..."
                 rows={1}
-                className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-white/30 focus:outline-none"
-                style={{ minHeight: '48px' }}
+                className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none"
+                style={{ minHeight: '44px' }}
               />
             </div>
 
@@ -268,7 +261,7 @@ export function MessageInputArea({
             </AnimatePresence>
           </div>
         )}
-      </GlassCard>
+      </div>
     </div>
   );
 }
