@@ -3,9 +3,11 @@
  * @module
  */
 import { useState, useRef } from 'react';
-import { X, Upload, Loader2 } from 'lucide-react';
+import { X, Upload, Loader2, FileJson } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { LottieRenderer } from '@/lib/lottie';
+import type { AnimationFormat } from './types';
 
 interface UploadEmojiModalProps {
   onClose: () => void;
@@ -21,6 +23,9 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
   const [shortcode, setShortcode] = useState('');
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [animationFormat, setAnimationFormat] = useState<AnimationFormat>(null);
+  const [lottieData, setLottieData] = useState<Record<string, unknown> | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -29,6 +34,9 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
       formData.append('image', file);
       formData.append('name', name);
       formData.append('shortcode', shortcode.replace(/[^a-z0-9_]/g, ''));
+      if (animationFormat) {
+        formData.append('animation_format', animationFormat);
+      }
       await api.post('/api/v1/emojis/custom', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -39,15 +47,62 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
     },
   });
 
+  const validateLottieJson = (data: unknown): string | null => {
+    if (typeof data !== 'object' || data === null) return 'Invalid JSON structure';
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- validated object from JSON.parse
+    const obj = data as Record<string, unknown>;
+    const required = ['v', 'fr', 'ip', 'op', 'w', 'h', 'layers'];
+    const missing = required.filter((k) => !(k in obj));
+    if (missing.length > 0) return `Missing Lottie fields: ${missing.join(', ')}`;
+    const fr = Number(obj.fr);
+    const ip = Number(obj.ip);
+    const op = Number(obj.op);
+    if (fr > 0 && (op - ip) / fr > 10) return 'Animation exceeds 10 second limit';
+    const w = Number(obj.w);
+    const h = Number(obj.h);
+    if (w < 64 || h < 64) return 'Dimensions must be at least 64x64';
+    if (w > 1024 || h > 1024) return 'Dimensions must not exceed 1024x1024';
+    return null;
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
-    setFile(selected);
-    const reader = new FileReader();
-    // type assertion: FileReader.result is string when readAsDataURL() is used
-     
-    reader.onload = () => setPreview(reader.result as string);
-    reader.readAsDataURL(selected);
+    setValidationError(null);
+    setLottieData(null);
+    setAnimationFormat(null);
+
+    const isLottieJson = selected.name.endsWith('.json') || selected.type === 'application/json';
+
+    if (isLottieJson) {
+      if (selected.size > 500 * 1024) {
+        setValidationError('Lottie JSON files must be under 500KB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          const error = validateLottieJson(parsed);
+          if (error) {
+            setValidationError(error);
+            return;
+          }
+          setLottieData(parsed);
+          setAnimationFormat('lottie');
+          setFile(selected);
+          setPreview(null);
+        } catch {
+          setValidationError('Invalid JSON file');
+        }
+      };
+      reader.readAsText(selected);
+    } else {
+      setFile(selected);
+      const reader = new FileReader();
+      reader.onload = () => setPreview(String(reader.result));
+      reader.readAsDataURL(selected);
+    }
 
     // Auto-fill name from filename
     if (!name) {
@@ -88,18 +143,34 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
         >
           {preview ? (
             <img src={preview} alt="Preview" className="h-16 w-16 rounded-lg object-contain" />
+          ) : lottieData ? (
+            <div className="flex flex-col items-center gap-1">
+              <LottieRenderer
+                codepoint="custom"
+                emoji={name || 'custom'}
+                animationData={lottieData}
+                size={64}
+                autoplay
+                loop
+              />
+              <span className="flex items-center gap-1 text-xs text-emerald-400">
+                <FileJson className="h-3 w-3" /> Lottie Animation
+              </span>
+            </div>
           ) : (
             <>
               <Upload className="mb-2 h-8 w-8 text-white/30" />
               <span className="text-sm text-white/50">Click to upload image</span>
-              <span className="mt-1 text-xs text-white/30">PNG, GIF, WEBP — max 256KB</span>
+              <span className="mt-1 text-xs text-white/30">
+                PNG, GIF, WEBP, JSON (Lottie) — max 500KB
+              </span>
             </>
           )}
         </button>
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/png,image/gif,image/webp"
+          accept="image/png,image/gif,image/webp,application/json,.json"
           className="hidden"
           onChange={handleFileChange}
         />
@@ -137,6 +208,9 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
             <span className="text-sm text-white/40">:</span>
           </div>
         </div>
+
+        {/* Validation error */}
+        {validationError && <p className="mb-4 text-sm text-amber-400">{validationError}</p>}
 
         {/* Error */}
         {uploadMutation.isError && (
