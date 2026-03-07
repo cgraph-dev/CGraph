@@ -36,7 +36,7 @@ const FeatureCard = memo(function FeatureCard({
   const reduced = prefersReducedMotion();
 
   return (
-    <TiltCard className="group rounded-xl border border-white/10 bg-gradient-to-br from-violet-500/10 to-emerald-500/5 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-violet-400/40 hover:bg-gradient-to-br hover:from-violet-500/20 hover:to-emerald-500/10 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+    <TiltCard className="group rounded-xl border border-white/10 bg-gradient-to-br from-violet-500/10 to-emerald-500/5 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-emerald-400/30 hover:bg-gradient-to-br hover:from-violet-500/15 hover:to-emerald-500/10">
       <motion.div
         initial={reduced ? {} : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -184,7 +184,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         </motion.div>
       </div>
 
-      {/* Right side — Auth form with 3D tilt glass card */}
+      {/* Right side — Auth form with flowing gradient border card */}
       <div className="relative z-10 flex flex-1 items-center justify-center p-8">
         <motion.div
           className="w-full max-w-md"
@@ -193,7 +193,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           transition={{ ...tweens.dramatic, delay: 0.3 }}
         >
           <TiltCard
-            className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-[#111827]/90 via-[#0a0f1a]/80 to-[#030712]/90 p-8 shadow-[0_0_60px_rgba(139,92,246,0.15),0_0_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl transition-all duration-500 hover:border-violet-400/40 hover:shadow-[0_0_80px_rgba(139,92,246,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]"
+            className="auth-card-border relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-[#111827]/90 via-[#0a0f1a]/80 to-[#030712]/90 p-8 shadow-[0_0_20px_-4px_rgba(16,185,129,0.25),0_0_14px_-7px_rgba(139,92,246,0.2)] backdrop-blur-xl transition-all duration-500 hover:border-emerald-400/30 hover:shadow-[0_0_28px_-4px_rgba(16,185,129,0.35),0_0_18px_-7px_rgba(139,92,246,0.25)]"
             maxTilt={5}
           >
             {children}

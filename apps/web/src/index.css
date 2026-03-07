@@ -800,3 +800,40 @@
   100% { background-position: 0% -200%; }
 }
 
+/* Auth card flowing gradient border — matches landing page marketing-btn */
+@keyframes auth-border-flow {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.auth-card-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(16, 185, 129, 0.5) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(16, 185, 129, 0.5) 75%,
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: auth-border-flow 4s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+
+.auth-card-border:hover::before {
+  opacity: 0.75;
+}
+
