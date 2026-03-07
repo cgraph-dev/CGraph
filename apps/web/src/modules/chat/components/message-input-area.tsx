@@ -76,7 +76,10 @@ export function MessageInputArea({
 
   return (
     <div className="relative z-10 px-4 pb-4 pt-2">
-      <div className="rounded-2xl border border-white/10 bg-[rgb(22,24,30)]/90 p-2 shadow-lg backdrop-blur-xl">
+      {/* Outer glow border */}
+      <div className="rounded-2xl bg-gradient-to-r from-primary-500/20 via-purple-500/10 to-primary-500/20 p-[1px] shadow-[0_-4px_20px_rgba(16,185,129,0.08)]">
+        {/* Inner card */}
+        <div className="rounded-2xl bg-[rgb(18,20,28)]/95 backdrop-blur-xl">
         {/* Sticker & GIF Pickers - positioned above input */}
         <div className="relative" ref={inputContainerRef}>
           <StickerPicker
@@ -109,23 +112,23 @@ export function MessageInputArea({
             className="w-full"
           />
         ) : (
-          <div className="flex items-end gap-3 p-2">
+          <div className="flex items-end gap-2 px-3 py-2.5">
             {/* Attach file button */}
             <motion.button
               onClick={() => {
                 fileInputRef.current?.click();
                 if (uiPreferences.enableHaptic) HapticFeedback.light();
               }}
-              className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
+              className="group flex-shrink-0 rounded-lg p-2 text-gray-500 transition-all hover:bg-white/[0.06] hover:text-primary-400"
               whileHover={{ scale: 1.1, rotate: -15 }}
               whileTap={{ scale: 0.9 }}
               title="Attach file"
             >
-              <PaperClipIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <PaperClipIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
             </motion.button>
 
             {/* Text input */}
-            <div className="flex-1 rounded-xl border border-white/10 bg-[rgb(30,32,40)]/70 transition-all focus-within:border-primary-500/50 focus-within:ring-1 focus-within:ring-primary-500/20">
+            <div className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] transition-all focus-within:border-primary-500/40 focus-within:bg-white/[0.05] focus-within:shadow-[0_0_0_1px_rgba(16,185,129,0.1)]">
               <textarea
                 value={messageInput}
                 onChange={(e) => {
@@ -135,10 +138,13 @@ export function MessageInputArea({
                 onKeyDown={onKeyPress}
                 placeholder="Type a message..."
                 rows={1}
-                className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none"
-                style={{ minHeight: '44px' }}
+                className="max-h-32 w-full resize-none bg-transparent px-4 py-2.5 text-[14px] leading-relaxed text-white placeholder-white/30 focus:outline-none"
+                style={{ minHeight: '42px' }}
               />
             </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-shrink-0 items-center gap-0.5">
 
             {/* Emoji Button */}
             <motion.button
@@ -148,16 +154,16 @@ export function MessageInputArea({
                 setShowGifPicker(false);
                 if (uiPreferences.enableHaptic) HapticFeedback.light();
               }}
-              className={`group rounded-xl p-2.5 transition-all ${
+              className={`group rounded-lg p-2 transition-all ${
                 showEmojiPicker
                   ? 'bg-primary-500/20 text-primary-400'
-                  : 'text-gray-400 hover:bg-primary-500/20 hover:text-primary-400'
+                  : 'text-gray-500 hover:bg-white/[0.06] hover:text-primary-400'
               }`}
               whileHover={{ scale: 1.1, rotate: -10 }}
               whileTap={{ scale: 0.9 }}
               title="Add emoji"
             >
-              <FaceSmileIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <FaceSmileIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
             </motion.button>
 
             {/* Sticker Button */}
@@ -169,7 +175,7 @@ export function MessageInputArea({
                 if (uiPreferences.enableHaptic) HapticFeedback.light();
               }}
               isActive={showStickerPicker}
-              className="rounded-xl hover:bg-primary-500/20 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+              className="rounded-lg hover:bg-white/[0.06] group-hover:drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]"
             />
 
             {/* GIF Button */}
@@ -180,23 +186,23 @@ export function MessageInputArea({
                 setShowEmojiPicker(false);
                 if (uiPreferences.enableHaptic) HapticFeedback.light();
               }}
-              className={`group rounded-xl p-2.5 transition-all ${
+              className={`group rounded-lg p-2 transition-all ${
                 showGifPicker
                   ? 'bg-primary-500/20 text-primary-400'
-                  : 'text-gray-400 hover:bg-primary-500/20 hover:text-primary-400'
+                  : 'text-gray-500 hover:bg-white/[0.06] hover:text-primary-400'
               }`}
               whileHover={{ scale: 1.1, rotate: -15 }}
               whileTap={{ scale: 0.9 }}
               title="Send GIF"
             >
-              <SparklesIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <SparklesIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
             </motion.button>
 
             {/* Schedule Button */}
             {messageInput.trim() && (
               <motion.button
                 onClick={onScheduleClick}
-                className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-purple-500/20 hover:text-purple-400"
+                className="group rounded-lg p-2 text-gray-500 transition-all hover:bg-white/[0.06] hover:text-purple-400"
                 whileHover={{ scale: 1.1, rotate: -10 }}
                 whileTap={{ scale: 0.9 }}
                 title="Schedule message"
@@ -204,7 +210,7 @@ export function MessageInputArea({
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
               >
-                <ClockIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                <ClockIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_6px_rgba(168,85,247,0.4)]" />
               </motion.button>
             )}
 
@@ -218,7 +224,7 @@ export function MessageInputArea({
                     if (uiPreferences.enableHaptic) HapticFeedback.success();
                   }}
                   disabled={isSending}
-                  className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 p-3 text-white transition-all hover:from-primary-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="group relative ml-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 p-2.5 text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-500 hover:to-purple-500 hover:shadow-primary-500/30 disabled:cursor-not-allowed disabled:opacity-50"
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   exit={{ scale: 0, rotate: 180 }}
@@ -246,7 +252,7 @@ export function MessageInputArea({
                     if (uiPreferences.enableHaptic) HapticFeedback.medium();
                   }}
                   disabled={isSending}
-                  className="group rounded-xl border border-red-500/20 p-3 text-gray-400 transition-all hover:bg-red-500/20 hover:text-red-400"
+                  className="group ml-1 rounded-xl border border-white/[0.06] p-2.5 text-gray-500 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-400"
                   title="Record voice message"
                   initial={{ scale: 0, rotate: 180 }}
                   animate={{ scale: 1, rotate: 0 }}
@@ -255,12 +261,14 @@ export function MessageInputArea({
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <MicrophoneIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                  <MicrophoneIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]" />
                 </motion.button>
               )}
             </AnimatePresence>
+            </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
