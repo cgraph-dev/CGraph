@@ -61,7 +61,7 @@
   background: rgba(16, 185, 129, 0.15);
   border-color: var(--color-accent);
   color: var(--color-accent);
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(16, 185, 129, 0.05);
+  box-shadow: none;
   transform: translateY(-2px);
 }
 
@@ -75,29 +75,15 @@
   border: none;
   color: #030712;
   font-weight: 700;
-  box-shadow: 
-    0 4px 20px rgba(16, 185, 129, 0.4),
-    0 0 0 1px rgba(16, 185, 129, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
-  animation: btn-primary-glow 3s ease-in-out infinite, btn-gradient-shift 6s ease infinite;
+  animation: btn-gradient-shift 6s ease infinite;
 }
 
 @keyframes btn-primary-glow {
-  0%, 100% {
-    box-shadow: 
-      0 4px 20px rgba(16, 185, 129, 0.4),
-      0 0 0 1px rgba(16, 185, 129, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 6px 35px rgba(16, 185, 129, 0.5),
-      0 0 50px rgba(139, 92, 246, 0.25),
-      0 0 0 1px rgba(139, 92, 246, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  }
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: none; }
 }
 
 @keyframes btn-gradient-shift {
@@ -165,18 +151,13 @@
   background: linear-gradient(135deg, #059669 0%, #8b5cf6 50%, #7c3aed 100%);
   background-size: 200% 100%;
   color: #FFFFFF;
-  box-shadow: 
-    0 8px 40px rgba(139, 92, 246, 0.5),
-    0 0 60px rgba(16, 185, 129, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: none;
   transform: translateY(-3px) scale(1.02);
 }
 
 .btn-swap--primary:active {
   transform: translateY(-1px) scale(0.99);
-  box-shadow: 
-    0 4px 20px rgba(139, 92, 246, 0.4),
-    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 /* ============================================================================
@@ -232,9 +213,7 @@
 .btn-signin:hover {
   background: rgba(16, 185, 129, 0.1);
   border-color: transparent;
-  box-shadow: 
-    0 0 25px rgba(16, 185, 129, 0.2),
-    inset 0 0 15px rgba(16, 185, 129, 0.05);
+  box-shadow: none;
   transform: translateY(-2px);
 }
 
@@ -311,7 +290,7 @@
 
 .btn-signin:hover .btn-signin__text {
   color: var(--color-accent);
-  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  text-shadow: none;
 }
 
 /* Active/pressed state */

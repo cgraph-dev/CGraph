@@ -189,7 +189,18 @@ defmodule CGraph.Forums.Customizations do
 
           # Validate and filter changes against defined options
           valid_keys = get_valid_keys(category)
-          filtered = Map.take(changes, valid_keys ++ Enum.map(valid_keys, &String.to_atom/1))
+          # Accept both string and atom keys — use to_existing_atom to prevent
+          # atom table exhaustion from untrusted map keys.
+          atom_keys =
+            Enum.flat_map(valid_keys, fn k ->
+              try do
+                [String.to_existing_atom(k)]
+              rescue
+                ArgumentError -> []
+              end
+            end)
+
+          filtered = Map.take(changes, valid_keys ++ atom_keys)
           string_filtered = for {k, v} <- filtered, into: %{}, do: {to_string(k), v}
 
           updated = Map.put(current, category_key, Map.merge(current[category_key] || %{}, string_filtered))

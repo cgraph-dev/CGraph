@@ -689,9 +689,7 @@
   backdrop-filter: blur(14px) saturate(130%);
   -webkit-backdrop-filter: blur(14px) saturate(130%);
   color: white;
-  box-shadow:
-    0 0 20px -4px rgba(16, 185, 129, 0.3),
-    0 0 14px -7px rgba(139, 92, 246, 0.25);
+  box-shadow: none;
 }
 
 .marketing-btn--primary::before {
@@ -726,22 +724,20 @@
 .marketing-btn--primary:hover {
   border-color: rgba(16, 185, 129, 0.5);
   transform: translateY(-1px);
-  box-shadow: 
-    0 0 30px -4px rgba(16, 185, 129, 0.46),
-    0 0 16px -2px rgba(139, 92, 246, 0.28);
+  box-shadow: none;
   animation: none;
 }
 
 @keyframes marketing-btn-glow {
-  0%, 100% { box-shadow: 0 6px 30px rgba(16, 185, 129, 0.4), 0 0 40px rgba(16, 185, 129, 0.2); }
-  50% { box-shadow: 0 6px 40px rgba(16, 185, 129, 0.5), 0 0 60px rgba(139, 92, 246, 0.3); }
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: none; }
 }
 
 .marketing-btn--secondary {
   background: rgba(0, 0, 0, 0.36);
   color: var(--color-light);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 0 16px -10px rgba(139, 92, 246, 0.3);
+  box-shadow: none;
 }
 
 .marketing-btn--secondary::before {
@@ -760,7 +756,7 @@
 .marketing-btn--secondary:hover {
   background: rgba(16, 185, 129, 0.08);
   border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 16px rgba(139, 92, 246, 0.12);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 
@@ -1797,6 +1793,7 @@
   left: 0;
   right: 0;
   height: 1px;
+  z-index: 3;
   background: linear-gradient(90deg, 
     transparent 0%, 
     rgba(16, 185, 129, 0.8) 20%, #ffffff 50%, rgba(139, 92, 246, 0.8) 80%, 
@@ -1804,7 +1801,7 @@
   );
   background-size: 200% 100%;
   animation: gl-footer-border-flow 4s linear infinite;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  box-shadow: none;
 }
 
 /* Subtle glow accent */
