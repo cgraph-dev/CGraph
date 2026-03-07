@@ -293,18 +293,54 @@
     font-weight: 600;
     isolation: isolate;
     box-shadow: none !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: auth-btn-border-flow 3s ease-in-out infinite;
+  }
+
+  .auth-cta-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(16, 185, 129, 0.07) 30%,
+      rgba(139, 92, 246, 0.1) 50%,
+      rgba(16, 185, 129, 0.07) 70%,
+      transparent 100%
+    );
+    transform: rotate(15deg);
+    animation: auth-btn-shimmer 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
   }
 
   .auth-cta-button:hover {
-    border-color: rgba(16, 185, 129, 0.5);
     transform: translateY(-1px) !important;
     box-shadow: none !important;
     opacity: 1 !important;
+    animation: auth-btn-border-flow 1.5s ease-in-out infinite;
+  }
+
+  .auth-cta-button:hover::after {
+    animation: auth-btn-shimmer 2s ease-in-out infinite;
   }
 
   .auth-cta-button:active {
     transform: translateY(0) !important;
+  }
+
+  @keyframes auth-btn-border-flow {
+    0%, 100% { border-color: rgba(16, 185, 129, 0.5); }
+    50% { border-color: rgba(139, 92, 246, 0.5); }
+  }
+
+  @keyframes auth-btn-shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
   }
 
   .matrix-card {

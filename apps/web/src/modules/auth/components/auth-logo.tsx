@@ -3,7 +3,6 @@
  * @module
  */
 import React from 'react';
-import { motion } from 'motion/react';
 import { LogoIcon } from '@/components/logo';
 
 export type LogoSize = 'sm' | 'md' | 'lg';
@@ -30,9 +29,9 @@ const LOGO_TEXT_SIZES: Record<LogoSize, string> = {
 export function AuthLogo({ size }: { size: LogoSize }): React.ReactElement {
   return (
   <a href="https://www.cgraph.org" className="group inline-flex items-center gap-3">
-    <motion.div whileHover={{ scale: 1.1, rotate: 5 }}>
+    <div>
       <LogoIcon size={LOGO_SIZES[size]} color="gradient" showGlow animated={false} />
-    </motion.div>
+    </div>
   </a>
 );
 }

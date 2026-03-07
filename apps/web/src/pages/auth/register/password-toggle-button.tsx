@@ -4,12 +4,7 @@
  * @module pages/auth/register/PasswordToggleButton
  */
 
-import { motion } from 'motion/react';
-
-function prefersReducedMotion() {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
+import React from 'react';
 
 interface PasswordToggleButtonProps {
   show: boolean;
@@ -23,15 +18,11 @@ interface PasswordToggleButtonProps {
  * Password Toggle Button component.
  */
 export function PasswordToggleButton({ show, onToggle }: PasswordToggleButtonProps) {
-  const reduced = prefersReducedMotion();
-
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onToggle}
-      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400"
-      whileHover={reduced ? {} : { scale: 1.2 }}
-      whileTap={reduced ? {} : { scale: 0.9 }}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400 hover:scale-110 active:scale-90"
     >
       {show ? (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,6 +49,6 @@ export function PasswordToggleButton({ show, onToggle }: PasswordToggleButtonPro
           />
         </svg>
       )}
-    </motion.button>
+    </button>
   );
 }

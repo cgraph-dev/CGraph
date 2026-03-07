@@ -59,7 +59,7 @@ export default function Register() {
 
   return (
     <motion.div
-      className="space-y-8"
+      className="space-y-5"
       variants={reduced ? {} : containerVariants}
       initial="hidden"
       animate="visible"
@@ -67,12 +67,9 @@ export default function Register() {
       {/* Mobile Logo with matrix glow */}
       <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="group inline-flex items-center gap-3">
-          <motion.div
-            whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
-            whileTap={reduced ? {} : { scale: 0.95 }}
-          >
+          <div>
             <LogoIcon size={192} color="gradient" showGlow={false} />
-          </motion.div>
+          </div>
         </a>
       </motion.div>
 
