@@ -33,7 +33,6 @@ export function AuthLogo({ size }: { size: LogoSize }): React.ReactElement {
     <motion.div whileHover={{ scale: 1.1, rotate: 5 }}>
       <LogoIcon size={LOGO_SIZES[size]} color="gradient" showGlow animated={false} />
     </motion.div>
-    <span className={`font-bold text-white ${LOGO_TEXT_SIZES[size]}`}>CGraph</span>
   </a>
 );
 }

@@ -91,7 +91,6 @@ export default function Login() {
           >
             <LogoIcon size={40} color="gradient" showGlow={false} />
           </motion.div>
-          <span className="matrix-glow text-2xl font-bold text-white">{t('common:app_name')}</span>
         </a>
       </motion.div>
 

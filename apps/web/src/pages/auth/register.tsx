@@ -73,7 +73,6 @@ export default function Register() {
           >
             <LogoIcon size={40} color="gradient" showGlow={false} />
           </motion.div>
-          <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
         </a>
       </motion.div>
 

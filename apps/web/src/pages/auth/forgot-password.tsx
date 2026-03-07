@@ -43,7 +43,6 @@ export default function ForgotPassword() {
         <div className="text-center lg:hidden">
           <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
             <LogoIcon size={40} color="gradient" showGlow={false} />
-            <span className="text-2xl font-bold text-white">{t('common:app_name')}</span>
           </a>
         </div>
 
@@ -98,7 +97,6 @@ export default function ForgotPassword() {
       <div className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
           <LogoIcon size={40} color="gradient" showGlow={false} />
-          <span className="text-2xl font-bold text-white">{t('common:app_name')}</span>
         </a>
       </div>
 
