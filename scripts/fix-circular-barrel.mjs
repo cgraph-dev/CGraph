@@ -6,23 +6,39 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'fs';
-import { basename, dirname, extname, join } from 'path';
-import { execSync } from 'child_process';
+import { basename, dirname, extname, join, resolve } from 'path';
+import { execFileSync } from 'child_process';
 
 const ROOT = 'apps/web/src';
 
+// Validate root is within project directory
+const PROJECT_ROOT = resolve('.');
+const resolvedRoot = resolve(ROOT);
+if (!resolvedRoot.startsWith(PROJECT_ROOT)) {
+  console.error('Error: ROOT must be within project directory');
+  process.exit(1);
+}
+
 // Find all files that share basename with sibling directory
 function findConflictingFiles(root) {
-  const result = execSync(
-    `find ${root} -name '*.tsx' -o -name '*.ts'`,
+  const result = execFileSync(
+    'find',
+    [root, '-name', '*.tsx', '-o', '-name', '*.ts'],
     { encoding: 'utf-8' }
   ).trim().split('\n').filter(Boolean);
 
   const conflicts = [];
   for (const f of result) {
+    // Validate resolved path stays within project root (prevent path traversal)
+    const resolvedFile = resolve(f);
+    if (!resolvedFile.startsWith(PROJECT_ROOT)) continue;
+
     const base = basename(f).replace(/\.[^.]*$/, '');
     const dir = dirname(f);
     const siblingDir = join(dir, base);
+    const resolvedSibling = resolve(siblingDir);
+    if (!resolvedSibling.startsWith(PROJECT_ROOT)) continue;
+
     try {
       if (statSync(siblingDir).isDirectory()) {
         conflicts.push({ file: f, base, siblingDir });

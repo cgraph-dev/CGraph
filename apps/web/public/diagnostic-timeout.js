@@ -8,29 +8,68 @@
  * Loaded as external script to comply with CSP script-src 'self'.
  */
 
+function __cgEscape(str) {
+  var d = document.createElement('div');
+  d.textContent = String(str || '');
+  return d.innerHTML;
+}
+
 setTimeout(function () {
-  const loader = document.getElementById('initial-loader');
+  var loader = document.getElementById('initial-loader');
   if (loader) {
-    const errors = window.__CGRAPH_ERRORS || [];
-    let errorDetail = '';
+    var errors = window.__CGRAPH_ERRORS || [];
+    var errorDetail = '';
     if (errors.length > 0) {
-      errorDetail =
-        '<pre style="color:#fbbf24;font-size:11px;text-align:left;overflow:auto;max-height:200px;background:#1a1a2e;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all">';
+      var pre = document.createElement('pre');
+      pre.setAttribute(
+        'style',
+        'color:#fbbf24;font-size:11px;text-align:left;overflow:auto;max-height:200px;background:#1a1a2e;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all'
+      );
+      var text = '';
       errors.forEach(function (e) {
-        errorDetail += (e.stack || e.msg || e.reason || 'Unknown error') + '\n---\n';
+        text += (e.stack || e.msg || e.reason || 'Unknown error') + '\n---\n';
       });
-      errorDetail += '</pre>';
+      pre.textContent = text;
+      errorDetail = pre.outerHTML;
     }
-    loader.innerHTML =
-      '<div style="text-align:center;max-width:600px;padding:20px">' +
-      '<p style="color:#ef4444;font-size:1.1rem;font-weight:600;margin-bottom:12px">Failed to load application</p>' +
-      '<p style="color:#9ca3af;font-size:0.875rem;margin-bottom:16px">' +
-      (errors.length > 0
+
+    var wrapper = document.createElement('div');
+    wrapper.setAttribute('style', 'text-align:center;max-width:600px;padding:20px');
+
+    var title = document.createElement('p');
+    title.setAttribute(
+      'style',
+      'color:#ef4444;font-size:1.1rem;font-weight:600;margin-bottom:12px'
+    );
+    title.textContent = 'Failed to load application';
+    wrapper.appendChild(title);
+
+    var desc = document.createElement('p');
+    desc.setAttribute('style', 'color:#9ca3af;font-size:0.875rem;margin-bottom:16px');
+    desc.textContent =
+      errors.length > 0
         ? errors.length + ' JavaScript error(s) detected:'
-        : 'The app took too long to start. This may be due to a network issue or a JavaScript error. Check Console (F12) for details.') +
-      '</p>' +
-      errorDetail +
-      '<button onclick="location.reload()" style="background:#7c3aed;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.875rem;margin-top:12px">Reload Page</button>' +
-      '</div>';
+        : 'The app took too long to start. This may be due to a network issue or a JavaScript error. Check Console (F12) for details.';
+    wrapper.appendChild(desc);
+
+    if (errorDetail) {
+      var temp = document.createElement('div');
+      temp.innerHTML = errorDetail; // safe — built via textContent above
+      if (temp.firstChild) wrapper.appendChild(temp.firstChild);
+    }
+
+    var btn = document.createElement('button');
+    btn.setAttribute(
+      'style',
+      'background:#7c3aed;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.875rem;margin-top:12px'
+    );
+    btn.textContent = 'Reload Page';
+    btn.addEventListener('click', function () {
+      location.reload();
+    });
+    wrapper.appendChild(btn);
+
+    loader.textContent = '';
+    loader.appendChild(wrapper);
   }
 }, 15000);
