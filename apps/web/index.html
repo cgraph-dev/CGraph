@@ -33,10 +33,13 @@
       Both meta tag and vercel.json use identical script-src 'self' (no unsafe-inline).
       All scripts are external files loaded from /public/ (early-errors.js, diagnostic-timeout.js).
       See docs/SECURITY_AUDIT_CHECKLIST.md §4.4 for full risk assessment.
+
+      NOTE: frame-ancestors is intentionally omitted from this meta tag because browsers
+      ignore it when delivered via <meta>. It is enforced via the HTTP header in vercel.json.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'self'"
     />
 
     <!-- Open Graph / Facebook -->
