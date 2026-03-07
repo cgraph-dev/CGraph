@@ -118,6 +118,11 @@ export interface Reaction {
   userId: string;
   user: UserBasic;
   createdAt: string;
+  /** Animation URLs for animated emoji reactions. */
+  animation?: {
+    lottie: string;
+    webp: string;
+  } | null;
 }
 
 /** Alias for Reaction for backwards compatibility */
@@ -653,3 +658,35 @@ export interface ForumMembership {
 }
 
 export type ForumMemberRole = 'member' | 'moderator' | 'admin' | 'owner';
+
+// ============================================
+// Lottie Animation Models
+// ============================================
+
+/** A Lottie animation asset from the backend catalog. */
+export interface LottieAsset {
+  id: string;
+  codepoint: string;
+  emoji: string;
+  name: string;
+  category: string;
+  lottieUrl: string;
+  webpUrl: string;
+  gifUrl: string;
+  assetType: 'emoji' | 'border' | 'effect' | 'sticker';
+  source: 'noto' | 'custom' | 'premium';
+}
+
+/** Animated emoji catalog entry from the animations API. */
+export interface AnimatedEmojiCatalog {
+  codepoint: string;
+  emoji: string;
+  name: string;
+  category: string;
+  animations: {
+    lottie: string;
+    webp: string;
+    gif: string;
+  };
+  hasAnimation: boolean;
+}

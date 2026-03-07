@@ -22,6 +22,8 @@ export interface EmojiPack {
   premium: boolean;
   /** Cover image for marketplace display. */
   cover_image_url?: string;
+  /** Whether this pack contains Lottie-animated emojis. */
+  has_lottie_emojis?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -56,6 +58,10 @@ export interface CustomEmoji {
   /** Who uploaded this emoji. */
   uploaded_by?: string;
   created_at: string;
+  /** URL to Lottie JSON animation file. */
+  lottie_url?: string;
+  /** Animation format: lottie, gif, apng, webp, or null for static. */
+  animation_format?: 'gif' | 'apng' | 'webp' | 'lottie' | null;
 }
 
 /** Payload for uploading a new custom emoji. */
