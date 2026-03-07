@@ -4,7 +4,7 @@
  */
 import { ToastContainer } from '@/shared/components/ui';
 import ShaderBackground from '@/components/shaders/shader-background';
-import { ParticleField } from '@/components/ui/particle-field';
+import { CinematicBackground } from '@/components/ui/cinematic-background';
 import { GradientBackground } from '@/components/ui/gradient-background';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 import { useAppLayout } from './hooks';
@@ -38,7 +38,7 @@ export default function AppLayout() {
     >
       {/* Brand ambient background — always on behind everything */}
       <GradientBackground variant="minimal" />
-      <ParticleField count={60} />
+      <CinematicBackground intensity="medium" />
 
       {/* Dynamic Background Effect */}
       {backgroundSettings.effect === 'shader' && (
