@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { space, radius } from '../../theme/tokens';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 
 interface Reaction {
   emoji: string;
@@ -104,7 +105,12 @@ const ReactionPill = memo(function ReactionPill({
         reaction.hasReacted && styles.pillActive,
       ]}
     >
-      <Text style={styles.emoji}>{reaction.emoji}</Text>
+      <LottieRenderer
+        emoji={reaction.emoji}
+        size={14}
+        autoplay={reaction.hasReacted}
+        fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
+      />
       <Text
         style={[
           styles.count,

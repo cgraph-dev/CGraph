@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';
 import { createLogger } from '../../../../lib/logger';
 import type { Message, UserBasic } from '../../../../types';
+import type { AnimationFormat } from '@/lib/lottie';
 
 const logger = createLogger('useMessageReactions');
 
@@ -45,6 +46,12 @@ interface ReactionUser {
   username?: string;
   display_name?: string;
   avatar_url?: string;
+}
+
+/** Animation metadata attached to reaction state */
+export interface ReactionAnimationMeta {
+  animationFormat?: AnimationFormat;
+  lottieUrl?: string;
 }
 
 /**

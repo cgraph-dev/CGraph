@@ -21,6 +21,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Message } from '../../types';
 import { EMOJI_CATEGORIES, EmojiCategory } from './constants';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 
 export interface ReactionPickerModalProps {
   /** Whether the modal is visible */
@@ -188,7 +189,12 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
                   onPress={() => handleEmojiPress(emoji)}
                   activeOpacity={0.6}
                 >
-                  <Text style={styles.gridEmoji}>{emoji}</Text>
+                  <LottieRenderer
+                    emoji={emoji}
+                    size={28}
+                    autoplay={reacted}
+                    fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(emoji))}
+                  />
                 </TouchableOpacity>
               );
             }}

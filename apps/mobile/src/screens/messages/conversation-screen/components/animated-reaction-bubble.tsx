@@ -23,6 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { SPRING_PRESETS } from '@/lib/animations/animation-library';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 import type { AnimatedReactionBubbleProps } from '../types';
 
 const SUPER_PARTICLE_COUNT = 10;
@@ -127,9 +128,14 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
             },
           ]}
         >
-          <Animated.Text style={[styles.reactionEmoji, emojiStyle]}>
-            {reaction.emoji}
-          </Animated.Text>
+          <Animated.View style={[styles.reactionEmoji, emojiStyle]}>
+            <LottieRenderer
+              emoji={reaction.emoji}
+              size={16}
+              autoplay
+              fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
+            />
+          </Animated.View>
           {reaction.count > 1 && (
             <Text
               style={[

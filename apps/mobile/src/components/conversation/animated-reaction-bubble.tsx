@@ -14,6 +14,7 @@ import { durations } from '@cgraph/animation-constants';
 import React, { memo, useCallback, useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSequence, withSpring, withTiming, interpolate, runOnJS, Easing as ReanimatedEasing, type SharedValue } from 'react-native-reanimated';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 
 // Number of particles in the explosion effect
 const PARTICLE_COUNT = 8;
@@ -226,14 +227,19 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
         onPress={handlePress}
         activeOpacity={0.7}
       >
-        <Animated.Text
+        <Animated.View
           style={[
             styles.reactionEmoji,
             emojiAnimatedStyle,
           ]}
         >
-          {reaction.emoji}
-        </Animated.Text>
+          <LottieRenderer
+            emoji={reaction.emoji}
+            size={16}
+            autoplay
+            fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
+          />
+        </Animated.View>
         {reaction.count > 1 && (
           <Text
             style={[

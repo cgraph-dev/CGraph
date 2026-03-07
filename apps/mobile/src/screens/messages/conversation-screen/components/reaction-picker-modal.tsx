@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { Message } from '../../../../types';
 import { styles } from '../styles';
 import { EMOJI_CATEGORIES } from '../hooks/useReactions';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 
 type EmojiCategoryKey = keyof typeof EMOJI_CATEGORIES;
 
@@ -144,7 +145,12 @@ export function ReactionPickerModal({
                     }}
                     activeOpacity={0.6}
                   >
-                    <Text style={styles.emojiGridEmoji}>{emoji}</Text>
+                    <LottieRenderer
+                      emoji={emoji}
+                      size={28}
+                      autoplay={reacted}
+                      fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(emoji))}
+                    />
                   </TouchableOpacity>
                 );
               })}

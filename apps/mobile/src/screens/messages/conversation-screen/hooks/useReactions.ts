@@ -10,6 +10,7 @@ import { useState, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 import type { Message } from '../../../../types';
 import { createLogger } from '../../../../lib/logger';
+import { emojiToCodepoint, getLottieCdnUrl } from '@/lib/lottie';
 
 const _logger = createLogger('useReactions');
 
@@ -487,6 +488,8 @@ export interface UseReactionsReturn {
   setSelectedEmojiCategory: (category: keyof typeof EMOJI_CATEGORIES) => void;
   // Helpers
   hasReacted: (message: Message, emoji: string) => boolean;
+  /** Get the Lottie CDN URL for an emoji */
+  getLottieUrl: (emoji: string) => string;
 }
 
 /**
@@ -522,6 +525,14 @@ export function useReactions(): UseReactionsReturn {
     return message.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
   }, []);
 
+  /**
+   * Get the Lottie CDN URL for a given emoji.
+   */
+  const getLottieUrl = useCallback((emoji: string): string => {
+    const cp = emojiToCodepoint(emoji);
+    return getLottieCdnUrl(cp);
+  }, []);
+
   return {
     // State
     showReactionPicker,
@@ -533,6 +544,7 @@ export function useReactions(): UseReactionsReturn {
     setSelectedEmojiCategory,
     // Helpers
     hasReacted,
+    getLottieUrl,
   };
 }
 

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors, HapticFeedback } from '@/lib/animations/animation-engine';
+import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 import GlassCard from '../ui/glass-card';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -167,7 +168,12 @@ export default function MessageReactions({
                   style={StyleSheet.absoluteFill}
                 />
               )}
-              <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
+              <LottieRenderer
+                emoji={reaction.emoji}
+                size={16}
+                autoplay={reaction.hasReacted}
+                fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
+              />
               <Text
                 style={[
                   styles.reactionCount,
@@ -238,7 +244,13 @@ export default function MessageReactions({
                       onPress={() => handleEmojiSelect(emoji)}
                       style={styles.quickReactionButton}
                     >
-                      <Text style={styles.quickReactionEmoji}>{emoji}</Text>
+                      <LottieRenderer
+                        emoji={emoji}
+                        size={28}
+                        autoplay
+                        loop
+                        fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(emoji))}
+                      />
                     </TouchableOpacity>
                   ))}
                 </View>
