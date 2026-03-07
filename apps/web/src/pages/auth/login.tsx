@@ -77,7 +77,7 @@ export default function Login() {
 
   return (
     <motion.div
-      className="space-y-5"
+      className="space-y-4"
       variants={reduced ? {} : containerVariants}
       initial="hidden"
       animate="visible"

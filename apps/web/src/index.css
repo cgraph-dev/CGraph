@@ -325,10 +325,6 @@
     animation: auth-btn-border-flow 1.5s ease-in-out infinite;
   }
 
-  .auth-cta-button:hover::after {
-    animation: auth-btn-shimmer 2s ease-in-out infinite;
-  }
-
   .auth-cta-button:active {
     transform: translateY(0) !important;
   }
@@ -878,25 +874,25 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(16, 185, 129, 0.5) 25%,
-    rgba(139, 92, 246, 0.5) 50%,
-    rgba(16, 185, 129, 0.5) 75%,
+    rgba(16, 185, 129, 0.25) 25%,
+    rgba(139, 92, 246, 0.25) 50%,
+    rgba(16, 185, 129, 0.25) 75%,
     transparent
   );
   background-size: 200% 100%;
-  animation: auth-border-flow 4s linear infinite;
+  animation: auth-border-flow 6s linear infinite;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.35;
   z-index: 1;
   transition: opacity 0.5s ease;
 }
 
 .auth-card-border:hover::before {
-  opacity: 0.75;
+  opacity: 0.5;
 }
 

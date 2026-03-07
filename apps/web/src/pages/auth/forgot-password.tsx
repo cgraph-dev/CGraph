@@ -38,7 +38,7 @@ export default function ForgotPassword() {
 
   if (isSuccess) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-4">
         {/* Mobile Logo */}
         <div className="text-center lg:hidden">
           <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
@@ -92,7 +92,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Mobile Logo */}
       <div className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
