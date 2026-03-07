@@ -1007,3 +1007,39 @@ export const UNICODE_CATEGORIES: UnicodeEmojiCategory[] = [
     ],
   },
 ];
+
+// ── Animation enrichment ───────────────────────────────────────────
+
+import type { AnimatedUnicodeEmoji } from './types';
+
+const LOTTIE_CDN_BASE = 'https://fonts.gstatic.com/s/e/notoemoji/latest';
+
+/**
+ * Returns animation data for a Unicode emoji from the cached catalog.
+ * The catalog is populated by the chat emoji picker and stored in localStorage.
+ */
+export function getUnicodeEmojiAnimation(
+  emoji: string
+): { lottie: string; webp: string; codepoint: string } | null {
+  try {
+    const stored = localStorage.getItem('cgraph_animated_emoji_catalog');
+    if (!stored) return null;
+    const items: AnimatedUnicodeEmoji[] = JSON.parse(stored);
+    const match = items.find((e) => e.emoji === emoji && e.hasAnimation);
+    if (!match) return null;
+    return {
+      lottie: `${LOTTIE_CDN_BASE}/${match.codepoint}/lottie.json`,
+      webp: `${LOTTIE_CDN_BASE}/${match.codepoint}/512.webp`,
+      codepoint: match.codepoint,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check whether a Unicode emoji has an animated Lottie variant.
+ */
+export function isAnimatedUnicodeEmoji(emoji: string): boolean {
+  return getUnicodeEmojiAnimation(emoji) !== null;
+}

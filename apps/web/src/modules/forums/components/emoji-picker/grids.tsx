@@ -20,7 +20,8 @@ import {
 
 import { CustomEmoji } from './types';
 import { EmojiButton, UnicodeEmojiButton, EmptyState } from './components';
-import { UNICODE_CATEGORIES } from './unicode-emojis';
+import { UNICODE_CATEGORIES, getUnicodeEmojiAnimation } from './unicode-emojis';
+import { LottieRenderer } from '@/lib/lottie';
 
 // =============================================================================
 // SEARCH RESULTS GRID
@@ -229,14 +230,37 @@ export function UnicodeEmojisGrid({ handleSelect }: UnicodeEmojisGridProps) {
             {category.icon} {category.name}
           </h4>
           <div className="grid grid-cols-8 gap-1">
-            {category.emojis.slice(0, 32).map((emoji, idx) => (
-              <UnicodeEmojiButton
-                key={`${category.id}-${idx}`}
-                emoji={emoji}
-                onSelect={handleSelect}
-                size="sm"
-              />
-            ))}
+            {category.emojis.slice(0, 32).map((emoji, idx) => {
+              const anim = getUnicodeEmojiAnimation(emoji);
+              if (anim) {
+                return (
+                  <button
+                    key={`${category.id}-${idx}`}
+                    type="button"
+                    onClick={() => handleSelect(emoji)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+                    title={emoji}
+                    aria-label={`${emoji} emoji`}
+                  >
+                    <LottieRenderer
+                      codepoint={anim.codepoint}
+                      emoji={emoji}
+                      size={24}
+                      playOnHover
+                      fallbackSrc={anim.webp}
+                    />
+                  </button>
+                );
+              }
+              return (
+                <UnicodeEmojiButton
+                  key={`${category.id}-${idx}`}
+                  emoji={emoji}
+                  onSelect={handleSelect}
+                  size="sm"
+                />
+              );
+            })}
           </div>
         </div>
       ))}

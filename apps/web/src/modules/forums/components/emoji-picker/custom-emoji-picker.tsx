@@ -19,16 +19,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { PlusIcon, StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';
+import { LottieRenderer } from '@/lib/lottie';
 
 import { CustomEmojiPickerProps, CustomEmoji } from './types';
 import { useCustomEmojis, useEmojiSearch } from './hooks';
 import { CategoryTab, SearchInput } from './components';
-import {
-  SearchResultsGrid,
-  RecentEmojisGrid,
-  FavoritesGrid,
-  UnicodeEmojisGrid,
-} from './grids';
+import { SearchResultsGrid, RecentEmojisGrid, FavoritesGrid, UnicodeEmojisGrid } from './grids';
 import { tweens } from '@/lib/animation-presets';
 
 /**
@@ -65,7 +61,7 @@ const PackGroup = memo(function PackGroup({
       {!collapsed && (
         <div className="grid grid-cols-8 gap-1 px-1">
           {groupEmojis.map((emoji) => {
-            const isAnimated = !!(emoji.is_animated || (emoji as unknown as Record<string, unknown>).isAnimated);
+            const isAnimated = !!(emoji.is_animated || ('isAnimated' in emoji && emoji.isAnimated));
             const isHovered = hoveredId === emoji.id;
             return (
               <div
@@ -76,19 +72,37 @@ const PackGroup = memo(function PackGroup({
                 onClick={() => handleSelect(emoji)}
                 title={`:${emoji.shortcode}:`}
               >
-                <img
-                  src={emoji.image_url}
-                  alt={emoji.shortcode}
-                  className={`h-7 w-7 object-contain ${isAnimated && !isHovered ? 'pause-animation' : ''}`}
-                  loading="lazy"
-                />
+                {emoji.animation_format === 'lottie' && emoji.lottie_url ? (
+                  <div className="h-7 w-7">
+                    <LottieRenderer
+                      codepoint={emoji.id}
+                      emoji={emoji.shortcode}
+                      size={28}
+                      playOnHover
+                      fallbackSrc={emoji.image_url}
+                    />
+                  </div>
+                ) : (
+                  <img
+                    src={emoji.image_url}
+                    alt={emoji.shortcode}
+                    className={`h-7 w-7 object-contain ${isAnimated && !isHovered ? 'pause-animation' : ''}`}
+                    loading="lazy"
+                  />
+                )}
                 {isAnimated && (
-                  <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-purple-500" title="Animated" />
+                  <span
+                    className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-purple-500"
+                    title="Animated"
+                  />
                 )}
                 <button
                   type="button"
                   className="absolute -left-0.5 -top-0.5 hidden group-hover:block"
-                  onClick={(e) => { e.stopPropagation(); toggleFavorite(emoji); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(emoji);
+                  }}
                 >
                   {favIds.has(emoji.id) ? (
                     <StarIconSolid className="h-3 w-3 text-amber-500" />
@@ -176,8 +190,12 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
     if (!isOpen) return undefined;
 
     const handleClickOutside = (e: MouseEvent) => {
-       
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { // safe downcast – DOM element
+      const target = e.target;
+      if (
+        containerRef.current &&
+        target instanceof Node &&
+        !containerRef.current.contains(target)
+      ) {
         onClose();
       }
     };
@@ -305,13 +323,26 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
                 const grouped = new Map<string, { name: string; items: typeof filteredEmojis }>();
                 const noPackKey = '__no_pack__';
                 for (const e of filteredEmojis) {
-                  const key = (e as unknown as Record<string, unknown>).pack_id as string || noPackKey;
-                  const name = key === noPackKey ? 'Uncategorized' : (e as unknown as Record<string, unknown>).pack_name as string || 'Pack';
+                  const key =
+                    'pack_id' in e && typeof e.pack_id === 'string' ? e.pack_id : noPackKey;
+                  const name =
+                    key === noPackKey
+                      ? 'Uncategorized'
+                      : 'pack_name' in e && typeof e.pack_name === 'string'
+                        ? e.pack_name
+                        : 'Pack';
                   if (!grouped.has(key)) grouped.set(key, { name, items: [] });
                   grouped.get(key)!.items.push(e);
                 }
                 return Array.from(grouped.entries()).map(([key, group]) => (
-                  <PackGroup key={key} name={group.name} emojis={group.items} favorites={favorites} handleSelect={handleSelect} toggleFavorite={toggleFavorite} />
+                  <PackGroup
+                    key={key}
+                    name={group.name}
+                    emojis={group.items}
+                    favorites={favorites}
+                    handleSelect={handleSelect}
+                    toggleFavorite={toggleFavorite}
+                  />
                 ));
               })()}
             </div>
@@ -327,12 +358,15 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
             onClick={() => {
               const input = document.createElement('input');
               input.type = 'file';
-              input.accept = 'image/png,image/gif,image/webp';
+              input.accept = 'image/png,image/gif,image/webp,.json';
               input.onchange = async (e) => {
-                 
-                const file = (e.target as HTMLInputElement).files?.[0]; // safe downcast – DOM element
+                const target = e.target;
+                const file = target instanceof HTMLInputElement ? target.files?.[0] : undefined;
                 if (!file) return;
-                const name = window.prompt('Emoji name (no spaces):', file.name.replace(/\.[^.]+$/, ''));
+                const name = window.prompt(
+                  'Emoji name (no spaces):',
+                  file.name.replace(/\.[^.]+$/, '')
+                );
                 if (!name?.trim()) return;
                 const formData = new FormData();
                 formData.append('image', file);
@@ -341,7 +375,9 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
                   await api.post('/api/v1/emojis', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                   });
-                } catch { /* silently fail */ }
+                } catch {
+                  /* silently fail */
+                }
               };
               input.click();
             }}

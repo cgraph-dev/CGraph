@@ -2,6 +2,9 @@
  * Custom Emoji Types
  */
 
+/** Format of the animation source. */
+export type AnimationFormat = 'gif' | 'apng' | 'webp' | 'lottie' | null;
+
 export interface CustomEmoji {
   id: string;
   shortcode: string;
@@ -14,6 +17,10 @@ export interface CustomEmoji {
   category?: EmojiCategory;
   usage_count: number;
   aliases: string[];
+  /** Lottie JSON CDN URL (when animation_format === 'lottie'). */
+  lottie_url?: string;
+  /** The format of the animated variant. */
+  animation_format?: AnimationFormat;
 }
 
 export interface EmojiCategory {
@@ -41,4 +48,18 @@ export interface CustomEmojiPickerProps {
   className?: string;
   /** Max height */
   maxHeight?: number;
+}
+
+/** Unicode emoji enriched with animation data from the catalog. */
+export interface AnimatedUnicodeEmoji {
+  emoji: string;
+  codepoint: string;
+  name: string;
+  category: string;
+  hasAnimation: boolean;
+  animations?: {
+    lottie: string;
+    webp: string;
+    gif: string;
+  };
 }
