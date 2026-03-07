@@ -85,6 +85,7 @@ const ANIMATION_LABELS: Record<BorderAnimationType, string> = {
   glow: 'Glow',
   flow: 'Flowing Gradient',
   spark: 'Spark',
+  lottie: 'Lottie',
 };
 
 /**

@@ -14,6 +14,7 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { THEME_COLORS } from '@/types/avatar-borders';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
+import { LottieBorderRenderer } from '@/lib/lottie/lottie-border-renderer';
 import type { AvatarBorderRendererProps, BorderColors } from './types';
 import {
   ANIMATION_KEYFRAMES,
@@ -69,6 +70,30 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
       >
         <img src={src} alt={alt} className="h-full w-full object-cover" />
       </div>
+    );
+  }
+
+  // Lottie border path: delegate to LottieBorderRenderer
+  const borderAny = border as Record<string, unknown>;
+  const lottieUrl = (borderAny.lottieUrl ?? borderAny.lottie_url) as string | undefined;
+  if (
+    (border.type?.includes('lottie') || borderAny.animationType === 'lottie' || borderAny.animation_type === 'lottie') &&
+    lottieUrl
+  ) {
+    const lottieConfig = (borderAny.lottieConfig ?? borderAny.lottie_config) as
+      | { loop?: boolean; speed?: number; segment?: [number, number] }
+      | undefined;
+    return (
+      <LottieBorderRenderer
+        lottieUrl={lottieUrl}
+        avatarSize={size}
+        borderWidth={Math.max(3, size * 0.06)}
+        lottieConfig={lottieConfig}
+        fallbackColor={colors.primary}
+        className={className}
+      >
+        <img src={src} alt={alt} className="h-full w-full object-cover" />
+      </LottieBorderRenderer>
     );
   }
 

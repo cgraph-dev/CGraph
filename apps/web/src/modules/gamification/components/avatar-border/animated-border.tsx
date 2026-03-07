@@ -28,7 +28,8 @@ export type BorderAnimationType =
   | 'particles'
   | 'glow'
   | 'flow'
-  | 'spark';
+  | 'spark'
+  | 'lottie';
 
 export interface AnimatedBorderProps {
   /** Animation type for the border */

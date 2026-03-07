@@ -10,6 +10,7 @@
 
 import { memo } from 'react';
 import { AnimatedBorder, type BorderAnimationType } from './animated-border';
+import { LottieBorderRenderer } from '@/lib/lottie/lottie-border-renderer';
 
 /** Shape expected from backend AvatarBorder / store data. */
 export interface AvatarBorderData {
@@ -23,6 +24,12 @@ export interface AvatarBorderData {
   accentColor?: string;
   accent_color?: string;
   rarity?: string;
+  /** Lottie animation URL (when animationType is 'lottie'). */
+  lottieUrl?: string;
+  lottie_url?: string;
+  /** Lottie playback configuration. */
+  lottieConfig?: { loop?: boolean; speed?: number; segment?: [number, number] };
+  lottie_config?: { loop?: boolean; speed?: number; segment?: [number, number] };
 }
 
 export interface BorderRendererProps {
@@ -69,6 +76,7 @@ function resolveAnimationType(raw?: string): BorderAnimationType {
     glow: 'glow',
     flow: 'flow',
     spark: 'spark',
+    lottie: 'lottie',
   };
   return MAP[normalized] ?? 'static';
 }
@@ -90,9 +98,25 @@ export const BorderRenderer = memo(function BorderRenderer({
     return <>{children}</>;
   }
 
-  const animationType = resolveAnimationType(
-    border.animationType ?? border.animation_type,
-  );
+  // Lottie border path: use LottieBorderRenderer when type is lottie
+  const rawAnimType = border.animationType ?? border.animation_type;
+  const lottieUrl = border.lottieUrl ?? border.lottie_url;
+  if (rawAnimType === 'lottie' && lottieUrl) {
+    return (
+      <LottieBorderRenderer
+        lottieUrl={lottieUrl}
+        avatarSize={size}
+        borderWidth={borderWidth}
+        lottieConfig={border.lottieConfig ?? border.lottie_config}
+        fallbackColor={border.primaryColor ?? border.primary_color}
+        className={className}
+      >
+        {children}
+      </LottieBorderRenderer>
+    );
+  }
+
+  const animationType = resolveAnimationType(rawAnimType);
   const rarityColors = RARITY_COLORS[border.rarity ?? ''] ?? DEFAULT_COLORS;
 
   return (
