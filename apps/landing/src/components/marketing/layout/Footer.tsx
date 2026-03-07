@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
 import { footerLinks } from '@/data/landing-data';
+import { FooterCyberGrid, FooterParticleField } from './FooterEffects';
 import '../marketing-pages.css';
 
 export default function Footer() {
@@ -47,14 +48,14 @@ export default function Footer() {
       {/* Blend gradient — seamless transition from page bg */}
       <div className="gl-footer-unified__blend" />
 
-      {/* 3D perspective terrain grid */}
-      <div className="gl-footer-unified__terrain" />
+      {/* Canvas: cyber grid (squares + pulsing nodes) */}
+      <FooterCyberGrid />
+
+      {/* Canvas: particle field (floating connected nodes, mouse-reactive) */}
+      <FooterParticleField />
 
       {/* Aurora glow bands */}
       <div className="gl-footer-unified__aurora" />
-
-      {/* Floating particles */}
-      <div className="gl-footer-unified__particles" />
 
       {/* Animated gradient top border */}
       <div className="gl-footer-unified__border" />
