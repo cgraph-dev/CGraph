@@ -41,6 +41,7 @@ interface MessageReactionsProps {
   onRemoveReaction: (messageId: string, emoji: string) => void;
   currentUserId: string;
   disabled?: boolean;
+  isOwn?: boolean;
 }
 
 // Most commonly used reactions for quick access
@@ -75,6 +76,7 @@ export default function MessageReactions({
   onAddReaction,
   onRemoveReaction,
   disabled = false,
+  isOwn = false,
 }: MessageReactionsProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
@@ -232,7 +234,7 @@ export default function MessageReactions({
               initial={{ opacity: 0, scale: 0.9, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              className="absolute bottom-full right-0 z-50 mb-2 min-w-[280px] rounded-lg border border-white/[0.08] bg-white/[0.04] p-3 shadow-2xl"
+              className={`absolute bottom-full ${isOwn ? 'right-0' : 'left-0'} z-50 mb-2 min-w-[280px] rounded-lg border border-white/[0.08] bg-white/[0.04] p-3 shadow-2xl`}
             >
               {/* Quick reactions */}
               <div className="mb-3">

@@ -339,6 +339,7 @@ export const MessageBubble = memo(function MessageBubble({
             onRemoveReaction={handleRemoveReaction}
             currentUserId={useAuthStore.getState().user?.id || ''}
             disabled={false}
+            isOwn={isOwn}
           />
         </div>
 

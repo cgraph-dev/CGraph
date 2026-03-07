@@ -81,27 +81,28 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className: _className =
     [onSelect, addRecentEmoji, onClose]
   );
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      {isOpen &&
-        createPortal(
-          <>
-            {/* Backdrop — closes picker on click outside */}
-            <div
-              className="fixed inset-0 z-[9998]"
-              onClick={onClose}
-              aria-hidden="true"
-            />
-            <motion.div
-              ref={pickerRef}
-              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              transition={springs.stiff}
-              className="fixed z-[9999]"
-              style={pickerPos ? { bottom: pickerPos.bottom, left: pickerPos.left } : { bottom: 96, left: 280 }}
-            >
-            <GlassCard className="w-80 p-0">
+      {isOpen && (
+        <>
+          {/* Backdrop — closes picker on click outside */}
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            onMouseDown={(e) => e.stopPropagation()}
+            aria-hidden="true"
+          />
+          <motion.div
+            key="emoji-picker-panel"
+            ref={pickerRef}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={springs.stiff}
+            className="fixed z-[9999]"
+            style={pickerPos ? { bottom: pickerPos.bottom, left: pickerPos.left } : { bottom: 96, left: 280 }}
+          >
+          <GlassCard className="w-80 p-0">
               <EmojiSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
               {/* Animated filter toggle */}
@@ -136,11 +137,11 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className: _className =
                 animatedCatalog={catalog}
                 animatedOnly={animatedOnly}
               />
-            </GlassCard>
-            </motion.div>
-          </>,
-          document.body
-        )}
-    </AnimatePresence>
+          </GlassCard>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }
