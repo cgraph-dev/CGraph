@@ -449,10 +449,10 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   logoImage: {
-    width: 72,
-    height: 72,
+    width: 100,
+    height: 100,
     marginBottom: 12,
-    borderRadius: 16,
+    borderRadius: 20,
   },
   subtitle: {
     fontSize: 24,
@@ -535,11 +535,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(16, 185, 129, 0.34)',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    shadowColor: 'rgba(16, 185, 129, 0.25)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 3,
   },
   buttonDisabled: {
     opacity: 0.7,

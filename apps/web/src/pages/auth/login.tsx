@@ -89,7 +89,7 @@ export default function Login() {
             whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
             whileTap={reduced ? {} : { scale: 0.95 }}
           >
-            <LogoIcon size={40} color="gradient" showGlow={false} />
+            <LogoIcon size={64} color="gradient" showGlow={false} />
           </motion.div>
         </a>
       </motion.div>

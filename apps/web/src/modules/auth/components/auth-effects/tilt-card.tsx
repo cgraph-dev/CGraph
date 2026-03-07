@@ -50,7 +50,6 @@ export const TiltCard = memo(function TiltCard({
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: prefersReducedMotion() ? 1 : 1.02 }}
       transition={springs.bouncy}
     >
       {children}
