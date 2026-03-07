@@ -127,6 +127,8 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
 
         const anim = lottie.loadAnimation({
           container,
+          // renderer type from lottie-web accepts 'svg' | 'canvas' | 'html'
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- lottie-web API requires this form
           renderer: renderer as 'svg' | 'canvas',
           loop: lottieConfig?.loop ?? true,
           autoplay: false,
