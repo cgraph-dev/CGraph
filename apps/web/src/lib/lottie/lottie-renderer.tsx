@@ -25,6 +25,7 @@ export function LottieRenderer({
   autoplay = false,
   loop = false,
   playOnHover = true,
+  replayInterval = 0,
   className,
   fallbackSrc,
 }: LottieRendererProps) {
@@ -35,6 +36,7 @@ export function LottieRenderer({
     autoplay,
     loop,
     playOnHover,
+    replayInterval,
   });
 
   const webpUrl = fallbackSrc ?? getWebpCdnUrl(codepoint);

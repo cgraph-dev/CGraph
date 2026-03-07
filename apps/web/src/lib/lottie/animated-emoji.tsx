@@ -17,6 +17,8 @@ export interface AnimatedEmojiProps {
   size?: number;
   /** Whether to play the animation on hover (default true). */
   playOnHover?: boolean;
+  /** Replay animation from start every N milliseconds. 0 = disabled. */
+  replayInterval?: number;
   /** Optional CSS class for the wrapper. */
   className?: string;
 }
@@ -31,6 +33,7 @@ export function AnimatedEmoji({
   emoji,
   size = 24,
   playOnHover = true,
+  replayInterval = 0,
   className,
 }: AnimatedEmojiProps) {
   const anim = getReactionAnimation(emoji);
@@ -42,6 +45,7 @@ export function AnimatedEmoji({
         emoji={emoji}
         size={size}
         playOnHover={playOnHover}
+        replayInterval={replayInterval}
         fallbackSrc={anim.webp}
         className={className}
       />

@@ -88,6 +88,8 @@ export interface LottieRendererProps {
   loop?: boolean;
   /** Play on hover, pause on leave. @default true */
   playOnHover?: boolean;
+  /** Replay animation from start every N milliseconds. 0 = disabled. @default 0 */
+  replayInterval?: number;
   /** Additional CSS class names. */
   className?: string;
   /** WebP fallback URL for reduced motion / load failure. */

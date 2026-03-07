@@ -8,7 +8,18 @@
  */
 
 import ReactMarkdown from 'react-markdown';
-import { memo } from 'react';
+import { Children, memo, type ReactNode } from 'react';
+import { EmojiTextRenderer } from '@/lib/lottie/emoji-text-renderer';
+
+/** Walk React children, replacing plain-text strings with animated emojis. */
+function processChildren(children: ReactNode): ReactNode {
+  return Children.map(children, (child) => {
+    if (typeof child === 'string') {
+      return <EmojiTextRenderer text={child} />;
+    }
+    return child;
+  });
+}
 
 interface MarkdownContentProps {
   content: string;
@@ -21,7 +32,11 @@ export const MarkdownContent = memo(function MarkdownContent({
 }: MarkdownContentProps) {
   // Skip markdown parsing for very short messages or messages with no markdown syntax
   if (!content || !hasMarkdownSyntax(content)) {
-    return <p className={`whitespace-pre-wrap break-words ${className}`}>{content}</p>;
+    return (
+      <p className={`whitespace-pre-wrap break-words ${className}`}>
+        <EmojiTextRenderer text={content} />
+      </p>
+    );
   }
 
   return (
@@ -30,7 +45,7 @@ export const MarkdownContent = memo(function MarkdownContent({
         components={{
         // Override default elements with styled versions
         p: ({ children }) => (
-          <p className="mb-1 last:mb-0">{children}</p>
+          <p className="mb-1 last:mb-0">{processChildren(children)}</p>
         ),
         strong: ({ children }) => (
           <strong className="font-bold">{children}</strong>
@@ -87,7 +102,7 @@ export const MarkdownContent = memo(function MarkdownContent({
         ol: ({ children }) => (
           <ol className="my-1 list-inside list-decimal space-y-0.5 text-gray-300">{children}</ol>
         ),
-        li: ({ children }) => <li className="text-sm">{children}</li>,
+        li: ({ children }) => <li className="text-sm">{processChildren(children)}</li>,
         // Disable images and other potentially dangerous elements
         img: () => null,
         iframe: () => null,

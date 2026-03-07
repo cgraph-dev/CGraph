@@ -48,6 +48,8 @@ export interface UseLottieConfig {
   loop?: boolean;
   /** Play animation only while hovering the container. @default true */
   playOnHover?: boolean;
+  /** Replay animation from start every N milliseconds. 0 = disabled. @default 0 */
+  replayInterval?: number;
 }
 
 export interface UseLottieReturn {
@@ -67,6 +69,7 @@ export function useLottie({
   autoplay = false,
   loop = false,
   playOnHover = true,
+  replayInterval = 0,
 }: UseLottieConfig): UseLottieReturn {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -141,6 +144,25 @@ export function useLottie({
       setIsPlaying(false);
     };
   }, [codepoint, containerRef, autoplay, loop, playOnHover, prefersReducedMotion]);
+
+  // Periodic replay — restarts animation every `replayInterval` ms
+  useEffect(() => {
+    if (!replayInterval || replayInterval <= 0 || prefersReducedMotion) return;
+    // Play once immediately when loaded
+    const anim = animRef.current;
+    if (anim && isLoaded) {
+      anim.goToAndPlay(0);
+      setIsPlaying(true);
+    }
+    const id = setInterval(() => {
+      const a = animRef.current;
+      if (a) {
+        a.goToAndPlay(0);
+        setIsPlaying(true);
+      }
+    }, replayInterval);
+    return () => clearInterval(id);
+  }, [replayInterval, isLoaded, prefersReducedMotion]);
 
   // Hover play / pause
   useEffect(() => {

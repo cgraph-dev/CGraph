@@ -164,7 +164,8 @@ export default function MessageReactions({
                       codepoint={anim.codepoint}
                       emoji={reaction.emoji}
                       size={24}
-                      playOnHover
+                      playOnHover={false}
+                      replayInterval={4000}
                       fallbackSrc={anim.webp}
                     />
                   );
