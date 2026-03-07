@@ -1,5 +1,9 @@
 /**
  * Avatar border particle system renderer.
+ *
+ * @deprecated CSS particle borders are maintained for backward compatibility.
+ * New borders should use Lottie animations via `LottieBorderRenderer`.
+ * CSS particle borders will be removed in v2.0.
  * @module
  */
 import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
@@ -11,6 +15,8 @@ import { random } from './utils';
 import { DOMParticle } from './dom-particle';
 import { getAnimationForType } from './animations';
 
+const DEPRECATION_WARNED = { current: false };
+
 /**
  * BorderParticleSystem
  *
@@ -20,6 +26,8 @@ import { getAnimationForType } from './animations';
  * - Optimized rendering with object pooling
  * - Canvas-based rendering for high particle counts
  * - Fallback to DOM for low particle counts
+ *
+ * @deprecated Use `LottieBorderRenderer` for new animated borders.
  */
 export const BorderParticleSystem = memo(function BorderParticleSystem({
   size,
@@ -32,6 +40,15 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
   reducedMotion = false,
   className,
 }: BorderParticleSystemProps) {
+  // Deprecation warning in development
+  if (process.env.NODE_ENV === 'development' && !DEPRECATION_WARNED.current) {
+    DEPRECATION_WARNED.current = true;
+    console.warn(
+      '[BorderParticleSystem] DEPRECATED: CSS particle borders will be removed in v2.0. ' +
+        'Use LottieBorderRenderer for new animated borders.'
+    );
+  }
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const frameRef = useRef<number>(0);

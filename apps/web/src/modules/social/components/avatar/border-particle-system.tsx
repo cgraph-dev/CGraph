@@ -12,6 +12,10 @@
  * - BorderParticleSystem.tsx - Main component
  * - PresetWrappers.tsx - Convenience wrapper components
  *
+ * @deprecated CSS particle borders are maintained for backward compatibility.
+ * New borders should use Lottie animations via `LottieBorderRenderer`.
+ * CSS particle borders will be removed in v2.0.
+ * @see {@link ../../../lib/lottie/lottie-border-renderer.tsx} for the replacement.
  * @module avatar/BorderParticleSystem
  */
 
