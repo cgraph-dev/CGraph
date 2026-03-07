@@ -4,6 +4,7 @@
 
 import { motion } from 'motion/react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { AnimatedEmoji } from '@/lib/lottie';
 import { QUICK_REACTIONS } from '@/modules/chat/components/animatedReactionBubble/constants';
 import { springs } from '@/lib/animation-presets';
 
@@ -42,7 +43,7 @@ export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
           whileHover={{ y: -4 }}
           whileTap={{ scale: 0.9 }}
         >
-          {emoji}
+          <AnimatedEmoji emoji={emoji} size={28} playOnHover />
         </motion.button>
       ))}
 

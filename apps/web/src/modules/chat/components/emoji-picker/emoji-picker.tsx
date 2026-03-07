@@ -15,6 +15,7 @@
  */
 
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { GlassCard } from '@/shared/components/ui';
@@ -55,50 +56,55 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: Emoji
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          ref={pickerRef}
-          initial={{ opacity: 0, scale: 0.9, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 10 }}
-          transition={springs.stiff}
-          className={`absolute z-50 ${className}`}
-        >
-          <GlassCard className="w-80 p-0">
-            <EmojiSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      {isOpen &&
+        createPortal(
+          <motion.div
+            ref={pickerRef}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={springs.stiff}
+            className="fixed bottom-24 left-4 z-[9999]"
+          >
+            <GlassCard className="w-80 p-0">
+              <EmojiSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-            {/* Animated filter toggle */}
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-1">
-              <button
-                type="button"
-                onClick={() => setAnimatedOnly(!animatedOnly)}
-                className={`rounded-md px-2 py-0.5 text-[10px] font-medium transition-colors ${
-                  animatedOnly
-                    ? 'bg-primary-500/20 text-primary-300'
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                ✨ Animated
-              </button>
-              {loading && (
-                <div className="h-3 w-3 animate-spin rounded-full border border-primary-500 border-t-transparent" />
+              {/* Animated filter toggle */}
+              <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-1">
+                <button
+                  type="button"
+                  onClick={() => setAnimatedOnly(!animatedOnly)}
+                  className={`rounded-md px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                    animatedOnly
+                      ? 'bg-primary-500/20 text-primary-300'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  ✨ Animated
+                </button>
+                {loading && (
+                  <div className="h-3 w-3 animate-spin rounded-full border border-primary-500 border-t-transparent" />
+                )}
+              </div>
+
+              {!searchQuery && (
+                <CategoryTabs
+                  activeCategory={activeCategory}
+                  onCategoryChange={setActiveCategory}
+                />
               )}
-            </div>
 
-            {!searchQuery && (
-              <CategoryTabs activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
-            )}
-
-            <EmojiGrid
-              emojis={filteredEmojis}
-              onEmojiClick={handleEmojiClick}
-              searchQuery={searchQuery}
-              animatedCatalog={catalog}
-              animatedOnly={animatedOnly}
-            />
-          </GlassCard>
-        </motion.div>
-      )}
+              <EmojiGrid
+                emojis={filteredEmojis}
+                onEmojiClick={handleEmojiClick}
+                searchQuery={searchQuery}
+                animatedCatalog={catalog}
+                animatedOnly={animatedOnly}
+              />
+            </GlassCard>
+          </motion.div>,
+          document.body
+        )}
     </AnimatePresence>
   );
 }

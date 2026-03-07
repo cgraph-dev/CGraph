@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { FaceSmileIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { LottieRenderer } from '@/lib/lottie';
+import { AnimatedEmoji } from '@/lib/lottie';
 import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 
 /**
@@ -245,7 +246,9 @@ export default function MessageReactions({
                       onClick={() => handleReaction(emoji)}
                       className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
                     >
-                      <span className="text-2xl leading-none">{emoji}</span>
+                      <span className="text-2xl leading-none">
+                        <AnimatedEmoji emoji={emoji} size={28} playOnHover />
+                      </span>
                     </motion.button>
                   ))}
                 </div>
@@ -283,7 +286,9 @@ export default function MessageReactions({
                     onClick={() => handleReaction(emoji)}
                     className="rounded p-2 transition-colors hover:bg-white/[0.08]"
                   >
-                    <span className="text-xl leading-none">{emoji}</span>
+                    <span className="text-xl leading-none">
+                      <AnimatedEmoji emoji={emoji} size={24} playOnHover />
+                    </span>
                   </motion.button>
                 ))}
               </div>

@@ -1,6 +1,6 @@
 # CGraph Architecture
 
-> Generated: 2026-02-26 | Version: 0.9.47
+> Generated: 2026-03-07 | Version: 1.0.0
 
 ## 1. Overall System Architecture
 
@@ -249,22 +249,24 @@ GET    /api/v1/users/:id/profile
 WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 
 | Channel               | Pattern          | Purpose                                           |
-| --------------------- | ---------------- | ------------------------------------------------- | --- | -------------- | --------- | ----------------------------- |
+| --------------------- | ---------------- | ------------------------------------------------- |
 | `ConversationChannel` | `conversation:*` | 1-on-1 and group chat messages, typing indicators |
 | `GroupChannel`        | `group:*`        | Group-level events, member updates                |
 | `UserChannel`         | `user:*`         | Per-user notifications, friend requests, presence |
 | `PresenceChannel`     | `presence:*`     | Online/offline tracking (Phoenix.Presence)        |
 | `CallChannel`         | `call:*`         | WebRTC signaling for voice/video calls            |
 | `WebRTCLobbyChannel`  | `webrtc:lobby`   | Call initiation lobby                             |
+| `VoiceStateChannel`   | `voice:*`        | Voice state tracking                              |
+| `SecretChatChannel`   | `secret_chat:*`  | E2EE secret chat sessions                         |
 | `GamificationChannel` | `gamification:*` | Real-time XP, level-up, achievement events        |
 | `MarketplaceChannel`  | `marketplace:*`  | Marketplace item updates                          |
 | `EventsChannel`       | `events:*`       | Seasonal event updates                            |
 | `ForumChannel`        | `forum:*`        | Forum-level real-time updates                     |
 | `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
+| `BoardChannel`        | `board:*`        | Board-level real-time updates                     |
 | `AIChannel`           | `ai:*`           | Streaming AI responses                            |
-| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |     | `BoardChannel` | `board:*` | Board-level real-time updates |
+| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |
 | `QrAuthChannel`       | `qr_auth:*`      | QR code login authentication                      |
-| `VoiceStateChannel`   | `voice_state:*`  | Voice state tracking                              |
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 

@@ -4,6 +4,7 @@
  */
 
 import { motion } from 'motion/react';
+import { AnimatedEmoji } from '@/lib/lottie';
 import {
   PARTICLE_COUNT,
   SUPER_PARTICLE_COUNT,
@@ -52,7 +53,7 @@ export function ReactionParticle({ emoji, index, isSuper }: ReactionParticleProp
         ease: 'easeOut',
       }}
     >
-      {emoji}
+      <AnimatedEmoji emoji={emoji} size={isSuper ? 22 : 18} playOnHover={false} />
     </motion.div>
   );
 }

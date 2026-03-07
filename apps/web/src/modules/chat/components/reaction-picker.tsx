@@ -5,7 +5,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { LottieRenderer } from '@/lib/lottie';
+import { LottieRenderer, AnimatedEmoji } from '@/lib/lottie';
 import { getReactionAnimation } from '@/lib/chat/reactionUtils';
 
 const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥'] as const;
@@ -251,7 +251,7 @@ export function ReactionPicker({ onSelect, onClose, isOpen, className }: Reactio
                           onClick={() => handleSelect(emoji)}
                           className="flex h-8 w-8 items-center justify-center rounded text-base transition-transform hover:scale-110 hover:bg-white/[0.06]"
                         >
-                          {emoji}
+                          <AnimatedEmoji emoji={emoji} size={22} playOnHover />
                         </button>
                       ))}
                     </div>

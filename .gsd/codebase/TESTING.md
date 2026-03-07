@@ -17,6 +17,7 @@
 | `packages/utils`      | **Vitest**     | Vitest            | node                      | (inferred from package)             |
 | `packages/api-client` | **Vitest**     | Vitest            | node                      | (inferred from package)             |
 | `packages/socket`     | **Vitest**     | Vitest            | node                      | (inferred from package)             |
+| `packages/ui`         | **Vitest**     | Vitest            | node                      | `packages/ui/vitest.config.ts`      |
 | **E2E (web)**         | **Playwright** | Playwright Test   | Chromium, Firefox, WebKit | `apps/web/playwright.config.ts`     |
 | **E2E (landing)**     | **Playwright** | Playwright Test   | Chromium                  | `apps/landing/playwright.config.ts` |
 
@@ -32,8 +33,8 @@
 - **ExMachina** — test data factory for Elixir/Ecto (backend)
 
 > **Note — Vitest Version Fragmentation**: Shared packages use different Vitest versions: `^1.0.0`
-> (crypto, utils, api-client), `^1.6.0` (socket), `^3.0.0` (animation-constants). `shared-types` has
-> no Vitest (no tests). Web uses `^3.1.0`, landing uses `^3.2.4`.
+> (crypto, utils, api-client), `^1.6.0` (socket), `^3.0.0` (animation-constants), `^3.1.0` (ui).
+> `shared-types` has no Vitest (no tests). Web uses `^3.1.0`, landing uses `^3.2.4`.
 
 ---
 
@@ -997,7 +998,8 @@ CI Pipeline
 │   ├── @cgraph/api-client (test + typecheck)
 │   ├── @cgraph/crypto (test + typecheck)
 │   ├── @cgraph/utils (test + typecheck)
-│   └── @cgraph/socket (test + typecheck)
+│   ├── @cgraph/socket (test + typecheck)
+│   └── @cgraph/ui (test + typecheck)
 ├── frontend-test    # Vitest --run --coverage + build
 ├── mobile-test      # Jest --ci --coverage + lint + typecheck
 ├── docker-build     # Build backend + web Docker images

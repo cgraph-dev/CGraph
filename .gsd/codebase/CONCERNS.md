@@ -1,7 +1,7 @@
 # CGraph Codebase Concerns
 
-> **Generated**: February 26, 2026 | **Updated**: March 4, 2026 | **Source**: Full monorepo analysis
-> | **Codebase Version**: 0.9.47 → 1.0.0 | **Composite Score**: 7.8/10 → 8.7/10
+> **Generated**: February 26, 2026 | **Updated**: March 7, 2026 | **Source**: Full monorepo analysis
+> | **Codebase Version**: 1.0.0 | **Composite Score**: 8.7/10
 
 ---
 

@@ -5,6 +5,8 @@
  */
 
 export { LottieRenderer } from './lottie-renderer';
+export { AnimatedEmoji } from './animated-emoji';
+export type { AnimatedEmojiProps } from './animated-emoji';
 export { LottieBorderRenderer } from './lottie-border-renderer';
 export type { LottieBorderProps, LottieBorderConfig } from './lottie-border-renderer';
 export { useLottie } from './use-lottie';

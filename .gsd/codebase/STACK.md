@@ -7,13 +7,13 @@
 
 ## 1. Languages & Runtimes
 
-| Language       | Version                                                                             | Where Used                                                  |
-| -------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **TypeScript** | `~5.8.0` (web), `~5.8.3` (landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.0` (mobile) | All frontend apps and shared packages                       |
-| **Elixir**     | `~> 1.17` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`)             | `apps/backend/`                                             |
-| **Erlang/OTP** | `27.1.2` (CI/Docker), `28.3` (local dev)                                            | Backend runtime (BEAM VM)                                   |
-| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                             | Frontend builds, tooling                                    |
-| **SQL**        | PostgreSQL dialect                                                                  | Database migrations in `apps/backend/priv/repo/migrations/` |
+| Language       | Version                                                                                     | Where Used                                                  |
+| -------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **TypeScript** | `~5.8.0` (web), `~5.8.3` (landing), `^5.3.0`–`^5.8.0` (packages), `~5.9.0` (mobile)         | All frontend apps and shared packages                       |
+| **Elixir**     | `~> 1.18` (mix.exs), `1.18.4` (CI/Docker), `1.19.4-otp-28` (local dev via `.tool-versions`) | `apps/backend/`                                             |
+| **Erlang/OTP** | `28.3.3` (CI/Docker), `28.3` (local dev)                                                    | Backend runtime (BEAM VM)                                   |
+| **Node.js**    | `>= 20.x` (engines), `22.x` (CI/Docker)                                                     | Frontend builds, tooling                                    |
+| **SQL**        | PostgreSQL dialect                                                                          | Database migrations in `apps/backend/priv/repo/migrations/` |
 
 ### Key Version Pins (from `package.json` root)
 
@@ -41,17 +41,17 @@ Source: [`apps/backend/mix.exs`](apps/backend/mix.exs)
 
 ### Web App — React/Vite (`apps/web/`)
 
-| Framework                | Version               | Purpose                      |
-| ------------------------ | --------------------- | ---------------------------- |
-| **React**                | `19.1.0`              | UI library                   |
-| **Vite**                 | `^6.3.0`              | Build tool + dev server      |
-| **React Router DOM**     | `^7.13.0`             | Client-side routing          |
-| **Zustand**              | `^5.0.0`              | State management             |
-| **TanStack React Query** | `^5.75.0`             | Server state / data fetching |
-| **Tailwind CSS**         | `^3.4.17`             | Utility-first CSS            |
-| **Framer Motion**        | `^12.0.0`             | Animations                   |
-| **Radix UI**             | Various `^1.x`–`^2.x` | Headless UI primitives       |
-| **Storybook**            | `8.6.15`              | Component development        |
+| Framework                | Version               | Purpose                        |
+| ------------------------ | --------------------- | ------------------------------ |
+| **React**                | `19.1.0`              | UI library                     |
+| **Vite**                 | `^6.3.0`              | Build tool + dev server        |
+| **React Router DOM**     | `^7.13.0`             | Client-side routing            |
+| **Zustand**              | `^5.0.0`              | State management               |
+| **TanStack React Query** | `^5.75.0`             | Server state / data fetching   |
+| **Tailwind CSS**         | `^3.4.17`             | Utility-first CSS              |
+| **Motion** (Framer)      | `^12.0.0`             | Animations (package: `motion`) |
+| **Radix UI**             | Various `^1.x`–`^2.x` | Headless UI primitives         |
+| **Storybook**            | `8.6.15`              | Component development          |
 
 Source: [`apps/web/package.json`](apps/web/package.json)
 
@@ -106,14 +106,15 @@ Source: [`apps/landing/package.json`](apps/landing/package.json)
 
 ## 4. Shared Packages (packages/)
 
-| Package                           | Key Dependencies                                     | Purpose                                                                                   |
-| --------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **`@cgraph/shared-types`**        | None (pure TS)                                       | Shared TypeScript type definitions (API, models, events)                                  |
-| **`@cgraph/api-client`**          | None (pure TS)                                       | Resilient API client with circuit breaker, retry, timeout                                 |
-| **`@cgraph/socket`**              | `phoenix ^1.7.0`                                     | Phoenix channel WebSocket client (tsup-built)                                             |
-| **`@cgraph/crypto`**              | `@noble/hashes ^1.8.0`, `@noble/post-quantum ^0.2.1` | Signal-grade E2EE: Triple Ratchet (ECDH + ML-KEM-768), PQXDH, Double Ratchet, AES-256-GCM |
-| **`@cgraph/utils`**               | `axios ^1.9.0`, `date-fns ^3.0.0`, `zod ^3.24.0`     | Format, validation, permissions utilities                                                 |
-| **`@cgraph/animation-constants`** | None (pure TS)                                       | Platform-agnostic animation timing/spring/easing constants                                |
+| Package                           | Key Dependencies                                                                   | Purpose                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **`@cgraph/shared-types`**        | None (pure TS)                                                                     | Shared TypeScript type definitions (API, models, events)                                  |
+| **`@cgraph/api-client`**          | None (pure TS)                                                                     | Resilient API client with circuit breaker, retry, timeout                                 |
+| **`@cgraph/socket`**              | `phoenix ^1.7.0`                                                                   | Phoenix channel WebSocket client (tsup-built)                                             |
+| **`@cgraph/crypto`**              | `@noble/hashes ^1.8.0`, `@noble/post-quantum ^0.2.1`                               | Signal-grade E2EE: Triple Ratchet (ECDH + ML-KEM-768), PQXDH, Double Ratchet, AES-256-GCM |
+| **`@cgraph/utils`**               | `axios ^1.9.0`, `date-fns ^3.0.0`, `zod ^3.24.0`                                   | Format, validation, permissions utilities                                                 |
+| **`@cgraph/ui`**                  | Peer: `react ^19`, `framer-motion ^12`, `cva ^0.7`, `clsx ^2`, `tailwind-merge ^3` | Liquid Glass UI component library (button, card, modal, input, etc.)                      |
+| **`@cgraph/animation-constants`** | None (pure TS)                                                                     | Platform-agnostic animation timing/spring/easing constants                                |
 
 Sources: [`packages/*/package.json`](packages/)
 
@@ -224,7 +225,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 | [`renovate.json`](renovate.json)                                                       | Automated dependency updates                                           |
 | [`docker-compose.dev.yml`](docker-compose.dev.yml)                                     | Dev services (Postgres, Redis, MeiliSearch)                            |
 | [`apps/backend/config/config.exs`](apps/backend/config/config.exs)                     | Elixir compile-time config                                             |
-| [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (429 lines)                              |
+| [`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs)                   | Elixir runtime/secrets config (486 lines)                              |
 | [`apps/backend/config/stripe.exs`](apps/backend/config/stripe.exs)                     | Stripe integration config                                              |
 | [`apps/backend/.tool-versions`](apps/backend/.tool-versions)                           | asdf versions: Erlang 28.3, Elixir 1.19.4-otp-28                       |
 | [`apps/backend/.credo.exs`](apps/backend/.credo.exs)                                   | Credo linter config                                                    |
@@ -264,7 +265,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 
 | Image    | Base                                                              | Purpose                          |
 | -------- | ----------------------------------------------------------------- | -------------------------------- |
-| Backend  | `hexpm/elixir:1.17.3-erlang-27.1.2-alpine-3.20.3` → `alpine:3.20` | Multi-stage Elixir release build |
+| Backend  | `hexpm/elixir:1.18.4-erlang-28.3.3-alpine-3.21.6` → `alpine:3.21` | Multi-stage Elixir release build |
 | Web (CI) | `node:22-alpine` → `nginx:1.27-alpine`                            | CI build + static server         |
 
 Sources: [`apps/backend/Dockerfile`](apps/backend/Dockerfile),

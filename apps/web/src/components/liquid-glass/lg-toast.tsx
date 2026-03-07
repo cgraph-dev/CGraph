@@ -10,7 +10,7 @@
  * @module components/liquid-glass/lg-toast
  */
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { springPreset } from './shared';
 
@@ -41,7 +41,7 @@ function emit() {
 
 let counter = 0;
 
-/** Imperative API — call from anywhere. */
+/** Show a toast notification. */
 export function toast(t: Omit<Toast, 'id'>) {
   const id = `lg-toast-${++counter}`;
   toasts = [...toasts, { ...t, id }];

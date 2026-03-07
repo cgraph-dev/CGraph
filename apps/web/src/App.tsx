@@ -16,6 +16,7 @@ import { AuthInitializer } from '@/routes/auth-initializer';
 import { AppRoutes } from '@/routes/app-routes';
 import { useGroupStore } from '@/modules/groups/store';
 import { initErrorTracking, reportWebVitals } from '@/lib/error-tracking';
+import { fetchAnimatedEmojiCatalog } from '@/modules/chat/components/emoji-picker/emojiData';
 import '@/themes/theme-globals.css';
 import '@/styles/customization-effects.css';
 
@@ -52,6 +53,11 @@ const PushNotificationPrompt = lazy(() =>
 // Initialize error tracking on module load
 initErrorTracking();
 reportWebVitals();
+
+// Eagerly load animated emoji catalog so Lottie emojis render everywhere
+fetchAnimatedEmojiCatalog().catch(() => {
+  // Silently ignore — emojis will fall back to plain text
+});
 
 /** Scrolls to top on route navigation */
 function ScrollToTop() {

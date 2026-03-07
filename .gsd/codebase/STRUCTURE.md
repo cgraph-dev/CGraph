@@ -1,6 +1,6 @@
 # CGraph Directory Structure
 
-> Generated: 2026-02-26 | Version: 0.9.47
+> Generated: 2026-03-07 | Version: 1.0.0
 
 ## 1. Top-Level Layout
 
@@ -17,7 +17,11 @@
 │   ├── crypto/                    # Signal Protocol E2EE implementation
 │   ├── shared-types/              # TypeScript interfaces (API, models, events)
 │   ├── socket/                    # Phoenix Channel typed client
+│   ├── ui/                        # Liquid Glass UI component library
 │   └── utils/                     # Format, validation, permissions, HTTP factory
+├── design-system/                 # Design system prototypes
+│   ├── cgraph-liquid-glass/       # Liquid Glass design system
+│   └── cgraph-web/                # Web design system
 ├── docs/                          # Project documentation
 ├── docs-website/                  # Docusaurus documentation site
 ├── infrastructure/                # Deployment, observability, IaC
@@ -1106,6 +1110,28 @@ src/
 ├── springs.ts     # Spring physics constants
 ├── stagger.ts     # Stagger timing constants
 └── transitions.ts # Transition constants
+```
+
+### `packages/ui/` — Liquid Glass UI Components
+
+```
+src/
+├── index.ts                        # Main exports
+├── shared.ts                       # Shared utilities
+├── tokens.css                      # Design tokens (CSS variables)
+├── components/
+│   ├── liquid-button.tsx           # Button component
+│   ├── liquid-card.tsx             # Card component
+│   ├── liquid-checkbox.tsx         # Checkbox component
+│   ├── liquid-input.tsx            # Input component
+│   ├── liquid-modal.tsx            # Modal component
+│   ├── liquid-search.tsx           # Search component
+│   ├── liquid-select.tsx           # Select component
+│   ├── liquid-tabs.tsx             # Tabs component
+│   ├── liquid-toast.tsx            # Toast component
+│   ├── liquid-toggle.tsx           # Toggle component
+│   └── liquid-user-card.tsx        # User card component
+└── test/                           # Component tests
 ```
 
 ---

@@ -20,7 +20,8 @@ CGraph/
 │   ├── shared-types/  # Cross-app TypeScript types
 │   ├── socket/        # Phoenix WebSocket client
 │   ├── utils/         # Shared validation, formatting, HTTP helpers
-│   └── animation-constants/  # Shared animation durations/springs
+│   ├── animation-constants/  # Shared animation durations/springs
+│   └── ui/            # Liquid Glass component library
 ├── infrastructure/    # Docker, Terraform, observability configs
 ├── docs/              # Architecture docs, ADRs, runbooks
 └── docs-website/      # Docusaurus documentation site
@@ -749,8 +750,8 @@ export { useChatStore } from '../modules/chat/store';
 | Routing (Web)     | React Router 7                                     |
 | State Management  | Zustand 5 + TanStack Query 5                       |
 | Validation        | Zod 3.24                                           |
-| Animation         | Framer Motion 12, GSAP                             |
-| Backend           | Elixir 1.17, Phoenix, PostgreSQL 16, Redis 7       |
+| Animation         | Motion 12 (package: `motion`), GSAP                |
+| Backend           | Elixir 1.18, Phoenix, PostgreSQL 16, Redis 7       |
 | Realtime          | Phoenix Channels (WebSocket)                       |
 | E2EE              | Signal Protocol-inspired (custom `@cgraph/crypto`) |
 | Build             | Vite (web/landing), Metro (mobile), Turborepo      |

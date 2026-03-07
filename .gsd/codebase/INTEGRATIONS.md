@@ -87,10 +87,8 @@
 - **Libraries**: `ex_keccak ~> 0.7`, `ex_secp256k1 ~> 0.7`
   ([`apps/backend/mix.exs`](apps/backend/mix.exs))
 - **Purpose**: Ethereum wallet signature verification for wallet-based login
-- **Web frontend**: `wagmi ^3.5.0`, `viem ^2.46.3`, `@wagmi/connectors 5.7.7`,
+- **Web frontend**: `wagmi 3.5.0`, `viem ^2.46.3`, `@wagmi/connectors 7.2.1`,
   `@walletconnect/modal ^2.7.0` ([`apps/web/package.json`](apps/web/package.json))
-- **Pinned overrides**: `@wagmi/core: 2.16.4`, `@wagmi/connectors: 5.7.7`
-  ([`package.json`](package.json) pnpm overrides)
 
 ### Apple Sign In (Mobile)
 
@@ -510,17 +508,23 @@
 
 ---
 
-## 13. AI Integration (Planned)
+## 13. AI Integration (Feature-Flagged — Disabled)
 
-- **Status**: Disabled placeholder
-  ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs#L400-L425))
+- **Status**: Modules implemented with heuristic fallbacks; LLM integration feature-flagged off
+  ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
 - **Provider**: Anthropic (Claude)
-- **Planned model**: `claude-4-opus`
-- **HTTP client**: `req ~> 0.5` (already included for LLM client)
-- **Planned features**: Forum moderation, chat suggestions, content moderation, smart search
-- **Channel**: `ai_channel.ex` exists in
+- **Model**: `claude-4-opus` (configured but `enabled: false`)
+- **HTTP client**: `req ~> 0.5` (LLM client in `CGraph.AI.LLMClient`)
+- **Implemented modules** ([`apps/backend/lib/cgraph/ai/`](apps/backend/lib/cgraph/ai/)):
+  - `LLMClient` — HTTP client for OpenAI, Anthropic, Ollama APIs
+  - `Moderation` — Content moderation with keyword fallback
+  - `SmartReplies` — Reply suggestion with heuristic fallback
+  - `Sentiment` — Sentiment analysis with heuristic fallback
+  - `Summarizer` — Conversation summarization with heuristic fallback
+- **Features** (all disabled via feature flag): forum moderation, chat suggestions, content
+  moderation, smart search
+- **Channel**: `ai_channel.ex` in
   [`apps/backend/lib/cgraph_web/channels/`](apps/backend/lib/cgraph_web/channels/)
-- **Module**: [`apps/backend/lib/cgraph/ai/`](apps/backend/lib/cgraph/ai/)
 
 ---
 
