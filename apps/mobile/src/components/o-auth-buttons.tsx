@@ -3,7 +3,7 @@
  * Social login buttons for Google, Apple, Facebook, and TikTok
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Platform,
   Alert,
+  Animated,
 } from 'react-native';
 import { Svg, Path } from 'react-native-svg';
 import {
@@ -114,6 +115,7 @@ export function OAuthButton({
 }: OAuthButtonProps) {
   const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const info = providerInfo[provider];
   const Icon = providerIcons[provider];
@@ -122,6 +124,24 @@ export function OAuthButton({
   if (provider === 'apple' && Platform.OS !== 'ios') {
     return null;
   }
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1.15,
+      useNativeDriver: true,
+      friction: 4,
+      tension: 300,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 4,
+      tension: 200,
+    }).start();
+  };
 
   const handlePress = async () => {
     setIsLoading(true);
@@ -145,28 +165,33 @@ export function OAuthButton({
 
   if (variant === 'icon') {
     return (
-      <TouchableOpacity
-        style={[
-          styles.iconButton,
-          {
-            backgroundColor: info.color,
-            borderColor: provider === 'google' ? colors.border : 'transparent',
-            borderWidth: provider === 'google' ? 1 : 0,
-          },
-          style,
-        ]}
-        onPress={handlePress}
-        disabled={isLoading}
-        accessibilityRole="button"
-        accessibilityLabel={`Sign in with ${info.name}`}
-        accessibilityState={{ disabled: isLoading, busy: isLoading }}
-      >
-        {isLoading ? (
-          <ActivityIndicator size="small" color={info.textColor} />
-        ) : (
-          <Icon size={24} color={info.textColor} />
-        )}
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <TouchableOpacity
+          style={[
+            styles.iconButton,
+            {
+              backgroundColor: info.color,
+              borderColor: provider === 'google' ? colors.border : 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+            },
+            style,
+          ]}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={handlePress}
+          disabled={isLoading}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={`Sign in with ${info.name}`}
+          accessibilityState={{ disabled: isLoading, busy: isLoading }}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color={info.textColor} />
+          ) : (
+            <Icon size={24} color={info.textColor} />
+          )}
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 

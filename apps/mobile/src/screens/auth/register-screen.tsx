@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Animated,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -71,7 +72,11 @@ export default function RegisterScreen({ navigation }: Props) {
             <View style={styles.content}>
               {/* Header */}
               <Animated.View style={[styles.header, { opacity: fadeAnims[0], transform: [{ translateY: translateYAnims[0] }] }]}>
-                <Text style={styles.logo}>CGraph</Text>
+                <Image
+                  source={require('../../../assets/icon.png')}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
                 <Text style={styles.subtitle}>Create your account</Text>
                 <Text style={styles.subtitleSecondary}>Join the next generation of communication</Text>
               </Animated.View>
@@ -95,15 +100,15 @@ export default function RegisterScreen({ navigation }: Props) {
                   <Animated.View style={{ opacity: fadeAnims[6], transform: [{ translateY: translateYAnims[6] }, { scale: buttonScale }] }}>
                     <TouchableOpacity activeOpacity={0.9} onPressIn={handlePressIn} onPressOut={handlePressOut}
                       onPress={reg.handleRegister} disabled={reg.isLoading}>
-                      <LinearGradient colors={['#059669', '#047857', '#065f46']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                        style={[styles.button, reg.isLoading && styles.buttonDisabled]}>
+                      <LinearGradient colors={['rgba(16, 185, 129, 0.18)', 'rgba(139, 92, 246, 0.18)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                        style={[styles.ctaButton, reg.isLoading && styles.buttonDisabled]}>
                         {reg.isLoading ? (
                           <View style={styles.loadingContainer}>
                             <ActivityIndicator color="#fff" size="small" />
                             <Text style={styles.loadingText}>Creating account...</Text>
                           </View>
                         ) : (
-                          <Text style={styles.buttonText}>Create Account</Text>
+                          <Text style={styles.buttonText}>Create Account  →</Text>
                         )}
                       </LinearGradient>
                     </TouchableOpacity>

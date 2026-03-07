@@ -280,6 +280,68 @@
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
   }
 
+  /* Auth CTA button — matches landing page marketing-btn--primary */
+  .auth-cta-button {
+    @apply relative overflow-hidden;
+    background:
+      linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(139, 92, 246, 0.18) 100%),
+      rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid rgba(16, 185, 129, 0.34);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    isolation: isolate;
+    box-shadow:
+      0 0 20px -4px rgba(16, 185, 129, 0.25),
+      0 0 14px -7px rgba(139, 92, 246, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .auth-cta-button::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(16, 185, 129, 0.6) 25%,
+      rgba(139, 92, 246, 0.6) 50%,
+      rgba(16, 185, 129, 0.6) 75%,
+      transparent
+    );
+    background-size: 200% 100%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+    animation: auth-border-flow 4s linear infinite;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .auth-cta-button:hover::before {
+    opacity: 1;
+  }
+
+  .auth-cta-button:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 30px -4px rgba(16, 185, 129, 0.4),
+      0 0 16px -2px rgba(139, 92, 246, 0.25);
+  }
+
+  .auth-cta-button:active {
+    transform: translateY(0);
+    box-shadow:
+      0 0 14px -4px rgba(16, 185, 129, 0.3),
+      0 0 8px -2px rgba(139, 92, 246, 0.15);
+  }
+
   .matrix-card {
     background: linear-gradient(145deg, rgba(17, 24, 39, 0.95) 0%, rgba(5, 46, 22, 0.15) 100%);
     border: 1px solid rgba(16, 185, 129, 0.2);

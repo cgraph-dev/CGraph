@@ -137,7 +137,7 @@ export default function Login() {
             <motion.div variants={reduced ? {} : itemVariants}>
               <SubmitButton
                 pendingText={t('login.signing_in')}
-                className="matrix-button w-full py-3"
+                className="auth-cta-button w-full py-3"
                 disabled={isLoading}
               >
                 <span>{t('login.submit')}</span>

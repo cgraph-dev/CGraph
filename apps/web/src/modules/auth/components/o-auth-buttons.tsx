@@ -4,6 +4,7 @@
  */
 
 import { useState, type ReactElement } from 'react';
+import { motion } from 'motion/react';
 import { OAuthProvider, openOAuthPopup, providerColors, providerNames } from '@/lib/oauth';
 import { useAuthStore, mapUserFromApi } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
@@ -72,6 +73,30 @@ const providerIcons: Record<OAuthProvider, () => ReactElement> = {
   tiktok: TikTokIcon,
 };
 
+// Provider-specific hover glow colors
+const providerGlow: Record<OAuthProvider, { ring: string; shadow: string; bg: string }> = {
+  google: {
+    ring: 'rgba(66, 133, 244, 0.5)',
+    shadow: '0 0 20px -4px rgba(66, 133, 244, 0.4), 0 0 10px -4px rgba(234, 67, 53, 0.3)',
+    bg: 'rgba(66, 133, 244, 0.08)',
+  },
+  apple: {
+    ring: 'rgba(255, 255, 255, 0.4)',
+    shadow: '0 0 20px -4px rgba(255, 255, 255, 0.25)',
+    bg: 'rgba(255, 255, 255, 0.08)',
+  },
+  facebook: {
+    ring: 'rgba(24, 119, 242, 0.5)',
+    shadow: '0 0 20px -4px rgba(24, 119, 242, 0.4)',
+    bg: 'rgba(24, 119, 242, 0.08)',
+  },
+  tiktok: {
+    ring: 'rgba(254, 44, 85, 0.4)',
+    shadow: '0 0 20px -4px rgba(254, 44, 85, 0.3), 0 0 10px -4px rgba(37, 244, 238, 0.3)',
+    bg: 'rgba(254, 44, 85, 0.08)',
+  },
+};
+
 interface OAuthButtonProps {
   provider: OAuthProvider;
   onSuccess?: () => void;
@@ -123,12 +148,22 @@ export function OAuthButton({
   };
 
   if (variant === 'icon') {
+    const glow = providerGlow[provider];
     return (
-      <button
+      <motion.button
         onClick={handleClick}
         disabled={isLoading}
-        className={`rounded-full border p-3 transition-colors ${colors.bg} ${colors.text} ${colors.hover} disabled:cursor-not-allowed disabled:opacity-50 ${provider === 'google' ? 'border-gray-300' : 'border-transparent'} ${className} `}
+        whileHover={{
+          scale: 1.12,
+          boxShadow: glow.shadow,
+          borderColor: glow.ring,
+          backgroundColor: glow.bg,
+        }}
+        whileTap={{ scale: 0.92 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        className={`rounded-full border p-3 transition-colors ${colors.bg} ${colors.text} disabled:cursor-not-allowed disabled:opacity-50 ${provider === 'google' ? 'border-gray-300' : 'border-transparent'} ${className} `}
         title={`Continue with ${name}`}
+        style={{ willChange: 'transform' }}
       >
         {isLoading ? (
           <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
@@ -150,7 +185,7 @@ export function OAuthButton({
         ) : (
           <Icon />
         )}
-      </button>
+      </motion.button>
     );
   }
 

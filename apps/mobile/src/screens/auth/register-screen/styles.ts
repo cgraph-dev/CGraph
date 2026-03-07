@@ -35,6 +35,12 @@ export const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
+  logoImage: {
+    width: 72,
+    height: 72,
+    marginBottom: 12,
+    borderRadius: 16,
+  },
   subtitle: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -142,6 +148,20 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 4,
+  },
+  ctaButton: {
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.34)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    shadowColor: 'rgba(16, 185, 129, 0.25)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 3,
   },
   buttonDisabled: {
     opacity: 0.7,
