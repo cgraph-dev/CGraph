@@ -5,6 +5,7 @@
 import React from 'react';
 import { motion, type HTMLMotionProps } from 'motion/react';
 import { useMotionSafe } from '@/hooks/useMotionSafe';
+import { useMagneticButton } from './magnetic-button';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'glass';
@@ -13,6 +14,8 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
+  /** Set false to disable magnetic/shimmer effects on this instance */
+  animated?: boolean;
 }
 
 /**
@@ -25,13 +28,18 @@ export function Button({
   leftIcon,
   rightIcon,
   fullWidth = false,
+  animated = true,
   disabled,
   children,
   className = '',
   ref,
   ...props
 }: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
-  const { tapScale, hoverScale, springs } = useMotionSafe();
+  const { tapScale, hoverScale, springs, shouldAnimate } = useMotionSafe();
+  const magnetic = useMagneticButton();
+
+  const isMagnetic = animated && shouldAnimate && (variant === 'primary' || variant === 'glass');
+  const hasShimmer = animated && shouldAnimate && variant === 'primary';
 
   const baseStyles =
     'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -61,9 +69,12 @@ export function Button({
 
   return (
     <motion.button
-      ref={ref}
+      ref={isMagnetic ? magnetic.ref : ref}
       disabled={disabled || isLoading}
-      className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${fullWidth ? 'w-full' : ''} ${className} `}
+      className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${fullWidth ? 'w-full' : ''} ${hasShimmer ? 'btn-shimmer' : ''} ${className} `}
+      style={isMagnetic ? { x: magnetic.style.x, y: magnetic.style.y } : undefined}
+      onMouseMove={isMagnetic ? magnetic.onMouseMove : undefined}
+      onMouseLeave={isMagnetic ? magnetic.onMouseLeave : undefined}
       whileTap={tapScale(0.97)}
       whileHover={hoverScale(1.02)}
       transition={springs.snappy}
