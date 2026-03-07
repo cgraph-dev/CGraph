@@ -8,13 +8,13 @@
 
 See: .gsd/PROJECT.md (updated 2026-03-04)
 
-**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Project
-initialized — ready for discovery.
+**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 25 —
+Cinematic UI Parity (planned, 8 plans across 3 waves).
 
 ## Current Position
 
-Phase: 0 of 0 (no phases defined yet) Plan: 0 of 0 Status: Ready for discovery Last activity:
-2026-03-04 — New project initialized at v1.0.0
+Phase: 25 of 25 (Cinematic UI Parity) Plan: 0 of 8 Status: Planned — awaiting execution Last
+activity: 2026-03-08 — Phase 25 planned (8 plans, 3 waves)
 
 Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -39,7 +39,11 @@ Recent decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-None yet.
+- Phase 25: Execute 8 plans for cinematic UI parity (web + mobile)
+  - Wave 1: Shared animation presets (25-01)
+  - Wave 2: Web buttons (25-02), Web backgrounds (25-03), Web avatars (25-04), Mobile buttons
+    (25-06), Mobile avatars (25-07)
+  - Wave 3: Web polish (25-05), Mobile premium (25-08)
 
 ### Blockers/Concerns
 
@@ -51,9 +55,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-04 Stopped at: Project initialized. Codebase mapped. Ready for /discovery.
-Resume file: None
+Last session: 2026-03-08 Stopped at: Phase 25 planned. 8 plans created. Ready for execution. Resume
+file: .gsd/phases/25-cinematic-ui-parity/
 
 ---
 
-_Last updated: 2026-03-04 (project initialized)_
+_Last updated: 2026-03-08 (phase 25 planned)_

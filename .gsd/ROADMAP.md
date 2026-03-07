@@ -1056,6 +1056,7 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 19    | Launch                   | Blocked by 15,17,18      | 0%       |
 | 20    | Liquid Glass UI          | Planned (10 plans)       | 30%      |
 | 21    | UI Interactions & Motion | Planned (10 plans)       | 0%       |
+| 25    | Cinematic UI Parity      | Planned (8 plans)        | 0%       |
 
 ---
 
@@ -1079,7 +1080,8 @@ Plans:
 - [x] 20-09-PLAN.md — Pages: Forums, Groups, Messages (78 files)
 - [x] 20-10-PLAN.md — Pages: Admin, Calls, Community, Social, Gamification (61 files)
 
-**Result:** 0 legacy `bg-dark-*` remaining (6 intentional theme preview configs preserved). Zero TypeScript errors.
+**Result:** 0 legacy `bg-dark-*` remaining (6 intentional theme preview configs preserved). Zero
+TypeScript errors.
 
 ---
 
@@ -1108,33 +1110,46 @@ Plans:
 
 ### Phase 22: Modern UI Overhaul — Discord/Instagram/Messenger Quality
 
-**Goal:** Upgrade web and mobile UI to match the complexity and polish of Discord, Instagram, and Meta Messenger — with message grouping, floating action bars, swipe gestures, command palette, server icon bar, forum cards, stories row, user card popovers, responsive layouts, skeleton loading, and micro-interactions across both platforms.
+**Goal:** Upgrade web and mobile UI to match the complexity and polish of Discord, Instagram, and
+Meta Messenger — with message grouping, floating action bars, swipe gestures, command palette,
+server icon bar, forum cards, stories row, user card popovers, responsive layouts, skeleton loading,
+and micro-interactions across both platforms.
 
 **Depends on:** Phases 20 (Liquid Glass UI), 21 (UI Interactions & Motion) **Plans:** 10 plans
 
 Plans:
 
-- [ ] 22-01-PLAN.md — Web design tokens + enhanced UI primitives (Avatar, Skeleton, ContextMenu, ScrollArea)
+- [ ] 22-01-PLAN.md — Web design tokens + enhanced UI primitives (Avatar, Skeleton, ContextMenu,
+      ScrollArea)
 - [ ] 22-02-PLAN.md — Mobile design tokens + mobile UI primitives parity
-- [ ] 22-03-PLAN.md — Web chat message overhaul (Discord-style grouping, action bars, reactions, embeds, threads)
-- [ ] 22-04-PLAN.md — Mobile chat overhaul (Messenger-style bubbles, swipe-to-reply, long-press actions, reactions)
-- [ ] 22-05-PLAN.md — Conversation list & chat info panel (stories row, online now, member list, shared media grid)
-- [ ] 22-06-PLAN.md — Profile & social surfaces (Instagram-style profiles, user card popovers, status composer)
-- [ ] 22-07-PLAN.md — Groups & channels UI (Discord server icon bar, channel categories, voice user indicators)
-- [ ] 22-08-PLAN.md — Forums UI overhaul (thread cards, grid/list views, voting, rich post composer, polls)
-- [ ] 22-09-PLAN.md — Navigation, search & cross-cutting (command palette, search overlay, notifications, call overlay, explore)
-- [ ] 22-10-PLAN.md — Polish pass (skeleton loading compositions, empty states, micro-interactions, responsive layout, mobile tab bar)
+- [ ] 22-03-PLAN.md — Web chat message overhaul (Discord-style grouping, action bars, reactions,
+      embeds, threads)
+- [ ] 22-04-PLAN.md — Mobile chat overhaul (Messenger-style bubbles, swipe-to-reply, long-press
+      actions, reactions)
+- [ ] 22-05-PLAN.md — Conversation list & chat info panel (stories row, online now, member list,
+      shared media grid)
+- [ ] 22-06-PLAN.md — Profile & social surfaces (Instagram-style profiles, user card popovers,
+      status composer)
+- [ ] 22-07-PLAN.md — Groups & channels UI (Discord server icon bar, channel categories, voice user
+      indicators)
+- [ ] 22-08-PLAN.md — Forums UI overhaul (thread cards, grid/list views, voting, rich post composer,
+      polls)
+- [ ] 22-09-PLAN.md — Navigation, search & cross-cutting (command palette, search overlay,
+      notifications, call overlay, explore)
+- [ ] 22-10-PLAN.md — Polish pass (skeleton loading compositions, empty states, micro-interactions,
+      responsive layout, mobile tab bar)
 
 ---
 
 ### Phase 23: E2EE Fix — Encryption/Decryption Reliability
 
-**Goal:** End-to-end encrypted messages decrypt reliably in real-time without requiring page refresh. E2EE initializes automatically on login.
+**Goal:** End-to-end encrypted messages decrypt reliably in real-time without requiring page
+refresh. E2EE initializes automatically on login.
 
-**Depends on:** Phase 7 (E2EE & Mobile Security)
-**Plans:** 2 plans
+**Depends on:** Phase 7 (E2EE & Mobile Security) **Plans:** 2 plans
 
 Plans:
+
 - [ ] 23-01-PLAN.md — Bootstrap E2EE on app startup + event-driven decrypt retry
 - [ ] 23-02-PLAN.md — Decrypt encrypted messages loaded via REST API (fetchMessages)
 
@@ -1142,12 +1157,14 @@ Plans:
 
 ### Phase 24: Landing Page Update — Accurate v1.0.0 Information
 
-**Goal:** All landing page content matches the actual v1.0.0 state — version numbers, feature descriptions, stats, milestones, status page, blog, download links, navigation, and company subpages are accurate.
+**Goal:** All landing page content matches the actual v1.0.0 state — version numbers, feature
+descriptions, stats, milestones, status page, blog, download links, navigation, and company subpages
+are accurate.
 
-**Depends on:** —
-**Plans:** 6 plans
+**Depends on:** — **Plans:** 6 plans
 
 Plans:
+
 - [ ] 24-01-PLAN.md — Core data files (landing-data.ts, pricing-data.ts) + version sync to 1.0.0
 - [ ] 24-02-PLAN.md — About page comprehensive update (stats, milestones, tech stack, vision)
 - [ ] 24-03-PLAN.md — Status page (live banner) + Blog (v1.0.0 release post)
@@ -1157,4 +1174,26 @@ Plans:
 
 ---
 
-_Roadmap: 24 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-06_
+### Phase 25: Cinematic UI Parity — Web & Mobile Match Landing/Auth Quality
+
+**Goal:** Web and mobile app UI matches the cinematic visual quality of the landing and auth pages —
+premium buttons with magnetic/shimmer effects, interactive particle backgrounds, squircle avatars
+(border-radius: 43px) with Lottie support, enhanced glass cards, and ambient effects.
+
+**Depends on:** Phase 24 (Landing Page Update) **Plans:** 8 plans
+
+Plans:
+
+- [ ] 25-01-PLAN.md — Shared animation presets (backgrounds + buttons in
+      @cgraph/animation-constants)
+- [ ] 25-02-PLAN.md — Web button upgrade (magnetic pull, shimmer, flowing border)
+- [ ] 25-03-PLAN.md — Web cinematic background (interactive canvas particle field)
+- [ ] 25-04-PLAN.md — Web avatar squircle (border-radius: 43px) + Lottie avatar support
+- [ ] 25-05-PLAN.md — Web component polish (glass card spotlight, gradient text, micro-interactions)
+- [ ] 25-06-PLAN.md — Mobile button upgrade (gradient border, glow press, haptics)
+- [ ] 25-07-PLAN.md — Mobile avatar squircle + Lottie avatar support
+- [ ] 25-08-PLAN.md — Mobile premium components (glass card, gradient text, ambient background)
+
+---
+
+_Roadmap: 25 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-08_
