@@ -25,7 +25,10 @@ defmodule CGraph.CacheSupervisor do
 
       # 2FA login challenge tokens — short-lived (5 min TTL), stores temp tokens
       # used between password verification and TOTP code submission
-      Supervisor.child_spec({Cachex, cachex_config(:two_factor_challenges, limit: 50_000, ttl: :timer.minutes(5))}, id: :two_factor_challenges)
+      Supervisor.child_spec({Cachex, cachex_config(:two_factor_challenges, limit: 50_000, ttl: :timer.minutes(5))}, id: :two_factor_challenges),
+
+      # Lottie animation metadata cache — 24h TTL for CDN URL lookups
+      Supervisor.child_spec({Cachex, cachex_config(:lottie_cache, limit: 50_000, ttl: :timer.hours(24))}, id: :lottie_cache)
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
