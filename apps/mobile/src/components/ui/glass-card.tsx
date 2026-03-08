@@ -5,13 +5,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  ViewStyle,
-  Animated,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, ViewStyle, Animated, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { AnimationColors } from '@/lib/animations/animation-engine';
@@ -30,7 +24,7 @@ interface GlassCardProps {
 }
 
 /**
- *
+ * Glassmorphism card with blur, gradients, and optional animations.
  */
 export default function GlassCard({
   children,
@@ -38,7 +32,7 @@ export default function GlassCard({
   intensity = 'medium',
   animated = false,
   glowColor = AnimationColors.primary,
-  _borderGradient = false,
+  borderGradient: _borderGradient = false,
   style,
 }: GlassCardProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
@@ -78,7 +72,7 @@ export default function GlassCard({
         ])
       ).start();
     }
-  }, [animated]);
+  }, [animated, shimmerAnim, pulseAnim]);
 
   const getBlurIntensity = (): number => {
     const intensityMap = {
@@ -153,11 +147,7 @@ export default function GlassCard({
     >
       {/* Background blur layer */}
       {Platform.OS === 'ios' ? (
-        <BlurView
-          intensity={getBlurIntensity()}
-          tint="dark"
-          style={StyleSheet.absoluteFill}
-        />
+        <BlurView intensity={getBlurIntensity()} tint="dark" style={StyleSheet.absoluteFill} />
       ) : (
         // Android fallback (no blur)
         <View
@@ -219,13 +209,7 @@ export default function GlassCard({
       {variant === 'holographic' && (
         <View style={styles.scanlines} pointerEvents="none">
           {[...Array(10)].map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.scanline,
-                { top: `${i * 10}%` },
-              ]}
-            />
+            <View key={i} style={[styles.scanline, { top: `${i * 10}%` }]} />
           ))}
         </View>
       )}

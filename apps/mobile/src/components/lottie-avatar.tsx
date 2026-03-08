@@ -38,6 +38,21 @@ export default function LottieAvatar({
   const [error, setError] = useState(false);
   const radius = getSquircleBorderRadius(size);
 
+  // Pre-fetch the Lottie JSON to detect load errors (lottie-react-native v7 has no onAnimationFailure)
+  useEffect(() => {
+    let cancelled = false;
+    fetch(lottieUrl)
+      .then((res) => {
+        if (!cancelled && !res.ok) setError(true);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [lottieUrl]);
+
   useEffect(() => {
     if (reducedMotion && lottieRef.current) {
       // Show first frame only under reduced-motion
@@ -100,7 +115,6 @@ export default function LottieAvatar({
         loop
         style={{ width: size, height: size }}
         onAnimationLoaded={() => setLoaded(true)}
-        onAnimationFailure={() => setError(true)}
       />
     </View>
   );

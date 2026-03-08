@@ -4,7 +4,7 @@
  * @module components/AnimatedButton
  */
 import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -118,34 +118,48 @@ export default function AnimatedButton({
   // Subtle mode: spring-only, no gradient border
   if (intensity === 'subtle' || reducedMotion) {
     return (
-      <Animated.View style={[containerAnimatedStyle, glowAnimatedStyle, style]}>
-        {children}
-      </Animated.View>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled}
+      >
+        <Animated.View style={[containerAnimatedStyle, glowAnimatedStyle, style]}>
+          {children}
+        </Animated.View>
+      </Pressable>
     );
   }
 
   return (
-    <Animated.View style={[containerAnimatedStyle, styles.wrapper, style]}>
-      <Animated.View style={[glowAnimatedStyle, { borderRadius: borderRadius + 2 }]}>
-        {/* Gradient border */}
-        <LinearGradient
-          colors={['#10b981', '#8b5cf6', '#06b6d4', '#10b981']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.gradientBorder, { borderRadius: borderRadius + 2, padding: 2 }]}
-        >
-          {/* Inner content area */}
-          <Animated.View style={[styles.innerContainer, { borderRadius }]}>
-            {children}
-            {/* Shimmer overlay */}
-            <Animated.View
-              style={[StyleSheet.absoluteFill, { borderRadius }, shimmerOverlayStyle]}
-              pointerEvents="none"
-            />
-          </Animated.View>
-        </LinearGradient>
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={disabled}
+    >
+      <Animated.View style={[containerAnimatedStyle, styles.wrapper, style]}>
+        <Animated.View style={[glowAnimatedStyle, { borderRadius: borderRadius + 2 }]}>
+          {/* Gradient border */}
+          <LinearGradient
+            colors={['#10b981', '#8b5cf6', '#06b6d4', '#10b981']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.gradientBorder, { borderRadius: borderRadius + 2, padding: 2 }]}
+          >
+            {/* Inner content area */}
+            <Animated.View style={[styles.innerContainer, { borderRadius }]}>
+              {children}
+              {/* Shimmer overlay */}
+              <Animated.View
+                style={[StyleSheet.absoluteFill, { borderRadius }, shimmerOverlayStyle]}
+                pointerEvents="none"
+              />
+            </Animated.View>
+          </LinearGradient>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+    </Pressable>
   );
 }
 

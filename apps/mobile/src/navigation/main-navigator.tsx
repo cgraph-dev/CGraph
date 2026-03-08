@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
 import { useThemeStore } from '@/stores';
 import { AnimatedTabBar } from './components/animated-tab-bar';
-import { AnimatedBackground } from '@/components/ui/animated-background';
+import AnimatedBackground from '@/components/ui/animated-background';
 import MessagesNavigator from './messages-navigator';
 import FriendsNavigator from './friends-navigator';
 import NotificationsNavigator from './notifications-navigator';
