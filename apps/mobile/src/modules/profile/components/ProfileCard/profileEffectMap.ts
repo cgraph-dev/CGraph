@@ -1,14 +1,13 @@
 /**
  * Profile effect Lottie asset map.
  *
- * Maps profile effect IDs to their Lottie JSON require() calls.
- * Add entries here as profile effect Lottie assets are created.
+ * Re-exports the canonical effect map from the assets directory.
+ * Profile-card components import from here for backwards compatibility.
  *
  * @module profile/components/ProfileCard/profileEffectMap
  */
 
-// Add profile effect Lottie JSON entries here as assets are created.
-// Example:
-//   'confetti': require('../../../../assets/lottie/effects/confetti.json'),
-//   'sparkle_rain': require('../../../../assets/lottie/effects/sparkle_rain.json'),
-export const PROFILE_EFFECT_LOTTIE_MAP: Record<string, unknown> = {};
+export {
+  PROFILE_EFFECT_ASSET_MAP as PROFILE_EFFECT_LOTTIE_MAP,
+  getProfileEffectSource,
+} from '../../../../assets/lottie/effects/effectMap';

@@ -16,6 +16,10 @@ import { View, Text, Image, StyleSheet, useWindowDimensions } from 'react-native
 import { useThemeStore } from '@/stores';
 import { getValidImageUrl } from '@/lib/imageUtils';
 import { getBorderById, type BorderTheme } from '@cgraph/animation-constants';
+import {
+  DEFAULT_PROFILE_THEME,
+  type ProfileTheme,
+} from '@cgraph/animation-constants/src/registries/profileThemes';
 import { AvatarBorder } from '../../../gamification/components/AvatarBorder';
 import { ProfileBanner } from './ProfileBanner';
 import { Nameplate, type Badge } from './Nameplate';
@@ -47,6 +51,8 @@ interface ProfileCardProps {
   equippedBannerUrl?: string;
   /** Theme override for banner gradient */
   bannerTheme?: BorderTheme;
+  /** Profile theme colors (primary background + accent) */
+  profileTheme?: ProfileTheme;
   /** Profile widgets */
   widgets?: ProfileWidget[];
   /** Preview mode disables animations */
@@ -70,6 +76,7 @@ export function ProfileCard({
   equippedProfileEffectId,
   equippedBannerUrl,
   bannerTheme,
+  profileTheme,
   widgets = [],
   isPreview = false,
 }: ProfileCardProps) {
@@ -77,6 +84,10 @@ export function ProfileCard({
   const { width: screenWidth } = useWindowDimensions();
   const cardWidth = Math.min(screenWidth - 32, 480);
   const isAnimating = !isPreview;
+
+  // Resolve profile theme
+  const themePrimary = profileTheme?.primary ?? DEFAULT_PROFILE_THEME.primary;
+  const themeAccent = profileTheme?.accent ?? DEFAULT_PROFILE_THEME.accent;
 
   // Resolve border entry for rarity/theme
   const borderEntry = equippedBorderId ? getBorderById(equippedBorderId) : undefined;
@@ -96,7 +107,7 @@ export function ProfileCard({
         styles.card,
         {
           width: cardWidth,
-          backgroundColor: colors.surface,
+          backgroundColor: themePrimary,
           borderColor: colors.border,
         },
       ]}
@@ -157,19 +168,15 @@ export function ProfileCard({
             displayName={displayName}
             nameplateId={equippedNameplateId}
             badges={user.badges}
+            accentTint={themeAccent}
           />
 
           {user.username && (
-            <Text style={[styles.handle, { color: colors.textSecondary }]}>
-              @{user.username}
-            </Text>
+            <Text style={[styles.handle, { color: colors.textSecondary }]}>@{user.username}</Text>
           )}
 
           {user.bio && (
-            <Text
-              style={[styles.bio, { color: colors.textSecondary }]}
-              numberOfLines={2}
-            >
+            <Text style={[styles.bio, { color: colors.textSecondary }]} numberOfLines={2}>
               {user.bio}
             </Text>
           )}

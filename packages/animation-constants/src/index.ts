@@ -50,3 +50,40 @@ export {
   type BorderRotationDirection,
   type BorderRegistryEntry,
 } from './borders';
+export {
+  PROFILE_EFFECT_REGISTRY,
+  getProfileEffectById,
+  getFreeProfileEffects,
+  getProfileEffectsByRarity,
+  type ProfileEffectRarity,
+  type ProfileEffectEntry,
+} from './registries/profileEffects';
+export {
+  NAMEPLATE_REGISTRY,
+  getNameplateById,
+  getFreeNameplates,
+  getNameplatesByRarity,
+  type NameplateRarity,
+  type NameplateEntry,
+} from './registries/nameplates';
+export {
+  NAME_FONTS,
+  NAME_FONT_KEYS,
+  NAME_EFFECTS,
+  NAME_EFFECT_KEYS,
+  NAME_COLORS,
+  DEFAULT_DISPLAY_NAME_STYLE,
+  type NameFont,
+  type NameFontConfig,
+  type NameEffect,
+  type NameEffectConfig,
+  type DisplayNameStyle,
+} from './registries/displayNameStyles';
+export {
+  PROFILE_THEME_PRESETS,
+  DEFAULT_PROFILE_THEME,
+  getProfileThemePresetById,
+  isCustomTheme,
+  type ProfileThemePreset,
+  type ProfileTheme,
+} from './registries/profileThemes';

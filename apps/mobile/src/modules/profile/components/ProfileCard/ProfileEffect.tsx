@@ -1,3 +1,4 @@
+/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * ProfileEffect — full-card Lottie overlay for profile entrance effects.
  *
@@ -10,11 +11,11 @@
 import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
-import { PROFILE_EFFECT_LOTTIE_MAP } from './profileEffectMap';
+import { getProfileEffectSource } from './profileEffectMap';
 
 interface ProfileEffectProps {
-  /** Profile effect ID */
-  effectId?: string;
+  /** Profile effect ID (null or 'effect_none' = hidden) */
+  effectId?: string | null;
   /** Whether the effect is playing */
   isAnimating: boolean;
   /** Effect overlay width */
@@ -30,7 +31,7 @@ interface ProfileEffectProps {
 export function ProfileEffect({ effectId, isAnimating, width, height }: ProfileEffectProps) {
   const lottieRef = useRef<LottieView>(null);
 
-  const source = effectId ? PROFILE_EFFECT_LOTTIE_MAP[effectId] : undefined;
+  const source = getProfileEffectSource(effectId ?? null);
 
   useEffect(() => {
     if (!lottieRef.current || !source) return;
@@ -41,7 +42,7 @@ export function ProfileEffect({ effectId, isAnimating, width, height }: ProfileE
     }
   }, [isAnimating, source]);
 
-  if (!effectId || !source) {
+  if (!effectId || effectId === 'effect_none' || !source) {
     return null;
   }
 
@@ -52,7 +53,8 @@ export function ProfileEffect({ effectId, isAnimating, width, height }: ProfileE
         source={source as LottieView['props']['source']}
         style={{ width, height }}
         autoPlay={isAnimating}
-        loop={false}
+        loop
+        speed={1.0}
         renderMode="AUTOMATIC"
       />
     </View>
