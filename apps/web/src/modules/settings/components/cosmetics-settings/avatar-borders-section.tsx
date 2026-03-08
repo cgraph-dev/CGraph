@@ -37,7 +37,6 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
   const equippedBorderId = preferences.equippedBorderId;
   const [selectedBorder, setSelectedBorder] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState(false);
-  const [animTypeFilter, setAnimTypeFilter] = useState<'all' | 'css' | 'lottie'>('all');
 
   // Fetch Lottie borders on mount
   useEffect(() => {
@@ -46,13 +45,6 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
 
   const filteredBorders = useMemo(() => {
     let result = getFilteredBorders();
-
-    // Apply animation type filter
-    if (animTypeFilter === 'lottie') {
-      result = result.filter((b) => b.lottieUrl);
-    } else if (animTypeFilter === 'css') {
-      result = result.filter((b) => !b.lottieUrl);
-    }
 
     // Apply additional filters from props
     if (filters.theme !== 'all') {
@@ -75,7 +67,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
     }
 
     return result;
-  }, [getFilteredBorders, filters, unlockedBorders, animTypeFilter]);
+  }, [getFilteredBorders, filters, unlockedBorders]);
 
   const handleEquip = useCallback(
     async (borderId: string) => {
@@ -142,29 +134,20 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
         >
           <option value="all">All Rarities</option>
+          <option value="free">Free</option>
           <option value="common">Common</option>
-          <option value="uncommon">Uncommon</option>
           <option value="rare">Rare</option>
           <option value="epic">Epic</option>
           <option value="legendary">Legendary</option>
           <option value="mythic">Mythic</option>
         </select>
 
-        {/* Animation Type Filter */}
+        {/* Animation Type Badge */}
         <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
-          {(['all', 'css', 'lottie'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setAnimTypeFilter(t)}
-              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                animTypeFilter === t
-                  ? 'bg-cyan-500/20 text-cyan-400'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {t === 'all' ? 'All' : t === 'css' ? 'CSS' : 'Lottie'}
-            </button>
-          ))}
+          <span className="rounded px-3 py-1.5 text-xs font-medium bg-cyan-500/20 text-cyan-400">
+            Lottie
+          </span>
+          </span>
         </div>
 
         {/* View Toggle */}

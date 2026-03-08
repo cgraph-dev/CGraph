@@ -58,19 +58,19 @@ export function createInitialize(set: SetState, _get: GetState) {
 
       set({
         unlockedBorders: [
-          // Always include free borders
-          { borderId: 'none', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
-          { borderId: 'static', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
-          {
-            borderId: 'simple-glow',
-            unlockedAt: new Date().toISOString(),
-            unlockSource: 'free',
-          },
-          {
-            borderId: 'gentle-pulse',
-            unlockedAt: new Date().toISOString(),
-            unlockSource: 'free',
-          },
+          // Always include FREE + COMMON borders
+          { borderId: 'border_8bit_free_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_kawaii_free_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_elemental_water_free_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_gothic_free_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_anime_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_cyberpunk_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_japanese_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_elemental_fire_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_elemental_earth_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_elemental_air_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_cosmic_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
+          { borderId: 'border_gothic_common_01', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
           ...unlocked,
         ],
         preferences: {

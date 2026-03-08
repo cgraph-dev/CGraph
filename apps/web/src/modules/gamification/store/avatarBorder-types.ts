@@ -117,7 +117,7 @@ export interface AvatarBorderState {
 // ==================== DEFAULT VALUES ====================
 
 export const DEFAULT_PREFERENCES: BorderPreference = {
-  equippedBorderId: 'none',
+  equippedBorderId: 'border_8bit_free_01',
   animationSpeed: 1.0,
   particleDensity: 50,
   showParticles: true,

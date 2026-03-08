@@ -21,47 +21,59 @@ export const LOTTIE_BORDER_FALLBACK = require('../../../../assets/lottie/borders
  * The key matches `BorderRegistryEntry.id`, the value is a require() call.
  */
 export const LOTTIE_BORDER_MAP: Record<string, unknown> = {
-  // ─── STATIC (available locally) ─────────────────────────────────────
-  'avatar-frame-gold': require('../../../../assets/lottie/borders/avatar-frame-gold.json'),
+  // ─── FREE (4) ────────────────────────────────────────────────────────
+  'border_8bit_free_01': require('../../../../assets/lottie/borders/8bit_free_01.json'),
+  'border_kawaii_free_01': require('../../../../assets/lottie/borders/kawaii_free_01.json'),
+  'border_elemental_water_free_01': require('../../../../assets/lottie/borders/elemental_water_free_01.json'),
+  'border_gothic_free_01': require('../../../../assets/lottie/borders/gothic_free_01.json'),
+
+  // ─── COMMON (8) ─────────────────────────────────────────────────────
+  'border_anime_common_01': require('../../../../assets/lottie/borders/anime_common_01.json'),
+  'border_cyberpunk_common_01': require('../../../../assets/lottie/borders/cyberpunk_common_01.json'),
+  'border_japanese_common_01': require('../../../../assets/lottie/borders/japanese_common_01.json'),
+  'border_elemental_fire_common_01': require('../../../../assets/lottie/borders/elemental_fire_common_01.json'),
+  'border_elemental_earth_common_01': require('../../../../assets/lottie/borders/elemental_earth_common_01.json'),
+  'border_elemental_air_common_01': require('../../../../assets/lottie/borders/elemental_air_common_01.json'),
+  'border_cosmic_common_01': require('../../../../assets/lottie/borders/cosmic_common_01.json'),
+  'border_gothic_common_01': require('../../../../assets/lottie/borders/gothic_common_01.json'),
 
   // ─── RARE (10) ──────────────────────────────────────────────────────
-  // Uncomment each line after placing the corresponding .json file:
-  // 'border_8bit_rare_01': require('../../../../assets/lottie/borders/8bit_rare_01.json'),
-  // 'border_anime_rare_01': require('../../../../assets/lottie/borders/anime_rare_01.json'),
-  // 'border_cyberpunk_rare_01': require('../../../../assets/lottie/borders/cyberpunk_rare_01.json'),
-  // 'border_japanese_rare_01': require('../../../../assets/lottie/borders/japanese_rare_01.json'),
-  // 'border_gothic_rare_01': require('../../../../assets/lottie/borders/gothic_rare_01.json'),
-  // 'border_kawaii_rare_01': require('../../../../assets/lottie/borders/kawaii_rare_01.json'),
-  // 'border_elemental_fire_rare_01': require('../../../../assets/lottie/borders/elemental_fire_rare_01.json'),
-  // 'border_elemental_water_rare_01': require('../../../../assets/lottie/borders/elemental_water_rare_01.json'),
-  // 'border_elemental_earth_rare_01': require('../../../../assets/lottie/borders/elemental_earth_rare_01.json'),
-  // 'border_cosmic_rare_01': require('../../../../assets/lottie/borders/cosmic_rare_01.json'),
+  'border_8bit_rare_01': require('../../../../assets/lottie/borders/8bit_rare_01.json'),
+  'border_anime_rare_01': require('../../../../assets/lottie/borders/anime_rare_01.json'),
+  'border_cyberpunk_rare_01': require('../../../../assets/lottie/borders/cyberpunk_rare_01.json'),
+  'border_japanese_rare_01': require('../../../../assets/lottie/borders/japanese_rare_01.json'),
+  'border_gothic_rare_01': require('../../../../assets/lottie/borders/gothic_rare_01.json'),
+  'border_kawaii_rare_01': require('../../../../assets/lottie/borders/kawaii_rare_01.json'),
+  'border_elemental_fire_rare_01': require('../../../../assets/lottie/borders/elemental_fire_rare_01.json'),
+  'border_elemental_water_rare_01': require('../../../../assets/lottie/borders/elemental_water_rare_01.json'),
+  'border_elemental_earth_rare_01': require('../../../../assets/lottie/borders/elemental_earth_rare_01.json'),
+  'border_cosmic_rare_01': require('../../../../assets/lottie/borders/cosmic_rare_01.json'),
 
   // ─── EPIC (8) ───────────────────────────────────────────────────────
-  // 'border_8bit_epic_01': require('../../../../assets/lottie/borders/8bit_epic_01.json'),
-  // 'border_anime_epic_01': require('../../../../assets/lottie/borders/anime_epic_01.json'),
-  // 'border_cyberpunk_epic_01': require('../../../../assets/lottie/borders/cyberpunk_epic_01.json'),
-  // 'border_japanese_epic_01': require('../../../../assets/lottie/borders/japanese_epic_01.json'),
-  // 'border_kawaii_epic_01': require('../../../../assets/lottie/borders/kawaii_epic_01.json'),
-  // 'border_elemental_fire_epic_01': require('../../../../assets/lottie/borders/elemental_fire_epic_01.json'),
-  // 'border_elemental_air_epic_01': require('../../../../assets/lottie/borders/elemental_air_epic_01.json'),
-  // 'border_cosmic_epic_01': require('../../../../assets/lottie/borders/cosmic_epic_01.json'),
+  'border_8bit_epic_01': require('../../../../assets/lottie/borders/8bit_epic_01.json'),
+  'border_anime_epic_01': require('../../../../assets/lottie/borders/anime_epic_01.json'),
+  'border_cyberpunk_epic_01': require('../../../../assets/lottie/borders/cyberpunk_epic_01.json'),
+  'border_japanese_epic_01': require('../../../../assets/lottie/borders/japanese_epic_01.json'),
+  'border_kawaii_epic_01': require('../../../../assets/lottie/borders/kawaii_epic_01.json'),
+  'border_elemental_fire_epic_01': require('../../../../assets/lottie/borders/elemental_fire_epic_01.json'),
+  'border_elemental_air_epic_01': require('../../../../assets/lottie/borders/elemental_air_epic_01.json'),
+  'border_cosmic_epic_01': require('../../../../assets/lottie/borders/cosmic_epic_01.json'),
 
   // ─── LEGENDARY (8) ─────────────────────────────────────────────────
-  // 'border_8bit_legendary_01': require('../../../../assets/lottie/borders/8bit_legendary_01.json'),
-  // 'border_anime_legendary_01': require('../../../../assets/lottie/borders/anime_legendary_01.json'),
-  // 'border_cyberpunk_legendary_01': require('../../../../assets/lottie/borders/cyberpunk_legendary_01.json'),
-  // 'border_japanese_legendary_01': require('../../../../assets/lottie/borders/japanese_legendary_01.json'),
-  // 'border_gothic_legendary_01': require('../../../../assets/lottie/borders/gothic_legendary_01.json'),
-  // 'border_elemental_water_legendary_01': require('../../../../assets/lottie/borders/elemental_water_legendary_01.json'),
-  // 'border_elemental_earth_legendary_01': require('../../../../assets/lottie/borders/elemental_earth_legendary_01.json'),
-  // 'border_cosmic_legendary_01': require('../../../../assets/lottie/borders/cosmic_legendary_01.json'),
+  'border_8bit_legendary_01': require('../../../../assets/lottie/borders/8bit_legendary_01.json'),
+  'border_anime_legendary_01': require('../../../../assets/lottie/borders/anime_legendary_01.json'),
+  'border_cyberpunk_legendary_01': require('../../../../assets/lottie/borders/cyberpunk_legendary_01.json'),
+  'border_japanese_legendary_01': require('../../../../assets/lottie/borders/japanese_legendary_01.json'),
+  'border_gothic_legendary_01': require('../../../../assets/lottie/borders/gothic_legendary_01.json'),
+  'border_elemental_water_legendary_01': require('../../../../assets/lottie/borders/elemental_water_legendary_01.json'),
+  'border_elemental_earth_legendary_01': require('../../../../assets/lottie/borders/elemental_earth_legendary_01.json'),
+  'border_cosmic_legendary_01': require('../../../../assets/lottie/borders/cosmic_legendary_01.json'),
 
   // ─── MYTHIC (4) ────────────────────────────────────────────────────
-  // 'border_cyberpunk_mythic_01': require('../../../../assets/lottie/borders/cyberpunk_mythic_01.json'),
-  // 'border_cosmic_mythic_01': require('../../../../assets/lottie/borders/cosmic_mythic_01.json'),
-  // 'border_elemental_fire_mythic_01': require('../../../../assets/lottie/borders/elemental_fire_mythic_01.json'),
-  // 'border_anime_mythic_01': require('../../../../assets/lottie/borders/anime_mythic_01.json'),
+  'border_cyberpunk_mythic_01': require('../../../../assets/lottie/borders/cyberpunk_mythic_01.json'),
+  'border_cosmic_mythic_01': require('../../../../assets/lottie/borders/cosmic_mythic_01.json'),
+  'border_elemental_fire_mythic_01': require('../../../../assets/lottie/borders/elemental_fire_mythic_01.json'),
+  'border_anime_mythic_01': require('../../../../assets/lottie/borders/anime_mythic_01.json'),
 };
 
 /**

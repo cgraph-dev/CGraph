@@ -40,14 +40,17 @@ export type BorderTheme =
 
 // ==================== BORDER TYPES ====================
 
+/**
+ * All avatar borders are now Lottie-based.
+ * Legacy CSS animation types kept for backwards compatibility with
+ * the customization store (avatar-panel.tsx).
+ */
 export type AvatarBorderType =
-  // Free tier (4)
+  // Legacy CSS types (customization store compatibility)
   | 'none'
   | 'static'
   | 'simple-glow'
   | 'gentle-pulse'
-
-  // Premium subscription (8)
   | 'rotating-ring'
   | 'dual-ring'
   | 'gradient-wave'
@@ -56,142 +59,14 @@ export type AvatarBorderType =
   | 'neon-outline'
   | 'ripple'
   | 'heartbeat'
-
-  // Enterprise subscription (12)
-  | 'fire-inferno'
-  | 'ice-frost'
-  | 'storm-electric'
-  | 'nature-vines'
-  | 'water-flow'
-  | 'shadow-mist'
-  | 'light-radiance'
-  | 'cherry-blossom'
-  | 'golden-coins'
-  | 'starfield'
-  | 'aurora-borealis'
-  | 'bubble-rise'
-
-  // Legendary (Achievement-locked, 8)
-  | 'phoenix-rising'
-  | 'dragon-scale'
-  | 'void-portal'
-  | 'cosmic-nebula'
-  | 'chaos-rift'
-  | 'divine-halo'
-  | 'ancient-runes'
-  | 'crystal-formation'
-
-  // Mythic (Events/Top 100, 8)
-  | 'reality-warp'
-  | 'timeline-shift'
-  | 'dimensional-tear'
-  | 'celestial-crown'
-  | 'infinity-loop'
-  | 'primordial-flame'
-  | 'eternal-frost'
-  | 'transcendent'
-
-  // 8-Bit Theme (8)
-  | '8bit-pixels'
-  | '8bit-powerup'
-  | '8bit-coins'
-  | '8bit-hearts'
-  | '8bit-stars'
-  | '8bit-rainbow'
-  | '8bit-glitch'
-  | '8bit-boss'
-
-  // Japanese Theme (10)
-  | 'sakura-petals'
-  | 'bamboo-forest'
-  | 'koi-fish'
-  | 'paper-lanterns'
-  | 'shrine-torii'
-  | 'samurai-blade'
-  | 'zen-circle'
-  | 'maple-leaves'
-  | 'wave-pattern'
-  | 'kanji-scroll'
-
-  // Chinese Theme (10)
-  | 'dragon-dance'
-  | 'phoenix-feather'
-  | 'lotus-bloom'
-  | 'jade-ring'
-  | 'paper-cut'
-  | 'temple-bells'
-  | 'ink-brush'
-  | 'cloud-pattern'
-  | 'fortune-coins'
-  | 'zodiac-circle'
-
-  // Anime Theme (10)
-  | 'manga-speed-lines'
-  | 'power-aura'
-  | 'transformation'
-  | 'chibi-sparkle'
-  | 'impact-frame'
-  | 'spirit-energy'
-  | 'magical-circle'
-  | 'sakuga-flash'
-  | 'eye-shine'
-  | 'battle-scars'
-
-  // Cyberpunk Theme (10)
-  | 'cyber-circuit'
-  | 'neon-hexagon'
-  | 'hologram-glitch'
-  | 'data-stream'
-  | 'tech-scanner'
-  | 'neural-link'
-  | 'quantum-flux'
-  | 'ai-interface'
-  | 'synth-wave'
-  | 'matrix-code'
-
-  // Gothic Theme (10)
-  | 'blood-moon'
-  | 'bat-swarm'
-  | 'thorns-vines'
-  | 'coffin-chains'
-  | 'skull-crown'
-  | 'raven-feathers'
-  | 'cursed-runes'
-  | 'vampire-bite'
-  | 'cemetery-mist'
-  | 'darkrose'
-
-  // Kawaii Theme (10)
-  | 'pastel-hearts'
-  | 'rainbow-stars'
-  | 'candy-swirl'
-  | 'bubble-tea'
-  | 'kitty-paws'
-  | 'unicorn-magic'
-  | 'cupcake-sprinkles'
-  | 'cloud-nine'
-  | 'fairy-dust'
-  | 'teddy-bear'
-
-  // Steampunk Theme (8)
-  | 'brass-gears'
-  | 'steam-engine'
-  | 'clockwork'
-  | 'copper-pipes'
-  | 'Victorian-frame'
-  | 'airship-propeller'
-  | 'tesla-coil'
-  | 'industrial-rivets'
-
-  // Vaporwave Theme (8)
-  | 'retro-grid'
-  | 'palm-trees'
-  | 'sunset-gradient'
-  | 'glitch-art'
-  | 'wireframe'
-  | 'neon-triangle'
-  | 'vhs-static'
-  | 'aesthetic-kanji'
+  | 'fire'
+  | 'ice'
+  | 'electric'
+  | 'glow'
+  | 'pulse'
+  | 'rotate'
+  | 'legendary'
+  | 'mythic'
 
   // Lottie (animated JSON borders)
   | 'lottie';
