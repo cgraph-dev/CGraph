@@ -490,6 +490,7 @@ export type SettingsStackParamList = {
   IdentityCustomization: undefined;
   EffectsCustomization: undefined;
   ProgressionCustomization: undefined;
+  ProfileCustomization: undefined;
   BadgeSelection: undefined;
   TitleSelection: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };

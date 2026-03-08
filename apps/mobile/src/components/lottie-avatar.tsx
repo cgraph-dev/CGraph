@@ -1,12 +1,11 @@
 /**
- * Lottie-animated avatar rendered within a squircle mask.
+ * Lottie-animated avatar rendered within a circular mask.
  * @module components/LottieAvatar
  */
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { useReducedMotion } from 'react-native-reanimated';
-import { getSquircleBorderRadius } from './avatar-squircle-clip';
 
 interface LottieAvatarProps {
   /** URL to a Lottie JSON animation */
@@ -22,7 +21,7 @@ interface LottieAvatarProps {
 }
 
 /**
- * Renders a Lottie animation inside squircle-masked avatar bounds.
+ * Renders a Lottie animation inside circle-masked avatar bounds.
  * Falls back to static image or initials while loading.
  */
 export default function LottieAvatar({
@@ -36,7 +35,7 @@ export default function LottieAvatar({
   const reducedMotion = useReducedMotion();
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const radius = getSquircleBorderRadius(size);
+  const radius = size / 2;
 
   // Pre-fetch the Lottie JSON to detect load errors (lottie-react-native v7 has no onAnimationFailure)
   useEffect(() => {

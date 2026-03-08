@@ -37,6 +37,7 @@ import {
 } from '../screens/customize';
 import EmailNotificationsScreen from '../screens/settings/email-notifications-screen';
 import KeyVerificationScreen from '../screens/settings/key-verification-screen';
+import ProfileCustomizationScreen from '../screens/profile/ProfileCustomizationScreen';
 import PrivacyPolicyScreen from '../screens/legal/privacy-policy-screen';
 import TermsOfServiceScreen from '../screens/legal/terms-of-service-screen';
 import CookiePolicyScreen from '../screens/legal/cookie-policy-screen';
@@ -213,6 +214,11 @@ export default function SettingsNavigator() {
         name="ProgressionCustomization"
         component={ProgressionCustomizationScreen}
         options={{ title: 'Progression', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProfileCustomization"
+        component={ProfileCustomizationScreen}
+        options={{ title: 'Profile Cosmetics', headerShown: false }}
       />
       <Stack.Screen
         name="BadgeSelection"

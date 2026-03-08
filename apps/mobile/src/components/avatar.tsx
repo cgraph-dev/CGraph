@@ -6,7 +6,6 @@ import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
 import AnimatedBorder, { type BorderAnimationType } from './gamification/animated-border';
-import { getSquircleBorderRadius } from './avatar-squircle-clip';
 import LottieAvatar from './lottie-avatar';
 
 /** Equipped border data from the gamification system. */
@@ -33,8 +32,8 @@ interface AvatarProps {
   status?: 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
   /** Show status indicator */
   showStatus?: boolean;
-  /** Avatar shape — squircle (default), circle, or square */
-  shape?: 'squircle' | 'circle' | 'square';
+  /** Avatar shape — circle (default) or square */
+  shape?: 'circle' | 'square';
   /** URL to a Lottie JSON animation (renders inside avatar bounds) */
   lottieUrl?: string;
   /** Gamification equipped border */
@@ -98,7 +97,7 @@ export default function Avatar({
   size = 'md',
   status,
   showStatus = true,
-  shape = 'squircle',
+  shape = 'circle',
   lottieUrl,
   equippedBorder,
   style,
@@ -109,12 +108,7 @@ export default function Avatar({
   const statusSize = Math.max(sizeValue * 0.25, 8);
 
   // Compute border radius based on shape
-  const borderRadius =
-    shape === 'circle'
-      ? sizeValue / 2
-      : shape === 'square'
-        ? 16
-        : getSquircleBorderRadius(sizeValue);
+  const borderRadius = shape === 'square' ? 16 : sizeValue / 2;
 
   const initials = name
     ? name

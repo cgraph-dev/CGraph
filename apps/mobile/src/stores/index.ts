@@ -25,6 +25,8 @@ export {
   useStreak,
   useAchievements,
   useActiveQuests,
+  useEquippedBorderId,
+  useEquippedNameplateId,
 } from './gamificationStore';
 
 // ─── Marketplace ─────────────────────────────────────────────────────────────

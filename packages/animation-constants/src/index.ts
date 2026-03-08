@@ -33,3 +33,20 @@ export {
   type HoverPreset,
   type ButtonReducedMotion,
 } from './buttons';
+export {
+  BORDER_REGISTRY,
+  BORDER_THEME_PALETTES,
+  BORDER_RARITY_GLOW_RADIUS,
+  BORDER_RARITY_MAX_ANIMATIONS,
+  BORDER_RARITY_LOTTIE_SPEED,
+  BORDER_RARITY_SCALE,
+  getBorderById,
+  getBordersByRarity,
+  getBordersByTheme,
+  isAnimatedRarity,
+  type BorderRarity,
+  type BorderTheme,
+  type BorderParticleShape,
+  type BorderRotationDirection,
+  type BorderRegistryEntry,
+} from './borders';

@@ -1513,6 +1513,28 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     tags: ['kawaii', 'teddy', 'love'],
   },
 
+  // ==================== LOTTIE BORDERS (Static) ====================
+  {
+    id: 'avatar-frame-gold',
+    type: 'lottie',
+    name: 'Golden Avatar Frame',
+    description: 'Elegant animated golden frame with shimmering effects',
+    theme: 'luxury',
+    rarity: 'legendary',
+    unlockType: 'default',
+    primaryColor: '#f59e0b',
+    secondaryColor: '#d97706',
+    accentColor: '#fbbf24',
+    isPremium: false,
+    animationSpeed: 'normal',
+    tags: ['gold', 'frame', 'lottie', 'animated', 'luxury'],
+    lottieUrl: '/lottie/borders/avatar-frame.json',
+    lottieConfig: {
+      loop: true,
+      speed: 1,
+    },
+  },
+
   // --- Lottie Borders (loaded dynamically from API) ---
   // Lottie borders are not hardcoded here — they come from:
   // GET /api/v1/cosmetics/borders?animation_type=lottie

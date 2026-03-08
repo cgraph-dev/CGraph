@@ -13,7 +13,7 @@ const LottieRenderer = lazy(() =>
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 type AvatarStatus = 'online' | 'offline' | 'idle' | 'dnd' | 'invisible';
-type AvatarShape = 'squircle' | 'circle' | 'square';
+type AvatarShape = 'circle' | 'square';
 
 interface AvatarProps {
   src?: string | null;
@@ -27,7 +27,7 @@ interface AvatarProps {
   storyRing?: boolean;
   /** Show animated typing dots overlay */
   typing?: boolean;
-  /** Avatar shape — squircle (43px radius, default), circle, or square */
+  /** Avatar shape — circle (default) or square */
   shape?: AvatarShape;
   borderId?: string | null;
   /** URL to a Lottie JSON animation (renders inside avatar bounds) */
@@ -149,13 +149,12 @@ export default function Avatar({
   status,
   storyRing = false,
   typing = false,
-  shape = 'squircle',
+  shape = 'circle',
   borderId,
   lottieUrl,
 }: AvatarProps) {
   const cfg = sizeConfig[size];
-  const rounding =
-    shape === 'circle' ? 'rounded-full' : shape === 'square' ? 'rounded-2xl' : 'rounded-[43px]';
+  const rounding = shape === 'square' ? 'rounded-2xl' : 'rounded-full';
   const gradient = useMemo(() => getGradient(name), [name]);
   const borderStyle = borderId ? getAvatarBorderStyle(borderId) : { className: '' };
 

@@ -81,6 +81,10 @@ interface GamificationState {
   currentTitle: string | null;
   equippedTitleId: string | null;
 
+  // Cosmetics
+  equippedBorderId: string | null;
+  equippedNameplateId: string | null;
+
   // Leaderboard
   scopedLeaderboard: Array<{
     rank: number;
@@ -116,6 +120,10 @@ interface GamificationState {
   claimDailyStreak: () => Promise<{ coins: number; streak: number } | null>;
   equipTitle: (titleId: string) => Promise<void>;
   unequipTitle: () => Promise<void>;
+  equipBorder: (borderId: string) => void;
+  unequipBorder: () => void;
+  equipNameplate: (nameplateId: string) => void;
+  unequipNameplate: () => void;
   fetchScopedLeaderboard: (scope: string, scopeId?: string, category?: string) => Promise<void>;
   purchaseBattlePass: (eventId: string) => Promise<{ success: boolean }>;
   purchaseMarketplaceListing: (listingId: string) => Promise<{ success: boolean }>;
@@ -176,6 +184,9 @@ const INITIAL_STATE = {
   currentTitle: null as string | null,
    
   equippedTitleId: null as string | null,
+
+  equippedBorderId: null as string | null,
+  equippedNameplateId: null as string | null,
 
   scopedLeaderboard: [] as Array<{
     rank: number;
@@ -469,6 +480,19 @@ export const useGamificationStore = create<GamificationState>()(
       handleNewQuestsAvailable: () => {
         get().fetchQuests();
       },
+
+      equipBorder: (borderId: string) => {
+        set({ equippedBorderId: borderId });
+      },
+      unequipBorder: () => {
+        set({ equippedBorderId: null });
+      },
+      equipNameplate: (nameplateId: string) => {
+        set({ equippedNameplateId: nameplateId });
+      },
+      unequipNameplate: () => {
+        set({ equippedNameplateId: null });
+      },
     }),
     {
       name: 'cgraph-gamification',
@@ -492,5 +516,7 @@ export const useXP = () => useGamificationStore((s) => s.xp);
 export const useStreak = () => useGamificationStore((s) => s.streak);
 export const useAchievements = () => useGamificationStore((s) => s.achievements);
 export const useActiveQuests = () => useGamificationStore((s) => s.activeQuests);
+export const useEquippedBorderId = () => useGamificationStore((s) => s.equippedBorderId);
+export const useEquippedNameplateId = () => useGamificationStore((s) => s.equippedNameplateId);
 
 export default useGamificationStore;

@@ -12,7 +12,7 @@ export const defaultAvatarStyle: AvatarStyle = {
   secondaryColor: '#8b5cf6',
   glowIntensity: 50,
   animationSpeed: 'normal',
-  shape: 'squircle',
+  shape: 'circle',
   particleEffect: 'none',
   pulseOnHover: true,
   showLevel: false,

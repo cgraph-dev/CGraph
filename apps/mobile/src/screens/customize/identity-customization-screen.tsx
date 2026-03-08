@@ -58,6 +58,13 @@ export default function IdentityCustomizationScreen() {
       action: () => navigation.navigate('AvatarSettings'),
     },
     {
+      id: 'avatar-decoration',
+      title: 'Avatar Decoration',
+      description: 'Choose an animated border for your avatar',
+      icon: 'color-palette-outline',
+      action: () => navigation.navigate('ProfileCustomization'),
+    },
+    {
       id: 'visibility',
       title: 'Profile Visibility',
       description: 'Control who can see your profile information',

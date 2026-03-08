@@ -191,7 +191,10 @@ export type AvatarBorderType =
   | 'wireframe'
   | 'neon-triangle'
   | 'vhs-static'
-  | 'aesthetic-kanji';
+  | 'aesthetic-kanji'
+
+  // Lottie (animated JSON borders)
+  | 'lottie';
 
 // ==================== RARITY SYSTEM ====================
 
