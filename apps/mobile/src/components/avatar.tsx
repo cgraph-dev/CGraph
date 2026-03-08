@@ -6,6 +6,8 @@ import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
 import AnimatedBorder, { type BorderAnimationType } from './gamification/animated-border';
+import { getSquircleBorderRadius } from './avatar-squircle-clip';
+import LottieAvatar from './lottie-avatar';
 
 /** Equipped border data from the gamification system. */
 export interface EquippedBorderData {
@@ -31,6 +33,10 @@ interface AvatarProps {
   status?: 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
   /** Show status indicator */
   showStatus?: boolean;
+  /** Avatar shape — squircle (default), circle, or square */
+  shape?: 'squircle' | 'circle' | 'square';
+  /** URL to a Lottie JSON animation (renders inside avatar bounds) */
+  lottieUrl?: string;
   /** Gamification equipped border */
   equippedBorder?: EquippedBorderData | null;
   /** Additional styles */
@@ -84,7 +90,7 @@ function getColorFromName(name: string): string {
 }
 
 /**
- *
+ * Avatar component displaying a user image or generated initials.
  */
 export default function Avatar({
   source,
@@ -92,6 +98,8 @@ export default function Avatar({
   size = 'md',
   status,
   showStatus = true,
+  shape = 'squircle',
+  lottieUrl,
   equippedBorder,
   style,
 }: AvatarProps) {
@@ -99,6 +107,14 @@ export default function Avatar({
   const sizeValue = typeof size === 'number' ? size : SIZES[size];
   const fontSize = sizeValue * 0.4;
   const statusSize = Math.max(sizeValue * 0.25, 8);
+
+  // Compute border radius based on shape
+  const borderRadius =
+    shape === 'circle'
+      ? sizeValue / 2
+      : shape === 'square'
+        ? 16
+        : getSquircleBorderRadius(sizeValue);
 
   const initials = name
     ? name
@@ -116,14 +132,32 @@ export default function Avatar({
       ? source
       : null;
 
+  // Lottie animated avatar
+  if (lottieUrl) {
+    return (
+      <LottieAvatar
+        lottieUrl={lottieUrl}
+        size={sizeValue}
+        fallbackSource={validSource}
+        initials={initials}
+        initialsColor={name ? getColorFromName(name) : colors.primary}
+      />
+    );
+  }
+
   // Resolve equipped border animation type
-  const borderAnimationType: BorderAnimationType =
-    (equippedBorder?.animationType ?? equippedBorder?.animation_type ?? 'none') as BorderAnimationType;
+  const rawType = equippedBorder?.animationType ?? equippedBorder?.animation_type ?? 'none';
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- dynamic border type from API
+  const borderAnimationType = rawType as BorderAnimationType;
   const hasBorder = equippedBorder != null && borderAnimationType !== 'none';
 
   const avatarContent = (
     <View
-      style={[styles.container, { width: sizeValue, height: sizeValue }, !hasBorder ? style : undefined]}
+      style={[
+        styles.container,
+        { width: sizeValue, height: sizeValue },
+        !hasBorder ? style : undefined,
+      ]}
       accessible={true}
       accessibilityLabel={name ? `${name} avatar` : 'User avatar'}
       accessibilityRole="image"
@@ -136,7 +170,7 @@ export default function Avatar({
             {
               width: sizeValue,
               height: sizeValue,
-              borderRadius: sizeValue / 2,
+              borderRadius,
             },
           ]}
         />
@@ -147,7 +181,7 @@ export default function Avatar({
             {
               width: sizeValue,
               height: sizeValue,
-              borderRadius: sizeValue / 2,
+              borderRadius,
               backgroundColor: name ? getColorFromName(name) : colors.primary,
             },
           ]}
