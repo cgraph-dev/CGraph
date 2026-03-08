@@ -62,6 +62,21 @@ export const apiSchemaMapper = createSchemaMapper<CustomizationState>({
   // Identity
   equippedTitle: 'equipped_title',
   equippedBadges: 'equipped_badges',
+
+  // Display Name Style
+  displayNameFont: 'display_name_font',
+  displayNameEffect: 'display_name_effect',
+  displayNameColor: 'display_name_color',
+  displayNameSecondaryColor: 'display_name_secondary_color',
+
+  // Nameplate & Profile Effect
+  equippedNameplate: 'equipped_nameplate',
+  equippedProfileEffect: 'equipped_profile_effect',
+
+  // Profile Theme Preset
+  profileThemePresetId: 'profile_theme_preset_id',
+  profileThemePrimary: 'profile_theme_primary',
+  profileThemeAccent: 'profile_theme_accent',
 });
 
 // =============================================================================
@@ -113,4 +128,13 @@ export const PERSIST_PARTIALIZE = (state: CustomizationStore) => ({
   particleEffects: state.particleEffects,
   equippedTitle: state.equippedTitle,
   equippedBadges: state.equippedBadges,
+  displayNameFont: state.displayNameFont,
+  displayNameEffect: state.displayNameEffect,
+  displayNameColor: state.displayNameColor,
+  displayNameSecondaryColor: state.displayNameSecondaryColor,
+  equippedNameplate: state.equippedNameplate,
+  equippedProfileEffect: state.equippedProfileEffect,
+  profileThemePresetId: state.profileThemePresetId,
+  profileThemePrimary: state.profileThemePrimary,
+  profileThemeAccent: state.profileThemeAccent,
 });

@@ -28,6 +28,11 @@ interface ProfileContentProps {
     displayNameEffect?: string;
     displayNameColor?: string;
     displayNameSecondaryColor?: string | null;
+    equippedNameplate?: string | null;
+    equippedProfileEffect?: string | null;
+    profileThemePresetId?: string | null;
+    profileThemePrimary?: string | null;
+    profileThemeAccent?: string | null;
   };
   colors: ThemeColors;
   effectiveBorderType: AvatarBorderType;
