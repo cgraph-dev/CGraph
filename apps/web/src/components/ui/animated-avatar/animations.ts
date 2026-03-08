@@ -11,6 +11,8 @@ import { ANIMATION_DURATIONS } from './constants';
  */
 export function getShapeStyles(shape: AvatarStyle['shape']): string {
   switch (shape) {
+    case 'squircle':
+      return 'rounded-[43px]';
     case 'circle':
       return 'rounded-full';
     case 'rounded-square':
@@ -24,7 +26,7 @@ export function getShapeStyles(shape: AvatarStyle['shape']): string {
     case 'diamond':
       return '[clip-path:polygon(50%_0%,100%_50%,50%_100%,0%_50%)]';
     default:
-      return 'rounded-full';
+      return 'rounded-[43px]';
   }
 }
 

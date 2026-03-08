@@ -54,7 +54,7 @@ export interface AvatarStyle {
   secondaryColor: string;
   glowIntensity: number;
   animationSpeed: 'none' | 'slow' | 'normal' | 'fast' | 'ultra';
-  shape: 'circle' | 'rounded-square' | 'hexagon' | 'octagon' | 'shield' | 'diamond';
+  shape: 'squircle' | 'circle' | 'rounded-square' | 'hexagon' | 'octagon' | 'shield' | 'diamond';
   particleEffect: 'none' | 'sparkles' | 'bubbles' | 'flames' | 'snow' | 'hearts' | 'stars';
   pulseOnHover: boolean;
   showLevel: boolean;
