@@ -53,12 +53,14 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                 {achievement.icon}
               </div>
               <div className="flex-1">
-                <h4 className="mb-1 text-base font-bold text-white">{achievement.name}</h4>
-                <p className="mb-1 text-xs text-white/60">{achievement.description}</p>
+                <h4 className="mb-1 text-base font-bold text-white">
+                  {achievement.name || 'Unknown'}
+                </h4>
+                <p className="mb-1 text-xs text-white/60">{achievement.description || ''}</p>
                 <span
                   className={`text-xs font-medium ${achievement.rarity === 'legendary' ? 'text-yellow-400' : achievement.rarity === 'epic' ? 'text-purple-400' : achievement.rarity === 'rare' ? 'text-blue-400' : 'text-gray-400'}`}
                 >
-                  {achievement.rarity.toUpperCase()}
+                  {(achievement.rarity || 'common').toUpperCase()}
                 </span>
               </div>
             </div>

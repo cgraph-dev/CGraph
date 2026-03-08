@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Gamification Store — Data Fetching Actions
  *
@@ -36,7 +37,8 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
       ]);
 
       const statsRes = statsResult.status === 'fulfilled' ? statsResult.value : null;
-      const achievementsRes = achievementsResult.status === 'fulfilled' ? achievementsResult.value : null;
+      const achievementsRes =
+        achievementsResult.status === 'fulfilled' ? achievementsResult.value : null;
 
       const stats = statsRes?.data?.data || statsRes?.data || {};
       const achievements = achievementsRes?.data?.data || [];
@@ -77,19 +79,17 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
           const objWrapper = isRecord(questData.objectives) ? questData.objectives : {};
           const rawObjs = Array.isArray(objWrapper.objectives) ? objWrapper.objectives : [];
           const progress: Record<string, number> = isRecord(q.progress)
-             
             ? (q.progress as Record<string, number>) // safe downcast: verified object
             : {};
           return {
-             
             id: q.id as string, // type assertion: API response field
-             
+
             title: (questData.title || q.title) as string, // type assertion: API response field
-             
+
             description: (questData.description || q.description) as string, // type assertion: API response field
-             
+
             type: (questData.type || q.type) as string, // type assertion: API response field
-             
+
             xpReward: (questData.xp_reward || q.xp_reward || 0) as number, // type assertion: API response field
             objectives: rawObjs.map((raw: unknown) => {
               const obj: Record<string, unknown> = isRecord(raw) ? raw : {};
@@ -103,11 +103,11 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
                 completed: (progress[objId] || 0) >= (Number(obj.target) || 0),
               };
             }),
-             
+
             expiresAt: q.expires_at as string, // type assertion: API response field
-             
+
             completed: (q.completed || false) as boolean, // type assertion: API response field
-             
+
             completedAt: q.completed_at as string | undefined, // type assertion: API response field
           };
         }),
@@ -178,9 +178,12 @@ export function createFetchQuests(set: StoreSet, get: StoreGet) {
         api.get('/api/v1/quests/weekly'),
       ]);
 
-      const activeQuests = activeResult.status === 'fulfilled' ? (activeResult.value.data?.data || []) : [];
-      const dailyQuests = dailyResult.status === 'fulfilled' ? (dailyResult.value.data?.data || []) : [];
-      const weeklyQuests = weeklyResult.status === 'fulfilled' ? (weeklyResult.value.data?.data || []) : [];
+      const activeQuests =
+        activeResult.status === 'fulfilled' ? activeResult.value.data?.data || [] : [];
+      const dailyQuests =
+        dailyResult.status === 'fulfilled' ? dailyResult.value.data?.data || [] : [];
+      const weeklyQuests =
+        weeklyResult.status === 'fulfilled' ? weeklyResult.value.data?.data || [] : [];
 
       // Combine all quests, filtering for accepted ones
       const allActive = [
@@ -192,41 +195,39 @@ export function createFetchQuests(set: StoreSet, get: StoreGet) {
       set({
         activeQuests: allActive.map((q: Record<string, unknown>) => {
           const quest: Record<string, unknown> = isRecord(q.quest) ? q.quest : q;
-           
+
           const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || []; // safe downcast
           return {
-             
             id: (q.id || quest.id) as string, // type assertion: API response field
-             
+
             title: quest.title as string, // type assertion: API response field
-             
+
             description: quest.description as string, // type assertion: API response field
-             
+
             type: (quest.type as QuestType) || 'daily', // safe downcast
-             
+
             xpReward: (quest.xp_reward as number) || 0, // type assertion: API response field
             objectives: rawObjectives.map((obj: unknown) => {
               const o: Record<string, unknown> = isRecord(obj) ? obj : {};
               return {
-                 
                 id: (o.id as string) || '', // type assertion: API response field
-                 
+
                 description: (o.description as string) || '', // type assertion: API response field
-                 
+
                 type: (o.type as 'count' | 'visit' | 'interact' | 'collect') || 'count', // safe downcast
-                 
+
                 targetValue: (o.target_value as number) || (o.targetValue as number) || 1, // type assertion: API response field
-                 
+
                 currentValue: (o.current_value as number) || (o.currentValue as number) || 0, // type assertion: API response field
-                 
+
                 completed: (o.completed as boolean) || false, // type assertion: API response field
               };
             }),
-             
+
             expiresAt: q.expires_at as string, // type assertion: API response field
-             
+
             completed: (q.completed as boolean) || false, // type assertion: API response field
-             
+
             completedAt: q.completed_at as string | undefined, // type assertion: API response field
           };
         }),
@@ -337,7 +338,22 @@ export async function fetchThemes() {
 export async function fetchAchievementsList() {
   try {
     const response = await api.get('/api/v1/gamification/achievements');
-    return response.data?.data || [];
+    const raw = response.data?.data || [];
+    return raw.map((a: Record<string, unknown>) => ({
+      id: a.id ?? '',
+      name: (a.name || a.title || '') as string,
+      description: (a.description || '') as string,
+      icon: (a.icon || '🏆') as string,
+      rarity: (a.rarity || 'common') as string,
+      progress: (a.progress || 0) as number,
+      maxProgress: (a.max_progress || a.maxProgress || 1) as number,
+      unlocked: (a.unlocked || false) as boolean,
+      reward: {
+        xp: (a.xp_reward || (a.reward as Record<string, unknown>)?.xp || 0) as number,
+        coins: (a.reward as Record<string, unknown>)?.coins as number | undefined,
+        item: (a.reward as Record<string, unknown>)?.item as string | undefined,
+      },
+    }));
   } catch (error: unknown) {
     logger.error('Failed to fetch achievements:', error);
     return [];
@@ -355,11 +371,30 @@ export async function fetchQuestsList() {
       api.get('/api/v1/quests/daily'),
       api.get('/api/v1/quests/weekly'),
     ]);
-    return [
+    const raw = [
       ...(activeRes.status === 'fulfilled' ? activeRes.value.data?.data || [] : []),
       ...(dailyRes.status === 'fulfilled' ? dailyRes.value.data?.data || [] : []),
       ...(weeklyRes.status === 'fulfilled' ? weeklyRes.value.data?.data || [] : []),
     ];
+    return raw.map((q: Record<string, unknown>) => {
+      const questData = (q.quest && typeof q.quest === 'object' ? q.quest : q) as Record<
+        string,
+        unknown
+      >;
+      return {
+        id: (q.id || '') as string,
+        name: (questData.name || questData.title || q.name || q.title || '') as string,
+        description: (questData.description || q.description || '') as string,
+        type: (questData.type || q.type || 'daily') as string,
+        progress: (q.progress_count || q.progress || 0) as number,
+        maxProgress: (questData.max_progress || q.maxProgress || 1) as number,
+        completed: (q.completed || false) as boolean,
+        reward: {
+          xp: (questData.xp_reward || (q.reward as Record<string, unknown>)?.xp || 0) as number,
+          coins: (q.reward as Record<string, unknown>)?.coins as number | undefined,
+        },
+      };
+    });
   } catch (error: unknown) {
     logger.error('Failed to fetch quests:', error);
     return [];

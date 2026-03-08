@@ -13,7 +13,13 @@ import {
   fetchQuestsList,
   fetchDailyRewards,
 } from '@/modules/gamification/store/gamification-queries';
-import type { ProgressionCategory, Achievement, LeaderboardEntry, Quest, DailyReward } from './types';
+import type {
+  ProgressionCategory,
+  Achievement,
+  LeaderboardEntry,
+  Quest,
+  DailyReward,
+} from './types';
 import { getCategoryConfigs } from './categories';
 import { StatsOverview } from './stats-overview';
 import { AchievementsSection } from './achievements-section';
@@ -76,15 +82,23 @@ export function ProgressionCustomization() {
       .finally(() => {
         if (!cancelled) setIsLoadingData(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Refetch leaderboard when type changes
   useEffect(() => {
-    fetchLeaderboard(leaderboardType).then(setLeaderboard).catch(() => {});
+    fetchLeaderboard(leaderboardType)
+      .then(setLeaderboard)
+      .catch(() => {});
   }, [leaderboardType]);
 
-  const categories = getCategoryConfigs(achievements.length, leaderboard.length, quests.filter((q) => !q.completed).length);
+  const categories = getCategoryConfigs(
+    achievements.length,
+    leaderboard.length,
+    quests.filter((q) => !q.completed).length
+  );
 
   // Calculate current streak
   const currentStreak = dailyRewards.filter((r) => r.claimed).length;
@@ -105,8 +119,8 @@ export function ProgressionCustomization() {
   // Filter achievements by search
   const filteredAchievements = achievements.filter(
     (ach) =>
-      ach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ach.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (ach.name ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (ach.description ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoadingData) {

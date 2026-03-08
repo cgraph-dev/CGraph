@@ -60,8 +60,10 @@ export function QuestsSection({ quests }: QuestsSectionProps) {
                 {/* Quest Info */}
                 <div className="mb-2 flex items-start justify-between">
                   <div>
-                    <h4 className="text-base font-bold text-white">{quest.name}</h4>
-                    <p className="text-sm text-white/60">{quest.description}</p>
+                    <h4 className="text-base font-bold text-white">
+                      {quest.name || 'Unknown Quest'}
+                    </h4>
+                    <p className="text-sm text-white/60">{quest.description || ''}</p>
                   </div>
                   {quest.completed && (
                     <CheckCircleIconSolid className="h-6 w-6 flex-shrink-0 text-green-400" />
