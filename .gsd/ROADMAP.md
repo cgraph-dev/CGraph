@@ -1056,7 +1056,7 @@ All 136 requirements mapped across 13 categories. Each REQ-ID appears in exactly
 | 19    | Launch                   | Blocked by 15,17,18      | 0%       |
 | 20    | Liquid Glass UI          | Planned (10 plans)       | 30%      |
 | 21    | UI Interactions & Motion | Planned (10 plans)       | 0%       |
-| 25    | Cinematic UI Parity      | Planned (8 plans)        | 0%       |
+| 25    | Cinematic UI Parity      | Complete (8 plans)       | 100%     |
 
 ---
 
@@ -1174,25 +1174,28 @@ Plans:
 
 ---
 
-### Phase 25: Cinematic UI Parity — Web & Mobile Match Landing/Auth Quality
+### Phase 25: Cinematic UI Parity — Web & Mobile Match Landing/Auth Quality ✅
 
 **Goal:** Web and mobile app UI matches the cinematic visual quality of the landing and auth pages —
 premium buttons with magnetic/shimmer effects, interactive particle backgrounds, squircle avatars
 (border-radius: 43px) with Lottie support, enhanced glass cards, and ambient effects.
 
-**Depends on:** Phase 24 (Landing Page Update) **Plans:** 8 plans
+**Depends on:** Phase 24 (Landing Page Update) **Plans:** 8 plans — **COMPLETE**
 
 Plans:
 
-- [ ] 25-01-PLAN.md — Shared animation presets (backgrounds + buttons in
+- [x] 25-01-PLAN.md — Shared animation presets (backgrounds + buttons in
       @cgraph/animation-constants)
-- [ ] 25-02-PLAN.md — Web button upgrade (magnetic pull, shimmer, flowing border)
-- [ ] 25-03-PLAN.md — Web cinematic background (interactive canvas particle field)
-- [ ] 25-04-PLAN.md — Web avatar squircle (border-radius: 43px) + Lottie avatar support
-- [ ] 25-05-PLAN.md — Web component polish (glass card spotlight, gradient text, micro-interactions)
-- [ ] 25-06-PLAN.md — Mobile button upgrade (gradient border, glow press, haptics)
-- [ ] 25-07-PLAN.md — Mobile avatar squircle + Lottie avatar support
-- [ ] 25-08-PLAN.md — Mobile premium components (glass card, gradient text, ambient background)
+- [x] 25-02-PLAN.md — Web button upgrade (magnetic pull, shimmer, flowing border)
+- [x] 25-03-PLAN.md — Web cinematic background (interactive canvas particle field)
+- [x] 25-04-PLAN.md — Web avatar squircle (border-radius: 43px) + Lottie avatar support
+- [x] 25-05-PLAN.md — Web component polish (glass card spotlight, gradient text, micro-interactions)
+- [x] 25-06-PLAN.md — Mobile button upgrade (gradient border, glow press, haptics)
+- [x] 25-07-PLAN.md — Mobile avatar squircle + Lottie avatar support
+- [x] 25-08-PLAN.md — Mobile premium components (glass card, gradient text, ambient background)
+
+**Result:** Web and mobile apps have cinematic UI matching landing/auth quality. All effects respect
+`useReducedMotion` / `prefers-reduced-motion`. All animations use native-thread execution on mobile.
 
 ---
 

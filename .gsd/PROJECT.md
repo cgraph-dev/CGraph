@@ -177,6 +177,10 @@ These rules are **absolute** — no exceptions, no shortcuts:
 
 <!-- Next work scope. To be defined via /discovery and /plan phases. -->
 
+- ✓ Liquid Glass UI (10 plans) — Phase 20
+- ✓ UI Interactions & Motion (10 plans) — Phase 21
+- ✓ Cinematic UI Parity (8 plans) — Phase 25
+
 (Pending — run `/discovery` to define next milestone scope)
 
 ### Out of Scope
