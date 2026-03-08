@@ -52,13 +52,7 @@ export function useTapScale(scale = 0.97) {
 // ── AnimatedCounter ────────────────────────────────────────────────────
 
 /** Number that rolls up/down when value changes (like Discord member count) */
-export function AnimatedCounter({
-  value,
-  className,
-}: {
-  value: number;
-  className?: string;
-}) {
+export function AnimatedCounter({ value, className }: { value: number; className?: string }) {
   const reduced = usePrefersReducedMotion();
   const [prev, setPrev] = useState(value);
   const [current, setCurrent] = useState(value);
@@ -67,6 +61,7 @@ export function AnimatedCounter({
   useEffect(() => {
     setPrev(current);
     setCurrent(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- prev tracks prior value; including current would defeat purpose
   }, [value]);
 
   if (reduced) {
@@ -74,7 +69,7 @@ export function AnimatedCounter({
   }
 
   return (
-    <span className={cn('inline-flex overflow-hidden relative', className)}>
+    <span className={cn('relative inline-flex overflow-hidden', className)}>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={value}
@@ -94,13 +89,7 @@ export function AnimatedCounter({
 // ── PulseBadge ─────────────────────────────────────────────────────────
 
 /** Badge that pulses when count increments */
-export function PulseBadge({
-  count,
-  className,
-}: {
-  count: number;
-  className?: string;
-}) {
+export function PulseBadge({ count, className }: { count: number; className?: string }) {
   const reduced = usePrefersReducedMotion();
   const prevRef = useRef(count);
   const [pulse, setPulse] = useState(false);
@@ -121,13 +110,11 @@ export function PulseBadge({
   return (
     <motion.span
       animate={
-        pulse && !reduced
-          ? { scale: [1, 1.3, 1], transition: { duration: 0.4 } }
-          : { scale: 1 }
+        pulse && !reduced ? { scale: [1, 1.3, 1], transition: { duration: 0.4 } } : { scale: 1 }
       }
       className={cn(
-        'inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold',
-        className,
+        'inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white',
+        className
       )}
     >
       {count > 99 ? '99+' : count}
@@ -156,13 +143,13 @@ export function SendAnimation({
       onClick={onSend}
       disabled={status !== 'idle'}
       className={cn(
-        'relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors',
+        'relative flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
         status === 'sent'
           ? 'bg-green-600 text-white'
           : status === 'sending'
             ? 'bg-primary-700 text-white/60'
             : 'bg-primary-600 text-white hover:bg-primary-500',
-        className,
+        className
       )}
       {...(!reduced ? { whileTap: { scale: 0.95 } } : {})}
     >
@@ -192,7 +179,7 @@ export function SendAnimation({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
           />
         ) : (
           <motion.span
@@ -238,20 +225,111 @@ export function ToggleSwitch({
       className={cn(
         'relative rounded-full transition-colors',
         checked ? 'bg-primary-600' : 'bg-white/[0.12]',
-        disabled && 'opacity-40 cursor-not-allowed',
+        disabled && 'cursor-not-allowed opacity-40'
       )}
       style={{ width: trackW, height: trackH }}
     >
       <motion.div
-        className="absolute top-[2px] left-[2px] rounded-full bg-white shadow-sm"
+        className="absolute left-[2px] top-[2px] rounded-full bg-white shadow-sm"
         style={{ width: thumbSize, height: thumbSize }}
         animate={{ x: checked ? travel : 0 }}
-        transition={
-          reduced
-            ? { duration: 0 }
-            : { type: 'spring', stiffness: 500, damping: 30 }
-        }
+        transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 30 }}
       />
+    </button>
+  );
+}
+
+// ── StaggerChildren ────────────────────────────────────────────────────
+
+/** Wrapper that staggers children entrance with spring physics */
+export function StaggerChildren({
+  children,
+  staggerDelay = 0.06,
+  className,
+}: {
+  children: React.ReactNode;
+  staggerDelay?: number;
+  className?: string;
+}) {
+  const reduced = usePrefersReducedMotion();
+
+  return (
+    <motion.div
+      className={className}
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: reduced ? 0 : staggerDelay,
+          },
+        },
+      }}
+    >
+      {React.Children.map(children, (child) =>
+        React.isValidElement(child) ? (
+          <motion.div
+            variants={{
+              hidden: reduced ? { opacity: 1 } : { opacity: 0, y: 12 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          >
+            {child}
+          </motion.div>
+        ) : (
+          child
+        )
+      )}
+    </motion.div>
+  );
+}
+
+// ── RippleButton ───────────────────────────────────────────────────────
+
+/** Material-design ripple effect on click */
+export function RippleButton({
+  children,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+}) {
+  const reduced = usePrefersReducedMotion();
+  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const nextId = useRef(0);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!reduced) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const id = nextId.current++;
+      setRipples((prev) => [...prev, { id, x, y }]);
+      setTimeout(() => setRipples((prev) => prev.filter((r) => r.id !== id)), 600);
+    }
+    onClick?.(e);
+  };
+
+  return (
+    <button onClick={handleClick} className={cn('relative overflow-hidden', className)}>
+      {children}
+      <AnimatePresence>
+        {ripples.map(({ id, x, y }) => (
+          <motion.span
+            key={id}
+            className="pointer-events-none absolute rounded-full bg-white/25"
+            style={{ left: x - 20, top: y - 20, width: 40, height: 40 }}
+            initial={{ scale: 0, opacity: 0.5 }}
+            animate={{ scale: 6, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          />
+        ))}
+      </AnimatePresence>
     </button>
   );
 }
@@ -263,4 +341,6 @@ export default {
   PulseBadge,
   SendAnimation,
   ToggleSwitch,
+  StaggerChildren,
+  RippleButton,
 };

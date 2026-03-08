@@ -10,7 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useRef, useState, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
 import { springs } from '@/lib/animation-presets';
@@ -37,6 +37,7 @@ export default function GlassCard({
   shimmer = false,
   borderGradient = false,
   particles = false,
+  spotlight = true,
   className,
   ...props
 }: GlassCardProps) {
@@ -47,35 +48,47 @@ export default function GlassCard({
   // Disable 3D effect if user prefers reduced motion
   const shouldAnimate3D = hover3D && !prefersReducedMotion;
 
-  // Motion values for 3D tilt effect
+  // Motion values for 3D tilt effect (capped at 8° for subtle app-context feel)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), {
+  // Pixel-space mouse position for spotlight
+  const spotlightX = useMotionValue(0);
+  const spotlightY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [4, -4]), {
     stiffness: 200,
     damping: 20,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), {
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-4, 4]), {
     stiffness: 200,
     damping: 20,
   });
+
+  // Spotlight radial gradient that follows cursor
+  const spotlightBackground = useMotionTemplate`radial-gradient(300px circle at ${spotlightX}px ${spotlightY}px, rgba(16, 185, 129, 0.12), transparent 70%)`;
 
   // Handle mouse move for 3D effect - throttled to ~60fps for performance
   const handleMouseMoveInternal = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current || !shouldAnimate3D) return;
+      if (!cardRef.current) return;
 
       const rect = cardRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
 
-      const percentX = (e.clientX - centerX) / (rect.width / 2);
-      const percentY = (e.clientY - centerY) / (rect.height / 2);
+      if (shouldAnimate3D) {
+        const percentX = (e.clientX - centerX) / (rect.width / 2);
+        const percentY = (e.clientY - centerY) / (rect.height / 2);
+        mouseX.set(percentX);
+        mouseY.set(percentY);
+      }
 
-      mouseX.set(percentX);
-      mouseY.set(percentY);
+      // Spotlight tracks pixel position relative to card
+      spotlightX.set(e.clientX - rect.left);
+      spotlightY.set(e.clientY - rect.top);
     },
-    [shouldAnimate3D, mouseX, mouseY]
+    [shouldAnimate3D, mouseX, mouseY, spotlightX, spotlightY]
   );
 
   // Throttle mouse move handler to 16ms (~60fps) for smooth but efficient updates
@@ -214,6 +227,14 @@ export default function GlassCard({
 
       {/* Border */}
       <div className="pointer-events-none absolute inset-0 rounded-2xl" style={{ border }} />
+
+      {/* Spotlight border — radial gradient following cursor */}
+      {spotlight && isHovered && !prefersReducedMotion && (
+        <motion.div
+          className="pointer-events-none absolute inset-0 rounded-2xl"
+          style={{ background: spotlightBackground }}
+        />
+      )}
 
       {/* Content */}
       <div className="relative z-10">{children}</div>

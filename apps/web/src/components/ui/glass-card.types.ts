@@ -23,5 +23,7 @@ export interface GlassCardProps extends Omit<
   shimmer?: boolean;
   borderGradient?: boolean;
   particles?: boolean;
+  /** Mouse-following spotlight border effect (default true) */
+  spotlight?: boolean;
   className?: string;
 }

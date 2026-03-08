@@ -23,6 +23,8 @@ interface GlowTextProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   /** Enable shimmer effect */
   shimmer?: boolean;
+  /** Enable animated gradient flow (emerald→purple→cyan cycle) */
+  gradientFlow?: boolean;
   /** HTML element to render */
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 }
@@ -60,6 +62,7 @@ export default function GlowText({
   glowIntensity = 'medium',
   size = 'xl',
   shimmer = false,
+  gradientFlow = false,
   as: Component = 'span',
 }: GlowTextProps) {
   // Parse gradient
@@ -73,8 +76,8 @@ export default function GlowText({
     : gradient.match(/#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3}|rgb[a]?\([^)]+\)/)?.[0] || '#667eea';
   void _primaryColor; // Reserved for future enhanced glow effects
 
-   
-  const MotionComponent = motion[Component] as typeof motion.span; // type assertion: dynamic motion component access returns compatible type
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- dynamic motion component access requires type assertion
+  const MotionComponent = motion[Component] as typeof motion.span;
 
   return (
     <MotionComponent
@@ -110,19 +113,36 @@ export default function GlowText({
         </motion.span>
       )}
 
-      {/* Main text */}
-      <span
-        className="relative"
-        style={{
-          background: gradientValue,
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          color: 'transparent',
-          backgroundSize: shimmer ? '200% 100%' : '100% 100%',
-        }}
-      >
-        {children}
-      </span>
+      {/* Main text — with optional gradient flow animation */}
+      {gradientFlow ? (
+        <motion.span
+          className="relative"
+          style={{
+            background: 'linear-gradient(90deg, #10b981, #8b5cf6, #06b6d4, #10b981)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            backgroundSize: '300% 100%',
+          }}
+          animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          {children}
+        </motion.span>
+      ) : (
+        <span
+          className="relative"
+          style={{
+            background: gradientValue,
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            backgroundSize: shimmer ? '200% 100%' : '100% 100%',
+          }}
+        >
+          {children}
+        </span>
+      )}
 
       {/* Shimmer overlay */}
       {shimmer && (
