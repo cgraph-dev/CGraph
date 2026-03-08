@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Unified Customization Store
  *
@@ -62,7 +63,6 @@ const logger = createLogger('customizationStore');
 export const useCustomizationStore = create<CustomizationStore>()(
   persist(
     (set, get) => {
-       
       const _set = set as unknown as ZustandSet<CustomizationStore>; // type assertion: zustand set function type widening
       return {
         ...DEFAULT_STATE,
@@ -117,6 +117,28 @@ export const useCustomizationStore = create<CustomizationStore>()(
         setEquippedTitle: (titleId) =>
           set({ equippedTitle: titleId, title: titleId, isDirty: true }),
         setEquippedBadges: (badgeIds) => set({ equippedBadges: badgeIds, isDirty: true }),
+
+        // === Display Name Style Actions ===
+        setDisplayNameFont: (font) => set({ displayNameFont: font, isDirty: true }),
+        setDisplayNameEffect: (effect) => set({ displayNameEffect: effect, isDirty: true }),
+        setDisplayNameColor: (color) => set({ displayNameColor: color, isDirty: true }),
+        setDisplayNameSecondaryColor: (color) =>
+          set({ displayNameSecondaryColor: color, isDirty: true }),
+
+        // === Nameplate & Profile Effect Actions ===
+        setEquippedNameplate: (nameplateId) =>
+          set({ equippedNameplate: nameplateId, isDirty: true }),
+        setEquippedProfileEffect: (effectId) =>
+          set({ equippedProfileEffect: effectId, isDirty: true }),
+
+        // === Profile Theme Preset Actions ===
+        setProfileThemePreset: (presetId, primary, accent) =>
+          set({
+            profileThemePresetId: presetId,
+            profileThemePrimary: primary,
+            profileThemeAccent: accent,
+            isDirty: true,
+          }),
 
         // === Legacy Batch Update Methods ===
         updateChatStyle: (key, value) => set({ [key]: value, isDirty: true }),

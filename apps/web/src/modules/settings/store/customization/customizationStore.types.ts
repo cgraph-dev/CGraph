@@ -113,6 +113,21 @@ export interface CustomizationState {
   equippedTitle: string | null;
   equippedBadges: string[];
 
+  // === Display Name Style ===
+  displayNameFont: string;
+  displayNameEffect: string;
+  displayNameColor: string;
+  displayNameSecondaryColor: string | null;
+
+  // === Nameplate & Profile Effect ===
+  equippedNameplate: string | null;
+  equippedProfileEffect: string | null;
+
+  // === Profile Theme Preset ===
+  profileThemePresetId: string | null;
+  profileThemePrimary: string | null;
+  profileThemeAccent: string | null;
+
   // === Legacy Aliases (for backward compatibility) ===
   chatTheme: ThemePreset; // alias for chatBubbleColor
   bubbleStyle: ChatBubbleStyle; // alias for chatBubbleStyle
@@ -182,6 +197,23 @@ export interface CustomizationActions {
   toggleParticleEffects: () => void;
   setEquippedTitle: (titleId: string | null) => void;
   setEquippedBadges: (badgeIds: string[]) => void;
+
+  // Display name style actions
+  setDisplayNameFont: (font: string) => void;
+  setDisplayNameEffect: (effect: string) => void;
+  setDisplayNameColor: (color: string) => void;
+  setDisplayNameSecondaryColor: (color: string | null) => void;
+
+  // Nameplate & profile effect actions
+  setEquippedNameplate: (nameplateId: string | null) => void;
+  setEquippedProfileEffect: (effectId: string | null) => void;
+
+  // Profile theme preset actions
+  setProfileThemePreset: (
+    presetId: string | null,
+    primary: string | null,
+    accent: string | null
+  ) => void;
 
   // Legacy batch update methods
   updateChatStyle: (key: string, value: unknown) => void;
@@ -341,6 +373,21 @@ export const DEFAULT_STATE: CustomizationState = {
   // Identity
   equippedTitle: null,
   equippedBadges: [],
+
+  // Display Name Style
+  displayNameFont: 'default',
+  displayNameEffect: 'solid',
+  displayNameColor: '#ffffff',
+  displayNameSecondaryColor: null,
+
+  // Nameplate & Profile Effect
+  equippedNameplate: null,
+  equippedProfileEffect: null,
+
+  // Profile Theme Preset
+  profileThemePresetId: null,
+  profileThemePrimary: null,
+  profileThemeAccent: null,
 
   // Legacy Aliases (computed at runtime, but need defaults for type safety)
   chatTheme: 'emerald',

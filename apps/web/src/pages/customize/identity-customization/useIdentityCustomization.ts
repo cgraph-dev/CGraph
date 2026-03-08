@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * useIdentityCustomization Hook
  *
@@ -22,21 +23,26 @@ import {
   fetchTitles,
   fetchBadges,
 } from '@/modules/gamification/store/gamification-queries';
+import { NAMEPLATE_REGISTRY, PROFILE_EFFECT_REGISTRY } from '@cgraph/animation-constants';
 
 import type { Rarity, Border, Title, Badge, ProfileLayout } from './types';
-import {
-  getV2BorderType,
-  LEGACY_BORDER_ID_TO_V2_TYPE,
-} from './constants';
+import { getV2BorderType, LEGACY_BORDER_ID_TO_V2_TYPE } from './constants';
 
-export type SectionId = 'borders' | 'titles' | 'badges' | 'layouts';
+export type SectionId =
+  | 'borders'
+  | 'titles'
+  | 'badges'
+  | 'layouts'
+  | 'name-styles'
+  | 'nameplates'
+  | 'effects';
 
 /** Map static BorderDefinition to the component's Border type */
 function mapBorderDefinition(b: BorderDefinition): Border {
   return {
     id: b.id,
     name: b.name,
-    rarity: b.rarity === 'free' ? 'common' : b.rarity as Rarity,
+    rarity: b.rarity === 'free' ? 'common' : (b.rarity as Rarity),
     animation: b.animationType,
     colors: b.colors,
     unlocked: b.unlocked,
@@ -92,6 +98,19 @@ export function useIdentityCustomization() {
     selectBorderId,
     setEquippedTitle,
     setEquippedBadges,
+    // New cosmetics
+    displayNameFont,
+    displayNameEffect,
+    displayNameColor,
+    displayNameSecondaryColor,
+    equippedNameplate,
+    equippedProfileEffect,
+    setDisplayNameFont,
+    setDisplayNameEffect,
+    setDisplayNameColor,
+    setDisplayNameSecondaryColor,
+    setEquippedNameplate,
+    setEquippedProfileEffect,
   } = store;
 
   const [activeSection, setActiveSection] = useState<SectionId>('borders');
@@ -147,7 +166,9 @@ export function useIdentityCustomization() {
       .finally(() => {
         if (!cancelled) setIsLoadingIdentity(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // --- Filtering ---
@@ -200,7 +221,10 @@ export function useIdentityCustomization() {
       setPreviewingLockedItem(itemId);
       if (type === 'border') applyBorderToStore(itemId);
       else if (type === 'title') applyTitleToStore(itemId);
-      toast('👁️ Previewing item - Purchase premium to save', { icon: '✨', duration: durations.cinematic.ms });
+      toast('👁️ Previewing item - Purchase premium to save', {
+        icon: '✨',
+        duration: durations.cinematic.ms,
+      });
     },
     [applyBorderToStore, applyTitleToStore]
   );
@@ -256,11 +280,14 @@ export function useIdentityCustomization() {
 
   const handleSelectLayout = (layoutId: string, layout: ProfileLayout) => {
     if (!layout.unlocked) {
-      toast('👁️ Previewing layout - Premium required to use', { icon: '✨', duration: durations.cinematic.ms });
+      toast('👁️ Previewing layout - Premium required to use', {
+        icon: '✨',
+        duration: durations.cinematic.ms,
+      });
       return;
     }
     updateIdentity('profileLayout', layoutId);
-     
+
     store.setProfileCardStyle(layoutId as ProfileCardStyle);
   };
 
@@ -283,6 +310,16 @@ export function useIdentityCustomization() {
       toast.error(err instanceof Error ? err.message : 'Failed to save customizations');
     }
   };
+
+  // --- Display Name Style handlers ---
+  const handleFontChange = (font: string) => setDisplayNameFont(font);
+  const handleEffectChange = (effect: string) => setDisplayNameEffect(effect);
+  const handleColorChange = (color: string) => setDisplayNameColor(color);
+  const handleSecondaryColorChange = (color: string | null) => setDisplayNameSecondaryColor(color);
+
+  // --- Nameplate / Profile Effect handlers ---
+  const handleEquipNameplate = (nameplateId: string | null) => setEquippedNameplate(nameplateId);
+  const handleEquipProfileEffect = (effectId: string | null) => setEquippedProfileEffect(effectId);
 
   return {
     // State
@@ -319,5 +356,25 @@ export function useIdentityCustomization() {
     handleToggleBadge,
     handleSelectLayout,
     handleSaveChanges,
+
+    // Display Name Style
+    displayNameFont,
+    displayNameEffect,
+    displayNameColor,
+    displayNameSecondaryColor,
+    handleFontChange,
+    handleEffectChange,
+    handleColorChange,
+    handleSecondaryColorChange,
+
+    // Nameplate
+    equippedNameplate,
+    handleEquipNameplate,
+    nameplatesCount: NAMEPLATE_REGISTRY.length,
+
+    // Profile Effect
+    equippedProfileEffect,
+    handleEquipProfileEffect,
+    profileEffectsCount: PROFILE_EFFECT_REGISTRY.length,
   };
 }

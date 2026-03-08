@@ -18,11 +18,16 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
+import { PROFILE_LAYOUTS, getRarityColor } from './constants';
 import {
-  PROFILE_LAYOUTS,
-  getRarityColor,
-} from './constants';
-import { BordersSection, TitlesSection, BadgesSection, LayoutsSection } from './sections';
+  BordersSection,
+  TitlesSection,
+  BadgesSection,
+  LayoutsSection,
+  NameStylesSection,
+  NameplatesSection,
+  ProfileEffectsSection,
+} from './sections';
 import { useIdentityCustomization, type SectionId } from './useIdentityCustomization';
 import { SearchFilterBar } from './search-filter-bar';
 import { SaveButton } from './save-button';
@@ -58,6 +63,23 @@ export default function IdentityCustomization() {
     handleToggleBadge,
     handleSelectLayout,
     handleSaveChanges,
+    // Display Name Style
+    displayNameFont,
+    displayNameEffect,
+    displayNameColor,
+    displayNameSecondaryColor,
+    handleFontChange,
+    handleEffectChange,
+    handleColorChange,
+    handleSecondaryColorChange,
+    // Nameplate
+    equippedNameplate,
+    handleEquipNameplate,
+    nameplatesCount,
+    // Profile Effect
+    equippedProfileEffect,
+    handleEquipProfileEffect,
+    profileEffectsCount,
   } = useIdentityCustomization();
 
   const sectionTabs: { id: SectionId; label: string; count: number }[] = [
@@ -65,6 +87,9 @@ export default function IdentityCustomization() {
     { id: 'titles', label: 'Titles', count: titlesCount },
     { id: 'badges', label: 'Badges', count: badgesCount },
     { id: 'layouts', label: 'Profile Layouts', count: PROFILE_LAYOUTS.length },
+    { id: 'name-styles', label: 'Name Styles', count: 8 },
+    { id: 'nameplates', label: 'Nameplates', count: nameplatesCount },
+    { id: 'effects', label: 'Profile Effects', count: profileEffectsCount },
   ];
 
   if (isLoadingIdentity) {
@@ -143,6 +168,30 @@ export default function IdentityCustomization() {
               layouts={PROFILE_LAYOUTS}
               selectedLayout={profileLayout}
               onSelect={handleSelectLayout}
+            />
+          )}
+          {activeSection === 'name-styles' && (
+            <NameStylesSection
+              selectedFont={displayNameFont}
+              selectedEffect={displayNameEffect}
+              selectedColor={displayNameColor}
+              selectedSecondaryColor={displayNameSecondaryColor}
+              onFontChange={handleFontChange}
+              onEffectChange={handleEffectChange}
+              onColorChange={handleColorChange}
+              onSecondaryColorChange={handleSecondaryColorChange}
+            />
+          )}
+          {activeSection === 'nameplates' && (
+            <NameplatesSection
+              selectedNameplate={equippedNameplate}
+              onEquip={handleEquipNameplate}
+            />
+          )}
+          {activeSection === 'effects' && (
+            <ProfileEffectsSection
+              selectedEffect={equippedProfileEffect}
+              onEquip={handleEquipProfileEffect}
             />
           )}
         </motion.div>

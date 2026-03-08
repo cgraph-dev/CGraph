@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * ProfileContent - Avatar, name, title, status, badges, and XP bar
  */
 
-import { durations } from '@cgraph/animation-constants';
+import { durations, NAME_FONTS, type NameFont, type NameEffect } from '@cgraph/animation-constants';
 import { motion } from 'motion/react';
 import { AnimatedAvatar } from '../animated-avatar';
 import type {
@@ -23,6 +24,10 @@ interface ProfileContentProps {
     glowEnabled: boolean;
     showBadges: boolean;
     showStatus: boolean;
+    displayNameFont?: string;
+    displayNameEffect?: string;
+    displayNameColor?: string;
+    displayNameSecondaryColor?: string | null;
   };
   colors: ThemeColors;
   effectiveBorderType: AvatarBorderType;
@@ -32,6 +37,111 @@ interface ProfileContentProps {
   isLegendaryTitle: boolean;
   speedMultiplier: number;
   equippedBadges?: string[];
+}
+
+/**
+ * Renders the display name with the selected font and text effect.
+ */
+function StyledDisplayName({
+  font,
+  effect,
+  color,
+  secondaryColor,
+  fallbackGradient,
+}: {
+  /** Selected font key from NAME_FONTS registry. */
+  font: NameFont;
+  /** Selected text effect (solid, gradient, neon, toon, pop). */
+  effect: NameEffect;
+  /** Primary text color hex. */
+  color: string;
+  /** Secondary color for gradient/neon/pop effects. */
+  secondaryColor: string | null;
+  /** Fallback gradient when using the default solid effect. */
+  fallbackGradient: [string, string];
+}) {
+  const fontConfig = NAME_FONTS[font] || NAME_FONTS.default;
+  const secondary = secondaryColor || fallbackGradient[1];
+
+  const baseStyle: React.CSSProperties = {
+    fontSize: '1.125rem',
+    fontWeight: fontConfig.fontWeight || '700',
+    fontFamily: fontConfig.fontFamily || 'inherit',
+    fontStyle: fontConfig.fontStyle || 'normal',
+    letterSpacing: fontConfig.letterSpacing ?? 0,
+    lineHeight: 1.3,
+  };
+
+  switch (effect) {
+    case 'gradient':
+      return (
+        <h4
+          style={{
+            ...baseStyle,
+            background: `linear-gradient(135deg, ${color}, ${secondary})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          CryptoNinja
+        </h4>
+      );
+    case 'neon':
+      return (
+        <h4
+          style={{
+            ...baseStyle,
+            color,
+            textShadow: `0 0 7px ${color}, 0 0 10px ${color}, 0 0 21px ${color}, 0 0 42px ${secondary}`,
+          }}
+        >
+          CryptoNinja
+        </h4>
+      );
+    case 'toon':
+      return (
+        <h4
+          style={{
+            ...baseStyle,
+            color,
+            WebkitTextStroke: '1px rgba(0,0,0,0.6)',
+            textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
+          }}
+        >
+          CryptoNinja
+        </h4>
+      );
+    case 'pop':
+      return (
+        <h4
+          style={{
+            ...baseStyle,
+            color,
+            textShadow: `3px 3px 0 ${secondary}, -1px -1px 0 rgba(0,0,0,0.2)`,
+          }}
+        >
+          CryptoNinja
+        </h4>
+      );
+    default:
+      // Solid: if font is default and color is still white, use the theme
+      // gradient via GlowText for backward compatibility
+      if (font === 'default' && color === '#ffffff') {
+        return (
+          <GlowText
+            as="h4"
+            gradient={fallbackGradient}
+            size="lg"
+            animate={true}
+            glowIntensity="medium"
+          >
+            CryptoNinja
+          </GlowText>
+        );
+      }
+      return <h4 style={{ ...baseStyle, color }}>CryptoNinja</h4>;
+  }
 }
 
 /**
@@ -50,9 +160,7 @@ export function ProfileContent({
 }: ProfileContentProps) {
   // Resolve equipped badge IDs to display data; fall back to default preview badges
   const resolvedBadges: (BadgeDisplay | PreviewBadge)[] =
-    equippedBadges.length > 0
-      ? resolveEquippedBadges(equippedBadges)
-      : PREVIEW_BADGES;
+    equippedBadges.length > 0 ? resolveEquippedBadges(equippedBadges) : PREVIEW_BADGES;
   return (
     <div className="relative z-10 flex flex-col items-center">
       {/* Avatar */}
@@ -65,15 +173,13 @@ export function ProfileContent({
 
       {/* Name & Title & Status */}
       <div className="mt-3 text-center">
-        <GlowText
-          as="h4"
-          gradient={[colors.primary, colors.secondary]}
-          size="lg"
-          animate={true}
-          glowIntensity="medium"
-        >
-          CryptoNinja
-        </GlowText>
+        <StyledDisplayName
+          font={(settings.displayNameFont || 'default') as NameFont}
+          effect={(settings.displayNameEffect || 'solid') as NameEffect}
+          color={settings.displayNameColor || '#ffffff'}
+          secondaryColor={settings.displayNameSecondaryColor ?? null}
+          fallbackGradient={[colors.primary, colors.secondary]}
+        />
 
         {/* Title Display */}
         {titleInfo && (

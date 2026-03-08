@@ -45,6 +45,18 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
       title: state.title,
       profileTheme: state.profileTheme,
       particleEffect: state.particleEffect,
+      // Display name style
+      displayNameFont: state.displayNameFont,
+      displayNameEffect: state.displayNameEffect,
+      displayNameColor: state.displayNameColor,
+      displayNameSecondaryColor: state.displayNameSecondaryColor,
+      // Nameplate & effects
+      equippedNameplate: state.equippedNameplate,
+      equippedProfileEffect: state.equippedProfileEffect,
+      // Profile theme preset
+      profileThemePresetId: state.profileThemePresetId,
+      profileThemePrimary: state.profileThemePrimary,
+      profileThemeAccent: state.profileThemeAccent,
     }))
   );
 
@@ -120,7 +132,10 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
               }
             : undefined
         }
-        transition={{ duration: durations.cinematic.ms / 1000 * speedMultiplier, repeat: Infinity }}
+        transition={{
+          duration: (durations.cinematic.ms / 1000) * speedMultiplier,
+          repeat: Infinity,
+        }}
       >
         <ParticleField
           show={showParticles}
