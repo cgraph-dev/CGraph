@@ -22,7 +22,6 @@ import Animated, {
   withTiming,
   withSequence,
   withDelay,
-  withSpring,
   useReducedMotion,
   Easing,
 } from 'react-native-reanimated';
@@ -74,10 +73,7 @@ const AnimatedView = Animated.createAnimatedComponent(View);
  * useAnimatedBorderStyle hook.
  * Returns an animated style based on the animation type.
  */
-function useAnimatedBorderStyle(
-  animationType: BorderAnimationType,
-  isReducedMotion: boolean,
-) {
+function useAnimatedBorderStyle(animationType: BorderAnimationType, isReducedMotion: boolean) {
   const progress = useSharedValue(0);
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
@@ -93,18 +89,15 @@ function useAnimatedBorderStyle(
         scale.value = withRepeat(
           withSequence(
             withTiming(1.06, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-            withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+            withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
           ),
           -1,
-          false,
+          false
         );
         opacity.value = withRepeat(
-          withSequence(
-            withTiming(0.85, { duration: 1000 }),
-            withTiming(1, { duration: 1000 }),
-          ),
+          withSequence(withTiming(0.85, { duration: 1000 }), withTiming(1, { duration: 1000 })),
           -1,
-          false,
+          false
         );
         break;
 
@@ -113,7 +106,7 @@ function useAnimatedBorderStyle(
         rotation.value = withRepeat(
           withTiming(360, { duration: 3000, easing: Easing.linear }),
           -1,
-          false,
+          false
         );
         break;
 
@@ -121,7 +114,7 @@ function useAnimatedBorderStyle(
         progress.value = withRepeat(
           withTiming(1, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
           -1,
-          true,
+          true
         );
         break;
 
@@ -130,18 +123,15 @@ function useAnimatedBorderStyle(
           withSequence(
             withTiming(2, { duration: 750 }),
             withTiming(-2, { duration: 1500 }),
-            withTiming(0, { duration: 750 }),
+            withTiming(0, { duration: 750 })
           ),
           -1,
-          false,
+          false
         );
         scale.value = withRepeat(
-          withSequence(
-            withTiming(1.03, { duration: 1500 }),
-            withTiming(1, { duration: 1500 }),
-          ),
+          withSequence(withTiming(1.03, { duration: 1500 }), withTiming(1, { duration: 1500 })),
           -1,
-          false,
+          false
         );
         break;
 
@@ -150,10 +140,10 @@ function useAnimatedBorderStyle(
           withSequence(
             withTiming(1.04, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
             withTiming(0.98, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
-            withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.ease) }),
+            withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.ease) })
           ),
           -1,
-          false,
+          false
         );
         break;
 
@@ -161,18 +151,15 @@ function useAnimatedBorderStyle(
         rotation.value = withRepeat(
           withTiming(360, { duration: 4000, easing: Easing.linear }),
           -1,
-          false,
+          false
         );
         break;
 
       case 'glow':
         opacity.value = withRepeat(
-          withSequence(
-            withTiming(0.7, { duration: 1250 }),
-            withTiming(1, { duration: 1250 }),
-          ),
+          withSequence(withTiming(0.7, { duration: 1250 }), withTiming(1, { duration: 1250 })),
           -1,
-          false,
+          false
         );
         break;
 
@@ -181,18 +168,15 @@ function useAnimatedBorderStyle(
           withSequence(
             withTiming(5, { duration: 1667 }),
             withTiming(-3, { duration: 1667 }),
-            withTiming(0, { duration: 1666 }),
+            withTiming(0, { duration: 1666 })
           ),
           -1,
-          false,
+          false
         );
         scale.value = withRepeat(
-          withSequence(
-            withTiming(1.02, { duration: 2500 }),
-            withTiming(0.99, { duration: 2500 }),
-          ),
+          withSequence(withTiming(1.02, { duration: 2500 }), withTiming(0.99, { duration: 2500 })),
           -1,
-          false,
+          false
         );
         break;
 
@@ -202,10 +186,10 @@ function useAnimatedBorderStyle(
             withDelay(2400, withTiming(1.08, { duration: 150 })),
             withTiming(1, { duration: 150 }),
             withDelay(300, withTiming(1.04, { duration: 150 })),
-            withTiming(1, { duration: 150 }),
+            withTiming(1, { duration: 150 })
           ),
           -1,
-          false,
+          false
         );
         break;
 
@@ -214,29 +198,21 @@ function useAnimatedBorderStyle(
         rotation.value = withRepeat(
           withTiming(360, { duration: 6000, easing: Easing.linear }),
           -1,
-          false,
+          false
         );
         scale.value = withRepeat(
-          withSequence(
-            withTiming(1.02, { duration: 1500 }),
-            withTiming(1, { duration: 1500 }),
-          ),
+          withSequence(withTiming(1.02, { duration: 1500 }), withTiming(1, { duration: 1500 })),
           -1,
-          false,
+          false
         );
         break;
     }
   }, [animationType, isReducedMotion, progress, scale, rotation, opacity]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
+  return useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
     opacity: opacity.value,
   }));
-
-  return animatedStyle;
 }
 
 /**
@@ -255,15 +231,9 @@ export default function AnimatedBorder({
   children,
 }: AnimatedBorderProps) {
   const isReducedMotion = useReducedMotion();
-  const isAnimated =
-    !isReducedMotion &&
-    animationType !== 'none' &&
-    animationType !== 'static';
+  const isAnimated = !isReducedMotion && animationType !== 'none' && animationType !== 'static';
 
-  const animatedStyle = useAnimatedBorderStyle(
-    animationType,
-    isReducedMotion ?? false,
-  );
+  const animatedStyle = useAnimatedBorderStyle(animationType, isReducedMotion ?? false);
 
   const innerSize = size - borderWidth * 2;
   const center = size / 2;
@@ -279,7 +249,7 @@ export default function AnimatedBorder({
       alignItems: 'center' as const,
       justifyContent: 'center' as const,
     }),
-    [size],
+    [size]
   );
 
   // Lottie border: render LottieView behind avatar
@@ -309,21 +279,13 @@ export default function AnimatedBorder({
 
   // For non-animated types, render a simple View
   if (animationType === 'none') {
-    return (
-      <View style={containerStyle}>
-        {children}
-      </View>
-    );
+    return <View style={containerStyle}>{children}</View>;
   }
 
   return (
     <AnimatedView style={[containerStyle, isAnimated ? animatedStyle : undefined]}>
       {/* SVG border ring */}
-      <Svg
-        width={size}
-        height={size}
-        style={StyleSheet.absoluteFill}
-      >
+      <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="borderGrad" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor={borderColor} />

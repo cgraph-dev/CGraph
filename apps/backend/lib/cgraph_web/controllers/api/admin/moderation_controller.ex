@@ -69,7 +69,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   def show_report(conn, %{"id" => id}) do
     case CGraph.Repo.get(Report, id) |> CGraph.Repo.preload([:reporter, :review_actions]) do
       nil ->
-        render_error(conn, :not_found, "Report not found")
+        render_error(conn, 404, "Report not found")
 
       report ->
         render_data(conn, render_report_detail(report))
@@ -98,7 +98,6 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   - `suspend` - Temporarily suspend user (requires duration_hours)
   - `ban` - Permanently ban user
   """
-  @doc "Reviews a moderation report as admin."
   @spec review_report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def review_report(conn, %{"id" => id} = params) do
     reviewer = conn.assigns.current_user
@@ -165,12 +164,12 @@ defmodule CGraphWeb.API.Admin.ModerationController do
         })
 
       {:error, reason} ->
-        render_error(conn, :unprocessable_entity, ErrorHelpers.safe_error_message(reason, context: "batch_review"))
+        render_error(conn, 422, ErrorHelpers.safe_error_message(reason, context: "batch_review"))
     end
   end
 
   def batch_review(conn, _params) do
-    render_error(conn, :bad_request, "report_ids must be a list")
+    render_error(conn, 400, "report_ids must be a list")
   end
 
   # ---------------------------------------------------------------------------
@@ -217,10 +216,10 @@ defmodule CGraphWeb.API.Admin.ModerationController do
         })
 
       {:error, :not_found} ->
-        render_error(conn, :not_found, "Appeal not found")
+        render_error(conn, 404, "Appeal not found")
 
       {:error, :unauthorized} ->
-        render_error(conn, :forbidden, "Insufficient permissions")
+        render_error(conn, 403, "Insufficient permissions")
     end
   end
 
@@ -275,7 +274,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
     if user && user.is_admin do
       conn
     else
-      render_error(conn, :forbidden, "Moderator access required")
+      render_error(conn, 403, "Moderator access required")
       |> halt()
     end
   end

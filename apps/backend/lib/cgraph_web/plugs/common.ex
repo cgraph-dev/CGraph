@@ -321,7 +321,6 @@ defmodule CGraphWeb.Plugs.HealthCheck do
     |> halt()
   end
 
-  @doc "Processes the connection through this plug."
   def call(%Plug.Conn{request_path: "/ready"} = conn, _opts) do
     checks = perform_readiness_checks()
     all_ok = Enum.all?(checks, fn {_, status} -> status == :ok end)
@@ -337,7 +336,6 @@ defmodule CGraphWeb.Plugs.HealthCheck do
     |> halt()
   end
 
-  @doc "Processes the connection through this plug."
   def call(conn, _opts), do: conn
 
   defp perform_readiness_checks do

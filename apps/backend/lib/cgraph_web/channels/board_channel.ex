@@ -16,7 +16,7 @@ defmodule CGraphWeb.BoardChannel do
   @doc "Handles a client joining the board channel."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("board:" <> board_id, _params, socket) do
-    user = socket.assigns.current_user
+    _user = socket.assigns.current_user
     socket = assign(socket, :board_id, board_id)
     send(self(), :after_join)
     {:ok, socket}

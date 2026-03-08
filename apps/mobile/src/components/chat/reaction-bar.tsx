@@ -3,14 +3,8 @@
  * @module components/chat/reaction-bar
  */
 import React, { memo, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  Layout,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import { Text, Pressable, StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { space, radius } from '../../theme/tokens';
 import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
@@ -44,17 +38,9 @@ export const ReactionBar = memo(function ReactionBar({
   if (reactions.length === 0) return null;
 
   return (
-    <Animated.View
-      layout={Layout.springify()}
-      style={styles.container}
-    >
+    <Animated.View layout={Layout.springify()} style={styles.container}>
       {reactions.map((r) => (
-        <ReactionPill
-          key={r.emoji}
-          reaction={r}
-          onToggle={onToggle}
-          onLongPress={onLongPress}
-        />
+        <ReactionPill key={r.emoji} reaction={r} onToggle={onToggle} onLongPress={onLongPress} />
       ))}
 
       {/* Add reaction button */}
@@ -100,10 +86,7 @@ const ReactionPill = memo(function ReactionPill({
       onPress={handlePress}
       onLongPress={handleLongPress}
       delayLongPress={400}
-      style={[
-        styles.pill,
-        reaction.hasReacted && styles.pillActive,
-      ]}
+      style={[styles.pill, reaction.hasReacted && styles.pillActive]}
     >
       <LottieRenderer
         emoji={reaction.emoji}
@@ -111,12 +94,7 @@ const ReactionPill = memo(function ReactionPill({
         autoplay={reaction.hasReacted}
         fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
       />
-      <Text
-        style={[
-          styles.count,
-          reaction.hasReacted && styles.countActive,
-        ]}
-      >
+      <Text style={[styles.count, reaction.hasReacted && styles.countActive]}>
         {reaction.count}
       </Text>
     </AnimatedPressable>

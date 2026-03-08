@@ -93,7 +93,6 @@ defmodule CGraph.Audit do
         target_type: :user
       )
   """
-  @doc "Records an audit log entry."
   @spec log(category(), event_type(), metadata(), keyword()) :: :ok
   def log(category, event_type, metadata \\ %{}, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -167,7 +166,6 @@ defmodule CGraph.Audit do
       {:ok, entries} ->
         json = Jason.encode!(entries, pretty: true)
         {:ok, json}
-      error -> error
     end
   end
 

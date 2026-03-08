@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Cgraph.Lottie.Seed do
         "Seeded #{length(ok)} animated emojis (#{new_count} new, #{updated_count} updated, #{length(err)} errors)"
       )
 
-      if length(err) > 0 do
+      if err != [] do
         Enum.each(err, fn {:error, cp, reason} ->
           Mix.shell().error("  Error seeding #{cp}: #{inspect(reason)}")
         end)

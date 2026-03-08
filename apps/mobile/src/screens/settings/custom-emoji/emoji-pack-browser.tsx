@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,6 @@ import {
   Image,
   ActivityIndicator,
   Alert,
-  ScrollView,
   Pressable,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -56,8 +55,13 @@ interface PackEmoji {
 
 type TabType = 'installed' | 'marketplace' | 'favorites';
 
+const tabTypes: TabType[] = ['installed', 'marketplace', 'favorites'];
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
+/**
+ * Browsable emoji pack grid with install, marketplace and favorites tabs.
+ */
 export default function EmojiPackBrowser() {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -71,7 +75,7 @@ export default function EmojiPackBrowser() {
   // Fetch packs
   useEffect(() => {
     fetchPacks();
-  }, []);
+  }, [fetchPacks]);
 
   const fetchPacks = useCallback(async () => {
     setLoading(true);
@@ -80,8 +84,12 @@ export default function EmojiPackBrowser() {
         api.get('/api/v1/emoji-packs/installed').catch(() => ({ data: { data: [] } })),
         api.get('/api/v1/emoji-packs/marketplace').catch(() => ({ data: { data: [] } })),
       ]);
-      setInstalledPacks((installed.data as { data: EmojiPack[] }).data || []);
-      setMarketplacePacks((marketplace.data as { data: EmojiPack[] }).data || []);
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- API response shape
+      const installedData = installed.data as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- API response shape
+      const marketplaceData = marketplace.data as Record<string, unknown>;
+      setInstalledPacks(Array.isArray(installedData.data) ? installedData.data : []);
+      setMarketplacePacks(Array.isArray(marketplaceData.data) ? marketplaceData.data : []);
     } catch {
       // silently fail
     } finally {
@@ -103,13 +111,10 @@ export default function EmojiPackBrowser() {
     [fetchPacks]
   );
 
-  const handleTogglePack = useCallback(
-    (packId: string) => {
-      setExpandedPack((prev) => (prev === packId ? null : packId));
-      HapticFeedback.light();
-    },
-    []
-  );
+  const handleTogglePack = useCallback((packId: string) => {
+    setExpandedPack((prev) => (prev === packId ? null : packId));
+    HapticFeedback.light();
+  }, []);
 
   const handleLongPress = useCallback((emoji: PackEmoji) => {
     setPreviewEmoji(emoji);
@@ -226,7 +231,7 @@ export default function EmojiPackBrowser() {
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>
-        {(['installed', 'marketplace', 'favorites'] as TabType[]).map((tab) => (
+        {tabTypes.map((tab) => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.activeTab]}

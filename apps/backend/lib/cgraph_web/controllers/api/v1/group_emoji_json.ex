@@ -3,7 +3,6 @@ defmodule CGraphWeb.API.V1.GroupEmojiJSON do
   JSON rendering for group emoji responses.
   """
   alias CGraph.Groups.GroupEmoji
-  alias CGraph.Animations.LottieManifest
 
   @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()

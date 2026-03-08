@@ -262,8 +262,8 @@ defmodule CGraph.Animations.NotoScraper do
   # Private Helpers
   # ============================================================================
 
-  defp get_content_length(%Req.Response{headers: headers}) do
-    case Req.Response.get_header(headers, "content-length") do
+  defp get_content_length(%Req.Response{} = response) do
+    case Req.Response.get_header(response, "content-length") do
       [size | _] -> String.to_integer(size)
       _ -> nil
     end

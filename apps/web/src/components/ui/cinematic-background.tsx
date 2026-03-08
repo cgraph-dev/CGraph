@@ -7,7 +7,7 @@
  * @module components/ui/cinematic-background
  */
 'use client';
-import { useEffect, useRef, memo, useCallback } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { backgroundPresets } from '@cgraph/animation-constants';
 

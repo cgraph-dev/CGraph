@@ -69,7 +69,6 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   - `{:error, :invalid_subscription}` - Subscription is invalid
   - `{:error, reason}` - Other failure
   """
-  @doc "Sends a web push notification."
   @spec send(map(), map(), keyword()) :: :ok | {:error, term()}
   def send(subscription, message, opts \\ [])
 
@@ -209,25 +208,25 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
     end
   end
 
-  defp handle_response(%{status_code: status}, _endpoint, _keys, _message, _opts, _retry)
+  defp handle_response(%{status: status}, _endpoint, _keys, _message, _opts, _retry)
        when status in 200..299 do
     :ok
   end
 
-  defp handle_response(%{status_code: 404}, _endpoint, _keys, _message, _opts, _retry) do
+  defp handle_response(%{status: 404}, _endpoint, _keys, _message, _opts, _retry) do
     {:error, :expired}
   end
 
-  defp handle_response(%{status_code: 410}, _endpoint, _keys, _message, _opts, _retry) do
+  defp handle_response(%{status: 410}, _endpoint, _keys, _message, _opts, _retry) do
     # 410 Gone - subscription is no longer valid
     {:error, :expired}
   end
 
-  defp handle_response(%{status_code: 413}, _endpoint, _keys, _message, _opts, _retry) do
+  defp handle_response(%{status: 413}, _endpoint, _keys, _message, _opts, _retry) do
     {:error, :payload_too_large}
   end
 
-  defp handle_response(%{status_code: 429}, endpoint, keys, message, opts, retry_count)
+  defp handle_response(%{status: 429}, endpoint, keys, message, opts, retry_count)
        when retry_count < @max_retries do
     # Rate limited - back off and retry
     backoff = :math.pow(2, retry_count) * 1000 |> round()
@@ -235,12 +234,12 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
     send_internal(endpoint, keys, message, opts, retry_count + 1)
   end
 
-  defp handle_response(%{status_code: status}, _endpoint, _keys, _message, _opts, _retry)
+  defp handle_response(%{status: status}, _endpoint, _keys, _message, _opts, _retry)
        when status >= 500 do
     {:error, {:server_error, status}}
   end
 
-  defp handle_response(%{status_code: status, body: body}, _endpoint, _keys, _message, _opts, _retry) do
+  defp handle_response(%{status: status, body: body}, _endpoint, _keys, _message, _opts, _retry) do
     Logger.warning("web_push_failed_with_status", status: status, body: inspect(body))
     {:error, {:unexpected_status, status}}
   end

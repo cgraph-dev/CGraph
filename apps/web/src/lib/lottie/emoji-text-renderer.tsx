@@ -94,7 +94,7 @@ export function EmojiTextRenderer({
   }, [text]);
 
   if (parts.length === 0) return null;
-  if (parts.length === 1 && parts[0].type === 'text') return <>{parts[0].value}</>;
+  if (parts.length === 1 && parts[0]?.type === 'text') return <>{parts[0]?.value}</>;
 
   return (
     <>

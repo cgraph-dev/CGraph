@@ -44,6 +44,8 @@ defmodule CGraphWeb.Admin.EventsController do
   plug :require_admin
   plug :rate_limit, max_requests: 100, window_ms: 60_000
 
+  action_fallback CGraphWeb.FallbackController
+
   @doc """
   List all events with filtering and pagination.
 
@@ -109,7 +111,6 @@ defmodule CGraphWeb.Admin.EventsController do
   }
   ```
   """
-  @doc "Creates a new event."
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
     admin = conn.assigns.current_admin
@@ -315,8 +316,8 @@ defmodule CGraphWeb.Admin.EventsController do
 
     with {:ok, event} <- Events.get_event(event_id),
          :ok <- validate_can_modify_battle_pass(event),
-         {:ok, tier} <- Events.get_battle_pass_tier(event_id, tier_id),
-         {:ok, updated_tier} <- Events.update_battle_pass_tier(event_id, tier, tier_params) do
+         {:ok, _tier} <- Events.get_battle_pass_tier(event_id, tier_id),
+         {:ok, updated_tier} <- Events.update_battle_pass_tier(event_id, tier_id, tier_params) do
 
       AuditLog.log(:tier_updated, admin.id, %{
         event_id: event_id,
@@ -367,8 +368,8 @@ defmodule CGraphWeb.Admin.EventsController do
   def update_quest(conn, %{"event_id" => event_id, "quest_id" => quest_id, "quest" => quest_params}) do
     admin = conn.assigns.current_admin
 
-    with {:ok, quest} <- Events.get_quest(event_id, quest_id),
-         {:ok, updated_quest} <- Events.update_quest(event_id, quest, quest_params) do
+    with {:ok, _quest} <- Events.get_quest(event_id, quest_id),
+         {:ok, updated_quest} <- Events.update_quest(event_id, quest_id, quest_params) do
 
       AuditLog.log(:quest_updated, admin.id, %{
         event_id: event_id,
