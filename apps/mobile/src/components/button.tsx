@@ -21,6 +21,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { springs } from '@cgraph/animation-constants';
 import { useThemeStore } from '@/stores';
+import AnimatedButton from './animated-button';
 
 interface ButtonProps {
   /** Button text */
@@ -43,6 +44,8 @@ interface ButtonProps {
   textStyle?: TextStyle;
   /** Icon element to show before text */
   icon?: ReactNode;
+  /** Enable premium animated effects (default true) */
+  animated?: boolean;
 }
 
 /**
@@ -59,6 +62,7 @@ export default function Button({
   style,
   textStyle,
   icon,
+  animated = true,
 }: ButtonProps) {
   const { colors } = useThemeStore();
   const scale = useSharedValue(1);
@@ -113,6 +117,53 @@ export default function Button({
     lg: 18,
   };
 
+  const useEnhanced = animated && !disabled && (variant === 'primary' || variant === 'secondary');
+  const enhancedIntensity = variant === 'primary' ? 'full' : 'subtle';
+
+  const buttonContent = (
+    <>
+      {loading ? (
+        <ActivityIndicator color={textColors[variant]} size="small" />
+      ) : (
+        <View style={styles.content}>
+          {icon}
+          <Text
+            style={[
+              styles.text,
+              { color: textColors[variant], fontSize: textSizes[size] },
+              textStyle,
+            ]}
+          >
+            {children}
+          </Text>
+        </View>
+      )}
+    </>
+  );
+
+  if (useEnhanced) {
+    return (
+      <AnimatedButton
+        onPress={onPress}
+        disabled={disabled || loading}
+        intensity={enhancedIntensity}
+        borderRadius={8}
+        style={style}
+      >
+        <View
+          style={[
+            styles.button,
+            variantStyles[variant],
+            sizeStyles[size],
+            fullWidth && styles.fullWidth,
+          ]}
+        >
+          {buttonContent}
+        </View>
+      </AnimatedButton>
+    );
+  }
+
   return (
     <Animated.View style={animatedStyle}>
       <Pressable
@@ -131,22 +182,7 @@ export default function Button({
           style,
         ]}
       >
-        {loading ? (
-          <ActivityIndicator color={textColors[variant]} size="small" />
-        ) : (
-          <View style={styles.content}>
-            {icon}
-            <Text
-              style={[
-                styles.text,
-                { color: textColors[variant], fontSize: textSizes[size] },
-                textStyle,
-              ]}
-            >
-              {children}
-            </Text>
-          </View>
-        )}
+        {buttonContent}
       </Pressable>
     </Animated.View>
   );
