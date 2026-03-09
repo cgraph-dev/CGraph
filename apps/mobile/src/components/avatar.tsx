@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
-import AnimatedBorder, { type BorderAnimationType } from './gamification/animated-border';
+// TODO(phase-26): Rewire — AnimatedBorder deleted
 import LottieAvatar from './lottie-avatar';
 
 /** Equipped border data from the gamification system. */
@@ -142,7 +142,7 @@ export default function Avatar({
   // Resolve equipped border animation type
   const rawType = equippedBorder?.animationType ?? equippedBorder?.animation_type ?? 'none';
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- dynamic border type from API
-  const borderAnimationType = rawType as BorderAnimationType;
+  const borderAnimationType = rawType as string;
   const hasBorder = equippedBorder != null && borderAnimationType !== 'none';
 
   const avatarContent = (
@@ -202,18 +202,8 @@ export default function Avatar({
   );
 
   if (hasBorder) {
-    return (
-      <AnimatedBorder
-        animationType={borderAnimationType}
-        borderColor={equippedBorder?.primaryColor ?? equippedBorder?.primary_color}
-        borderColorSecondary={equippedBorder?.secondaryColor ?? equippedBorder?.secondary_color}
-        borderColorAccent={equippedBorder?.accentColor ?? equippedBorder?.accent_color}
-        size={sizeValue + 6}
-        borderWidth={3}
-      >
-        {avatarContent}
-      </AnimatedBorder>
-    );
+    // TODO(phase-26): Rewire — AnimatedBorder deleted
+    return <View style={style}>{avatarContent}</View>;
   }
 
   return avatarContent;

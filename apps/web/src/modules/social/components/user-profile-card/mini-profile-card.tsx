@@ -25,7 +25,7 @@ export const MiniProfileCard = memo(function MiniProfileCard({
 
   // Get the user's equipped border
   const userBorder = isOwnProfile
-    ? getEquippedBorder()
+    ? (getEquippedBorder() ?? undefined)
     : user.avatarBorderId
       ? getBorderById(user.avatarBorderId)
       : undefined;

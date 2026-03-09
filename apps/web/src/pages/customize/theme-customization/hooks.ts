@@ -15,7 +15,7 @@ import {
   type ProfileThemeCategory,
 } from '@/data/profileThemes';
 // TODO(phase-26): Rewire — gamification stores deleted
-const fetchThemes = async (): Promise<unknown[]> => [];
+const fetchThemes = async (): Promise<Theme[]> => [];
 
 import type { ThemeCategory, Theme } from './types';
 
@@ -195,8 +195,7 @@ export function useThemeCustomization() {
     (themeId: string, category: ThemeCategory) => {
       return selectedThemes[category] === themeId;
     },
-    // selectedThemes is derived from store values that change on each render,
-    // so we depend on the individual values instead
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedThemes is derived from store values
     [profileTheme, chatTheme, forumTheme, appTheme]
   );
 

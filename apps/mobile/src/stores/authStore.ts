@@ -165,35 +165,31 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
     // NOTE: Do NOT set global isLoading here — LoginScreen has its own local
     // loading state. Setting global isLoading causes RootNavigator to unmount
     // AuthNavigator mid-flight, losing error feedback and causing a loading loop.
-    try {
-      const response = await api.post('/api/v1/auth/login', { identifier, password });
-      const data = response.data?.data || response.data;
+    const response = await api.post('/api/v1/auth/login', { identifier, password });
+    const data = response.data?.data || response.data;
 
-      // Handle 2FA-required response
-      if (data?.status === '2fa_required' && data?.two_factor_token) {
-        return {
-          twoFactorRequired: true as const,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-          twoFactorToken: data.two_factor_token as string,
-        };
-      }
-
-      const { user, tokens } = data;
-
-      await saveAuth(tokens.access_token, tokens.refresh_token, user);
-
-      set({
-        user,
-        token: tokens.access_token,
-        isAuthenticated: true,
-      });
-
-      // Connect socket
-      const socketManager = await getSocketManager();
-      socketManager.connect().catch(() => {});
-    } catch (error) {
-      throw error;
+    // Handle 2FA-required response
+    if (data?.status === '2fa_required' && data?.two_factor_token) {
+      return {
+        twoFactorRequired: true as const,
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        twoFactorToken: data.two_factor_token as string,
+      };
     }
+
+    const { user, tokens } = data;
+
+    await saveAuth(tokens.access_token, tokens.refresh_token, user);
+
+    set({
+      user,
+      token: tokens.access_token,
+      isAuthenticated: true,
+    });
+
+    // Connect socket
+    const socketManager = await getSocketManager();
+    socketManager.connect().catch(() => {});
   },
 
   verifyLoginTwoFactor: async (twoFactorToken: string, code: string) => {
@@ -279,8 +275,7 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       const { useFriendStore } = await import('./friendStore');
       const { useNotificationStore } = await import('./notificationStore');
       const { useGroupStore } = await import('./groupStore');
-      const { useGamificationStore } = await import('./gamificationStore');
-      const { useMarketplaceStore } = await import('./marketplaceStore');
+      // TODO(phase-26): gamificationStore and marketplaceStore deleted
       const { useCustomizationStore } = await import('./customizationStore');
 
       // Reset stores that have initial states
@@ -288,8 +283,6 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
       useFriendStore.setState(useFriendStore.getInitialState?.() ?? {});
       useNotificationStore.setState(useNotificationStore.getInitialState?.() ?? {});
       useGroupStore.setState(useGroupStore.getInitialState?.() ?? {});
-      useGamificationStore.setState(useGamificationStore.getInitialState?.() ?? {});
-      useMarketplaceStore.setState(useMarketplaceStore.getInitialState?.() ?? {});
       useCustomizationStore.setState(useCustomizationStore.getInitialState?.() ?? {});
     } catch {
       // Store reset failure shouldn't block logout

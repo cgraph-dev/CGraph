@@ -210,6 +210,7 @@ export function NotificationProvider({
   const _handleDismissAchievement = useCallback((index: number) => {
     setAchievementNotifications((prev) => prev.filter((_, i) => i !== index));
   }, []);
+  void _handleDismissAchievement; // TODO(phase-26): Rewire when AchievementNotification restored
 
   const contextValue: NotificationContextType = {
     toast,

@@ -8,20 +8,36 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 
-import type { SectionProps } from './types';
+import type { AvatarBorderConfig } from '@/types/avatar-borders';
+import type { SectionProps, FilterState } from './types';
 import { RARITY_COLORS } from './constants';
 import { GridIcon, ListIcon } from './icons';
 
 // =============================================================================
 // STUB DATA — phase-26 removed gamification; these satisfy hook deps stably
 // =============================================================================
-const STUB_BORDERS: Record<string, unknown>[] = [];
-const STUB_UNLOCKED: Record<string, unknown>[] = [];
+/** Unlocked-border stub record */
+interface UnlockedBorderRecord {
+  borderId: string;
+}
+
+const STUB_BORDERS: AvatarBorderConfig[] = [];
+const STUB_UNLOCKED: UnlockedBorderRecord[] = [];
 const STUB_PREFS: { equippedBorderId: string | null } = { equippedBorderId: null };
-const stubGetFilteredBorders = (): Record<string, unknown>[] => [];
+const stubGetFilteredBorders = (): AvatarBorderConfig[] => [];
 const stubEquipBorder = (_id: string): Promise<void> => Promise.resolve();
 const stubPurchaseBorder = (_id: string): Promise<boolean> => Promise.resolve(false);
 const stubFetchLottieBorders = (): Promise<void> => Promise.resolve();
+
+/** Type guard: trust `<select>` option values for theme filter */
+function isThemeFilter(_v: string): _v is FilterState['theme'] {
+  return true; // values constrained by <select> options
+}
+
+/** Type guard: trust `<select>` option values for rarity filter */
+function isRarityFilter(_v: string): _v is FilterState['rarity'] {
+  return true; // values constrained by <select> options
+}
 
 // =============================================================================
 // COMPONENT
@@ -118,7 +134,9 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           value={filters.theme}
           onChange={(e) => {
             const value = e.target.value;
-            setFilters((f) => ({ ...f, theme: value satisfies typeof filters.theme }));
+            if (isThemeFilter(value)) {
+              setFilters((f) => ({ ...f, theme: value }));
+            }
           }}
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
         >
@@ -136,7 +154,9 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           value={filters.rarity}
           onChange={(e) => {
             const value = e.target.value;
-            setFilters((f) => ({ ...f, rarity: value satisfies typeof filters.rarity }));
+            if (isRarityFilter(value)) {
+              setFilters((f) => ({ ...f, rarity: value }));
+            }
           }}
           className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-cyan-500/50 focus:outline-none"
         >

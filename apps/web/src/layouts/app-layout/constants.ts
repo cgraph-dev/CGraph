@@ -18,7 +18,8 @@ import {
   UserCircleIcon as UserCircleIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
 } from '@heroicons/react/24/solid';
-import type { FeatureGateKey } from '@cgraph/shared-types';
+// TODO(phase-26): Rewire — FeatureGateKey deleted from shared-types
+type FeatureGateKey = string;
 
 export const navItems = [
   {
@@ -44,7 +45,7 @@ export const navItems = [
     label: 'Customize',
     icon: PaintBrushIcon,
     activeIcon: PaintBrushIconSolid,
-    featureGate: 'cosmetics' as FeatureGateKey,
+    featureGate: 'cosmetics' satisfies FeatureGateKey,
   },
   {
     path: '/profile',

@@ -20,8 +20,22 @@ import type { Badge } from './types';
 
 const logger = createLogger('BadgeSelection');
 
+// TODO(phase-26): Rewire — stub achievement type for deleted gamification data
+interface StubAchievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: string;
+  rarity: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+  progress: number;
+  maxProgress: number;
+}
+
 /** Stable empty array for stub achievements */
-const EMPTY_ACHIEVEMENTS: never[] = [];
+const EMPTY_ACHIEVEMENTS: StubAchievement[] = [];
 
 /**
  * Badge Selection component.

@@ -25,7 +25,6 @@ import {
   ExplorePage,
   // Profile & Community
   UserProfile,
-  UserLeaderboard,
   // Calls
   CallScreen,
   CallHistory,
@@ -97,9 +96,6 @@ export function AppRoutes() {
         {/* Settings */}
         {SettingsRoutes()}
 
-        {/* Community */}
-        <Route path="community/leaderboard" element={<UserLeaderboard />} />
-
         {/* Members */}
         <Route path="members" element={<MemberList />} />
         <Route path="members/online" element={<WhosOnline />} />
@@ -129,20 +125,11 @@ export function AppRoutes() {
         {/* Profile */}
         <Route path="profile" element={<ProfileRedirectRoute />} />
 
-        {/* Gamification redirects */}
-        <Route path="leaderboard" element={<Navigate to="/customize/progression" replace />} />
-        <Route path="gamification" element={<Navigate to="/customize/progression" replace />} />
-        <Route
-          path="gamification/achievements"
-          element={<Navigate to="/customize/progression" replace />}
-        />
-        <Route
-          path="gamification/quests"
-          element={<Navigate to="/customize/progression" replace />}
-        />
-        <Route path="gamification/titles" element={<Navigate to="/customize/identity" replace />} />
-        <Route path="achievements" element={<Navigate to="/customize/progression" replace />} />
-        <Route path="quests" element={<Navigate to="/customize/progression" replace />} />
+        {/* Gamification catchall — deleted pages redirect home */}
+        <Route path="gamification/*" element={<Navigate to="/" replace />} />
+        <Route path="leaderboard" element={<Navigate to="/" replace />} />
+        <Route path="achievements" element={<Navigate to="/" replace />} />
+        <Route path="quests" element={<Navigate to="/" replace />} />
         <Route path="titles" element={<Navigate to="/customize/identity" replace />} />
 
         {/* Calls */}

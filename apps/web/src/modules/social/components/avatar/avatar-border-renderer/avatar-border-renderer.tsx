@@ -54,7 +54,12 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
 }: AvatarBorderRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // TODO(phase-26): Rewire — gamification stores deleted
-  const preferences = { showParticles: true, reducedMotion: false, animationSpeed: 1 };
+  const preferences = {
+    showParticles: true,
+    reducedMotion: false,
+    animationSpeed: 1,
+    particleDensity: 50,
+  };
   const displayBorder = null;
 
   // Use prop border or store border

@@ -13,7 +13,7 @@ import type { PreviewTitle } from './types';
 const logger = createLogger('TitleSelection');
 
 /** Stable empty array for stub titles */
-const EMPTY_TITLES: never[] = [];
+const EMPTY_TITLES: PreviewTitle[] = [];
 
 /**
  * unknown for the settings module.

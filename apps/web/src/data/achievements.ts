@@ -11,7 +11,9 @@ type AchievementCategory =
   | 'mastery'
   | 'community'
   | 'special'
-  | 'seasonal';
+  | 'seasonal'
+  | 'legendary'
+  | 'secret';
 type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 interface Achievement {
   id: string;

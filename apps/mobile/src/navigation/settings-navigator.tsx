@@ -21,7 +21,7 @@ import RSSFeedsScreen from '../screens/settings/rss-feeds-screen';
 import CustomEmojiScreen from '../screens/settings/custom-emoji/custom-emoji-screen';
 import { PremiumScreen, CoinShopScreen } from '../screens/premium';
 import { CalendarScreen } from '../screens/calendar';
-import { LeaderboardScreen } from '../screens/leaderboard';
+// TODO(phase-26): Rewire — LeaderboardScreen deleted (../screens/leaderboard)
 import { ReferralScreen } from '../screens/referrals';
 import { MemberListScreen, WhosOnlineScreen } from '../screens/community';
 import { E2EEVerificationScreen } from '../screens/security';
@@ -104,12 +104,7 @@ export default function SettingsNavigator() {
         component={CalendarScreen}
         options={{ title: 'Calendar', headerShown: false }}
       />
-      <Stack.Screen
-        name="Leaderboard"
-        component={LeaderboardScreen}
-        options={{ title: 'Leaderboard', headerShown: false }}
-      />
-      {/* TODO(phase-26): Rewire — gamification components deleted */}
+      {/* TODO(phase-26): Rewire — Leaderboard screen removed, reintroduce when rebuilt */}
       <Stack.Screen
         name="Referrals"
         component={ReferralScreen}

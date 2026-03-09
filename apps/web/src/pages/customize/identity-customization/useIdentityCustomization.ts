@@ -19,13 +19,13 @@ import { ALL_BORDERS, type BorderDefinition } from '@/data/borderCollections';
 import { ALL_TITLES, type TitleDefinition } from '@/data/titlesCollection';
 import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
 // TODO(phase-26): Rewire — gamification stores deleted
-const fetchBorders = async (): Promise<unknown[]> => [];
-const fetchTitles = async (): Promise<unknown[]> => [];
-const fetchBadges = async (): Promise<unknown[]> => [];
+const fetchBorders = async (): Promise<Border[]> => [];
+const fetchTitles = async (): Promise<Title[]> => [];
+const fetchBadges = async (): Promise<Badge[]> => [];
 import { NAMEPLATE_REGISTRY, PROFILE_EFFECT_REGISTRY } from '@cgraph/animation-constants';
 
 import type { Rarity, Border, Title, Badge, ProfileLayout } from './types';
-import { getV2BorderType, LEGACY_BORDER_ID_TO_V2_TYPE } from './constants';
+import { getV2BorderType } from './constants';
 
 export type SectionId =
   | 'borders'
@@ -192,14 +192,9 @@ export function useIdentityCustomization() {
 
   const applyBorderToStore = useCallback(
     (borderId: string) => {
-      const legacyV2Type = LEGACY_BORDER_ID_TO_V2_TYPE[borderId];
-      if (legacyV2Type) {
-        setAvatarBorder(legacyV2Type);
-      } else {
-        const border = ALL_BORDERS.find((b) => b.id === borderId);
-        if (border) {
-          setAvatarBorder(getV2BorderType(border.animationType));
-        }
+      const border = ALL_BORDERS.find((b) => b.id === borderId);
+      if (border) {
+        setAvatarBorder(getV2BorderType(border.animationType));
       }
       selectBorderId(borderId);
     },

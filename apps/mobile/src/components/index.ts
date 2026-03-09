@@ -79,15 +79,6 @@ export { default as ParticleBackground } from './ui/particle-background';
 export { default as Carousel, ParallaxImage, ScaleItem } from './ui/carousel';
 export type { CarouselProps, CarouselItem } from './ui/carousel';
 
-// Gamification Components - Full Engagement System
-export { default as TitleBadge } from './gamification/title-badge';
-export { default as LevelUpModal } from './gamification/level-up-modal';
-export { default as AchievementNotification } from './gamification/achievement-notification';
-export { default as LevelProgress } from './gamification/level-progress';
-export { default as QuestPanel } from './gamification/quest-panel';
-export type { Achievement, AchievementRarity } from './gamification/achievement-notification';
-export type { Quest, QuestType, QuestStatus, QuestReward } from './gamification/quest-panel';
-
 // Forum Components - Complete MyBB Feature Set
 export { default as ThreadPrefixBadge } from './forums/thread-prefix-badge';
 export { default as ThreadRatingDisplay } from './forums/thread-rating-display';

@@ -14,7 +14,6 @@ export type { HapticStyle } from './useHaptics';
 export { useInterval, useTimeout, useIsMounted, usePrevious } from './useInterval';
 
 // Feature-specific hooks
-export { useGamification } from './useGamification';
 export { useFriendPresence, useIsFriendOnline, useFriendsPresence } from './useFriendPresence';
 export { useContactsPresence } from './useContactsPresence';
 export { useNotifications } from './useNotifications';

@@ -14,13 +14,7 @@ export { default } from './identity-customization';
 export type { Rarity, Border, Title, Badge, ProfileLayout, RarityOption } from './types';
 
 // Constants (data now fetched from API)
-export {
-  RARITIES,
-  PROFILE_LAYOUTS,
-  getRarityColor,
-  getV2BorderType,
-  LEGACY_BORDER_ID_TO_V2_TYPE,
-} from './constants';
+export { RARITIES, PROFILE_LAYOUTS, getRarityColor, getV2BorderType } from './constants';
 
 // Section Components
 export { BordersSection, TitlesSection, BadgesSection, LayoutsSection } from './sections';

@@ -20,8 +20,8 @@ import { PresenceStatusSelector } from '@/shared/components/presence-status-sele
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 import { loop, springs } from '@/lib/animation-presets';
-// TODO(phase-26): Rewire — gamification stores deleted
-import type { FeatureGateKey } from '@cgraph/shared-types';
+// TODO(phase-26): Rewire — FeatureGateKey deleted from shared-types
+type FeatureGateKey = string;
 import { useState, useCallback, useRef } from 'react';
 
 /**

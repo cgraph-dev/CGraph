@@ -121,27 +121,3 @@ export function getV2BorderType(animation: string): AvatarBorderType {
   };
   return animationToV2[animation] || 'none';
 }
-
-/**
- * Legacy border ID to V2 type mapping for mock borders
- */
-export const LEGACY_BORDER_ID_TO_V2_TYPE: Record<string, AvatarBorderType> = {
-  b1: 'none',
-  b2: 'none',
-  b3: 'none',
-  b4: 'none',
-  b5: 'pulse',
-  b6: 'rotate',
-  b7: 'glow',
-  b8: 'electric',
-  b9: 'rotate',
-  b10: 'fire',
-  b11: 'ice',
-  b12: 'glow',
-  b13: 'fire',
-  b14: 'legendary',
-  b15: 'mythic',
-  b16: 'fire',
-  b17: 'mythic',
-  b18: 'legendary',
-};
