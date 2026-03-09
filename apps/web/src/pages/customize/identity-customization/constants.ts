@@ -12,6 +12,7 @@ import type { ProfileLayout, RarityOption, Rarity } from './types';
 import type { AvatarBorderType } from '@/modules/settings/store/customization';
 
 export const RARITIES: RarityOption[] = [
+  { value: 'free', label: 'Free', color: 'text-gray-500' },
   { value: 'common', label: 'Common', color: 'text-gray-400' },
   { value: 'rare', label: 'Rare', color: 'text-blue-400' },
   { value: 'epic', label: 'Epic', color: 'text-purple-400' },
@@ -62,6 +63,7 @@ export const PROFILE_LAYOUTS: ProfileLayout[] = [
  */
 export function getRarityColor(rarity: Rarity): string {
   const colors: Record<Rarity, string> = {
+    free: 'text-gray-500',
     common: 'text-gray-400',
     rare: 'text-blue-400',
     epic: 'text-purple-400',

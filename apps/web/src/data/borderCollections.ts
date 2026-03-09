@@ -1,6 +1,11 @@
 /**
- * Border Collections Data
- * 
+ * Border Collections Data (DEPRECATED)
+ *
+ * @deprecated Use `avatar-borders.ts` for the canonical 42 Lottie border definitions.
+ * This file is retained only for backward compatibility with the browse/filter UI
+ * (themed-border-card, borders-section, useIdentityCustomization).
+ * New code should import from `@/data/avatar-borders` instead.
+ *
  * 150+ animated borders organized by theme categories.
  * Each border has rarity, animations, unlock requirements, and premium status.
  */

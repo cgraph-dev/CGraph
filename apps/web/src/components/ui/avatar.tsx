@@ -6,7 +6,7 @@ import { ReactNode, useMemo, lazy, Suspense } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getAvatarBorderStyle } from '@/modules/settings/hooks/useCustomizationApplication';
-import { getBorderById } from '@/data/borderCollections';
+import { getBorderById } from '@/data/avatar-borders';
 
 const LottieRenderer = lazy(() =>
   import('@/lib/lottie/lottie-renderer').then((m) => ({ default: m.LottieRenderer }))
@@ -165,7 +165,7 @@ export default function Avatar({
   const borderLottieUrl = useMemo(() => {
     if (!borderId) return undefined;
     const def = getBorderById(borderId);
-    return def?.lottieFile ?? undefined;
+    return def?.lottieUrl ?? undefined;
   }, [borderId]);
 
   const avatarContent = (

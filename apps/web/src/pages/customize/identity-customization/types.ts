@@ -4,7 +4,7 @@
 
 import type { TitleAnimationType } from '@/data/titlesCollection';
 
-export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+export type Rarity = 'free' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 export interface Border {
   id: string;

@@ -37,7 +37,7 @@ export interface UserBadge {
   description: string;
   iconUrl: string;
   color: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
   earnedAt: string;
   isEquipped: boolean;
 }

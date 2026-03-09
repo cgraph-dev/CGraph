@@ -18,7 +18,25 @@
  * @since 2026-01-20
  */
 
-import type { AvatarBorderConfig, BorderTheme } from '@/types/avatar-borders';
+import type { AvatarBorderConfig, BorderRarity, BorderTheme } from '@/types/avatar-borders';
+
+// Re-export types for consumer convenience
+export type { AvatarBorderConfig, BorderRarity, BorderTheme };
+
+// ==================== RARITY UI COLORS ====================
+
+/**
+ * Tailwind CSS class-based rarity colors for border cards.
+ * Replaces the equivalent constant from the deprecated borderCollections.
+ */
+export const RARITY_COLORS: Record<BorderRarity, { bg: string; border: string; text: string; glow: string }> = {
+  free: { bg: 'bg-gray-500/20', border: 'border-gray-500/50', text: 'text-gray-400', glow: 'rgba(156,163,175,0.3)' },
+  common: { bg: 'bg-gray-400/20', border: 'border-gray-400/50', text: 'text-gray-300', glow: 'rgba(209,213,219,0.3)' },
+  rare: { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400', glow: 'rgba(59,130,246,0.5)' },
+  epic: { bg: 'bg-purple-500/20', border: 'border-purple-500/50', text: 'text-purple-400', glow: 'rgba(139,92,246,0.5)' },
+  legendary: { bg: 'bg-orange-500/20', border: 'border-orange-500/50', text: 'text-orange-400', glow: 'rgba(249,115,22,0.6)' },
+  mythic: { bg: 'bg-pink-500/20', border: 'border-pink-500/50', text: 'text-pink-400', glow: 'rgba(236,72,153,0.7)' },
+};
 
 // ==================== 42 LOTTIE BORDERS ====================
 

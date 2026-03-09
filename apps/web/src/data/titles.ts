@@ -6,7 +6,7 @@
  * animations and styling based on rarity.
  */
 
-export type TitleRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' | 'unique';
+export type TitleRarity = 'free' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 export type TitleCategory = 'achievement' | 'premium' | 'event' | 'leaderboard' | 'special';
 
 export interface Title {
@@ -37,7 +37,7 @@ export type TitleAnimationType =
   | 'pulse'
   | 'float'
   | 'bounce'
-  // Advanced animations (uncommon+)
+  // Advanced animations (common+)
   | 'rainbow'
   | 'wave'
   | 'sparkle'
@@ -76,13 +76,12 @@ export interface TitleAnimation {
 
 // Rarity color schemes
 export const RARITY_COLORS: Record<TitleRarity, { primary: string; secondary: string; glow: string }> = {
+  free: { primary: '#6b7280', secondary: '#4b5563', glow: 'rgba(107, 114, 128, 0.2)' },
   common: { primary: '#9ca3af', secondary: '#6b7280', glow: 'rgba(156, 163, 175, 0.3)' },
-  uncommon: { primary: '#22c55e', secondary: '#16a34a', glow: 'rgba(34, 197, 94, 0.3)' },
   rare: { primary: '#3b82f6', secondary: '#2563eb', glow: 'rgba(59, 130, 246, 0.4)' },
   epic: { primary: '#a855f7', secondary: '#9333ea', glow: 'rgba(168, 85, 247, 0.4)' },
   legendary: { primary: '#f59e0b', secondary: '#d97706', glow: 'rgba(245, 158, 11, 0.5)' },
   mythic: { primary: '#ef4444', secondary: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)' },
-  unique: { primary: '#ec4899', secondary: '#db2777', glow: 'rgba(236, 72, 153, 0.5)' },
 };
 
 export const TITLES: Title[] = [
@@ -113,7 +112,7 @@ export const TITLES: Title[] = [
     id: 'social_butterfly',
     name: 'Social Butterfly',
     displayName: 'Social Butterfly',
-    rarity: 'uncommon',
+    rarity: 'common',
     category: 'achievement',
     description: 'Make 25 friends',
     color: '#22c55e',
@@ -603,7 +602,7 @@ export const TITLES: Title[] = [
     id: 'summer_festival',
     name: 'Summer Festival',
     displayName: 'Summer Star',
-    rarity: 'uncommon',
+    rarity: 'common',
     category: 'event',
     description: 'Participated in Summer Festival event',
     color: '#f59e0b',
@@ -716,7 +715,7 @@ export const TITLES: Title[] = [
     id: 'developer',
     name: 'Developer',
     displayName: 'Developer',
-    rarity: 'unique',
+    rarity: 'mythic',
     category: 'special',
     description: 'CGraph development team member',
     color: '#ec4899',
@@ -727,7 +726,7 @@ export const TITLES: Title[] = [
     id: 'community_manager',
     name: 'Community Manager',
     displayName: 'CM',
-    rarity: 'unique',
+    rarity: 'mythic',
     category: 'special',
     description: 'Official community manager',
     color: '#06b6d4',

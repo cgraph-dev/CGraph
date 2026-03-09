@@ -76,7 +76,6 @@ export type AvatarBorderType =
 export type BorderRarity =
   | 'free'
   | 'common'
-  | 'uncommon'
   | 'rare'
   | 'epic'
   | 'legendary'
@@ -376,10 +375,6 @@ export const RARITY_COLORS: Record<BorderRarity, { glow: string; gradient: strin
   common: {
     glow: 'rgba(156, 163, 175, 0.4)',
     gradient: 'from-gray-500 to-gray-600',
-  },
-  uncommon: {
-    glow: 'rgba(16, 185, 129, 0.5)',
-    gradient: 'from-emerald-400 to-green-500',
   },
   rare: {
     glow: 'rgba(59, 130, 246, 0.5)',

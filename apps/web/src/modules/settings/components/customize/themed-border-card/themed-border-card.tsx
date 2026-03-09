@@ -9,7 +9,7 @@
 import { lazy, Suspense } from 'react';
 import { motion, type TargetAndTransition, type Transition } from 'motion/react';
 import { LockClosedIcon, CheckIcon, SparklesIcon } from '@heroicons/react/24/solid';
-import { RARITY_COLORS, type BorderRarity } from '@/data/borderCollections';
+import { RARITY_COLORS, type BorderRarity } from '@/data/avatar-borders';
 import type { ThemedBorderCardProps } from './types';
 import { SIZE_CONFIG, PARTICLE_ANIMATION_TYPES } from './constants';
 import { getBorderAnimation } from './animations';

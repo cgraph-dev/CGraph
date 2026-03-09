@@ -5,23 +5,21 @@
 import type { TitleRarity } from '@/data/titles';
 
 export const RARITY_LIST: TitleRarity[] = [
+  'free',
   'common',
-  'uncommon',
   'rare',
   'epic',
   'legendary',
   'mythic',
-  'unique',
 ];
 
 const RARITY_COLORS: Record<TitleRarity, string> = {
+  free: 'text-gray-500 border-gray-700',
   common: 'text-gray-400 border-gray-600',
-  uncommon: 'text-green-400 border-green-600',
   rare: 'text-blue-400 border-blue-600',
   epic: 'text-purple-400 border-purple-600',
   legendary: 'text-yellow-400 border-yellow-600',
   mythic: 'text-pink-400 border-pink-600',
-  unique: 'text-cyan-400 border-cyan-600',
 };
 
 /**

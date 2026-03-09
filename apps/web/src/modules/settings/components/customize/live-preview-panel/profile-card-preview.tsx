@@ -15,7 +15,7 @@ import {
 } from '@/modules/settings/store/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import { getThemeById, type ProfileThemeConfig } from '@/data/profileThemes';
-import { getBorderById } from '@/data/borderCollections';
+import { getBorderById } from '@/data/avatar-borders';
 import { TiltCard } from '@/shared/components/ui';
 import { LottieOverlay } from '@/components/lottie';
 import { ANIMATION_SPEED_MULTIPLIERS, LEGENDARY_TITLE_IDS } from './constants';
@@ -64,7 +64,7 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
 
   const effectiveBorderId = settings.selectedBorderId || settings.avatarBorderType;
   const borderDef = effectiveBorderId ? getBorderById(effectiveBorderId) : undefined;
-  const borderLottieUrl = borderDef?.lottieFile ?? undefined;
+  const borderLottieUrl = borderDef?.lottieUrl ?? undefined;
   const effectiveBorderType = effectiveBorderId
     ? borderLottieUrl
       ? ('lottie' as const)
