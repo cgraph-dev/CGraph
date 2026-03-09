@@ -13,7 +13,7 @@
  * @module components/nameplate/NameplateBar
  */
 
-import { useRef, useEffect, useState, useCallback, memo } from 'react';
+import { useRef, useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   getNameplateById,
