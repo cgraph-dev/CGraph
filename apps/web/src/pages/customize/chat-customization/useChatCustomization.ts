@@ -12,7 +12,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   ChatBubbleLeftRightIcon,
   SparklesIcon,
-  FaceSmileIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
@@ -26,11 +25,10 @@ import type {
   ChatCategory,
   BubbleStyle,
   MessageEffect,
-  ReactionStyle,
   CategoryDefinition,
   EntranceAnimation,
 } from './types';
-import { BUBBLE_STYLES, MESSAGE_EFFECTS, REACTION_STYLES } from './constants';
+import { BUBBLE_STYLES, MESSAGE_EFFECTS } from './constants';
 
 /**
  * Hook for managing chat customization.
@@ -41,7 +39,6 @@ export function useChatCustomization() {
   const {
     bubbleStyle,
     messageEffect,
-    reactionStyle,
     isSaving,
     error,
     fetchCustomizations,
@@ -78,17 +75,14 @@ export function useChatCustomization() {
 
   // Preview handler – updates the unified store directly
   const handlePreviewItem = useCallback(
-    (category: 'bubble' | 'effect' | 'reaction', id: string, isUnlocked: boolean) => {
+    (category: 'bubble' | 'effect', id: string, isUnlocked: boolean) => {
       if (category === 'bubble') {
         updateChatStyle('bubbleStyle', id);
         setChatBubbleStyle(getBubbleStyle(id));
         setPreviewingLockedItem(isUnlocked ? null : id);
-      } else if (category === 'effect') {
+      } else {
         updateChatStyle('messageEffect', id);
         setBubbleAnimation(getBubbleAnimation(id));
-        setPreviewingLockedItem(isUnlocked ? null : id);
-      } else {
-        updateChatStyle('reactionStyle', id);
         setPreviewingLockedItem(isUnlocked ? null : id);
       }
     },
@@ -153,12 +147,6 @@ export function useChatCustomization() {
         count: MESSAGE_EFFECTS.length,
       },
       {
-        id: 'reactions',
-        label: 'Reaction Styles',
-        icon: FaceSmileIcon,
-        count: REACTION_STYLES.length,
-      },
-      {
         id: 'advanced',
         label: 'Fine Controls',
         icon: AdjustmentsHorizontalIcon,
@@ -169,14 +157,12 @@ export function useChatCustomization() {
   );
 
   // Filter items by search
-  const filteredItems: (BubbleStyle | MessageEffect | ReactionStyle)[] = useMemo(() => {
+  const filteredItems: (BubbleStyle | MessageEffect)[] = useMemo(() => {
     const query = searchQuery.toLowerCase();
     const source =
       activeCategory === 'bubbles'
         ? BUBBLE_STYLES
-        : activeCategory === 'effects'
-          ? MESSAGE_EFFECTS
-          : REACTION_STYLES;
+        : MESSAGE_EFFECTS;
 
     return source.filter(
       (item) =>
@@ -197,7 +183,6 @@ export function useChatCustomization() {
     // Store-derived selections
     bubbleStyle,
     messageEffect,
-    reactionStyle,
     isSaving,
     error,
 

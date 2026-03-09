@@ -3,7 +3,7 @@
  * Mock data and constants for chat customization
  */
 
-import type { BubbleStyle, MessageEffect, ReactionStyle } from './types';
+import type { BubbleStyle, MessageEffect } from './types';
 
 // ==================== BUBBLE STYLES ====================
 
@@ -149,63 +149,6 @@ export const MESSAGE_EFFECTS: MessageEffect[] = [
     animation: 'glitch',
     unlocked: false,
     unlockRequirement: 'Reach Level 25',
-  },
-];
-
-// ==================== REACTION STYLES ====================
-
-export const REACTION_STYLES: ReactionStyle[] = [
-  {
-    id: 'reaction-bounce',
-    name: 'Bounce',
-    description: 'Classic bounce animation',
-    animation: 'bounce',
-    unlocked: true,
-  },
-  {
-    id: 'reaction-pop',
-    name: 'Pop',
-    description: 'Quick pop effect',
-    animation: 'pop',
-    unlocked: true,
-  },
-  {
-    id: 'reaction-spin',
-    name: 'Spin',
-    description: '360° rotation',
-    animation: 'spin',
-    unlocked: true,
-  },
-  {
-    id: 'reaction-pulse',
-    name: 'Pulse',
-    description: 'Pulsating glow',
-    animation: 'pulse',
-    unlocked: true,
-  },
-  {
-    id: 'reaction-shake',
-    name: 'Shake',
-    description: 'Vigorous shake',
-    animation: 'shake',
-    unlocked: false,
-    unlockRequirement: 'React 100 Times',
-  },
-  {
-    id: 'reaction-float',
-    name: 'Float Up',
-    description: 'Floats upward',
-    animation: 'float',
-    unlocked: false,
-    unlockRequirement: 'Reach Level 20',
-  },
-  {
-    id: 'reaction-explode',
-    name: 'Explode',
-    description: 'Explosive particles',
-    animation: 'explode',
-    unlocked: false,
-    unlockRequirement: 'Premium Tier',
   },
 ];
 

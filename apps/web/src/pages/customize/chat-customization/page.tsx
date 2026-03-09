@@ -1,21 +1,19 @@
 /**
  * ChatCustomization Component
  *
- * Comprehensive chat styling customization with 3 sections:
+ * Chat styling customization with 2 sections:
  * 1. Bubble Styles - 25+ chat bubble shapes and styles
  * 2. Message Effects - 15+ send/receive animations
- * 3. Reaction Styles - 10+ emoji reaction animations
  *
  * State & logic live in useChatCustomization hook.
  */
 
 import { motion, AnimatePresence } from 'motion/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import type { BubbleStyle, MessageEffect, ReactionStyle } from './types';
+import type { BubbleStyle, MessageEffect } from './types';
 import {
   BubbleStylesSection,
   MessageEffectsSection,
-  ReactionStylesSection,
   AdvancedControlsSection,
 } from './sections';
 import { useChatCustomization } from './useChatCustomization';
@@ -30,7 +28,6 @@ export default function ChatCustomization() {
   const {
     bubbleStyle,
     messageEffect,
-    reactionStyle,
     isSaving,
     error,
     activeCategory,
@@ -118,16 +115,6 @@ export default function ChatCustomization() {
               selectedEffect={messageEffect}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('effect', id, isUnlocked)}
-            />
-          )}
-
-          {activeCategory === 'reactions' && (
-            <ReactionStylesSection
-               
-              reactions={filteredItems as ReactionStyle[]} // safe downcast – runtime verified
-              selectedReaction={reactionStyle}
-              previewingLockedItem={previewingLockedItem}
-              onSelect={(id, isUnlocked) => handlePreviewItem('reaction', id, isUnlocked)}
             />
           )}
 

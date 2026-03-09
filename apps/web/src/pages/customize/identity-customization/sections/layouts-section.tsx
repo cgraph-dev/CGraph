@@ -118,41 +118,6 @@ function LayoutPreview({ preview }: { preview: string }) {
           </div>
         </div>
       );
-    case 'professional':
-      return (
-        <div className={`${baseClasses} bg-gradient-to-br from-slate-800 to-slate-900 p-3`}>
-          {/* Professional: Clean business */}
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600" />
-            <div className="flex-1">
-              <div className="mb-1 h-2 w-full rounded bg-white/30" />
-              <div className="mb-2 h-1.5 w-2/3 rounded bg-white/20" />
-              <div className="border-t border-white/10 pt-2">
-                <div className="h-1 w-1/2 rounded bg-white/15" />
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    case 'artistic':
-      return (
-        <div
-          className={`${baseClasses} relative overflow-hidden bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-2`}
-        >
-          {/* Artistic: Creative asymmetric */}
-          <div className="absolute -right-2 -top-2 h-12 w-12 rounded-full bg-gradient-to-br from-pink-500/30 to-purple-500/30 blur-sm" />
-          <div className="relative z-10">
-            <div className="mb-2 ml-auto h-8 w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 ring-2 ring-white/20" />
-            <div className="mb-1 h-2 w-full rounded bg-white/30" />
-            <div className="h-1.5 w-2/3 rounded bg-white/20" />
-            <div className="mt-2 flex justify-end gap-1">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-3 w-3 rounded-full bg-white/20" />
-              ))}
-            </div>
-          </div>
-        </div>
-      );
     default:
       return (
         <div

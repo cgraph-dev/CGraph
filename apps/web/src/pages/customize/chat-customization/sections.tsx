@@ -7,5 +7,4 @@
 
 export { BubbleStylesSection } from './bubble-styles-section';
 export { MessageEffectsSection } from './message-effects-section';
-export { ReactionStylesSection } from './reaction-styles-section';
 export { AdvancedControlsSection } from './advanced-controls-section';

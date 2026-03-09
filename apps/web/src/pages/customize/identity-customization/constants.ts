@@ -55,20 +55,6 @@ export const PROFILE_LAYOUTS: ProfileLayout[] = [
     preview: 'gaming',
     unlocked: true,
   },
-  {
-    id: 'professional',
-    name: 'Professional',
-    description: 'Clean business-style layout',
-    preview: 'professional',
-    unlocked: false,
-  },
-  {
-    id: 'artistic',
-    name: 'Artistic',
-    description: 'Creative asymmetric design',
-    preview: 'artistic',
-    unlocked: false,
-  },
 ];
 
 /**

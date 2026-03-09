@@ -1,10 +1,9 @@
 /**
  * ChatCustomization Component
  *
- * Comprehensive chat styling customization with 3 sections:
+ * Chat styling customization with 2 sections:
  * 1. Bubble Styles - 25+ chat bubble shapes and styles
  * 2. Message Effects - 15+ send/receive animations
- * 3. Reaction Styles - 10+ emoji reaction animations
  *
  * Features:
  * - Live preview of chat bubbles
