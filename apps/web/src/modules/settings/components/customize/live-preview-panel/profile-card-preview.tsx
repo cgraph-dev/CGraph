@@ -17,6 +17,7 @@ import { usePrefersReducedMotion } from '@/hooks';
 import { getThemeById, type ProfileThemeConfig } from '@/data/profileThemes';
 import { getBorderById } from '@/data/borderCollections';
 import { TiltCard } from '@/shared/components/ui';
+import { LottieOverlay } from '@/components/lottie';
 import { ANIMATION_SPEED_MULTIPLIERS, LEGENDARY_TITLE_IDS } from './constants';
 import { getBackgroundStyle, getParticleStyle as computeParticleStyle } from './profile-card-utils';
 import { ParticleField } from './particle-field';
@@ -42,9 +43,8 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
       equippedTitle: state.equippedTitle,
       equippedBadges: state.equippedBadges,
       selectedBorderId: state.selectedBorderId,
-      avatarBorder: state.avatarBorder,
-      title: state.title,
-      profileTheme: state.profileTheme,
+      avatarBorderType: state.avatarBorderType,
+      selectedProfileThemeId: state.selectedProfileThemeId,
       particleEffect: state.particleEffect,
       // Display name style
       displayNameFont: state.displayNameFont,
@@ -61,9 +61,9 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
     }))
   );
 
-  const effectiveTitle = settings.title || settings.equippedTitle || null;
+  const effectiveTitle = settings.equippedTitle || null;
 
-  const effectiveBorderId = settings.selectedBorderId || settings.avatarBorder;
+  const effectiveBorderId = settings.selectedBorderId || settings.avatarBorderType;
   const borderDef = effectiveBorderId ? getBorderById(effectiveBorderId) : undefined;
   const borderLottieUrl = borderDef?.lottieFile ?? undefined;
   const effectiveBorderType = effectiveBorderId
@@ -161,6 +161,12 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
           speedMultiplier={speedMultiplier}
           equippedBadges={settings.equippedBadges}
           lottieUrl={borderLottieUrl}
+        />
+
+        {/* Profile effect overlay (sparkles, snow, fire, etc.) */}
+        <LottieOverlay
+          effectId={settings.equippedProfileEffect ?? null}
+          speed={speedMultiplier}
         />
       </motion.div>
     </TiltCard>
