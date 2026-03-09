@@ -43,7 +43,6 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
       equippedTitle: state.equippedTitle,
       equippedBadges: state.equippedBadges,
       selectedBorderId: state.selectedBorderId,
-      avatarBorderType: state.avatarBorderType,
       selectedProfileThemeId: state.selectedProfileThemeId,
       particleEffect: state.particleEffect,
       // Display name style
@@ -73,12 +72,14 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
     : settings.avatarBorderType;
 
   const effectiveColorPreset =
-    (settings.profileTheme && PROFILE_THEME_TO_COLOR[settings.profileTheme]) ||
+    (settings.selectedProfileThemeId && PROFILE_THEME_TO_COLOR[settings.selectedProfileThemeId]) ||
     settings.avatarBorderColor;
 
   const activeProfileTheme = useMemo<ProfileThemeConfig | null>(() => {
-    return settings.profileTheme ? (getThemeById(settings.profileTheme) ?? null) : null;
-  }, [settings.profileTheme]);
+    return settings.selectedProfileThemeId
+      ? (getThemeById(settings.selectedProfileThemeId) ?? null)
+      : null;
+  }, [settings.selectedProfileThemeId]);
 
   const showParticles =
     !prefersReducedMotion &&
