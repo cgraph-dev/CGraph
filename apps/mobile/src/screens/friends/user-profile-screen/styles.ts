@@ -64,70 +64,7 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     lineHeight: 20,
   },
-  gamificationSection: {
-    width: '100%',
-    marginTop: 20,
-    paddingTop: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  levelContainer: {
-    marginBottom: 12,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  levelGradient: {
-    padding: 12,
-    borderRadius: 12,
-  },
-  levelHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  levelBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  levelText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#8b5cf6',
-  },
-  xpText: {
-    fontSize: 14,
-    color: '#9ca3af',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  statItem: {
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    minWidth: 90,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginTop: 4,
-  },
-  statLabel: {
-    fontSize: 11,
-    marginTop: 2,
-  },
-  streakEmoji: {
-    fontSize: 18,
-  },
+
   privateNotice: {
     flexDirection: 'row',
     alignItems: 'center',

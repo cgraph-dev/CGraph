@@ -21,7 +21,7 @@ import RSSFeedsScreen from '../screens/settings/rss-feeds-screen';
 import CustomEmojiScreen from '../screens/settings/custom-emoji/custom-emoji-screen';
 import { PremiumScreen, CoinShopScreen } from '../screens/premium';
 import { CalendarScreen } from '../screens/calendar';
-// TODO(phase-26): Rewire — LeaderboardScreen deleted (../screens/leaderboard)
+
 import { ReferralScreen } from '../screens/referrals';
 import { MemberListScreen, WhosOnlineScreen } from '../screens/community';
 import { E2EEVerificationScreen } from '../screens/security';
@@ -42,7 +42,6 @@ import TermsOfServiceScreen from '../screens/legal/terms-of-service-screen';
 import CookiePolicyScreen from '../screens/legal/cookie-policy-screen';
 import GDPRScreen from '../screens/legal/gdpr-screen';
 import SessionsScreen from '../screens/settings/sessions-screen';
-// TODO(phase-26): Rewire — gamification components deleted
 import CustomStatusScreen from '../screens/social/custom-status-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -104,7 +103,6 @@ export default function SettingsNavigator() {
         component={CalendarScreen}
         options={{ title: 'Calendar', headerShown: false }}
       />
-      {/* TODO(phase-26): Rewire — Leaderboard screen removed, reintroduce when rebuilt */}
       <Stack.Screen
         name="Referrals"
         component={ReferralScreen}
@@ -177,7 +175,6 @@ export default function SettingsNavigator() {
         component={EffectsCustomizationScreen}
         options={{ title: 'Effects & Themes', headerShown: false }}
       />
-      {/* TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization) */}
       <Stack.Screen
         name="ProfileCustomization"
         component={ProfileCustomizationScreen}

@@ -1,13 +1,11 @@
 /**
- * Profile header card with avatar, name, badges, bio, and gamification stats.
+ * Profile header card with avatar, name, badges, and bio.
  * @module screens/friends/user-profile-screen/components/profile-header
  */
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from '../../../../components';
-// TODO(phase-26): Rewire — gamification components deleted
 import { formatKarma, type UserProfile } from '../types';
 import { styles } from '../styles';
 
@@ -52,62 +50,6 @@ export function ProfileHeader({ user, colors }: ProfileHeaderProps) {
       </View>
 
       {user.bio && <Text style={[styles.bio, { color: colors.text }]}>{user.bio}</Text>}
-
-      {/* Gamification Stats Section */}
-      {(user.level || user.current_title || user.achievements_count) && (
-        <View style={styles.gamificationSection}>
-          {/* TODO(phase-26): Rewire — gamification components deleted */}
-          {user.current_title && (
-            <View style={styles.titleContainer}>
-              <Text style={[styles.levelText, { color: colors.text }]}>{user.current_title}</Text>
-            </View>
-          )}
-
-          {user.level && (
-            <View style={styles.levelContainer}>
-              <LinearGradient colors={['#8b5cf620', 'transparent']} style={styles.levelGradient}>
-                <View style={styles.levelHeader}>
-                  <View style={styles.levelBadge}>
-                    <Ionicons name="sparkles" size={16} color="#8b5cf6" />
-                    <Text style={styles.levelText}>Level {user.level}</Text>
-                  </View>
-                  {user.xp !== undefined && (
-                    <Text style={styles.xpText}>{(user.xp ?? 0).toLocaleString()} XP</Text>
-                  )}
-                </View>
-              </LinearGradient>
-            </View>
-          )}
-
-          <View style={styles.statsRow}>
-            {user.achievements_count !== undefined && (
-              <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
-                <Ionicons name="trophy" size={18} color="#f59e0b" />
-                <Text style={[styles.statValue, { color: colors.text }]}>
-                  {user.achievements_count}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                  Achievements
-                </Text>
-              </View>
-            )}
-            {user.streak !== undefined && user.streak > 0 && (
-              <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
-                <Text style={styles.streakEmoji}>🔥</Text>
-                <Text style={[styles.statValue, { color: colors.text }]}>{user.streak}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Day Streak</Text>
-              </View>
-            )}
-            {user.titles && user.titles.length > 0 && (
-              <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
-                <Ionicons name="ribbon" size={18} color="#ec4899" />
-                <Text style={[styles.statValue, { color: colors.text }]}>{user.titles.length}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Titles</Text>
-              </View>
-            )}
-          </View>
-        </View>
-      )}
 
       {/* Private Profile Notice */}
       {user.is_profile_private && user.username === 'Unknown' && (

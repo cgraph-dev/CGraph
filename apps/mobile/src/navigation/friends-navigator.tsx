@@ -9,7 +9,6 @@ import FriendListScreen from '../screens/friends/friend-list-screen';
 import AddFriendScreen from '../screens/friends/add-friend-screen';
 import FriendRequestsScreen from '../screens/friends/friend-requests-screen';
 import UserProfileScreen from '../screens/friends/user-profile-screen';
-// TODO(phase-26): Rewire — LeaderboardScreen deleted (../screens/community/leaderboard-screen)
 import ContactsScreen from '../screens/social/contacts-screen';
 import UserSearchScreen from '../screens/social/user-search-screen';
 import ProfileEditScreen from '../screens/social/profile-edit-screen';
@@ -28,7 +27,6 @@ export default function FriendsNavigator() {
       <Stack.Screen name="AddFriend" component={AddFriendScreen} />
       <Stack.Screen name="FriendRequests" component={FriendRequestsScreen} />
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
-      {/* TODO(phase-26): Rewire — Leaderboard screen removed */}
       <Stack.Screen name="Contacts" component={ContactsScreen} />
       <Stack.Screen name="UserSearch" component={UserSearchScreen} />
       <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />

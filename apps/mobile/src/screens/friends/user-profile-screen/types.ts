@@ -13,12 +13,13 @@ export interface UserProfile extends UserBasic {
   is_profile_private?: boolean;
   friend_request_sent?: boolean;
   friend_request_received?: boolean;
-  level?: number;
-  xp?: number;
-  achievements_count?: number;
-  titles?: string[];
-  current_title?: string;
-  streak?: number;
+  // TODO(phase-27): Reintroduce gamification fields when rebuilt
+  // level?: number;
+  // xp?: number;
+  // achievements_count?: number;
+  // titles?: string[];
+  // current_title?: string;
+  // streak?: number;
 }
 
 export const formatKarma = (karma: number): string => {

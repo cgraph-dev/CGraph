@@ -118,27 +118,7 @@ export default function SettingsScreen({ navigation }: Props) {
            
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
-        {
-          title: 'Leaderboard',
-          icon: 'trophy' as const,
-          onPress: () => navigation.navigate('Leaderboard'),
-           
-          gradient: ['#f59e0b', '#fbbf24'] as [string, string],
-        },
-        {
-          title: 'Gamification',
-          icon: 'game-controller' as const,
-          onPress: () => navigation.navigate('GamificationHub'),
-           
-          gradient: ['#8b5cf6', '#c084fc'] as [string, string],
-        },
-        {
-          title: 'Achievements',
-          icon: 'ribbon' as const,
-          onPress: () => navigation.navigate('Achievements'),
-           
-          gradient: ['#f59e0b', '#eab308'] as [string, string],
-        },
+
         {
           title: 'Referral Program',
           icon: 'gift' as const,

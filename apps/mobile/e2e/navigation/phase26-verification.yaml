@@ -1,0 +1,104 @@
+# Phase 26 Mobile Verification — Gamification Removal
+# Verifies that deleted gamification features no longer appear in the mobile app.
+#
+# Run: maestro test apps/mobile/e2e/navigation/phase26-verification.yaml
+#
+# Checks:
+#   1. Settings screen has no Leaderboard / Gamification / Achievements menu items
+#   2. Friends / user-profile screen has no gamification badges or stats
+#   3. Bottom tabs have no Leaderboard tab
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+
+# --- Authenticate first ---
+- runFlow: ../auth/login.yaml
+
+# ===================================================================
+# 1. Settings — no gamification menu items
+# ===================================================================
+
+- tapOn:
+    text: 'Settings'
+
+- waitForAnimationToEnd
+
+- takeScreenshot: phase26-settings-before
+
+# Assert deleted menu items are NOT visible
+- assertNotVisible:
+    text: 'Leaderboard'
+    optional: false
+
+- assertNotVisible:
+    text: 'Gamification'
+    optional: false
+
+- assertNotVisible:
+    text: 'Achievements'
+    optional: false
+
+# Positive check — items that SHOULD still be there
+- assertVisible:
+    text: 'Calendar|Referral Program'
+    regex: true
+
+- takeScreenshot: phase26-settings-verified
+
+# ===================================================================
+# 2. Bottom tabs — no Leaderboard tab
+# ===================================================================
+
+# Navigate back to main screen to check bottom tabs
+- tapOn:
+    text: 'Home|Messages|Friends'
+    regex: true
+
+- waitForAnimationToEnd
+
+# The bottom tab bar should NOT contain a Leaderboard tab
+- assertNotVisible:
+    id: 'tab-leaderboard'
+
+- takeScreenshot: phase26-tabs-verified
+
+# ===================================================================
+# 3. Friends / Profile — no gamification stats
+# ===================================================================
+
+- tapOn:
+    text: 'Friends'
+
+- waitForAnimationToEnd
+
+# Tap on the first friend to open their profile
+- tapOn:
+    index: 0
+    below:
+      text: 'Friends'
+    optional: true
+
+- waitForAnimationToEnd
+
+# Profile should NOT show gamification-specific UI
+- assertNotVisible:
+    text: 'Gamification Hub'
+    optional: false
+
+- assertNotVisible:
+    text: 'Quest Tracker'
+    optional: false
+
+- assertNotVisible:
+    text: 'Achievement Progress'
+    optional: false
+
+- takeScreenshot: phase26-profile-verified
+
+# ===================================================================
+# Verification complete
+# ===================================================================
+- runScript:
+    script: |
+      console.log("✅ Phase 26 mobile verification passed — no gamification remnants found")
