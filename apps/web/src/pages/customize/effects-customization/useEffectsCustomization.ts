@@ -76,7 +76,6 @@ export function useEffectsCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateEffects,
-    setEffect,
     updateSettings,
     setAnimationSpeed,
   } = store;

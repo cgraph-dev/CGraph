@@ -6,7 +6,7 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-import { useCustomizationStore, getThemePreset } from '@/modules/settings/store/customization';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 import {
   ALL_PROFILE_THEMES,
@@ -36,10 +36,6 @@ export function useThemeCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateTheme,
-    setTheme,
-    setAvatarBorderColor,
-    setChatBubbleColor,
-    setProfileTheme,
   } = store;
 
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>('profile');
@@ -82,19 +78,6 @@ export function useThemeCustomization() {
         theme.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [newProfileThemes, searchQuery]);
-
-  // Apply theme to store for live preview - uses centralized mapping
-  const applyThemeToStore = useCallback(
-    (themeId: string) => {
-      const preset = getThemePreset(themeId);
-      if (preset) {
-        setTheme(preset);
-        setAvatarBorderColor(preset);
-      }
-      setProfileTheme(themeId);
-    },
-    [setTheme, setAvatarBorderColor, setProfileTheme]
-  );
 
   const handleSaveThemes = useCallback(async () => {
     if (!user?.id) {

@@ -84,7 +84,7 @@ function spawnParticle(width: number, height: number, colors: string[]): Particl
     opacity: Math.random() * 0.6 + 0.2,
     life: 0,
     maxLife: Math.random() * 200 + 100,
-    color: colors[Math.floor(Math.random() * colors.length)],
+    color: colors[Math.floor(Math.random() * colors.length)] ?? '#6366f1',
   };
 }
 
@@ -124,6 +124,7 @@ export const ParticleEngine = memo(function ParticleEngine({
       // Update and draw
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
+        if (!p) continue;
         p.x += p.vx;
         p.y += p.vy;
         p.life += 1;

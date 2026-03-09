@@ -41,7 +41,7 @@ function mapBorderDefinition(b: BorderDefinition): Border {
   return {
     id: b.id,
     name: b.name,
-    rarity: b.rarity === 'free' ? 'common' : (b.rarity as Rarity),
+    rarity: b.rarity,
     animation: b.animationType,
     colors: b.colors,
     unlocked: b.unlocked,
@@ -68,7 +68,7 @@ function mapBadgeDefinition(b: BadgeDefinition): Badge {
     name: b.name,
     description: b.description,
     icon: b.icon,
-    rarity: b.rarity as Rarity,
+    rarity: b.rarity,
     unlocked: b.unlocked,
     unlockRequirement: b.unlockRequirement,
   };
@@ -84,10 +84,10 @@ export function useIdentityCustomization() {
 
   const store = useCustomizationStore();
   const {
-    avatarBorder,
-    title,
+    avatarBorderType,
+    equippedTitle,
     equippedBadges,
-    profileLayout,
+    profileCardStyle,
     isSaving,
     error,
     fetchCustomizations,
@@ -226,10 +226,10 @@ export function useIdentityCustomization() {
   const clearPreview = useCallback(() => {
     if (previewingLockedItem) {
       setPreviewingLockedItem(null);
-      if (avatarBorder) applyBorderToStore(avatarBorder);
-      if (title) applyTitleToStore(title);
+      if (avatarBorderType) applyBorderToStore(avatarBorderType);
+      if (equippedTitle) applyTitleToStore(equippedTitle);
     }
-  }, [previewingLockedItem, avatarBorder, title, applyBorderToStore, applyTitleToStore]);
+  }, [previewingLockedItem, avatarBorderType, equippedTitle, applyBorderToStore, applyTitleToStore]);
 
   // --- Section handlers ---
 
@@ -280,7 +280,7 @@ export function useIdentityCustomization() {
       });
       return;
     }
-    updateIdentity('profileLayout', layoutId);
+    updateIdentity('profileCardStyle', layoutId);
 
     store.setProfileCardStyle(layoutId as ProfileCardStyle);
   };
@@ -326,10 +326,10 @@ export function useIdentityCustomization() {
     previewingLockedItem,
 
     // Store values
-    avatarBorder,
-    title,
+    avatarBorderType,
+    equippedTitle,
     equippedBadges,
-    profileLayout,
+    profileCardStyle,
     isSaving,
     error,
     isLoadingIdentity,
