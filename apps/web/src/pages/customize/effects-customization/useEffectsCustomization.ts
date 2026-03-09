@@ -15,7 +15,6 @@ import toast from 'react-hot-toast';
 
 import type { EffectCategory, ParticleEffect, BackgroundEffect, AnimationSet } from './types';
 import {
-  PARTICLE_ID_TO_EFFECT,
   PARTICLE_EFFECTS,
   BACKGROUND_EFFECTS,
   ANIMATION_SETS,
@@ -86,14 +85,12 @@ export function useEffectsCustomization() {
   const [searchQuery, setSearchQuery] = useState('');
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
-  // Apply particle effect to store for live preview
+  // Apply particle effect to store for live preview — uses direct ID
   const applyParticleToStore = useCallback(
     (particleId: string) => {
-      const effectPreset = PARTICLE_ID_TO_EFFECT[particleId] || 'minimal';
-      setEffect(effectPreset);
       updateSettings({ particlesEnabled: particleId !== 'particle-none' });
     },
-    [setEffect, updateSettings]
+    [updateSettings]
   );
 
   // Apply background effect to store for live preview
@@ -112,13 +109,12 @@ export function useEffectsCustomization() {
     }
   }, [user?.id, fetchCustomizations]);
 
-  // Apply current selection to store on mount
+  // Sync store on mount with current particle selection
   useEffect(() => {
     if (particleEffect) {
-      const effectPreset = PARTICLE_ID_TO_EFFECT[particleEffect] || 'minimal';
-      setEffect(effectPreset);
+      updateSettings({ particlesEnabled: particleEffect !== 'particle-none' });
     }
-  }, [particleEffect, setEffect]);
+  }, [particleEffect, updateSettings]);
 
   // Handle preview for locked items
   const handlePreviewItem = (

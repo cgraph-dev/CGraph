@@ -21,7 +21,6 @@ export type {
 
 // Constants
 export {
-  PARTICLE_ID_TO_EFFECT,
   PARTICLE_EFFECTS,
   BACKGROUND_EFFECTS,
   ANIMATION_SETS,

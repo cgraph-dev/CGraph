@@ -3,24 +3,7 @@
  * @module pages/customize/effects-customization
  */
 
-import type { EffectPreset } from '@/modules/settings/store/customization';
 import type { ParticleEffect, BackgroundEffect, AnimationSet } from './types';
-
-// Mapping from particle IDs to EffectPreset
-export const PARTICLE_ID_TO_EFFECT: Record<string, EffectPreset> = {
-  'particle-none': 'minimal',
-  'particle-snow': 'glassmorphism',
-  'particle-confetti': 'neon',
-  'particle-stars': 'aurora',
-  'particle-bubbles': 'glassmorphism',
-  'particle-aurora': 'aurora',
-  'particle-neon': 'neon',
-  'particle-matrix': 'cyberpunk',
-  'particle-cyber': 'cyberpunk',
-  'particle-hologram': 'holographic',
-  'particle-fire': 'neon',
-  'particle-storm': 'aurora',
-};
 
 export const PARTICLE_EFFECTS: ParticleEffect[] = [
   {
