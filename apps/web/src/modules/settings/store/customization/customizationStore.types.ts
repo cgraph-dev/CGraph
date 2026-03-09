@@ -129,7 +129,7 @@ export interface CustomizationState {
   profileThemePrimary: string | null;
   profileThemeAccent: string | null;
 
-  // === Legacy Aliases (for backward compatibility) ===
+  // === Canonical Aliases (kept in sync by store actions — consumed throughout codebase) ===
   chatTheme: ThemePreset; // alias for chatBubbleColor
   bubbleStyle: ChatBubbleStyle; // alias for chatBubbleStyle
   messageEffect: BubbleAnimation; // alias for bubbleEntranceAnimation
@@ -396,7 +396,7 @@ export const DEFAULT_STATE: CustomizationState = {
   profileThemePrimary: null,
   profileThemeAccent: null,
 
-  // Legacy Aliases (computed at runtime, but need defaults for type safety)
+  // Canonical Aliases (computed at runtime, kept in sync by store actions)
   chatTheme: 'emerald',
   bubbleStyle: 'default',
   messageEffect: 'fade',
