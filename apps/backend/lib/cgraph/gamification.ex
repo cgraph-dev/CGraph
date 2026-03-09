@@ -2,15 +2,11 @@ defmodule CGraph.Gamification do
   @moduledoc """
   The Gamification context.
 
-  Handles XP progression, achievements, quests, titles, shop items,
-  coin transactions, and leaderboards.
+  Handles XP progression, achievements, titles, shop items, coins, and streaks.
 
   Core XP/coin/streak engine lives here. Domain sub-systems delegate to:
   - `CGraph.Gamification.AchievementSystem` — achievement progress & unlocking
-  - `CGraph.Gamification.QuestSystem` — quest acceptance, progress, rewards
   - `CGraph.Gamification.TitleShopSystem` — titles, shop items, purchases
-  - `CGraph.Gamification.LeaderboardSystem` — global leaderboard queries
-  - `CGraph.Gamification.EventSystem` — seasonal events, battle passes
   """
 
   import Ecto.Query, warn: false
@@ -19,24 +15,10 @@ defmodule CGraph.Gamification do
   alias CGraph.Gamification.{
     AchievementSystem,
     AchievementTriggers,
-    CoinTransaction,
-    CurrencySystem,
-    EventSystem,
-    FeatureGates,
-    Leaderboard,
-    LeaderboardSystem,
     TitleShopSystem
   }
 
   alias CGraph.Repo
-
-  # ==================== FEATURE GATES (delegated) ====================
-
-  defdelegate feature_requirements(), to: FeatureGates
-  defdelegate required_level(feature), to: FeatureGates
-  defdelegate feature_unlocked?(user_level, feature), to: FeatureGates, as: :unlocked?
-  defdelegate get_user_gates(user_level), to: FeatureGates
-  defdelegate newly_unlocked_features(old_level, new_level), to: FeatureGates
 
   # ==================== ACHIEVEMENTS (delegated) ====================
 
@@ -60,38 +42,6 @@ defmodule CGraph.Gamification do
   defdelegate get_shop_item(id), to: TitleShopSystem
   defdelegate purchase_shop_item(user, item_id, quantity \\ 1), to: TitleShopSystem
   defdelegate list_user_purchases(user_id, opts \\ []), to: TitleShopSystem
-
-  # ==================== LEADERBOARDS (delegated) ====================
-
-  defdelegate get_leaderboard(category, opts \\ []), to: LeaderboardSystem
-  defdelegate get_leaderboard_count(category), to: LeaderboardSystem
-  defdelegate get_user_rank(user_id, category), to: LeaderboardSystem
-  defdelegate get_xp_leaderboard(limit \\ 10), to: LeaderboardSystem
-
-  # ==================== EVENTS (delegated) ====================
-
-  defdelegate list_active_events(), to: EventSystem
-  defdelegate list_upcoming_events(days \\ 7), to: EventSystem
-  defdelegate get_event(event_id), to: EventSystem
-  defdelegate get_user_event_progress(user_id, event_id), to: EventSystem
-  defdelegate get_user_event_rank(user_id, event_id), to: EventSystem
-  defdelegate get_event_quests(user_id, event_id), to: EventSystem
-  defdelegate get_battle_pass_info(event_id, user_id), to: EventSystem
-  defdelegate claim_event_reward(user_id, event_id, tier, reward_type), to: EventSystem
-  defdelegate purchase_battle_pass(user_id, event_id), to: EventSystem
-  defdelegate get_community_milestones(event_id), to: EventSystem
-
-  @doc "Get event leaderboard (2-arg backward-compat)."
-  @spec get_event_leaderboard(String.t(), integer()) :: term()
-  def get_event_leaderboard(event_id, limit) when is_integer(limit) do
-    EventSystem.get_event_leaderboard(event_id, limit, 0)
-  end
-
-  @doc "Get event leaderboard with cursor/offset."
-  @spec get_event_leaderboard(String.t(), integer(), term()) :: term()
-  def get_event_leaderboard(event_id, limit, cursor_or_offset) do
-    EventSystem.get_event_leaderboard(event_id, limit, cursor_or_offset)
-  end
 
   # ==================== LEVEL SYSTEM ====================
 
@@ -163,41 +113,6 @@ defmodule CGraph.Gamification do
 
       {updated_user, level_up}
     end)
-    |> case do
-      {:ok, {updated_user, level_up}} ->
-        # Get old rank before sync for rank_changed detection
-        old_xp_rank = case Leaderboard.get_rank(updated_user.id, "xp") do
-          {:ok, rank} -> rank
-          _ -> nil
-        end
-
-        Leaderboard.sync_scores(updated_user, [:xp, :level])
-
-        # Broadcast rank_changed if rank improved
-        Task.start(fn ->
-          new_xp_rank = case Leaderboard.get_rank(updated_user.id, "xp") do
-            {:ok, rank} -> rank
-            _ -> nil
-          end
-
-          if old_xp_rank && new_xp_rank && new_xp_rank != old_xp_rank do
-            Phoenix.PubSub.broadcast(
-              CGraph.PubSub,
-              "gamification:#{updated_user.id}",
-              {:rank_changed, %{
-                category: "xp",
-                old_rank: old_xp_rank,
-                new_rank: new_xp_rank
-              }}
-            )
-          end
-        end)
-
-        {:ok, {updated_user, level_up}}
-
-      error ->
-        error
-    end
   end
 
   @doc "Add XP to a user (simplified, by user_id)."
@@ -217,33 +132,12 @@ defmodule CGraph.Gamification do
 
   @doc "Award coins to a user."
   @spec award_coins(User.t(), integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
-  def award_coins(%User{} = user, amount, type, opts \\ []) do
-    description = Keyword.get(opts, :description)
-    reference_type = Keyword.get(opts, :reference_type)
-    reference_id = Keyword.get(opts, :reference_id)
+  def award_coins(%User{} = user, amount, _type, _opts \\ []) do
     new_balance = user.coins + amount
 
-    Repo.transaction(fn ->
-      {:ok, updated_user} =
-        user
-        |> Ecto.Changeset.change(%{coins: new_balance})
-        |> Repo.update()
-
-      {:ok, _transaction} =
-        %CoinTransaction{}
-        |> CoinTransaction.changeset(%{
-          user_id: user.id,
-          amount: amount,
-          balance_after: new_balance,
-          type: type,
-          description: description,
-          reference_type: reference_type,
-          reference_id: reference_id
-        })
-        |> Repo.insert()
-
-      updated_user
-    end)
+    user
+    |> Ecto.Changeset.change(%{coins: new_balance})
+    |> Repo.update()
   end
 
   @doc """
@@ -251,11 +145,7 @@ defmodule CGraph.Gamification do
   Uses SELECT FOR UPDATE to prevent concurrent balance modifications.
   """
   @spec spend_coins(User.t(), pos_integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, :insufficient_funds}
-  def spend_coins(%User{} = user, amount, type, opts \\ []) when amount > 0 do
-    description = Keyword.get(opts, :description)
-    reference_type = Keyword.get(opts, :reference_type)
-    reference_id = Keyword.get(opts, :reference_id)
-
+  def spend_coins(%User{} = user, amount, _type, _opts \\ []) when amount > 0 do
     Repo.transaction(fn ->
       locked_user =
         from(u in User, where: u.id == ^user.id, lock: "FOR UPDATE")
@@ -271,44 +161,10 @@ defmodule CGraph.Gamification do
           |> Ecto.Changeset.change(%{coins: new_balance})
           |> Repo.update()
 
-        {:ok, _transaction} =
-          %CoinTransaction{}
-          |> CoinTransaction.changeset(%{
-            user_id: user.id,
-            amount: -amount,
-            balance_after: new_balance,
-            type: type,
-            description: description,
-            reference_type: reference_type,
-            reference_id: reference_id
-          })
-          |> Repo.insert()
-
         updated_user
       end
     end)
   end
-
-  @doc "Get coin transaction history for a user."
-  @spec list_coin_transactions(String.t(), keyword()) :: {[CoinTransaction.t()], map()}
-  def list_coin_transactions(user_id, opts \\ []) do
-    query = CoinTransaction |> where([t], t.user_id == ^user_id)
-
-    pagination_opts =
-      CGraph.Pagination.parse_params(
-        Enum.into(opts, %{}),
-        sort_field: :inserted_at,
-        sort_direction: :desc,
-        default_limit: 50
-      )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
-
-  # ==================== CURRENCY MANAGEMENT (delegated) ====================
-
-  defdelegate add_currency(user_or_id, amount, currency_type), to: CurrencySystem
-  defdelegate deduct_currency(user_or_id, amount, currency_type), to: CurrencySystem
 
   # ==================== STREAK MANAGEMENT ====================
 
@@ -350,17 +206,6 @@ defmodule CGraph.Gamification do
         })
         |> Repo.update()
 
-      {:ok, _} =
-        %CoinTransaction{}
-        |> CoinTransaction.changeset(%{
-          user_id: user.id,
-          amount: coins,
-          balance_after: updated_user.coins,
-          type: "daily_bonus",
-          description: "Day #{new_streak} login bonus"
-        })
-        |> Repo.insert()
-
       {:ok, {final_user, _level_up}} =
         award_xp(updated_user, 25, "daily_login", description: "Daily login bonus")
 
@@ -401,44 +246,6 @@ defmodule CGraph.Gamification do
       equipped_title_id: user.equipped_title_id
     }
   end
-
-  # ==================== PRESTIGE ====================
-
-  @doc "Get user's prestige info."
-  @spec get_user_prestige(String.t()) :: {:ok, map()}
-  def get_user_prestige(user_id) do
-    alias CGraph.Gamification.UserPrestige
-
-    case Repo.get_by(UserPrestige, user_id: user_id) do
-      nil ->
-        {:ok, %{
-          level: 0, total_prestiges: 0, xp_multiplier: 1.0, coin_multiplier: 1.0,
-          karma_multiplier: 1.0, bonuses: [], prestige_xp: 0,
-          xp_to_next: UserPrestige.xp_required_for_prestige(0)
-        }}
-
-      prestige ->
-        {:ok, %{
-          level: prestige.prestige_level,
-          total_prestiges: prestige.total_resets || 0,
-          xp_multiplier: 1.0 + (prestige.xp_bonus || 0.0),
-          coin_multiplier: 1.0 + (prestige.coin_bonus || 0.0),
-          karma_multiplier: 1.0 + (prestige.karma_bonus || 0.0),
-          bonuses: [
-            %{type: "xp", value: prestige.xp_bonus || 0.0},
-            %{type: "coins", value: prestige.coin_bonus || 0.0},
-            %{type: "karma", value: prestige.karma_bonus || 0.0},
-            %{type: "drop_rate", value: prestige.drop_rate_bonus || 0.0}
-          ],
-          prestige_xp: prestige.prestige_xp,
-          xp_to_next: UserPrestige.xp_required_for_prestige(prestige.prestige_level)
-        }}
-    end
-  end
-
-  @doc "Get prestige leaderboard."
-  @spec get_prestige_leaderboard(keyword()) :: list()
-  def get_prestige_leaderboard(_opts \\ []), do: []
 
   # ==================== MISC ====================
 

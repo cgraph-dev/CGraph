@@ -18,11 +18,6 @@ defmodule CGraphWeb.UserSocket do
   channel "voice:*", CGraphWeb.VoiceStateChannel
   channel "secret_chat:*", CGraphWeb.SecretChatChannel
 
-  # Gamification Channels
-  channel "gamification:*", CGraphWeb.GamificationChannel
-  channel "marketplace:*", CGraphWeb.MarketplaceChannel
-  channel "events:*", CGraphWeb.EventsChannel
-
   # Forum Channels
   channel "forum:*", CGraphWeb.ForumChannel
   channel "thread:*", CGraphWeb.ThreadChannel

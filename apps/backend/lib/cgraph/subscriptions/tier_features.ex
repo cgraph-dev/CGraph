@@ -3,8 +3,8 @@ defmodule CGraph.Subscriptions.TierFeatures do
   Subscription tier feature configuration and checks.
 
   Single source of truth for what each subscription tier provides.
-  Used by PremiumController, PremiumGatePlug, XpEventHandler, and
-  coin award logic to determine tier-specific capabilities and multipliers.
+  Used by PremiumController and coin award logic to
+  determine tier-specific capabilities and multipliers.
 
   ## Tiers
 

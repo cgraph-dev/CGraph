@@ -1,28 +1,7 @@
 defmodule CGraphWeb.GamificationJSON do
   @moduledoc """
-  JSON rendering for gamification endpoints.
+  JSON rendering for achievement endpoints.
   """
-
-  @doc "Renders gamification stats as JSON."
-  @spec stats(map()) :: map()
-  def stats(%{stats: stats}) do
-    %{
-      data: %{
-        xp: stats.xp,
-        level: stats.level,
-        level_progress: stats.level_progress,
-        xp_to_next_level: stats.xp_to_next_level,
-        coins: stats.coins,
-        streak_days: stats.streak_days,
-        streak_longest: stats.streak_longest,
-        achievements_unlocked: stats.achievements_unlocked,
-        achievements_total: stats.achievements_total,
-        active_quests: stats.active_quests,
-        subscription_tier: stats.subscription_tier,
-        equipped_title_id: stats.equipped_title_id
-      }
-    }
-  end
 
   @doc "Renders a list of achievements as JSON."
   @spec achievements(map()) :: map()
@@ -55,42 +34,6 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
-  @doc "Renders streak claim result as JSON."
-  @spec streak_claimed(map()) :: map()
-  def streak_claimed(%{user: user, coins: coins, streak: streak}) do
-    %{
-      data: %{
-        success: true,
-        coins_earned: coins,
-        streak_days: streak,
-        total_coins: user.coins,
-        streak_longest: user.streak_longest
-      }
-    }
-  end
-
-  @doc "Renders the gamification leaderboard as JSON."
-  @spec leaderboard(map()) :: map()
-  def leaderboard(%{entries: entries, category: category, user_rank: user_rank}) do
-    %{
-      data: %{
-        category: category,
-        entries: Enum.map(entries, &render_leaderboard_entry/1),
-        user_rank: user_rank
-      }
-    }
-  end
-
-  @doc "Renders XP history as JSON."
-  @spec xp_history(map()) :: map()
-  def xp_history(%{transactions: transactions}) do
-    %{
-      data: Enum.map(transactions, &render_xp_transaction/1)
-    }
-  end
-
-  # Private helpers
-
   defp render_achievement_with_progress(item) do
     %{
       id: item.achievement.id,
@@ -107,31 +50,6 @@ defmodule CGraphWeb.GamificationJSON do
       progress: item.progress,
       unlocked: item.unlocked,
       unlocked_at: item.unlocked_at
-    }
-  end
-
-  defp render_leaderboard_entry(entry) do
-    %{
-      rank: entry.rank,
-      id: entry.id,
-      username: entry.username,
-      value: entry.value,
-      level: Map.get(entry, :level),
-      xp: Map.get(entry, :xp),
-      longest: Map.get(entry, :longest)
-    }
-  end
-
-  defp render_xp_transaction(transaction) do
-    %{
-      id: transaction.id,
-      amount: transaction.amount,
-      total_after: transaction.total_after,
-      level_after: transaction.level_after,
-      source: transaction.source,
-      description: transaction.description,
-      multiplier: transaction.multiplier,
-      created_at: transaction.inserted_at
     }
   end
 end

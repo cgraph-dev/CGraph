@@ -12,8 +12,7 @@ defmodule CGraphWeb.API.V1.ForumLeaderboardController do
 
   use CGraphWeb, :controller
 
-  alias CGraph.Forums.{ForumRank, RankingEngine}
-  alias CGraph.Gamification.LeaderboardSystem
+  alias CGraph.Forums.{ForumRank, RankingEngine, UserLeaderboard}
   alias CGraph.Workers.RankingUpdateWorker
 
   action_fallback CGraphWeb.FallbackController
@@ -28,9 +27,9 @@ defmodule CGraphWeb.API.V1.ForumLeaderboardController do
     period = parse_period(params["period"])
     limit = parse_limit(params["limit"])
 
-    entries = LeaderboardSystem.get_forum_leaderboard(forum_id,
+    {entries, _meta} = UserLeaderboard.get_forum_user_leaderboard(forum_id,
       period: period,
-      limit: limit
+      per_page: limit
     )
 
     # Build response with score change indicators
@@ -91,7 +90,7 @@ defmodule CGraphWeb.API.V1.ForumLeaderboardController do
       |> List.first()
 
     # Find position in leaderboard
-    entries = LeaderboardSystem.get_forum_leaderboard(forum_id, limit: 10_000)
+    {entries, _meta} = UserLeaderboard.get_forum_user_leaderboard(forum_id, per_page: 10_000)
     position =
       Enum.find_index(entries, fn e -> e.user_id == user.id end)
       |> then(fn
