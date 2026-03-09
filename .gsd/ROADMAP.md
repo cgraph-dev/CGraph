@@ -33,8 +33,8 @@
 | 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                          |
 | ... | *Phases 20-25*          | *See below — all complete*                         |      |                                         |
 | 26  | The Great Delete        | Remove entire gamification system from codebase     | 4    | Phase 25 ✅                             |
-| 27  | Fix What Remains        | Consolidate themes, fix achievements, clean stores  | 2    | Phase 26                                |
-| 28  | Complete Cosmetics      | Nameplate, profile effects, border unification      | 3    | Phase 27                                |
+| 27  | Fix What Remains        | Consolidate themes, fix achievements, clean stores  | 2    | Phase 26 ✅                             |
+| 28  | Complete Cosmetics      | Nameplate, profile effects, border unification      | 3    | Phase 27 ✅                             |
 | 29  | Secret Chat             | E2E encrypted secret chat UI + privacy features     | 2    | Phase 26                                |
 | 30  | Pulse Reputation        | Community-scoped reputation system (backend + UI)   | 2    | Phase 26                                |
 | 31  | Forums + Discovery      | Forums, feed ranking, frequency-based discovery     | 2    | Phase 30                                |
@@ -1247,7 +1247,9 @@ Plans:
 
 ---
 
-### Phase 27: Fix What Remains Broken
+### Phase 27: Fix What Remains Broken ✅
+
+**Completed:** 2026-03-10 | **Plans:** 2/2 | **Verification:** Passed (14/15)
 
 **Goal:** Fix everything broken after the Great Delete — consolidate dual theme system, simplify
 background effects, build ParticleEngine, clean achievement types, fix rarity constants.
@@ -1255,8 +1257,8 @@ background effects, build ParticleEngine, clean achievement types, fix rarity co
 **Depends on:** Phase 26 **Plans:** 2 plans
 
 Plans:
-- [ ] 27-01-PLAN.md — Customization fixes (themes, effects, particles, dead props)
-- [ ] 27-02-PLAN.md — Achievement system fix (strip gamification fields, fix titleRewards, rarities)
+- [x] 27-01-PLAN.md — Customization fixes (themes, effects, particles, dead props)
+- [x] 27-02-PLAN.md — Achievement system fix (strip gamification fields, fix titleRewards, rarities)
 
 ---
 
