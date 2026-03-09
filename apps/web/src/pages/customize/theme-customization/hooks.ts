@@ -14,10 +14,8 @@ import {
   type ProfileThemeConfig,
   type ProfileThemeCategory,
 } from '@/data/profileThemes';
-// TODO(phase-26): Rewire — gamification stores deleted
-const fetchThemes = async (): Promise<Theme[]> => [];
 
-import type { ThemeCategory, Theme } from './types';
+import type { ThemeCategory } from './types';
 
 /**
  * unknown for the customize module.
@@ -50,30 +48,6 @@ export function useThemeCustomization() {
   const [profileThemeCategory, setProfileThemeCategory] = useState<ProfileThemeCategory | 'all'>(
     'all'
   );
-  const [useNewProfileThemes, setUseNewProfileThemes] = useState(true);
-
-  // Themes fetched from API
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [isLoadingThemes, setIsLoadingThemes] = useState(true);
-
-  // Fetch themes from API
-  useEffect(() => {
-    let cancelled = false;
-    setIsLoadingThemes(true);
-    fetchThemes()
-      .then((data) => {
-        if (!cancelled) setThemes(data);
-      })
-      .catch(() => {
-        // Error logged in fetch function
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoadingThemes(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Get profile themes from new data file
   const newProfileThemes = useMemo(() => {
@@ -99,16 +73,7 @@ export function useThemeCustomization() {
     app: appTheme,
   };
 
-  // Filter themes by category and search (from API data)
-  const filteredThemes = themes.filter((theme) => {
-    const matchesCategory = theme.category === activeCategory;
-    const matchesSearch =
-      theme.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      theme.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  // Filter new profile themes by search
+  // Filter profile themes by search
   const filteredNewProfileThemes = useMemo(() => {
     if (!searchQuery) return newProfileThemes;
     return newProfileThemes.filter(
@@ -120,53 +85,15 @@ export function useThemeCustomization() {
 
   // Apply theme to store for live preview - uses centralized mapping
   const applyThemeToStore = useCallback(
-    (themeId: string, category: ThemeCategory) => {
+    (themeId: string) => {
       const preset = getThemePreset(themeId);
       if (preset) {
-        if (category === 'profile') {
-          setTheme(preset);
-          setAvatarBorderColor(preset);
-        } else if (category === 'chat') {
-          setChatBubbleColor(preset);
-        }
+        setTheme(preset);
+        setAvatarBorderColor(preset);
       }
       setProfileTheme(themeId);
     },
-    [setTheme, setAvatarBorderColor, setChatBubbleColor, setProfileTheme]
-  );
-
-  const handleApplyTheme = useCallback(
-    (themeId: string, category: ThemeCategory, theme: Theme) => {
-      if (!theme.unlocked) {
-        setPreviewingTheme(themeId);
-        applyThemeToStore(themeId, category);
-        toast('👁️ Previewing theme - Purchase premium to save', {
-          icon: '✨',
-          duration: durations.cinematic.ms,
-        });
-        return;
-      }
-
-      setPreviewingTheme(null);
-
-      switch (category) {
-        case 'profile':
-          updateTheme('profileTheme', themeId);
-          break;
-        case 'chat':
-          updateTheme('chatTheme', themeId);
-          break;
-        case 'forum':
-          updateTheme('forumTheme', themeId);
-          break;
-        case 'app':
-          updateTheme('appTheme', themeId);
-          break;
-      }
-
-      applyThemeToStore(themeId, category);
-    },
-    [applyThemeToStore, updateTheme]
+    [setTheme, setAvatarBorderColor, setProfileTheme]
   );
 
   const handleSaveThemes = useCallback(async () => {
@@ -192,11 +119,11 @@ export function useThemeCustomization() {
   }, [user?.id, previewingTheme, saveCustomizations]);
 
   const isThemeActive = useCallback(
-    (themeId: string, category: ThemeCategory) => {
-      return selectedThemes[category] === themeId;
+    (themeId: string) => {
+      return selectedThemes.profile === themeId;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedThemes is derived from store values
-    [profileTheme, chatTheme, forumTheme, appTheme]
+    [profileTheme]
   );
 
   const isThemePreviewing = useCallback(
@@ -206,7 +133,7 @@ export function useThemeCustomization() {
     [previewingTheme]
   );
 
-  const handleApplyNewProfileTheme = useCallback(
+  const handleApplyProfileTheme = useCallback(
     (theme: ProfileThemeConfig) => {
       const isLocked = theme.tier !== 'free' && !theme.unlocked;
 
@@ -234,8 +161,6 @@ export function useThemeCustomization() {
     setActiveCategory,
     searchQuery,
     setSearchQuery,
-    useNewProfileThemes,
-    setUseNewProfileThemes,
     profileThemeCategory,
     setProfileThemeCategory,
     selectedThemes,
@@ -243,15 +168,12 @@ export function useThemeCustomization() {
     error,
 
     // Derived data
-    filteredThemes,
     filteredNewProfileThemes,
 
     // Handlers
-    handleApplyTheme,
     handleSaveThemes,
     isThemeActive,
     isThemePreviewing,
-    handleApplyNewProfileTheme,
-    isLoadingThemes,
+    handleApplyProfileTheme,
   };
 }
