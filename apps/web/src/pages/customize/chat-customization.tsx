@@ -23,21 +23,17 @@ export {
   type ChatCategory,
   type BubbleStyle,
   type MessageEffect,
-  type ReactionStyle,
   type BubbleStylesSectionProps,
   type MessageEffectsSectionProps,
-  type ReactionStylesSectionProps,
   type AdvancedControlsSectionProps,
   type CategoryDefinition,
   // Constants
   BUBBLE_STYLES,
   MESSAGE_EFFECTS,
-  REACTION_STYLES,
   ENTRANCE_ANIMATIONS,
   type EntranceAnimationType,
   // Sections
   BubbleStylesSection,
   MessageEffectsSection,
-  ReactionStylesSection,
   AdvancedControlsSection,
 } from './chat-customization/index';
