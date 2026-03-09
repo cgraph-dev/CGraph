@@ -1270,9 +1270,9 @@ Lottie), Profile Effects (LottieOverlay), and Border unification (CSS→Lottie, 
 **Depends on:** Phase 27 **Plans:** 3 plans
 
 Plans:
-- [ ] 28-01-PLAN.md — NameplateBar component (web + mobile, all 24 nameplates)
-- [ ] 28-02-PLAN.md — Profile effects via LottieOverlay (12 effects)
-- [ ] 28-03-PLAN.md — Border unification (CSS→Lottie, 42 borders, backend seed sync)
+- [x] 28-01-PLAN.md — NameplateBar component (web + mobile, all 24 nameplates) ✓
+- [x] 28-02-PLAN.md — Profile effects via LottieOverlay (12 effects) ✓
+- [x] 28-03-PLAN.md — Border unification (CSS→Lottie, 42 borders, backend seed sync) ✓
 
 ---
 
