@@ -17,6 +17,7 @@ import { PREVIEW_BADGES } from './constants';
 import { resolveEquippedBadges } from '@/modules/settings/store/customization/mappings';
 import type { BadgeDisplay } from '@/modules/settings/store/customization/mappings';
 import type { ThemeColors, PreviewBadge } from './types';
+import { NameplateBar } from '@/components/nameplate';
 
 interface ProfileContentProps {
   settings: {
@@ -204,6 +205,13 @@ export function ProfileContent({
               <span className={`text-xs font-medium ${titleInfo.gradient}`}>{titleInfo.name}</span>
             )}
           </motion.div>
+        )}
+
+        {/* Nameplate Bar */}
+        {settings.equippedNameplate && (
+          <div className="mt-2 flex justify-center">
+            <NameplateBar nameplateId={settings.equippedNameplate} width={240} height={36} />
+          </div>
         )}
 
         {settings.showStatus && (
