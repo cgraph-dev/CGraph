@@ -26,3 +26,4 @@ export {
 export * from './billing';
 export * from './creator';
 export * from './auth';
+export * from './achievements';
