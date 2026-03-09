@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import UserProfileCard from '@/modules/social/components/user-profile-card';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { LastSeenBadge } from '@/shared/components/last-seen-badge';
 import {
   ChatBubbleLeftRightIcon,
@@ -81,7 +80,11 @@ export function FriendListItem({
                   }
                 : {}
             }
-            transition={friend.status === 'online' ? { duration: durations.loop.ms / 1000, repeat: Infinity } : {}}
+            transition={
+              friend.status === 'online'
+                ? { duration: durations.loop.ms / 1000, repeat: Infinity }
+                : {}
+            }
           />
         </div>
       </UserProfileCard>
@@ -92,9 +95,7 @@ export function FriendListItem({
           <p className="truncate text-sm font-medium text-white">
             {friend.displayName || friend.username}
           </p>
-          {friend.equippedTitleId && (
-            <TitleBadge title={friend.equippedTitleId} size="xs" animated />
-          )}
+          {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
         </div>
         <p className="truncate text-xs text-gray-400">@{friend.username}</p>
         <LastSeenBadge
@@ -152,7 +153,7 @@ export function FriendListItem({
                         setDropdownOpen(false);
                         HapticFeedback.medium();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 transition-colors hover:bg-white/[0.10]/50 hover:text-white"
+                      className="hover:bg-white/[0.10]/50 flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 transition-colors hover:text-white"
                     >
                       <UserMinusIcon className="h-4 w-4" />
                       Remove

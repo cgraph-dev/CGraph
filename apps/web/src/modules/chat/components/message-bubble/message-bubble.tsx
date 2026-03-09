@@ -15,7 +15,6 @@ import RichMediaEmbed from '@/modules/chat/components/rich-media-embed';
 import { MarkdownContent } from '@/modules/chat/components/markdown-content';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import UserProfileCard from '@/modules/social/components/user-profile-card';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 import { cn } from '@/lib/utils';
 
@@ -145,7 +144,8 @@ export const MessageBubble = memo(function MessageBubble({
             <span className="text-xs font-medium text-gray-400">
               {message.sender?.displayName || message.sender?.username}
             </span>
-            {equippedTitleId && <TitleBadge title={equippedTitleId} size="xs" animated={false} />}
+            {/* TODO(phase-26): Rewire — gamification components deleted */}
+            {equippedTitleId && <span className="text-xs opacity-60">{equippedTitleId}</span>}
           </div>
         )}
 

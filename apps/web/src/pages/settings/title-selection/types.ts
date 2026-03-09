@@ -9,7 +9,7 @@ export interface PreviewTitle {
   name: string;
   description: string;
   color: string;
-  rarity: string;
+  rarity: TitleRarity;
 }
 
 export interface TitleCardProps {
@@ -18,7 +18,7 @@ export interface TitleCardProps {
     name: string;
     description: string;
     color: string;
-    rarity: string;
+    rarity: TitleRarity;
     unlocked?: boolean;
   };
   isEquipped: boolean;

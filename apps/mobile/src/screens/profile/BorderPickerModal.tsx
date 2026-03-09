@@ -6,6 +6,7 @@
  *
  * @module profile/screens/BorderPickerModal
  */
+/* eslint-disable check-file/filename-naming-convention */
 
 import React, { useCallback } from 'react';
 import {
@@ -18,13 +19,12 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {
-  BORDER_REGISTRY,
   getBordersByRarity,
   type BorderRarity,
   type BorderRegistryEntry,
 } from '@cgraph/animation-constants';
 import { useThemeStore } from '@/stores';
-import { AvatarBorder } from '../../modules/gamification/components/AvatarBorder';
+// TODO(phase-26): Rewire — gamification components deleted
 
 interface BorderPickerModalProps {
   /** Whether the modal is visible */
@@ -75,15 +75,8 @@ export function BorderPickerModal({
           onPress={() => onSelect(border.id)}
           activeOpacity={0.7}
         >
-          <AvatarBorder
-            borderId={border.id}
-            size={PREVIEW_SIZE}
-            isAnimating={true}
-            rarity={border.rarity}
-            theme={border.theme}
-          >
-            <View style={styles.previewAvatar} />
-          </AvatarBorder>
+          {/* TODO(phase-26): Rewire — gamification components deleted (AvatarBorder) */}
+          <View style={styles.previewAvatar} />
           <Text style={[styles.borderName, { color: colors.text }]} numberOfLines={1}>
             {border.name}
           </Text>
@@ -117,9 +110,7 @@ export function BorderPickerModal({
             return (
               <View key={rarity} style={styles.raritySection}>
                 <View style={styles.rarityHeader}>
-                  <View
-                    style={[styles.rarityDot, { backgroundColor: RARITY_COLORS[rarity] }]}
-                  />
+                  <View style={[styles.rarityDot, { backgroundColor: RARITY_COLORS[rarity] }]} />
                   <Text style={[styles.rarityLabel, { color: RARITY_COLORS[rarity] }]}>
                     {rarity}
                   </Text>
@@ -127,9 +118,7 @@ export function BorderPickerModal({
                     ({borders.length})
                   </Text>
                 </View>
-                <View style={styles.grid}>
-                  {borders.map(renderBorderItem)}
-                </View>
+                <View style={styles.grid}>{borders.map(renderBorderItem)}</View>
               </View>
             );
           })}

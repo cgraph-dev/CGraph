@@ -71,6 +71,7 @@ export type {
   AvatarBorderType,
   ChatBubbleStylePreset,
   EffectPreset,
+  UserTheme,
 } from './theme/types';
 export { useForumThemeStore } from './theme';
 export { useCustomizationStore } from '../modules/settings/store/customization';

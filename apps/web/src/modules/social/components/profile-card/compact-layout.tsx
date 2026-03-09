@@ -7,8 +7,6 @@ import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
-import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import type { LayoutProps } from './types';
 
 export const CompactLayout = memo(function CompactLayout({
@@ -47,18 +45,17 @@ export const CompactLayout = memo(function CompactLayout({
             {user.displayName}
           </span>
         </div>
+        {/* TODO(phase-26): Rewire — gamification components deleted */}
         {config.showTitle && user.equippedTitle && (
-          <TitleBadge title={user.equippedTitle.id} size="sm" animated />
+          <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
         )}
+        {/* TODO(phase-26): Rewire — gamification components deleted */}
         {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
           <div className="mt-1 flex gap-1">
             {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
-              <AnimatedBadgeWithTooltip
-                key={badge.id}
-                achievement={badge}
-                size="sm"
-                showProgress={false}
-              />
+              <span key={badge.id} className="rounded bg-white/10 px-1.5 py-0.5 text-xs">
+                {badge.id}
+              </span>
             ))}
           </div>
         )}

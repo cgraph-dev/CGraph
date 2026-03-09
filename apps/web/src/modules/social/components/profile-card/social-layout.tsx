@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { LayoutProps } from './types';
 
 export const SocialLayout = memo(function SocialLayout({
@@ -32,8 +31,9 @@ export const SocialLayout = memo(function SocialLayout({
         />
         <div className="flex-1">
           <div className={cn('font-semibold', sizeConfig.titleSize)}>{user.displayName}</div>
+          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
+            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
           )}
         </div>
       </div>

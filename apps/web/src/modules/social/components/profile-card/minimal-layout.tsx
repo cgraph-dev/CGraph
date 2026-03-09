@@ -7,7 +7,6 @@ import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { LayoutProps } from './types';
 
 export const MinimalLayout = memo(function MinimalLayout({
@@ -33,8 +32,9 @@ export const MinimalLayout = memo(function MinimalLayout({
             {user.displayName}
           </span>
         </div>
+        {/* TODO(phase-26): Rewire — gamification components deleted */}
         {config.showTitle && user.equippedTitle && (
-          <TitleBadge title={user.equippedTitle.id} size="sm" animated />
+          <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
         )}
       </div>
     </div>

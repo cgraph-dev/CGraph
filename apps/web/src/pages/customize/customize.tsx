@@ -15,7 +15,7 @@ const IdentityCustomization = lazy(() => import('./identity-customization'));
 const ThemeCustomization = lazy(() => import('./theme-customization'));
 const ChatCustomization = lazy(() => import('./chat-customization'));
 const EffectsCustomization = lazy(() => import('./effects-customization'));
-const ProgressionCustomization = lazy(() => import('./progression-customization'));
+// TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization)
 
 // New V2 panels for enhanced experience (optional use)
 import { LivePreviewPanel } from '@/modules/settings/components/customize';
@@ -104,17 +104,17 @@ export default function Customize() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.15 }}
           >
-              {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
-              <GlassCard variant="frosted" hover3D={false} className="overflow-visible p-8">
-                <Suspense fallback={<LoadingSkeleton />}>
-                  {activeCategory === 'identity' && <IdentityCustomization />}
-                  {activeCategory === 'themes' && <ThemeCustomization />}
-                  {activeCategory === 'chat' && <ChatCustomization />}
-                  {activeCategory === 'effects' && <EffectsCustomization />}
-                  {activeCategory === 'progression' && <ProgressionCustomization />}
-                </Suspense>
-              </GlassCard>
-            </motion.div>
+            {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
+            <GlassCard variant="frosted" hover3D={false} className="overflow-visible p-8">
+              <Suspense fallback={<LoadingSkeleton />}>
+                {activeCategory === 'identity' && <IdentityCustomization />}
+                {activeCategory === 'themes' && <ThemeCustomization />}
+                {activeCategory === 'chat' && <ChatCustomization />}
+                {activeCategory === 'effects' && <EffectsCustomization />}
+                {/* TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization) */}
+              </Suspense>
+            </GlassCard>
+          </motion.div>
         </div>
       </main>
 

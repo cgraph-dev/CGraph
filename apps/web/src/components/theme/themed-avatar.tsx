@@ -4,15 +4,16 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import { motion } from 'motion/react';
- 
-import { useThemeStore, THEME_COLORS } from '@/stores/theme';
- 
-import type { UserTheme } from '@/stores/theme';
+
+import { useThemeStore, THEME_COLORS } from '@/stores';
+
+import type { UserTheme } from '@/stores';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import { AVATAR_BORDERS } from '@/data/avatar-borders';
 import { tweens, loop } from '@/lib/animation-presets';
-import { BorderRenderer, type AvatarBorderData } from '@/modules/gamification/components/avatar-border';
+// TODO(phase-26): Rewire — gamification components deleted
+type AvatarBorderData = Record<string, unknown>;
 
 interface ThemedAvatarProps {
   src?: string | null;
@@ -92,21 +93,24 @@ export function ThemedAvatar({
     (avatarBorderId ? AVATAR_BORDERS.find((border) => border.id === avatarBorderId) : undefined);
 
   // Gamification equipped border (CSS animated borders) — highest priority
+  // TODO(phase-26): Rewire — gamification components deleted
   if (equippedBorder) {
     return (
       <div className={className} style={style} onClick={onClick}>
-        <BorderRenderer border={equippedBorder} size={sizePxMap[size]} borderWidth={borderWidth}>
+        <div style={{ width: sizePxMap[size], height: sizePxMap[size] }}>
           <img
             src={src || '/default-avatar.png'}
             alt={alt}
             className="h-full w-full rounded-full object-cover"
-            style={{ width: sizePxMap[size] - borderWidth * 2, height: sizePxMap[size] - borderWidth * 2 }}
+            style={{
+              width: sizePxMap[size] - borderWidth * 2,
+              height: sizePxMap[size] - borderWidth * 2,
+            }}
             onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = '/default-avatar.png';
+              e.currentTarget.src = '/default-avatar.png';
             }}
           />
-        </BorderRenderer>
+        </div>
       </div>
     );
   }
@@ -222,7 +226,7 @@ export function ThemedAvatar({
       transition={
         hasAnimation
           ? {
-              duration: durations.loop.ms / 1000 * speedMultiplier,
+              duration: (durations.loop.ms / 1000) * speedMultiplier,
               repeat: Infinity,
               ease: 'easeInOut',
             }
@@ -265,10 +269,7 @@ export function ThemedAvatar({
         alt={alt}
         className="h-full w-full object-cover"
         onError={(e) => {
-          // type assertion: image onLoad event target is HTMLImageElement
-           
-          const target = e.target as HTMLImageElement;
-          target.src = '/default-avatar.png';
+          e.currentTarget.src = '/default-avatar.png';
         }}
       />
 

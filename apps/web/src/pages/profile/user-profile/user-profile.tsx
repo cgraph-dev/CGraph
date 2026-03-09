@@ -16,7 +16,6 @@ import { useAuthStore } from '@/modules/auth/store';
 // TODO(phase-26): Rewire — gamification stores deleted
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import LevelProgress from '@/modules/gamification/components/level-progress';
 
 import {
   ProfileLoadingState,
@@ -180,15 +179,7 @@ export function UserProfile() {
               onBioChange={actions.setEditedBio}
             />
 
-            {isOwnProfile && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <LevelProgress variant="expanded" showStreak={true} />
-              </motion.div>
-            )}
+            {/* TODO(phase-26): Rewire — gamification components deleted (LevelProgress) */}
 
             {isOwnProfile && (
               <EquippedBadgesShowcase

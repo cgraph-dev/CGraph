@@ -7,7 +7,7 @@ import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from '../../../../components';
-import { TitleBadge } from '../../../../components/gamification';
+// TODO(phase-26): Rewire — gamification components deleted
 import { formatKarma, type UserProfile } from '../types';
 import { styles } from '../styles';
 
@@ -16,6 +16,7 @@ interface ProfileHeaderProps {
   colors: Record<string, string>;
 }
 
+/** Profile header card with avatar, name, badges, and bio. */
 export function ProfileHeader({ user, colors }: ProfileHeaderProps) {
   return (
     <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
@@ -23,7 +24,7 @@ export function ProfileHeader({ user, colors }: ProfileHeaderProps) {
         source={user.avatar_url}
         name={user.display_name || user.username || 'Unknown'}
         size="xl"
-        status={user.status as 'online' | 'offline'}
+        status={user.status === 'online' ? 'online' : 'offline'}
       />
       <Text style={[styles.displayName, { color: colors.text }]}>
         {user.display_name || user.username || 'Unknown'}
@@ -55,9 +56,10 @@ export function ProfileHeader({ user, colors }: ProfileHeaderProps) {
       {/* Gamification Stats Section */}
       {(user.level || user.current_title || user.achievements_count) && (
         <View style={styles.gamificationSection}>
+          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {user.current_title && (
             <View style={styles.titleContainer}>
-              <TitleBadge title={user.current_title} rarity="rare" size="md" />
+              <Text style={[styles.levelText, { color: colors.text }]}>{user.current_title}</Text>
             </View>
           )}
 
@@ -81,8 +83,12 @@ export function ProfileHeader({ user, colors }: ProfileHeaderProps) {
             {user.achievements_count !== undefined && (
               <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
                 <Ionicons name="trophy" size={18} color="#f59e0b" />
-                <Text style={[styles.statValue, { color: colors.text }]}>{user.achievements_count}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Achievements</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  {user.achievements_count}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                  Achievements
+                </Text>
               </View>
             )}
             {user.streak !== undefined && user.streak > 0 && (

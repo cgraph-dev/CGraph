@@ -81,7 +81,7 @@ export const BlockedUsers = lazyRetry(() => import('@/pages/settings/blocked-use
 export const CustomEmoji = lazyRetry(() => import('@/pages/settings/custom-emoji'));
 export const RSSFeeds = lazyRetry(() => import('@/pages/settings/rss-feeds'));
 export const UserProfile = lazyRetry(() => import('@/pages/profile/user-profile'));
-export const UserLeaderboard = lazyRetry(() => import('@/pages/community/user-leaderboard'));
+// TODO(phase-26): Rewire — gamification components deleted (UserLeaderboard)
 
 // ── Security ───────────────────────────────────────────────────────────
 export const E2EEVerification = lazyRetry(() => import('@/pages/security/e2-ee-verification'));
@@ -120,4 +120,6 @@ export const NotFound = lazyRetry(() => import('@/pages/not-found'));
 // ── Dev/Test Pages ─────────────────────────────────────────────────────
 export const MatrixTest = lazyRetry(() => import('@/__dev__/test/matrix-test'));
 export const EnhancedDemo = lazyRetry(() => import('@/__dev__/test/enhanced-demo'));
-export const ThemeApplicationTest = lazyRetry(() => import('@/__dev__/test/theme-application-test'));
+export const ThemeApplicationTest = lazyRetry(
+  () => import('@/__dev__/test/theme-application-test')
+);

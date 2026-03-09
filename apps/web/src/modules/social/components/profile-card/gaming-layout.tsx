@@ -8,8 +8,6 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
-import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import type { LayoutProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
@@ -46,8 +44,9 @@ export const GamingLayout = memo(function GamingLayout({
         </div>
         <div className="flex-1">
           <div className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
+          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
+            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
           )}
         </div>
       </div>
@@ -105,15 +104,13 @@ export const GamingLayout = memo(function GamingLayout({
       )}
 
       {/* Achievements */}
+      {/* TODO(phase-26): Rewire — gamification components deleted */}
       {config.showAchievements && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex justify-center gap-2">
           {user.equippedBadges.slice(0, 5).map((badge) => (
-            <AnimatedBadgeWithTooltip
-              key={badge.id}
-              achievement={badge}
-              size="md"
-              showProgress={false}
-            />
+            <span key={badge.id} className="rounded bg-white/10 px-2 py-0.5 text-xs">
+              {badge.id}
+            </span>
           ))}
         </div>
       )}

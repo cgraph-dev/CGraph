@@ -21,7 +21,6 @@ import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/advanced-vo
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import { InlineTitle } from '@/modules/gamification/components/title-badge';
 import type { EnhancedMessageBubbleProps } from './types';
 
 const logger = createLogger('EnhancedMessageBubble');
@@ -192,18 +191,13 @@ export function EnhancedMessageBubble({
               hover3D
               className={`px-4 py-3 ${isOwn ? 'rounded-br-sm' : 'rounded-bl-sm'}`}
             >
-              {/* Sender name + equipped title (for received messages) */}
+              {/* Sender name (for received messages) */}
               {!isOwn && showAvatar && message.sender && (
                 <div className="mb-1 flex items-center gap-1.5">
                   <span className="text-xs font-medium text-primary-300">
                     {message.sender.displayName || message.sender.username}
                   </span>
-                  {!!(message.sender as Record<string, unknown>).equippedTitleId && (
-                    <InlineTitle
-                      title={(message.sender as Record<string, unknown>).equippedTitleId as string}
-                      size="xs"
-                    />
-                  )}
+                  {/* TODO(phase-26): Rewire — gamification components deleted (InlineTitle) */}
                 </div>
               )}
               {/* Text content */}
@@ -224,9 +218,7 @@ export function EnhancedMessageBubble({
               {(message.messageType === 'voice' || message.messageType === 'audio') &&
                 message.metadata?.url && (
                   <AdvancedVoiceVisualizer
-                    // type assertion: message metadata URL field is string for voice/media messages
-                     
-                    audioUrl={message.metadata.url as string}
+                    audioUrl={message.metadata.url}
                     variant="spectrum"
                     theme="matrix-green"
                     height={80}
@@ -270,15 +262,14 @@ export function EnhancedMessageBubble({
                 layout
               >
                 {Object.entries(
-                  optimisticReactions.reduce<Record<string, { count: number; hasReacted: boolean }>>(
-                    (acc, r) => {
-                      const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
-                      entry.count++;
-                      if (user && r.userId === user.id) entry.hasReacted = true;
-                      return acc;
-                    },
-                    {}
-                  )
+                  optimisticReactions.reduce<
+                    Record<string, { count: number; hasReacted: boolean }>
+                  >((acc, r) => {
+                    const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
+                    entry.count++;
+                    if (user && r.userId === user.id) entry.hasReacted = true;
+                    return acc;
+                  }, {})
                 ).map(([emoji, { count, hasReacted }]) => (
                   <AnimatedReactionBubble
                     key={emoji}

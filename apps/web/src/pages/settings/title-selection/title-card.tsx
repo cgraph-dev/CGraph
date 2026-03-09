@@ -4,7 +4,6 @@
 
 import { motion } from 'motion/react';
 import { Lock, Sparkles } from 'lucide-react';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import type { TitleCardProps } from './types';
 import { springs } from '@/lib/animation-presets';
 
@@ -34,7 +33,8 @@ export function TitleCard({
     >
       <div className="p-4">
         <div className="mb-3 flex items-center justify-center py-2">
-          <TitleBadge title={title.id} />
+          {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
+          <span className="text-sm font-medium text-purple-400">{title.name ?? title.id}</span>
         </div>
 
         <div className="mb-3 text-center">

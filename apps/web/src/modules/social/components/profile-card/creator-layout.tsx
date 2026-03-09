@@ -7,8 +7,6 @@ import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
-import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import type { LayoutProps } from './types';
 
 export const CreatorLayout = memo(function CreatorLayout({
@@ -32,11 +30,7 @@ export const CreatorLayout = memo(function CreatorLayout({
           className="mx-auto"
         />
         <div className={cn('mt-2 font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
-        {config.showTitle && user.equippedTitle && (
-          <div className="flex justify-center">
-            <TitleBadge title={user.equippedTitle.id} size="md" animated />
-          </div>
-        )}
+        {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
       </div>
 
       {/* Bio */}
@@ -71,13 +65,14 @@ export const CreatorLayout = memo(function CreatorLayout({
       {/* Badges */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2">
+          {/* TODO(phase-26): Rewire — gamification components deleted (AnimatedBadgeWithTooltip) */}
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
-            <AnimatedBadgeWithTooltip
+            <span
               key={badge.id}
-              achievement={badge}
-              size="md"
-              showProgress={false}
-            />
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70"
+            >
+              {badge.description || badge.id}
+            </span>
           ))}
         </div>
       )}

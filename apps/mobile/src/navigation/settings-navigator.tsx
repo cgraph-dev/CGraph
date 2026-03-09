@@ -31,7 +31,6 @@ import {
   CustomizeScreen,
   IdentityCustomizationScreen,
   EffectsCustomizationScreen,
-  ProgressionCustomizationScreen,
   BadgeSelectionScreen,
   TitleSelectionScreen,
 } from '../screens/customize';
@@ -43,19 +42,12 @@ import TermsOfServiceScreen from '../screens/legal/terms-of-service-screen';
 import CookiePolicyScreen from '../screens/legal/cookie-policy-screen';
 import GDPRScreen from '../screens/legal/gdpr-screen';
 import SessionsScreen from '../screens/settings/sessions-screen';
-import {
-  GamificationHubScreen,
-  AchievementsScreen,
-  QuestsScreen,
-  TitlesScreen,
-} from '../screens/gamification';
+// TODO(phase-26): Rewire — gamification components deleted
 import CustomStatusScreen from '../screens/social/custom-status-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
-/**
- *
- */
+/** Settings stack navigator — gamification screens removed (phase-26). */
 export default function SettingsNavigator() {
   const { colors } = useThemeStore();
 
@@ -117,27 +109,7 @@ export default function SettingsNavigator() {
         component={LeaderboardScreen}
         options={{ title: 'Leaderboard', headerShown: false }}
       />
-      {/* Gamification Screens */}
-      <Stack.Screen
-        name="GamificationHub"
-        component={GamificationHubScreen}
-        options={{ title: 'Gamification', headerShown: false }}
-      />
-      <Stack.Screen
-        name="Achievements"
-        component={AchievementsScreen}
-        options={{ title: 'Achievements', headerShown: false }}
-      />
-      <Stack.Screen
-        name="Quests"
-        component={QuestsScreen}
-        options={{ title: 'Quests', headerShown: false }}
-      />
-      <Stack.Screen
-        name="Titles"
-        component={TitlesScreen}
-        options={{ title: 'Titles', headerShown: false }}
-      />
+      {/* TODO(phase-26): Rewire — gamification components deleted */}
       <Stack.Screen
         name="Referrals"
         component={ReferralScreen}
@@ -210,11 +182,7 @@ export default function SettingsNavigator() {
         component={EffectsCustomizationScreen}
         options={{ title: 'Effects & Themes', headerShown: false }}
       />
-      <Stack.Screen
-        name="ProgressionCustomization"
-        component={ProgressionCustomizationScreen}
-        options={{ title: 'Progression', headerShown: false }}
-      />
+      {/* TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization) */}
       <Stack.Screen
         name="ProfileCustomization"
         component={ProfileCustomizationScreen}
@@ -256,11 +224,7 @@ export default function SettingsNavigator() {
         component={CookiePolicyScreen}
         options={{ title: 'Cookie Policy' }}
       />
-      <Stack.Screen
-        name="GDPR"
-        component={GDPRScreen}
-        options={{ title: 'GDPR Information' }}
-      />
+      <Stack.Screen name="GDPR" component={GDPRScreen} options={{ title: 'GDPR Information' }} />
       <Stack.Screen
         name="Sessions"
         component={SessionsScreen}

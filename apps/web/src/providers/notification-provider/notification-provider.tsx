@@ -15,9 +15,11 @@ import confetti from 'canvas-confetti';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 // TODO(phase-26): Rewire — gamification stores deleted
 type Achievement = Record<string, unknown>;
-import AchievementNotification, {
-  AchievementNotificationData,
-} from '@/modules/gamification/components/achievement-notification';
+// TODO(phase-26): Rewire — gamification components deleted (AchievementNotification)
+interface AchievementNotificationData {
+  achievement: Record<string, unknown>;
+  isUnlock: boolean;
+}
 
 import { DEFAULT_DURATION, DEFAULT_MAX_NOTIFICATIONS } from './constants';
 import { ToastItem } from './toast-item';
@@ -50,7 +52,7 @@ export function NotificationProvider({
   defaultDuration = DEFAULT_DURATION,
 }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [achievementNotifications, setAchievementNotifications] = useState<
+  const [_achievementNotifications, setAchievementNotifications] = useState<
     AchievementNotificationData[]
   >([]);
   // Generate unique ID
@@ -205,7 +207,7 @@ export function NotificationProvider({
   }, []);
 
   // Handle achievement dismissal
-  const handleDismissAchievement = useCallback((index: number) => {
+  const _handleDismissAchievement = useCallback((index: number) => {
     setAchievementNotifications((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
@@ -236,11 +238,7 @@ export function NotificationProvider({
         </AnimatePresence>
       </div>
 
-      {/* Achievement Notifications Container */}
-      <AchievementNotification
-        notifications={achievementNotifications}
-        onDismiss={handleDismissAchievement}
-      />
+      {/* TODO(phase-26): Rewire — gamification components deleted (AchievementNotification) */}
     </NotificationContext.Provider>
   );
 }

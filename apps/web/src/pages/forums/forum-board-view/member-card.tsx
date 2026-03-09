@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { UserIcon, StarIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { getAvatarBorderId } from '@/lib/utils';
 import { ROLE_COLORS } from './constants';
 import type { MemberCardProps } from './types';
@@ -55,7 +54,8 @@ export function MemberCard({ member }: MemberCardProps) {
             </span>
           )}
         </div>
-        {member.title && <TitleBadge title={member.title} size="xs" animated />}
+        {/* TODO(phase-26): Rewire — gamification components deleted */}
+        {member.title && <span className="text-xs text-purple-400">{member.title}</span>}
         <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
           <span>{member.postCount.toLocaleString()} posts</span>
           <span>

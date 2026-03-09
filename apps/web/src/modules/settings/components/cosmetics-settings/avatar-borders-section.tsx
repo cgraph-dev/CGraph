@@ -6,7 +6,6 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 
 import type { SectionProps } from './types';
@@ -14,25 +13,33 @@ import { RARITY_COLORS } from './constants';
 import { GridIcon, ListIcon } from './icons';
 
 // =============================================================================
+// STUB DATA — phase-26 removed gamification; these satisfy hook deps stably
+// =============================================================================
+const STUB_BORDERS: Record<string, unknown>[] = [];
+const STUB_UNLOCKED: Record<string, unknown>[] = [];
+const STUB_PREFS: { equippedBorderId: string | null } = { equippedBorderId: null };
+const stubGetFilteredBorders = (): Record<string, unknown>[] => [];
+const stubEquipBorder = (_id: string): Promise<void> => Promise.resolve();
+const stubPurchaseBorder = (_id: string): Promise<boolean> => Promise.resolve(false);
+const stubFetchLottieBorders = (): Promise<void> => Promise.resolve();
+
+// =============================================================================
 // COMPONENT
 // =============================================================================
 
 /**
- * unknown for the settings module.
- */
-/**
  * Avatar Borders Section component.
  */
 export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMode }: SectionProps) {
-  const {
-    allBorders,
-    unlockedBorders,
-    preferences,
-    getFilteredBorders,
-    equipBorder,
-    purchaseBorder,
-    fetchLottieBorders,
-  } = useAvatarBorderStore();
+  // TODO(phase-26): Rewire — gamification components deleted
+  const allBorders = STUB_BORDERS;
+  const unlockedBorders = STUB_UNLOCKED;
+  const preferences = STUB_PREFS;
+  const getFilteredBorders = stubGetFilteredBorders;
+  const equipBorder = stubEquipBorder;
+  const purchaseBorder = stubPurchaseBorder;
+  const fetchLottieBorders = stubFetchLottieBorders;
+  void unlockedBorders;
 
   const equippedBorderId = preferences.equippedBorderId;
   const [selectedBorder, setSelectedBorder] = useState<string | null>(null);
@@ -144,7 +151,7 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
 
         {/* Animation Type Badge */}
         <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
-          <span className="rounded px-3 py-1.5 text-xs font-medium bg-cyan-500/20 text-cyan-400">
+          <span className="rounded bg-cyan-500/20 px-3 py-1.5 text-xs font-medium text-cyan-400">
             Lottie
           </span>
         </div>

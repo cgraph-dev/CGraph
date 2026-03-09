@@ -3,13 +3,8 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
-import type { TitleRarity } from '@/data/titles';
 import type { TitlePreviewModalProps } from './types';
 
-/**
- * unknown for the settings module.
- */
 /**
  * Title Preview Modal dialog component.
  */
@@ -40,17 +35,17 @@ export function TitlePreviewModal({
 
             <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-white/[0.04] p-4">
               <span className="text-lg font-semibold">{displayName}</span>
-              <TitleBadge title={previewTitle.id} />
+              {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
+              <span className="text-sm text-purple-400">
+                {previewTitle.name ?? previewTitle.id}
+              </span>
             </div>
 
             <div className="mb-4 space-y-2">
               <p className="text-sm text-gray-400">{previewTitle.description}</p>
               <div className="flex items-center gap-2 text-sm">
                 <span className="capitalize text-gray-400">Rarity:</span>
-                { }
-                <span className={getRarityColor(previewTitle.rarity as TitleRarity)}> // safe downcast – structural boundary
-                  {previewTitle.rarity}
-                </span>
+                <span className={getRarityColor(previewTitle.rarity)}>{previewTitle.rarity}</span>
               </div>
             </div>
 

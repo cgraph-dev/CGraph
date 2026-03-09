@@ -17,7 +17,6 @@ import { useAuthStore } from '@/modules/auth/store';
 // TODO(phase-26): Rewire — gamification stores deleted
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import { BADGE_DISPLAY_MAP } from '@/modules/settings/store/customization/mappings';
 import {
   MAX_MUTUAL_FRIENDS_DISPLAY,
@@ -85,9 +84,7 @@ export const FullProfileCard = memo(function FullProfileCard({
           <div className="mt-12 flex-1">
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-white">{user.displayName}</h2>
-              {user.equippedTitle && (
-                <TitleBadge title={user.equippedTitle.id} size="sm" animated showTooltip />
-              )}
+              {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
             </div>
             <p className="text-sm text-white/60">@{user.username}</p>
             {user.pronouns && <p className="text-xs text-white/40">{user.pronouns}</p>}

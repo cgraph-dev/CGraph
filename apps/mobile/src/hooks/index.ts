@@ -1,6 +1,6 @@
 /**
  * Mobile Hooks Index
- * 
+ *
  * Central export for all React Native hooks.
  */
 
@@ -24,12 +24,12 @@ export { usePremium } from './usePremium';
 export { useCalendar } from './useCalendar';
 export { usePushNotifications } from './usePushNotifications';
 export { useSocket } from './useSocket';
-export { 
-  useRealtimeChannel, 
-  useConversationChannel, 
-  useGroupChannel, 
+export {
+  useRealtimeChannel,
+  useConversationChannel,
+  useGroupChannel,
   useForumChannel,
-  useThreadChannel
+  useThreadChannel,
 } from './useRealtimeChannel';
 export { useReferrals } from './useReferrals';
 export { useE2EE } from './useE2EE';
@@ -37,7 +37,7 @@ export { useOfflineQueue } from './useOfflineQueue';
 
 // Feature module hooks (re-exports)
 export * from '../features/messaging/hooks';
-export * from '../features/gamification/hooks';
+// TODO(phase-26): Rewire — gamification components deleted
 export * from '../features/premium/hooks';
 export * from '../features/groups/hooks';
 export * from '../features/auth/hooks';

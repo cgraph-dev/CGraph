@@ -8,8 +8,6 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
-import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/animated-badge';
 import { StatItem } from './stat-item';
 import type { LayoutProps } from './types';
 import { tweens } from '@/lib/animation-presets';
@@ -39,8 +37,9 @@ export const DetailedLayout = memo(function DetailedLayout({
             <span className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</span>
             <span className="text-sm opacity-60">@{user.username}</span>
           </div>
+          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
+            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
           )}
           {config.showBio && user.bio && (
             <p className={cn('mt-2 line-clamp-2 opacity-80', sizeConfig.textSize)}>{user.bio}</p>
@@ -87,15 +86,13 @@ export const DetailedLayout = memo(function DetailedLayout({
       )}
 
       {/* Badges */}
+      {/* TODO(phase-26): Rewire — gamification components deleted */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
-            <AnimatedBadgeWithTooltip
-              key={badge.id}
-              achievement={badge}
-              size="md"
-              showProgress={false}
-            />
+            <span key={badge.id} className="rounded bg-white/10 px-2 py-0.5 text-xs">
+              {badge.id}
+            </span>
           ))}
         </div>
       )}

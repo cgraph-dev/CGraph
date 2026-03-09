@@ -7,7 +7,6 @@
 
 import { motion } from 'motion/react';
 import { Search, Sparkles } from 'lucide-react';
-import { TitleBadge } from '@/modules/gamification/components/title-badge';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';
 import { useTitleSelection } from './useTitleSelection';
 import { getRarityColor, RARITY_LIST } from './constants';
@@ -59,7 +58,8 @@ export default function TitleSelection() {
               <h3 className="mb-2 text-sm font-semibold text-gray-400">Currently Equipped</h3>
               <div className="flex items-center gap-3">
                 <span className="text-lg font-semibold">{displayName}</span>
-                <TitleBadge title={equippedTitleId} />
+                {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
+                <span className="text-sm text-purple-400">{equippedTitleId}</span>
               </div>
             </div>
             <button

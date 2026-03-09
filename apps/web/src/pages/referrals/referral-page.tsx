@@ -2,7 +2,7 @@
  * Referral program page component.
  * @module pages/referrals/referral-page
  */
-import ReferralDashboard from '@/modules/gamification/components/referral-dashboard';
+// TODO(phase-26): Rewire — gamification components deleted (ReferralDashboard)
 
 /**
  * Referral Page
@@ -14,5 +14,9 @@ import ReferralDashboard from '@/modules/gamification/components/referral-dashbo
  * Referral Page — route-level page component.
  */
 export default function ReferralPage() {
-  return <ReferralDashboard />;
+  return (
+    <div className="flex h-full items-center justify-center p-8 text-gray-400">
+      Referral dashboard coming soon.
+    </div>
+  );
 }

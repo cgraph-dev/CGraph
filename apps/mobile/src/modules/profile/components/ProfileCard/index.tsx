@@ -20,7 +20,7 @@ import {
   DEFAULT_PROFILE_THEME,
   type ProfileTheme,
 } from '@cgraph/animation-constants/src/registries/profileThemes';
-import { AvatarBorder } from '../../../gamification/components/AvatarBorder';
+// TODO(phase-26): Rewire — gamification components deleted
 import { ProfileBanner } from './ProfileBanner';
 import { Nameplate, type Badge } from './Nameplate';
 import { ProfileEffect } from './ProfileEffect';
@@ -91,7 +91,7 @@ export function ProfileCard({
 
   // Resolve border entry for rarity/theme
   const borderEntry = equippedBorderId ? getBorderById(equippedBorderId) : undefined;
-  const borderRarity = borderEntry?.rarity ?? 'FREE';
+  const _borderRarity = borderEntry?.rarity ?? 'FREE';
   const borderTheme = borderEntry?.theme ?? bannerTheme ?? 'COSMIC';
 
   // Resolve avatar URL
@@ -132,13 +132,8 @@ export function ProfileCard({
       <View style={styles.content}>
         {/* Layer 2: Avatar with border */}
         <View style={styles.avatarSection}>
-          <AvatarBorder
-            borderId={equippedBorderId ?? 'border_8bit_free_01'}
-            size={AVATAR_SIZE}
-            isAnimating={isAnimating}
-            rarity={borderRarity}
-            theme={borderTheme}
-          >
+          {/* TODO(phase-26): Rewire AvatarBorder — gamification components deleted */}
+          <View style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}>
             <Image
               source={
                 avatarUrl
@@ -150,7 +145,7 @@ export function ProfileCard({
               style={styles.avatarImage}
               resizeMode="cover"
             />
-          </AvatarBorder>
+          </View>
 
           {/* Online indicator */}
           <View
