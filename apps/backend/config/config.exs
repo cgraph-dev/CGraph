@@ -103,14 +103,6 @@ config :cgraph, Oban,
        {"0 * * * *", CGraph.Workers.RankingUpdateWorker},
        # Reset weekly forum scores every Monday at 00:00 UTC
        {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}},
-       # Generate fresh daily quests at midnight UTC
-       {"0 0 * * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "daily"}},
-       # Generate fresh weekly quests on Monday at midnight UTC
-       {"0 0 * * 1", CGraph.Gamification.QuestRotationWorker, args: %{type: "weekly"}},
-       # Generate monthly quests on the 1st at midnight UTC
-       {"0 0 1 * *", CGraph.Gamification.QuestRotationWorker, args: %{type: "monthly"}},
-       # Check event lifecycle every 15 minutes (auto-activate/end events)
-       {"*/15 * * * *", CGraph.Gamification.EventLifecycleWorker, args: %{action: "check_lifecycle"}},
        # CRDT document compaction check every 15 minutes
        {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker},
        # Delete expired secret messages every minute (privacy-critical)

@@ -70,46 +70,8 @@ defmodule CGraph.Gamification.EventSystem do
 
   @doc "Get event quests for a user."
   @spec get_event_quests(binary(), binary()) :: list()
-  def get_event_quests(user_id, event_id) do
-    case Repo.get(SeasonalEvent, event_id) do
-      nil ->
-        []
-
-      event ->
-        quest_ids = event.quests || []
-
-        if quest_ids == [] do
-          []
-        else
-          alias CGraph.Gamification.{Quest, UserQuest}
-
-          quests =
-            from(q in Quest, where: q.id in ^quest_ids and q.is_active == true)
-            |> Repo.all()
-
-          user_progress =
-            from(uq in UserQuest,
-              where: uq.user_id == ^user_id and uq.quest_id in ^quest_ids
-            )
-            |> Repo.all()
-            |> Map.new(&{&1.quest_id, &1})
-
-          Enum.map(quests, fn quest ->
-            progress = Map.get(user_progress, quest.id)
-
-            %{
-              id: quest.id,
-              title: quest.title,
-              description: quest.description,
-              xp_reward: quest.xp_reward,
-              coin_reward: quest.coin_reward,
-              objectives: quest.objectives,
-              completed: if(progress, do: progress.completed, else: false),
-              progress: if(progress, do: progress.progress, else: %{})
-            }
-          end)
-        end
-    end
+  def get_event_quests(_user_id, _event_id) do
+    []
   end
 
   @doc "Get battle pass info."

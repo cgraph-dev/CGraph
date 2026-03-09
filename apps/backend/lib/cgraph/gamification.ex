@@ -25,7 +25,6 @@ defmodule CGraph.Gamification do
     FeatureGates,
     Leaderboard,
     LeaderboardSystem,
-    QuestSystem,
     TitleShopSystem
   }
 
@@ -48,21 +47,6 @@ defmodule CGraph.Gamification do
   defdelegate try_unlock_achievement(user_id, achievement_id), to: AchievementSystem
   defdelegate unlock_achievement_by_slug(user, slug), to: AchievementSystem
   defdelegate check_achievement_triggers(user_id, action_type), to: AchievementTriggers, as: :check_all
-
-  # ==================== QUESTS (delegated) ====================
-
-  defdelegate list_available_quests(opts \\ []), to: QuestSystem
-  defdelegate list_user_quests(user_id, opts \\ []), to: QuestSystem
-  defdelegate accept_quest(user_id, quest_id), to: QuestSystem
-  defdelegate claim_quest_rewards(user_id, user_quest_id), to: QuestSystem
-
-  # 3-arg version (objective-based progress)
-  @doc "Update quest progress by objective type."
-  @spec update_quest_progress(String.t(), atom(), integer()) :: term()
-  def update_quest_progress(user_id, objective_type, increment)
-      when not is_integer(increment) or is_integer(increment) do
-    QuestSystem.update_quest_progress(user_id, objective_type, increment)
-  end
 
   # ==================== TITLES & SHOP (delegated) ====================
 
@@ -107,13 +91,6 @@ defmodule CGraph.Gamification do
   @spec get_event_leaderboard(String.t(), integer(), term()) :: term()
   def get_event_leaderboard(event_id, limit, cursor_or_offset) do
     EventSystem.get_event_leaderboard(event_id, limit, cursor_or_offset)
-  end
-
-  # 4-arg quest progress (event-based)
-  @doc "Update quest progress for an event-based quest."
-  @spec update_quest_progress(String.t(), String.t(), String.t(), integer()) :: term()
-  def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
-    EventSystem.update_quest_progress(user_id, event_id, quest_id, progress_increment)
   end
 
   # ==================== LEVEL SYSTEM ====================
@@ -398,7 +375,7 @@ defmodule CGraph.Gamification do
   @doc "Get complete gamification stats for a user."
   @spec get_user_stats(String.t()) :: map()
   def get_user_stats(user_id) do
-    alias CGraph.Gamification.{Achievement, UserAchievement, UserQuest}
+    alias CGraph.Gamification.{Achievement, UserAchievement}
 
     # get! safe: called with authenticated user.id from controller
     user = Repo.get!(User, user_id)
@@ -408,10 +385,6 @@ defmodule CGraph.Gamification do
       |> Repo.aggregate(:count)
 
     total_achievements = Repo.aggregate(Achievement, :count)
-
-    active_quests =
-      from(uq in UserQuest, where: uq.user_id == ^user_id and uq.claimed == false)
-      |> Repo.aggregate(:count)
 
     %{
       xp: user.xp,
@@ -423,7 +396,7 @@ defmodule CGraph.Gamification do
       streak_longest: user.streak_longest,
       achievements_unlocked: unlocked_achievements,
       achievements_total: total_achievements,
-      active_quests: active_quests,
+      active_quests: 0,
       subscription_tier: user.subscription_tier,
       equipped_title_id: user.equipped_title_id
     }

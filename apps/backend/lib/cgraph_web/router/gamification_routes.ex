@@ -9,10 +9,6 @@ defmodule CGraphWeb.Router.GamificationRoutes do
   defmacro gamification_routes do
     quote do
       # ── Level gate pipelines for progressive disclosure ──────────
-      pipeline :level_gate_quests do
-        plug CGraphWeb.Plugs.LevelGatePlug, feature: :quests
-      end
-
       pipeline :level_gate_shop do
         plug CGraphWeb.Plugs.LevelGatePlug, feature: :shop
       end
@@ -91,18 +87,6 @@ defmodule CGraphWeb.Router.GamificationRoutes do
         # IAP validation (authenticated — mobile sends receipt after native purchase)
         post "/iap/validate", IAPController, :validate
         post "/iap/restore", IAPController, :restore
-
-        # ── Level-gated: Quests (level 3) ─────────────────────────
-        scope "/quests" do
-          pipe_through [:level_gate_quests]
-          get "/", QuestController, :index
-          get "/active", QuestController, :active
-          get "/daily", QuestController, :daily
-          get "/weekly", QuestController, :weekly
-          get "/:id", QuestController, :show
-          post "/:id/accept", QuestController, :accept
-          post "/:id/claim", QuestController, :claim
-        end
 
         # ── Level-gated: Shop (level 8) ───────────────────────────
         scope "/shop" do
