@@ -21,7 +21,6 @@ import HttpBackend from 'i18next-http-backend';
  *   - groups    — groups, forums, channels
  *   - settings  — user settings, preferences
  *   - premium   — subscription, shop, tiers
- *   - gamification — XP, quests, achievements, prestige
  *
  * Usage:
  *   const { t } = useTranslation('common');
@@ -49,7 +48,7 @@ i18n
 
     // Default namespace
     defaultNS: 'common',
-    ns: ['common', 'auth', 'messages', 'groups', 'settings', 'premium', 'gamification'],
+    ns: ['common', 'auth', 'messages', 'groups', 'settings', 'premium'],
 
     // Language detection order
     detection: {

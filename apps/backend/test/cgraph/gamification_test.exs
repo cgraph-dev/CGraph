@@ -1,11 +1,9 @@
 defmodule CGraph.GamificationTest do
   @moduledoc """
-  Integration test suite for the gamification system.
+  Integration test suite for the cosmetics and marketplace system.
 
   Tests cover:
-  - Cosmetics API endpoints
-  - Prestige system
-  - Seasonal events
+  - Cosmetics API endpoints (borders)
   - Marketplace transactions
   - WebSocket channels
 
@@ -23,7 +21,7 @@ defmodule CGraph.GamificationTest do
   import CGraph.Factory
   import Phoenix.ChannelTest, only: [subscribe_and_join: 3, assert_push: 2, assert_broadcast: 2]
 
-  alias CGraph.Gamification.{Cosmetics, Prestige, Events, Marketplace}
+  alias CGraph.Gamification.{Cosmetics, Marketplace}
   alias CGraph.Gamification.UserAvatarBorder
   alias CGraph.Accounts.User
   alias CGraphWeb.Endpoint
@@ -183,164 +181,6 @@ defmodule CGraph.GamificationTest do
         |> json_response(400)
 
       assert response["error"] =~ "not purchasable"
-    end
-  end
-
-  # ==================== PRESTIGE SYSTEM TESTS ====================
-
-  describe "GET /api/v1/prestige" do
-    test "returns user's prestige status", %{authed_conn: conn, user: user} do
-      insert(:user_prestige,
-        user_id: user.id,
-        prestige_level: 3,
-        xp_multiplier: 1.15,
-        lifetime_xp: 5_000_000
-      )
-
-      response =
-        conn
-        |> get("/api/v1/prestige")
-        |> json_response(200)
-
-      assert response["prestige"]["level"] == 3
-      assert response["prestige"]["lifetime"]["xp"] == 5_000_000
-    end
-  end
-
-  describe "POST /api/v1/prestige/activate" do
-    test "activates prestige when eligible", %{authed_conn: conn, user: user} do
-      # User at max level with sufficient prestige XP
-      update_user_level(user, 100, 999_999)
-      insert(:user_prestige, user_id: user.id, prestige_level: 0, prestige_xp: 150_000)
-
-      response =
-        conn
-        |> post("/api/v1/prestige/activate")
-        |> json_response(200)
-
-      assert response["success"] == true
-      assert response["prestige"]["level"] == 1
-    end
-
-    test "fails when not at max level", %{authed_conn: conn, user: user} do
-      update_user_level(user, 50, 500_000)
-
-      response =
-        conn
-        |> post("/api/v1/prestige/activate")
-        |> json_response(400)
-
-      assert response["error"] == "Cannot prestige yet"
-    end
-
-    test "grants prestige rewards", %{authed_conn: conn, user: user} do
-      _prestige_reward = insert(:prestige_reward, prestige_level: 1)
-      update_user_level(user, 100, 999_999)
-      insert(:user_prestige, user_id: user.id, prestige_level: 0, prestige_xp: 150_000)
-
-      response =
-        conn
-        |> post("/api/v1/prestige/activate")
-        |> json_response(200)
-
-      # Verify prestige level incremented and rewards returned
-      assert response["success"] == true
-      assert response["prestige"]["level"] == 1
-      assert is_list(response["rewards"])
-    end
-  end
-
-  # ==================== SEASONAL EVENTS TESTS ====================
-
-  describe "GET /api/v1/events/active" do
-    test "returns currently active events", %{authed_conn: conn} do
-      # Insert active event
-      active_event = insert(:seasonal_event,
-        status: "active",
-        starts_at: DateTime.add(DateTime.utc_now(), -1, :day),
-        ends_at: DateTime.add(DateTime.utc_now(), 7, :day)
-      )
-
-      # Insert inactive events
-      insert(:seasonal_event, status: "draft")
-      insert(:seasonal_event, status: "ended")
-
-      response =
-        conn
-        |> get("/api/v1/events/active")
-        |> json_response(200)
-
-      events = response["active"] || []
-      assert length(events) >= 1
-    end
-  end
-
-  describe "GET /api/v1/events/:id/progress" do
-    test "returns user's event progress", %{authed_conn: conn, user: user} do
-      event = insert(:seasonal_event, status: "active")
-      insert(:user_event_progress,
-        user_id: user.id,
-        seasonal_event_id: event.id,
-        event_points: 15000,
-        battle_pass_tier: 8,
-        leaderboard_rank: 42
-      )
-
-      response =
-        conn
-        |> get("/api/v1/events/#{event.id}/progress")
-        |> json_response(200)
-
-      assert response["progress"]["eventPoints"] == 15000
-      assert response["progress"]["battlePassTier"] == 8
-      assert response["progress"]["leaderboardRank"] == 42
-    end
-  end
-
-  describe "POST /api/v1/events/:id/claim-reward" do
-    test "claims available milestone reward", %{authed_conn: conn, user: user} do
-      reward = %{"id" => "reward-5", "points_required" => 10000, "name" => "Gold Medal", "type" => "coins", "amount" => 500}
-      event = insert(:seasonal_event,
-        status: "active",
-        milestone_rewards: [reward]
-      )
-
-      insert(:user_event_progress,
-        user_id: user.id,
-        seasonal_event_id: event.id,
-        event_points: 15000,
-        milestones_claimed: []
-      )
-
-      response =
-        conn
-        |> post("/api/v1/events/#{event.id}/claim-reward", %{reward_id: "reward-5"})
-        |> json_response(200)
-
-      assert response["success"] == true
-      assert response["reward"] != nil
-    end
-
-    test "fails when not enough points", %{authed_conn: conn, user: user} do
-      reward = %{"id" => "reward-10", "points_required" => 50000, "name" => "Diamond", "type" => "coins", "amount" => 1000}
-      event = insert(:seasonal_event,
-        status: "active",
-        milestone_rewards: [reward]
-      )
-
-      insert(:user_event_progress,
-        user_id: user.id,
-        seasonal_event_id: event.id,
-        event_points: 5000,
-        milestones_claimed: []
-      )
-
-      response =
-        conn
-        |> post("/api/v1/events/#{event.id}/claim-reward", %{reward_id: "reward-10"})
-        |> json_response(400)
-
-      assert response["error"] =~ "Not enough points"
     end
   end
 

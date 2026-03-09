@@ -16,9 +16,7 @@ vi.mock('@/modules/auth/store', () => ({
   useAuthStore: () => ({ user: { id: 'current-user' } }),
 }));
 
-vi.mock('@/modules/gamification/store', () => ({
-  useAvatarBorderStore: () => ({ getEquippedBorder: () => undefined }),
-}));
+// NOTE: vi.mock('@/modules/gamification/store') removed — module was deleted.
 
 vi.mock('@/data/avatar-borders', () => ({
   getBorderById: () => undefined,
@@ -30,9 +28,7 @@ vi.mock('@/modules/social/components/avatar/avatar-border-renderer', () => ({
   ),
 }));
 
-vi.mock('@/modules/gamification/components/title-badge', () => ({
-  TitleBadge: () => <div data-testid="title-badge" />,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/title-badge') removed — module was deleted.
 
 vi.mock('../constants', () => ({
   MAX_MUTUAL_FRIENDS_DISPLAY: 5,
@@ -49,9 +45,7 @@ vi.mock('@/shared/components/ui', () => ({
   ),
 }));
 
-vi.mock('@/modules/gamification/components/user-stars', () => ({
-  UserStars: () => <div data-testid="user-stars" />,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/user-stars') removed — module was deleted.
 
 vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="themed-avatar">{alt}</div>,

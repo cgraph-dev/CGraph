@@ -7,9 +7,7 @@ vi.mock('@/modules/auth/store', () => ({
   useAuthStore: () => ({ user: { id: 'current-user' } }),
 }));
 
-vi.mock('@/modules/gamification/store', () => ({
-  useAvatarBorderStore: () => ({ getEquippedBorder: () => undefined }),
-}));
+// NOTE: vi.mock('@/modules/gamification/store') removed — module was deleted.
 
 vi.mock('@/data/avatar-borders', () => ({
   getBorderById: () => undefined,

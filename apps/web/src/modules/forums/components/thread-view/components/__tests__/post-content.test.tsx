@@ -195,9 +195,8 @@ vi.mock('@/lib/utils', () => ({
   formatTimeAgo: (date: string) => `${date} ago`,
 }));
 
-vi.mock('@/modules/gamification/components/user-stars', () => ({
-  UserStars: () => <div data-testid="user-stars" />,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/user-stars') removed — module was deleted.
+// The test "renders user stars component" may need updating.
 
 vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,

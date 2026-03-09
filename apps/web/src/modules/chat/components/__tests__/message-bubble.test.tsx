@@ -86,9 +86,7 @@ vi.mock('@/components/media/voice-message-player', () => ({
   VoiceMessagePlayer: () => <div data-testid="voice-player">Voice Player</div>,
 }));
 
-vi.mock('@/modules/gamification/components/title-badge', () => ({
-  TitleBadge: () => null,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/title-badge') removed — module was deleted.
 
 const defaultUIPreferences: UIPreferences = {
   glassEffect: 'frosted',

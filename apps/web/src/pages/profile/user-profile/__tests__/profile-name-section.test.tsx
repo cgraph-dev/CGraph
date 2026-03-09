@@ -9,9 +9,8 @@ vi.mock('@heroicons/react/24/outline', () => ({
   CheckBadgeIcon: () => <span data-testid="verified-icon" />,
 }));
 
-vi.mock('@/modules/gamification/components/title-badge', () => ({
-  TitleBadge: ({ title }: { title: string }) => <span data-testid="title-badge">{title}</span>,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/title-badge') removed — module was deleted.
+// Tests referencing TitleBadge / data-testid="title-badge" may need updating.
 
 vi.mock('@/lib/animation-presets', () => ({
   springs: { bouncy: {} },

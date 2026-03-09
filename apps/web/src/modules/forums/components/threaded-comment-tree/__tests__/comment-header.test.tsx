@@ -7,9 +7,7 @@ vi.mock('@heroicons/react/24/outline', () => ({
   PlusIcon: () => <span data-testid="plus-icon" />,
 }));
 
-vi.mock('@/modules/gamification/components/user-stars', () => ({
-  UserStars: ({ tier }: { tier: string }) => <span data-testid="user-stars">{tier}</span>,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/user-stars') removed — module was deleted.
 
 vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <img data-testid="avatar" alt={alt} />,

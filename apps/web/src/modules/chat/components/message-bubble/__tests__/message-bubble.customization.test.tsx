@@ -58,9 +58,7 @@ vi.mock('@/modules/chat/components/rich-media-embed', () => ({
 vi.mock('@/modules/social/components/user-profile-card', () => ({
   default: ({ children }: any) => <div>{children}</div>,
 }));
-vi.mock('@/modules/gamification/components/title-badge', () => ({
-  TitleBadge: () => <span data-testid="title-badge" />,
-}));
+// NOTE: vi.mock('@/modules/gamification/components/title-badge') removed — module was deleted.
 vi.mock('@/components/theme/themed-avatar', () => ({
   ThemedAvatar: ({ username }: any) => <div data-testid="avatar">{username}</div>,
 }));

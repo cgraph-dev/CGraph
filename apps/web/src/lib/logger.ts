@@ -80,7 +80,6 @@ export const createLogger = (namespace: string): Logger => {
 
     log: (...args: unknown[]) => {
       if (isDev) {
-        // eslint-disable-next-line no-console
         console.log(prefix, ...args);
       }
     },
@@ -155,5 +154,4 @@ export const apiLogger = createLogger('API');
 export const forumLogger = createLogger('Forum');
 export const chatLogger = createLogger('Chat');
 export const themeLogger = createLogger('Theme');
-export const gamificationLogger = createLogger('Gamification');
 export const routeLogger = createLogger('Route');

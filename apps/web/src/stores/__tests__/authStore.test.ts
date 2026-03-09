@@ -245,8 +245,8 @@ describe('authStore', () => {
     });
   });
 
-  describe('gamification fields', () => {
-    it('should correctly map gamification data', () => {
+  describe('core user stats fields', () => {
+    it('should correctly map xp/coins/streak data', () => {
       const gamifiedUser = {
         ...mockApiUser,
         level: 10,
@@ -267,7 +267,7 @@ describe('authStore', () => {
       expect(user.title).toBe('Legend');
     });
 
-    it('should default gamification fields to reasonable values', () => {
+    it('should default stats fields to reasonable values', () => {
       const basicUser = {
         id: 'user-new',
         email: 'new@test.com',
