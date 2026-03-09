@@ -102,8 +102,8 @@ export default function IdentityCustomization() {
 
   return (
     <div className="space-y-6">
-      {/* Section Tabs */}
-      <div className="flex gap-2 border-b border-white/10 pb-4">
+      {/* Section Tabs — wrapping grid so all tabs are visible */}
+      <div className="flex flex-wrap gap-2 border-b border-white/10 pb-4">
         {sectionTabs.map((section) => (
           <button
             key={section.id}

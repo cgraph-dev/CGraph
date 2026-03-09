@@ -147,7 +147,6 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           <span className="rounded px-3 py-1.5 text-xs font-medium bg-cyan-500/20 text-cyan-400">
             Lottie
           </span>
-          </span>
         </div>
 
         {/* View Toggle */}

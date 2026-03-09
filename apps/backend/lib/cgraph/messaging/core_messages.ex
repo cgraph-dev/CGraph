@@ -136,18 +136,6 @@ defmodule CGraph.Messaging.CoreMessages do
         :not_found -> do_create_message(conversation, message_attrs)
       end
 
-    # Trigger XP pipeline for successful user messages (fire-and-forget)
-    with {:ok, message} <- result do
-      Task.start(fn ->
-        CGraph.Gamification.XpEventHandler.handle_action(
-          user,
-          :message,
-          reference_type: "message",
-          reference_id: message.id
-        )
-      end)
-    end
-
     result
   end
 

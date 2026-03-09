@@ -114,28 +114,13 @@ defmodule CGraph.Forums.ForumXpBridge do
     )
   end
 
-  defp grant_xp(user_id, amount, source, reference_id) do
+  defp grant_xp(user_id, amount, _source, _reference_id) do
     # Get user to calculate total_after and level_after
     # get! safe: user_id from authenticated session via forum activity
     user = Repo.get!(CGraph.Accounts.User, user_id)
 
     total_after = (user.xp || 0) + amount
     level_after = calculate_level(total_after)
-
-    attrs = %{
-      user_id: user_id,
-      amount: amount,
-      total_after: total_after,
-      level_after: level_after,
-      source: source,
-      description: "Forum activity: #{source}",
-      reference_type: "forum",
-      reference_id: reference_id
-    }
-
-    %CGraph.Gamification.XpTransaction{}
-    |> CGraph.Gamification.XpTransaction.changeset(attrs)
-    |> Repo.insert()
 
     # Update user XP and level
     from(u in CGraph.Accounts.User, where: u.id == ^user_id)

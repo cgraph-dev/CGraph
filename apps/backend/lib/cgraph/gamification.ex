@@ -26,8 +26,7 @@ defmodule CGraph.Gamification do
     Leaderboard,
     LeaderboardSystem,
     QuestSystem,
-    TitleShopSystem,
-    XpTransaction
+    TitleShopSystem
   }
 
   alias CGraph.Repo
@@ -179,21 +178,6 @@ defmodule CGraph.Gamification do
         user
         |> Ecto.Changeset.change(%{xp: new_xp, level: new_level})
         |> Repo.update()
-
-      {:ok, _transaction} =
-        %XpTransaction{}
-        |> XpTransaction.changeset(%{
-          user_id: user.id,
-          amount: final_amount,
-          total_after: new_xp,
-          level_after: new_level,
-          source: source,
-          description: description,
-          multiplier: multiplier,
-          reference_type: reference_type,
-          reference_id: reference_id
-        })
-        |> Repo.insert()
 
       if level_up do
         AchievementSystem.check_level_achievements(updated_user, new_level)

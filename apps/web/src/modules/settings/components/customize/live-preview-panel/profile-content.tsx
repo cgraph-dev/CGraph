@@ -42,6 +42,8 @@ interface ProfileContentProps {
   isLegendaryTitle: boolean;
   speedMultiplier: number;
   equippedBadges?: string[];
+  /** Lottie JSON URL for 'lottie' border type. */
+  lottieUrl?: string;
 }
 
 /**
@@ -162,6 +164,7 @@ export function ProfileContent({
   isLegendaryTitle,
   speedMultiplier,
   equippedBadges = [],
+  lottieUrl,
 }: ProfileContentProps) {
   // Resolve equipped badge IDs to display data; fall back to default preview badges
   const resolvedBadges: (BadgeDisplay | PreviewBadge)[] =
@@ -174,6 +177,7 @@ export function ProfileContent({
         borderColor={effectiveColorPreset}
         size={settings.avatarSize}
         speedMultiplier={speedMultiplier}
+        lottieUrl={lottieUrl}
       />
 
       {/* Name & Title & Status */}

@@ -105,7 +105,7 @@ export default function Customize() {
             transition={{ duration: 0.15 }}
           >
               {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
-              <GlassCard variant="frosted" hover3D={false} className="p-8">
+              <GlassCard variant="frosted" hover3D={false} className="overflow-visible p-8">
                 <Suspense fallback={<LoadingSkeleton />}>
                   {activeCategory === 'identity' && <IdentityCustomization />}
                   {activeCategory === 'themes' && <ThemeCustomization />}

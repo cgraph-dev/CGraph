@@ -192,41 +192,8 @@ defmodule CGraph.Forums.Voting do
   end
 
   # Award XP to post author when they receive an upvote (skip self-votes)
-  defp maybe_award_upvote_xp({:ok, _vote_result}, voter, post, vote_type)
-       when vote_type in [:up, "up"] and voter.id != post.author_id do
-    Task.start(fn ->
-      author = CGraph.Repo.get(CGraph.Accounts.User, post.author_id)
-
-      if author do
-        CGraph.Gamification.XpEventHandler.handle_action(
-          author,
-          :forum_upvote_received,
-          reference_type: "post",
-          reference_id: post.id,
-          board_id: post.forum_id
-        )
-      end
-    end)
-  end
-
   defp maybe_award_upvote_xp(_result, _voter, _post, _vote_type), do: :ok
 
   # Award XP to comment author when they receive an upvote (skip self-votes)
-  defp maybe_award_comment_upvote_xp({:ok, _vote_result}, voter, comment, vote_type)
-       when vote_type in [:up, "up"] and voter.id != comment.author_id do
-    Task.start(fn ->
-      author = CGraph.Repo.get(CGraph.Accounts.User, comment.author_id)
-
-      if author do
-        CGraph.Gamification.XpEventHandler.handle_action(
-          author,
-          :forum_upvote_received,
-          reference_type: "comment",
-          reference_id: comment.id
-        )
-      end
-    end)
-  end
-
   defp maybe_award_comment_upvote_xp(_result, _voter, _comment, _vote_type), do: :ok
 end

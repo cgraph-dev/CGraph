@@ -3,8 +3,10 @@
  *
  * Border preview card with animated borders, corner brackets,
  * rarity badges, and lock indicators.
+ * Renders Lottie animations when a border has a lottieFile URL.
  */
 
+import { lazy, Suspense } from 'react';
 import { motion, type TargetAndTransition, type Transition } from 'motion/react';
 import { LockClosedIcon, CheckIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import { RARITY_COLORS, type BorderRarity } from '@/data/borderCollections';
@@ -14,6 +16,14 @@ import { getBorderAnimation } from './animations';
 import { CornerBrackets } from './corner-brackets';
 import { ParticleEffects } from './particle-effects';
 import { tweens, loop } from '@/lib/animation-presets';
+
+// Lazy-load Lottie renderer to avoid bundling lottie-web when not needed
+const LottieBorderRenderer = lazy(() =>
+  import('@/lib/lottie/lottie-border-renderer').then((m) => ({ default: m.default ?? m.LottieBorderRenderer }))
+);
+
+/** Avatar size in px for each card size */
+const AVATAR_PX: Record<string, number> = { sm: 48, md: 64, lg: 96 };
 
 /**
  * Themed Border Card display component.
@@ -51,30 +61,59 @@ export default function ThemedBorderCard({
       {/* Corner brackets for selection */}
       {isSelected && <CornerBrackets color={border.colors[0] || '#fff'} />}
 
-      {/* Avatar preview with animated border */}
-      <motion.div
-        className={`${config.avatar} relative overflow-visible rounded-full`}
-        style={{
-          background: `linear-gradient(135deg, ${border.colors.join(', ')})`,
-          padding: '3px',
-          ...borderAnimation.style,
-        }}
-        animate={
-           
-          borderAnimation.animate as TargetAndTransition /* safe downcast – framer-motion typing */
-        }
-        transition={
-           
-          borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
-        }
-      >
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[rgb(30,32,40)]">
-          <span className="text-2xl">👤</span>
-        </div>
+      {/* Avatar preview with animated border — Lottie or CSS fallback */}
+      {border.lottieFile && showAnimation ? (
+        <Suspense
+          fallback={
+            <div
+              className={`${config.avatar} rounded-full`}
+              style={{
+                background: `linear-gradient(135deg, ${border.colors.join(', ')})`,
+                padding: '3px',
+              }}
+            >
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-[rgb(30,32,40)]">
+                <span className="text-2xl">👤</span>
+              </div>
+            </div>
+          }
+        >
+          <LottieBorderRenderer
+            lottieUrl={border.lottieFile}
+            avatarSize={Math.round((AVATAR_PX[size] ?? 64) * 0.65)}
+            borderWidth={Math.round((AVATAR_PX[size] ?? 64) * 0.18)}
+            fallbackColor={border.colors[0]}
+          >
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-[rgb(30,32,40)]">
+              <span className="text-2xl">👤</span>
+            </div>
+          </LottieBorderRenderer>
+        </Suspense>
+      ) : (
+        <motion.div
+          className={`${config.avatar} relative overflow-visible rounded-full`}
+          style={{
+            background: `linear-gradient(135deg, ${border.colors.join(', ')})`,
+            padding: '3px',
+            ...borderAnimation.style,
+          }}
+          animate={
+             
+            borderAnimation.animate as TargetAndTransition /* safe downcast – framer-motion typing */
+          }
+          transition={
+             
+            borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
+          }
+        >
+          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[rgb(30,32,40)]">
+            <span className="text-2xl">👤</span>
+          </div>
 
-        {/* Particle effects for special borders */}
-        {showParticles && <ParticleEffects colors={border.colors} />}
-      </motion.div>
+          {/* Particle effects for special borders */}
+          {showParticles && <ParticleEffects colors={border.colors} />}
+        </motion.div>
+      )}
 
       {/* Border name */}
       <span className={`${config.text} w-full truncate text-center font-medium text-gray-300`}>
@@ -88,15 +127,10 @@ export default function ThemedBorderCard({
         {border.rarity}
       </div>
 
-      {/* Lock overlay */}
+      {/* Lock badge — small corner indicator so the animated preview stays visible */}
       {!border.unlocked && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/50 backdrop-blur-[1px]">
-          <LockClosedIcon className="mb-1 h-6 w-6 text-white/70" />
-          {border.unlockRequirement && (
-            <span className="px-2 text-center text-[9px] leading-tight text-white/60">
-              {border.unlockRequirement}
-            </span>
-          )}
+        <div className="absolute left-1 top-1 flex items-center gap-0.5 rounded-full bg-black/70 px-1.5 py-0.5 backdrop-blur-sm">
+          <LockClosedIcon className="h-3 w-3 text-white/70" />
         </div>
       )}
 

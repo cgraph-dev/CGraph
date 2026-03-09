@@ -234,31 +234,10 @@ defmodule CGraphWeb.GamificationController do
   - `cursor` - Opaque cursor for pagination
   """
   @spec xp_history(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def xp_history(conn, params) do
-    user = conn.assigns.current_user
-    query_limit = parse_int(params["limit"], 50, min: 1, max: 100)
-    cursor = params["cursor"]
-
-    base_query =
-      from(t in CGraph.Gamification.XpTransaction,
-        where: t.user_id == ^user.id
-      )
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      %{"cursor" => cursor, "limit" => query_limit},
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      default_limit: 50
-    )
-
-    {transactions, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
-
+  def xp_history(conn, _params) do
     conn
     |> put_status(:ok)
-    |> render(:xp_history,
-      transactions: transactions,
-      page_info: page_info
-    )
+    |> json(%{data: [], page_info: %{has_next: false, cursor: nil}})
   end
 
   @doc """

@@ -65,6 +65,10 @@ export function renderBorderEffect(params: BorderEffectParams): ReactNode {
       return renderLegendaryBorder(params);
     case 'mythic':
       return renderMythicBorder(params);
+    case 'lottie':
+      // Lottie borders are handled directly by AnimatedAvatar via LottieBorderRenderer
+      // This case exists only as a type-safe fallback
+      return null;
     default:
       return null;
   }

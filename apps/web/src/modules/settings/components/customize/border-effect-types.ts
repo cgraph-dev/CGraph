@@ -13,6 +13,8 @@ export interface BorderEffectParams {
   speedMultiplier: number;
   gpuStyles: React.CSSProperties;
   prefersReducedMotion: boolean;
+  /** Lottie JSON URL for 'lottie' border type. */
+  lottieUrl?: string;
 }
 
 /** Render function signature shared by all border-effect modules. */

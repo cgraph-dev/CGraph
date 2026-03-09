@@ -60,11 +60,17 @@ export {
 } from './registries/profileEffects';
 export {
   NAMEPLATE_REGISTRY,
+  NAMEPLATE_CATEGORIES,
   getNameplateById,
   getFreeNameplates,
   getNameplatesByRarity,
+  getNameplatesByCategory,
   type NameplateRarity,
   type NameplateEntry,
+  type NameplateTextEffect,
+  type NameplateParticleType,
+  type NameplateBorderStyle,
+  type NameplateCategory,
 } from './registries/nameplates';
 export {
   NAME_FONTS,

@@ -15,6 +15,7 @@ import {
 } from '@/modules/settings/store/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import { getThemeById, type ProfileThemeConfig } from '@/data/profileThemes';
+import { getBorderById } from '@/data/borderCollections';
 import { TiltCard } from '@/shared/components/ui';
 import { ANIMATION_SPEED_MULTIPLIERS, LEGENDARY_TITLE_IDS } from './constants';
 import { getBackgroundStyle, getParticleStyle as computeParticleStyle } from './profile-card-utils';
@@ -63,8 +64,12 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
   const effectiveTitle = settings.title || settings.equippedTitle || null;
 
   const effectiveBorderId = settings.selectedBorderId || settings.avatarBorder;
+  const borderDef = effectiveBorderId ? getBorderById(effectiveBorderId) : undefined;
+  const borderLottieUrl = borderDef?.lottieFile ?? undefined;
   const effectiveBorderType = effectiveBorderId
-    ? BORDER_ID_TO_TYPE[effectiveBorderId] || settings.avatarBorderType
+    ? borderLottieUrl
+      ? ('lottie' as const)
+      : BORDER_ID_TO_TYPE[effectiveBorderId] || settings.avatarBorderType
     : settings.avatarBorderType;
 
   const effectiveColorPreset =
@@ -155,6 +160,7 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
           isLegendaryTitle={!!isLegendaryTitle}
           speedMultiplier={speedMultiplier}
           equippedBadges={settings.equippedBadges}
+          lottieUrl={borderLottieUrl}
         />
       </motion.div>
     </TiltCard>

@@ -42,7 +42,8 @@ export type AvatarBorderType =
   | 'ice'
   | 'electric'
   | 'legendary'
-  | 'mythic';
+  | 'mythic'
+  | 'lottie';
 
 export type ChatBubbleStyle = 'default' | 'rounded' | 'sharp' | 'cloud' | 'modern' | 'retro';
 
@@ -317,6 +318,12 @@ export const AVATAR_BORDERS: Record<
     description: 'Reality-bending void effect',
     premium: true,
     rarity: 'Mythic',
+  },
+  lottie: {
+    name: 'Animated Frame',
+    description: 'Custom Lottie animated border frame',
+    premium: true,
+    rarity: 'Legendary',
   },
 };
 

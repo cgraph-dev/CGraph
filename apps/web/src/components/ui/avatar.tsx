@@ -6,9 +6,14 @@ import { ReactNode, useMemo, lazy, Suspense } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { getAvatarBorderStyle } from '@/modules/settings/hooks/useCustomizationApplication';
+import { getBorderById } from '@/data/borderCollections';
 
 const LottieRenderer = lazy(() =>
   import('@/lib/lottie/lottie-renderer').then((m) => ({ default: m.LottieRenderer }))
+);
+
+const LottieBorderRenderer = lazy(() =>
+  import('@/lib/lottie/lottie-border-renderer').then((m) => ({ default: m.LottieBorderRenderer }))
 );
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
@@ -157,8 +162,13 @@ export default function Avatar({
   const rounding = shape === 'square' ? 'rounded-2xl' : 'rounded-full';
   const gradient = useMemo(() => getGradient(name), [name]);
   const borderStyle = borderId ? getAvatarBorderStyle(borderId) : { className: '' };
+  const borderLottieUrl = useMemo(() => {
+    if (!borderId) return undefined;
+    const def = getBorderById(borderId);
+    return def?.lottieFile ?? undefined;
+  }, [borderId]);
 
-  return (
+  const avatarContent = (
     <div className={cn('relative inline-flex shrink-0', className)}>
       {/* Story ring */}
       {storyRing && (
@@ -179,9 +189,9 @@ export default function Avatar({
           storyRing && 'ring-2 ring-[rgb(15,15,20)]',
           !src && `bg-gradient-to-br ${gradient}`,
           src && 'bg-white/[0.06]',
-          borderStyle.className
+          !borderLottieUrl && borderStyle.className
         )}
-        style={borderStyle.style}
+        style={!borderLottieUrl ? borderStyle.style : undefined}
       >
         {lottieUrl ? (
           <Suspense
@@ -252,6 +262,24 @@ export default function Avatar({
       {badge && <span className="absolute -right-1 -top-1">{badge}</span>}
     </div>
   );
+
+  if (borderLottieUrl) {
+    // Lottie frames have decorative elements that extend beyond the avatar
+    const frameBorderWidth = Math.max(6, Math.round(cfg.px * 0.2));
+    return (
+      <Suspense fallback={avatarContent}>
+        <LottieBorderRenderer
+          lottieUrl={borderLottieUrl}
+          avatarSize={cfg.px}
+          borderWidth={frameBorderWidth}
+        >
+          {avatarContent}
+        </LottieBorderRenderer>
+      </Suspense>
+    );
+  }
+
+  return avatarContent;
 }
 
 // ---------- AvatarGroup ----------

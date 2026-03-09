@@ -31,6 +31,14 @@
 | 17  | Monetization            | Stripe, mobile IAP, creator payouts                | 10   | Phase 16 ✅ Complete (2026-03-02)       |
 | 18  | Rich Media & Polish     | Voice msgs, files, GIFs, search, animations, scale | 20   | Phase 7 ✅, 13 ✅ Complete (2026-03-02) |
 | 19  | Launch                  | App Store, landing page, wallet auth, final QA     | 4    | Phase 15,17,18                          |
+| ... | *Phases 20-25*          | *See below — all complete*                         |      |                                         |
+| 26  | The Great Delete        | Remove entire gamification system from codebase     | 4    | Phase 25 ✅                             |
+| 27  | Fix What Remains        | Consolidate themes, fix achievements, clean stores  | 2    | Phase 26                                |
+| 28  | Complete Cosmetics      | Nameplate, profile effects, border unification      | 3    | Phase 27                                |
+| 29  | Secret Chat             | E2E encrypted secret chat UI + privacy features     | 2    | Phase 26                                |
+| 30  | Pulse Reputation        | Community-scoped reputation system (backend + UI)   | 2    | Phase 26                                |
+| 31  | Forums + Discovery      | Forums, feed ranking, frequency-based discovery     | 2    | Phase 30                                |
+| 32  | Nodes Monetization      | Virtual currency wallet, tipping, content unlock    | 2    | Phase 31                                |
 
 **Dependency Graph:**
 
@@ -57,6 +65,23 @@ Phase 1 (Infrastructure)
                            Phases 15, 17, 18 ──────────────────►│
                                                                 ▼
                                                    Phase 19 (Launch)
+
+Phases 20–25 ──────────────────────────────────────► All Complete
+                                                                │
+                                           Phase 26 (Great Delete)
+                                          ┌─────────┼─────────┐
+                                          ▼         ▼         ▼
+                              Phase 27        Phase 29     Phase 30
+                            (Fix What        (Secret      (Pulse
+                             Remains)        Chat)        Reputation)
+                                │                             │
+                                ▼                             ▼
+                              Phase 28               Phase 31 (Forums
+                            (Complete                + Discovery)
+                             Cosmetics)                       │
+                                                              ▼
+                                                   Phase 32 (Nodes
+                                                    Monetization)
 ```
 
 **Parallel tracks after Phase 2:**
@@ -1199,4 +1224,107 @@ Plans:
 
 ---
 
-_Roadmap: 25 phases · 135 requirements (AUTH-12 descoped) · 0 orphans · Updated: 2026-03-08_
+## v2.0 Pivot — Product Evolution (Phases 26-32)
+
+> The following phases execute the "Definitive Plan" — a major product pivot that removes the
+> gamification system and builds Pulse reputation, Nodes currency, Secret Chat UI, and Discovery
+> in its place. See `docs/PrivateFolder/This will be the definitive.txt` for full plan.
+
+### Phase 26: The Great Delete
+
+**Goal:** Remove the entire gamification system from the codebase — backend (30+ Elixir modules,
+83 routes stripped to 3), frontend stores (9 stores + facades), pages (gamification hub, achievements,
+quests, titles, leaderboard, progression customization), components (214 files), mobile screens,
+and all supporting types/hooks/tests.
+
+**Depends on:** Phase 25 (Cinematic UI Parity) **Plans:** 4 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — Backend delete (30+ Elixir modules, routes stripped, migration)
+- [ ] 26-02-PLAN.md — Frontend stores, facades, hooks delete (web + mobile)
+- [ ] 26-03-PLAN.md — Frontend pages, components, screens delete (~300 files)
+- [ ] 26-04-PLAN.md — Route cleanup, type consolidation, dangling reference sweep (wave 2)
+
+---
+
+### Phase 27: Fix What Remains Broken
+
+**Goal:** Fix everything broken after the Great Delete — consolidate dual theme system, simplify
+background effects, build ParticleEngine, clean achievement types, fix rarity constants.
+
+**Depends on:** Phase 26 **Plans:** 2 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Customization fixes (themes, effects, particles, dead props)
+- [ ] 27-02-PLAN.md — Achievement system fix (strip gamification fields, fix titleRewards, rarities)
+
+---
+
+### Phase 28: Complete Broken Cosmetics
+
+**Goal:** Build/fix the three most impactful cosmetic features: NameplateBar (full rendering with
+Lottie), Profile Effects (LottieOverlay), and Border unification (CSS→Lottie, sync 42 borders).
+
+**Depends on:** Phase 27 **Plans:** 3 plans
+
+Plans:
+- [ ] 28-01-PLAN.md — NameplateBar component (web + mobile, all 24 nameplates)
+- [ ] 28-02-PLAN.md — Profile effects via LottieOverlay (12 effects)
+- [ ] 28-03-PLAN.md — Border unification (CSS→Lottie, 42 borders, backend seed sync)
+
+---
+
+### Phase 29: Secret Chat
+
+**Goal:** Build complete Secret Chat with E2E encryption (custom Signal Protocol from packages/crypto/),
+Ghost Mode, Secret Identity, Timed Conversations, Panic Wipe, 12 secret themes. Backend infrastructure
+partially exists — frontend UI is 100% greenfield.
+
+**Depends on:** Phase 26 **Plans:** 2 plans
+
+Plans:
+- [ ] 29-01-PLAN.md — Backend: Ghost Mode, session extensions, Panic Wipe, timed expiry
+- [ ] 29-02-PLAN.md — Frontend: Secret Chat UI, 12 themes, E2E encryption integration
+
+---
+
+### Phase 30: Pulse Reputation
+
+**Goal:** Build community-scoped reputation system. 100% greenfield. Weighted voting (1-4x based on
+voter's pulse), 6 tiers (newcomer→legend), 5% decay per 30 days inactive, Fade gated at pulse >= 50.
+
+**Depends on:** Phase 26 **Plans:** 2 plans
+
+Plans:
+- [ ] 30-01-PLAN.md — Backend: tables, context, weighted votes, decay worker, API
+- [ ] 30-02-PLAN.md — Frontend: PulseDots, profile card integration, reaction UI, achievements
+
+---
+
+### Phase 31: Forums + Discovery
+
+**Goal:** Build Forums (threads, replies, content gating) and Discovery (feed ranking with 5 modes,
+user frequencies, community health scoring). 100% greenfield.
+
+**Depends on:** Phase 30 **Plans:** 2 plans
+
+Plans:
+- [ ] 31-01-PLAN.md — Backend: tables, feed ranking, health scoring, forum CRUD, API
+- [ ] 31-02-PLAN.md — Frontend: feed page, forum pages, frequency picker, routes
+
+---
+
+### Phase 32: Nodes Monetization
+
+**Goal:** Build virtual currency system (Nodes). Wallet, transaction processing, tipping, content
+unlock, withdrawal requests. Uses existing Stripe integration — Paddle migration is separate epic.
+
+**Depends on:** Phase 31 **Plans:** 2 plans
+
+Plans:
+- [ ] 32-01-PLAN.md — Backend: wallet tables, context, tipping, platform cut, withdrawals, API
+- [ ] 32-02-PLAN.md — Frontend: wallet page, bundle purchase, tipping UI, content unlock, routes
+
+---
+
+_Roadmap: 32 phases · 135+ requirements · Updated: 2026-07-23_

@@ -7,11 +7,15 @@
  * @version 3.0.0 - Extracted border effects to animated-avatar-borders.tsx
  */
 
-import { memo, useMemo } from 'react';
+import { memo, useMemo, lazy, Suspense } from 'react';
 import type { AvatarBorderType, ThemePreset } from '@/modules/settings/store/customization';
 import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import { renderBorderEffect } from './animated-avatar-borders';
+
+const LottieBorderRenderer = lazy(() =>
+  import('@/lib/lottie/lottie-border-renderer').then((m) => ({ default: m.LottieBorderRenderer }))
+);
 
 interface AnimatedAvatarProps {
   borderType: AvatarBorderType;
@@ -20,6 +24,8 @@ interface AnimatedAvatarProps {
   speedMultiplier?: number;
   src?: string;
   initials?: string;
+  /** Lottie JSON URL for 'lottie' border type. */
+  lottieUrl?: string;
 }
 
 const sizeMap = { small: 48, medium: 64, large: 80 };
@@ -33,6 +39,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
   speedMultiplier = 1,
   src,
   initials = 'CG',
+  lottieUrl,
 }: AnimatedAvatarProps) {
   const colors = themeColors[borderColor];
   const avatarSize = typeof size === 'number' ? size : sizeMap[size];
@@ -50,6 +57,44 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
     [prefersReducedMotion]
   );
 
+  const avatarImage = (
+    <div
+      className="flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-700 to-gray-800"
+      style={{ width: avatarSize - 4, height: avatarSize - 4 }}
+    >
+      {src ? (
+        <img src={src} alt="Avatar" className="h-full w-full object-cover" />
+      ) : (
+        <span className="text-xl font-bold text-white">{initials}</span>
+      )}
+    </div>
+  );
+
+  // Lottie border: wrap avatar directly in LottieBorderRenderer
+  // Frame needs extra space for decorative elements (star crown, wings, etc.)
+  if (borderType === 'lottie' && lottieUrl) {
+    const frameSize = avatarSize + 28; // Lottie frame is larger than avatar
+    const outerSize = frameSize + 8;   // Container with breathing room
+    return (
+      <div
+        className="relative flex items-center justify-center"
+        style={{ width: outerSize, height: outerSize }}
+      >
+        <Suspense fallback={avatarImage}>
+          <LottieBorderRenderer
+            lottieUrl={lottieUrl}
+            avatarSize={avatarSize - 8}
+            borderWidth={Math.round((frameSize - (avatarSize - 8)) / 2)}
+            lottieConfig={{ speed: speedMultiplier }}
+          >
+            {avatarImage}
+          </LottieBorderRenderer>
+        </Suspense>
+      </div>
+    );
+  }
+
+  // CSS-based borders
   return (
     <div
       className="relative flex items-center justify-center"
@@ -74,19 +119,13 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
           speedMultiplier,
           gpuStyles,
           prefersReducedMotion,
+          lottieUrl,
         })}
       </div>
 
       {/* Avatar image */}
-      <div
-        className="relative z-10 flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-700 to-gray-800"
-        style={{ width: avatarSize - 4, height: avatarSize - 4 }}
-      >
-        {src ? (
-          <img src={src} alt="Avatar" className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-xl font-bold text-white">{initials}</span>
-        )}
+      <div className="relative z-10">
+        {avatarImage}
       </div>
     </div>
   );

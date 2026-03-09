@@ -47,7 +47,7 @@ export interface LottieBorderProps {
 // ── Active animation counter (max 2 concurrent) ───────────────────────
 
 let activeAnimationCount = 0;
-const MAX_CONCURRENT_ANIMATIONS = 2;
+const MAX_CONCURRENT_ANIMATIONS = 20;
 
 // ── Reduced motion hook ───────────────────────────────────────────────
 
@@ -220,8 +220,9 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
         <div
           style={{
             position: 'absolute',
-            top: borderWidth,
-            left: borderWidth,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             width: avatarSize,
             height: avatarSize,
             borderRadius: '50%',
@@ -234,6 +235,19 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
     );
   }
 
+  // Cut out only the center circle where the avatar sits.
+  // This keeps all decorative frame elements (stars, wings, ornaments) visible
+  // while preventing the Lottie's background shapes from covering the avatar.
+  const innerRadius = Math.max(0, (avatarSize / 2) - 2); // slightly smaller hole for overlap
+  const maskCenter = totalSize / 2;
+  const maskStyle: React.CSSProperties = {
+    position: 'absolute' as const,
+    inset: 0,
+    pointerEvents: 'none' as const,
+    WebkitMaskImage: `radial-gradient(circle ${innerRadius}px at ${maskCenter}px ${maskCenter}px, transparent ${innerRadius - 1}px, black ${innerRadius}px)`,
+    maskImage: `radial-gradient(circle ${innerRadius}px at ${maskCenter}px ${maskCenter}px, transparent ${innerRadius - 1}px, black ${innerRadius}px)`,
+  };
+
   return (
     <div
       className={className}
@@ -243,32 +257,24 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
         height: totalSize,
       }}
     >
-      {/* Lottie animation layer (behind avatar, masked into a ring) */}
+      {/* Lottie animation layer — masked to cut out only the avatar center */}
       <div
         ref={containerRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          clipPath: `circle(${totalSize / 2}px at center)`,
-          WebkitMaskImage: `radial-gradient(circle ${avatarSize / 2}px at center, transparent ${
-            avatarSize / 2 - 1
-          }px, black ${avatarSize / 2}px)`,
-          maskImage: `radial-gradient(circle ${avatarSize / 2}px at center, transparent ${
-            avatarSize / 2 - 1
-          }px, black ${avatarSize / 2}px)`,
-        }}
+        style={maskStyle}
       />
 
-      {/* Avatar centered on top */}
+      {/* Avatar centered inside the frame hole */}
       <div
         style={{
           position: 'absolute',
-          top: borderWidth,
-          left: borderWidth,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
           width: avatarSize,
           height: avatarSize,
           borderRadius: '50%',
           overflow: 'hidden',
+          zIndex: 1,
         }}
       >
         {children}

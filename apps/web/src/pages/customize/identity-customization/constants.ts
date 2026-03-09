@@ -98,12 +98,26 @@ export function getV2BorderType(animation: string): AvatarBorderType {
     'gradient-rotate': 'rotate',
     flame: 'fire',
     fire: 'fire',
-    shimmer: 'ice',
+    shimmer: 'glow',
     drip: 'ice',
+    ice: 'ice',
     particles: 'legendary',
     aurora: 'legendary',
     void: 'mythic',
     electric: 'electric',
+    // Newer animation types → CSS fallback approximation
+    // (Lottie file wired separately via border.lottieFile when available)
+    holographic: 'rotate',
+    galaxy: 'legendary',
+    'pixel-pulse': 'pulse',
+    'scan-line': 'rotate',
+    glitch: 'electric',
+    'sakura-fall': 'legendary',
+    wave: 'pulse',
+    'energy-surge': 'electric',
+    smoke: 'glow',
+    'neon-flicker': 'electric',
+    rainbow: 'rotate',
   };
   return animationToV2[animation] || 'none';
 }
