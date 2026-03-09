@@ -13,7 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
-import { useGamificationStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import LevelProgress from '@/modules/gamification/components/level-progress';
@@ -41,6 +41,9 @@ import { tweens } from '@/lib/animation-presets';
 /**
  * unknown for the profile module.
  */
+/** Stable empty array for stub achievements */
+const EMPTY_ACHIEVEMENTS: never[] = [];
+
 /**
  * User Profile component.
  */
@@ -48,7 +51,9 @@ export function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuthStore();
-  const { achievements, equippedBadges } = useGamificationStore();
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const achievements = EMPTY_ACHIEVEMENTS;
+  const equippedBadges: string[] = [];
 
   const isOwnProfile = currentUser?.id === userId;
 

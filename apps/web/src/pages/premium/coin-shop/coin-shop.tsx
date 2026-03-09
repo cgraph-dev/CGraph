@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CurrencyDollarIcon, ShoppingBagIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { Button } from '@/components';
-import { useCoinShopStore } from '@/modules/gamification/store/coinShopStore';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { COIN_BUNDLES, SHOP_ITEMS } from './constants';
 import { useCoinShop } from './useCoinShop';
 import { CoinBalanceCard } from './coin-balance-card';
@@ -28,10 +28,10 @@ export default function CoinShop() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Fetch bundles from the backend API
-  const { bundles: apiBundles, loading: _bundlesLoading, fetchBundles } = useCoinShopStore();
-  useEffect(() => { fetchBundles(); }, [fetchBundles]);
-  const displayBundles = apiBundles.length > 0 ? apiBundles : COIN_BUNDLES;
+  // TODO(phase-26): Rewire — gamification stores deleted (useCoinShopStore removed)
+  // const { bundles: apiBundles, loading: _bundlesLoading, fetchBundles } = useCoinShopStore();
+  // useEffect(() => { fetchBundles(); }, [fetchBundles]);
+  const displayBundles = COIN_BUNDLES;
 
   const {
     coinBalance,

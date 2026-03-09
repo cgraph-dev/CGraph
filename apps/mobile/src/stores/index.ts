@@ -17,22 +17,6 @@ export type { Message, Conversation, Reaction } from './chatStore';
 export { useGroupStore, useGroups, useActiveGroupId } from './groupStore';
 export type { ChannelMessage } from './groupStore';
 
-// ─── Gamification ────────────────────────────────────────────────────────────
-export {
-  useGamificationStore,
-  useLevel,
-  useXP,
-  useStreak,
-  useAchievements,
-  useActiveQuests,
-  useEquippedBorderId,
-  useEquippedNameplateId,
-} from './gamificationStore';
-
-// ─── Marketplace ─────────────────────────────────────────────────────────────
-export { useMarketplaceStore, useMarketplaceListings, useMyListings } from './marketplaceStore';
-export type { MarketplaceListing } from './marketplaceStore';
-
 // ─── Notifications ───────────────────────────────────────────────────────────
 export { useNotificationStore, useUnreadCount, useNotifications } from './notificationStore';
 export type { Notification } from './notificationStore';
@@ -120,8 +104,6 @@ import { useSettingsStore as _useSettings } from './settingsStore';
 import { useCustomizationStore as _useCustomization } from './customizationStore';
 import { useChatStore as _useChat } from './chatStore';
 import { useGroupStore as _useGroup } from './groupStore';
-import { useGamificationStore as _useGamification } from './gamificationStore';
-import { useMarketplaceStore as _useMarketplace } from './marketplaceStore';
 import { useForumStore as _useForum } from './forumStore';
 
 /**
@@ -192,50 +174,23 @@ export function useCommunityFacade() {
   const setActiveChannel = _useGroup((s) => s.setActiveChannel);
   const forums = _useForum((s) => s.forums);
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    const activeGroup = activeGroupId ? groups.find((g) => g.id === activeGroupId) : undefined;
+    let channels: unknown[] = [];
+    if (activeGroup && 'channels' in activeGroup && Array.isArray(activeGroup.channels)) {
+      channels = activeGroup.channels;
+    }
+    return {
       groups,
-      channels: activeGroupId
-         
-        ? ((groups.find((g) => g.id === activeGroupId) as unknown as Record<string, unknown>)
-            ?.channels as unknown[]) || []
-        : [],
-       
+      channels,
       forums,
-      activeGroup: activeGroupId ? groups.find((g) => g.id === activeGroupId) || null : null,
+      activeGroup: activeGroup ?? null,
       activeChannel: activeChannelId,
       joinGroup,
       leaveGroup,
       setActiveChannel,
-    }),
-    [groups, activeGroupId, activeChannelId, joinGroup, leaveGroup, setActiveChannel, forums]
-  );
-}
-
-/**
- * Gamification facade — XP, karma, achievements, effects.
- * Wired to real gamificationStore (v0.9.31).
- */
-export function useGamificationFacade() {
-  const xp = _useGamification((s) => s.xp);
-  const level = _useGamification((s) => s.level);
-  const coins = _useGamification((s) => s.coins);
-  const achievements = _useGamification((s) => s.achievements);
-  const streak = _useGamification((s) => s.streak);
-  const fetchGamificationData = _useGamification((s) => s.fetchGamificationData);
-
-  return useMemo(
-    () => ({
-      xp,
-      level,
-      coins,
-      achievements,
-      badges: achievements.filter((a) => a.unlocked),
-      streak,
-      fetchGamificationData,
-    }),
-    [xp, level, coins, achievements, streak, fetchGamificationData]
-  );
+    };
+  }, [groups, activeGroupId, activeChannelId, joinGroup, leaveGroup, setActiveChannel, forums]);
 }
 
 /**
@@ -264,35 +219,6 @@ export function useSettingsFacade() {
 }
 
 /**
- * Marketplace facade — items, purchases, inventory.
- * Wired to real marketplaceStore (v0.9.31).
- */
-export function useMarketplaceFacade() {
-  const listings = _useMarketplace((s) => s.listings);
-  const myListings = _useMarketplace((s) => s.myListings);
-  const purchaseListing = _useMarketplace((s) => s.purchaseListing);
-  const fetchMyListings = _useMarketplace((s) => s.fetchMyListings);
-  const fetchListings = _useMarketplace((s) => s.fetchListings);
-  const coins = _useGamification((s) => s.coins);
-
-  return useMemo(
-    () => ({
-      items: listings,
-      inventory: myListings,
-      balance: coins,
-      purchaseItem: async (itemId: string) => {
-        await purchaseListing(itemId);
-      },
-      fetchInventory: async () => {
-        await fetchMyListings();
-      },
-      fetchListings,
-    }),
-    [listings, myListings, purchaseListing, fetchMyListings, fetchListings, coins]
-  );
-}
-
-/**
  * UI facade — theme, sidebar, modals, toasts.
  *
  * Sidebar and modal methods are no-ops on mobile:
@@ -304,6 +230,7 @@ export function useUIFacade() {
   const colorScheme = _useTheme((s) => s.colorScheme);
   const setThemePreference = _useTheme((s) => s.setThemePreference);
   const customization = _useCustomization((s) => s.theme);
+  const activeModal: string | null = null;
 
   return useMemo(
     () => ({
@@ -317,7 +244,7 @@ export function useUIFacade() {
         /* no-op — mobile uses React Navigation drawer instead */
       },
       // Mobile: modals are managed by React Navigation modal stack
-      activeModal: null as string | null,
+      activeModal,
       showModal: (_id: string) => {
         /* no-op — use navigation.navigate() with modal presentation */
       },
@@ -359,7 +286,6 @@ export async function initializeStores(): Promise<void> {
     Promise.all([
       _useChat.getState().fetchConversations(),
       _useGroup.getState().fetchGroups(),
-      _useGamification.getState().fetchGamificationData(),
       useFriendStore.getState().fetchFriends(),
       useNotificationStore.getState().fetchNotifications(true),
     ]).catch(() => {

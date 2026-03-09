@@ -3,7 +3,14 @@
  * @module layouts/app-layout
  */
 import { NavLink, type Location } from 'react-router-dom';
-import { type MotionValue, motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
+import {
+  type MotionValue,
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from 'motion/react';
 import { LogoIcon } from '@/components/logo/logo-icon';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';
@@ -13,7 +20,7 @@ import { PresenceStatusSelector } from '@/shared/components/presence-status-sele
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 import { loop, springs } from '@/lib/animation-presets';
-import { useLevelGate } from '@/modules/gamification/hooks/useLevelGate';
+// TODO(phase-26): Rewire — gamification stores deleted
 import type { FeatureGateKey } from '@cgraph/shared-types';
 import { useState, useCallback, useRef } from 'react';
 
@@ -21,8 +28,9 @@ import { useState, useCallback, useRef } from 'react';
  * Lock badge overlay for level-gated nav items.
  * Shows a small lock icon with tooltip when the feature is locked.
  */
-function NavItemGateBadge({ feature }: { feature: FeatureGateKey }) {
-  const { unlocked, requiredLevel } = useLevelGate(feature);
+function NavItemGateBadge({ feature: _feature }: { feature: FeatureGateKey }) {
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const { unlocked, requiredLevel } = { unlocked: true, requiredLevel: 0 };
 
   if (unlocked) return null;
 
@@ -104,7 +112,8 @@ function MagneticNavItem({
                 mass: 0.7,
               }}
               style={{
-                background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(59,130,246,0.10) 100%)',
+                background:
+                  'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(59,130,246,0.10) 100%)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(255,255,255,0.08)',
               }}
             />
@@ -120,7 +129,8 @@ function MagneticNavItem({
               }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
               style={{
-                background: 'radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 70%)',
+                background:
+                  'radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 70%)',
               }}
             />
           )}
@@ -128,20 +138,17 @@ function MagneticNavItem({
           {/* Icon with color transition */}
           <motion.div
             className="relative z-10"
-            animate={isActive
-              ? { y: 0, filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.35))' }
-              : { y: 0, filter: 'drop-shadow(0 0 0px rgba(139,92,246,0))' }
+            animate={
+              isActive
+                ? { y: 0, filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.35))' }
+                : { y: 0, filter: 'drop-shadow(0 0 0px rgba(139,92,246,0))' }
             }
             transition={{ duration: 0.3, ease: 'easeOut' }}
             initial={false}
           >
             <Icon
               className={`h-[22px] w-[22px] transition-colors duration-200 ${
-                isActive
-                  ? 'text-white'
-                  : isHovered
-                    ? 'text-gray-300'
-                    : 'text-gray-500'
+                isActive ? 'text-white' : isHovered ? 'text-gray-300' : 'text-gray-500'
               }`}
             />
           </motion.div>
@@ -231,9 +238,12 @@ export default function Sidebar({
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const mouseY = useMotionValue(0);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    mouseY.set(e.clientY);
-  }, [mouseY]);
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      mouseY.set(e.clientY);
+    },
+    [mouseY]
+  );
 
   return (
     <aside
@@ -257,7 +267,13 @@ export default function Sidebar({
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.02] via-transparent to-white/[0.01]" />
 
       {/* Subtle noise texture */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")' }} />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage:
+            'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")',
+        }}
+      />
 
       {/* ── User Avatar (top) ── */}
       <div className="relative z-10 mb-2" role="group" aria-label="User profile">
@@ -270,39 +286,37 @@ export default function Sidebar({
           >
             <div
               className="h-11 w-11 cursor-pointer overflow-hidden rounded-xl p-[1.5px]"
-            role="img"
-            aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.6), rgba(59,130,246,0.5), rgba(16,185,129,0.5))',
-            }}
-          >
-            {user?.avatarUrl ? (
-              <ThemedAvatar
-                src={user.avatarUrl}
-                alt={user.displayName || user.username || 'User avatar'}
-                size="medium"
-                className="h-full w-full rounded-[10px]"
-                avatarBorderId={getAvatarBorderId(user)}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[rgba(10,12,18,0.92)] text-base font-semibold text-gray-200">
-                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
+              role="img"
+              aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(139,92,246,0.6), rgba(59,130,246,0.5), rgba(16,185,129,0.5))',
+              }}
+            >
+              {user?.avatarUrl ? (
+                <ThemedAvatar
+                  src={user.avatarUrl}
+                  alt={user.displayName || user.username || 'User avatar'}
+                  size="medium"
+                  className="h-full w-full rounded-[10px]"
+                  avatarBorderId={getAvatarBorderId(user)}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[rgba(10,12,18,0.92)] text-base font-semibold text-gray-200">
+                  {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
 
-          {/* Breathing ring */}
-          <motion.div
-            className="pointer-events-none absolute -inset-0.5 rounded-xl"
-            animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(139, 92, 246, 0.3)',
-                '0 0 0 5px rgba(139, 92, 246, 0)',
-              ],
-            }}
-            transition={loop({ duration: 3, ease: 'easeOut' })}
-          />
-        </motion.div>
+            {/* Breathing ring */}
+            <motion.div
+              className="pointer-events-none absolute -inset-0.5 rounded-xl"
+              animate={{
+                boxShadow: ['0 0 0 0 rgba(139, 92, 246, 0.3)', '0 0 0 5px rgba(139, 92, 246, 0)'],
+              }}
+              transition={loop({ duration: 3, ease: 'easeOut' })}
+            />
+          </motion.div>
         </NavLink>
 
         {/* Presence Status Selector */}
@@ -338,7 +352,11 @@ export default function Sidebar({
       <div className="mb-2 mt-auto h-px w-8 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
       {/* ── Bottom: Logout + Logo ── */}
-      <div className="relative z-10 flex flex-col items-center gap-2" role="group" aria-label="Bottom actions">
+      <div
+        className="relative z-10 flex flex-col items-center gap-2"
+        role="group"
+        aria-label="Bottom actions"
+      >
         {/* Logout */}
         <motion.button
           onClick={() => {
@@ -360,7 +378,11 @@ export default function Sidebar({
         </motion.button>
 
         {/* Logo */}
-        <a href="https://www.cgraph.org" title="CGraph" className="block opacity-40 transition-opacity duration-300 hover:opacity-70">
+        <a
+          href="https://www.cgraph.org"
+          title="CGraph"
+          className="block opacity-40 transition-opacity duration-300 hover:opacity-70"
+        >
           <motion.div
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}

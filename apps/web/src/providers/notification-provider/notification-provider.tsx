@@ -8,12 +8,13 @@
  * @module providers/notification-provider
  */
 
-import { createContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useState, useCallback } from 'react';
 import { AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import { useGamificationStore, Achievement } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
+type Achievement = Record<string, unknown>;
 import AchievementNotification, {
   AchievementNotificationData,
 } from '@/modules/gamification/components/achievement-notification';
@@ -28,6 +29,12 @@ import type {
   NotificationContextType,
   NotificationProviderProps,
 } from './types';
+
+/** Distributive Omit preserves union discrimination for notification variants */
+type NotificationInput =
+  | Omit<ToastNotification, 'id'>
+  | Omit<LevelUpNotification, 'id'>
+  | Omit<QuestNotification, 'id'>;
 
 export const NotificationContext = createContext<NotificationContextType | null>(null);
 
@@ -46,22 +53,31 @@ export function NotificationProvider({
   const [achievementNotifications, setAchievementNotifications] = useState<
     AchievementNotificationData[]
   >([]);
-  const { recentlyUnlocked } = useGamificationStore();
-
   // Generate unique ID
   const generateId = () => `notification_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 
   // Add notification to queue
   const addNotification = useCallback(
-    (notification: Omit<Notification, 'id'>) => {
+    (notification: NotificationInput) => {
       const id = generateId();
-       
-      const newNotification = {
-        ...notification,
+      const defaults = {
         id,
         duration: notification.duration ?? defaultDuration,
         dismissible: notification.dismissible ?? true,
-      } as Notification; // safe downcast – runtime verified
+      };
+
+      let newNotification: Notification;
+      switch (notification.type) {
+        case 'levelup':
+          newNotification = { ...notification, ...defaults };
+          break;
+        case 'quest':
+          newNotification = { ...notification, ...defaults };
+          break;
+        default:
+          newNotification = { ...notification, ...defaults };
+          break;
+      }
 
       setNotifications((prev) => {
         const updated = [...prev, newNotification];
@@ -120,7 +136,6 @@ export function NotificationProvider({
   // Level up notification
   const showLevelUp = useCallback(
     (newLevel: number, rewards?: string[]) => {
-       
       addNotification({
         type: 'levelup',
         title: `Level Up!`,
@@ -128,7 +143,7 @@ export function NotificationProvider({
         newLevel,
         rewards,
         duration: 8000,
-      } as LevelUpNotification); // safe downcast – runtime verified
+      });
 
       // Celebration confetti
       confetti({
@@ -157,7 +172,6 @@ export function NotificationProvider({
   // Quest complete notification
   const showQuestComplete = useCallback(
     (questTitle: string, xpReward: number) => {
-       
       addNotification({
         type: 'quest',
         title: 'Quest Complete!',
@@ -165,7 +179,7 @@ export function NotificationProvider({
         questTitle,
         xpReward,
         duration: 6000,
-      } as QuestNotification); // safe downcast – runtime verified
+      });
 
       confetti({
         particleCount: 80,
@@ -194,16 +208,6 @@ export function NotificationProvider({
   const handleDismissAchievement = useCallback((index: number) => {
     setAchievementNotifications((prev) => prev.filter((_, i) => i !== index));
   }, []);
-
-  // Watch for achievement unlocks from gamification store
-  useEffect(() => {
-    if (recentlyUnlocked.length > 0) {
-      const latestAchievement = recentlyUnlocked[recentlyUnlocked.length - 1];
-      if (latestAchievement) {
-        showAchievement(latestAchievement, true);
-      }
-    }
-  }, [recentlyUnlocked, showAchievement]);
 
   const contextValue: NotificationContextType = {
     toast,

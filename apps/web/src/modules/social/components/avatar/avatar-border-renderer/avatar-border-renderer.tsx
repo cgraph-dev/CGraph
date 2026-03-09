@@ -9,11 +9,11 @@
  */
 
 import { durations } from '@cgraph/animation-constants';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useMemo, useRef, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { THEME_COLORS } from '@/types/avatar-borders';
-import { useAvatarBorderStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { LottieBorderRenderer } from '@/lib/lottie/lottie-border-renderer';
 import type { AvatarBorderRendererProps, BorderColors } from './types';
 import {
@@ -23,6 +23,21 @@ import {
   getThemeStyles,
 } from './animations';
 import { Particle } from './particle';
+
+/** Type guard: is the value a lottie animation config object? */
+function isLottieConfig(
+  val: unknown
+): val is { loop?: boolean; speed?: number; segment?: [number, number] } {
+  return typeof val === 'object' && val !== null;
+}
+
+/** Type guard: is the key a valid ANIMATION_KEYFRAMES entry? */
+function isAnimationKey(key: string): key is keyof typeof ANIMATION_KEYFRAMES {
+  return key in ANIMATION_KEYFRAMES;
+}
+
+/** CSS properties with CSS custom property support */
+type CSSPropertiesWithVars = CSSProperties & Record<`--${string}`, string>;
 
 export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
   src,
@@ -38,8 +53,9 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
   reducedMotion: propReducedMotion,
 }: AvatarBorderRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const preferences = useAvatarBorderStore((state) => state.preferences);
-  const displayBorder = useAvatarBorderStore((state) => state.getDisplayBorder());
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const preferences = { showParticles: true, reducedMotion: false, animationSpeed: 1 };
+  const displayBorder = null;
 
   // Use prop border or store border
   const border = propBorder ?? displayBorder;
@@ -74,15 +90,20 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
   }
 
   // Lottie border path: delegate to LottieBorderRenderer
-  const borderAny = border as Record<string, unknown>;
-  const lottieUrl = (borderAny.lottieUrl ?? borderAny.lottie_url) as string | undefined;
-  if (
-    (border.type?.includes('lottie') || borderAny.animationType === 'lottie' || borderAny.animation_type === 'lottie') &&
-    lottieUrl
-  ) {
-    const lottieConfig = (borderAny.lottieConfig ?? borderAny.lottie_config) as
-      | { loop?: boolean; speed?: number; segment?: [number, number] }
-      | undefined;
+  const lottieUrl: string | undefined = (() => {
+    if ('lottieUrl' in border && typeof border.lottieUrl === 'string') return border.lottieUrl;
+    if ('lottie_url' in border && typeof border.lottie_url === 'string') return border.lottie_url;
+    return undefined;
+  })();
+  const isLottieType =
+    border.type?.includes('lottie') ||
+    ('animationType' in border && border.animationType === 'lottie') ||
+    ('animation_type' in border && border.animation_type === 'lottie');
+  if (isLottieType && lottieUrl) {
+    const rawConfig =
+      ('lottieConfig' in border ? border.lottieConfig : undefined) ??
+      ('lottie_config' in border ? border.lottie_config : undefined);
+    const lottieConfig = isLottieConfig(rawConfig) ? rawConfig : undefined;
     return (
       <LottieBorderRenderer
         lottieUrl={lottieUrl}
@@ -109,8 +130,9 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
     if (reducedMotion) return {};
 
     const animationType = getAnimationTypeFromBorder(border.type);
-     
-    const baseAnimation = ANIMATION_KEYFRAMES[animationType as keyof typeof ANIMATION_KEYFRAMES];
+
+    if (!isAnimationKey(animationType)) return {};
+    const baseAnimation = ANIMATION_KEYFRAMES[animationType];
 
     if (typeof baseAnimation === 'function') {
       return baseAnimation(0, 1);
@@ -135,18 +157,17 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
       ? Math.round((border.particleCount || 8) * (preferences.particleDensity / 50))
       : 0;
 
+  const containerStyle: CSSPropertiesWithVars = {
+    width: size,
+    height: size,
+    '--glow-color': colors.accent,
+  };
+
   return (
     <motion.div
       ref={containerRef}
       className={cn('relative flex cursor-pointer items-center justify-center', className)}
-      style={
-         
-        {
-          width: size,
-          height: size,
-          '--glow-color': colors.accent,
-        } as React.CSSProperties // type assertion: CSS custom properties not in CSSProperties type
-      }
+      style={containerStyle}
       onClick={onClick}
       whileHover={interactive && !reducedMotion ? { scale: 1.05 } : undefined}
       whileTap={interactive && !reducedMotion ? { scale: 0.98 } : undefined}

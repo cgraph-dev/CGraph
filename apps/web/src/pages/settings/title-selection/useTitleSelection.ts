@@ -3,7 +3,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useGamificationStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { useAuthStore } from '@/modules/auth/store';
 import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
@@ -11,6 +11,9 @@ import type { TitleRarity } from '@/data/titles';
 import type { PreviewTitle } from './types';
 
 const logger = createLogger('TitleSelection');
+
+/** Stable empty array for stub titles */
+const EMPTY_TITLES: never[] = [];
 
 /**
  * unknown for the settings module.
@@ -20,7 +23,10 @@ const logger = createLogger('TitleSelection');
  */
 export function useTitleSelection() {
   const user = useAuthStore((state) => state.user);
-  const { titles, equippedTitleId, equipTitle } = useGamificationStore();
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const titles = EMPTY_TITLES;
+  const equippedTitleId: string | null = null;
+  const equipTitle = async (_titleId: string) => {};
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRarity, setSelectedRarity] = useState<TitleRarity | 'all'>('all');

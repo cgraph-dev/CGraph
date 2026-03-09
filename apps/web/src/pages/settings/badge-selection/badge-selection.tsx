@@ -6,7 +6,7 @@
 
 import { useState, useMemo } from 'react';
 import { Award } from 'lucide-react';
-import { useGamificationStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { useAuthStore } from '@/modules/auth/store';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';
 import { toast } from '@/shared/components/ui';
@@ -20,12 +20,19 @@ import type { Badge } from './types';
 
 const logger = createLogger('BadgeSelection');
 
+/** Stable empty array for stub achievements */
+const EMPTY_ACHIEVEMENTS: never[] = [];
+
 /**
  * Badge Selection component.
  */
 export default function BadgeSelection() {
   const user = useAuthStore((state) => state.user);
-  const { achievements, equippedBadges, equipBadge, unequipBadge } = useGamificationStore();
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const achievements = EMPTY_ACHIEVEMENTS;
+  const equippedBadges: string[] = [];
+  const equipBadge = async (_badgeId: string) => {};
+  const unequipBadge = async (_badgeId: string) => {};
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -73,7 +80,8 @@ export default function BadgeSelection() {
   }, [filteredBadges]);
 
   const userIsPremium =
-    user?.subscription?.tier === 'premium' || (typeof user?.subscription?.tier === 'string' && user.subscription.tier === 'enterprise');
+    user?.subscription?.tier === 'premium' ||
+    (typeof user?.subscription?.tier === 'string' && user.subscription.tier === 'enterprise');
 
   const handleEquipBadge = async (badgeId: string) => {
     try {

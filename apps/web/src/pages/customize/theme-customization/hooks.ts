@@ -14,7 +14,8 @@ import {
   type ProfileThemeConfig,
   type ProfileThemeCategory,
 } from '@/data/profileThemes';
-import { fetchThemes } from '@/modules/gamification/store/gamification-queries';
+// TODO(phase-26): Rewire — gamification stores deleted
+const fetchThemes = async (): Promise<unknown[]> => [];
 
 import type { ThemeCategory, Theme } from './types';
 
@@ -69,7 +70,9 @@ export function useThemeCustomization() {
       .finally(() => {
         if (!cancelled) setIsLoadingThemes(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Get profile themes from new data file

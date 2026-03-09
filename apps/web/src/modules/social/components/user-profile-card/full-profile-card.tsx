@@ -14,7 +14,7 @@ import {
   ShieldExclamationIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
-import { useAvatarBorderStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { TitleBadge } from '@/modules/gamification/components/title-badge';
@@ -32,7 +32,8 @@ export const FullProfileCard = memo(function FullProfileCard({
   onClose,
 }: FullProfileCardProps) {
   const { user: currentUser } = useAuthStore();
-  const { getEquippedBorder } = useAvatarBorderStore();
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const getEquippedBorder = () => null;
   const isOwnProfile = user.id === currentUser?.id;
 
   // Get the user's equipped border
@@ -89,9 +90,7 @@ export const FullProfileCard = memo(function FullProfileCard({
               )}
             </div>
             <p className="text-sm text-white/60">@{user.username}</p>
-            {user.pronouns && (
-              <p className="text-xs text-white/40">{user.pronouns}</p>
-            )}
+            {user.pronouns && <p className="text-xs text-white/40">{user.pronouns}</p>}
           </div>
         </div>
 

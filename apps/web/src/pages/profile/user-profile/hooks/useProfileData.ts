@@ -5,11 +5,14 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
-import { useGamificationStore } from '@/modules/gamification/store';
-import type { Achievement } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
+type Achievement = Record<string, unknown> & { unlocked?: boolean };
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 const logger = createLogger('useProfileData');
+
+/** Stable empty array for stub achievements (avoids new reference each render) */
+const EMPTY_ACHIEVEMENTS: Achievement[] = [];
 
 interface UseProfileDataOptions {
   userId: string | undefined;
@@ -39,12 +42,11 @@ export function useProfileData({
   userId,
   isOwnProfile,
 }: UseProfileDataOptions): UseProfileDataReturn {
-  const {
-    achievements,
-    level: myLevel,
-    totalXP: myTotalXP,
-    loginStreak: myStreak,
-  } = useGamificationStore();
+  // TODO(phase-26): Rewire — gamification stores deleted
+  const achievements = EMPTY_ACHIEVEMENTS;
+  const myLevel = 1;
+  const myTotalXP = 0;
+  const myStreak = 0;
 
   const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -110,7 +112,10 @@ export function useProfileData({
           level: userData.level || (isOwnProfile ? myLevelRef.current : 1),
           totalXP: userData.total_xp || userData.xp || (isOwnProfile ? myTotalXPRef.current : 0),
           currentXP: userData.current_xp || 0,
-          loginStreak: userData.login_streak || userData.streak_days || (isOwnProfile ? myStreakRef.current : 0),
+          loginStreak:
+            userData.login_streak ||
+            userData.streak_days ||
+            (isOwnProfile ? myStreakRef.current : 0),
           achievementCount:
             userData.achievement_count || (isOwnProfile ? totalUnlockedRef.current : 0),
           totalAchievements: userData.total_achievements || achievements.length,
@@ -118,7 +123,8 @@ export function useProfileData({
           postsCreated: userData.posts_created || 0,
           friendsCount: userData.friends_count || 0,
           // Title system - equipped title ID
-          equippedTitle: userData.equipped_title || userData.equipped_title_id || userData.title_id || null,
+          equippedTitle:
+            userData.equipped_title || userData.equipped_title_id || userData.title_id || null,
         });
 
         // Backend returns is_friend/friend_request_sent/friend_request_received booleans

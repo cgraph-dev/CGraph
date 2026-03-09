@@ -2,7 +2,16 @@
  * ProfileCard - Type Definitions
  */
 
-import type { Achievement } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
+type Achievement = {
+  id: string;
+  name: string;
+  description: string;
+  unlocked: boolean;
+  rarity?: string;
+  category?: string;
+};
+
 import type {
   ProfileTheme,
   ProfileCardConfig,

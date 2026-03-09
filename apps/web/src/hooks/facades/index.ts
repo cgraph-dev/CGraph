@@ -29,9 +29,7 @@
  * | `useAuthFacade` | authStore |
  * | `useChatFacade` | chatStore, chatEffectsStore, chatBubbleStore |
  * | `useCommunityFacade` | forumStore, groupStore, announcementStore, moderationStore |
- * | `useGamificationFacade` | gamificationStore, prestigeStore, seasonalEventStore, referralStore |
  * | `useSettingsFacade` | settingsStore, customizationStore, themeStore |
- * | `useMarketplaceFacade` | marketplaceStore, avatarBorderStore |
  * | `useUIFacade` | notificationStore, searchStore, calendarStore |
  *
  * @module hooks/facades
@@ -40,7 +38,5 @@
 export { useAuthFacade, type AuthFacade } from './useAuthFacade';
 export { useChatFacade, type ChatFacade } from './useChatFacade';
 export { useCommunityFacade, type CommunityFacade } from './useCommunityFacade';
-export { useGamificationFacade, type GamificationFacade } from './useGamificationFacade';
 export { useSettingsFacade, type SettingsFacade } from './useSettingsFacade';
-export { useMarketplaceFacade, type MarketplaceFacade } from './useMarketplaceFacade';
 export { useUIFacade, type UIFacade } from './useUIFacade';

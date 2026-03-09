@@ -63,17 +63,6 @@ export type {
 export { useModerationStore } from '../modules/moderation/store';
 
 // ============================================================================
-// Gamification Domain (XP, Achievements, Events)
-// ============================================================================
-export {
-  useGamificationStore,
-  usePrestigeStore,
-  useSeasonalEventStore,
-  useReferralStore,
-  useMarketplaceStore,
-} from '../modules/gamification/store';
-
-// ============================================================================
 // Theme Domain (All Theme/Customization)
 // ============================================================================
 export { useThemeStore, THEME_COLORS } from './theme';
@@ -85,11 +74,6 @@ export type {
 } from './theme/types';
 export { useForumThemeStore } from './theme';
 export { useCustomizationStore } from '../modules/settings/store/customization';
-
-// ============================================================================
-// Marketplace Domain (Economy, Items)
-// ============================================================================
-export { useAvatarBorderStore } from '../modules/gamification/store';
 
 // ============================================================================
 // Utility Domain (Notifications, Search, Misc)

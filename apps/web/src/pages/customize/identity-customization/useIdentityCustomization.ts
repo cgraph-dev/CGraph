@@ -9,7 +9,7 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-import { useGamificationStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import {
   useCustomizationStore,
   type ProfileCardStyle,
@@ -18,11 +18,10 @@ import toast from 'react-hot-toast';
 import { ALL_BORDERS, type BorderDefinition } from '@/data/borderCollections';
 import { ALL_TITLES, type TitleDefinition } from '@/data/titlesCollection';
 import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
-import {
-  fetchBorders,
-  fetchTitles,
-  fetchBadges,
-} from '@/modules/gamification/store/gamification-queries';
+// TODO(phase-26): Rewire — gamification stores deleted
+const fetchBorders = async (): Promise<unknown[]> => [];
+const fetchTitles = async (): Promise<unknown[]> => [];
+const fetchBadges = async (): Promise<unknown[]> => [];
 import { NAMEPLATE_REGISTRY, PROFILE_EFFECT_REGISTRY } from '@cgraph/animation-constants';
 
 import type { Rarity, Border, Title, Badge, ProfileLayout } from './types';
@@ -80,8 +79,8 @@ function mapBadgeDefinition(b: BadgeDefinition): Badge {
  */
 export function useIdentityCustomization() {
   const { user } = useAuthStore();
-  const { level: _level } = useGamificationStore();
-  void _level; // Reserved for future use
+  const level = 1; // TODO(phase-26): Rewire — gamification stores deleted
+  void level;
 
   const store = useCustomizationStore();
   const {

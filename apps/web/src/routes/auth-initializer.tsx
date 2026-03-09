@@ -10,12 +10,12 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-import { useGamificationStore } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { ThemeRegistry } from '@/themes/theme-registry';
 import { useCustomizationApplication } from '@/modules/settings/hooks/useCustomizationApplication';
-import { authLogger, themeLogger, gamificationLogger } from '@/lib/logger';
+import { authLogger, themeLogger } from '@/lib/logger';
 
 /**
  * Initializes authentication, gamification, customization, and theme state.
@@ -25,7 +25,6 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const userId = useAuthStore((state) => state.user?.id);
-  const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
   const colorPreset = useThemeStore((state) => state.theme.colorPreset);
   const syncWithServer = useThemeStore((state) => state.syncWithServer);
   const fetchCustomizations = useCustomizationStore((state) => state.fetchCustomizations);
@@ -45,15 +44,6 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
       });
   }, [checkAuth]);
 
-  // Fetch gamification data when authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      gamificationLogger.debug('Fetching gamification data...');
-      fetchGamificationData().catch((error) => {
-        gamificationLogger.error(error, 'Gamification fetch failed');
-      });
-    }
-  }, [isAuthenticated, fetchGamificationData]);
   useEffect(() => {
     if (isAuthenticated) {
       fetchCustomizations().catch((error) => {

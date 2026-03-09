@@ -3,7 +3,8 @@
  * @module providers/notification-provider
  */
 
-import type { Achievement } from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
+type Achievement = Record<string, unknown>;
 
 export type NotificationType =
   | 'success'

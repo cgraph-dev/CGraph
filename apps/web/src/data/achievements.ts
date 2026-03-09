@@ -2,11 +2,33 @@
  * Achievement data definitions and configurations.
  * @module data/achievements
  */
-import type {
-  Achievement,
-  AchievementCategory,
-  AchievementRarity,
-} from '@/modules/gamification/store';
+// TODO(phase-26): Rewire — gamification stores deleted
+// Types previously from @/modules/gamification/store
+type AchievementCategory =
+  | 'social'
+  | 'content'
+  | 'exploration'
+  | 'mastery'
+  | 'community'
+  | 'special'
+  | 'seasonal';
+type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  category: AchievementCategory;
+  rarity: AchievementRarity;
+  icon: string;
+  xpReward: number;
+  maxProgress: number;
+  isHidden: boolean;
+  progress?: number;
+  unlocked?: boolean;
+  unlockedAt?: string;
+  loreFragment?: string;
+  titleReward?: string;
+}
 
 /**
  * Achievement Definitions for CGraph
