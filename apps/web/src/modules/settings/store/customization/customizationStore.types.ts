@@ -328,6 +328,8 @@ export const AVATAR_BORDERS: Record<
 };
 
 export const RARITY_COLORS: Record<string, string> = {
+  Free: '#6b7280',
+  Common: '#9ca3af',
   Rare: '#3b82f6',
   Epic: '#8b5cf6',
   Legendary: '#f97316',

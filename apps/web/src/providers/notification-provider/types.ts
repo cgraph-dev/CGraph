@@ -3,8 +3,7 @@
  * @module providers/notification-provider
  */
 
-// TODO(phase-26): Rewire — gamification stores deleted
-type Achievement = Record<string, unknown>;
+import type { Achievement } from '@cgraph/shared-types';
 
 export type NotificationType =
   | 'success'

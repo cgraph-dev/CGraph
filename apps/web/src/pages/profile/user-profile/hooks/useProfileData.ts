@@ -5,14 +5,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
-// TODO(phase-26): Rewire — gamification stores deleted
-interface Achievement {
-  id: string;
-  title: string;
-  icon: string;
-  rarity: string;
-  unlocked: boolean;
-}
+import type { Achievement } from '@cgraph/shared-types';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 const logger = createLogger('useProfileData');

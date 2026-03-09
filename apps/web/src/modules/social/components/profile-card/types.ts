@@ -2,15 +2,7 @@
  * ProfileCard - Type Definitions
  */
 
-// TODO(phase-26): Rewire — gamification stores deleted
-type Achievement = {
-  id: string;
-  name: string;
-  description: string;
-  unlocked: boolean;
-  rarity?: string;
-  category?: string;
-};
+import type { Achievement } from '@cgraph/shared-types';
 
 import type {
   ProfileTheme,

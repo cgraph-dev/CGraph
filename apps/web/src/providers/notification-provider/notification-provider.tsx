@@ -13,11 +13,11 @@ import { AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-// TODO(phase-26): Rewire — gamification stores deleted
-type Achievement = Record<string, unknown>;
-// TODO(phase-26): Rewire — gamification components deleted (AchievementNotification)
+import type { Achievement } from '@cgraph/shared-types';
+
+/** @description Data for an achievement unlock notification. */
 interface AchievementNotificationData {
-  achievement: Record<string, unknown>;
+  achievement: Achievement;
   isUnlock: boolean;
 }
 

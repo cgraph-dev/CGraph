@@ -9,14 +9,7 @@ import { SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { rarityColors, defaultRarityColor } from '@/types/profile.types';
-
-interface Achievement {
-  id: string;
-  title: string;
-  icon: string;
-  rarity: string;
-  unlocked: boolean;
-}
+import type { Achievement } from '@cgraph/shared-types';
 
 interface EquippedBadgesShowcaseProps {
   equippedBadges: string[];
