@@ -17,6 +17,7 @@ defmodule CGraph.Messaging.SecretChat do
 
   import Ecto.Query
   alias CGraph.Repo
+  alias CGraph.Redis
   alias CGraph.Messaging.{SecretConversation, SecretMessage}
 
   # ============================================================================
@@ -276,6 +277,71 @@ defmodule CGraph.Messaging.SecretChat do
           {:error, changeset}
       end
     end
+  end
+
+  # ============================================================================
+  # Panic Wipe
+  # ============================================================================
+
+  @doc """
+  Panic wipe: terminate ALL active secret conversations for a user and clear
+  associated Redis keys.
+
+  This is an emergency action that:
+  1. Hard-deletes all secret messages in the user's active conversations
+  2. Marks all active conversations as terminated
+  3. Clears any ghost mode Redis keys for the user
+
+  Returns `{:ok, count}` with the number of conversations terminated.
+  """
+  @spec panic_wipe(String.t()) :: {:ok, non_neg_integer()} | {:error, term()}
+  def panic_wipe(user_id) do
+    now = DateTime.utc_now() |> DateTime.truncate(:microsecond)
+
+    conversations =
+      from(sc in SecretConversation,
+        where: sc.status == "active",
+        where: sc.initiator_id == ^user_id or sc.recipient_id == ^user_id
+      )
+      |> Repo.all()
+
+    conversation_ids = Enum.map(conversations, & &1.id)
+
+    Repo.transaction(fn ->
+      # 1. Hard-delete all messages in affected conversations
+      if conversation_ids != [] do
+        from(m in SecretMessage, where: m.secret_conversation_id in ^conversation_ids)
+        |> Repo.delete_all()
+      end
+
+      # 2. Terminate all active conversations
+      {count, _} =
+        from(sc in SecretConversation,
+          where: sc.id in ^conversation_ids,
+          where: sc.status == "active"
+        )
+        |> Repo.update_all(
+          set: [
+            status: "terminated",
+            terminated_at: now,
+            terminated_by: user_id
+          ]
+        )
+
+      # 3. Clear ghost mode Redis key
+      Redis.command(["DEL", "ghost:#{user_id}"])
+
+      # 4. Broadcast termination for each conversation
+      Enum.each(conversations, fn convo ->
+        Phoenix.PubSub.broadcast(
+          CGraph.PubSub,
+          "secret_chat:#{convo.id}",
+          {:secret_chat_terminated, %{conversation_id: convo.id, terminated_by: user_id, panic_wipe: true}}
+        )
+      end)
+
+      count
+    end)
   end
 
   # ============================================================================

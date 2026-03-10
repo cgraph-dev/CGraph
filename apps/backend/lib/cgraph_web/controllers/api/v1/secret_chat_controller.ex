@@ -162,6 +162,27 @@ defmodule CGraphWeb.API.V1.SecretChatController do
     end
   end
 
+  @doc """
+  Panic wipe: terminate ALL of the user's secret conversations and clear Redis keys.
+
+  POST /api/v1/secret-chats/panic-wipe
+  """
+  def panic_wipe(conn, _params) do
+    user = conn.assigns.current_user
+
+    case SecretChat.panic_wipe(user.id) do
+      {:ok, count} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{message: "All secret chats wiped", conversations_terminated: count})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Panic wipe failed", reason: inspect(reason)})
+    end
+  end
+
   # ============================================================================
   # Private Helpers
   # ============================================================================
