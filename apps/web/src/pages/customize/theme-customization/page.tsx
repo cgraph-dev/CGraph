@@ -6,6 +6,7 @@
 import { useThemeCustomization } from './hooks';
 import { SearchBar } from './search-bar';
 import { ProfileThemePicker } from './profile-theme-picker';
+import { SecretThemeSection } from './secret-theme-section';
 import { SaveButton } from './save-button';
 
 /**
@@ -39,6 +40,11 @@ export default function ThemeCustomization() {
         selectedProfileThemeId={selectedThemes.profile}
         onApplyTheme={handleApplyProfileTheme}
       />
+
+      {/* Secret Chat Theme — separate equip slot */}
+      <div className="border-t border-white/5 pt-6">
+        <SecretThemeSection searchQuery={searchQuery} />
+      </div>
 
       <SaveButton onSave={handleSaveThemes} isSaving={isSaving} error={error} />
     </div>
