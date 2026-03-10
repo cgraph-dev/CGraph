@@ -107,6 +107,8 @@ config :cgraph, Oban,
        {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker},
        # Delete expired secret messages every minute (privacy-critical)
        {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages},
+       # Expire secret conversations past their expires_at (privacy-critical)
+       {"* * * * *", CGraph.Workers.ExpireSecretConversations},
        # Clean up abandoned/expired file transfers hourly
        {"0 * * * *", CGraph.Workers.FileCleanupWorker}
      ]}

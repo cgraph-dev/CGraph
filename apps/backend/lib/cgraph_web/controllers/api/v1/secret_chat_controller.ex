@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.V1.SecretChatController do
   use CGraphWeb, :controller
 
   alias CGraph.Messaging.SecretChat
+  alias CGraph.Presence.GhostMode
 
   action_fallback CGraphWeb.FallbackController
 
@@ -180,6 +181,42 @@ defmodule CGraphWeb.API.V1.SecretChatController do
         conn
         |> put_status(:internal_server_error)
         |> json(%{error: "Panic wipe failed", reason: inspect(reason)})
+    end
+  end
+
+  @doc """
+  Toggle ghost mode for the authenticated user.
+
+  POST /api/v1/secret-chats/ghost
+
+  Body: `{"enabled": true}` or `{"enabled": false}`
+  """
+  def toggle_ghost(conn, %{"enabled" => true} = _params) do
+    user = conn.assigns.current_user
+
+    case GhostMode.activate(user.id) do
+      :ok ->
+        ttl = GhostMode.ttl(user.id)
+        json(conn, %{ghost_mode: true, ttl_seconds: ttl})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Failed to activate ghost mode", reason: inspect(reason)})
+    end
+  end
+
+  def toggle_ghost(conn, %{"enabled" => false} = _params) do
+    user = conn.assigns.current_user
+
+    case GhostMode.deactivate(user.id) do
+      :ok ->
+        json(conn, %{ghost_mode: false})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Failed to deactivate ghost mode", reason: inspect(reason)})
     end
   end
 

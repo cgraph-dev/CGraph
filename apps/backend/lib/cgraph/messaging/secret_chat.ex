@@ -19,6 +19,7 @@ defmodule CGraph.Messaging.SecretChat do
   alias CGraph.Repo
   alias CGraph.Redis
   alias CGraph.Messaging.{SecretConversation, SecretMessage}
+  alias CGraph.Presence.GhostMode
 
   # ============================================================================
   # Conversation Lifecycle
@@ -354,7 +355,7 @@ defmodule CGraph.Messaging.SecretChat do
         )
 
       # 3. Clear ghost mode Redis key
-      Redis.command(["DEL", "ghost:#{user_id}"])
+      GhostMode.deactivate(user_id)
 
       # 4. Broadcast termination for each conversation
       Enum.each(conversations, fn convo ->

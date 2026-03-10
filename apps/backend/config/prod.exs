@@ -79,7 +79,11 @@ config :cgraph, Oban,
       # Reset weekly forum scores every Monday at 00:00 UTC
       {"0 0 * * 1", CGraph.Workers.RankingUpdateWorker, args: %{type: "weekly_reset"}},
       # CRDT document compaction check every 15 minutes
-      {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker}
+      {"*/15 * * * *", CGraph.Workers.DocumentCompactionWorker},
+      # Delete expired secret messages every minute (privacy-critical)
+      {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages},
+      # Expire secret conversations past their expires_at (privacy-critical)
+      {"* * * * *", CGraph.Workers.ExpireSecretConversations}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}

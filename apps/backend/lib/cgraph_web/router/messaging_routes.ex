@@ -116,6 +116,7 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         resources "/secret-chats", SecretChatController, only: [:index, :show, :create, :delete]
         put "/secret-chats/:id/timer", SecretChatController, :set_timer
         post "/secret-chats/panic-wipe", SecretChatController, :panic_wipe
+        post "/secret-chats/ghost", SecretChatController, :toggle_ghost
 
         # File Transfers (chat file sharing)
         scope "/transfers" do
