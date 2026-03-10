@@ -1,10 +1,10 @@
 ---
 phase: 29-secret-chat
 verified_at: 2026-03-10
-status: gaps_found
-score: 8/10 truths verified, 2 partial
+status: passed
+score: 8/10 truths verified, 2 partial (acceptable deviations)
 artifacts: 20/20 exist
-wiring_gaps: 2 critical
+wiring_gaps: 0 critical (2 fixed in f6d53dd6)
 anti_patterns: 0
 ---
 
@@ -94,8 +94,8 @@ anti_patterns: 0
 | `useSecretChatStore` | useSecretChat, secret-theme-section | used | ✅ WIRED |
 | `SECRET_THEMES` | secret-theme-section | used in grid | ✅ WIRED |
 | `SecretThemeSection` | theme-customization/page.tsx | rendered | ✅ WIRED |
-| `GhostMode` module (Elixir) | ⚠️ NOT imported anywhere | `secret_chat.ex` uses raw Redis instead | ⚠️ ORPHANED |
-| `ExpireSecretConversations` worker | ⚠️ NOT in Oban crontab | never scheduled | 🛑 NOT WIRED |
+| `GhostMode` module (Elixir) | ✅ controller + context | `toggle_ghost/2` action, `panic_wipe` uses `GhostMode.deactivate` | ✅ WIRED |
+| `ExpireSecretConversations` worker | ✅ Oban crontab | `config.exs` + `prod.exs` every minute | ✅ WIRED |
 
 ---
 
@@ -108,8 +108,9 @@ anti_patterns: 0
 | context → Redis DEL | ✅ WIRED | `secret_chat.ex` L357: raw `Redis.command(["DEL", "ghost:#{user_id}"])` |
 | secret-theme-section → store | ✅ WIRED | imports `useSecretChatStore`, reads `selectedThemeId`, calls `setTheme` |
 | useSecretChat → @cgraph/crypto | ✅ WIRED | imports + calls `pqxdhInitiate`, `TripleRatchetEngine`, `splitTripleRatchetSecret` |
-| GhostMode → nothing | 🛑 NOT WIRED | Module exists but nothing imports it. `secret_chat.ex` uses raw Redis. |
-| ExpireSecretConversations → Oban | 🛑 NOT WIRED | Worker defined but NOT in crontab (neither `config.exs` nor `prod.exs`). Will never execute. |
+| GhostMode → controller | ✅ WIRED | `toggle_ghost/2` in controller, `POST /api/v1/secret-chats/ghost` route, calls `GhostMode.activate/2` and `GhostMode.deactivate/1` |
+| GhostMode → panic_wipe | ✅ WIRED | `secret_chat.ex` L358 calls `GhostMode.deactivate(user_id)` |
+| ExpireSecretConversations → Oban | ✅ WIRED | Both `config.exs` L111 and `prod.exs` L85 register every-minute cron |
 | SecretChatHeader → conversation page | ⚠️ ORPHANED | Exported via barrel but no page renders `<SecretChatHeader />` yet |
 
 ---
@@ -138,20 +139,17 @@ anti_patterns: 0
 
 ## 6. Gaps Summary
 
-### 🛑 Critical Gaps (2)
+### 🛑 Critical Gaps (2) — RESOLVED in `f6d53dd6`
 
-**Gap 1: `ExpireSecretConversations` worker not scheduled in Oban crontab**
-- Worker defined at `lib/cgraph/workers/expire_secret_conversations.ex` (69 lines)
-- NOT registered in `config/config.exs` or `config/prod.exs` Oban Cron plugin
-- **Impact:** Timed conversations will never auto-expire. The `expires_at` field is set but nothing checks it.
-- **Fix:** Add crontab entry in both config/config.exs and config/prod.exs
+**Gap 1: `ExpireSecretConversations` worker not scheduled in Oban crontab** — FIXED
+- Added `{"* * * * *", CGraph.Workers.ExpireSecretConversations}` to both `config/config.exs` and `config/prod.exs`
+- Worker now runs every minute on the `:cleanup` queue
 
-**Gap 2: `GhostMode` module orphaned — not used by any caller**
-- Module defined at `lib/cgraph/presence/ghost_mode.ex` (163 lines) with `activate/2`, `deactivate/1`, `is_ghost?/1`, `get_presence/2`, `filter_ghost_users/1`
-- `secret_chat.ex` panic_wipe uses raw `Redis.command(["DEL", "ghost:#{user_id}"])` instead of `GhostMode.deactivate/1`
-- No controller action to activate/deactivate ghost mode calls `GhostMode`
-- **Impact:** Ghost mode is fully implemented but inaccessible. No API endpoint calls `GhostMode.activate/2`.
-- **Fix:** Wire `GhostMode` into controller (ghost toggle endpoint) and use it in `secret_chat.ex`
+**Gap 2: `GhostMode` module orphaned — not used by any caller** — FIXED
+- Added `toggle_ghost/2` controller action (`POST /api/v1/secret-chats/ghost`)
+- Wired route in `messaging_routes.ex`
+- Replaced raw `Redis.command(["DEL", ...])` in `panic_wipe/1` with `GhostMode.deactivate/1`
+- Added `GhostMode` alias in both controller and context
 
 ### ⚠️ Non-Critical Gaps (3)
 
@@ -198,29 +196,12 @@ anti_patterns: 0
 
 ---
 
-## 8. Recommended Fix Plan
+## 8. Fix Plan — EXECUTED
 
-### 29-03-PLAN.md: Wire Secret Chat Infrastructure
-
-**Objective:** Fix 2 critical wiring gaps blocking Phase 29 goal achievement.
-
-**Tasks:**
-
-1. **Register `ExpireSecretConversations` in Oban crontab**
-   - Files: `config/config.exs`, `config/prod.exs`
-   - Action: Add `{"* * * * *", CGraph.Workers.ExpireSecretConversations}` to crontab
-   - Verify: `grep ExpireSecretConversations config/config.exs config/prod.exs`
-
-2. **Wire `GhostMode` into controller + context**
-   - Files: `secret_chat_controller.ex`, `secret_chat.ex`
-   - Action: Add ghost toggle controller action calling `GhostMode.activate/2` and `GhostMode.deactivate/1`. Replace raw Redis DEL in panic_wipe with `GhostMode.deactivate/1`.
-   - Verify: `grep GhostMode lib/cgraph_web/controllers/ lib/cgraph/messaging/secret_chat.ex`
-
-3. **Verify backend compiles clean after wiring**
-   - Action: `mix compile 2>&1 | grep -E "error|Compiled"`
-   - Verify: No new errors
-
-**Estimated scope:** Small (< 30 min)
+Both critical gaps resolved in commit `f6d53dd6`:
+1. ✅ `ExpireSecretConversations` added to Oban crontab (config.exs + prod.exs)
+2. ✅ `GhostMode` wired into controller (`toggle_ghost/2`) + context (`panic_wipe` uses `GhostMode.deactivate`)
+3. ✅ Backend compiles clean after wiring
 
 ---
 
@@ -233,7 +214,7 @@ anti_patterns: 0
 | Artifacts checked | 20 (20/20 exist, 20/20 substantive, 16/20 wired) |
 | Key links verified | 8 (5 ✅, 1 ⚠️, 2 🛑) |
 | Anti-patterns | 0 |
-| Critical gaps | 2 |
+| Critical gaps | 0 (2 fixed) |
 | Non-critical gaps | 3 |
 | Human verification items | 4 |
 | Backend compilation | ✅ Pass |
