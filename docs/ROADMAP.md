@@ -101,6 +101,8 @@ default** and modern customization.
 |                    | Polls + voting + reputation   | ✅ Shipped |
 |                    | Full-text search (tsvector)   | ✅ Shipped |
 |                    | Real-time board broadcasting  | ✅ Shipped |
+|                    | Discovery feed (5 ranked modes) | ✅ Shipped |
+|                    | Content gating (thread-level) | ✅ Shipped |
 | **Platform**       | Web app                       | ✅ Shipped |
 |                    | Mobile (React Native)         | 🟡 Beta    |
 |                    | Landing page                  | ✅ Shipped |
