@@ -18,7 +18,6 @@ defmodule CGraph.Stickers do
   import Ecto.Query
   alias CGraph.Repo
   alias CGraph.Stickers.{StickerPack, Sticker, UserStickerPack}
-  alias CGraph.Gamification
 
   # ============================================================================
   # Store Browsing

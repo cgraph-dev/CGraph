@@ -174,7 +174,7 @@ defmodule CGraph.Gamification do
 
       AchievementSystem.check_streak_achievements(final_user, new_streak)
 
-      {final_user, coins, new_streak}
+      {final_user, 0, new_streak}
     end)
   end
 
