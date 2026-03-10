@@ -1332,8 +1332,8 @@ unlock, withdrawal requests. Uses existing Stripe integration — Paddle migrati
 Plans:
 
 - [x] 32-01-PLAN.md — Backend: wallet tables, context, tipping, platform cut, withdrawals, API
-- [ ] 32-02-PLAN.md — Frontend: wallet page, bundle purchase, tipping UI, content unlock, routes
+- [x] 32-02-PLAN.md — Frontend: wallet page, bundle purchase, tipping UI, content unlock, routes
 
 ---
 
-_Roadmap: 32 phases · 135+ requirements · Updated: 2026-07-23_
+_Roadmap: 32 phases · 135+ requirements · Updated: 2026-03-10_
