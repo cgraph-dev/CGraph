@@ -14,10 +14,15 @@ defmodule CGraph.Repo.Migrations.AddLottieFieldsToEmojis do
       add :animation_format, :string
     end
 
-    # Add lottie fields to group_custom_emojis table (Groups.CustomEmoji)
-    alter table(:group_custom_emojis) do
-      add :lottie_url, :string
-      add :animation_format, :string
-    end
+    # group_custom_emojis was never created — skip if absent
+    execute(
+      "ALTER TABLE IF EXISTS group_custom_emojis ADD COLUMN IF NOT EXISTS lottie_url VARCHAR",
+      "SELECT 1"
+    )
+
+    execute(
+      "ALTER TABLE IF EXISTS group_custom_emojis ADD COLUMN IF NOT EXISTS animation_format VARCHAR",
+      "SELECT 1"
+    )
   end
 end
