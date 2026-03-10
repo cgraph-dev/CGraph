@@ -1285,8 +1285,8 @@ partially exists — frontend UI is 100% greenfield.
 **Depends on:** Phase 26 **Plans:** 2 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Backend: Ghost Mode, session extensions, Panic Wipe, timed expiry
-- [ ] 29-02-PLAN.md — Frontend: Secret Chat UI, 12 themes, E2E encryption integration
+- [x] 29-01-PLAN.md — Backend: Ghost Mode, session extensions, Panic Wipe, timed expiry ✓
+- [x] 29-02-PLAN.md — Frontend: Secret Chat UI, 12 themes, E2E encryption integration ✓
 
 ---
 
