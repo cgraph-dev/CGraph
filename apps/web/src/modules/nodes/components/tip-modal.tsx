@@ -6,7 +6,7 @@
  */
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useSendTip, useNodeWallet } from '../../hooks/useNodes';
+import { useSendTip, useNodeWallet } from '../hooks/useNodes';
 import toast from 'react-hot-toast';
 
 interface TipModalProps {
@@ -16,7 +16,7 @@ interface TipModalProps {
   onClose: () => void;
 }
 
-const PRESETS = [10, 50, 100, 500];
+const PRESETS = [10, 50, 100, 500] as const;
 
 export function TipModal({ recipientId, recipientName, isOpen, onClose }: TipModalProps) {
   const [amount, setAmount] = useState<number>(PRESETS[0]);

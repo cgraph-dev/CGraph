@@ -2,7 +2,7 @@
  * Bundle card component — displays a node bundle for purchase.
  */
 import { cn } from '@/lib/utils';
-import type { NodeBundle } from '../../types';
+import type { NodeBundle } from '../types';
 
 interface BundleCardProps {
   bundle: NodeBundle;

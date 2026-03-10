@@ -3,7 +3,7 @@
  */
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useRequestWithdrawal } from '../../hooks/useNodes';
+import { useRequestWithdrawal } from '../hooks/useNodes';
 import toast from 'react-hot-toast';
 
 interface WithdrawalModalProps {

@@ -262,11 +262,11 @@ defmodule CGraph.StickersTest do
       assert updated_user.coins == 400
     end
 
-    test "returns :insufficient_coins when user lacks coins" do
+    test "returns :insufficient_nodes when user lacks nodes" do
       user = insert(:user, coins: 10)
       pack = insert(:sticker_pack, is_premium: true, coin_price: 100)
 
-      assert {:error, :insufficient_coins} = Stickers.add_pack(user, pack.id)
+      assert {:error, :insufficient_nodes} = Stickers.add_pack(user, pack.id)
 
       # Coins unchanged
       updated_user = CGraph.Repo.get!(CGraph.Accounts.User, user.id)

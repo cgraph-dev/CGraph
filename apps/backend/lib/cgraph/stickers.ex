@@ -10,7 +10,7 @@ defmodule CGraph.Stickers do
   - Browse sticker store by category, type, price
   - Search packs by name/title/emoji shortcode
   - Add/remove packs to user's personal collection
-  - Coin-gated premium packs (uses Nodes debit)
+  - Node-gated premium packs (uses Nodes debit)
   - Track download counts and trending packs
   - Recently used stickers per user
   """
@@ -136,14 +136,14 @@ defmodule CGraph.Stickers do
   @doc """
   Adds a sticker pack to a user's collection.
 
-  If the pack has a coin price > 0, deducts coins from the user's balance.
-  Returns `{:error, :insufficient_coins}` if the user doesn't have enough.
+  If the pack has a coin price > 0, deducts nodes from the user's wallet.
+  Returns `{:error, :insufficient_nodes}` if the user doesn't have enough.
   """
   @spec add_pack(map(), String.t()) :: {:ok, UserStickerPack.t()} | {:error, atom() | Ecto.Changeset.t()}
   def add_pack(user, pack_id) do
     with {:ok, pack} <- get_pack(pack_id),
          :ok <- check_not_already_added(user.id, pack_id),
-         :ok <- maybe_charge_coins(user, pack) do
+         :ok <- maybe_charge_nodes(user, pack) do
       %UserStickerPack{}
       |> UserStickerPack.changeset(%{user_id: user.id, sticker_pack_id: pack_id})
       |> Repo.insert()
@@ -282,17 +282,17 @@ defmodule CGraph.Stickers do
     end
   end
 
-  defp maybe_charge_coins(_user, %StickerPack{coin_price: 0}), do: :ok
-  defp maybe_charge_coins(_user, %StickerPack{coin_price: nil}), do: :ok
+  defp maybe_charge_nodes(_user, %StickerPack{coin_price: 0}), do: :ok
+  defp maybe_charge_nodes(_user, %StickerPack{coin_price: nil}), do: :ok
 
-  defp maybe_charge_coins(user, %StickerPack{coin_price: price, id: pack_id}) when price > 0 do
+  defp maybe_charge_nodes(user, %StickerPack{coin_price: price, id: pack_id}) when price > 0 do
     case CGraph.Nodes.debit_nodes(user.id, price, :cosmetic_purchase,
            description: "Sticker pack purchase",
            reference_type: "sticker_pack",
            reference_id: pack_id
          ) do
       {:ok, _transaction} -> :ok
-      {:error, :insufficient_balance} -> {:error, :insufficient_coins}
+      {:error, :insufficient_balance} -> {:error, :insufficient_nodes}
     end
   end
 

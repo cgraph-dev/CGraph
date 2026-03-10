@@ -55,11 +55,11 @@ defmodule CGraph.Messaging.StickersTest do
       assert usp.sticker_pack.id == pack.id
     end
 
-    test "rejects premium pack with insufficient coins" do
+    test "rejects premium pack with insufficient nodes" do
       user = insert(:user, coins: 0)
       pack = insert(:sticker_pack, is_premium: true, coin_price: 100)
 
-      assert {:error, :insufficient_coins} = Stickers.add_pack(user, pack.id)
+      assert {:error, :insufficient_nodes} = Stickers.add_pack(user, pack.id)
     end
 
     test "rejects duplicate add" do

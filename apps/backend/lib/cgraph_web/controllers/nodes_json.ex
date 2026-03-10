@@ -38,7 +38,7 @@ defmodule CGraphWeb.NodesJSON do
             id: b.id,
             name: b.name,
             nodes: b.nodes,
-            price: b.price,
+            price: b.price_eur,
             bonus_percent: b.bonus_percent,
             popular: Map.get(b, :popular, false)
           }

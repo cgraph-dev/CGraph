@@ -128,7 +128,7 @@ defmodule CGraphWeb.TitleController do
       {:error, :insufficient_funds} ->
         conn
         |> put_status(:bad_request)
-        |> json(%{error: "insufficient_funds", message: "You don't have enough coins"})
+        |> json(%{error: "insufficient_funds", message: "You don't have enough nodes"})
 
       {:error, :already_owned} ->
         conn

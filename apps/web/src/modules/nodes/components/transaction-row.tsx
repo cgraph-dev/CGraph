@@ -2,7 +2,7 @@
  * Transaction row component — displays a single node transaction.
  */
 import { cn } from '@/lib/utils';
-import type { NodeTransaction } from '../../types';
+import type { NodeTransaction } from '../types';
 
 const typeConfig: Record<string, { label: string; icon: string; colorClass: string }> = {
   purchase: { label: 'Purchase', icon: '💎', colorClass: 'text-green-500' },

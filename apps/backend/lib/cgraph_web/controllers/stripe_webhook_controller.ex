@@ -155,7 +155,7 @@ defmodule CGraphWeb.StripeWebhookController do
   defp handle_event(%Stripe.Event{type: "checkout.session.completed", data: %{object: session}}) do
     Logger.info("Checkout session completed", session_id: session.id)
 
-    # Distinguish coin purchases from subscription checkouts via metadata
+    # Distinguish node purchases from subscription checkouts via metadata
     case session.metadata do
       %{"type" => "node_purchase", "user_id" => user_id, "bundle_id" => bundle_id} ->
         bundle = CGraph.Nodes.NodeBundles.get_bundle(bundle_id)

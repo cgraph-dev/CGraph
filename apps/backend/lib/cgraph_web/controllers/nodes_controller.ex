@@ -73,7 +73,7 @@ defmodule CGraphWeb.NodesController do
       bundle ->
         app_url = Application.get_env(:cgraph_web, :app_url, "https://cgraph.app")
 
-        price_cents = round(bundle.price * 100)
+        price_cents = bundle.price_cents
 
         checkout_params = %{
           mode: "payment",

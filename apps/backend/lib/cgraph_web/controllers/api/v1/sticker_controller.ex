@@ -182,10 +182,10 @@ defmodule CGraphWeb.API.V1.StickerController do
         |> put_status(:conflict)
         |> json(%{error: "Pack already in your collection"})
 
-      {:error, :insufficient_coins} ->
+      {:error, :insufficient_nodes} ->
         conn
         |> put_status(:payment_required)
-        |> json(%{error: "Not enough coins to purchase this pack"})
+        |> json(%{error: "Not enough nodes to purchase this pack"})
 
       {:error, changeset} ->
         conn

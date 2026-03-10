@@ -134,7 +134,7 @@ defmodule CGraph.Gamification do
 
   @doc """
   Claim daily login streak bonus.
-  Returns {:ok, {user, coins_awarded, new_streak}} or {:error, :already_claimed}
+  Returns {:ok, {user, xp_awarded, new_streak}} or {:error, :already_claimed}
   """
   @spec claim_daily_streak(User.t()) :: {:ok, {User.t(), non_neg_integer(), pos_integer()}} | {:error, :already_claimed}
   def claim_daily_streak(%User{} = user) do
@@ -157,7 +157,7 @@ defmodule CGraph.Gamification do
 
   defp calculate_streak_bonus(streak_days), do: min(10 + streak_days * 5, 100)
 
-  defp do_claim_streak(user, today, new_streak, longest, _coins) do
+  defp do_claim_streak(user, today, new_streak, longest, _bonus) do
     Repo.transaction(fn ->
       {:ok, updated_user} =
         user

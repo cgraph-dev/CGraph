@@ -1,12 +1,12 @@
 defmodule CGraphWeb.ShopController do
   @moduledoc """
-  Controller for coin shop and purchases.
+  Controller for cosmetic shop and purchases.
 
   ## Security
 
   - All purchase endpoints require authentication
   - Quantity is validated (1-100) and safely parsed
-  - Race conditions in coin spending are handled by optimistic locking
+  - Race conditions in node spending are handled by optimistic locking
   """
   use CGraphWeb, :controller
 
@@ -90,7 +90,7 @@ defmodule CGraphWeb.ShopController do
       {:error, :insufficient_funds} ->
         conn
         |> put_status(:bad_request)
-        |> json(%{error: "insufficient_funds", message: "You don't have enough coins"})
+        |> json(%{error: "insufficient_funds", message: "You don't have enough nodes"})
 
       {:error, :already_owned} ->
         conn
