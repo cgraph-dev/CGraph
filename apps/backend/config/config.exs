@@ -110,7 +110,9 @@ config :cgraph, Oban,
        # Expire secret conversations past their expires_at (privacy-critical)
        {"* * * * *", CGraph.Workers.ExpireSecretConversations},
        # Clean up abandoned/expired file transfers hourly
-       {"0 * * * *", CGraph.Workers.FileCleanupWorker}
+       {"0 * * * *", CGraph.Workers.FileCleanupWorker},
+       # Pulse reputation decay — daily at 2 AM UTC
+       {"0 2 * * *", CGraph.Workers.PulseDecayWorker}
      ]}
   ],
   queues: [

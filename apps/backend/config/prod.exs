@@ -83,7 +83,9 @@ config :cgraph, Oban,
       # Delete expired secret messages every minute (privacy-critical)
       {"* * * * *", CGraph.Workers.DeleteExpiredSecretMessages},
       # Expire secret conversations past their expires_at (privacy-critical)
-      {"* * * * *", CGraph.Workers.ExpireSecretConversations}
+      {"* * * * *", CGraph.Workers.ExpireSecretConversations},
+      # Pulse reputation decay — daily at 2 AM UTC
+      {"0 2 * * *", CGraph.Workers.PulseDecayWorker}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
