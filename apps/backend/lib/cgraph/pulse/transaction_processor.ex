@@ -42,6 +42,11 @@ defmodule CGraph.Pulse.TransactionProcessor do
           to_score
           |> PulseScore.changeset(%{score: new_score, tier: new_tier})
           |> Repo.update!()
+
+          # Check for tier-change achievements
+          if new_tier != to_score.tier do
+            CGraph.Gamification.AchievementTriggers.check_all(to_user_id, :pulse_tier_reached)
+          end
         end
 
         tx

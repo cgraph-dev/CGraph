@@ -78,6 +78,11 @@ defmodule CGraph.Gamification.AchievementTriggers do
     ],
     title_acquired: [
       "title_collector"
+    ],
+    pulse_tier_reached: [
+      "trusted_voice",
+      "expert_contributor",
+      "authority_figure"
     ]
   }
 
