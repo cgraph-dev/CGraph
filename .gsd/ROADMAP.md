@@ -1331,7 +1331,7 @@ unlock, withdrawal requests. Uses existing Stripe integration — Paddle migrati
 
 Plans:
 
-- [ ] 32-01-PLAN.md — Backend: wallet tables, context, tipping, platform cut, withdrawals, API
+- [x] 32-01-PLAN.md — Backend: wallet tables, context, tipping, platform cut, withdrawals, API
 - [ ] 32-02-PLAN.md — Frontend: wallet page, bundle purchase, tipping UI, content unlock, routes
 
 ---
