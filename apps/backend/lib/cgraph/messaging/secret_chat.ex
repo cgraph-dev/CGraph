@@ -280,6 +280,31 @@ defmodule CGraph.Messaging.SecretChat do
   end
 
   # ============================================================================
+  # Conversation Expiry
+  # ============================================================================
+
+  @doc """
+  Set or update the expiry time on a secret conversation.
+
+  Pass a `DateTime` to set an absolute expiry, or `nil` to clear it.
+  Only participants can modify the expiry.
+  """
+  @spec set_expires_at(SecretConversation.t(), String.t(), DateTime.t() | nil) ::
+          {:ok, SecretConversation.t()} | {:error, atom() | Ecto.Changeset.t()}
+  def set_expires_at(%SecretConversation{} = conversation, user_id, expires_at) do
+    unless SecretConversation.participant?(conversation, user_id) do
+      {:error, :not_participant}
+    else
+      conversation
+      |> Ecto.Changeset.change(%{expires_at: truncate_datetime(expires_at)})
+      |> Repo.update()
+    end
+  end
+
+  defp truncate_datetime(nil), do: nil
+  defp truncate_datetime(%DateTime{} = dt), do: DateTime.truncate(dt, :microsecond)
+
+  # ============================================================================
   # Panic Wipe
   # ============================================================================
 
