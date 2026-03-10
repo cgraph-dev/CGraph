@@ -10,7 +10,7 @@ defmodule CGraph.Stickers do
   - Browse sticker store by category, type, price
   - Search packs by name/title/emoji shortcode
   - Add/remove packs to user's personal collection
-  - Coin-gated premium packs (uses Gamification.spend_coins)
+  - Coin-gated premium packs (uses Nodes debit)
   - Track download counts and trending packs
   - Recently used stickers per user
   """
@@ -287,13 +287,13 @@ defmodule CGraph.Stickers do
   defp maybe_charge_coins(_user, %StickerPack{coin_price: nil}), do: :ok
 
   defp maybe_charge_coins(user, %StickerPack{coin_price: price, id: pack_id}) when price > 0 do
-    case Gamification.spend_coins(user, price, "purchase",
+    case CGraph.Nodes.debit_nodes(user.id, price, :cosmetic_purchase,
            description: "Sticker pack purchase",
            reference_type: "sticker_pack",
            reference_id: pack_id
          ) do
-      {:ok, _updated_user} -> :ok
-      {:error, :insufficient_funds} -> {:error, :insufficient_coins}
+      {:ok, _transaction} -> :ok
+      {:error, :insufficient_balance} -> {:error, :insufficient_coins}
     end
   end
 

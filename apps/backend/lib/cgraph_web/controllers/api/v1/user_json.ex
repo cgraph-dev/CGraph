@@ -114,7 +114,6 @@ defmodule CGraphWeb.API.V1.UserJSON do
       # Gamification fields
       xp: user.xp || 0,
       level: user.level || 1,
-      coins: user.coins || 0,
       streak_days: user.streak_days || 0,
       subscription_tier: user.subscription_tier || "free",
       equipped_title_id: user.equipped_title_id,

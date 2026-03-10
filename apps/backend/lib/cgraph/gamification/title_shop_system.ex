@@ -83,7 +83,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
     end
   end
 
-  @doc "Purchase a title with coins."
+  @doc "Purchase a title with nodes."
   @spec purchase_title(User.t(), binary()) :: {:ok, User.t()} | {:error, atom()}
   def purchase_title(%User{} = user, title_id) do
     case Repo.get(Title, title_id) do
@@ -91,14 +91,17 @@ defmodule CGraph.Gamification.TitleShopSystem do
       title ->
         cond do
           not title.is_purchasable -> {:error, :not_purchasable}
-          user.coins < title.coin_cost -> {:error, :insufficient_funds}
           Repo.get_by(UserTitle, user_id: user.id, title_id: title.id) != nil -> {:error, :already_owned}
           true ->
             Repo.transaction(fn ->
-              {:ok, updated_user} = CGraph.Gamification.spend_coins(user, title.coin_cost, "purchase",
-                description: "Purchased title: #{title.name}", reference_type: "title", reference_id: title.id)
-              {:ok, _} = unlock_title_by_slug(updated_user, title.slug)
-              updated_user
+              case CGraph.Nodes.debit_nodes(user.id, title.coin_cost, :cosmetic_purchase,
+                description: "Purchased title: #{title.name}", reference_type: "title", reference_id: title.id) do
+                {:ok, _transaction} ->
+                  {:ok, _} = unlock_title_by_slug(user, title.slug)
+                  user
+                {:error, :insufficient_balance} ->
+                  Repo.rollback(:insufficient_funds)
+              end
             end)
         end
     end
@@ -134,25 +137,27 @@ defmodule CGraph.Gamification.TitleShopSystem do
         cond do
           not ShopItem.available?(item) -> {:error, :not_available}
           item.premium_only and user.subscription_tier == "free" -> {:error, :premium_required}
-          user.coins < total_cost -> {:error, :insufficient_funds}
           item.type == "permanent" and user_owns_item?(user.id, item_id) -> {:error, :already_owned}
           true ->
             Repo.transaction(fn ->
-              {:ok, updated_user} = CGraph.Gamification.spend_coins(user, total_cost, "purchase",
-                description: "Purchased: #{item.name} x#{quantity}", reference_type: "shop_item", reference_id: item_id)
+              case CGraph.Nodes.debit_nodes(user.id, total_cost, :cosmetic_purchase,
+                description: "Purchased: #{item.name} x#{quantity}", reference_type: "shop_item", reference_id: item_id) do
+                {:ok, _transaction} ->
+                  {:ok, _purchase} = %UserPurchase{}
+                    |> UserPurchase.changeset(%{
+                      user_id: user.id, item_id: item_id, quantity: quantity,
+                      coin_spent: total_cost, purchased_at: DateTime.utc_now()
+                    })
+                    |> Repo.insert()
 
-              {:ok, _purchase} = %UserPurchase{}
-                |> UserPurchase.changeset(%{
-                  user_id: user.id, item_id: item_id, quantity: quantity,
-                  coin_spent: total_cost, purchased_at: DateTime.utc_now()
-                })
-                |> Repo.insert()
+                  {:ok, _} = item
+                    |> Ecto.Changeset.change(%{sold_count: item.sold_count + quantity})
+                    |> Repo.update()
 
-              {:ok, _} = item
-                |> Ecto.Changeset.change(%{sold_count: item.sold_count + quantity})
-                |> Repo.update()
-
-              updated_user
+                  user
+                {:error, :insufficient_balance} ->
+                  Repo.rollback(:insufficient_funds)
+              end
             end)
         end
     end

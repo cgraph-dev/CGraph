@@ -157,8 +157,14 @@ defmodule CGraphWeb.StripeWebhookController do
 
     # Distinguish coin purchases from subscription checkouts via metadata
     case session.metadata do
-      %{"type" => "coin_purchase"} ->
-        CGraph.Shop.CoinCheckout.fulfill_purchase(session.id)
+      %{"type" => "node_purchase", "user_id" => user_id, "bundle_id" => bundle_id} ->
+        bundle = CGraph.Nodes.NodeBundles.get_bundle(bundle_id)
+        if bundle do
+          CGraph.Nodes.credit_nodes(user_id, bundle.nodes, :purchase,
+            description: "Purchased #{bundle.name} bundle",
+            reference_type: "stripe_session",
+            reference_id: session.id)
+        end
 
       _ ->
         # Subscription checkout flow

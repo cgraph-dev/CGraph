@@ -112,12 +112,11 @@ defmodule CGraphWeb.TitleController do
     user = conn.assigns.current_user
 
     case Gamification.purchase_title(user, title_id) do
-      {:ok, updated_user} ->
+      {:ok, _updated_user} ->
         conn
         |> put_status(:ok)
         |> json(%{
           success: true,
-          coins: updated_user.coins,
           message: "Title purchased successfully"
         })
 

@@ -66,12 +66,11 @@ defmodule CGraphWeb.ShopController do
     quantity = parse_int(params["quantity"], 1, min: 1, max: @max_purchase_quantity)
 
     case Gamification.purchase_shop_item(user, item_id, quantity) do
-      {:ok, updated_user} ->
+      {:ok, _updated_user} ->
         conn
         |> put_status(:ok)
         |> json(%{
           success: true,
-          coins: updated_user.coins,
           message: "Purchase successful"
         })
 

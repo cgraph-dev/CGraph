@@ -2,11 +2,13 @@ defmodule CGraph.Gamification do
   @moduledoc """
   The Gamification context.
 
-  Handles XP progression, achievements, titles, shop items, coins, and streaks.
+  Handles XP progression, achievements, titles, shop items, and streaks.
 
-  Core XP/coin/streak engine lives here. Domain sub-systems delegate to:
+  Core XP/streak engine lives here. Domain sub-systems delegate to:
   - `CGraph.Gamification.AchievementSystem` — achievement progress & unlocking
   - `CGraph.Gamification.TitleShopSystem` — titles, shop items, purchases
+
+  Currency (Nodes) is handled by `CGraph.Nodes`.
   """
 
   import Ecto.Query, warn: false
@@ -128,44 +130,6 @@ defmodule CGraph.Gamification do
   defp get_xp_multiplier(%User{subscription_tier: "enterprise"}), do: Decimal.new("3.0")
   defp get_xp_multiplier(_user), do: Decimal.new("1.0")
 
-  # ==================== COIN MANAGEMENT ====================
-
-  @doc "Award coins to a user."
-  @spec award_coins(User.t(), integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
-  def award_coins(%User{} = user, amount, _type, _opts \\ []) do
-    new_balance = user.coins + amount
-
-    user
-    |> Ecto.Changeset.change(%{coins: new_balance})
-    |> Repo.update()
-  end
-
-  @doc """
-  Spend coins from a user's balance with race condition protection.
-  Uses SELECT FOR UPDATE to prevent concurrent balance modifications.
-  """
-  @spec spend_coins(User.t(), pos_integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, :insufficient_funds}
-  def spend_coins(%User{} = user, amount, _type, _opts \\ []) when amount > 0 do
-    Repo.transaction(fn ->
-      locked_user =
-        from(u in User, where: u.id == ^user.id, lock: "FOR UPDATE")
-        |> Repo.one!()
-
-      if locked_user.coins < amount do
-        Repo.rollback(:insufficient_funds)
-      else
-        new_balance = locked_user.coins - amount
-
-        {:ok, updated_user} =
-          locked_user
-          |> Ecto.Changeset.change(%{coins: new_balance})
-          |> Repo.update()
-
-        updated_user
-      end
-    end)
-  end
-
   # ==================== STREAK MANAGEMENT ====================
 
   @doc """
@@ -193,7 +157,7 @@ defmodule CGraph.Gamification do
 
   defp calculate_streak_bonus(streak_days), do: min(10 + streak_days * 5, 100)
 
-  defp do_claim_streak(user, today, new_streak, longest, coins) do
+  defp do_claim_streak(user, today, new_streak, longest, _coins) do
     Repo.transaction(fn ->
       {:ok, updated_user} =
         user
@@ -201,8 +165,7 @@ defmodule CGraph.Gamification do
           streak_days: new_streak,
           streak_last_claimed: today,
           streak_longest: longest,
-          daily_bonus_claimed_at: today,
-          coins: user.coins + coins
+          daily_bonus_claimed_at: today
         })
         |> Repo.update()
 
@@ -236,7 +199,6 @@ defmodule CGraph.Gamification do
       level: user.level,
       level_progress: level_progress(user.xp),
       xp_to_next_level: xp_for_level(user.level + 1) - user.xp,
-      coins: user.coins,
       streak_days: user.streak_days,
       streak_longest: user.streak_longest,
       achievements_unlocked: unlocked_achievements,

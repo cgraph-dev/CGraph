@@ -111,8 +111,8 @@ defmodule CGraph.Gamification.AchievementSystem do
           description: "Unlocked: #{achievement.title}", reference_type: "achievement", reference_id: achievement.id)
       end
       if achievement.coin_reward > 0 do
-        CGraph.Gamification.award_coins(user, achievement.coin_reward, "achievement",
-          description: "Unlocked: #{achievement.title}", reference_type: "achievement", reference_id: achievement.id)
+        CGraph.Nodes.credit_nodes(user.id, achievement.coin_reward, :purchase,
+          description: "Achievement reward: #{achievement.title}", reference_type: "achievement", reference_id: achievement.id)
       end
       if achievement.title_reward do
         CGraph.Gamification.unlock_title_by_slug(user, achievement.title_reward)

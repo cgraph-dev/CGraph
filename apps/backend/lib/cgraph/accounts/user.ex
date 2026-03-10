@@ -113,7 +113,6 @@ defmodule CGraph.Accounts.User do
     # Gamification
     field :xp, :integer, default: 0
     field :level, :integer, default: 1
-    field :coins, :integer, default: 0
     field :streak_days, :integer, default: 0
     field :streak_last_claimed, :date
     field :streak_longest, :integer, default: 0

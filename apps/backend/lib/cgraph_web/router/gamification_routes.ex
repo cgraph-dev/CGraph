@@ -3,7 +3,7 @@ defmodule CGraphWeb.Router.GamificationRoutes do
   Achievement and cosmetics routes.
 
   Includes achievements, cosmetics (borders, themes, effects), titles, shop,
-  coins, premium, and IAP validation.
+  premium, and IAP validation.
   """
 
   defmacro gamification_routes do
@@ -16,12 +16,6 @@ defmodule CGraphWeb.Router.GamificationRoutes do
         get "/gamification/achievements", GamificationController, :achievements
         get "/gamification/achievements/:id", GamificationController, :show_achievement
         post "/gamification/achievements/:id/unlock", GamificationController, :unlock_achievement
-
-        # Coins (currency system)
-        get "/coins", CoinsController, :balance
-        get "/coins/history", CoinsController, :history
-        get "/coins/packages", CoinsController, :packages
-        get "/coins/earn", CoinsController, :earn_methods
 
         # Premium subscriptions
         get "/premium/status", PremiumController, :status
@@ -39,8 +33,6 @@ defmodule CGraphWeb.Router.GamificationRoutes do
           get "/", ShopController, :index
           get "/categories", ShopController, :categories
           get "/purchases", ShopController, :purchases
-          get "/bundles", CoinShopController, :bundles
-          post "/purchase-coins", CoinShopController, :checkout
           get "/:id", ShopController, :show
           post "/:id/purchase", ShopController, :purchase
         end
