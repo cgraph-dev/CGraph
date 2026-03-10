@@ -11,9 +11,9 @@ import type { Border, Rarity } from '../types';
 import {
   ALL_BORDERS,
   BORDER_THEMES,
-  getBordersByTheme,
+  getLegacyBordersByTheme,
   type BorderTheme,
-} from '@/data/borderCollections';
+} from '@/data/avatar-borders';
 import ThemedBorderCard from '@/modules/settings/components/customize/themed-border-card';
 
 export interface BordersSectionProps {
@@ -46,7 +46,7 @@ export function BordersSection({
     if (selectedTheme === 'all') {
       return ALL_BORDERS;
     }
-    return getBordersByTheme(selectedTheme);
+    return getLegacyBordersByTheme(selectedTheme);
   }, [selectedTheme]);
 
   // Filter by search query from parent (using the borders prop for search results)

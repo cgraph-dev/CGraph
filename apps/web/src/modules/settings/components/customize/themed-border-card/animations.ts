@@ -4,7 +4,7 @@
  * Animation configurations for all 21+ border animation types
  */
 
-import { type BorderDefinition } from '@/data/borderCollections';
+import { type BorderDefinition } from '@/data/avatar-borders';
 import type { BorderAnimationResult } from './types';
 
 /**

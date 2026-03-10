@@ -804,3 +804,94 @@ export function getFreeBorders(): AvatarBorderConfig[] {
 export function getPremiumBorders(): AvatarBorderConfig[] {
   return AVATAR_BORDERS.filter((border) => border.isPremium);
 }
+
+// ==================== BACKWARD-COMPAT LAYER ====================
+// Adapters so existing UI components (ThemedBorderCard, BordersSection,
+// useIdentityCustomization) work with the new 42-border Lottie catalog
+// without rewriting their internals.
+
+/** Legacy animation type union expected by themed-border-card animations.ts */
+export type BorderAnimationType =
+  | 'none' | 'pulse' | 'glow' | 'rotate' | 'shimmer' | 'rainbow'
+  | 'fire' | 'ice' | 'electric' | 'void' | 'aurora' | 'galaxy'
+  | 'pixel-pulse' | 'scan-line' | 'glitch' | 'sakura-fall' | 'wave'
+  | 'energy-surge' | 'smoke' | 'neon-flicker' | 'holographic'
+  | 'lottie';
+
+/** Legacy BorderDefinition shape consumed by themed-border-card + sections */
+export interface BorderDefinition {
+  id: string;
+  name: string;
+  theme: BorderTheme;
+  rarity: BorderRarity;
+  animationType: BorderAnimationType;
+  colors: string[];
+  isPremium: boolean;
+  unlocked: boolean;
+  unlockRequirement?: string;
+  unlockLevel?: number;
+  description: string;
+  borderWidth?: number;
+  glowIntensity?: number;
+  animationDuration?: number;
+  lottieFile?: string;
+}
+
+/** Theme category for the browse UI */
+export interface BorderThemeCategory {
+  id: BorderTheme;
+  name: string;
+  description: string;
+  icon: string;
+  accentColor: string;
+  borderCount: number;
+}
+
+/** Convert AvatarBorderConfig → BorderDefinition */
+function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
+  const colors = [b.primaryColor, b.secondaryColor, b.accentColor].filter(Boolean) as string[];
+  const isUnlocked = b.unlockType === 'default' || !b.isPremium;
+  return {
+    id: b.id,
+    name: b.name,
+    theme: b.theme,
+    rarity: b.rarity,
+    animationType: b.type === 'lottie' ? 'lottie' : (b.type as BorderAnimationType),
+    colors,
+    isPremium: b.isPremium,
+    unlocked: isUnlocked,
+    unlockRequirement: b.unlockRequirement?.description,
+    description: b.description,
+    animationDuration: b.animationDuration,
+    lottieFile: b.lottieUrl,
+  };
+}
+
+/** All 42 borders as legacy BorderDefinition for existing UI */
+export const ALL_BORDERS: BorderDefinition[] = AVATAR_BORDERS.map(toBorderDefinition);
+
+/** Deduplicated theme list derived from the actual 42 borders */
+const themeConfig: Record<string, { name: string; icon: string; accentColor: string; description: string }> = {
+  '8bit':       { name: '8-Bit',      icon: '🎮', accentColor: '#39ff14', description: 'Retro pixel art nostalgia' },
+  japanese:     { name: 'Japanese',   icon: '🌸', accentColor: '#ff6b9d', description: 'Traditional & elegant' },
+  anime:        { name: 'Anime',      icon: '⚡', accentColor: '#ffcc00', description: 'Dynamic power effects' },
+  cyberpunk:    { name: 'Cyberpunk',  icon: '🤖', accentColor: '#00ffff', description: 'Neon-drenched future' },
+  gothic:       { name: 'Gothic',     icon: '🦇', accentColor: '#8b00ff', description: 'Dark & mysterious' },
+  kawaii:        { name: 'Kawaii',     icon: '🌈', accentColor: '#ff69b4', description: 'Cute & colorful' },
+  elemental:    { name: 'Elemental',  icon: '🔥', accentColor: '#ff4500', description: 'Forces of nature' },
+  cosmic:       { name: 'Cosmic',     icon: '✨', accentColor: '#9b30ff', description: 'Stellar phenomena' },
+};
+
+export const BORDER_THEMES: BorderThemeCategory[] = Object.entries(themeConfig).map(([id, cfg]) => ({
+  id: id as BorderTheme,
+  name: cfg.name,
+  description: cfg.description,
+  icon: cfg.icon,
+  accentColor: cfg.accentColor,
+  borderCount: AVATAR_BORDERS.filter((b) => b.theme === id).length,
+}));
+
+/** Legacy helper — get BorderDefinition[] by theme */
+export function getLegacyBordersByTheme(theme: BorderTheme): BorderDefinition[] {
+  return AVATAR_BORDERS.filter((b) => b.theme === theme).map(toBorderDefinition);
+}

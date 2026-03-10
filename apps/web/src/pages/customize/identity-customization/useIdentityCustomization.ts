@@ -15,7 +15,7 @@ import {
   type ProfileCardStyle,
 } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
-import { ALL_BORDERS, type BorderDefinition } from '@/data/borderCollections';
+import { ALL_BORDERS, type BorderDefinition } from '@/data/avatar-borders';
 import { ALL_TITLES, type TitleDefinition } from '@/data/titlesCollection';
 import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
 // TODO(phase-26): Rewire — gamification stores deleted

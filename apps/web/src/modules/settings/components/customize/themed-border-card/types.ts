@@ -2,7 +2,7 @@
  * Type definitions for ThemedBorderCard module
  */
 
-import type { BorderDefinition, BorderRarity } from '@/data/borderCollections';
+import type { BorderDefinition, BorderRarity } from '@/data/avatar-borders';
 import type { CSSProperties } from 'react';
 
 /** Size configuration for border cards */
