@@ -97,7 +97,6 @@ export const CallHistory = lazyRetry(() => import('@/pages/calls/call-history'))
 
 // ── Premium & Gamification ─────────────────────────────────────────────
 export const PremiumPage = lazyRetry(() => import('@/pages/premium/premium-page'));
-export const CoinShop = lazyRetry(() => import('@/pages/premium/coin-shop'));
 
 // ── Creator ────────────────────────────────────────────────────────────
 export const CreatorDashboard = lazyRetry(() => import('@/pages/creator/creator-dashboard'));

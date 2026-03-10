@@ -33,7 +33,6 @@ import {
   CallHistory,
   // Premium
   PremiumPage,
-  CoinShop,
   // Creator
   CreatorDashboard,
   CreatorEarnings,
@@ -119,7 +118,6 @@ export function AppRoutes() {
 
         {/* Premium */}
         <Route path="premium" element={<PremiumPage />} />
-        <Route path="premium/coins" element={<CoinShop />} />
 
         {/* Creator */}
         <Route path="creator" element={<CreatorDashboard />} />

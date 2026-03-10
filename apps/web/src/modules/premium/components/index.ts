@@ -13,10 +13,6 @@ export type { SubscriptionCardProps } from './subscription-card';
 export { PaymentModal } from './payment-modal';
 export type { PaymentModalProps, PaymentItem } from './payment-modal';
 
-// Coin shop
-export { CoinShopWidget } from './coin-shop-widget';
-export type { CoinShopWidgetProps } from './coin-shop-widget';
-
 // Upsell banners
 export { PremiumBanner } from './premium-banner';
 export type { PremiumBannerProps } from './premium-banner';

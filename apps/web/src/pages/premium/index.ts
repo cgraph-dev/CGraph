@@ -5,4 +5,3 @@
  */
 
 export { default as PremiumPage } from './premium-page';
-export { default as CoinShop } from './coin-shop';
