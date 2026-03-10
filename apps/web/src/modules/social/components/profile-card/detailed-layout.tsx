@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
+import { PulseDots } from '@/modules/pulse/components/pulse-dots';
 import { StatItem } from './stat-item';
 import type { LayoutProps } from './types';
 import { tweens } from '@/lib/animation-presets';
@@ -82,6 +83,26 @@ export const DetailedLayout = memo(function DetailedLayout({
           )}
           <StatItem label="Posts" value={user.postCount || 0} color={theme?.colors.accent} />
           <StatItem label="Friends" value={user.friendCount || 0} color={theme?.colors.accent} />
+        </div>
+      )}
+
+      {/* Top Communities by Pulse */}
+      {user.topCommunities && user.topCommunities.length > 0 && (
+        <div>
+          <div className="mb-1 text-xs opacity-60">Top Communities</div>
+          <div className="space-y-1">
+            {user.topCommunities.slice(0, 3).map((community) => (
+              <div key={community.forumId} className="flex items-center justify-between">
+                <span className="truncate text-sm">{community.forumName}</span>
+                <PulseDots
+                  score={community.score}
+                  tier={community.tier}
+                  size="sm"
+                  showLabel={false}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

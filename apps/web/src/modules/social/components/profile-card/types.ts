@@ -47,6 +47,8 @@ export interface ProfileCardUser {
   forumsInCommon?: { id: string; name: string }[];
   recentActivity?: { type: string; description: string; timestamp: string }[];
   socialLinks?: { platform: string; url: string }[];
+  // Pulse
+  topCommunities?: { forumId: string; forumName: string; score: number; tier: string }[];
   // Status
   isOnline: boolean;
   lastSeen?: string;

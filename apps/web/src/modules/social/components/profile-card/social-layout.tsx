@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
+import { PulseDots } from '@/modules/pulse/components/pulse-dots';
 import type { LayoutProps } from './types';
 
 export const SocialLayout = memo(function SocialLayout({
@@ -88,6 +89,26 @@ export const SocialLayout = memo(function SocialLayout({
               >
                 {forum.name}
               </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top Communities by Pulse */}
+      {user.topCommunities && user.topCommunities.length > 0 && (
+        <div>
+          <div className="mb-1 text-xs opacity-60">Top Communities</div>
+          <div className="space-y-1">
+            {user.topCommunities.slice(0, 3).map((community) => (
+              <div key={community.forumId} className="flex items-center justify-between">
+                <span className="truncate text-sm">{community.forumName}</span>
+                <PulseDots
+                  score={community.score}
+                  tier={community.tier}
+                  size="sm"
+                  showLabel={false}
+                />
+              </div>
             ))}
           </div>
         </div>
