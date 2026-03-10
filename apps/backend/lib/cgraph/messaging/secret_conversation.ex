@@ -30,6 +30,14 @@ defmodule CGraph.Messaging.SecretConversation do
     field :initiator_fingerprint, :string
     field :recipient_fingerprint, :string
     field :terminated_at, :utc_datetime_usec
+    field :expires_at, :utc_datetime_usec
+    field :ghost_initiator, :boolean, default: false
+    field :ghost_recipient, :boolean, default: false
+    field :alias_initiator, :string
+    field :alias_recipient, :string
+    field :secret_theme_id, :string
+    field :panic_wipe_initiator, :boolean, default: false
+    field :panic_wipe_recipient, :boolean, default: false
     belongs_to :terminated_by_user, CGraph.Accounts.User, foreign_key: :terminated_by
 
     belongs_to :initiator, CGraph.Accounts.User
@@ -42,7 +50,9 @@ defmodule CGraph.Messaging.SecretConversation do
 
   @required_fields ~w(initiator_id recipient_id)a
   @optional_fields ~w(status self_destruct_seconds initiator_device_id recipient_device_id
-                       initiator_fingerprint recipient_fingerprint terminated_at terminated_by)a
+                       initiator_fingerprint recipient_fingerprint terminated_at terminated_by
+                       expires_at ghost_initiator ghost_recipient alias_initiator alias_recipient
+                       secret_theme_id panic_wipe_initiator panic_wipe_recipient)a
 
   @doc "Changeset for creating a secret conversation."
   def changeset(conversation, attrs) do
@@ -50,6 +60,9 @@ defmodule CGraph.Messaging.SecretConversation do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> validate_inclusion(:status, @statuses)
+    |> validate_length(:alias_initiator, max: 50)
+    |> validate_length(:alias_recipient, max: 50)
+    |> validate_length(:secret_theme_id, max: 50)
     |> validate_different_users()
     |> foreign_key_constraint(:initiator_id)
     |> foreign_key_constraint(:recipient_id)
