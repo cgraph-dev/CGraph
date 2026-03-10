@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.CategoryJSON do
   @moduledoc """
   JSON rendering for category responses.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{categories: categories}) do
     %{data: Enum.map(categories, &category_data/1)}

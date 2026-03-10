@@ -140,7 +140,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
-  @doc "Registers E2EE keys for the current device."
   @spec register_keys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def register_keys(conn, params) do
     user = conn.assigns.current_user
@@ -194,7 +193,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
-  @doc "Retrieves the prekey bundle for a user."
   @spec get_prekey_bundle(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_prekey_bundle(conn, %{"user_id" => user_id}) do
     case E2EE.get_prekey_bundle(user_id) do
@@ -252,7 +250,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
         ]
       }
   """
-  @doc "Uploads new one-time prekeys."
   @spec upload_prekeys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def upload_prekeys(conn, %{"prekeys" => prekeys}) do
     user = conn.assigns.current_user
@@ -298,7 +295,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
         ]
       }
   """
-  @doc "Lists registered E2EE devices."
   @spec list_devices(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_devices(conn, _params) do
     user = conn.assigns.current_user
@@ -348,7 +344,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
-  @doc "Generates a safety number for key verification."
   @spec safety_number(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def safety_number(conn, %{"user_id" => other_user_id}) do
     user = conn.assigns.current_user
@@ -403,7 +398,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
   guarantee. Without this notification, contacts would continue encrypting
   messages for an attacker's stolen device.
   """
-  @doc "Revokes an E2EE key."
   @spec revoke_key(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def revoke_key(conn, %{"key_id" => key_id}) do
     user = conn.assigns.current_user

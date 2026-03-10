@@ -114,7 +114,6 @@ defmodule CGraph.Query.SoftDelete do
       # Best: build from schema directly
       Message |> with_deleted() |> Repo.all()
   """
-  @doc "Includes soft-deleted records in the query."
   @spec with_deleted(queryable()) :: Ecto.Query.t()
   def with_deleted(queryable) do
     # Remove any existing deleted_at filter and return base query

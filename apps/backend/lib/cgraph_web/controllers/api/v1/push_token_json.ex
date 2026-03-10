@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.PushTokenJSON do
   @moduledoc """
   JSON rendering for push token responses.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{tokens: tokens}) do
     %{data: Enum.map(tokens, &token_data/1), meta: %{total: length(tokens)}}

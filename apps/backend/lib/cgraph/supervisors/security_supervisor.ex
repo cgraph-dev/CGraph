@@ -9,7 +9,6 @@ defmodule CGraph.SecuritySupervisor do
   end
 
   @impl true
-  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, {Supervisor.sup_flags(), [Supervisor.child_spec()]}}
   def init(_init_arg) do
     children = [

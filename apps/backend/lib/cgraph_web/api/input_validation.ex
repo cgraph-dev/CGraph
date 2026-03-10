@@ -111,7 +111,6 @@ defmodule CGraphWeb.API.InputValidation do
       validate(%{"email" => "invalid"}, schema)
       # => {:error, %{email: ["has invalid format"]}}
   """
-  @doc "Validates request parameters against the schema."
   @spec validate(map(), schema(), keyword()) :: validation_result()
   def validate(params, schema, opts \\ []) when is_map(params) and is_map(schema) do
     strict = Keyword.get(opts, :strict, false)
@@ -229,7 +228,6 @@ defmodule CGraphWeb.API.InputValidation do
         end
       end
   """
-  @doc "Returns a validator function for the given schema."
   @spec validator(schema(), keyword()) :: (map() -> validation_result())
   def validator(schema, opts \\ []) do
     fn params -> validate(params, schema, opts) end

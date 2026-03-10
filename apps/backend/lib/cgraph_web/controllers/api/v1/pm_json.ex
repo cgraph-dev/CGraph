@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.PMJSON do
   @moduledoc """
   JSON rendering for Private Message endpoints.
   """
-
-  @doc "Renders private message folders as JSON."
   @spec folders(map()) :: map()
   def folders(%{folders: folders}) do
     %{folders: Enum.map(folders, &folder_data/1)}

@@ -13,7 +13,6 @@ defmodule CGraphWeb.BoardChannel do
   alias CGraph.Presence
 
   @impl true
-  @doc "Handles a client joining the board channel."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("board:" <> board_id, _params, socket) do
     _user = socket.assigns.current_user
@@ -23,7 +22,6 @@ defmodule CGraphWeb.BoardChannel do
   end
 
   @impl true
-  @doc "Handles generic messages."
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
@@ -43,7 +41,6 @@ defmodule CGraphWeb.BoardChannel do
   # ============================================================================
 
   @impl true
-  @doc "Handles incoming channel messages from the client."
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_threads", params, socket) do
     board_id = socket.assigns.board_id

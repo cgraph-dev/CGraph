@@ -30,7 +30,6 @@ defmodule CGraph.Storage.S3 do
   require Logger
 
   @impl true
-  @doc "Stores a file in Amazon S3."
   @spec store(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def store(source_path, filename, opts \\ []) do
     context = Keyword.get(opts, :context, "files")
@@ -80,7 +79,6 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
-  @doc "Deletes a file from Amazon S3."
   @spec delete(String.t()) :: :ok | {:error, term()}
   def delete(url_or_key) do
     config = config()
@@ -99,7 +97,6 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
-  @doc "Generates a signed URL for S3 file access."
   @spec signed_url(String.t(), keyword()) :: {:ok, String.t()}
   def signed_url(key, opts \\ []) do
     config = config()
@@ -119,7 +116,6 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
-  @doc "Checks if a file exists in Amazon S3."
   @spec exists?(String.t()) :: boolean()
   def exists?(key) do
     config = config()

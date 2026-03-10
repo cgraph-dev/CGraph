@@ -7,7 +7,7 @@ defmodule CGraph.Groups.Automod.Enforcement do
   """
 
   import Ecto.Query
-  alias CGraph.Groups.{AutomodRule, Automod}
+  alias CGraph.Groups.AutomodRule
   alias CGraph.Repo
 
   @type check_result :: :ok | {:blocked, AutomodRule.t()}

@@ -59,7 +59,6 @@ defmodule CGraphWeb.ErrorTracker do
         context: %{job: "ProcessPayment", amount: 100}
       )
   """
-  @doc "Tracks and records an error occurrence."
   @spec track(term(), keyword()) :: :ok
 
   # Handle Plug.Conn as first argument - convenience function

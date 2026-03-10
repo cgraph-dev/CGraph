@@ -17,7 +17,6 @@ defmodule CGraph.Messaging.SecretChat do
 
   import Ecto.Query
   alias CGraph.Repo
-  alias CGraph.Redis
   alias CGraph.Messaging.{SecretConversation, SecretMessage}
   alias CGraph.Presence.GhostMode
 

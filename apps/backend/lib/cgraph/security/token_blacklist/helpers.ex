@@ -5,8 +5,6 @@ defmodule CGraph.Security.TokenBlacklist.Helpers do
   Provides token decoding, hashing, and revocation time parsing functions
   used by the revocation and storage layers.
   """
-
-  @doc "Extract the JTI (JWT ID) claim from a token."
   @spec extract_jti(String.t()) :: String.t() | nil
   def extract_jti(token) do
     case decode_token_claims(token) do

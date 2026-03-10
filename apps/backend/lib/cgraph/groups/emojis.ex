@@ -14,7 +14,8 @@ defmodule CGraph.Groups.Emojis do
   # Size limits for emoji uploads
   @max_static_size 128 * 1024   # 128KB for static
   @max_animated_size 256 * 1024 # 256KB for animated
-  @max_dimension 128            # 128x128 pixels max
+  # Maximum dimension for emoji (reserved for future use)
+  # @max_dimension 128          # 128x128 pixels max
 
   @doc "List custom emojis for a group."
   @spec list_group_emojis(struct()) :: list()

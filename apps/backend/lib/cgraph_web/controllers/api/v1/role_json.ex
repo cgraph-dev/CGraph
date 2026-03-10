@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.RoleJSON do
   @moduledoc """
   JSON rendering for role responses.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{roles: roles}) do
     %{data: Enum.map(roles, &role_data/1), meta: %{total: length(roles)}}

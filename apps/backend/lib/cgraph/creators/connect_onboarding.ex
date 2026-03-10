@@ -23,7 +23,7 @@ defmodule CGraph.Creators.ConnectOnboarding do
   Returns `{:ok, %{account_id: String.t(), url: String.t()}}` on success.
   """
   @spec create_connect_account(User.t()) :: {:ok, map()} | {:error, any()}
-  def create_connect_account(%User{stripe_connect_id: existing} = user) when not is_nil(existing) do
+  def create_connect_account(%User{stripe_connect_id: existing} = _user) when not is_nil(existing) do
     # Already has a connect account — just refresh the link
     case create_account_link(existing) do
       {:ok, link} -> {:ok, %{account_id: existing, url: link.url}}

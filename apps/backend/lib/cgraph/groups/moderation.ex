@@ -11,7 +11,6 @@ defmodule CGraph.Groups.Moderation do
 
   alias CGraph.Groups
   alias CGraph.Groups.Members
-  alias CGraph.Moderation.Enforcement
   alias CGraph.Moderation.Report
   alias CGraph.Moderation.ReviewAction
   alias CGraph.Repo

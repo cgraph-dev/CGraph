@@ -5,8 +5,6 @@ defmodule CGraphWeb.CosmeticsController.Serializers do
   Provides serialization for avatar borders, profile themes, and chat effects,
   as well as shared helpers like expiration checks.
   """
-
-  @doc "Check whether a timed item has expired."
   @spec expired?(DateTime.t() | nil) :: boolean()
   def expired?(nil), do: false
   def expired?(expires_at), do: DateTime.compare(DateTime.utc_now(), expires_at) == :gt

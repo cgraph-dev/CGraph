@@ -28,7 +28,6 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   require Logger
 
   @impl Plug
-  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -40,7 +39,6 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   end
 
   @impl Plug
-  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     conn = Plug.Conn.put_private(conn, :cgraph_request_start, System.monotonic_time(:millisecond))
@@ -105,15 +103,16 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   end
 
   # Known audit event types — prevents atom table exhaustion from arbitrary paths.
-  @known_event_types ~w(
-    post_auth_login post_auth_register post_auth_logout post_auth_refresh
-    post_auth_wallet_challenge post_auth_wallet_verify
-    get_users_me patch_users_me delete_users_me
-    post_conversations get_conversations post_messages
-    post_forums get_forums post_groups get_groups
-    post_uploads delete_uploads
-    post_admin get_admin patch_admin delete_admin
-  )a
+  # Reserved for future validation use
+  # @known_event_types ~w(
+  #   post_auth_login post_auth_register post_auth_logout post_auth_refresh
+  #   post_auth_wallet_challenge post_auth_wallet_verify
+  #   get_users_me patch_users_me delete_users_me
+  #   post_conversations get_conversations post_messages
+  #   post_forums get_forums post_groups get_groups
+  #   post_uploads delete_uploads
+  #   post_admin get_admin patch_admin delete_admin
+  # )a
 
   defp derive_event_type(conn) do
     # Build event type from HTTP method + first meaningful path segment

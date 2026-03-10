@@ -68,7 +68,6 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   - `{:ok, message_id}` - Notification was accepted
   - `{:error, reason}` - Notification failed
   """
-  @doc "Sends a push notification via Firebase Cloud Messaging."
   @spec send(String.t(), map(), keyword()) :: {:ok, String.t()} | {:error, atom()}
   def send(token, payload, opts \\ []) do
     GenServer.call(__MODULE__, {:send, token, payload, opts}, @default_timeout)
@@ -164,7 +163,6 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call({:send, String.t(), map(), keyword()}, GenServer.from(), map()) :: {:reply, {:ok, String.t()} | {:error, atom()}, map()}
   def handle_call({:send, token, payload, opts}, _from, state) do
     state = Auth.ensure_valid_token(state)

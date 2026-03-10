@@ -10,8 +10,6 @@ defmodule CGraphWeb do
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean.
   """
-
-  @doc "Returns the list of static file paths for the application."
   @spec static_paths() :: [String.t()]
   def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
 

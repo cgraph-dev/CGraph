@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.BoardJSON do
   @moduledoc """
   JSON rendering for boards.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{boards: boards}) do
     %{data: Enum.map(boards, &board_data/1)}

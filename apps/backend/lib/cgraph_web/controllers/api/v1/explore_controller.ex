@@ -18,7 +18,7 @@ defmodule CGraphWeb.API.V1.ExploreController do
   - `offset` — pagination offset (default 0)
   """
   use CGraphWeb, :controller
-  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_data: 3]
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Explore
 

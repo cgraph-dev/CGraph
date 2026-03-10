@@ -88,10 +88,10 @@ defmodule CGraph.Gamification do
   Returns {:ok, {%User{}, level_up?}} or {:error, changeset}
   """
   @spec award_xp(User.t(), integer(), String.t(), keyword()) :: {:ok, {User.t(), boolean()}} | {:error, term()}
-  def award_xp(%User{} = user, amount, source, opts \\ []) do
-    description = Keyword.get(opts, :description)
-    reference_type = Keyword.get(opts, :reference_type)
-    reference_id = Keyword.get(opts, :reference_id)
+  def award_xp(%User{} = user, amount, _source, opts \\ []) do
+    _description = Keyword.get(opts, :description)
+    _reference_type = Keyword.get(opts, :reference_type)
+    _reference_id = Keyword.get(opts, :reference_id)
     multiplier = get_xp_multiplier(user)
 
     final_amount = round(amount * Decimal.to_float(multiplier))

@@ -6,7 +6,6 @@ defmodule CGraph.Forums.Customizations do
   Options are stored as JSONB in the `customization_options` column on `forums`.
   """
 
-  import Ecto.Query
   alias CGraph.Repo
   alias CGraph.Forums.Forum
 

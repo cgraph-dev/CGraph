@@ -125,7 +125,6 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
-  @doc "Handles asynchronous cast messages."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:record_error, report}, state) do
     fingerprint = generate_fingerprint(report)
@@ -196,7 +195,6 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:get_stats, minutes}, _from, state) do
     cutoff = System.system_time(:millisecond) - (minutes * 60 * 1000)
@@ -242,7 +240,6 @@ defmodule CGraph.Telemetry.ErrorReporter do
   end
 
   @impl true
-  @doc "Handles generic messages."
   @spec handle_info(:flush, map()) :: {:noreply, map()}
   def handle_info(:flush, state) do
     flush_to_storage()

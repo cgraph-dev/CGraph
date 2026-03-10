@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.ThreadJSON do
   @moduledoc """
   JSON rendering for threads.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{threads: threads, meta: meta}) do
     %{

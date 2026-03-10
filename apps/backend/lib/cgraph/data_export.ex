@@ -168,7 +168,6 @@ defmodule CGraph.DataExport do
         include: [:profile, :messages]
       ])
   """
-  @doc "Exports all data associated with a user."
   @spec export_user_data(String.t(), export_options()) :: {:ok, export()} | {:error, term()}
   def export_user_data(user_id, opts \\ []),
     do: CGraph.DataExport.Server.export_user_data(user_id, opts)
@@ -193,7 +192,6 @@ defmodule CGraph.DataExport do
         columns: [:id, :email, :name]
       ])
   """
-  @doc "Executes and exports the results of a data query."
   @spec export_query(Ecto.Query.t(), export_options()) :: {:ok, export()} | {:error, term()}
   def export_query(query, opts \\ []),
     do: CGraph.DataExport.Server.export_query(query, opts)

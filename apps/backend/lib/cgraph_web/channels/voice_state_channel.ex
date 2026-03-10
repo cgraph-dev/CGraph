@@ -30,12 +30,10 @@ defmodule CGraphWeb.VoiceStateChannel do
 
   alias CGraph.Groups
   alias CGraph.WebRTC.VoiceChannelManager
-  alias CGraphWeb.Presence
 
   require Logger
 
   @impl true
-  @doc "Handles joining a voice channel. Verifies CONNECT permission and returns LiveKit token."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, map(), Phoenix.Socket.t()} | {:error, map()}
   def join("voice:" <> channel_id, params, socket) do
     user = socket.assigns.current_user

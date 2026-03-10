@@ -15,15 +15,15 @@ defmodule CGraphWeb.IAPController do
 
   alias CGraph.Subscriptions.IAPValidator
 
-  # Apple root CA certificate URLs for JWS verification
-  @apple_root_ca_urls [
-    "https://www.apple.com/certificateauthority/AppleRootCA-G3.cer",
-    "https://www.apple.com/certificateauthority/AppleRootCA-G2.cer"
-  ]
+  # Apple root CA certificate URLs for JWS verification (reserved for future use)
+  # @apple_root_ca_urls [
+  #   "https://www.apple.com/certificateauthority/AppleRootCA-G3.cer",
+  #   "https://www.apple.com/certificateauthority/AppleRootCA-G2.cer"
+  # ]
 
-  # Cache key for Apple root certificates
-  @apple_cert_cache_key "apple_root_certificates"
-  @apple_cert_cache_ttl :timer.hours(24)
+  # Cache key for Apple root certificates (reserved for future use)
+  # @apple_cert_cache_key "apple_root_certificates"
+  # @apple_cert_cache_ttl :timer.hours(24)
 
   # ---------------------------------------------------------------------------
   # Authenticated Endpoints
@@ -300,27 +300,27 @@ defmodule CGraphWeb.IAPController do
     end
   end
 
-  # Legacy decode for Apple notifications (kept for backward compatibility with test stubs)
-  defp decode_apple_notification(%{"signedPayload" => signed_payload}) do
-    case String.split(signed_payload, ".") do
-      [_header, payload | _] ->
-        case Base.url_decode64(payload, padding: false) do
-          {:ok, decoded} ->
-            case Jason.decode(decoded) do
-              {:ok, map} -> map
-              _ -> %{}
-            end
-
-          _ ->
-            %{}
-        end
-
-      _ ->
-        %{}
-    end
-  end
-
-  defp decode_apple_notification(params), do: params
+  # Legacy decode for Apple notifications (reserved for future JWS verification)
+  # defp decode_apple_notification(%{"signedPayload" => signed_payload}) do
+  #   case String.split(signed_payload, ".") do
+  #     [_header, payload | _] ->
+  #       case Base.url_decode64(payload, padding: false) do
+  #         {:ok, decoded} ->
+  #           case Jason.decode(decoded) do
+  #             {:ok, map} -> map
+  #             _ -> %{}
+  #           end
+  #
+  #         _ ->
+  #           %{}
+  #       end
+  #
+  #     _ ->
+  #       %{}
+  #   end
+  # end
+  #
+  # defp decode_apple_notification(params), do: params
 
   defp decode_google_notification(%{"message" => %{"data" => data}}) when is_binary(data) do
     case Base.decode64(data) do

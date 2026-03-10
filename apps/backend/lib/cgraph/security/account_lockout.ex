@@ -156,7 +156,6 @@ defmodule CGraph.Security.AccountLockout do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:check_locked, identifier}, _from, state) do
     result = LockoutLogic.do_check_locked(identifier, state.config, state.redis_available)

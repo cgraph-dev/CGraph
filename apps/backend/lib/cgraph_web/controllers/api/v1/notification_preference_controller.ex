@@ -6,7 +6,7 @@ defmodule CGraphWeb.API.V1.NotificationPreferenceController do
   that override a user's global notification settings.
   """
   use CGraphWeb, :controller
-  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Notifications.Preferences
 

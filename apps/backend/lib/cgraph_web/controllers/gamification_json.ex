@@ -2,8 +2,6 @@ defmodule CGraphWeb.GamificationJSON do
   @moduledoc """
   JSON rendering for achievement endpoints.
   """
-
-  @doc "Renders a list of achievements as JSON."
   @spec achievements(map()) :: map()
   def achievements(%{achievements: achievements}) do
     %{

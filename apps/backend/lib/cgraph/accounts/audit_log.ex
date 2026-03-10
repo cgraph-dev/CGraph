@@ -90,7 +90,6 @@ defmodule CGraph.Accounts.AuditLog do
       iex> AuditLog.log(:login_success, user_id, ip_address: "1.2.3.4")
       {:ok, %AuditLog{action: "login_success", ...}}
   """
-  @doc "Records an account audit log entry."
   @spec log(atom() | String.t(), String.t() | nil, map() | keyword()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def log(action, actor_id, metadata \\ %{}) when is_atom(action) or is_binary(action) do
     log_entry_attrs = %{
@@ -144,7 +143,6 @@ defmodule CGraph.Accounts.AuditLog do
       AuditLog.list(actor_id: user_id, limit: 50)
       AuditLog.list(action: "login_success", from: ~U[2026-01-01 00:00:00Z])
   """
-  @doc "Lists audit log entries."
   @spec list(keyword()) :: {:ok, [struct()], map()}
   def list(opts \\ []) do
     query =

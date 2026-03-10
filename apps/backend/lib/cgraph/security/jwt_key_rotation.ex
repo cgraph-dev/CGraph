@@ -144,7 +144,6 @@ defmodule CGraph.Security.JWTKeyRotation do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:current_key, _from, state) do
     {:reply, state.primary_key, state}
@@ -230,7 +229,6 @@ defmodule CGraph.Security.JWTKeyRotation do
   end
 
   @impl true
-  @doc "Handles generic messages."
   @spec handle_info(:cleanup_expired_keys, map()) :: {:noreply, map()}
   def handle_info(:cleanup_expired_keys, state) do
     now = DateTime.utc_now()

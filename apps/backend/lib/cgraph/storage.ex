@@ -164,10 +164,6 @@ defmodule CGraph.Storage do
     _ -> {:ok, []}
   end
 
-  @doc """
-  Detect content type from filename.
-  """
-
   @content_types %{
     # Audio
     ".webm" => "audio/webm",

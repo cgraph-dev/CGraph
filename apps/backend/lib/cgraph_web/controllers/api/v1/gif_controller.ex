@@ -59,7 +59,6 @@ defmodule CGraphWeb.API.V1.GifController do
   }
   ```
   """
-  @doc "Searches for GIFs matching the query."
   @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def search(conn, %{"q" => query} = params) do
     limit = min(String.to_integer(params["limit"] || "#{@default_limit}"), 50)

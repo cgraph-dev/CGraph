@@ -26,7 +26,6 @@ defmodule CGraphWeb.ControllerHelpers do
       iex> safe_to_integer(nil, 10)
       10
   """
-  @doc "Safely converts a value to an integer."
   @spec safe_to_integer(String.t() | nil, integer()) :: integer()
   def safe_to_integer(nil, default), do: default
   def safe_to_integer(value, default) when is_binary(value) do
@@ -55,7 +54,6 @@ defmodule CGraphWeb.ControllerHelpers do
       iex> extract_pagination_params(%{"page" => "invalid"})
       [page: 1, per_page: 20]
   """
-  @doc "Extracts pagination parameters from the request."
   @spec extract_pagination_params(map(), keyword()) :: keyword()
   def extract_pagination_params(params, opts \\ []) do
     max_per_page = Keyword.get(opts, :max_per_page, 100)
@@ -87,7 +85,6 @@ defmodule CGraphWeb.ControllerHelpers do
       iex> sanitize_search_query(nil)
       nil
   """
-  @doc "Sanitizes a search query string for safe execution."
   @spec sanitize_search_query(String.t() | nil, keyword()) :: String.t() | nil
   def sanitize_search_query(query, opts \\ [])
   def sanitize_search_query(nil, _opts), do: nil
@@ -158,7 +155,6 @@ defmodule CGraphWeb.ControllerHelpers do
       iex> render_data(conn, items, %{cursor: "abc", has_more: true})
       # => json(conn, %{data: items, meta: %{cursor: "abc", has_more: true}})
   """
-  @doc "Renders data in the standard API response format."
   @spec render_data(Plug.Conn.t(), term()) :: Plug.Conn.t()
   def render_data(conn, payload) do
     Phoenix.Controller.json(conn, %{data: payload})

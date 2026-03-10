@@ -115,7 +115,6 @@ defmodule CGraph.Cache do
       Cache.put("user:123", user_data, :timer.minutes(5))
       Cache.put("user:123", user_data, ttl: :timer.minutes(5))
   """
-  @doc "Stores a value in the cache."
   @spec put(key(), value(), ttl() | keyword()) :: {:ok, value()} | {:error, term()}
   def put(key, value, ttl_or_opts \\ []) do
     opts = if is_integer(ttl_or_opts), do: [ttl: ttl_or_opts], else: ttl_or_opts
@@ -261,7 +260,6 @@ defmodule CGraph.Cache do
         Repo.get(User, 123)
       end, ttl: :timer.hours(1))
   """
-  @doc "Retrieves a value from the cache."
   @spec fetch(key(), (() -> value()), keyword() | map() | integer()) :: value()
   def fetch(key, compute_fn, opts \\ []) when is_function(compute_fn, 0) do
     opts =

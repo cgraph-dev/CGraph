@@ -78,7 +78,6 @@ defmodule CGraph.FeatureFlags do
       # With default
       FeatureFlags.enabled?(:unknown_flag, default: true)
   """
-  @doc "Checks if a feature flag is enabled."
   @spec enabled?(atom(), keyword()) :: boolean()
   def enabled?(flag_name, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -204,7 +203,6 @@ defmodule CGraph.FeatureFlags do
         user_tiers: [:admin]
       )
   """
-  @doc "Sets targeting rules for a feature flag."
   @spec set_targeting(atom(), keyword()) :: {:ok, map()} | {:error, term()}
   def set_targeting(flag_name, rules) do
     update_flag(flag_name, %{

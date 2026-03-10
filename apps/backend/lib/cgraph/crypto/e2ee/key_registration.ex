@@ -28,7 +28,6 @@ defmodule CGraph.Crypto.E2EE.KeyRegistration do
     - `prekey_id` - Integer ID for the signed prekey
     - `one_time_prekeys` - List of {key_id, base64_public_key} tuples
   """
-  @doc "Registers E2EE keys for a user device."
   @spec register_keys(String.t(), map()) :: {:ok, map()} | {:error, term()}
   def register_keys(user_id, keys) do
     Repo.transaction(fn ->

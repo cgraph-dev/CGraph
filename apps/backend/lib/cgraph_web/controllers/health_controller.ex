@@ -20,6 +20,8 @@ defmodule CGraphWeb.HealthController do
 
   import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
+  require Logger
+
   alias CGraph.Repo
   alias CGraph.Repo.Healthcheck
   alias CGraph.Search.Engine

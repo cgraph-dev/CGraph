@@ -211,7 +211,6 @@ defmodule CGraphWeb.API.Response do
       {users, meta} = Users.list_users(page: 1, per_page: 20)
       conn |> paginated(users, meta)
   """
-  @doc "Renders a paginated list response."
   @spec paginated(Plug.Conn.t(), term(), map()) :: Plug.Conn.t()
   def paginated(conn, data, pagination_info) do
     pagination = build_pagination(pagination_info)
@@ -286,7 +285,6 @@ defmodule CGraphWeb.API.Response do
       conn |> error(:not_found, "User not found")
       conn |> error(:forbidden, "You cannot access this resource")
   """
-  @doc "Renders an error response."
   @spec error(Plug.Conn.t(), error_code(), String.t(), keyword()) :: Plug.Conn.t()
   def error(conn, code, message, opts \\ []) do
     status = Keyword.get(opts, :status) || Map.get(@error_status_map, code, 500)

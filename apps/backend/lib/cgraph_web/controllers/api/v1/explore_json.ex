@@ -4,8 +4,6 @@ defmodule CGraphWeb.API.V1.ExploreJSON do
 
   Serializes community explore data for the unified discovery endpoint.
   """
-
-  @doc "Renders the explore index response."
   @spec index(map()) :: map()
   def index(%{communities: communities, categories: categories}) do
     %{

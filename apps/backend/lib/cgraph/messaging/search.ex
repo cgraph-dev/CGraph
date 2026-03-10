@@ -28,7 +28,6 @@ defmodule CGraph.Messaging.Search do
   ## Returns
     `{messages, metadata}` tuple
   """
-  @doc "Searches messages matching the given criteria."
   @spec search_messages(map(), String.t(), keyword()) :: {list(Message.t()), map()}
   def search_messages(user, query, opts \\ []) do
     conversation_id = Keyword.get(opts, :conversation_id)

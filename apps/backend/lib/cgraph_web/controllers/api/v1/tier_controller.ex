@@ -122,7 +122,6 @@ defmodule CGraphWeb.API.V1.TierController do
   Response:
     - 200: { allowed: true/false, limit: X, current: Y }
   """
-  @doc "Checks if a user's tier permits an action."
   @spec check_action(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_action(conn, %{"action" => action}) do
     user = conn.assigns.current_user

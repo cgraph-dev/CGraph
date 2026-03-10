@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.ThreadAttachmentJSON do
   @moduledoc """
   JSON rendering for thread attachments.
   """
-
-  @doc "Renders a list of attachments."
   @spec index(map()) :: map()
   def index(%{attachments: attachments}) do
     %{data: Enum.map(attachments, &attachment_data/1)}

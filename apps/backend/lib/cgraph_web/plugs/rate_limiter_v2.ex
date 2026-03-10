@@ -135,8 +135,6 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
       config :cgraph, CGraph.RateLimiter, enabled: false
   """
   @impl Plug
-  @doc "Applies rate limiting to the request."
-  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def call(conn, opts) do
     # Bypass if rate limiting is disabled (e.g., test environment)

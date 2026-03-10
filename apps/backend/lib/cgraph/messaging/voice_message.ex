@@ -175,7 +175,6 @@ defmodule CGraph.Messaging.VoiceMessage do
   - `:extract_waveform` - Whether to generate waveform (default: true)
   - `:context` - Storage context (default: "voice")
   """
-  @doc "Processes a voice message for storage and delivery."
   @spec process(User.t(), map(), keyword()) :: {:ok, t()} | {:error, term()}
   def process(user, upload, opts \\ []) do
     CGraph.Messaging.VoiceMessage.Processing.process(user, upload, opts)

@@ -169,7 +169,6 @@ defmodule CGraph.Notifications.PushService do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:send, user_id, notification, opts}, _from, state) do
     result = do_send_to_user(user_id, notification, opts)

@@ -92,7 +92,6 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   # ---------------------------------------------------------------------------
 
   @impl true
-  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -107,7 +106,6 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   end
 
   @impl true
-  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     identifier = extract_identifier(conn, opts.by)
@@ -153,13 +151,11 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
     apply_tier_multiplier(conn, base_opts)
   end
 
-  @doc """
-  Apply subscription tier rate limit multiplier.
-
-  Premium users get 2x the base rate limit.
-  Enterprise users get 5x the base rate limit.
-  Free users get the default 1x limit.
-  """
+  # Apply subscription tier rate limit multiplier.
+  #
+  # Premium users get 2x the base rate limit.
+  # Enterprise users get 5x the base rate limit.
+  # Free users get the default 1x limit.
   defp apply_tier_multiplier(conn, opts) do
     multiplier = get_tier_multiplier(conn)
 

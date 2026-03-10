@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.PollJSON do
   @moduledoc """
   JSON rendering for thread polls.
   """
-
-  @doc "Renders a poll with results and vote status."
   @spec show(map()) :: map()
   def show(%{poll: poll, results: results, has_voted: has_voted}) do
     %{

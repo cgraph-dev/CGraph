@@ -129,7 +129,6 @@ defmodule CGraph.Redis do
       ])
       # => [{:ok, "OK"}, {:ok, "OK"}, {:ok, "value1"}, {:ok, "value2"}]
   """
-  @doc "Executes a pipeline of Redis commands."
   @spec pipeline([[String.t()]], keyword()) :: {:ok, [term()]} | {:error, term()}
   def pipeline(commands, opts \\ []) when is_list(commands) do
     timeout = Keyword.get(opts, :timeout, @default_timeout * length(commands))

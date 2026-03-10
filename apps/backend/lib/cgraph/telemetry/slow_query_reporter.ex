@@ -85,7 +85,6 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # ===========================================================================
 
   @impl true
-  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     # Create ETS tables for tracking
@@ -115,7 +114,6 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   end
 
   @impl true
-  @doc "Handles generic messages."
   @spec handle_info(:generate_report, map()) :: {:noreply, map()}
   def handle_info(:generate_report, state) do
     generate_and_log_report()

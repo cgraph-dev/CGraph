@@ -157,7 +157,6 @@ defmodule CGraph.Workers.Orchestrator do
         priority: 1
       )
   """
-  @doc "Enqueues a job for orchestrated execution."
   @spec enqueue(module(), map(), keyword()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(worker, args, opts \\ []) do
     job_opts = build_job_opts(opts)
@@ -212,7 +211,6 @@ defmodule CGraph.Workers.Orchestrator do
         cron: "0 * * * *"  # Every hour
       )
   """
-  @doc "Schedules a recurring job."
   @spec recurring(atom(), module(), map(), keyword()) :: {:ok, map()}
   def recurring(name, worker, args, opts) do
     cron = Keyword.fetch!(opts, :cron)

@@ -15,7 +15,7 @@ defmodule CGraph.Creators.Payout do
   import Ecto.Query
   require Logger
 
-  alias CGraph.Creators.{CreatorPayout, Earnings}
+  alias CGraph.Creators.CreatorPayout
   alias CGraph.Accounts.User
   alias CGraph.Repo
 

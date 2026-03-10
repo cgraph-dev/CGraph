@@ -99,7 +99,6 @@ defmodule CGraph.ErrorReporter do
           {:error, :operation_failed}
       end
   """
-  @doc "Reports an error to the error tracking system."
   @spec report(Exception.t(), Exception.stacktrace(), context()) :: :ok
   def report(exception, stacktrace, context \\ %{}) do
     GenServer.cast(__MODULE__, {:report, exception, stacktrace, context})

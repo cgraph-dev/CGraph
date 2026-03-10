@@ -37,7 +37,7 @@ defmodule CGraph.Groups.Operations do
             "permissions" => Role.permissions_map()[:administrator]
           })
 
-          {:ok, member_role} = Roles.create_role(group, %{
+          {:ok, _member_role} = Roles.create_role(group, %{
             "name" => "Member",
             "color" => "#808080",
             "position" => 0,

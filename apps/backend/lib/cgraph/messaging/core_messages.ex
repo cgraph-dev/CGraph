@@ -13,7 +13,6 @@ defmodule CGraph.Messaging.CoreMessages do
   import CGraph.Query.SoftDelete
 
   alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message}
-  alias CGraph.Accounts.User
   alias CGraph.Messaging.LinkPreviewService
   alias CGraph.Repo
   alias CGraph.Search.Indexer

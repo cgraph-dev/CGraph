@@ -126,24 +126,25 @@ defmodule CGraphWeb.API.V1.UserJSON do
   def user_data(nil), do: nil
   def user_data(%Ecto.Association.NotLoaded{}), do: nil
 
-  defp public_profile(%User{} = user) do
-    %{
-      id: user.id,
-      username: user.username,
-      display_name: user.display_name,
-      avatar_url: user.avatar_url,
-      banner_url: user.banner_url,
-      bio: user.bio,
-      status: user.status,
-      status_message: user.status_message,
-      avatar_border_id: user.avatar_border_id,
-      karma: user.karma || 0,
-      is_verified: user.is_verified || false,
-      is_premium: user.is_premium || false,
-      is_profile_private: user.is_profile_private || false,
-      created_at: user.inserted_at
-    }
-  end
+  # Reserved for future public profile rendering (symmetric pair with hidden_profile/1)
+  # defp public_profile(%User{} = user) do
+  #   %{
+  #     id: user.id,
+  #     username: user.username,
+  #     display_name: user.display_name,
+  #     avatar_url: user.avatar_url,
+  #     banner_url: user.banner_url,
+  #     bio: user.bio,
+  #     status: user.status,
+  #     status_message: user.status_message,
+  #     avatar_border_id: user.avatar_border_id,
+  #     karma: user.karma || 0,
+  #     is_verified: user.is_verified || false,
+  #     is_premium: user.is_premium || false,
+  #     is_profile_private: user.is_profile_private || false,
+  #     created_at: user.inserted_at
+  #   }
+  # end
 
   defp hidden_profile(%User{} = user) do
     %{

@@ -62,7 +62,6 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
 
   Returns cursor-paginated leaderboard entries with user rank information.
   """
-  @doc "Retrieves and renders the leaderboard."
   @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user

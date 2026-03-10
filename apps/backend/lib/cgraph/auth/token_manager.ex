@@ -148,7 +148,6 @@ defmodule CGraph.Auth.TokenManager do
   }}
   ```
   """
-  @doc "Generates authentication tokens for a user."
   @spec generate_tokens(User.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def generate_tokens(%User{} = user, opts \\ []) do
     device_info = Keyword.get(opts, :device_info, %{})

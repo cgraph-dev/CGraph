@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.ScheduledMessageJSON do
   @moduledoc """
   JSON rendering for scheduled message responses.
   """
-
-  @doc "Renders a list of scheduled messages."
   @spec index(map()) :: map()
   def index(%{messages: messages}) do
     %{data: Enum.map(messages, &message_data/1)}

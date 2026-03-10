@@ -49,7 +49,6 @@ defmodule CGraphWeb.API.V1.TelemetryController do
 
   Returns 204 No Content on success.
   """
-  @doc "Records a client-side error report."
   @spec create_error(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_error(conn, params) do
     user = conn.assigns[:current_user]

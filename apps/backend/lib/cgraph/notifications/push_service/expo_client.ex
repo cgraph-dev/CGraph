@@ -63,7 +63,6 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
   - `{:ok, ticket_id}` - Message was accepted
   - `{:error, reason}` - Message failed
   """
-  @doc "Sends a push notification via Expo push service."
   @spec send(String.t(), map()) :: {:ok, String.t()} | {:error, term()}
   def send(token, message) do
     case send_batch([Map.put(message, "to", token)]) do

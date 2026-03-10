@@ -2,8 +2,6 @@ defmodule CGraphWeb.TitleJSON do
   @moduledoc """
   JSON rendering for title endpoints.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{titles: titles}) do
     %{data: Enum.map(titles, &render_title_with_ownership/1), meta: %{total: length(titles)}}

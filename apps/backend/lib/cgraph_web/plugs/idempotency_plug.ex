@@ -33,7 +33,6 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
     end
   end
 
-  @doc "Processes the connection through this plug."
   def call(conn, _opts), do: conn
 
   defp handle_key(conn, key, ttl_ms) do

@@ -68,10 +68,10 @@ defmodule CGraph.Forums.BBCode do
     # Temporarily replace code blocks with placeholders
     regex = ~r/\[code\](.*?)\[\/code\]/si
 
-    {result, _} =
+    {_result, _} =
       Regex.scan(regex, text, return: :index)
-      |> Enum.reduce({text, 0}, fn [{start, len} | _], {acc, offset} ->
-        [_full, {inner_start, inner_len}] =
+      |> Enum.reduce({text, 0}, fn [{start, _len} | _], {acc, offset} ->
+        [_full, {_inner_start, _inner_len}] =
           Regex.run(regex, String.slice(acc, (start + offset)..String.length(acc)), return: :index)
 
         # Just process in-place

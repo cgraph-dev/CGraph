@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.UploadJSON do
   @moduledoc """
   JSON rendering for upload responses.
   """
-
-  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{file: file}) do
     %{data: file_data(file)}

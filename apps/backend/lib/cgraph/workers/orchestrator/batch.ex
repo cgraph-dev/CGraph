@@ -45,7 +45,6 @@ defmodule CGraph.Workers.Orchestrator.Batch do
         on_complete: {AdminNotifier, %{type: "sync_complete"}}
       )
   """
-  @doc "Executes a batch of related jobs."
   @spec batch(list(), module(), keyword()) :: {:ok, String.t(), non_neg_integer()}
   def batch(items, worker, opts \\ []) when is_list(items) do
     batch_size = Keyword.get(opts, :batch_size, 100)

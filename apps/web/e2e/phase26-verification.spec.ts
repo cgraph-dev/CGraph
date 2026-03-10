@@ -27,7 +27,7 @@ test.describe('Phase 26: Route Redirects', () => {
 
   for (const route of deletedRoutes) {
     test(`${route} does not render a gamification page`, async ({ page }) => {
-      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(2000);
       const url = new URL(page.url());
 
@@ -54,7 +54,7 @@ test.describe('Phase 26: Sidebar Cleanup', () => {
     await page.waitForTimeout(2000);
 
     const sidebar = page.locator('nav, [data-testid="sidebar"], aside').first();
-    if (await sidebar.count() > 0) {
+    if ((await sidebar.count()) > 0) {
       const sidebarText = await sidebar.textContent();
       expect(sidebarText?.toLowerCase()).not.toContain('leaderboard');
       expect(sidebarText?.toLowerCase()).not.toContain('gamification hub');

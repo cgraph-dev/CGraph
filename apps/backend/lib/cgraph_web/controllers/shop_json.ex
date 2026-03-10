@@ -2,8 +2,6 @@ defmodule CGraphWeb.ShopJSON do
   @moduledoc """
   JSON rendering for shop endpoints.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{items: items}) do
     %{data: Enum.map(items, &render_item/1), meta: %{total: length(items)}}

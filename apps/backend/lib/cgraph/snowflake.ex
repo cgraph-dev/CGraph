@@ -136,7 +136,6 @@ defmodule CGraph.Snowflake do
   end
 
   @impl true
-  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:generate, _from, state) do
     {id, new_state} = do_generate(state)

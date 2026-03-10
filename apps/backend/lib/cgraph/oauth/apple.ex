@@ -31,7 +31,6 @@ defmodule CGraph.OAuth.Apple do
   - `{:ok, claims}` - The verified token claims
   - `{:error, reason}` - If verification failed
   """
-  @doc "Verifies an Apple Sign-In token."
   @spec verify_token(String.t(), Keyword.t()) :: {:ok, map()} | {:error, term()}
   def verify_token(id_token, config) do
     verify_id_token(id_token, config)
@@ -64,7 +63,6 @@ defmodule CGraph.OAuth.Apple do
 
   The signed JWT string, or an empty string if the private key is not configured.
   """
-  @doc "Generates the Apple client secret JWT."
   @spec generate_client_secret(Keyword.t()) :: String.t()
   def generate_client_secret(config) do
     now = System.system_time(:second)

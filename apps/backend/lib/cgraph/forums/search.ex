@@ -19,9 +19,8 @@ defmodule CGraph.Forums.Search do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{Board, Comment, CursorPagination, Post, Thread, ThreadPost}
+  alias CGraph.Forums.{Comment, CursorPagination, Post, Thread, ThreadPost}
   alias CGraph.Pagination
-  alias CGraph.Repo
 
   # ── Public API ───────────────────────────────────────────────────────
 

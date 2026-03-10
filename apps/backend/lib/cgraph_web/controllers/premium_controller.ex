@@ -145,7 +145,6 @@ defmodule CGraphWeb.PremiumController do
   - STRIPE_WEBHOOK_SECRET: Webhook signature verification
   - PREMIUM_DEMO_MODE: Set to "true" ONLY for development
   """
-  @doc "Handles premium subscription creation."
   @spec subscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subscribe(conn, %{"tier" => tier}) do
     user = conn.assigns.current_user

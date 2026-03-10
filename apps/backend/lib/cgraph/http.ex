@@ -104,7 +104,6 @@ defmodule CGraph.HTTP do
       CGraph.HTTP.get("https://api.example.com/users")
       CGraph.HTTP.get("https://api.example.com/users", timeout: 5_000)
   """
-  @doc "Performs an HTTP GET request."
   @spec get(String.t(), options()) :: response()
   def get(url, opts \\ []) do
     request(:get, url, nil, opts)
@@ -169,7 +168,6 @@ defmodule CGraph.HTTP do
 
       CGraph.HTTP.service(:stripe).get("/v1/customers")
   """
-  @doc "Configures an HTTP service client."
   @spec service(atom()) :: module()
   def service(name) when is_atom(name) do
     case name do
@@ -201,7 +199,6 @@ defmodule CGraph.HTTP do
       )
       Tesla.get(client, "/users")
   """
-  @doc "Builds a configured HTTP client instance."
   @spec build_client(keyword()) :: Tesla.Client.t()
   def build_client(opts \\ []) do
     base_url = Keyword.get(opts, :base_url)

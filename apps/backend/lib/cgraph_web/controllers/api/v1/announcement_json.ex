@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.AnnouncementJSON do
   @moduledoc """
   JSON rendering for Announcement endpoints.
   """
-
-  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{announcements: announcements}) do
     %{data: %{announcements: Enum.map(announcements, &announcement_data/1)}, meta: %{total: length(announcements)}}

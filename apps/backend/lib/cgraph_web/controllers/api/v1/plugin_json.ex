@@ -2,8 +2,6 @@ defmodule CGraphWeb.API.V1.PluginJSON do
   @moduledoc """
   JSON views for plugin endpoints.
   """
-
-  @doc "Renders the plugin marketplace listing as JSON."
   @spec marketplace(map()) :: map()
   def marketplace(%{plugins: plugins}) do
     %{

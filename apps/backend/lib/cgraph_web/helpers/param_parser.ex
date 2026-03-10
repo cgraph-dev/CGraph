@@ -46,7 +46,6 @@ defmodule CGraphWeb.Helpers.ParamParser do
       parse_int("1000", 50, max: 100)
       #=> 100
   """
-  @doc "Parses a string parameter as an integer."
   @spec parse_int(term(), integer(), keyword()) :: integer()
   def parse_int(value, default, opts \\ [])
 
@@ -81,7 +80,6 @@ defmodule CGraphWeb.Helpers.ParamParser do
       parse_atom(nil, [:xp, :level, :coins], :xp)
       #=> :xp
   """
-  @doc "Parses a string parameter as a safe atom."
   @spec parse_atom(term(), [atom()], atom()) :: atom()
   def parse_atom(value, allowed, default)
 

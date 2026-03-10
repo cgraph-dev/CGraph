@@ -113,7 +113,6 @@ defmodule CGraph.Security.TokenBlacklist do
       TokenBlacklist.revoke("eyJ...", reason: :logout, user_id: "user_123")
       TokenBlacklist.revoke("eyJ...", reason: :password_change)
   """
-  @doc "Revokes a specific authentication token."
   @spec revoke(token(), keyword()) :: :ok | {:error, term()}
   def revoke(token, opts \\ []) when is_binary(token) do
     reason = Keyword.get(opts, :reason, :logout)
@@ -157,7 +156,6 @@ defmodule CGraph.Security.TokenBlacklist do
       TokenBlacklist.revoke_all_for_user("user_123", reason: :password_change)
       TokenBlacklist.revoke_all_for_user("user_123", reason: :security_breach)
   """
-  @doc "Revokes all authentication tokens for a user."
   @spec revoke_all_for_user(user_id(), keyword()) :: :ok | {:error, term()}
   def revoke_all_for_user(user_id, opts \\ []) when is_binary(user_id) do
     GenServer.call(__MODULE__, {:revoke_all_user, user_id, opts})

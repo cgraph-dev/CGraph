@@ -2,8 +2,6 @@ defmodule CGraphWeb.CoinsJSON do
   @moduledoc """
   JSON rendering for coins endpoints.
   """
-
-  @doc "Renders coin transaction history as JSON."
   @spec history(map()) :: map()
   def history(%{transactions: {transactions, meta}}) when is_list(transactions) do
     %{data: Enum.map(transactions, &render_transaction/1), meta: meta}
