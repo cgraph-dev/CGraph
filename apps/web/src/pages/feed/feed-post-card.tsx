@@ -14,6 +14,7 @@ import {
   LockClosedIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
+import { PulseReactions } from '@/modules/pulse/components/pulse-reactions';
 import type { FeedThread } from '@/modules/discovery/hooks/useFeed';
 
 interface FeedPostCardProps {
@@ -86,7 +87,7 @@ export function FeedPostCard({ thread, className }: FeedPostCardProps) {
         </p>
       )}
 
-      {/* Bottom bar: metrics */}
+      {/* Bottom bar: metrics + reactions */}
       <div className="flex items-center gap-4 text-xs text-white/30">
         <span className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="h-3.5 w-3.5" />
@@ -100,6 +101,21 @@ export function FeedPostCard({ thread, className }: FeedPostCardProps) {
           <span className="font-medium text-indigo-400/60">
             ↑ {formatCount(thread.score)}
           </span>
+        )}
+        {thread.author && thread.board && (
+          <div
+            className="ml-auto"
+            onClick={(e) => e.preventDefault()}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); }}
+            role="group"
+          >
+            <PulseReactions
+              contentId={thread.id}
+              contentType="thread"
+              authorId={thread.author.id}
+              forumId={thread.board.id}
+            />
+          </div>
         )}
       </div>
     </Link>
