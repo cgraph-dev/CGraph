@@ -9,6 +9,7 @@ import {
   PaintBrushIcon,
   UserCircleIcon,
   Cog6ToothIcon,
+  CircleStackIcon,
 } from '@heroicons/react/24/outline';
 import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
@@ -17,6 +18,7 @@ import {
   PaintBrushIcon as PaintBrushIconSolid,
   UserCircleIcon as UserCircleIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
+  CircleStackIcon as CircleStackIconSolid,
 } from '@heroicons/react/24/solid';
 // TODO(phase-26): Rewire — FeatureGateKey deleted from shared-types
 type FeatureGateKey = string;
@@ -39,6 +41,12 @@ export const navItems = [
     label: 'Forums',
     icon: NewspaperIcon,
     activeIcon: NewspaperIconSolid,
+  },
+  {
+    path: '/nodes',
+    label: 'Nodes',
+    icon: CircleStackIcon,
+    activeIcon: CircleStackIconSolid,
   },
   {
     path: '/customize',
