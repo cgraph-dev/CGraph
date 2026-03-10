@@ -54,6 +54,9 @@ interface ThreadCardData {
   isLocked?: boolean;
   isHot?: boolean;
   userVote?: 'up' | 'down' | null;
+  /** Content gating (Phase 31 — Discovery) */
+  isContentGated?: boolean;
+  gatePriceNodes?: number;
 }
 
 interface ThreadCardProps {
@@ -189,6 +192,12 @@ export function ThreadCard({ thread, compact = false, className }: ThreadCardPro
             {thread.isPinned && <MapPinIcon className="h-3.5 w-3.5 text-primary-400" />}
             {thread.isLocked && <LockClosedIcon className="h-3.5 w-3.5 text-gray-500" />}
             {thread.isHot && <FireIcon className="h-3.5 w-3.5 text-orange-400" />}
+            {thread.isContentGated && (
+              <span className="flex items-center gap-0.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
+                <LockClosedIcon className="h-3 w-3" />
+                {thread.gatePriceNodes != null ? `${thread.gatePriceNodes} Nodes` : 'Gated'}
+              </span>
+            )}
           </div>
         </div>
 

@@ -70,6 +70,10 @@ export const PluginMarketplace = lazyRetry(() => import('@/pages/forums/plugin-m
 export const ModerationQueue = lazyRetry(() => import('@/pages/forums/moderation-queue'));
 export const ForumSearchResults = lazyRetry(() => import('@/pages/forums/forum-search-results'));
 
+// ── Discovery (Phase 31) ──────────────────────────────────────────────
+export const FeedPage = lazyRetry(() => import('@/pages/feed/feed-page'));
+export const DiscoverySettings = lazyRetry(() => import('@/pages/settings/discovery/discovery-settings'));
+
 // ── Settings & Profile ─────────────────────────────────────────────────
 export const Settings = lazyRetry(() => import('@/pages/settings/settings'));
 export const ThemeCustomization = lazyRetry(() => import('@/pages/settings/theme-customization'));

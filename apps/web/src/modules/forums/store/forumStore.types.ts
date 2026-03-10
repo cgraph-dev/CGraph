@@ -93,6 +93,10 @@ export interface Post {
   editHistory?: PostEditHistory[];
   isApproved?: boolean;
   poll?: Poll | null;
+  /** Content gating (Phase 31 — Discovery) */
+  isContentGated?: boolean;
+  gatePriceNodes?: number;
+  gatePreviewChars?: number;
   author: {
     id: string;
     username: string | null;

@@ -23,6 +23,9 @@ import {
   ExploreGroups,
   // Explore (unified)
   ExplorePage,
+  // Discovery (Phase 31)
+  FeedPage,
+  DiscoverySettings,
   // Profile & Community
   UserProfile,
   // Calls
@@ -90,11 +93,17 @@ export function AppRoutes() {
         {/* Explore — unified community discovery */}
         <Route path="explore" element={<ExplorePage />} />
 
+        {/* Discovery Feed (Phase 31) */}
+        <Route path="feed" element={<FeedPage />} />
+
         {/* Forums */}
         {ForumRoutes()}
 
         {/* Settings */}
         {SettingsRoutes()}
+
+        {/* Discovery Settings (Phase 31) */}
+        <Route path="settings/discovery" element={<DiscoverySettings />} />
 
         {/* Members */}
         <Route path="members" element={<MemberList />} />
