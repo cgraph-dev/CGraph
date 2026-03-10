@@ -61,6 +61,12 @@ defmodule CGraph.Forums.Thread do
     field :downvotes, :integer, default: 0
     field :hot_score, :float, default: 0.0
 
+    # Content gating (Phase 31 — Discovery)
+    field :is_content_gated, :boolean, default: false
+    field :gate_price_nodes, :integer
+    field :gate_preview_chars, :integer, default: 300
+    field :weighted_resonates, :decimal, default: 0
+
     # Soft delete
     field :deleted_at, :utc_datetime
 
@@ -84,7 +90,8 @@ defmodule CGraph.Forums.Thread do
     |> cast(attrs, [
       :title, :slug, :content, :content_html, :thread_type,
       :is_locked, :is_pinned, :is_hidden, :is_approved,
-      :prefix, :prefix_color, :board_id, :author_id, :icon_id
+      :prefix, :prefix_color, :board_id, :author_id, :icon_id,
+      :is_content_gated, :gate_price_nodes, :gate_preview_chars
     ])
     |> validate_required([:title, :content, :board_id, :author_id])
     |> validate_length(:title, min: 3, max: 200)

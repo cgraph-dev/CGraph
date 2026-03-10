@@ -36,6 +36,7 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.CreatorRoutes
   import CGraphWeb.Router.AnimationRoutes
   import CGraphWeb.Router.PulseRoutes
+  import CGraphWeb.Router.DiscoveryRoutes
 
   # ============================================================================
   # Pipelines
@@ -135,4 +136,5 @@ defmodule CGraphWeb.Router do
   ai_routes()
   sync_routes()
   pulse_routes()
+  discovery_routes()
 end
