@@ -19,8 +19,11 @@ does NOT modify the Creator monetization system.
 
 - **Replace coins with Nodes entirely** — deprecate/delete coin system
 - Migrate coins field → node_wallets table (separate table, not a field on users)
-- Delete all 6 backend coin files + 15 frontend coin shop files
+- Delete all 6 backend coin files + 18 frontend coin shop files
 - Remove award_coins/spend_coins from gamification.ex
+- Update all existing callers: stickers.ex (L290), title_shop_system.ex (L94+L98+L137+L141),
+  achievement_system.ex (L114), and JSON serializers (user_json.ex L117, auth_json.ex L117,
+  shop_controller.ex L74, title_controller.ex L120)
 - Keep non-coin gamification functions (streaks, etc.) if any exist
 
 ### Bundle Pricing
