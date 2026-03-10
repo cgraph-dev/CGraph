@@ -25,7 +25,6 @@ import {
   arrayBufferToBase64,
   base64ToArrayBuffer,
   generateECKeyPair,
-  exportPublicKey,
   type PQXDHPreKeyBundle,
   type TripleRatchetMessage,
   type TripleRatchetDecryptedMessage,
@@ -50,9 +49,12 @@ function serializeMessage(msg: TripleRatchetMessage): string {
   return JSON.stringify({
     header: {
       ec: {
-        publicKey: arrayBufferToBase64(msg.header.ec.publicKey),
-        messageNumber: msg.header.ec.messageNumber,
-        previousChainLength: msg.header.ec.previousChainLength,
+        dh: arrayBufferToBase64(msg.header.ec.dh),
+        pn: msg.header.ec.pn,
+        n: msg.header.ec.n,
+        sessionId: msg.header.ec.sessionId,
+        timestamp: msg.header.ec.timestamp,
+        version: msg.header.ec.version,
       },
       pq: msg.header.pq,
       version: msg.header.version,
@@ -66,7 +68,7 @@ function serializeMessage(msg: TripleRatchetMessage): string {
 /** Shape of the parsed serialized message JSON */
 interface SerializedTripleRatchetMessage {
   header: {
-    ec: { publicKey: string; messageNumber: number; previousChainLength: number };
+    ec: { dh: string; pn: number; n: number; sessionId: string; timestamp: number; version: number };
     pq: TripleRatchetMessage['header']['pq'];
     version: number;
   };
@@ -84,9 +86,12 @@ function deserializeMessage(blob: string): TripleRatchetMessage {
   return {
     header: {
       ec: {
-        publicKey: new Uint8Array(base64ToArrayBuffer(parsed.header.ec.publicKey)),
-        messageNumber: parsed.header.ec.messageNumber,
-        previousChainLength: parsed.header.ec.previousChainLength,
+        dh: new Uint8Array(base64ToArrayBuffer(parsed.header.ec.dh)),
+        pn: parsed.header.ec.pn,
+        n: parsed.header.ec.n,
+        sessionId: parsed.header.ec.sessionId,
+        timestamp: parsed.header.ec.timestamp,
+        version: parsed.header.ec.version,
       },
       pq: parsed.header.pq,
       version: parsed.header.version,
@@ -148,7 +153,7 @@ export function useSecretChat(): UseSecretChatReturn {
 
   // Persist engine and protocol store across renders in refs
   const engineRef = useRef<TripleRatchetEngine | null>(null);
-  const protocolStoreRef = useRef<InMemoryProtocolStore>(new InMemoryProtocolStore());
+  const protocolStoreRef = useRef<InMemoryProtocolStore | null>(null);
 
   // ── Ghost Mode ─────────────────────────────────────────────────────
 
@@ -178,7 +183,7 @@ export function useSecretChat(): UseSecretChatReturn {
     } finally {
       // Destroy crypto state
       engineRef.current = null;
-      protocolStoreRef.current = new InMemoryProtocolStore();
+      protocolStoreRef.current = null;
       doPanicWipe();
     }
   }, []);
@@ -213,13 +218,15 @@ export function useSecretChat(): UseSecretChatReturn {
 
     engineRef.current = engine;
 
-    // Store identity keys in protocol store for future lookups
+    // Create protocol store with session identity keys
+    protocolStoreRef.current = new InMemoryProtocolStore(
+      { publicKey: identityKeyPair.rawPublicKey, privateKey: new Uint8Array(32) },
+      1
+    );
+
+    // Store peer's identity key in protocol store for future lookups
     const address = { name: 'secret-peer', deviceId: 1 };
-    await protocolStoreRef.current.saveIdentityKey(address, {
-      address,
-      identityKey: peerBundle.identityKey,
-      trustedAt: Date.now(),
-    });
+    await protocolStoreRef.current.saveIdentity(address, peerBundle.identityKey);
 
     // Wipe secret material
     pqxdhResult.sharedSecret.fill(0);
