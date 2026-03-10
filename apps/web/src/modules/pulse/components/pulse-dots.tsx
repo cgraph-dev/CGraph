@@ -15,8 +15,10 @@ export interface PulseDotsProps {
   className?: string;
 }
 
+const DEFAULT_TIER = { dots: 0, color: 'text-gray-400', label: 'Newcomer' } as const;
+
 const TIER_CONFIG: Record<string, { dots: number; color: string; label: string }> = {
-  newcomer: { dots: 0, color: 'text-gray-400', label: 'Newcomer' },
+  newcomer: DEFAULT_TIER,
   active: { dots: 1, color: 'text-blue-400', label: 'Active' },
   trusted: { dots: 2, color: 'text-green-400', label: 'Trusted' },
   expert: { dots: 3, color: 'text-purple-400', label: 'Expert' },
@@ -40,7 +42,7 @@ export const PulseDots = memo(function PulseDots({
   showTooltip = true,
   className,
 }: PulseDotsProps) {
-  const config = TIER_CONFIG[tier] ?? TIER_CONFIG.newcomer;
+  const config = TIER_CONFIG[tier] ?? DEFAULT_TIER;
 
   const dots = useMemo(() => {
     return Array.from({ length: TOTAL_DOTS }, (_, i) => i < config.dots);
