@@ -7,8 +7,17 @@
 import { useState, useCallback, useEffect } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import type { MessageActionMenuProps } from './types';
-import { ReplyIcon, EditIcon, PinIcon, ForwardIcon, DeleteIcon, BookmarkIcon, BookmarkFilledIcon } from './icons';
+import {
+  ReplyIcon,
+  EditIcon,
+  PinIcon,
+  ForwardIcon,
+  DeleteIcon,
+  BookmarkIcon,
+  BookmarkFilledIcon,
+} from './icons';
 import { api } from '@/lib/api';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 /**
  * Message Action Menu component.
@@ -19,13 +28,16 @@ export function MessageActionMenu({
   onPin,
   onForward,
   onDelete,
+  onTip,
   isMenuOpen,
   onToggleMenu,
+  isOwn,
   messageId,
 }: MessageActionMenuProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const dmTipping = useFeatureFlag('nodes.dm_tipping');
 
   // Check saved state when menu opens
   useEffect(() => {
@@ -45,7 +57,9 @@ export function MessageActionMenu({
         // ignore
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [isMenuOpen, messageId]);
 
   const handleToggleSave = useCallback(async () => {
@@ -116,6 +130,15 @@ export function MessageActionMenu({
             {isSaved ? <BookmarkFilledIcon /> : <BookmarkIcon />}
             {isSaved ? 'Unsave' : 'Save'}
           </button>
+          {!isOwn && dmTipping.enabled && onTip && (
+            <button
+              onClick={onTip}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-purple-400 hover:bg-white/[0.08]"
+            >
+              <span className="flex h-4 w-4 items-center justify-center text-sm">{'\u2115'}</span>
+              Tip
+            </button>
+          )}
           <button
             onClick={onDelete}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-white/[0.08]"

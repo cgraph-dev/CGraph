@@ -65,6 +65,7 @@ export interface MessageActionMenuProps {
   onPin?: () => void;
   onForward?: () => void;
   onDelete?: () => void;
+  onTip?: () => void;
   isMenuOpen?: boolean;
   onToggleMenu?: () => void;
   isOwn: boolean;
