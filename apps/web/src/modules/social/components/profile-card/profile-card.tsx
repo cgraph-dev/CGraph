@@ -7,6 +7,8 @@ import { memo, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useActiveProfileTheme, useProfileCardConfig } from '@/stores/theme';
+import { useAuthStore } from '@/modules/auth/store';
+import { TipButton } from '@/modules/nodes/components/tip-button';
 import { SIZE_CONFIG, getHoverVariants, RADIUS_MAP } from './constants';
 import { MinimalLayout } from './minimal-layout';
 import { CompactLayout } from './compact-layout';
@@ -37,6 +39,7 @@ export const ProfileCard = memo(function ProfileCard({
 }: ProfileCardProps) {
   const storeTheme = useActiveProfileTheme();
   const storeConfig = useProfileCardConfig();
+  const { user: currentUser } = useAuthStore();
 
   const theme = propTheme ?? storeTheme;
   const config = propConfig ?? storeConfig;
@@ -47,7 +50,7 @@ export const ProfileCard = memo(function ProfileCard({
 
     const { colors, glassmorphism, borderRadius } = theme;
 
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- CSS custom properties not in CSSProperties type
     return {
       '--glow-color': colors.accent,
       '--accent-color': colors.accent,
@@ -57,7 +60,7 @@ export const ProfileCard = memo(function ProfileCard({
       borderRadius: RADIUS_MAP[borderRadius],
       color: colors.text,
       fontFamily: theme.fontFamily,
-    } as React.CSSProperties; // type assertion: CSS custom properties not in CSSProperties type
+    } as React.CSSProperties;
   }, [theme]);
 
   const hoverVariants = theme ? getHoverVariants(theme.hoverEffect) : undefined;
@@ -98,6 +101,13 @@ export const ProfileCard = memo(function ProfileCard({
       )}
       {config.layout === 'custom' && (
         <DetailedLayout user={user} config={config} sizeConfig={sizeConfig} theme={theme} />
+      )}
+
+      {/* Tip button — hidden on own profile */}
+      {currentUser && user.id !== currentUser.id && (
+        <div className="flex justify-end border-t border-white/5 px-2 pt-2">
+          <TipButton recipientId={user.id} recipientName={user.displayName || user.username} />
+        </div>
       )}
 
       {/* Online status indicator */}
