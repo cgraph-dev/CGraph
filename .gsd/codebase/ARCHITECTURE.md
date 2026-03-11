@@ -202,7 +202,8 @@ top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_con
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 27 workers in `lib/cgraph/workers/` (notable workers):
+**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (30 files including
+`base.ex` and `orchestrator.ex`):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -228,7 +229,8 @@ top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_con
 - `ExpireSecretConversations` — secret chat session expiry
 - `FileCleanupWorker` — orphaned file cleanup
 - `SendScheduledMessage` — scheduled message dispatch
-- Worker orchestrator (`base.ex`) for complex multi-step jobs
+- Worker base module (`base.ex`) for shared worker behaviour
+- Worker orchestrator (`orchestrator.ex`) for complex multi-step jobs
 
 ---
 
@@ -272,11 +274,12 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 | `WebRTCLobbyChannel`  | `webrtc:lobby`   | Call initiation lobby                             |
 | `VoiceStateChannel`   | `voice:*`        | Voice state tracking                              |
 | `SecretChatChannel`   | `secret_chat:*`  | E2EE secret chat sessions                         |
-
-| `ForumChannel` | `forum:*` | Forum-level real-time updates | | `ThreadChannel` | `thread:*` |
-Thread-level real-time updates | | `BoardChannel` | `board:*` | Board-level real-time updates | |
-`AIChannel` | `ai:*` | Streaming AI responses | | `DocumentChannel` | `document:*` | Collaborative
-editing (Yjs CRDT sync) | | `QrAuthChannel` | `qr_auth:*` | QR code login authentication |
+| `ForumChannel`        | `forum:*`        | Forum-level real-time updates                     |
+| `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
+| `BoardChannel`        | `board:*`        | Board-level real-time updates                     |
+| `AIChannel`           | `ai:*`           | Streaming AI responses                            |
+| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |
+| `QrAuthChannel`       | `qr_auth:*`      | QR code login authentication                      |
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 

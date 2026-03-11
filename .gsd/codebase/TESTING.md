@@ -68,7 +68,7 @@ apps/web/src/
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
-│   └── ... (15 store test files)
+│   └── ... (16 store test files)
 ├── hooks/__tests__/          # Hook unit tests (9 direct + 5 facade tests = 14)
 │   ├── useDebounce.test.ts
 │   ├── useClickOutside.test.ts
@@ -383,7 +383,7 @@ apps/backend/test/
 └── integration/              # Integration tests (E2EE, real-time messaging, etc.)
 ```
 
-~220 test files total across the backend.
+~219 test files total across the backend.
 
 #### Context/Domain Test Pattern
 

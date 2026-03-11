@@ -79,8 +79,8 @@ This is the **single biggest compliance failure** in the World-Class Gap Analysi
 
 | Metric                  | Current   | Target       | Gap                |
 | ----------------------- | --------- | ------------ | ------------------ |
-| Web test files          | 357       | ~2,240 (1:1) | **~1,883 missing** |
-| Web test coverage ratio | ~15.9%    | 100%         | ~84.1%             |
+| Web test files          | 357       | ~2,218 (1:1) | **~1,861 missing** |
+| Web test coverage ratio | ~16.1%    | 100%         | ~83.9%             |
 | CI coverage gate        | 40% lines | 70%+         | Gate too low       |
 
 Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
@@ -107,10 +107,10 @@ Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
 CI enforcement thresholds have been raised but the hard gate in `ci.yml` remains low
 (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 13):
 
-- Vitest (`apps/web/vite.config.js`): statements 60%, branches 60%, functions 60%, lines 60%
-- CI hard gate in `.github/workflows/ci.yml`: `WEB_PCT < 40` (still at old threshold)
-- Separate `coverage.yml` coverage-gate job enforces 60% web / 75% backend
-- **Gap**: `ci.yml` hard gate (40%) is inconsistent with vitest thresholds (60%)
+- Vitest (`apps/web/vite.config.ts`): statements 40%, branches 55%, functions 50%, lines 40%
+- CI hard gate in `.github/workflows/ci.yml`: `WEB_PCT < 40` (aligned with vitest lines threshold)
+- Separate `coverage.yml` coverage-gate job runs vitest with same thresholds / 75% backend
+- **Note**: `ci.yml` hard gate (40%) is now aligned with vitest lines threshold (40%)
 
 ### 2.4 Missing Test Categories
 
@@ -207,7 +207,7 @@ partially refactored). While annotated with reason comments, these represent **s
 safety debt**:
 
 - `scripts/fix-type-assertions.mjs` documents the situation
-- Affects ~100 web files and 1 mobile file
+- Affects ~101 web files (0 mobile files)
 - Original intent was to replace with runtime type guards; only ~40 were actually replaced
 - Rule 11 (Type Safety) now rated **PASS** in gap analysis — 0 unannotated casts remain
 
@@ -253,7 +253,7 @@ memory, which will cause issues with long-lived documents (`docs/V1_ACTION_PLAN.
 
 ### 5.3 useMemo/useCallback Debt — ~2,461 Instances
 
-~2,461 `useMemo`/`useCallback` hook usages across ~579 files cannot be removed until React Compiler
+~2,487 `useMemo`/`useCallback` hook usages across ~588 files cannot be removed until React Compiler
 (`babel-plugin-react-compiler`) is enabled. These are technically unnecessary with React 19 but
 required without the compiler. Rule 12 (React 19 Patterns) is now rated **PASS** in gap analysis
 (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
@@ -446,7 +446,7 @@ From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | ---------------------------- | -------------------------------------------------------------------------- |
 | Animation Standards (Rule 4) | **PASS** — ~100+ dynamic inline values remain but all migratable ones done |
 | Mobile File Size (Rule 8)    | **PASS** (web) — but 138 mobile TSX files still over 300 lines             |
-| Testing (Rule 9)             | **FAIL** — 15.9% web test coverage vs 100% target (357/2240)               |
+| Testing (Rule 9)             | **FAIL** — 16.1% web test coverage vs 100% target (357/2218)               |
 | Type Safety (Rule 11)        | **PASS** — 348 `as` casts annotated, 0 unannotated remain                  |
 | React 19 (Rule 12)           | **PASS** — React Compiler not enabled, ~2,461 useMemo/useCallback remain   |
 
@@ -589,7 +589,7 @@ from new code). Total across monorepo is now ~450 (282 web + ~139 mobile + ~29 p
 | eslint-disable suppressions    | ~450 (282 web, ~139 mobile, ~29 packages) |
 | Type assertion annotations     | 348                                       |
 | Deprecated files/annotations   | 20 (incl. gamification.ex stubs)          |
-| Missing web test files         | ~1,883                                    |
+| Missing web test files         | ~1,861                                    |
 | Oversized mobile TSX files     | 138                                       |
 | Incomplete wave tasks          | ~35                                       |
 | Security reviews overdue       | 2                                         |

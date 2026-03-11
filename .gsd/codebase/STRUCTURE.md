@@ -188,7 +188,7 @@ apps/backend/
 │   │   ├── accounts/                  # User management context
 │   │   │   ├── user.ex               # User Ecto schema
 │   │   │   ├── user/                  # User sub-modules
-│   │   │   ├── authentication.ex      # Login/credential verification
+│   │   │   ├── credentials.ex         # Login/credential verification
 │   │   │   ├── registration.ex        # User registration
 │   │   │   ├── session.ex            # Session schema
 │   │   │   ├── sessions.ex           # Session management
@@ -455,8 +455,13 @@ apps/backend/
 │   │   │   ├── tier_limits/          # Feature gating per tier
 │   │   │   ├── tier_limits.ex        # Tier limits module
 │   │   │   ├── tier_feature.ex       # Feature schema
+│   │   │   ├── tier_features.ex      # Feature queries/operations
 │   │   │   ├── tier_limit.ex         # Limit schema
-│   │   │   └── user_tier_override.ex # Per-user tier overrides
+│   │   │   ├── user_tier_override.ex # Per-user tier overrides
+│   │   │   ├── iap_validator.ex      # In-app purchase validation
+│   │   │   ├── idempotency.ex        # Idempotent subscription operations
+│   │   │   ├── receipt_validation.ex # Receipt validation logic
+│   │   │   └── webhook_event.ex      # Subscription webhook events
 │   │   │
 │   │   ├── presence/                  # Online presence tracking
 │   │   │   ├── tracker.ex            # Presence tracker
@@ -711,6 +716,11 @@ apps/web/
 │   │   ├── theme/                     # Theme-related components
 │   │   ├── animated-logo/            # Animated logo component
 │   │   ├── error-boundary.tsx        # React error boundary
+│   │   ├── empty-state.msw.stories.tsx # Empty state MSW stories
+│   │   ├── liquid-glass/             # Liquid Glass components
+│   │   ├── lottie/                    # Lottie animation components
+│   │   ├── nameplate/                 # Nameplate components
+│   │   ├── particles/                 # Particle effect components
 │   │   ├── dev/                       # Dev-only components
 │   │   ├── index.ts                   # Component barrel exports
 │   │   ├── __tests__/                 # Component tests
@@ -728,6 +738,16 @@ apps/web/
 │   │   │   ├── avatar-lightbox.tsx
 │   │   │   ├── last-seen-badge.tsx
 │   │   │   ├── notification-actions.tsx
+│   │   │   ├── notification-center.tsx
+│   │   │   ├── notification-item.tsx
+│   │   │   ├── call-controls.tsx
+│   │   │   ├── call-overlay.tsx
+│   │   │   ├── command-palette.tsx
+│   │   │   ├── error-fallback.tsx
+│   │   │   ├── navigation-sidebar.tsx
+│   │   │   ├── page-skeleton.tsx
+│   │   │   ├── search-overlay.tsx
+│   │   │   ├── search-result-item.tsx
 │   │   │   ├── index.ts
 │   │   │   ├── feedback/              # Feedback components
 │   │   │   ├── layout/               # Shared layout components
@@ -753,6 +773,7 @@ apps/web/
 │   │   ├── useAdaptiveInterval.ts | useAdaptiveMotion.ts
 │   │   ├── useNotification.ts | useToast.ts | useWindowSize.ts
 │   │   ├── useFeatureFlag.ts          # Feature flag hook
+│   │   ├── useMotionSafe.ts           # Motion safety hook
 │   │   └── useReducedMotion.ts
 │   │
 │   ├── lib/                           # Core libraries
@@ -776,6 +797,9 @@ apps/web/
 │   │   │   ├── secureStorage.ts     # Encrypted key storage
 │   │   │   ├── e2eeStore.ts         # E2EE state store
 │   │   │   ├── e2ee.secure.ts       # Secure E2EE operations
+│   │   │   ├── file-encryption.ts    # File-level encryption
+│   │   │   ├── group-e2ee.ts        # Group E2EE support
+│   │   │   ├── voice-encryption.ts  # Voice call encryption
 │   │   │   ├── migrateToSecureStorage.ts # Storage migration
 │   │   │   ├── index.ts
 │   │   │   ├── double-ratchet/      # Double Ratchet sub-modules
@@ -789,6 +813,8 @@ apps/web/
 │   │   ├── webrtc/                    # WebRTC client
 │   │   │   ├── webrtcService.ts     # WebRTC service
 │   │   │   ├── peerConnection.ts    # Peer connection management
+│   │   │   ├── callEncryption.ts    # Call encryption utilities
+│   │   │   ├── livekitService.ts    # LiveKit integration service
 │   │   │   ├── useCall.ts           # Call hook
 │   │   │   ├── index.ts | types.ts
 │   │   │   └── __tests__/
@@ -808,11 +834,14 @@ apps/web/
 │   │   │   └── __tests__/
 │   │   ├── collaboration/             # Collaborative editing
 │   │   │   ├── useCollaborativeEditor.ts # Yjs editor hook
-│   │   │   └── phoenix-provider.ts   # Phoenix channel provider for Yjs
+│   │   │   ├── phoenix-provider.ts   # Phoenix channel provider for Yjs
+│   │   │   └── index.ts             # Collaboration barrel exports
 │   │   ├── security/                  # Security utilities
 │   │   │   ├── xss-csrf.ts          # XSS/CSRF protection
 │   │   │   ├── css-sanitization.ts   # CSS sanitization
-│   │   │   └── validation.ts         # Input validation
+│   │   │   ├── validation.ts         # Input validation
+│   │   │   ├── index.ts             # Security barrel exports
+│   │   │   └── __tests__/           # Security tests
 │   │   ├── animations/               # Animation utilities
 │   │   ├── audio/                     # Audio utilities
 │   │   ├── bbcode/                    # BBCode parser
@@ -832,7 +861,8 @@ apps/web/
 │   ├── services/                      # Application services
 │   │   ├── billing.ts                # Billing service
 │   │   ├── webPushService.ts         # Web push notification service
-│   │   └── web-push/                 # Push notification utilities
+│   │   ├── web-push/                 # Push notification utilities
+│   │   └── __tests__/                # Service tests
 │   │
 │   ├── contexts/                      # React contexts
 │   │   ├── theme-context.tsx         # Base theme context
@@ -852,8 +882,7 @@ apps/web/
 │   ├── assets/                        # Static assets (images, fonts)
 │   ├── mocks/                         # MSW API mocks
 │   ├── test/                          # Test utilities
-│   ├── __dev__/                       # Development/debug utilities
-│   └── __tests__/                     # Global tests
+│   └── __dev__/                       # Development/debug utilities
 │
 ├── e2e/                               # Playwright E2E tests
 ├── playwright/                        # Playwright utilities
@@ -901,7 +930,8 @@ apps/mobile/
 │   │   ├── explore/                   # Explore/discovery screen
 │   │   ├── account/                   # Account management
 │   │   ├── creator/                   # Creator dashboard screen
-│   │   └── loading-screen.tsx         # App loading screen
+│   │   ├── loading-screen.tsx         # App loading screen
+│   │   └── __tests__/                 # Screen tests
 │   │
 │   ├── navigation/                    # ★ Navigation structure
 │   │   ├── root-navigator.tsx         # Auth/Main switch based on auth state
@@ -972,6 +1002,7 @@ apps/mobile/
 │   │   ├── pushNotifications.ts | referralService.ts | searchService.ts
 │   │   ├── settingsService.ts | tierService.ts | creatorService.ts
 │   │   ├── callService.ts | forumService.ts
+│   │   ├── __tests__/                 # Service tests
 │   │   └── index.ts
 │   │
 │   ├── lib/                           # Core libraries
@@ -1002,14 +1033,18 @@ apps/mobile/
 │   │   │   ├── index.ts
 │   │   │   ├── use-wallet-connect.ts  # WalletConnect hook
 │   │   │   └── wallet-connect-provider.tsx # WalletConnect provider
+│   │   ├── lottie/                    # Lottie animation utilities
 │   │   ├── __tests__/                # Lib tests
 │   │   └── database/                  # Local database
 │   │
 │   ├── platform/                      # Platform-specific code
 │   │   ├── platform-adapter.ts        # Platform abstraction layer
+│   │   ├── index.ts                   # Platform barrel exports
 │   │   ├── android/                   # Android-specific
 │   │   └── ios/                       # iOS-specific
 │   │
+│   ├── shell/                         # Expo Router shell layout
+│   ├── theme/                         # Theme tokens & typography
 │   ├── shared/                        # Shared utilities
 │   ├── types/                         # TypeScript types
 │   ├── test/                          # Test utilities
@@ -1138,6 +1173,7 @@ src/
 ├── types.ts              # Socket/channel types
 ├── backoff.ts            # Exponential backoff with jitter
 ├── backoff.test.ts       # Backoff tests
+├── phoenixClient.test.ts # Phoenix client tests
 └── channels/
     ├── conversationChannel.ts  # Typed conversation channel
     ├── groupChannel.ts         # Typed group channel
@@ -1204,6 +1240,7 @@ src/
 ```
 infrastructure/
 ├── docker-compose.observability.yml   # Full observability stack
+├── docker-compose.livekit.yml         # LiveKit WebRTC infrastructure
 ├── .env.observability                 # Observability env vars
 │
 ├── terraform/                         # Cloudflare IaC
