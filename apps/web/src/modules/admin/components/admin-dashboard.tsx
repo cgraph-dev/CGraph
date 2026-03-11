@@ -1,9 +1,8 @@
 /**
- * Admin Dashboard for Gamification System
+ * Admin Dashboard
  *
  * Comprehensive admin interface with:
  * - Event management (create, edit, lifecycle control)
- * - Marketplace moderation (flagged listings, disputes)
  * - Analytics dashboard
  * - User management
  * - System settings
@@ -38,7 +37,6 @@ export {
   // Panels
   DashboardOverview,
   EventsManagement,
-  MarketplaceModeration,
   UsersManagement,
   AnalyticsDashboard,
   SystemSettings,

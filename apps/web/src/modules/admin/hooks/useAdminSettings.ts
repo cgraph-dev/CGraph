@@ -24,18 +24,15 @@ export function useAdminSettings() {
 
   // Group settings by category
   const settingsByCategory = useMemo(() => {
-    return systemSettings.reduce(
-      (acc, setting) => {
-        const category = setting.category ?? 'uncategorized';
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(setting);
-        return acc;
-      },
-       
-      {} as Record<string, typeof systemSettings> // type assertion: initial empty record type
-    );
+    const initial: Record<string, typeof systemSettings> = {};
+    return systemSettings.reduce((acc, setting) => {
+      const category = setting.category ?? 'uncategorized';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(setting);
+      return acc;
+    }, initial);
   }, [systemSettings]);
 
   const categories = useMemo(() => Object.keys(settingsByCategory), [settingsByCategory]);
@@ -88,17 +85,13 @@ export function useAdminKeyboardShortcuts() {
           break;
         case '3':
           e.preventDefault();
-          setActiveTab('marketplace');
+          setActiveTab('users');
           break;
         case '4':
           e.preventDefault();
-          setActiveTab('users');
-          break;
-        case '5':
-          e.preventDefault();
           setActiveTab('analytics');
           break;
-        case '6':
+        case '5':
           e.preventDefault();
           setActiveTab('settings');
           break;

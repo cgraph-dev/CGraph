@@ -18,8 +18,8 @@ defmodule CGraph.Performance.RequestCoalescing do
       end)
 
       # With TTL — result is cached and reused for subsequent calls
-      {:ok, result} = RequestCoalescing.execute("leaderboard:global", fn ->
-        Gamification.get_leaderboard(:xp)
+      {:ok, result} = RequestCoalescing.execute("forum:trending", fn ->
+        CGraph.Forums.list_trending_forums(limit: 10)
       end, ttl: :timer.seconds(5))
 
   ## How it works

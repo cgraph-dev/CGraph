@@ -10,7 +10,7 @@
 
 // ==================== TYPE ALIASES ====================
 
-export type AdminTab = 'dashboard' | 'events' | 'marketplace' | 'users' | 'analytics' | 'settings';
+export type AdminTab = 'dashboard' | 'events' | 'users' | 'analytics' | 'settings';
 export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
 export type ModerationItemType = 'listing' | 'transaction' | 'report' | 'user' | 'content';
 export type ModerationStatus = 'pending' | 'reviewed' | 'escalated' | 'resolved' | 'dismissed';
