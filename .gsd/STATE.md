@@ -8,17 +8,19 @@
 
 See: .gsd/PROJECT.md (updated 2026-03-04)
 
-**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 33 —
-Canonical Reconciliation COMPLETE. All v2.0 phases (26–32) done. Phase 33 (Canonical Reconciliation)
-completed — 3 plans, 15 commits. Rarity unified (7-tier), cosmetics manifest created, API catalog,
-profile themes reconciled (25-set), Oban expanded (27 queues).
+**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 34 —
+Parity + Mobile Nodes COMPLETE. All v2.0 phases (26–33) done. Phase 34 (Parity + Mobile Nodes)
+completed — 6 plans, 26 commits. Backend tip hardening, web tip/unlock UI, mobile nodes wallet/shop,
+secret chat mobile, discovery feed (5 modes), customization parity (5 screens), privacy expansion
+(6→15 toggles), chat effects store, friend favorites/nicknames, shared TipContext type, api-client
+nodes methods.
 
 ## Current Position
 
-Phase: 33 of 39 (Canonical Reconciliation) Plan: 3 of 3 Status: COMPLETE Last activity: 2026-03-11 —
-Phase 33 completed (3 plans, 15 commits: c37878ef…789e5d60)
+Phase: 34 of 39 (Parity + Mobile Nodes) Plan: 6 of 6 Status: COMPLETE Last activity: 2026-03-12 —
+Phase 34 completed (6 plans, 26 commits: ad690db3…95b9058b)
 
-Progress: [██████████████████████████████████░░░░░░] 85% (33/39 phases)
+Progress: [████████████████████████████████████░░░░] 87% (34/39 phases)
 
 ## Performance Metrics
 
@@ -56,6 +58,10 @@ Recent decisions logged in PROJECT.md Key Decisions table.
   0af60287, f324887e, e8223a10, c410a950, 29c3aa8b, fc42850d)
 - ~~Phase 33: Canonical Reconciliation~~ — COMPLETE (3 plans, 15 commits: c37878ef…789e5d60. Rarity
   unified 7-tier, cosmetics manifest, API catalog, profile themes 25-set, Oban 27 queues)
+- ~~Phase 34: Parity + Mobile Nodes~~ — COMPLETE (6 plans, 26 commits: ad690db3…95b9058b. Backend
+  tip hardening, web tip/unlock UI, mobile nodes wallet/shop/withdrawal, mobile secret chat,
+  discovery feed 5 modes, customization parity 5 screens, privacy 15 toggles, chat effects store,
+  friend favorites/nicknames, TipContext type, api-client nodes methods)
 
 ### Blockers/Concerns
 
@@ -68,9 +74,9 @@ Recent decisions logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-11 Stopped at: Phase 33 complete. Phases 34–39 remain. Resume file:
-.gsd/phases/33-canonical-reconciliation/
+Last session: 2026-03-12 Stopped at: Phase 34 complete. Phases 35–39 remain. Resume file:
+.gsd/phases/34-parity-mobile-nodes/
 
 ---
 
-_Last updated: 2026-03-10 (Phase 32 complete — v2.0 milestone finished)_
+_Last updated: 2026-03-12 (Phase 34 complete — Parity + Mobile Nodes finished)_
