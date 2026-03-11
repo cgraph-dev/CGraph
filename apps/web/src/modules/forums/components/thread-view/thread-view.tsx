@@ -17,9 +17,8 @@ import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '@/shared/components/ui';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useAuthStore } from '@/modules/auth/store';
-import { useUnlockContent } from '@/modules/nodes/hooks/useNodes';
 import { TipButton } from '@/modules/nodes/components/tip-button';
-import toast from 'react-hot-toast';
+import { ContentUnlockOverlay } from '@/modules/nodes/components/content-unlock-overlay';
 
 import type { ThreadViewProps } from './types';
 import {
@@ -67,7 +66,6 @@ export function ThreadView({
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
   const navigate = useNavigate();
-  const unlockMutation = useUnlockContent();
 
   // State
   const [showCommentForm, setShowCommentForm] = useState(false);
@@ -145,37 +143,11 @@ export function ThreadView({
 
       {/* Content Gating Overlay — Phase 31 */}
       {post.isContentGated && (
-        <GlassCard variant="frosted" className="mb-4 p-6 text-center">
-          <div className="flex flex-col items-center gap-3 py-4">
-            <span className="text-3xl">🔒</span>
-            <h3 className="text-lg font-semibold text-white">Content Gated</h3>
-            <p className="max-w-sm text-sm text-white/50">
-              This thread's full content is gated. Unlock it to read the complete post and join the discussion.
-            </p>
-            <button
-              className="mt-2 rounded-lg bg-indigo-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={unlockMutation.isPending}
-              onClick={() => {
-                unlockMutation.mutate(post.id, {
-                  onSuccess: () => {
-                    toast.success('Content unlocked!');
-                  },
-                  onError: (error: unknown) => {
-                    const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error;
-                    if (msg === 'insufficient_balance') {
-                      toast.error('Not enough Nodes');
-                      navigate('/nodes/shop');
-                    } else {
-                      toast.error('Unlock failed. Please try again.');
-                    }
-                  },
-                });
-              }}
-            >
-              {unlockMutation.isPending ? 'Unlocking…' : `Unlock for ${post.gatePriceNodes ?? '?'} Nodes`}
-            </button>
-          </div>
-        </GlassCard>
+        <ContentUnlockOverlay
+          postId={post.id}
+          price={post.gatePriceNodes ?? 0}
+          onUnlocked={() => navigate(0)}
+        />
       )}
 
       {/* Comments */}
