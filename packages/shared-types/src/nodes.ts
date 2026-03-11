@@ -30,6 +30,9 @@ export const HOLD_DAYS = 21 as const;
 /** Minimum node balance required for withdrawal. */
 export const MIN_WITHDRAWAL = 1000 as const;
 
+/** Minimum tip amount in Nodes */
+export const MIN_TIP = 10 as const;
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Convert a Node amount to EUR. */
