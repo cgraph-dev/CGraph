@@ -91,7 +91,7 @@ export function ProfileCard({
 
   // Resolve border entry for rarity/theme
   const borderEntry = equippedBorderId ? getBorderById(equippedBorderId) : undefined;
-  const _borderRarity = borderEntry?.rarity ?? 'FREE';
+  const _borderRarity = borderEntry?.rarity ?? 'free';
   const borderTheme = borderEntry?.theme ?? bannerTheme ?? 'COSMIC';
 
   // Resolve avatar URL
