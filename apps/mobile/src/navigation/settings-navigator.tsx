@@ -43,9 +43,15 @@ import CookiePolicyScreen from '../screens/legal/cookie-policy-screen';
 import GDPRScreen from '../screens/legal/gdpr-screen';
 import SessionsScreen from '../screens/settings/sessions-screen';
 import CustomStatusScreen from '../screens/social/custom-status-screen';
-
-// Phase 34 placeholder screens — will be implemented in later plans
-const PlaceholderScreen = () => null;
+import ThemeBrowserScreen from '../screens/customize/theme-browser-screen';
+import ParticleEffectsScreen from '../screens/customize/particle-effects-screen';
+import BackgroundEffectsScreen from '../screens/customize/background-effects-screen';
+import AnimationPresetsScreen from '../screens/customize/animation-presets-screen';
+import NameStylesScreen from '../screens/customize/name-styles-screen';
+import ProfileLayoutsScreen from '../screens/customize/profile-layouts-screen';
+import NodesWalletScreen from '../screens/nodes/nodes-wallet-screen';
+import ShopScreen from '../screens/nodes/shop-screen';
+import WithdrawalScreen from '../screens/nodes/withdrawal-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -232,33 +238,48 @@ export default function SettingsNavigator() {
       {/* Phase 34 Screens */}
       <Stack.Screen
         name="ThemeBrowser"
-        component={PlaceholderScreen}
+        component={ThemeBrowserScreen}
         options={{ title: 'Theme Browser', headerShown: false }}
       />
       <Stack.Screen
         name="ParticleEffects"
-        component={PlaceholderScreen}
+        component={ParticleEffectsScreen}
         options={{ title: 'Particle Effects', headerShown: false }}
       />
       <Stack.Screen
         name="BackgroundEffects"
-        component={PlaceholderScreen}
+        component={BackgroundEffectsScreen}
         options={{ title: 'Background Effects', headerShown: false }}
       />
       <Stack.Screen
         name="AnimationPresets"
-        component={PlaceholderScreen}
+        component={AnimationPresetsScreen}
         options={{ title: 'Animation Presets', headerShown: false }}
       />
       <Stack.Screen
         name="NameStyles"
-        component={PlaceholderScreen}
+        component={NameStylesScreen}
         options={{ title: 'Name Styles', headerShown: false }}
       />
       <Stack.Screen
         name="ProfileLayouts"
-        component={PlaceholderScreen}
+        component={ProfileLayoutsScreen}
         options={{ title: 'Profile Layouts', headerShown: false }}
+      />
+      <Stack.Screen
+        name="NodesWallet"
+        component={NodesWalletScreen}
+        options={{ title: 'Nodes Wallet', headerShown: false }}
+      />
+      <Stack.Screen
+        name="NodesShop"
+        component={ShopScreen}
+        options={{ title: 'Nodes Shop', headerShown: false }}
+      />
+      <Stack.Screen
+        name="Withdrawal"
+        component={WithdrawalScreen}
+        options={{ title: 'Withdraw Nodes', headerShown: false }}
       />
     </Stack.Navigator>
   );

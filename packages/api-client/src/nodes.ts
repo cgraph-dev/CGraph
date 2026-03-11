@@ -8,14 +8,53 @@
  */
 
 import type { ApiClient } from './client';
-import type {
-  NodeWallet,
-  NodeTransaction,
-  NodeBundle,
-  WithdrawalRequest,
-  TipContext,
-} from '@cgraph/shared-types/nodes';
 import { NODES } from './endpoints';
+
+// ---------------------------------------------------------------------------
+// Types — aligned with @cgraph/shared-types/nodes
+// ---------------------------------------------------------------------------
+
+/** Context in which a tip was sent. */
+type TipContext = 'dm' | 'profile' | 'forum' | 'post';
+
+interface NodeWallet {
+  id: string;
+  user_id: string;
+  available_balance: number;
+  pending_balance: number;
+  lifetime_earned: number;
+  updated_at: string;
+}
+
+interface NodeTransaction {
+  id: string;
+  user_id: string;
+  amount: number;
+  type: string;
+  description: string;
+  metadata: Record<string, unknown>;
+  inserted_at: string;
+}
+
+interface NodeBundle {
+  id: string;
+  name: string;
+  node_amount: number;
+  price_eur: number;
+  bonus_percent: number;
+  is_active: boolean;
+}
+
+interface WithdrawalRequest {
+  id: string;
+  user_id: string;
+  amount: number;
+  eur_amount: number;
+  status: string;
+  payout_method: string;
+  requested_at: string;
+  processed_at?: string;
+}
 
 // ---------------------------------------------------------------------------
 // API methods — each takes a pre-configured ApiClient instance

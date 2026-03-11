@@ -11,9 +11,8 @@ import ConversationScreen from '../screens/messages/conversation-screen';
 import NewConversationScreen from '../screens/messages/new-conversation-screen';
 import SavedMessagesScreen from '../screens/messages/saved-messages-screen';
 import SafetyNumberScreen from '../screens/chat/safety-number-screen';
-
-// Phase 34 placeholder screens — will be implemented in later plans
-const PlaceholderScreen = () => null;
+import SecretChatScreen from '../screens/secret-chat/secret-chat-screen';
+import SecretChatSettingsScreen from '../screens/secret-chat/secret-chat-settings-screen';
 
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
@@ -60,12 +59,12 @@ export default function MessagesNavigator() {
       {/* Phase 34 Screens */}
       <Stack.Screen
         name="SecretChat"
-        component={PlaceholderScreen}
+        component={SecretChatScreen}
         options={{ title: 'Secret Chat', headerShown: false }}
       />
       <Stack.Screen
         name="SecretChatSettings"
-        component={PlaceholderScreen}
+        component={SecretChatSettingsScreen}
         options={{ title: 'Secret Chat Settings', headerShown: false }}
       />
     </Stack.Navigator>
