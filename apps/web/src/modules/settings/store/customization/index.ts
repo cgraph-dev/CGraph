@@ -81,8 +81,7 @@ export {
   useSyncState,
 } from './customizationStore.selectors';
 
-// V2 alias (lives in customizationStore.ts, not selectors)
-export { useCustomizationStoreV2 } from './customizationStore';
+
 
 // Mappings
 export * from './mappings';

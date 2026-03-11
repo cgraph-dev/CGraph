@@ -18,6 +18,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useAuthStore } from '@/modules/auth/store';
 import { useUnlockContent } from '@/modules/nodes/hooks/useNodes';
+import { TipButton } from '@/modules/nodes/components/tip-button';
 import toast from 'react-hot-toast';
 
 import type { ThreadViewProps } from './types';
@@ -130,6 +131,16 @@ export function ThreadView({
             onSubmitComment={handleSubmitComment}
           />
         </div>
+
+        {/* Tip the author — Nodes Economy */}
+        {user && post.author.id !== user.id && (
+          <div className="flex justify-end border-t border-white/5 px-2 pt-3">
+            <TipButton
+              recipientId={post.author.id}
+              recipientName={post.author.displayName || post.author.username || 'User'}
+            />
+          </div>
+        )}
       </GlassCard>
 
       {/* Content Gating Overlay — Phase 31 */}

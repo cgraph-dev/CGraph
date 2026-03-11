@@ -63,10 +63,6 @@ defmodule CGraph.Gamification.AchievementTriggers do
       "group_explorer",
       "community_builder"
     ],
-    quest_completed: [
-      "first_quest",
-      "quest_master"
-    ],
     conversation_started: [
       "conversation_starter"
     ],

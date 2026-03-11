@@ -43,14 +43,6 @@ export interface MessageEffectsSectionProps {
   onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
-/** Props for ReactionStylesSection component */
-export interface ReactionStylesSectionProps {
-  reactions: ReactionStyle[];
-  selectedReaction: string;
-  previewingLockedItem: string | null;
-  onSelect: (id: string, isUnlocked: boolean) => void;
-}
-
 /** Props for AdvancedControlsSection component */
 export interface AdvancedControlsSectionProps {
   bubbleBorderRadius: number;

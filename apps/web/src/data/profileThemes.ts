@@ -186,7 +186,6 @@ const THEMES_8BIT: ProfileThemeConfig[] = [
     textColor: '#ffffff',
     unlocked: false,
     unlockRequirement: 'Reach Level 15',
-    unlockLevel: 15,
   },
   {
     id: '8bit-dreams',
@@ -255,7 +254,6 @@ const THEMES_JAPANESE: ProfileThemeConfig[] = [
     textColor: '#ffffff',
     unlocked: false,
     unlockRequirement: 'Reach Level 20',
-    unlockLevel: 20,
   },
   {
     id: 'jp-wave',
@@ -326,7 +324,6 @@ const THEMES_ANIME: ProfileThemeConfig[] = [
     textColor: '#ffffff',
     unlocked: false,
     unlockRequirement: 'Reach Level 25',
-    unlockLevel: 25,
   },
   {
     id: 'anime-hero',
@@ -400,7 +397,6 @@ const THEMES_CYBERPUNK: ProfileThemeConfig[] = [
     textColor: '#00ff00',
     unlocked: false,
     unlockRequirement: 'Reach Level 20',
-    unlockLevel: 20,
   },
   {
     id: 'cyber-pulse',
@@ -470,7 +466,6 @@ const THEMES_GOTHIC: ProfileThemeConfig[] = [
     textColor: '#ffffff',
     unlocked: false,
     unlockRequirement: 'Reach Level 20',
-    unlockLevel: 20,
   },
   {
     id: 'gothic-void',
@@ -540,7 +535,6 @@ const THEMES_KAWAII: ProfileThemeConfig[] = [
     textColor: '#ffffff',
     unlocked: false,
     unlockRequirement: 'Reach Level 15',
-    unlockLevel: 15,
   },
   {
     id: 'kawaii-rainbow',

@@ -48,8 +48,6 @@ export {
 import type { CustomizationStore } from './customizationStore.types';
 import {
   THEME_COLORS,
-  AVATAR_BORDERS,
-  RARITY_COLORS,
   DEFAULT_STATE,
 } from './customizationStore.types';
 import { apiSchemaMapper, debouncedSave, PERSIST_PARTIALIZE } from './customizationStore.schema';
@@ -190,10 +188,8 @@ export const useCustomizationStore = create<CustomizationStore>()(
 // LEGACY EXPORTS (for backward compatibility during migration)
 // =============================================================================
 
-export const useCustomizationStoreV2 = useCustomizationStore;
+/** @deprecated Use THEME_COLORS directly */
 export const themeColors = THEME_COLORS;
-export const avatarBorders = AVATAR_BORDERS;
-export const rarityColors = RARITY_COLORS;
 
 // Re-export all mappings for centralized access
 export * from './mappings';

@@ -10,8 +10,6 @@ export type {
   NotificationType,
   BaseNotification,
   ToastNotification,
-  LevelUpNotification,
-  QuestNotification,
   Notification,
   NotificationContextType,
   NotificationProviderProps,

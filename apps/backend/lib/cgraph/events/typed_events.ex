@@ -137,17 +137,6 @@ defmodule CGraph.Events.TypedEvents do
     def new(fields), do: struct!(__MODULE__, fields)
   end
 
-  defmodule QuestCompleted do
-    @moduledoc false
-    @type t :: %__MODULE__{user_id: String.t(), quest_id: String.t(), xp_reward: non_neg_integer(), coin_reward: non_neg_integer()}
-    @enforce_keys [:user_id, :quest_id]
-    defstruct [:user_id, :quest_id, xp_reward: 0, coin_reward: 0]
-
-    @doc "Creates a new event struct from the given fields."
-    @spec new(keyword()) :: t()
-    def new(fields), do: struct!(__MODULE__, fields)
-  end
-
   # ==================== FORUMS ====================
 
   defmodule PostCreated do
@@ -210,7 +199,7 @@ defmodule CGraph.Events.TypedEvents do
       :user_registered, :user_deactivated,
       :friend_request_sent, :friend_request_accepted,
       :message_sent, :message_deleted, :reaction_added,
-      :xp_awarded, :achievement_unlocked, :quest_completed,
+      :achievement_unlocked,
       :post_created, :post_voted,
       :content_reported, :user_banned
     ]

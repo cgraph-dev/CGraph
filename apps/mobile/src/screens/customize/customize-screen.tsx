@@ -42,14 +42,7 @@ const CATEGORIES: CustomizeCategory[] = [
     screen: 'EffectsCustomization',
     color: '#ec4899',
   },
-  {
-    id: 'progression',
-    title: 'Progression',
-    description: 'Levels, XP, achievements, and quests',
-    icon: 'trending-up-outline',
-    screen: 'ProgressionCustomization',
-    color: '#10b981',
-  },
+
 ];
 
 /**

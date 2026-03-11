@@ -10,9 +10,7 @@ export type NotificationType =
   | 'error'
   | 'warning'
   | 'info'
-  | 'achievement'
-  | 'levelup'
-  | 'quest';
+  | 'achievement';
 
 export interface BaseNotification {
   id: string;
@@ -31,19 +29,7 @@ export interface ToastNotification extends BaseNotification {
   type: 'success' | 'error' | 'warning' | 'info';
 }
 
-export interface LevelUpNotification extends BaseNotification {
-  type: 'levelup';
-  newLevel: number;
-  rewards?: string[];
-}
-
-export interface QuestNotification extends BaseNotification {
-  type: 'quest';
-  xpReward: number;
-  questTitle: string;
-}
-
-export type Notification = ToastNotification | LevelUpNotification | QuestNotification;
+export type Notification = ToastNotification;
 
 export interface NotificationContextType {
   // Toast notifications
@@ -54,8 +40,6 @@ export interface NotificationContextType {
     info: (title: string, message?: string, options?: Partial<ToastNotification>) => void;
   };
   // Special notifications
-  showLevelUp: (newLevel: number, rewards?: string[]) => void;
-  showQuestComplete: (questTitle: string, xpReward: number) => void;
   showAchievement: (achievement: Achievement, isUnlock?: boolean) => void;
   // Management
   dismiss: (id: string) => void;

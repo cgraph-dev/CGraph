@@ -18,7 +18,7 @@
  * | `/login` | Login | `cgraph://login` |
  * | `/register` | Register | `cgraph://register` |
  * | `/premium` | Premium | `cgraph://premium` |
- * | `/gamification` | GamificationHub | `cgraph://gamification` |
+ * | `/leaderboard` | Leaderboard | `cgraph://leaderboard` |
  * | `/admin` | AdminDashboard | `cgraph://admin` |
  * | `/legal/privacy` | PrivacyPolicy | `cgraph://legal/privacy` |
  *
@@ -158,13 +158,7 @@ export const linkingConfig: LinkingOptions<RootStackParamList>['config'] = {
             CoinShop: 'shop',
             Calendar: 'calendar',
             Referrals: 'referrals',
-            GamificationHub: 'gamification',
-            Achievements: 'gamification/achievements',
-            Quests: 'gamification/quests',
             Leaderboard: 'leaderboard',
-            Titles: 'gamification/titles',
-            BadgeSelection: 'gamification/badges',
-            TitleSelection: 'gamification/title-select',
             Customize: 'settings/customize',
             IdentityCustomization: 'settings/customize/identity',
             EffectsCustomization: 'settings/customize/effects',

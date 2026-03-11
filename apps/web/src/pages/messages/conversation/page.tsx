@@ -9,6 +9,7 @@
  */
 
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 
 import type { Message } from '@/modules/chat/store';
@@ -18,6 +19,8 @@ import { ConversationMessages } from './conversation-messages';
 import { CallModals, InfoPanel } from './conversation-modals';
 
 import { ConversationHeader } from '@/modules/chat/components';
+import { SecretChatHeader } from '@/modules/secret-chat/components';
+import { useSecretChatStore } from '@/modules/secret-chat/store/secretChatStore';
 import {
   MessageInputArea,
   UISettingsPanel,
@@ -48,6 +51,12 @@ export default function Conversation() {
   const ctx = useConversationPage();
   const chatEffect = useChatEffect();
   const activeThread = useThreadStore((s) => s.activeThread);
+  const secretSession = useSecretChatStore((s) => s.session);
+  const ghostMode = useSecretChatStore((s) => s.ghostMode);
+  const toggleGhostMode = useSecretChatStore((s) => s.toggleGhostMode);
+  const setGhostToggling = useSecretChatStore((s) => s.setGhostToggling);
+  const panicWipe = useSecretChatStore((s) => s.panicWipe);
+  const navigate = useNavigate();
 
   // ── Loading state ────────────────────────────────────────────────────
   if (!ctx.conversation) {
@@ -66,41 +75,57 @@ export default function Conversation() {
         <AmbientBackground uiPreferences={ctx.uiPreferences} />
         <FullScreenChatEffect effect={chatEffect.activeEffect} onComplete={chatEffect.clear} />
 
-        <ConversationHeader
-          conversationName={ctx.conversationName}
-          otherParticipant={ctx.otherParticipant}
-          isOtherUserOnline={ctx.isOtherUserOnline}
-          typing={ctx.typing}
-          uiPreferences={
-             
-            ctx.uiPreferences as Parameters< // safe downcast – structural boundary
-              typeof ConversationHeader
-            >[0]['uiPreferences'] 
-          }
-          onStartVoiceCall={() =>
-            ctx.callModals.handleStartVoiceCall(ctx.uiPreferences.enableHaptic)
-          }
-          onStartVideoCall={() =>
-            ctx.callModals.handleStartVideoCall(ctx.uiPreferences.enableHaptic)
-          }
-          onToggleSearch={() => ctx.hapticToggle(ctx.setShowMessageSearch)}
-          onToggleScheduledList={() =>
-            ctx.hapticToggle(() =>
-              ctx.scheduleActions.setShowScheduledList(!ctx.scheduleActions.showScheduledList)
-            )
-          }
-          onToggleInfoPanel={() => ctx.hapticToggle(ctx.setShowInfoPanel)}
-          onToggleSettings={() => ctx.hapticToggle(ctx.setShowSettings)}
-          onToggleE2EETester={() => {
-            ctx.setShowE2EETester(true);
-            HapticFeedback.medium();
-          }}
-          showScheduledList={ctx.scheduleActions.showScheduledList}
-          showInfoPanel={ctx.showInfoPanel}
-          showSettings={ctx.showSettings}
-          formatLastSeen={formatLastSeen}
-          onVerifyIdentity={() => {}}
-        />
+        {secretSession ? (
+          <SecretChatHeader
+            ghostModeActive={ghostMode.isActive}
+            ghostModeToggling={ghostMode.isToggling}
+            expiresAt={secretSession.expiresAt}
+            isPanicWiping={useSecretChatStore.getState().isPanicWiping}
+            onBack={() => navigate('/messages')}
+            onToggleGhost={() => {
+              setGhostToggling(true);
+              toggleGhostMode();
+              setTimeout(() => setGhostToggling(false), 300);
+            }}
+            onPanicWipe={panicWipe}
+          />
+        ) : (
+          <ConversationHeader
+            conversationName={ctx.conversationName}
+            otherParticipant={ctx.otherParticipant}
+            isOtherUserOnline={ctx.isOtherUserOnline}
+            typing={ctx.typing}
+            uiPreferences={
+               
+              ctx.uiPreferences as Parameters< // safe downcast – structural boundary
+                typeof ConversationHeader
+              >[0]['uiPreferences'] 
+            }
+            onStartVoiceCall={() =>
+              ctx.callModals.handleStartVoiceCall(ctx.uiPreferences.enableHaptic)
+            }
+            onStartVideoCall={() =>
+              ctx.callModals.handleStartVideoCall(ctx.uiPreferences.enableHaptic)
+            }
+            onToggleSearch={() => ctx.hapticToggle(ctx.setShowMessageSearch)}
+            onToggleScheduledList={() =>
+              ctx.hapticToggle(() =>
+                ctx.scheduleActions.setShowScheduledList(!ctx.scheduleActions.showScheduledList)
+              )
+            }
+            onToggleInfoPanel={() => ctx.hapticToggle(ctx.setShowInfoPanel)}
+            onToggleSettings={() => ctx.hapticToggle(ctx.setShowSettings)}
+            onToggleE2EETester={() => {
+              ctx.setShowE2EETester(true);
+              HapticFeedback.medium();
+            }}
+            showScheduledList={ctx.scheduleActions.showScheduledList}
+            showInfoPanel={ctx.showInfoPanel}
+            showSettings={ctx.showSettings}
+            formatLastSeen={formatLastSeen}
+            onVerifyIdentity={() => {}}
+          />
+        )}
 
         <AnimatePresence>
           {ctx.showSettings && (

@@ -121,7 +121,6 @@ const ACHIEVEMENT_TITLES: TitleDefinition[] = [
     isPremium: false,
     unlocked: false,
     unlockRequirement: 'Reach Level 25',
-    unlockLevel: 25,
     description: 'Top-tier player status',
   },
   {

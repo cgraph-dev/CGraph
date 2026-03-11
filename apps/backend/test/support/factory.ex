@@ -29,7 +29,7 @@ defmodule CGraph.Factory do
   alias CGraph.Messaging.{Conversation, Message, Reaction}
   alias CGraph.Groups.{Group, Member}
   alias CGraph.Forums.{Forum, Board, Thread, Post, Subscription}
-  alias CGraph.Gamification.{Achievement, UserAchievement, Quest, UserQuest}
+  alias CGraph.Gamification.{Achievement, UserAchievement}
 
   # ============================================================================
   # User Factories
@@ -486,52 +486,6 @@ defmodule CGraph.Factory do
 
   def featured_achievement_factory do
     build(:user_achievement)
-  end
-
-  def quest_factory do
-    %Quest{
-      title: sequence(:quest_title, &"Daily Quest #{&1}"),
-      slug: sequence(:quest_slug, &"daily-quest-#{&1}"),
-      description: "Complete this quest to earn rewards",
-      type: Enum.random(["daily", "weekly", "special"]),
-      xp_reward: Enum.random([25, 50, 100, 250]),
-      coin_reward: Enum.random([5, 10, 25]),
-      is_active: true,
-      starts_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(-1, :hour),
-      ends_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(23, :hour),
-      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
-      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
-    }
-  end
-
-  def weekly_quest_factory do
-    build(:quest,
-      type: "weekly",
-      xp_reward: Enum.random([250, 500, 1000]),
-      ends_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(7, :day)
-    )
-  end
-
-  def user_quest_factory do
-    %UserQuest{
-      user: build(:user),
-      quest: build(:quest),
-      progress: %{},
-      completed: false,
-      claimed: false
-    }
-  end
-
-  def completed_quest_factory do
-    quest = build(:quest)
-
-    build(:user_quest,
-      quest: quest,
-      progress: %{},
-      completed: true,
-      claimed: false,
-      completed_at: DateTime.truncate(DateTime.utc_now(), :second)
-    )
   end
 
   # ============================================================================

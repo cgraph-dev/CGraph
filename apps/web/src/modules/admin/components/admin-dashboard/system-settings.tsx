@@ -1,15 +1,12 @@
 /**
  * System Settings Panel
- * Configure gamification, marketplace, and moderation settings
+ * Configure nodes economy and moderation settings
  */
 
 import { motion } from 'motion/react';
 
 import { ToggleSwitch, SettingsSection, SettingRow } from './shared-components';
 
-/**
- * unknown for the admin module.
- */
 /**
  * System Settings component.
  */
@@ -24,71 +21,47 @@ export function SystemSettings() {
       <h1 className="mb-8 text-3xl font-bold">System Settings</h1>
 
       <div className="max-w-2xl space-y-8">
-        <SettingsSection title="🎮 Gamification">
+        <SettingsSection title="💎 Nodes Economy">
           <SettingRow
-            label="XP Rate Multiplier"
-            description="Global multiplier for all XP gains"
+            label="Platform Fee (%)"
+            description="Percentage deducted from tips and content unlocks"
             value={
               <input
                 type="number"
-                defaultValue="1.0"
-                step="0.1"
+                defaultValue="20"
+                step="1"
                 className="w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right"
               />
             }
           />
           <SettingRow
-            label="Daily Quest Reset Time"
-            description="UTC time for daily quest reset"
-            value={
-              <input
-                type="time"
-                defaultValue="00:00"
-                className="rounded-lg border border-white/10 bg-black/30 px-3 py-2"
-              />
-            }
-          />
-          <SettingRow
-            label="Enable Prestige System"
-            description="Allow users to prestige at max level"
-            value={<ToggleSwitch defaultChecked />}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="🏪 Marketplace">
-          <SettingRow
-            label="Transaction Fee"
-            description="Percentage fee on all sales"
+            label="Withdrawal Hold (days)"
+            description="Days before earned nodes become withdrawable"
             value={
               <input
                 type="number"
-                defaultValue="5"
+                defaultValue="21"
                 className="w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right"
               />
             }
           />
           <SettingRow
-            label="Listing Duration (days)"
-            description="How long listings remain active"
+            label="Min Withdrawal (Nodes)"
+            description="Minimum node balance required for withdrawal"
             value={
               <input
                 type="number"
-                defaultValue="30"
+                defaultValue="1000"
                 className="w-24 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right"
               />
             }
-          />
-          <SettingRow
-            label="Enable Trading"
-            description="Allow direct item trades between users"
-            value={<ToggleSwitch defaultChecked />}
           />
         </SettingsSection>
 
         <SettingsSection title="🛡️ Moderation">
           <SettingRow
             label="Auto-flag High Risk"
-            description="Automatically flag high-risk listings"
+            description="Automatically flag high-risk content"
             value={<ToggleSwitch defaultChecked />}
           />
           <SettingRow

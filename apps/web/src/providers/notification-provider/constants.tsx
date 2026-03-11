@@ -8,8 +8,6 @@ import {
   XCircleIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
-  BoltIcon,
-  GiftIcon,
 } from '@heroicons/react/24/outline';
 import React from 'react';
 
@@ -18,8 +16,6 @@ export const NOTIFICATION_ICONS: Record<string, React.ReactNode> = {
   error: React.createElement(XCircleIcon, { className: 'h-6 w-6 text-red-400' }),
   warning: React.createElement(ExclamationTriangleIcon, { className: 'h-6 w-6 text-yellow-400' }),
   info: React.createElement(InformationCircleIcon, { className: 'h-6 w-6 text-blue-400' }),
-  levelup: React.createElement(BoltIcon, { className: 'h-6 w-6 text-yellow-400' }),
-  quest: React.createElement(GiftIcon, { className: 'h-6 w-6 text-primary-400' }),
 };
 
 export const NOTIFICATION_COLORS: Record<string, { bg: string; border: string; glow: string }> = {
@@ -31,16 +27,6 @@ export const NOTIFICATION_COLORS: Record<string, { bg: string; border: string; g
     glow: 'rgba(234, 179, 8, 0.3)',
   },
   info: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', glow: 'rgba(59, 130, 246, 0.3)' },
-  levelup: {
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30',
-    glow: 'rgba(234, 179, 8, 0.4)',
-  },
-  quest: {
-    bg: 'bg-primary-500/10',
-    border: 'border-primary-500/30',
-    glow: 'rgba(16, 185, 129, 0.3)',
-  },
 };
 
 export const DEFAULT_NOTIFICATION_COLOR = {

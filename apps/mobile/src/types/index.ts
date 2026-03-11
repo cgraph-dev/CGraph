@@ -464,11 +464,7 @@ export type SettingsStackParamList = {
   Leaderboard: undefined;
   Referrals: undefined;
   HolographicDemo: undefined;
-  // Gamification screens
-  GamificationHub: undefined;
-  Achievements: undefined;
-  Quests: undefined;
-  Titles: undefined;
+
   // New screens
   ProfileVisibility: undefined;
   RSSFeeds: { forumId?: string; forumName?: string };
@@ -489,10 +485,7 @@ export type SettingsStackParamList = {
   Customize: undefined;
   IdentityCustomization: undefined;
   EffectsCustomization: undefined;
-  ProgressionCustomization: undefined;
   ProfileCustomization: undefined;
-  BadgeSelection: undefined;
-  TitleSelection: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
   // Legal screens
   PrivacyPolicy: undefined;

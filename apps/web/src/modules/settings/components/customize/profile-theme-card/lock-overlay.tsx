@@ -24,7 +24,7 @@ export default function LockOverlay({ theme }: LockOverlayProps) {
     >
       <LockClosedIcon className="mb-2 h-8 w-8 text-white/70" />
       <span className="text-xs font-medium text-white/80">
-        {theme.unlockLevel ? `Level ${theme.unlockLevel}` : 'Locked'}
+        {'Locked'}
       </span>
       {theme.unlockRequirement && (
         <span className="mt-1 px-4 text-center text-[10px] text-white/60">

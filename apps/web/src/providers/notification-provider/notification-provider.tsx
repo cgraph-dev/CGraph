@@ -10,7 +10,6 @@
 
 import { createContext, useState, useCallback } from 'react';
 import { AnimatePresence } from 'motion/react';
-import confetti from 'canvas-confetti';
 
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Achievement } from '@cgraph/shared-types';
@@ -26,17 +25,12 @@ import { ToastItem } from './toast-item';
 import type {
   Notification,
   ToastNotification,
-  LevelUpNotification,
-  QuestNotification,
   NotificationContextType,
   NotificationProviderProps,
 } from './types';
 
 /** Distributive Omit preserves union discrimination for notification variants */
-type NotificationInput =
-  | Omit<ToastNotification, 'id'>
-  | Omit<LevelUpNotification, 'id'>
-  | Omit<QuestNotification, 'id'>;
+type NotificationInput = Omit<ToastNotification, 'id'>;
 
 export const NotificationContext = createContext<NotificationContextType | null>(null);
 
@@ -70,12 +64,6 @@ export function NotificationProvider({
 
       let newNotification: Notification;
       switch (notification.type) {
-        case 'levelup':
-          newNotification = { ...notification, ...defaults };
-          break;
-        case 'quest':
-          newNotification = { ...notification, ...defaults };
-          break;
         default:
           newNotification = { ...notification, ...defaults };
           break;
@@ -89,8 +77,6 @@ export function NotificationProvider({
       // Haptic feedback based on type
       switch (notification.type) {
         case 'success':
-        case 'levelup':
-        case 'quest':
           HapticFeedback.success();
           break;
         case 'error':
@@ -135,71 +121,13 @@ export function NotificationProvider({
     },
   };
 
-  // Level up notification
-  const showLevelUp = useCallback(
-    (newLevel: number, rewards?: string[]) => {
-      addNotification({
-        type: 'levelup',
-        title: `Level Up!`,
-        message: `You've reached level ${newLevel}!`,
-        newLevel,
-        rewards,
-        duration: 8000,
-      });
-
-      // Celebration confetti
-      confetti({
-        particleCount: 150,
-        spread: 100,
-        origin: { y: 0.6 },
-        colors: ['#f59e0b', '#fbbf24', '#10b981', '#8b5cf6'],
-      });
-
-      setTimeout(() => {
-        confetti({
-          particleCount: 75,
-          spread: 80,
-          origin: { x: 0.3, y: 0.6 },
-        });
-        confetti({
-          particleCount: 75,
-          spread: 80,
-          origin: { x: 0.7, y: 0.6 },
-        });
-      }, 300);
-    },
-    [addNotification]
-  );
-
-  // Quest complete notification
-  const showQuestComplete = useCallback(
-    (questTitle: string, xpReward: number) => {
-      addNotification({
-        type: 'quest',
-        title: 'Quest Complete!',
-        message: questTitle,
-        questTitle,
-        xpReward,
-        duration: 6000,
-      });
-
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#10b981', '#34d399', '#6ee7b7'],
-      });
-    },
-    [addNotification]
-  );
-
   // Achievement notification
   const showAchievement = useCallback((achievement: Achievement, isUnlock = true) => {
     setAchievementNotifications((prev) =>
       [
         ...prev,
         {
-          achievement: { ...achievement, progress: achievement.progress || 0, unlocked: isUnlock },
+          achievement: { ...achievement, unlocked: isUnlock },
           isUnlock,
         },
       ].slice(-5)
@@ -214,8 +142,6 @@ export function NotificationProvider({
 
   const contextValue: NotificationContextType = {
     toast,
-    showLevelUp,
-    showQuestComplete,
     showAchievement,
     dismiss,
     dismissAll,

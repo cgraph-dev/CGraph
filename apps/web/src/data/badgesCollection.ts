@@ -210,7 +210,6 @@ const EPIC_BADGES: BadgeDefinition[] = [
     rarity: 'epic',
     unlocked: false,
     unlockRequirement: 'Reach Level 25',
-    unlockLevel: 25,
     isPremium: false,
   },
   {
