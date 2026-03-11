@@ -32,12 +32,13 @@ import { Nameplate } from '../components/ProfileCard/Nameplate';
 // ─── Rarity colors ───────────────────────────────────────────────────────────
 
 const RARITY_COLORS: Record<NameplateRarity, { bg: string; text: string; border: string }> = {
-  FREE: { bg: '#374151', text: '#d1d5db', border: '#4b5563' },
-  COMMON: { bg: '#1f2937', text: '#9ca3af', border: '#4b5563' },
-  RARE: { bg: '#1e3a5f', text: '#60a5fa', border: '#3b82f6' },
-  EPIC: { bg: '#2e1065', text: '#a78bfa', border: '#8b5cf6' },
-  LEGENDARY: { bg: '#451a03', text: '#fbbf24', border: '#f59e0b' },
-  MYTHICAL: { bg: '#4a0e2b', text: '#f472b6', border: '#ec4899' },
+  free: { bg: '#374151', text: '#d1d5db', border: '#4b5563' },
+  common: { bg: '#1f2937', text: '#9ca3af', border: '#4b5563' },
+  uncommon: { bg: '#064e3b', text: '#6ee7b7', border: '#10b981' },
+  rare: { bg: '#1e3a5f', text: '#60a5fa', border: '#3b82f6' },
+  epic: { bg: '#2e1065', text: '#a78bfa', border: '#8b5cf6' },
+  legendary: { bg: '#451a03', text: '#fbbf24', border: '#f59e0b' },
+  mythic: { bg: '#4a0e2b', text: '#f472b6', border: '#ec4899' },
 };
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -63,12 +64,13 @@ type RarityFilter = 'ALL' | NameplateRarity;
 
 const RARITY_FILTERS: { label: string; value: RarityFilter }[] = [
   { label: 'All', value: 'ALL' },
-  { label: 'Free', value: 'FREE' },
-  { label: 'Common', value: 'COMMON' },
-  { label: 'Rare', value: 'RARE' },
-  { label: 'Epic', value: 'EPIC' },
-  { label: 'Legendary', value: 'LEGENDARY' },
-  { label: 'Mythical', value: 'MYTHICAL' },
+  { label: 'Free', value: 'free' },
+  { label: 'Common', value: 'common' },
+  { label: 'Uncommon', value: 'uncommon' },
+  { label: 'Rare', value: 'rare' },
+  { label: 'Epic', value: 'epic' },
+  { label: 'Legendary', value: 'legendary' },
+  { label: 'Mythic', value: 'mythic' },
 ];
 
 // ─── List Row ────────────────────────────────────────────────────────────────

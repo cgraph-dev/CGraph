@@ -491,7 +491,7 @@ export const NameplateBar = memo(function NameplateBar({
           </span>
 
           {/* Trailing emblem for symmetry on high-rarity plates */}
-          {entry.emblem && (entry.rarity === 'LEGENDARY' || entry.rarity === 'MYTHICAL') && (
+          {entry.emblem && (entry.rarity === 'legendary' || entry.rarity === 'mythic') && (
             <motion.span
               className="flex-shrink-0 text-base"
               initial={{ scale: 0, rotate: 45 }}

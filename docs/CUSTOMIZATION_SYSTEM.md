@@ -167,7 +167,7 @@ Border selection → border.lottieFile exists?
 |----------|---------|
 | **Store keys** | `equippedNameplate` |
 | **Data source** | `NAMEPLATE_REGISTRY` from `@cgraph/animation-constants/registries/nameplates.ts` |
-| **Item count** | **24 nameplates** across 6 rarities (FREE → MYTHICAL) |
+| **Item count** | **24 nameplates** across 6 rarities (free → mythic) |
 | **UI component** | `sections/nameplates-section.tsx` |
 | **Preview rendering** | Store key passed to `ProfileContent` via settings — **partially wired** |
 | **Affects** | Name banner/bar behind display name (Lottie background, text effects, emblems, particles, border) |

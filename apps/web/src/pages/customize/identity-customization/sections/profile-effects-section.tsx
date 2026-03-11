@@ -19,30 +19,33 @@ export interface ProfileEffectsSectionProps {
 }
 
 const RARITY_GRADIENT: Record<ProfileEffectRarity, string> = {
-  FREE: 'from-gray-500 to-gray-600',
-  COMMON: 'from-gray-400 to-gray-500',
-  RARE: 'from-blue-500 to-blue-600',
-  EPIC: 'from-purple-500 to-purple-600',
-  LEGENDARY: 'from-yellow-500 to-orange-500',
-  MYTHICAL: 'from-pink-500 to-rose-500',
+  free: 'from-gray-500 to-gray-600',
+  common: 'from-gray-400 to-gray-500',
+  uncommon: 'from-green-500 to-emerald-600',
+  rare: 'from-blue-500 to-blue-600',
+  epic: 'from-purple-500 to-purple-600',
+  legendary: 'from-yellow-500 to-orange-500',
+  mythic: 'from-pink-500 to-rose-500',
 };
 
 const RARITY_COLOR: Record<ProfileEffectRarity, string> = {
-  FREE: '#9ca3af',
-  COMMON: '#9ca3af',
-  RARE: '#3b82f6',
-  EPIC: '#8b5cf6',
-  LEGENDARY: '#f97316',
-  MYTHICAL: '#ec4899',
+  free: '#9ca3af',
+  common: '#9ca3af',
+  uncommon: '#10b981',
+  rare: '#3b82f6',
+  epic: '#8b5cf6',
+  legendary: '#f97316',
+  mythic: '#ec4899',
 };
 
 const RARITY_LABELS: Record<ProfileEffectRarity, string> = {
-  FREE: 'Free',
-  COMMON: 'Common',
-  RARE: 'Rare',
-  EPIC: 'Epic',
-  LEGENDARY: 'Legendary',
-  MYTHICAL: 'Mythical',
+  free: 'Free',
+  common: 'Common',
+  uncommon: 'Uncommon',
+  rare: 'Rare',
+  epic: 'Epic',
+  legendary: 'Legendary',
+  mythic: 'Mythic',
 };
 
 /**

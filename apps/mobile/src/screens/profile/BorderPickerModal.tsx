@@ -37,15 +37,16 @@ interface BorderPickerModalProps {
   onClose: () => void;
 }
 
-const RARITY_ORDER: BorderRarity[] = ['FREE', 'COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MYTHIC'];
+const RARITY_ORDER: BorderRarity[] = ['free', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 
 const RARITY_COLORS: Record<BorderRarity, string> = {
-  FREE: '#9ca3af',
-  COMMON: '#d1d5db',
-  RARE: '#3b82f6',
-  EPIC: '#a855f7',
-  LEGENDARY: '#f59e0b',
-  MYTHIC: '#ef4444',
+  free: '#9ca3af',
+  common: '#d1d5db',
+  uncommon: '#10b981',
+  rare: '#3b82f6',
+  epic: '#a855f7',
+  legendary: '#f59e0b',
+  mythic: '#ef4444',
 };
 
 const PREVIEW_SIZE = 64;

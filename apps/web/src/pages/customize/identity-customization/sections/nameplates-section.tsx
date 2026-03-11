@@ -24,21 +24,23 @@ export interface NameplatesSectionProps {
 }
 
 const RARITY_COLORS: Record<NameplateRarity, string> = {
-  FREE: '#9ca3af',
-  COMMON: '#9ca3af',
-  RARE: '#3b82f6',
-  EPIC: '#8b5cf6',
-  LEGENDARY: '#f97316',
-  MYTHICAL: '#ec4899',
+  free: '#9ca3af',
+  common: '#9ca3af',
+  uncommon: '#10b981',
+  rare: '#3b82f6',
+  epic: '#8b5cf6',
+  legendary: '#f97316',
+  mythic: '#ec4899',
 };
 
 const RARITY_LABELS: Record<NameplateRarity, string> = {
-  FREE: 'Free',
-  COMMON: 'Common',
-  RARE: 'Rare',
-  EPIC: 'Epic',
-  LEGENDARY: 'Legendary',
-  MYTHICAL: 'Mythical',
+  free: 'Free',
+  common: 'Common',
+  uncommon: 'Uncommon',
+  rare: 'Rare',
+  epic: 'Epic',
+  legendary: 'Legendary',
+  mythic: 'Mythic',
 };
 
 const CATEGORY_ICONS: Record<string, string> = {

@@ -47,7 +47,7 @@ export const NAMEPLATE_LOTTIE_MAP: Record<string, unknown> = {
   plate_dragon_scale: placeholder,
   plate_eternal_frost: placeholder,
 
-  // MYTHICAL
+  // mythic
   plate_cosmic_sovereign: placeholder,
   plate_inferno_lord: placeholder,
   plate_void_emperor: placeholder,
