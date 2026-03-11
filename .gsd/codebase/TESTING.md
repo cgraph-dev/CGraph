@@ -449,9 +449,9 @@ end
 - `build(:user)` — creates unsaved struct
 - `insert(:user)` — creates and inserts into DB
 - `build_list(5, :user)` — creates multiple
-- Factories exist for: users, conversations, messages, groups, forums, achievements, stickers,
-  secret conversations, cosmetics (avatar borders, profile themes, chat effects), subscriptions,
-  etc.
+- Factories exist for: users, conversations, messages, groups, forums, achievements (legacy stubs
+  from removed gamification system), stickers, secret conversations, cosmetics (avatar borders,
+  profile themes, chat effects), subscriptions, etc.
 
 #### Test Isolation
 

@@ -1,6 +1,6 @@
 # CGraph Codebase Concerns
 
-> **Generated**: February 26, 2026 | **Updated**: March 14, 2026 | **Source**: Full monorepo
+> **Generated**: February 26, 2026 | **Updated**: March 11, 2026 | **Source**: Full monorepo
 > analysis | **Codebase Version**: 1.1.0 | **Composite Score**: 8.7/10
 
 ---
@@ -253,16 +253,16 @@ broadcasts compaction requests to connected clients when state exceeds 512KB. Th
 must respond to compaction broadcast), so documents with no active clients cannot be compacted
 server-side. Originally tracked as P1 in `.archived/docs/V1_ACTION_PLAN.md` Session 37 §P1.
 
-### 5.3 useMemo/useCallback Debt — ~2,461 Instances
+### 5.3 useMemo/useCallback Debt — ~2,448 Instances
 
-~2,487 `useMemo`/`useCallback` hook usages across ~588 files cannot be removed until React Compiler
+~2,448 `useMemo`/`useCallback` hook usages across ~575 files cannot be removed until React Compiler
 (`babel-plugin-react-compiler`) is enabled. These are technically unnecessary with React 19 but
 required without the compiler. Rule 12 (React 19 Patterns) is now rated **PASS** in gap analysis
 (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
 
 ### 5.4 Mobile File Size Non-Compliance
 
-**138 mobile TSX files exceed the 300-line limit** (up from 133 at last audit). CI warns but does
+**136 mobile TSX files exceed the 300-line limit** (up from 133 at last audit). CI warns but does
 not block. 6 were split in Session 59 (→ 31 sub-files), but the backlog has grown. Note: Rule 8
 (File Size) is rated **PASS** for web (16 tracked files all split), but mobile remains non-compliant
 (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 8).
@@ -448,10 +448,10 @@ From `.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | Dimension                    | Status                                                                     |
 | ---------------------------- | -------------------------------------------------------------------------- |
 | Animation Standards (Rule 4) | **PASS** — ~100+ dynamic inline values remain but all migratable ones done |
-| Mobile File Size (Rule 8)    | **PASS** (web) — but 138 mobile TSX files still over 300 lines             |
+| Mobile File Size (Rule 8)    | **PASS** (web) — but 136 mobile TSX files still over 300 lines             |
 | Testing (Rule 9)             | **FAIL** — 16.1% web test coverage vs 100% target (357/2218)               |
 | Type Safety (Rule 11)        | **PASS** — 345 `as` casts annotated, 0 unannotated remain                  |
-| React 19 (Rule 12)           | **PASS** — React Compiler not enabled, ~2,461 useMemo/useCallback remain   |
+| React 19 (Rule 12)           | **PASS** — React Compiler not enabled, ~2,448 useMemo/useCallback remain   |
 
 ### 13.3 Wave Task Completion
 
@@ -483,9 +483,9 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 
 ### P2 — Medium Priority
 
-11. **Split 138 oversized mobile TSX files** — CI warns but doesn't block
+11. **Split 136 oversized mobile TSX files** — CI warns but doesn't block
 12. **Refactor 345 type assertion annotations** — Replace with type guards
-13. **Enable React Compiler** — Allows removal of ~2,461 useMemo/useCallback hooks
+13. **Enable React Compiler** — Allows removal of ~2,448 useMemo/useCallback hooks
 14. **Clean up deprecated files** — 20 deprecated shims still in codebase
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
 16. **Automate key rotation** — Currently manual process
@@ -525,14 +525,14 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 - **Affected files**: `src/lib/lottie/index.ts`, `src/lib/lottie/lottie-renderer.tsx`,
   `src/modules/auth/components/auth-logo.tsx`, emoji-picker type imports
 
-### 15.2 Backend Compile Warnings — 17 Active (P2)
+### 15.2 Backend Compile Warnings — 15 Active (P2)
 
-17 compile warnings persist in the Elixir backend:
+15 compile warnings persist in the Elixir backend:
 
 | Warning                                         | Count | Location / Root Cause                                                                                                      |
 | ----------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------- |
 | `Forums.is_moderator?/2` undefined              | 2     | `forum_customization_controller.ex:183`, `forum_theme_crud_controller.ex:157` — function never defined in `Forums` context |
-| `Gamification.*` undefined/deprecated           | 4     | `get_leaderboard/2`, `get_user_rank/2`, `deduct_currency/3` undefined; `award_xp/4` deprecated but still called            |
+| `Gamification.*` undefined/deprecated           | 2     | `deduct_currency/3` undefined; `award_xp/4` deprecated but still called                                                    |
 | Unreachable clause / will never match           | 6     | Pattern match clauses that can never execute (3 "cannot match" + 3 "will never match")                                     |
 | Ungrouped clauses `upload_prekeys/2`            | 1     | `e2ee_controller.ex:254` — clauses with same name/arity not grouped together                                               |
 | `ChatPoll` invalid association                  | 1     | `messaging/message.ex` — `ChatPollVote` missing `chat_poll_id` field                                                       |
@@ -549,8 +549,8 @@ The XP/gamification system was deliberately removed in Phase 26, but cleanup is 
   removed if no callers remain.
 - **Web**: ~53 `TODO(phase-26): Rewire` comments across 34 files mark where gamification UI was
   stripped. These are cosmetic stubs (empty JSX, hardcoded `level = 1`) needing eventual cleanup.
-- **Mobile**: `stores/index.ts` still has `TODO: wire to gamification store coins` with balance
-  hardcoded to 0.
+- ~~**Mobile**: `stores/index.ts` had `TODO: wire to gamification store coins`~~ — **RESOLVED**:
+  TODO removed, facades wired.
 
 ### 15.4 `unlockLevel` Interface Field — Vestigial (P3)
 
@@ -576,8 +576,8 @@ to remove once confirmed no consumers check the field.
 
 ### 15.6 eslint-disable Suppressions — Updated Count (P2)
 
-Web app eslint-disable count is now **282** (down from 271 at last audit — slight increase likely
-from new code). Total across monorepo is now ~449 (282 web + ~138 mobile + ~29 packages).
+Web app eslint-disable count is now **282** (up from 271 at last audit — slight increase likely from
+new code). Total across monorepo is now ~443 (282 web + ~138 mobile + ~23 packages).
 
 ---
 
@@ -590,19 +590,19 @@ from new code). Total across monorepo is now ~449 (282 web + ~138 mobile + ~29 p
 | P2 Medium priority items       | 10                                        |
 | P3 Long-term items             | 8                                         |
 | Active TODO comments in code   | 4 + ~53 phase-26 rewire TODOs             |
-| eslint-disable suppressions    | ~449 (282 web, ~138 mobile, ~29 packages) |
+| eslint-disable suppressions    | ~443 (282 web, ~138 mobile, ~23 packages) |
 | Type assertion annotations     | 345                                       |
 | Deprecated files/annotations   | 20 (incl. gamification.ex stubs)          |
 | Missing web test files         | ~1,861                                    |
-| Oversized mobile TSX files     | 138                                       |
+| Oversized mobile TSX files     | 136                                       |
 | Incomplete wave tasks          | ~35                                       |
 | Security reviews overdue       | 2                                         |
 | SLOs not validated             | 6                                         |
 | Pre-existing TS errors (web)   | 17                                        |
-| Backend compile warnings       | 17                                        |
+| Backend compile warnings       | 15                                        |
 | Vestigial `unlockLevel` fields | 4                                         |
 
 ---
 
-<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 14, 2026 • Based on
+<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 11, 2026 • Based on
 full monorepo analysis</sub>

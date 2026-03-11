@@ -214,7 +214,7 @@ From `eslint.config.js`:
 
 ## 5. Import Patterns
 
-### Import Order (from `CONTRIBUTING.md`)
+### Import Order (from `.archived/root/CONTRIBUTING.md`)
 
 ```typescript
 // 1. React/framework
@@ -442,7 +442,7 @@ export const queryKeys = {
 
 ## 8. Error Handling Patterns
 
-### Domain-Specific Errors (from `CONTRIBUTING.md`)
+### Domain-Specific Errors (from `.archived/root/CONTRIBUTING.md`)
 
 ```typescript
 // ✅ Good — specific error types
@@ -658,7 +658,7 @@ Format: `type(scope): description`
 feat(messaging): add message reactions
 fix(auth): resolve token refresh race condition
 docs(readme): update installation instructions
-test(store): add gamification store unit tests
+test(store): add messaging store unit tests
 ```
 
 ### Branch Naming
