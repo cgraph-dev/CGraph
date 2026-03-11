@@ -1,6 +1,6 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.47** | Enterprise-grade real-time communication platform
+> **Current Version: 1.0.0** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
@@ -18,7 +18,7 @@ developers and users of our hosted platform.
 | [**Architecture Enforcement**](ARCHITECTURE_ENFORCEMENT.md) | Layer boundary enforcement rules         |
 | [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                 | Database table ownership matrix          |
 
-### Module Architecture (New in v0.9.31, updated v0.9.47)
+### Module Architecture (New in v0.9.31, updated v1.0.0)
 
 ```
 apps/web/src/
@@ -137,12 +137,12 @@ import { ForumPost } from '@/modules/forums';
 
 ### Feature Documentation
 
-| Document                                              | Description                |
-| ----------------------------------------------------- | -------------------------- |
-| [Customization System](CUSTOMIZATION_SYSTEM.md)       | Themes, avatars, cosmetics |
-| [Gamification System](GAMIFICATION_SYSTEM.md)         | Achievements & rewards     |
-| [Components](COMPONENTS.md)                           | UI component reference     |
-| [Lottie Prompts](design/LOTTIE_GENERATION_PROMPTS.md) | Animation design specs     |
+| Document                                              | Description                                   |
+| ----------------------------------------------------- | --------------------------------------------- |
+| [Customization System](CUSTOMIZATION_SYSTEM.md)       | Themes, avatars, cosmetics                    |
+| [Gamification System](GAMIFICATION_SYSTEM.md)         | Achievements & rewards (historical reference) |
+| [Components](COMPONENTS.md)                           | UI component reference                        |
+| [Lottie Prompts](design/LOTTIE_GENERATION_PROMPTS.md) | Animation design specs                        |
 
 ### Legal
 
@@ -205,5 +205,5 @@ docs/
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.47 • Proprietary Software • Last updated: March
+<sub>**CGraph Documentation** • Version 1.0.0 • Proprietary Software • Last updated: March
 2026</sub>

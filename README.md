@@ -4,15 +4,15 @@
 
 <img src="docs/assets/logo.png" alt="CGraph Logo" width="140" />
 
-### Secure messaging, forums, and gamification — in one app
+### Secure messaging, forums, and communities — in one app
 
-#### Chat • Forums • E2EE • Leveling & achievements • Subscriptions
+#### Chat • Forums • E2EE • Achievements • Subscriptions
 
-[![Version](https://img.shields.io/badge/version-0.9.47-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](#)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.47 (February 2026)
+**Current version:** 1.0.0 (March 2026)
 
 [🌐 Website](https://cgraph.org) · [📚 Documentation](https://docs.cgraph.org) ·
 [🔌 API Reference](https://api.cgraph.org/docs)
@@ -37,15 +37,15 @@ See [LICENSE](LICENSE) for complete terms.
 | **End-to-End Encryption** |  ✅ PQXDH + Triple Ratchet (PQ)  |  ⚠️ Varies  |
 | **OAuth Authentication**  |    ✅ Google, Apple, Facebook    |  ✅ Common  |
 | **Community Forums**      |           ✅ Built-in            |     ❌      |
-| **Gamification**          |   ✅ XP, Achievements, Quests    |     ❌      |
+| **Gamification**          |   ✅ Achievements & Cosmetics    |     ❌      |
 | **Subscription Tiers**    |   ✅ Free, Premium, Enterprise   |  ⚠️ Basic   |
 | **Role Permissions**      |           ✅ Granular            |  ⚠️ Basic   |
 | **Referral System**       | ✅ Tiered rewards & leaderboards |     ❌      |
 | **Offline Support**       |    ✅ Full queue & auto-sync     | ⚠️ Limited  |
 
 CGraph is a communication platform that puts chat, forums, and encryption together instead of making
-you duct-tape three different apps. It also has an RPG-style leveling system because community
-engagement shouldn't be boring.
+you duct-tape three different apps. It also has achievements and cosmetic customization to keep
+community engagement fun.
 
 ---
 
@@ -79,17 +79,15 @@ engagement shouldn't be boring.
 - Rich text editor + BBCode parser with syntax highlighting
 - RSS/Atom feeds
 
-### 🎮 Gamification
+### 🎮 Achievements & Customization
 
-- **XP & Levels** — earn XP from chatting, posting, daily logins
 - **50+ Achievements** across 6 categories (Social, Content, Exploration, Mastery, Legendary,
   Secret)
-- **Daily/Weekly Quests** for bonus XP
-- **Streaks** — 3+ days = 1.5x multiplier, 7+ = 2.0x
 - **Titles & Badges** — cosmetic unlocks you can equip
-- **Virtual Currency** — coins earned through activity, spent in the marketplace
-- **Leaderboards** — global and per-forum
-- **Seasonal Events** — limited-time challenges
+- **Profile Themes** — customize your profile appearance
+- **Avatar Borders** — unlock decorative avatar frames
+- **Chat Effects** — animated message effects
+- **Marketplace** — browse and equip cosmetic items
 
 ### 🔐 Security
 
@@ -169,7 +167,7 @@ Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
 | Layer      | Technology                                                                      |
 | ---------- | ------------------------------------------------------------------------------- |
-| Backend    | Elixir 1.17+ / Phoenix 1.8 / PostgreSQL 16                                      |
+| Backend    | Elixir 1.18+ / Phoenix 1.8 / PostgreSQL 16                                      |
 | Web        | React 19 / Vite / TailwindCSS / Zustand                                         |
 | Mobile     | React Native 0.81 / Expo SDK 54                                                 |
 | Real-time  | Phoenix Channels (WebSocket)                                                    |

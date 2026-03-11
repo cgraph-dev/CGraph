@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "CGraph - Secure messaging platform with Signal Protocol-inspired E2EE, gamification, and real-time collaboration",
+  "description": "CGraph - Secure messaging platform with Signal Protocol-inspired E2EE and real-time collaboration",
   "author": "Burca Lucas",
   "homepage": "https://cgraph.org",
   "bugs": {

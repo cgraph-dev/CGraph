@@ -1,6 +1,6 @@
 # CGraph Backend Route Audit
 
-**Date:** 2026-02-27 **Phase:** 01 Infrastructure Baseline — Plan 02 **Backend version:** 0.9.47
+**Date:** 2026-02-27 **Phase:** 01 Infrastructure Baseline — Plan 02 **Backend version:** 1.0.0
 (Elixir/Phoenix)
 
 ## Summary
