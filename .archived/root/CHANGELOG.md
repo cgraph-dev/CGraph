@@ -8,7 +8,9 @@ All notable changes to CGraph will be documented in this file.
 
 ### 🚀 CGraph v1.0.0 — First Public Release
 
-End-to-end encrypted messaging platform with forums, voice/video calls, gamification, creator monetization, and wallet authentication. 19 development phases completed across web (React), mobile (React Native/Expo), and backend (Elixir/Phoenix).
+End-to-end encrypted messaging platform with forums, voice/video calls, gamification, creator
+monetization, and wallet authentication. 19 development phases completed across web (React), mobile
+(React Native/Expo), and backend (Elixir/Phoenix).
 
 ### Platform
 
@@ -16,7 +18,8 @@ End-to-end encrypted messaging platform with forums, voice/video calls, gamifica
 - **Web:** React + TypeScript + Vite + Zustand — `web.cgraph.org`
 - **Mobile:** React Native + Expo (iOS & Android) — EAS build pipeline
 - **Landing:** React + Vite + GSAP + Framer Motion — `cgraph.org`
-- **Shared Packages:** 6 packages (@cgraph/crypto, shared-types, socket, utils, animation-constants, api-client)
+- **Shared Packages:** 6 packages (@cgraph/crypto, shared-types, socket, utils, animation-constants,
+  api-client)
 
 ### Security & Encryption (Phases 2-3, 7)
 

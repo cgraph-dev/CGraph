@@ -34,17 +34,15 @@ Authorization: Bearer <access_token>
 GET /cosmetics/borders
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `rarity` | string | Filter by rarity (common, uncommon, rare, epic, legendary, mythic) |
-| `theme` | string | Filter by theme (default, premium, seasonal, achievement) |
-| `type` | string | Filter by type (static, animated, particle) |
-| `owned` | boolean | Filter by ownership status |
-| `page` | integer | Page number (default: 1) |
-| `per_page` | integer | Items per page (default: 20, max: 100) |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| |
+`rarity` | string | Filter by rarity (common, uncommon, rare, epic, legendary, mythic) | | `theme` |
+string | Filter by theme (default, premium, seasonal, achievement) | | `type` | string | Filter by
+type (static, animated, particle) | | `owned` | boolean | Filter by ownership status | | `page` |
+integer | Page number (default: 1) | | `per_page` | integer | Items per page (default: 20, max: 100)
+|
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -99,6 +97,7 @@ POST /cosmetics/borders/:id/equip
 ```
 
 **Response:**
+
 ```json
 {
   "equipped": true,
@@ -107,6 +106,7 @@ POST /cosmetics/borders/:id/equip
 ```
 
 **Errors:**
+
 - `403`: "You do not own this border"
 
 #### Purchase Border
@@ -116,13 +116,15 @@ POST /cosmetics/borders/:id/purchase
 ```
 
 **Request Body:**
+
 ```json
 {
-  "currency": "coins"  // or "gems"
+  "currency": "coins" // or "gems"
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -132,6 +134,7 @@ POST /cosmetics/borders/:id/purchase
 ```
 
 **Errors:**
+
 - `400`: "This item cannot be purchased"
 - `402`: "Insufficient coins"
 - `409`: "You already own this item"
@@ -146,12 +149,9 @@ POST /cosmetics/borders/:id/purchase
 GET /cosmetics/themes
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `category` | string | Filter by category (minimal, vibrant, dark, light, seasonal) |
-| `rarity` | string | Filter by rarity |
-| `owned` | boolean | Filter by ownership |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| |
+`category` | string | Filter by category (minimal, vibrant, dark, light, seasonal) | | `rarity` |
+string | Filter by rarity | | `owned` | boolean | Filter by ownership |
 
 #### Equip Theme
 
@@ -175,11 +175,9 @@ POST /cosmetics/themes/:id/purchase
 GET /cosmetics/chat-effects
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `effect_type` | string | Filter by type (message, bubble, typing, reaction, entrance) |
-| `category` | string | Filter by category (fun, elegant, festive, minimal) |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| |
+`effect_type` | string | Filter by type (message, bubble, typing, reaction, entrance) | | `category`
+| string | Filter by category (fun, elegant, festive, minimal) |
 
 #### Equip Effect
 
@@ -198,6 +196,7 @@ GET /prestige
 ```
 
 **Response:**
+
 ```json
 {
   "prestige_level": 3,
@@ -224,16 +223,18 @@ POST /prestige/activate
 ```
 
 **Requirements:**
+
 - User must be at max level (100)
 - User must confirm prestige action
 
 **Response:**
+
 ```json
 {
   "success": true,
   "new_prestige_level": 4,
-  "xp_multiplier": 1.20,
-  "coin_multiplier": 1.20,
+  "xp_multiplier": 1.2,
+  "coin_multiplier": 1.2,
   "rewards_granted": [
     {
       "type": "avatar_border",
@@ -245,6 +246,7 @@ POST /prestige/activate
 ```
 
 **Errors:**
+
 - `400`: "Must be at max level to prestige"
 
 ### Get Prestige Rewards
@@ -254,6 +256,7 @@ GET /prestige/rewards
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -284,6 +287,7 @@ GET /prestige/history
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -308,6 +312,7 @@ GET /events/active
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -352,6 +357,7 @@ GET /events/:id/progress
 ```
 
 **Response:**
+
 ```json
 {
   "event_id": "uuid",
@@ -374,14 +380,12 @@ GET /events/:id/progress
 GET /events/:id/leaderboard
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `page` | integer | Page number |
-| `per_page` | integer | Items per page (max: 100) |
-| `friends_only` | boolean | Show only friends |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `page`
+| integer | Page number | | `per_page` | integer | Items per page (max: 100) | | `friends_only` |
+boolean | Show only friends |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -411,6 +415,7 @@ GET /events/:id/quests
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -441,6 +446,7 @@ GET /events/:id/battle-pass
 ```
 
 **Response:**
+
 ```json
 {
   "event_id": "uuid",
@@ -476,6 +482,7 @@ POST /events/:id/battle-pass/claim
 ```
 
 **Request Body:**
+
 ```json
 {
   "tier": 8
@@ -483,6 +490,7 @@ POST /events/:id/battle-pass/claim
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -501,6 +509,7 @@ POST /events/:id/battle-pass/claim
 ```
 
 **Errors:**
+
 - `400`: "Tier not yet reached"
 - `409`: "Tier already claimed"
 
@@ -511,6 +520,7 @@ POST /events/:id/battle-pass/purchase
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -529,20 +539,15 @@ POST /events/:id/battle-pass/purchase
 GET /marketplace/listings
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `type` | string | Item type (avatar_border, profile_theme, chat_effect) |
-| `rarity` | string | Item rarity |
-| `min_price` | integer | Minimum price |
-| `max_price` | integer | Maximum price |
-| `currency` | string | Currency (coins, gems) |
-| `sort` | string | Sort order (newest, oldest, price_low, price_high, rarity) |
-| `search` | string | Search item names |
-| `page` | integer | Page number |
-| `per_page` | integer | Items per page |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `type`
+| string | Item type (avatar_border, profile_theme, chat_effect) | | `rarity` | string | Item rarity
+| | `min_price` | integer | Minimum price | | `max_price` | integer | Maximum price | | `currency` |
+string | Currency (coins, gems) | | `sort` | string | Sort order (newest, oldest, price_low,
+price_high, rarity) | | `search` | string | Search item names | | `page` | integer | Page number | |
+`per_page` | integer | Items per page |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -583,6 +588,7 @@ GET /marketplace/listings/:id
 ```
 
 **Response includes:**
+
 - Full listing details
 - Price history
 - Similar listings
@@ -595,6 +601,7 @@ POST /marketplace/listings
 ```
 
 **Request Body:**
+
 ```json
 {
   "item_type": "avatar_border",
@@ -606,6 +613,7 @@ POST /marketplace/listings
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -616,6 +624,7 @@ POST /marketplace/listings
 ```
 
 **Errors:**
+
 - `400`: "This item cannot be traded"
 - `400`: "Item is trade locked until {date}"
 - `403`: "You do not own this item"
@@ -628,6 +637,7 @@ POST /marketplace/listings/:id/purchase
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -638,6 +648,7 @@ POST /marketplace/listings/:id/purchase
 ```
 
 **Errors:**
+
 - `400`: "Cannot purchase your own listing"
 - `402`: "Insufficient balance"
 - `404`: "Listing not found"
@@ -655,10 +666,8 @@ DELETE /marketplace/listings/:id
 GET /marketplace/my-listings
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `status` | string | Filter by status (active, sold, cancelled, expired) |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| |
+`status` | string | Filter by status (active, sold, cancelled, expired) |
 
 ### Get Transaction History
 
@@ -667,6 +676,7 @@ GET /marketplace/history
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -707,6 +717,7 @@ POST /marketplace/offers
 ```
 
 **Request Body:**
+
 ```json
 {
   "listing_id": "uuid",
@@ -727,11 +738,8 @@ POST /marketplace/offers
 GET /marketplace/offers
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `type` | string | received, sent |
-| `status` | string | pending, accepted, rejected, cancelled |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `type`
+| string | received, sent | | `status` | string | pending, accepted, rejected, cancelled |
 
 ### Respond to Offer
 
@@ -740,9 +748,10 @@ POST /marketplace/offers/:id/respond
 ```
 
 **Request Body:**
+
 ```json
 {
-  "action": "accept"  // or "reject"
+  "action": "accept" // or "reject"
 }
 ```
 
@@ -750,16 +759,16 @@ POST /marketplace/offers/:id/respond
 
 ## Error Codes
 
-| Code | Description |
-|------|-------------|
-| `400` | Bad Request - Invalid parameters |
+| Code  | Description                             |
+| ----- | --------------------------------------- |
+| `400` | Bad Request - Invalid parameters        |
 | `401` | Unauthorized - Invalid or missing token |
 | `402` | Payment Required - Insufficient balance |
-| `403` | Forbidden - No permission |
-| `404` | Not Found - Resource doesn't exist |
-| `409` | Conflict - Resource state conflict |
+| `403` | Forbidden - No permission               |
+| `404` | Not Found - Resource doesn't exist      |
+| `409` | Conflict - Resource state conflict      |
 | `429` | Too Many Requests - Rate limit exceeded |
-| `500` | Internal Server Error |
+| `500` | Internal Server Error                   |
 
 ### Error Response Format
 
@@ -775,13 +784,14 @@ POST /marketplace/offers/:id/respond
 
 ## Rate Limits
 
-| Endpoint Type | Limit | Window |
-|--------------|-------|--------|
-| Read | 100 requests | 1 minute |
-| Write | 20 requests | 1 minute |
-| Purchase | 10 requests | 1 minute |
+| Endpoint Type | Limit        | Window   |
+| ------------- | ------------ | -------- |
+| Read          | 100 requests | 1 minute |
+| Write         | 20 requests  | 1 minute |
+| Purchase      | 10 requests  | 1 minute |
 
 Rate limit headers:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95

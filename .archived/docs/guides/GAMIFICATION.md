@@ -20,34 +20,37 @@
 
 The CGraph Gamification System provides comprehensive features for user engagement:
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| XP & Levels | Experience points and leveling | ✅ Production |
-| Achievements | Unlockable accomplishments | ✅ Production |
-| Quests | Daily/weekly challenges | ✅ Production |
-| **Avatar Borders** | Animated avatar decorations | ✅ Production |
-| **Profile Themes** | Full profile customization | ✅ Production |
-| **Chat Effects** | Message animations | ✅ Production |
-| **Prestige System** | Prestige levels with bonuses | ✅ Production |
-| **Seasonal Events** | Time-limited events | ✅ Production |
-| **Battle Pass** | Tiered progression | ✅ Production |
-| **Marketplace** | P2P cosmetic trading | ✅ Production |
+| Feature             | Description                    | Status        |
+| ------------------- | ------------------------------ | ------------- |
+| XP & Levels         | Experience points and leveling | ✅ Production |
+| Achievements        | Unlockable accomplishments     | ✅ Production |
+| Quests              | Daily/weekly challenges        | ✅ Production |
+| **Avatar Borders**  | Animated avatar decorations    | ✅ Production |
+| **Profile Themes**  | Full profile customization     | ✅ Production |
+| **Chat Effects**    | Message animations             | ✅ Production |
+| **Prestige System** | Prestige levels with bonuses   | ✅ Production |
+| **Seasonal Events** | Time-limited events            | ✅ Production |
+| **Battle Pass**     | Tiered progression             | ✅ Production |
+| **Marketplace**     | P2P cosmetic trading           | ✅ Production |
 
 ---
 
 ## Core Systems
 
 ### XP & Levels
+
 - Users earn XP from activities
 - Levels unlock new features
 - Max level: 100
 
 ### Streaks
+
 - Daily login rewards
 - Streak multipliers for XP
 - `POST /api/v1/gamification/streak/claim`
 
 ### Achievements & Quests
+
 - Unlock achievements for XP/coins
 - Daily/weekly quests with rewards
 - Quest categories: social, content, exploration
@@ -61,21 +64,17 @@ The CGraph Gamification System provides comprehensive features for user engageme
 Avatar borders are visual decorations around profile pictures.
 
 **Types:**
+
 - `static` - Simple colored borders
 - `animated` - CSS/WebGL animations
 - `particle` - GPU-accelerated effects
 
-**Rarities:**
-| Rarity | Drop Rate | Trade Cooldown |
-|--------|-----------|----------------|
-| Common | 50% | None |
-| Uncommon | 25% | None |
-| Rare | 15% | 24 hours |
-| Epic | 7% | 72 hours |
-| Legendary | 2.5% | 7 days |
-| Mythic | 0.5% | 14 days |
+**Rarities:** | Rarity | Drop Rate | Trade Cooldown | |--------|-----------|----------------| |
+Common | 50% | None | | Uncommon | 25% | None | | Rare | 15% | 24 hours | | Epic | 7% | 72 hours | |
+Legendary | 2.5% | 7 days | | Mythic | 0.5% | 14 days |
 
 **API Endpoints:**
+
 ```
 GET  /api/v1/cosmetics/borders          # List all borders
 GET  /api/v1/cosmetics/borders/owned    # User's owned borders
@@ -97,12 +96,12 @@ POST /api/v1/cosmetics/themes/:id/purchase
 
 Message animations and visual effects.
 
-| Effect Type | Description |
-|-------------|-------------|
-| `message` | Send animations |
-| `bubble` | Message styling |
-| `typing` | Typing indicators |
-| `reaction` | Reaction effects |
+| Effect Type | Description       |
+| ----------- | ----------------- |
+| `message`   | Send animations   |
+| `bubble`    | Message styling   |
+| `typing`    | Typing indicators |
+| `reaction`  | Reaction effects  |
 
 ```
 GET  /api/v1/cosmetics/chat-effects
@@ -114,17 +113,13 @@ POST /api/v1/cosmetics/chat-effects/:id/equip
 ## Prestige System
 
 When users reach max level (100), they can "prestige" to:
+
 - Reset to level 1
 - Gain permanent XP/coin multipliers
 - Unlock exclusive rewards
 
-**Prestige Bonuses:**
-| Level | XP Bonus | Coin Bonus |
-|-------|----------|------------|
-| 1 | +5% | +5% |
-| 5 | +25% | +25% |
-| 10 | +50% | +50% |
-| 20 | +100% | +100% |
+**Prestige Bonuses:** | Level | XP Bonus | Coin Bonus | |-------|----------|------------| | 1 | +5%
+| +5% | | 5 | +25% | +25% | | 10 | +50% | +50% | | 20 | +100% | +100% |
 
 ```
 GET  /api/v1/prestige              # Get prestige status
@@ -140,11 +135,13 @@ GET  /api/v1/prestige/history      # Prestige history
 Time-limited events with exclusive content.
 
 **Event Lifecycle:**
+
 ```
 Draft → Scheduled → Active → Ending → Ended
 ```
 
 **Features:**
+
 - XP multipliers during events
 - Exclusive cosmetic rewards
 - Battle pass progression
@@ -163,6 +160,7 @@ POST /api/v1/events/:id/battle-pass/purchase
 ### Battle Pass
 
 Each event has a tiered battle pass:
+
 - **Free Track:** Available to all users
 - **Premium Track:** Requires purchase
 
@@ -177,6 +175,7 @@ P2P trading system for cosmetic items.
 **Transaction Fee:** 5%
 
 **API Endpoints:**
+
 ```
 GET  /api/v1/marketplace/listings
 POST /api/v1/marketplace/listings
@@ -189,6 +188,7 @@ POST /api/v1/marketplace/offers
 ```
 
 **Filters:**
+
 - `type`: avatar_border, profile_theme, chat_effect
 - `rarity`: common, uncommon, rare, epic, legendary
 - `min_price`, `max_price`
@@ -199,6 +199,7 @@ POST /api/v1/marketplace/offers
 ## API Reference
 
 ### Legacy Endpoints (v0.9.1)
+
 - `GET /api/v1/gamification/stats`
 - `GET /api/v1/gamification/level-info`
 - `GET /api/v1/gamification/xp/history`
@@ -210,6 +211,7 @@ POST /api/v1/marketplace/offers
 - `GET /api/v1/leaderboard`
 
 ### New Endpoints (v2.0.0)
+
 - `/api/v1/cosmetics/*`
 - `/api/v1/prestige/*`
 - `/api/v1/events/*`
@@ -220,6 +222,7 @@ POST /api/v1/marketplace/offers
 ## WebSocket Events
 
 ### Gamification Channel
+
 ```javascript
 // Subscribe
 socket.channel("gamification:user_123")
@@ -233,6 +236,7 @@ socket.channel("gamification:user_123")
 ```
 
 ### Marketplace Channel
+
 ```javascript
 // Subscribe
 socket.channel("marketplace:lobby")
@@ -246,6 +250,7 @@ socket.channel("marketplace:user_123")
 ```
 
 ### Events Channel
+
 ```javascript
 // Subscribe
 socket.channel("events:global")
@@ -262,11 +267,11 @@ socket.channel("events:event_123")
 
 ## Rate Limits
 
-| Endpoint Type | Limit | Window |
-|--------------|-------|--------|
-| Read | 100/min | Per user |
-| Write | 20/min | Per user |
-| Purchase | 10/min | Per user |
+| Endpoint Type | Limit   | Window   |
+| ------------- | ------- | -------- |
+| Read          | 100/min | Per user |
+| Write         | 20/min  | Per user |
+| Purchase      | 10/min  | Per user |
 
 ---
 
