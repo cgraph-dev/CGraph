@@ -4,6 +4,8 @@
  */
 import { cn } from '@/lib/utils';
 import { Avatar, Tooltip } from '@/components/ui';
+import { FavoriteButton } from './favorite-button';
+import { NicknameEditor } from './nickname-editor';
 
 interface FriendListItemProps {
   id: string;
@@ -13,9 +15,13 @@ interface FriendListItemProps {
   status: 'online' | 'idle' | 'dnd' | 'offline';
   customStatus?: string;
   mutualFriends?: number;
+  nickname?: string;
+  isFavorited?: boolean;
   onMessage?: () => void;
   onCall?: () => void;
   onRemove?: () => void;
+  onToggleFavorite?: (friendId: string, favorited: boolean) => void;
+  onSaveNickname?: (friendId: string, nickname: string) => void;
   onClick?: () => void;
   className?: string;
 }
@@ -24,15 +30,20 @@ interface FriendListItemProps {
  * Friend list row — avatar with status, name, custom status, hover action buttons.
  */
 export function FriendListItem({
+  id,
   name,
   username,
   avatarUrl,
   status,
   customStatus,
   mutualFriends,
+  nickname,
+  isFavorited = false,
   onMessage,
   onCall,
   onRemove,
+  onToggleFavorite,
+  onSaveNickname,
   onClick,
   className,
 }: FriendListItemProps) {
@@ -42,7 +53,7 @@ export function FriendListItem({
       className={cn(
         'group flex items-center gap-3 rounded-lg px-3 py-2',
         'cursor-pointer transition-colors hover:bg-white/[0.04]',
-        className,
+        className
       )}
     >
       <Avatar size="md" name={name} src={avatarUrl} status={status} />
@@ -52,19 +63,30 @@ export function FriendListItem({
           <span className="text-sm font-medium text-white/90">{name}</span>
           <span className="text-xs text-white/30">@{username}</span>
         </div>
-        {customStatus && (
-          <p className="truncate text-xs text-white/40">{customStatus}</p>
-        )}
+        {customStatus && <p className="truncate text-xs text-white/40">{customStatus}</p>}
       </div>
 
       {/* Mutual friends badge */}
       {mutualFriends !== undefined && mutualFriends > 0 && (
-        <Tooltip content={`${mutualFriends} mutual friend${mutualFriends > 1 ? 's' : ''}`} side="top">
+        <Tooltip
+          content={`${mutualFriends} mutual friend${mutualFriends > 1 ? 's' : ''}`}
+          side="top"
+        >
           <span className="mr-2 rounded-full bg-white/[0.04] px-1.5 py-0.5 text-[10px] text-white/30">
             {mutualFriends} mutual
           </span>
         </Tooltip>
       )}
+
+      {/* Favorite + Nickname */}
+      <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+        {onToggleFavorite && (
+          <FavoriteButton friendId={id} isFavorited={isFavorited} onToggle={onToggleFavorite} />
+        )}
+        {onSaveNickname && (
+          <NicknameEditor friendId={id} currentNickname={nickname} onSave={onSaveNickname} />
+        )}
+      </div>
 
       {/* Hover actions */}
       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -106,10 +128,19 @@ function IconButton({
           'transition-colors',
           destructive
             ? 'text-white/30 hover:bg-red-500/20 hover:text-red-400'
-            : 'text-white/30 hover:bg-white/[0.08] hover:text-white/60',
+            : 'text-white/30 hover:bg-white/[0.08] hover:text-white/60'
         )}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d={iconPaths[icon]} />
         </svg>
       </button>
