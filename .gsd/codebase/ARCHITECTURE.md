@@ -1,11 +1,11 @@
 # CGraph Architecture
 
-> Generated: 2026-03-07 | Version: 1.0.0
+> Generated: 2026-03-11 | Version: 1.1.0
 
 ## 1. Overall System Architecture
 
 CGraph is a **pnpm/Turborepo monorepo** implementing a secure real-time messaging platform with
-gamification features, forums, and end-to-end encryption. The architecture follows a **client–server
+forums, a Nodes virtual-currency economy, and end-to-end encryption. The architecture follows a **client–server
 model** with:
 
 - **Backend:** Elixir/Phoenix API server (REST JSON API + Phoenix Channels for real-time)
@@ -42,7 +42,7 @@ model** with:
 │  └──────────────────────┬───────────────────────────┘   │
 │  ┌──────────────────────┴───────────────────────────┐   │
 │  │  CGraph (Domain Contexts / Business Logic)        │   │
-│  │  Accounts│Messaging│Groups│Forums│Gamification... │   │
+│  │  Accounts│Messaging│Groups│Forums│Nodes│Pulse...   │   │
 │  └──────────────────────┬───────────────────────────┘   │
 │                         │                                │
 │  ┌──────────────────────┴────────────────────────────┐  │
@@ -106,7 +106,12 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **Messaging**      | `CGraph.Messaging`      | Conversations, messages, reactions, read receipts, delivery tracking, voice messages, saved messages                                |
 | **Groups**         | `CGraph.Groups`         | Group CRUD, channels, channel categories, roles, members, invites, bans, custom emojis, automod                                     |
 | **Forums**         | `CGraph.Forums`         | Forum boards, threads, posts, comments, polls, votes, categories, RSS, custom emojis, permissions, leaderboard                      |
-| **Gamification**   | `CGraph.Gamification`   | XP, achievements, quests, battle pass, shop, marketplace, prestige, titles, avatar borders, chat effects, seasonal events, currency |
+| **Gamification**   | `CGraph.Gamification`   | **DEPRECATED (stub-only)** — XP, quests, levels, streaks removed; facade returns empty/noop. Schemas remain for data migration |
+| **Nodes**          | `CGraph.Nodes`          | Virtual currency (Nodes) economy: wallets, transactions, tipping, content unlock, withdrawal requests, node bundles, platform cut (20%) |
+| **Pulse**          | `CGraph.Pulse`          | Pulse engagement scoring: pulse scores, tiers, pulse transactions, transaction processing |
+| **Discovery**      | `CGraph.Discovery`      | Content discovery feed: community health, topics, post metrics, user frequency, feed generation |
+| **Stickers**       | `CGraph.Stickers`       | Sticker system: sticker packs, user sticker packs, sticker schemas |
+| **Animations**     | `CGraph.Animations`     | Lottie animation management: caching, manifests, Noto emoji scraping |
 | **Notifications**  | `CGraph.Notifications`  | Push notifications, in-app notifications, delivery system                                                                           |
 | **Encryption**     | `CGraph.Encryption`     | Server-side encrypted fields, key management, hashing                                                                               |
 | **AI**             | `CGraph.AI`             | LLM client, sentiment analysis, smart replies, content moderation, summarizer                                                       |
@@ -140,7 +145,11 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `UserRoutes` — profiles, settings, friends, notifications
 - `MessagingRoutes` — conversations, groups, channels, reactions
 - `ForumRoutes` — forum CRUD, boards, threads, permissions
-- `GamificationRoutes` — XP, quests, shop, cosmetics, marketplace
+- `GamificationRoutes` — legacy gamification endpoints (deprecated, returns stubs)
+- `NodesRoutes` — Nodes economy endpoints (wallets, transactions, tipping, withdrawals)
+- `PulseRoutes` — Pulse engagement scoring endpoints
+- `DiscoveryRoutes` — Content discovery feed endpoints
+- `AnimationRoutes` — Lottie animation/border endpoints
 - `AdminRoutes` — admin dashboard, moderation, GDPR
 - `AIRoutes` — AI-powered features
 - `SyncRoutes` — offline data sync
@@ -179,8 +188,6 @@ top-level controllers outside `v1/` include: `coin_shop_controller`, `coins_cont
 - `RequireAuth` / `RequireAdmin` — Authorization enforcement
 - `CorrelationId` — Distributed tracing correlation
 - `EtagPlug` — HTTP ETag caching (available but not wired into pipelines)
-- `LevelGatePlug` — Level-gated feature access
-- `PremiumGatePlug` — Premium feature gating
 - `OptionalAuthPipeline` — Optional authentication for public endpoints with optional auth
 - `TwoFactorRateLimiter` — 2FA-specific rate limiting
 - `CurrentUser` — Current user assignment
@@ -258,9 +265,7 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 | `WebRTCLobbyChannel`  | `webrtc:lobby`   | Call initiation lobby                             |
 | `VoiceStateChannel`   | `voice:*`        | Voice state tracking                              |
 | `SecretChatChannel`   | `secret_chat:*`  | E2EE secret chat sessions                         |
-| `GamificationChannel` | `gamification:*` | Real-time XP, level-up, achievement events        |
-| `MarketplaceChannel`  | `marketplace:*`  | Marketplace item updates                          |
-| `EventsChannel`       | `events:*`       | Seasonal event updates                            |
+
 | `ForumChannel`        | `forum:*`        | Forum-level real-time updates                     |
 | `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
 | `BoardChannel`        | `board:*`        | Board-level real-time updates                     |
@@ -417,8 +422,8 @@ src/modules/<feature>/
 └── index.ts       # Public barrel export
 ```
 
-**Feature modules:** `admin`, `auth`, `calls`, `chat`, `forums`, `gamification`, `groups`,
-`moderation`, `premium`, `search`, `settings`, `social`
+**Feature modules:** `admin`, `auth`, `calls`, `chat`, `creator`, `discovery`, `forums`, `groups`,
+`moderation`, `nodes`, `premium`, `pulse`, `search`, `secret-chat`, `settings`, `social`
 
 ### 6.3 State Management
 
@@ -429,8 +434,9 @@ src/modules/<feature>/
   `useIncomingCallStore`
 - **Community domain:** `useForumStore`, `useForumHostingStore`, `useAnnouncementStore`,
   `useGroupStore`, `useModerationStore`
-- **Gamification domain:** `useGamificationStore`, `usePrestigeStore`, `useSeasonalEventStore`,
-  `useReferralStore`, `useMarketplaceStore`, `useAvatarBorderStore`
+- **Nodes Economy domain:** `useNodesStore` (in `src/modules/nodes/store`)
+- **Secret Chat domain:** `useSecretChatStore` (in `src/modules/secret-chat/store`) — ghost mode, panic wipe, session management
+- **Premium domain:** `usePremiumStore` (in `src/modules/premium/store`)
 - **Theme domain:** `useThemeStore`, `useForumThemeStore`, `useCustomizationStore`
 - **Utility domain:** `useNotificationStore`, `useSearchStore`, `usePluginStore`, `useCalendarStore`
 - **Feature flags:** `useFeatureFlagStore` (in `src/stores/featureFlagStore.ts`)
@@ -509,21 +515,22 @@ RootNavigator (native-stack)
 
 ### 7.3 Module Architecture
 
-Mirrors web module structure in `src/modules/`: `auth`, `calls`, `chat`, `forums`, `gamification`,
-`groups`, `moderation`, `premium`, `search`, `settings`, `social`
+Mirrors web module structure in `src/modules/`: `auth`, `calls`, `chat`, `forums`,
+`groups`, `moderation`, `premium`, `profile`, `search`, `settings`, `social`
 
 Each module has own `components/`, `hooks/`, `store/` etc.
 
 **Features** (`src/features/`) provide cross-cutting feature implementations: `auth`, `forums`,
-`gamification`, `groups`, `messaging`, `premium`
+`groups`, `messaging`, `premium`
 
-**Stores** (`src/stores/`): `authStore`, `callStore`, `chatStore`, `customizationStore`,
-`featureFlagStore`, `forumStore`, `friendStore`, `gamificationStore`, `groupStore`,
-`marketplaceStore`, `notificationStore`, `settingsStore`, `themeStore`, `voiceStateStore`
+**Stores** (`src/stores/`): `authStore`, `callStore`, `chatStore`, `creatorStore`,
+`customizationStore`, `featureFlagStore`, `forumStore`, `friendStore`, `groupStore`,
+`notificationStore`, `settingsStore`, `themeStore`, `voiceStateStore`
 
-**Services** (`src/services/`): `api`, `callService`, `calendarService`, `forumService`,
-`friendsService`, `gamificationService`, `groupsService`, `notificationsService`, `premiumService`,
-`pushNotifications`, `referralService`, `searchService`, `settingsService`, `tierService`
+**Services** (`src/services/`): `aiService`, `api`, `callService`, `calendarService`,
+`creatorService`, `forumService`, `friendsService`, `groupsService`, `notificationsService`,
+`premiumService`, `pushNotifications`, `referralService`, `searchService`, `settingsService`,
+`tierService`
 
 ### 7.4 Platform Abstraction
 

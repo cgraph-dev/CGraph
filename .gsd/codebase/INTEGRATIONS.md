@@ -199,15 +199,16 @@
 | `group_channel.ex`        | Group features                   |
 | `forum_channel.ex`        | Forum discussions                |
 | `thread_channel.ex`       | Threaded conversations           |
+| `board_channel.ex`        | Board/kanban features            |
 | `call_channel.ex`         | Voice/video call signaling       |
 | `webrtc_lobby_channel.ex` | WebRTC call lobby                |
+| `voice_state_channel.ex`  | Voice state management           |
+| `secret_chat_channel.ex`  | Secret/ephemeral chat            |
 | `document_channel.ex`     | Real-time document collaboration |
-| `gamification_channel.ex` | Gamification events              |
-| `events_channel.ex`       | System events                    |
 | `presence_channel.ex`     | User presence                    |
-| `marketplace_channel.ex`  | Marketplace features             |
 | `ai_channel.ex`           | AI feature channel               |
 | `user_channel.ex`         | User-specific events             |
+| `qr_auth_channel.ex`      | QR code login authentication     |
 | `backpressure.ex`         | Channel backpressure management  |
 | `socket_security.ex`      | WebSocket security module        |
 
@@ -396,10 +397,13 @@
   - `MessageArchivalWorker` — Archive old messages (daily 3 AM UTC)
   - `CleanupLinkPreviewCache` — Clean expired link preview cache (daily 4 AM UTC)
   - `RankingUpdateWorker` — Update forum rankings (hourly) + weekly reset (Monday 00:00 UTC)
-  - `QuestRotationWorker` — Rotate quests (daily/weekly/monthly)
-  - `EventLifecycleWorker` — Check event lifecycle (every 15 min)
+  - `DocumentCompactionWorker` — CRDT document compaction check (every 15 min)
+  - `DeleteExpiredSecretMessages` — Delete expired secret messages (every minute)
+  - `ExpireSecretConversations` — Expire secret conversations past their TTL (every minute)
+  - `FileCleanupWorker` — Clean up abandoned/expired file transfers (hourly)
+  - `PulseDecayWorker` — Pulse reputation decay (daily 2 AM UTC)
 - **Plugins**: Pruner (7-day retention), Lifeline (rescue stalled jobs after 30 min), Cron scheduler
-- **Queues** (24 total): `default`, `mailers`, `notifications`, `events`, `cleanup`,
+- **Queues** (23 total): `default`, `mailers`, `notifications`, `events`, `cleanup`,
   `notification_retry`, `webhooks`, `exports`, `external_api`, `dead_letter`, `maintenance`,
   `backups`, `push_notifications`, `email_notifications`, `archival`, `search`, `critical`,
   `emails`, `media`, `sync`, `link_previews`, `rankings`, `gamification`
@@ -419,7 +423,7 @@
 
 ### Content Sanitization
 
-- **Web**: `dompurify ^3.3.1` ([`apps/web/package.json`](apps/web/package.json))
+- **Web**: `dompurify ^3.3.2` ([`apps/web/package.json`](apps/web/package.json))
 - **Backend**: `html_sanitize_ex ~> 1.4` ([`apps/backend/mix.exs`](apps/backend/mix.exs))
 
 ### Date/Time
@@ -459,8 +463,8 @@
 
 ### Animations
 
-- **Web**: `framer-motion ^12.0.0`, `gsap ^3.14.2`
-- **Mobile**: `react-native-reanimated ~4.1.1`, `react-native-gesture-handler ~2.28.0`
+- **Web**: `motion ^12.0.0` (Framer Motion), `gsap ^3.14.2`, `lottie-web ^5.13.0` (Lottie avatar borders)
+- **Mobile**: `react-native-reanimated ~4.1.1`, `react-native-gesture-handler ~2.28.0`, `lottie-react-native ^7.3.6`
 - **Shared**: `@cgraph/animation-constants` workspace package
 
 ### Confetti

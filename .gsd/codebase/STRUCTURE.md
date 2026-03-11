@@ -1,6 +1,6 @@
 # CGraph Directory Structure
 
-> Generated: 2026-03-07 | Version: 1.0.0
+> Generated: 2026-03-11 | Version: 1.1.0
 
 ## 1. Top-Level Layout
 
@@ -71,10 +71,14 @@ apps/backend/
 │   │   │   ├── ai_routes.ex       # AI feature endpoints
 │   │   │   ├── auth_routes.ex     # Login, register, OAuth, 2FA, wallet
 │   │   │   ├── forum_routes.ex    # Forum CRUD, boards, threads
-│   │   │   ├── gamification_routes.ex  # XP, quests, shop, marketplace
+│   │   │   ├── gamification_routes.ex  # Legacy gamification (deprecated, stubs)
 │   │   │   ├── health_routes.ex   # Health checks, Stripe webhooks
 │   │   │   ├── messaging_routes.ex # Conversations, messages, groups
+│   │   │   ├── nodes_routes.ex     # Nodes economy (wallets, tips, withdrawals)
 │   │   │   ├── public_routes.ex   # Public forums, tiers, RSS
+│   │   │   ├── pulse_routes.ex     # Pulse engagement scoring
+│   │   │   ├── discovery_routes.ex # Content discovery feed
+│   │   │   ├── animation_routes.ex # Lottie animation/border endpoints
 │   │   │   ├── sync_routes.ex     # Offline data sync
 │   │   │   ├── user_routes.ex     # Profiles, settings, friends, notifications
 │   │   │   └── creator_routes.ex  # Creator economy endpoints
@@ -126,13 +130,11 @@ apps/backend/
 │   │   │   ├── webrtc_lobby_channel.ex # Call initiation
 │   │   │   ├── forum_channel.ex        # Forum real-time
 │   │   │   ├── thread_channel.ex       # Thread real-time
-│   │   │   ├── gamification_channel.ex # XP/achievement events
-│   │   │   ├── marketplace_channel.ex  # Marketplace updates
-│   │   │   ├── events_channel.ex       # Seasonal events
 │   │   │   ├── ai_channel.ex           # Streaming AI responses
 │   │   │   ├── document_channel.ex     # Collaborative editing (Yjs)
 │   │   │   ├── board_channel.ex        # Board-level real-time updates
 │   │   │   ├── qr_auth_channel.ex      # QR code login authentication
+│   │   │   ├── secret_chat_channel.ex  # E2EE secret chat sessions
 │   │   │   ├── voice_state_channel.ex  # Voice state tracking
 │   │   │   ├── backpressure.ex         # Message flood prevention
 │   │   │   ├── socket_security.ex      # Top-level socket security module
@@ -156,8 +158,6 @@ apps/backend/
 │   │   │   ├── geo_router.ex           # Geographic routing
 │   │   │   ├── raw_body_plug.ex        # Raw body preservation (webhooks)
 │   │   │   ├── request_context_plug.ex # Request context propagation
-│   │   │   ├── level_gate_plug.ex      # Level-gated feature access
-│   │   │   ├── premium_gate_plug.ex    # Premium feature gating
 │   │   │   ├── optional_auth_pipeline.ex # Optional auth for public endpoints
 │   │   │   ├── two_factor_rate_limiter.ex # 2FA-specific rate limiting
 │   │   │   ├── auth_error_handler.ex   # Auth error handling
@@ -266,9 +266,9 @@ apps/backend/
 │   │   │   └── ... (60+ files: permissions, search, feeds, plugins, etc.)
 │   │   ├── forums.ex                  # Forums context facade
 │   │   │
-│   │   ├── gamification/              # Gamification context
-│   │   │   ├── achievement.ex         # Achievement schema
-│   │   │   ├── quest.ex              # Quest schema
+│   │   ├── gamification/              # Gamification context (DEPRECATED — stub-only)
+│   │   │   ├── achievement.ex         # Achievement schema (retained for data migration)
+│   │   │   ├── quest.ex              # Quest schema (retained for data migration)
 │   │   │   ├── shop_item.ex          # Shop item schema
 │   │   │   ├── marketplace_item.ex   # Marketplace item schema
 │   │   │   ├── coin_transaction.ex   # Virtual currency transactions
@@ -278,17 +278,50 @@ apps/backend/
 │   │   │   ├── chat_effect.ex        # Chat effect schema
 │   │   │   ├── seasonal_event.ex     # Seasonal event schema
 │   │   │   ├── battle_pass_tier.ex   # Battle pass schema
-│   │   │   ├── achievement_system.ex # Achievement logic
-│   │   │   ├── quest_system.ex       # Quest logic
-│   │   │   ├── currency_system.ex    # Economy logic
-│   │   │   ├── leaderboard_system.ex # Leaderboard logic
-│   │   │   ├── marketplace.ex        # Marketplace logic
-│   │   │   ├── event_system.ex       # Event logic
-│   │   │   ├── title_shop_system.ex  # Title shop logic
+│   │   │   ├── achievement_system.ex # Achievement logic (stub)
+│   │   │   ├── quest_system.ex       # Quest logic (stub)
+│   │   │   ├── currency_system.ex    # Economy logic (stub)
+│   │   │   ├── leaderboard_system.ex # Leaderboard logic (stub)
+│   │   │   ├── marketplace.ex        # Marketplace logic (stub)
+│   │   │   ├── event_system.ex       # Event logic (stub)
+│   │   │   ├── title_shop_system.ex  # Title shop logic (stub)
 │   │   │   ├── events/               # Event sub-modules
 │   │   │   ├── repositories/         # Data access layer
-│   │   │   └── ... (34 entries total — schemas, systems, events, repositories)
-│   │   ├── gamification.ex            # Gamification context facade
+│   │   │   └── ... (34 entries total — schemas retained, systems stubbed)
+│   │   ├── gamification.ex            # Gamification context facade (stub — returns empty/noop)
+│   │   │
+│   │   ├── nodes/                     # Nodes Economy context (NEW)
+│   │   │   ├── nodes.ex              # Nodes context facade
+│   │   │   ├── node_bundles.ex       # Node bundle definitions
+│   │   │   ├── node_transaction.ex   # Node transaction schema
+│   │   │   ├── node_wallet.ex        # Node wallet schema
+│   │   │   └── withdrawal_request.ex # Withdrawal request schema
+│   │   │
+│   │   ├── pulse/                     # Pulse engagement context (NEW)
+│   │   │   ├── pulse_score.ex        # Pulse score schema
+│   │   │   ├── pulse_system.ex       # Pulse system logic
+│   │   │   ├── pulse_tiers.ex        # Pulse tier definitions
+│   │   │   ├── pulse_transaction.ex  # Pulse transaction schema
+│   │   │   └── transaction_processor.ex # Transaction processing
+│   │   │
+│   │   ├── discovery/                 # Content discovery context (NEW)
+│   │   │   ├── discovery.ex          # Discovery context facade
+│   │   │   ├── community_health.ex   # Community health scoring
+│   │   │   ├── feed.ex               # Feed generation
+│   │   │   ├── post_metric.ex        # Post metrics schema
+│   │   │   ├── topic.ex              # Topic schema
+│   │   │   └── user_frequency.ex     # User frequency tracking
+│   │   │
+│   │   ├── stickers/                  # Stickers context (NEW)
+│   │   │   ├── sticker.ex            # Sticker schema
+│   │   │   ├── sticker_pack.ex       # Sticker pack schema
+│   │   │   └── user_sticker_pack.ex  # User sticker pack schema
+│   │   │
+│   │   ├── animations/                # Animations context (NEW)
+│   │   │   ├── lottie.ex             # Lottie animation module
+│   │   │   ├── lottie_cache.ex       # Lottie cache module
+│   │   │   ├── lottie_manifest.ex    # Lottie manifest module
+│   │   │   └── noto_scraper.ex       # Noto emoji scraper
 │   │   │
 │   │   ├── notifications/             # Notifications context
 │   │   │   ├── notification.ex        # Schema
@@ -586,11 +619,34 @@ apps/web/
 │   │   ├── forums/                    # Forums module
 │   │   │   ├── api/ | components/ | hooks/ | store/ | types/ | pages/ | utils/
 │   │   │   └── index.ts
-│   │   ├── gamification/              # Gamification module
-│   │   │   ├── api/ | components/ | hooks/ | store/ | types/
-│   │   │   └── index.ts
 │   │   ├── groups/                    # Groups module
 │   │   │   ├── api/ | components/ | hooks/ | store/ | types/
+│   │   │   └── index.ts
+│   │   ├── nodes/                     # Nodes Economy module (NEW)
+│   │   │   ├── components/            # TipButton, TipModal, BundleCard, WithdrawalModal, TransactionRow
+│   │   │   ├── hooks/                 # Nodes hooks
+│   │   │   ├── services/              # nodesApi
+│   │   │   ├── store/                 # useNodesStore
+│   │   │   ├── types/                 # Nodes types
+│   │   │   └── index.ts
+│   │   ├── secret-chat/               # Secret Chat module (NEW)
+│   │   │   ├── components/            # SecretChatHeader, GhostModeIndicator, PanicWipeButton, SecretIdentity, TimerCountdown
+│   │   │   ├── hooks/                 # useSecretChat
+│   │   │   ├── store/                 # useSecretChatStore (ghost mode, panic wipe, session management)
+│   │   │   ├── themes/                # Secret chat visual themes
+│   │   │   └── index.ts
+│   │   ├── pulse/                     # Pulse engagement module (NEW)
+│   │   │   ├── components/            # PulseDots, PulseReactions
+│   │   │   └── index.ts
+│   │   ├── discovery/                 # Discovery module (NEW)
+│   │   │   ├── components/            # Discovery components
+│   │   │   ├── hooks/                 # Discovery hooks
+│   │   │   ├── store/                 # Discovery store
+│   │   │   └── index.ts
+│   │   ├── creator/                   # Creator Economy module
+│   │   │   ├── hooks/                 # Creator hooks
+│   │   │   ├── services/              # Creator API services
+│   │   │   ├── store/                 # Creator store
 │   │   │   └── index.ts
 │   │   ├── moderation/                # Moderation module
 │   │   ├── premium/                   # Premium/subscription module
@@ -618,16 +674,17 @@ apps/web/
 │   │   ├── auth/                      # Auth pages (login, register)
 │   │   ├── profile/                   # Profile pages
 │   │   ├── settings/                  # Settings pages
-│   │   ├── gamification/              # Gamification pages
 │   │   ├── premium/                   # Premium pages
-│   │   ├── admin/                     # Admin pages
+│   │   ├── admin/                     # Admin pages (dashboard + tabs: overview, settings, reports, users, audit)
 │   │   ├── calls/                     # Call pages
 │   │   ├── friends/                   # Friends pages
 │   │   ├── calendar/                  # Calendar page
-│   │   ├── community/ | customize/ | leaderboard/ | members/
+│   │   ├── customize/ | members/
 │   │   ├── notifications/ | referrals/ | search/ | security/ | social/
 │   │   ├── creator/                   # Creator dashboard/analytics/earnings pages
 │   │   ├── explore/                   # Explore/discovery page
+│   │   ├── nodes/                     # Nodes Economy pages (nodes-shop, nodes-wallet)
+│   │   ├── feed/                      # Discovery feed pages (feed-page, feed-post-card)
 │   │   └── not-found.tsx              # 404 page
 │   │
 │   ├── components/                    # Shared components
@@ -789,7 +846,7 @@ apps/web/
 │   ├── styles/                        # Global styles
 │   ├── types/                         # Global TypeScript types
 │   ├── utils/                         # Global utilities
-│   ├── data/                          # Static data (achievements, titles, borders, etc.)
+│   ├── data/                          # Static data (avatar borders [42 Lottie], titles, stickers, etc.)
 │   ├── assets/                        # Static assets (images, fonts)
 │   ├── mocks/                         # MSW API mocks
 │   ├── test/                          # Test utilities
@@ -831,7 +888,6 @@ apps/mobile/
 │   │   ├── groups/                    # GroupList, GroupDetail, Channels
 │   │   ├── friends/                   # FriendList, FriendRequests
 │   │   ├── forums/ | forum/           # ForumList, BoardView, ThreadView
-│   │   ├── gamification/              # Quests, Achievements, Leaderboard
 │   │   ├── profile/                   # UserProfile, EditProfile
 │   │   ├── settings/                  # Settings screens
 │   │   ├── premium/                   # Premium subscription screens
@@ -839,10 +895,11 @@ apps/mobile/
 │   │   ├── search/                    # Search screens
 │   │   ├── notifications/             # Notification screens
 │   │   ├── social/ | community/ | admin/ | calendar/ | content/
-│   │   ├── customize/ | leaderboard/ | legal/ | moderation/ | referrals/ | security/
+│   │   ├── customize/ | legal/ | moderation/ | referrals/ | security/
 │   │   ├── chat/                      # Chat screens (safety number)
 │   │   ├── explore/                   # Explore/discovery screen
 │   │   ├── account/                   # Account management
+│   │   ├── creator/                   # Creator dashboard screen
 │   │   └── loading-screen.tsx         # App loading screen
 │   │
 │   ├── navigation/                    # ★ Navigation structure
@@ -856,24 +913,25 @@ apps/mobile/
 │   │   ├── search-navigator.tsx       # Search stack
 │   │   ├── notifications-navigator.tsx # Notifications stack
 │   │   ├── settings-navigator.tsx     # Settings stack
+│   │   ├── tab-bar.tsx                # Custom bottom tab bar component
 │   │   ├── transition-config.ts       # Navigation transition config
 │   │   └── components/                # Navigation components
 │   │
 │   ├── modules/                       # Feature modules (mirrors web)
-│   │   ├── auth/ | calls/ | chat/ | forums/ | gamification/
-│   │   ├── groups/ | moderation/ | premium/ | search/
-│   │   ├── settings/ | social/
+│   │   ├── auth/ | calls/ | chat/ | forums/
+│   │   ├── groups/ | moderation/ | premium/ | profile/
+│   │   ├── search/ | settings/ | social/
 │   │   └── index.ts
 │   │
 │   ├── features/                      # Cross-cutting feature implementations
-│   │   ├── auth/ | forums/ | gamification/ | groups/
+│   │   ├── auth/ | forums/ | groups/
 │   │   ├── messaging/ | premium/
 │   │   └── index.ts
 │   │
 │   ├── stores/                        # Zustand stores
 │   │   ├── __tests__/                 # Store tests
 │   │   ├── authStore.ts | chatStore.ts | friendStore.ts
-│   │   ├── gamificationStore.ts | groupStore.ts | marketplaceStore.ts
+│   │   ├── groupStore.ts | creatorStore.ts
 │   │   ├── notificationStore.ts | settingsStore.ts | themeStore.ts
 │   │   ├── customizationStore.ts
 │   │   ├── featureFlagStore.ts        # Feature flag store
@@ -887,7 +945,6 @@ apps/mobile/
 │   │   ├── chat/                      # Chat components
 │   │   ├── conversation/              # Conversation components
 │   │   ├── forum/ | forums/           # Forum components
-│   │   ├── gamification/              # Gamification components
 │   │   ├── groups/                    # Group components
 │   │   ├── premium/                   # Premium components
 │   │   ├── enhanced/                  # Enhanced/animated components
@@ -900,7 +957,7 @@ apps/mobile/
 │   │
 │   ├── hooks/                         # Custom hooks
 │   │   ├── useSocket.ts | useE2EE.ts | useRealtimeChannel.ts
-│   │   ├── useGamification.ts | useGroups.ts | useFriendPresence.ts
+│   │   ├── useGroups.ts | useFriendPresence.ts
 │   │   ├── usePushNotifications.ts | useNotifications.ts
 │   │   ├── useOfflineQueue.ts | useHaptics.ts | useBubbleCustomization.ts
 │   │   ├── useCalendar.ts | useContactsPresence.ts | useFeatureFlag.ts
@@ -909,10 +966,10 @@ apps/mobile/
 │   │
 │   ├── services/                      # API services
 │   │   ├── api.ts                     # Base API client
-│   │   ├── friendsService.ts | groupsService.ts | gamificationService.ts
+│   │   ├── aiService.ts | friendsService.ts | groupsService.ts
 │   │   ├── calendarService.ts | notificationsService.ts | premiumService.ts
 │   │   ├── pushNotifications.ts | referralService.ts | searchService.ts
-│   │   ├── settingsService.ts | tierService.ts
+│   │   ├── settingsService.ts | tierService.ts | creatorService.ts
 │   │   ├── callService.ts | forumService.ts
 │   │   └── index.ts
 │   │

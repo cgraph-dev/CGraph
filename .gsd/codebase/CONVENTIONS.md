@@ -222,7 +222,7 @@ From `eslint.config.js`:
 import React, { useState, useEffect } from 'react';
 
 // 2. External packages (alphabetical)
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { z } from 'zod';
 
 // 3. Internal packages (@cgraph/*)
@@ -342,9 +342,20 @@ modules/
 │   ├── components/
 │   ├── hooks/
 │   └── types/
+├── calls/
 ├── chat/
+├── creator/
+├── discovery/
 ├── forums/
-├── gamification/
+├── groups/
+├── moderation/
+├── nodes/
+├── premium/
+├── pulse/
+├── search/
+├── secret-chat/
+├── settings/
+├── social/
 └── ...
 ```
 

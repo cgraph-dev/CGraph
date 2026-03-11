@@ -68,11 +68,11 @@ apps/web/src/
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
-│   └── ... (16 store test files)
-├── hooks/__tests__/          # Hook unit tests (9 direct + 7 facade tests = 16)
+│   └── ... (15 store test files)
+├── hooks/__tests__/          # Hook unit tests (9 direct + 5 facade tests = 14)
 │   ├── useDebounce.test.ts
 │   ├── useClickOutside.test.ts
-│   └── ... (9 hook test files + hooks/facades/__tests__/ with 7 facade tests)
+│   └── ... (9 hook test files + hooks/facades/__tests__/ with 5 facade tests)
 ├── components/__tests__/     # Component unit tests
 │   ├── modal.test.tsx
 │   ├── toast.test.tsx
@@ -363,7 +363,7 @@ apps/backend/test/
 │   ├── data_case.ex          # Case template for database tests (Ecto sandbox)
 │   ├── conn_case.ex          # Case template for controller/HTTP tests
 │   ├── channel_case.ex       # Case template for Phoenix channel tests
-│   ├── factory.ex            # ExMachina factory (786 lines, all domain entities)
+│   ├── factory.ex            # ExMachina factory (937 lines, all domain entities)
 │   ├── fixtures.ex           # Legacy fixtures module (UserFixtures, etc.)
 │   └── aliases.ex            # Shared aliases
 ├── cgraph/                   # Context/domain unit tests (~70 test files)
@@ -381,7 +381,7 @@ apps/backend/test/
 └── integration/              # Integration tests (E2EE, real-time messaging, etc.)
 ```
 
-~190 test files total across the backend.
+~220 test files total across the backend.
 
 #### Context/Domain Test Pattern
 
@@ -447,7 +447,9 @@ end
 - `build(:user)` — creates unsaved struct
 - `insert(:user)` — creates and inserts into DB
 - `build_list(5, :user)` — creates multiple
-- Factories exist for: users, conversations, messages, groups, forums, achievements, quests, etc.
+- Factories exist for: users, conversations, messages, groups, forums, achievements, stickers,
+  secret conversations, cosmetics (avatar borders, profile themes, chat effects), subscriptions,
+  marketplace listings, creator monetization, seasonal events, battle pass tiers, etc.
 
 #### Test Isolation
 
@@ -650,6 +652,8 @@ test.describe('Authentication Flows', () => {
 | `groups-forums.spec.ts` | Group/forum features                    |
 | `premium.spec.ts`       | Premium subscription flows              |
 | `accessibility.spec.ts` | WCAG compliance checks                  |
+| `phase26-verification.spec.ts` | Phase 26 feature verification    |
+| `phase27-verification.spec.ts` | Phase 27 feature verification    |
 
 ---
 

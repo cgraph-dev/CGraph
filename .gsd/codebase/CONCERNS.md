@@ -1,6 +1,6 @@
 # CGraph Codebase Concerns
 
-> **Generated**: February 26, 2026 | **Updated**: March 7, 2026 | **Source**: Full monorepo analysis
+> **Generated**: February 26, 2026 | **Updated**: March 11, 2026 | **Source**: Full monorepo analysis
 > | **Codebase Version**: 1.0.0 | **Composite Score**: 8.7/10
 
 ---
@@ -79,8 +79,8 @@ This is the **single biggest compliance failure** in the World-Class Gap Analysi
 
 | Metric                  | Current   | Target       | Gap                |
 | ----------------------- | --------- | ------------ | ------------------ |
-| Web test files          | 399       | ~2,230 (1:1) | **~1,831 missing** |
-| Web test coverage ratio | ~17.9%    | 100%         | ~82.1%             |
+| Web test files          | 357       | ~2,237 (1:1) | **~1,880 missing** |
+| Web test coverage ratio | ~16.0%    | 100%         | ~84.0%             |
 | CI coverage gate        | 40% lines | 70%+         | Gate too low       |
 
 Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
@@ -94,7 +94,7 @@ Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
 | groups       | 15    | 91         | 16.5%    | 76      |
 | admin        | 11    | 66         | 16.7%    | 55      |
 | forums       | 43    | 232        | 18.5%    | 189     |
-| gamification | 37    | 192        | 19.3%    | 155     |
+| gamification | —     | —          | N/A      | —       | ← **REMOVED** (Phase 26: module deleted from web) |
 | social       | 18    | 81         | 22.2%    | 63      |
 | search       | 6     | 26         | 23.1%    | 20      |
 | calls        | 5     | 18         | 27.8%    | 13      |
@@ -158,14 +158,22 @@ Active TODOs found in production code:
 | `apps/mobile/src/lib/crypto/e2ee.ts:585`                                 | `TODO: DH4 = ECDH(EK_A, OPK_B)` — one-time prekey DH computation not implemented            |
 | `apps/mobile/src/lib/deepLinks.ts:251`                                   | `TODO: Add GroupInviteAccept screen` — invite flow not built                                |
 | `apps/mobile/src/stores/index.ts:193`                                    | `TODO: wire to forum store` — forums facade returns empty array                             |
-| `apps/mobile/src/stores/index.ts:270`                                    | `TODO: wire to gamification store coins` — balance hardcoded to 0                           |
+| `apps/mobile/src/stores/index.ts:270`                                    | `TODO: wire to gamification store coins` — balance hardcoded to 0 (XP system removed, stub only) |
 | `apps/mobile/src/features/messaging/hooks/index.ts:40`                   | `TODO: Implement with expo-av` — voice recording stub                                       |
 | `apps/mobile/src/features/messaging/components/index.ts:21`              | `TODO: Create when needed` — placeholder component barrel                                   |
 | `apps/backend/test/cgraph_web/channels/chat_channel_test.exs:15,33`      | `TODO: Create conversation fixture` / `TODO: Set up joined socket` — incomplete test setup  |
 | `apps/backend/lib/cgraph/collaboration/document_server.ex:291`           | `TODO(P2): Implement server-side Yjs state compaction` — unbounded state growth             |
-| `apps/web/src/pages/customize/progression-customization/mock-data.ts:10` | `@todo(api) Create achievements API endpoints` — using mock data                            |
+| ~~`apps/web/src/pages/customize/progression-customization/mock-data.ts:10`~~ | ~~`@todo(api) Create achievements API endpoints`~~ — **RESOLVED**: file deleted (Phase 26) |
 | `apps/mobile/src/screens/calls/call-history-screen.tsx:86`               | `TODO: get from auth store in production` — hardcoded user ID                               |
 | `apps/backend/lib/cgraph/ai/moderation.ex:23`                            | `TODO: Integrate vision model (GPT-4V / Claude) for image analysis` — image moderation stub |
+
+**Web `TODO(phase-26)` Rewire Comments** (~20+ across 34 files, ~53 markers):
+
+After the Phase 26 gamification removal, ~53 `TODO(phase-26): Rewire` comments remain across 34 web files.
+These mark places where gamification components (LevelProgress, TitleBadge, InlineTitle,
+ProgressionCustomization, ReferralDashboard) were deleted and replaced with stub/empty JSX.
+Key affected areas: `pages/profile/`, `pages/customize/`, `pages/settings/`, `pages/forums/`,
+`pages/messages/`, `pages/referrals/`.
 
 ### 4.2 eslint-disable Suppressions (153 in mobile/packages, 427 total with web)
 
@@ -205,7 +213,7 @@ safety debt**:
 
 ### 4.4 Deprecated Code Still Present
 
-Active `@deprecated` annotations across the codebase:
+Active `@deprecated` annotations across the codebase (includes 7 XP/gamification stubs in backend):
 
 | File                                                                                        | What's Deprecated                                                                   |
 | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --- | -------------------------------------------------------- | ----------------------------------------------- |
@@ -224,6 +232,7 @@ Active `@deprecated` annotations across the codebase:
 | `apps/web/src/modules/forums/components/thread-view.tsx`                                    | Import from `./thread-view/index` instead for modular access                        |
 | `apps/web/src/components/ui/animated-avatar.tsx`                                            | Import from `@/components/ui/animated-avatar` instead                               |
 | `packages/shared-types/src/subscription.ts:48`                                              | Use `Invoice` from `./billing` instead                                              |
+| `apps/backend/lib/cgraph/gamification.ex:48-75`                                              | 7 XP/streak stubs marked `@deprecated "XP system removed — no-op stub"` (Phase 26) |
 
 ---
 
@@ -251,7 +260,7 @@ required without the compiler. Rule 12 (React 19 Patterns) is now rated **PASS**
 
 ### 5.4 Mobile File Size Non-Compliance
 
-**133 mobile TSX files exceed the 300-line limit** (up from 103 at last audit). CI warns but does
+**138 mobile TSX files exceed the 300-line limit** (up from 133 at last audit). CI warns but does
 not block. 6 were split in Session 59 (→ 31 sub-files), but the backlog has grown. Note: Rule 8
 (File Size) is rated **PASS** for web (16 tracked files all split), but mobile remains non-compliant
 (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 8).
@@ -388,10 +397,11 @@ listed as P0 for v1.0 but marked as "In Progress" (`docs/ROADMAP.md`).
 **warn** (not error) because 150+ exported functions still lack JSDoc. Escalation blocked until
 JSDoc backfill is complete (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 6).
 
-### 11.2 Mock Data in Production Code
+### 11.2 Mock Data in Production Code — RESOLVED
 
-`apps/web/src/pages/customize/progression-customization/mock-data.ts` contains placeholder data with
-a `@todo(api)` annotation indicating real API endpoints need to be created.
+~~`apps/web/src/pages/customize/progression-customization/mock-data.ts`~~ — **RESOLVED**: Entire
+`progression-customization/` directory was deleted in Phase 26 (gamification removal). No mock data
+remains in production code for this feature.
 
 ---
 
@@ -436,7 +446,7 @@ From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 | ---------------------------- | -------------------------------------------------------------------------- |
 | Animation Standards (Rule 4) | **PASS** — ~100+ dynamic inline values remain but all migratable ones done |
 | Mobile File Size (Rule 8)    | **PASS** (web) — but 133 mobile TSX files still over 300 lines             |
-| Testing (Rule 9)             | **FAIL** — 17.9% web test coverage vs 100% target                          |
+| Testing (Rule 9)             | **FAIL** — 16.0% web test coverage vs 100% target (357/2237)               |
 | Type Safety (Rule 11)        | **PASS** — 427 `as` casts annotated, 0 unannotated remain                  |
 | React 19 (Rule 12)           | **PASS** — React Compiler not enabled, ~1,851 useMemo/useCallback remain   |
 
@@ -477,7 +487,7 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
 16. **Automate key rotation** — Currently manual process
 17. **Wire mobile store facades** — Forums returns empty array, balance hardcoded to 0
-18. **Replace mock data with real API** — Progression customization uses placeholder data
+18. ~~**Replace mock data with real API** — Progression customization uses placeholder data~~ **RESOLVED** (Phase 26 deletion)
 19. **Fix conditional hooks violation** —
     `apps/mobile/src/screens/forums/create-post-screen/components/post-type-selector.tsx` calls
     hooks conditionally
@@ -496,6 +506,72 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 
 ---
 
+## 15. New Concerns (Added March 11, 2026)
+
+### 15.1 Pre-existing TypeScript Errors — 18 in Web App (P2)
+
+18 pre-existing TypeScript errors exist in the web app, primarily related to `AnimatedEmoji`:
+
+- **Duplicate identifier**: `AnimatedEmoji` is exported as both a component (`./animated-emoji.tsx`)
+  and an interface (`./lottie-types.ts`) from `src/lib/lottie/index.ts`, causing duplicate identifier
+  errors in consumers
+- **Type confusion**: `AnimatedEmoji` used as a type (`typeof`) instead of value in emoji-picker
+  and lottie-renderer components
+- **Affected files**: `src/lib/lottie/index.ts`, `src/lib/lottie/lottie-renderer.tsx`,
+  `src/modules/auth/components/auth-logo.tsx`, emoji-picker type imports
+
+### 15.2 Backend Compile Warnings — 4 Active (P2)
+
+4 compile warnings persist in the Elixir backend:
+
+| Warning | Location | Root Cause |
+| --- | --- | --- |
+| `Forums.is_moderator?/2` undefined | `forum_customization_controller.ex:183`, `forum_theme_crud_controller.ex:157` | Function called but never defined in `Forums` context |
+| `ChatPoll` invalid association | `messaging/message.ex` | `Message` schema references `ChatPoll` association but `Message` has no `has_one :chat_poll` or `belongs_to :chat_poll` |
+| `VoiceMessage.encryption_changeset/2` undefined | `voice_message_controller.ex:197` | Controller calls `VoiceMessage.encryption_changeset/2` but the function is not defined on `VoiceMessage` (only on `UploadedFile`) |
+| `HTTPoison` not available | `message_translation.ex:55` | `HTTPoison` is used but not listed in `mix.exs` dependencies |
+
+### 15.3 Gamification Stub Cleanup Pending (P3)
+
+The XP/gamification system was deliberately removed in Phase 26, but cleanup is incomplete:
+
+- **Backend**: `apps/backend/lib/cgraph/gamification.ex` still has 7 `@deprecated` stub functions
+  (XP grants, level-up checks, streak claims) that return `{:error, :deprecated}`. Could be fully
+  removed if no callers remain.
+- **Web**: ~53 `TODO(phase-26): Rewire` comments across 34 files mark where gamification UI was
+  stripped. These are cosmetic stubs (empty JSX, hardcoded `level = 1`) needing eventual cleanup.
+- **Mobile**: `stores/index.ts` still has `TODO: wire to gamification store coins` with balance
+  hardcoded to 0.
+
+### 15.4 `unlockLevel` Interface Field — Vestigial (P3)
+
+`unlockLevel?: number` still exists in 4 data collection interfaces even though the XP level system
+was removed:
+
+- `apps/web/src/data/profileThemes.ts:77`
+- `apps/web/src/data/titlesCollection.ts:33`
+- `apps/web/src/data/badgesCollection.ts:18`
+- `apps/web/src/data/avatar-borders.ts:832`
+
+The field values were stripped from actual data entries but the interface definition remains. Safe to
+remove once confirmed no consumers check the field.
+
+### 15.5 Legacy Customization Store Exports — Active Consumers (P3)
+
+- **`themeColors` legacy export**: Exported from `customizationStore.ts:192` as
+  `export const themeColors = THEME_COLORS;`. Still has **7 active import consumers** across
+  settings panels and preview components. Cannot be removed without migrating consumers.
+- **`updateChatStyle` / `updateEffects` batch methods**: Legacy batch-update methods in
+  customization store still have consumers in `useChatCustomization.ts`,
+  `useEffectsCustomization.ts`, `theme-application-test.tsx`, and tests. Cannot remove yet.
+
+### 15.6 eslint-disable Suppressions — Updated Count (P2)
+
+Web app eslint-disable count is now **282** (down from 271 at last audit — slight increase likely
+from new code). Total across monorepo remains ~427.
+
+---
+
 ## Summary Statistics
 
 | Category                     | Count  |
@@ -504,17 +580,20 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 | P1 High priority items       | 6      |
 | P2 Medium priority items     | 10     |
 | P3 Long-term items           | 8      |
-| Active TODO comments in code | 11     |
-| eslint-disable suppressions  | 427    |
+| Active TODO comments in code | 11 + ~53 phase-26 rewire TODOs |
+| eslint-disable suppressions  | ~427 (282 web, ~130 mobile, ~23 packages) |
 | Type assertion annotations   | 427    |
-| Deprecated files/annotations | 24     |
-| Missing web test files       | ~1,831 |
-| Oversized mobile TSX files   | 133    |
+| Deprecated files/annotations | 25 (incl. gamification.ex stubs) |
+| Missing web test files       | ~1,880 |
+| Oversized mobile TSX files   | 138    |
 | Incomplete wave tasks        | ~35    |
 | Security reviews overdue     | 2      |
 | SLOs not validated           | 6      |
+| Pre-existing TS errors (web) | 18     |
+| Backend compile warnings     | 4      |
+| Vestigial `unlockLevel` fields | 4    |
 
 ---
 
-<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 4, 2026 • Based on
+<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 11, 2026 • Based on
 full monorepo analysis</sub>

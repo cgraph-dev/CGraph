@@ -33,7 +33,7 @@
 | **Phoenix LiveView**      | `~> 1.1.3`           | Real-time admin dashboard                      |
 | **Phoenix LiveDashboard** | `~> 0.8.7`           | Built-in monitoring dashboard                  |
 | **Ecto**                  | `~> 3.13` (ecto_sql) | Database ORM/query builder                     |
-| **Bandit**                | `~> 1.10`            | HTTP server (replaces Cowboy)                  |
+| **Bandit**                | `~> 1.6`             | HTTP server (replaces Cowboy)                  |
 | **Oban**                  | `~> 2.20`            | Background job processing with cron scheduling |
 | **Guardian**              | `~> 2.4`             | JWT authentication                             |
 
