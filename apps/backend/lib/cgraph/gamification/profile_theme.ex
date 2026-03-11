@@ -12,10 +12,10 @@ defmodule CGraph.Gamification.ProfileTheme do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias CGraph.Cosmetics.Rarity
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-
-  @rarities ~w(common uncommon rare epic legendary mythic unique seasonal)
   @presets ~w(minimalist-dark minimalist-light gradient-aurora cyberpunk-neon fantasy-castle space-explorer ocean-deep forest-mystic retro-arcade kawaii-pastel dark-gothic royal-purple nature-zen sunset-warm arctic-frost volcanic-fire galaxy-dream steampunk-brass cherry-blossom neon-city holographic custom)
   @layout_types ~w(minimal compact detailed gaming social creator custom)
   @hover_effects ~w(none scale tilt glow border-animate parallax float)
@@ -86,7 +86,7 @@ defmodule CGraph.Gamification.ProfileTheme do
       :sort_order, :is_active, :preview_url
     ])
     |> validate_required([:slug, :name, :preset, :rarity, :unlock_type])
-    |> validate_inclusion(:rarity, @rarities)
+    |> validate_inclusion(:rarity, Rarity.string_values())
     |> validate_inclusion(:preset, @presets)
     |> validate_inclusion(:layout_type, @layout_types)
     |> validate_inclusion(:hover_effect, @hover_effects)
@@ -98,7 +98,7 @@ defmodule CGraph.Gamification.ProfileTheme do
 
   @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
-  def rarities, do: @rarities
+  def rarities, do: Rarity.string_values()
   @doc "Returns the list of available theme presets."
   @spec presets() :: [String.t()]
   def presets, do: @presets

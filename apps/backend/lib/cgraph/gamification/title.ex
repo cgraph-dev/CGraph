@@ -5,10 +5,10 @@ defmodule CGraph.Gamification.Title do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias CGraph.Cosmetics.Rarity
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-
-  @rarities ~w(common uncommon rare epic legendary mythic unique)
   @unlock_types ~w(achievement level purchase event)
 
   schema "titles" do
@@ -37,7 +37,7 @@ defmodule CGraph.Gamification.Title do
       :unlock_requirement, :is_purchasable, :coin_cost, :sort_order
     ])
     |> validate_required([:slug, :name, :rarity, :unlock_type])
-    |> validate_inclusion(:rarity, @rarities)
+    |> validate_inclusion(:rarity, Rarity.string_values())
     |> validate_inclusion(:unlock_type, @unlock_types)
     |> validate_number(:coin_cost, greater_than_or_equal_to: 0)
     |> unique_constraint(:slug)
@@ -45,7 +45,7 @@ defmodule CGraph.Gamification.Title do
 
   @doc "Returns the list of available title rarity levels."
   @spec rarities() :: [String.t()]
-  def rarities, do: @rarities
+  def rarities, do: Rarity.string_values()
 
   @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types

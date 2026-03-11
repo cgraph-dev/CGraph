@@ -10,10 +10,10 @@ defmodule CGraph.Gamification.AvatarBorder do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias CGraph.Cosmetics.Rarity
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-
-  @rarities ~w(common uncommon rare epic legendary mythic unique seasonal event)
   @themes ~w(basic gradient glow animated retro neon cyberpunk fantasy minimal nature ocean space fire ice pixel vaporwave 8bit steampunk anime cosmic ethereal)
   @animation_types ~w(none static pulse rotate shimmer wave breathe spin rainbow particles glow flow spark lottie)
   @unlock_types ~w(default achievement level purchase event season gift prestige)
@@ -77,7 +77,7 @@ defmodule CGraph.Gamification.AvatarBorder do
       :sort_order, :is_active, :preview_url
     ])
     |> validate_required([:slug, :name, :theme, :rarity, :unlock_type])
-    |> validate_inclusion(:rarity, @rarities)
+    |> validate_inclusion(:rarity, Rarity.string_values())
     |> validate_inclusion(:theme, @themes)
     |> validate_inclusion(:animation_type, @animation_types)
     |> validate_inclusion(:unlock_type, @unlock_types)
@@ -110,7 +110,7 @@ defmodule CGraph.Gamification.AvatarBorder do
 
   @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
-  def rarities, do: @rarities
+  def rarities, do: Rarity.string_values()
 
   @doc "Returns the list of available animation types."
   @spec themes() :: [String.t()]

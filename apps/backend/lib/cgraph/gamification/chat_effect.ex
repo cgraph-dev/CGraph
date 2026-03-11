@@ -12,10 +12,10 @@ defmodule CGraph.Gamification.ChatEffect do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias CGraph.Cosmetics.Rarity
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-
-  @rarities ~w(common uncommon rare epic legendary mythic unique)
   @effect_types ~w(message-effect bubble-style typing-indicator emoji-pack sound-effect)
   @message_effects ~w(none confetti fireworks sparkle rainbow hearts stars snow fire electric glitch matrix bubble shake bounce fade-in slide-in zoom flip typewriter neon-glow holographic plasma aurora cosmic sakura rain thunder explosion portal)
   @bubble_styles ~w(default rounded square cloud thought comic neon glass gradient outlined shadowed retro pixel futuristic organic)
@@ -62,7 +62,7 @@ defmodule CGraph.Gamification.ChatEffect do
       :sort_order, :is_active, :preview_url
     ])
     |> validate_required([:slug, :name, :effect_type, :effect_id, :rarity, :unlock_type])
-    |> validate_inclusion(:rarity, @rarities)
+    |> validate_inclusion(:rarity, Rarity.string_values())
     |> validate_inclusion(:effect_type, @effect_types)
     |> validate_inclusion(:unlock_type, @unlock_types)
     |> validate_effect_id()
@@ -91,7 +91,7 @@ defmodule CGraph.Gamification.ChatEffect do
 
   @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
-  def rarities, do: @rarities
+  def rarities, do: Rarity.string_values()
   @doc "Returns the list of available effect types."
   @spec effect_types() :: [String.t()]
   def effect_types, do: @effect_types
