@@ -38,6 +38,7 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.PulseRoutes
   import CGraphWeb.Router.DiscoveryRoutes
   import CGraphWeb.Router.NodesRoutes
+  import CGraphWeb.Router.CosmeticsRoutes
 
   # ============================================================================
   # Pipelines
@@ -132,6 +133,7 @@ defmodule CGraphWeb.Router do
   messaging_routes()
   forum_routes()
   gamification_routes()
+  cosmetics_routes()
   creator_routes()
   admin_routes()
   ai_routes()
