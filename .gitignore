@@ -39,11 +39,17 @@ Thumbs.db
 # Logs
 logs/
 *.log
+nohup.out
 monitoring_log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 crash-reports/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
 
 # Testing
 coverage/
