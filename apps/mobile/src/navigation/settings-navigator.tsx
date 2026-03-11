@@ -44,6 +44,9 @@ import GDPRScreen from '../screens/legal/gdpr-screen';
 import SessionsScreen from '../screens/settings/sessions-screen';
 import CustomStatusScreen from '../screens/social/custom-status-screen';
 
+// Phase 34 placeholder screens — will be implemented in later plans
+const PlaceholderScreen = () => null;
+
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 /** Settings stack navigator — gamification screens removed (phase-26). */
@@ -225,6 +228,37 @@ export default function SettingsNavigator() {
         name="CustomStatus"
         component={CustomStatusScreen}
         options={{ title: 'Custom Status', headerShown: false }}
+      />
+      {/* Phase 34 Screens */}
+      <Stack.Screen
+        name="ThemeBrowser"
+        component={PlaceholderScreen}
+        options={{ title: 'Theme Browser', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ParticleEffects"
+        component={PlaceholderScreen}
+        options={{ title: 'Particle Effects', headerShown: false }}
+      />
+      <Stack.Screen
+        name="BackgroundEffects"
+        component={PlaceholderScreen}
+        options={{ title: 'Background Effects', headerShown: false }}
+      />
+      <Stack.Screen
+        name="AnimationPresets"
+        component={PlaceholderScreen}
+        options={{ title: 'Animation Presets', headerShown: false }}
+      />
+      <Stack.Screen
+        name="NameStyles"
+        component={PlaceholderScreen}
+        options={{ title: 'Name Styles', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProfileLayouts"
+        component={PlaceholderScreen}
+        options={{ title: 'Profile Layouts', headerShown: false }}
       />
     </Stack.Navigator>
   );

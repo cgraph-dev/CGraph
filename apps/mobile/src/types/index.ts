@@ -389,6 +389,8 @@ export type MessagesStackParamList = {
   NewConversation: undefined;
   SavedMessages: undefined;
   SafetyNumber: { recipientId: string; recipientName: string };
+  SecretChat: { recipientId: string; recipientName: string };
+  SecretChatSettings: { conversationId: string };
 };
 
 export type NotificationsStackParamList = {
@@ -494,6 +496,16 @@ export type SettingsStackParamList = {
   Sessions: undefined;
   // Device management (E2EE multi-device)
   LinkedDevices: undefined;
+  // Phase 34 screens
+  ThemeBrowser: undefined;
+  ParticleEffects: undefined;
+  BackgroundEffects: undefined;
+  AnimationPresets: undefined;
+  NameStyles: undefined;
+  ProfileLayouts: undefined;
+  NodesWallet: undefined;
+  NodesShop: undefined;
+  Withdrawal: undefined;
 };
 
 // Friend types
