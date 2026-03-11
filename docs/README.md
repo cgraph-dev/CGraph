@@ -11,12 +11,12 @@ developers and users of our hosted platform.
 
 ## 🏗️ Architecture (START HERE)
 
-| Document                                                                    | Description                              |
-| --------------------------------------------------------------------------- | ---------------------------------------- |
-| [**Architecture Transformation Plan**](ARCHITECTURE_TRANSFORMATION_PLAN.md) | ⭐ Current architecture status (8.7/10)  |
-| [**CLAUDE.md**](../CLAUDE.md)                                               | AI agent instructions & project overview |
-| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)                       | Visual system architecture (Mermaid)     |
-| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                                 | Database table ownership matrix          |
+| Document                                                    | Description                              |
+| ----------------------------------------------------------- | ---------------------------------------- |
+| [**CLAUDE.md**](../CLAUDE.md)                               | AI agent instructions & project overview |
+| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)       | Visual system architecture (Mermaid)     |
+| [**Architecture Enforcement**](ARCHITECTURE_ENFORCEMENT.md) | Layer boundary enforcement rules         |
+| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                 | Database table ownership matrix          |
 
 ### Module Architecture (New in v0.9.31, updated v0.9.47)
 
@@ -43,24 +43,24 @@ import { ForumPost } from '@/modules/forums';
 
 ---
 
-## 📊 Project Status
+## 📊 Product & Roadmap
 
-| Document                                                  | Description                                 |
-| --------------------------------------------------------- | ------------------------------------------- |
-| [**Current State Dashboard**](CURRENT_STATE_DASHBOARD.md) | Real-time project health overview           |
-| [**Project Status**](PROJECT_STATUS.md)                   | Feature tracking, architecture, and roadmap |
-| [**Codebase Audit Report**](CODEBASE_AUDIT_REPORT.md)     | Full codebase quality review                |
+| Document                          | Description                    |
+| --------------------------------- | ------------------------------ |
+| [**Product Roadmap**](ROADMAP.md) | Timeline, releases, and vision |
 
 ---
 
 ## 🔒 Quality & Security
 
-| Document                                                     | Description                            |
-| ------------------------------------------------------------ | -------------------------------------- |
-| [**Quality Gates**](QUALITY_GATES.md)                        | CI requirements and enforcement policy |
-| [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)                | The 20 rules that matter most          |
-| [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md)  | Audit schedule and findings            |
-| [**Code Standards**](PrivateFolder/ENGINEERING_STANDARDS.md) | Comprehensive coding guidelines        |
+| Document                                                    | Description                            |
+| ----------------------------------------------------------- | -------------------------------------- |
+| [**Quality Gates**](QUALITY_GATES.md)                       | CI requirements and enforcement policy |
+| [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)               | The 20 rules that matter most          |
+| [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md) | Audit schedule and findings            |
+| [**Security Audit Checklist**](SECURITY_AUDIT_CHECKLIST.md) | Pre-audit checklist                    |
+| [**Security Testing**](SECURITY_TESTING.md)                 | Security test framework                |
+| [**Threat Model**](THREAT_MODEL.md)                         | STRIDE analysis & mitigations          |
 
 ---
 
@@ -69,10 +69,11 @@ import { ForumPost } from '@/modules/forums';
 | Document                                            | Description                    |
 | --------------------------------------------------- | ------------------------------ |
 | [**Operational Runbooks**](OPERATIONAL_RUNBOOKS.md) | Deployment, incidents, DB ops  |
-| [**API Documentation**](API_DOCUMENTATION.md)       | REST & WebSocket API reference |
+| [**API Reference**](api/API_REFERENCE.md)           | REST & WebSocket API reference |
+| [**API Contracts**](API_CONTRACTS.md)               | API contract definitions       |
+| [**OpenAPI Spec**](api/openapi.yaml)                | OpenAPI 3.0 specification      |
 | [**Testing Strategy**](TESTING_STRATEGY.md)         | Test pyramid and examples      |
-| [**Security Testing**](SECURITY_TESTING.md)         | Security test framework        |
-| [**Threat Model**](THREAT_MODEL.md)                 | STRIDE analysis & mitigations  |
+| [**SLO Document**](SLO_DOCUMENT.md)                 | Service level objectives       |
 
 ---
 
@@ -91,23 +92,26 @@ import { ForumPost } from '@/modules/forums';
 | Document                                 | Description                     |
 | ---------------------------------------- | ------------------------------- |
 | [Quickstart Guide](guides/QUICKSTART.md) | Get up and running in 5 minutes |
-| [User Guide](guides/USER_GUIDE.md)       | Complete end-user documentation |
-| [Contributing](../CONTRIBUTING.md)       | How to contribute to CGraph     |
+| [Deployment](guides/DEPLOYMENT.md)       | Production deployment guide     |
 
 ### Developer Guides
 
-| Document                           | Description                   |
-| ---------------------------------- | ----------------------------- |
-| [Deployment](guides/DEPLOYMENT.md) | Production deployment guide   |
-| [Frontend](guides/FRONTEND.md)     | Web application documentation |
-| [Mobile](guides/MOBILE.md)         | React Native mobile app guide |
-| [Security](guides/SECURITY.md)     | Security best practices       |
+| Document                                           | Description                   |
+| -------------------------------------------------- | ----------------------------- |
+| [Frontend](guides/FRONTEND.md)                     | Web application documentation |
+| [Mobile](guides/MOBILE.md)                         | React Native mobile app guide |
+| [Security](guides/SECURITY.md)                     | Security best practices       |
+| [CI/CD Secrets](guides/CI_CD_SECRETS.md)           | Secrets management            |
+| [Testing](guides/TESTING.md)                       | Testing guide                 |
+| [Monitoring](guides/MONITORING.md)                 | Observability guide           |
+| [Operations](guides/OPERATIONS.md)                 | Operations guide              |
+| [Store Architecture](guides/STORE_ARCHITECTURE.md) | Zustand state management      |
+| [Troubleshooting](guides/TROUBLESHOOTING.md)       | Common issues & fixes         |
 
 ### API Reference
 
 | Document                              | Description                     |
 | ------------------------------------- | ------------------------------- |
-| [API Overview](api/API.md)            | REST API introduction           |
 | [API Reference](api/API_REFERENCE.md) | Detailed endpoint documentation |
 | [OpenAPI Spec](api/openapi.yaml)      | OpenAPI 3.0 specification       |
 
@@ -117,7 +121,38 @@ import { ForumPost } from '@/modules/forums';
 | ----------------------------------------------------------------- | ------------------------------- |
 | [Architecture Overview](architecture/ARCHITECTURE.md)             | System architecture             |
 | [Database Design](architecture/DATABASE.md)                       | Schema and data model           |
-| [Database Scaling](architecture/DATABASE_SCALING.md)              | Scaling strategies              |
+| [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture |
+| [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation        |
+| [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive             |
+| [AI Integration](architecture/AI_INTEGRATION.md)                  | AI features (Claude)            |
+
+### Architecture Decision Records (ADR)
+
+| Document                                                          | Description               |
+| ----------------------------------------------------------------- | ------------------------- |
+| [ADR Index](adr/README.md)                                        | Complete list of ADRs     |
+| [001 - Monorepo Structure](adr/001-monorepo-structure.md)         | Monorepo architecture     |
+| [019 - Elixir/Phoenix Backend](adr/019-elixir-phoenix-backend.md) | Backend technology choice |
+| [004 - Signal Protocol (E2EE)](adr/004-signal-protocol-e2ee.md)   | End-to-end encryption     |
+
+### Feature Documentation
+
+| Document                                              | Description                |
+| ----------------------------------------------------- | -------------------------- |
+| [Customization System](CUSTOMIZATION_SYSTEM.md)       | Themes, avatars, cosmetics |
+| [Gamification System](GAMIFICATION_SYSTEM.md)         | Achievements & rewards     |
+| [Components](COMPONENTS.md)                           | UI component reference     |
+| [Lottie Prompts](design/LOTTIE_GENERATION_PROMPTS.md) | Animation design specs     |
+
+### Legal
+
+| Document                                                          | Description                     |
+| ----------------------------------------------------------------- | ------------------------------- |
+| [Terms of Service](LEGAL/TERMS_OF_SERVICE.md)                     | ToS                             |
+| [Privacy Policy](LEGAL/PRIVACY_POLICY.md)                         | Privacy policy                  |
+| [GDPR](LEGAL/GDPR.md)                                             | GDPR compliance                 |
+| [Cookie Policy](LEGAL/COOKIE_POLICY.md)                           | Cookie usage                    |
+| [DMCA Template](LEGAL/DMCA_TEMPLATE.md)                           | DMCA takedown                   |
 | [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture |
 | [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation        |
 | [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive             |
@@ -125,26 +160,7 @@ import { ForumPost } from '@/modules/forums';
 
 ---
 
-## 📋 Release Notes
-
-| Version                                         | Date          | Highlights                                                  |
-| ----------------------------------------------- | ------------- | ----------------------------------------------------------- |
-| **v0.9.47**                                     | February 2026 | **Latest** — Honest audit, version sync, 244 web test files |
-| v0.9.38                                         | February 2026 | World-class compliance push, 21 test batches                |
-| v0.9.37                                         | February 2026 | File renaming (1,510 kebab-case), @spec coverage            |
-| v0.9.31                                         | February 2026 | Module architecture rebuild, web restructure                |
-| v0.9.26                                         | January 2026  | Module architecture introduction, 12 feature modules        |
-| [v0.9.6](release-notes/V0.9.6_RELEASE_NOTES.md) | January 2026  | Avatar borders everywhere, deployment readiness             |
-| [v0.9.5](release-notes/V0.9.5_RELEASE_NOTES.md) | January 2026  | Security hardening, Stripe payments                         |
-| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md) | January 2026  | Proprietary transition, code protection                     |
-| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md) | January 2026  | Friend request idempotency, scroll fixes                    |
-| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md) | January 2026  | Chat message editing, typing indicators                     |
-| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md) | January 2026  | Major release — new architecture                            |
-| [All Releases →](release-notes/)                |               | Complete version history                                    |
-
----
-
-## 🔐 Security & CI/CD
+## � Security & CI/CD
 
 - **CI Pipeline**: Automated builds on every PR with security scanning
   - Backend and web Docker image builds
@@ -165,9 +181,7 @@ See [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) for full configura
 | ---------------- | -------------------------------------------------------------------- |
 | Source Code      | [github.com/cgraph-dev/CGraph](https://github.com/cgraph-dev/CGraph) |
 | Official Website | [cgraph.org](https://www.cgraph.org)                                 |
-| Community CGraph | [discord.gg/cgraph](https://discord.gg/cgraph)                       |
 | Security Policy  | [SECURITY.md](../SECURITY.md)                                        |
-| Code of Conduct  | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)                          |
 
 ---
 
@@ -176,33 +190,20 @@ See [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) for full configura
 ```
 docs/
 ├── README.md                 # This index file
-├── api/                      # API documentation
-│   ├── API.md
-│   ├── API_REFERENCE.md
-│   └── openapi.yaml
-├── architecture/             # System architecture
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE.md
-│   ├── PRESENCE_ARCHITECTURE.md
-│   └── decisions/            # Architecture Decision Records
-├── guides/                   # User and developer guides
-│   ├── QUICKSTART.md
-│   ├── DEPLOYMENT.md
-│   ├── USER_GUIDE.md
-│   └── ...
-├── release-notes/            # Version history (v0.7.x - v0.9.x)
-├── LEGAL/                    # Privacy policy & Terms of Service
-└── archive/                  # Historical documentation
+├── adr/                      # Architecture Decision Records (11)
+├── api/                      # API reference + OpenAPI spec
+├── architecture/             # System architecture docs (6)
+├── assets/                   # Brand assets (logo, favicon)
+├── design/                   # Design specifications
+├── guides/                   # Developer & operations guides (11)
+├── LEGAL/                    # Privacy policy, ToS, GDPR, DMCA
+└── *.md                      # Root-level reference docs
 ```
 
----
-
-## 📦 Archive
-
-Historical and completed documentation is preserved in [archive/](archive/). These documents contain
-outdated information but are retained for historical reference and audit purposes.
+> Historical and completed documentation is preserved in [`.archived/`](../.archived/) with
+> mirror-structure paths for easy recovery.
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.47 • Proprietary Software • Last updated: February
+<sub>**CGraph Documentation** • Version 0.9.47 • Proprietary Software • Last updated: March
 2026</sub>

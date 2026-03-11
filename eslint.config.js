@@ -14,6 +14,7 @@ export default [
       '**/coverage/**',
       '**/public/**',
       '**/e2e/**',
+      '.archived/**',
       'apps/web/scripts/**',
     ],
   },
@@ -228,10 +229,7 @@ export default [
   },
   // JSDoc enforcement — require JSDoc on exported functions/classes (Rule 6.4/6.5)
   {
-    files: [
-      'apps/web/src/**/*.{ts,tsx}',
-      'apps/mobile/src/**/*.{ts,tsx}',
-    ],
+    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/mobile/src/**/*.{ts,tsx}'],
     ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**', '**/mocks/**'],
     plugins: {
       jsdoc,
@@ -251,7 +249,10 @@ export default [
         },
       ],
       'jsdoc/require-description': ['error', { contexts: ['FunctionDeclaration'] }],
-      'jsdoc/check-tag-names': ['error', { definedTags: ['refactored', 'security', 'updated', 'architecture', 'todo'] }],
+      'jsdoc/check-tag-names': [
+        'error',
+        { definedTags: ['refactored', 'security', 'updated', 'architecture', 'todo'] },
+      ],
       'jsdoc/check-types': 'error',
     },
   },
@@ -277,7 +278,10 @@ export default [
         },
       ],
       'jsdoc/require-description': ['error', { contexts: ['FunctionDeclaration'] }],
-      'jsdoc/check-tag-names': ['error', { definedTags: ['refactored', 'security', 'updated', 'architecture', 'todo'] }],
+      'jsdoc/check-tag-names': [
+        'error',
+        { definedTags: ['refactored', 'security', 'updated', 'architecture', 'todo'] },
+      ],
       'jsdoc/check-types': 'error',
     },
   },

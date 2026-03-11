@@ -5,6 +5,7 @@ node_modules/
 deps/
 _build/
 .elixir_ls/
+.venv/
 
 # Build outputs
 dist/
