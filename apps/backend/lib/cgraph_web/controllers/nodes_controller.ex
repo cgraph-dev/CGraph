@@ -140,6 +140,11 @@ defmodule CGraphWeb.NodesController do
         |> put_status(:unprocessable_entity)
         |> json(%{error: "insufficient_balance"})
 
+      {:error, :tip_below_minimum} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "tip_below_minimum"})
+
       {:error, :self_tip} ->
         conn
         |> put_status(:unprocessable_entity)

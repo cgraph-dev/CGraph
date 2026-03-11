@@ -33,6 +33,7 @@ defmodule CGraph.Nodes do
   # Exchange rate: 0.008 EUR per Node (equivalent to @eur_per_100_nodes / 100).
   # Sourced from config for runtime override flexibility.
   @exchange_rate_eur Application.compile_env(:cgraph, :nodes_exchange_rate, 0.008)
+  @min_tip 10
 
   # ==================== WALLET MANAGEMENT ====================
 
@@ -169,9 +170,16 @@ defmodule CGraph.Nodes do
   @doc """
   Send a tip from one user to another.
   Debits sender, credits recipient (with 20% platform cut, 21-day hold).
+
+  Returns `{:error, :tip_below_minimum}` if `amount < @min_tip` (#{@min_tip}).
   """
   @spec tip(String.t(), String.t(), pos_integer()) ::
-          {:ok, NodeTransaction.t()} | {:error, :insufficient_balance | :self_tip | term()}
+          {:ok, NodeTransaction.t()}
+          | {:error, :insufficient_balance | :self_tip | :tip_below_minimum | term()}
+  def tip(_sender_id, _recipient_id, amount) when amount < @min_tip do
+    {:error, :tip_below_minimum}
+  end
+
   def tip(sender_id, recipient_id, amount) when amount > 0 do
     if sender_id == recipient_id, do: throw({:error, :self_tip})
 
