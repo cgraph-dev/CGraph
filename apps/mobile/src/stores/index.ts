@@ -86,6 +86,18 @@ export {
 
 // ─── Customization ──────────────────────────────────────────────────────────
 export { useCustomizationStore } from './customizationStore';
+
+// ─── Discovery ───────────────────────────────────────────────────────────────
+export {
+  useDiscoveryStore,
+  useActiveMode,
+  useFeedItems,
+  useTopics,
+  useDiscoveryLoading,
+  useDiscoveryError,
+  FEED_MODES,
+} from './discoveryStore';
+export type { FeedMode, FeedItem, FeedFilters } from './discoveryStore';
 // ─── Creator ─────────────────────────────────────────────────────────
 export {
   useCreatorStore,
@@ -94,6 +106,18 @@ export {
   useCreatorBalance,
   useCreatorPayouts,
 } from './creatorStore';
+
+// ─── Nodes ───────────────────────────────────────────────────────────────────
+export {
+  useNodesStore,
+  useNodesBalance,
+  useNodesEurBalance,
+  useNodesTransactions,
+  useNodesBundles,
+  useNodesLoading,
+  useNodesError,
+} from './nodesStore';
+
 // =============================================================================
 // FACADE HOOKS — 7-domain API matching web architecture
 // =============================================================================
