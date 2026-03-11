@@ -403,10 +403,10 @@
   - `FileCleanupWorker` — Clean up abandoned/expired file transfers (hourly)
   - `PulseDecayWorker` — Pulse reputation decay (daily 2 AM UTC)
 - **Plugins**: Pruner (7-day retention), Lifeline (rescue stalled jobs after 30 min), Cron scheduler
-- **Queues** (23 total): `default`, `mailers`, `notifications`, `events`, `cleanup`,
+- **Queues** (22 total): `default`, `mailers`, `notifications`, `events`, `cleanup`,
   `notification_retry`, `webhooks`, `exports`, `external_api`, `dead_letter`, `maintenance`,
   `backups`, `push_notifications`, `email_notifications`, `archival`, `search`, `critical`,
-  `emails`, `media`, `sync`, `link_previews`, `rankings`, `gamification`
+  `emails`, `media`, `sync`, `link_previews`, `rankings`
 
 ### Circuit Breaker
 

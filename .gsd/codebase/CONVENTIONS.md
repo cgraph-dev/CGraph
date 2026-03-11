@@ -23,8 +23,7 @@ CGraph/
 │   ├── animation-constants/  # Shared animation durations/springs
 │   └── ui/            # Liquid Glass component library
 ├── infrastructure/    # Docker, Terraform, observability configs
-├── docs/              # Architecture docs, ADRs, runbooks
-└── docs-website/      # Docusaurus documentation site
+└── docs/              # Architecture docs, ADRs, runbooks
 ```
 
 Managed by **pnpm workspaces** (`pnpm@10.12.1`) with **Turborepo** for task orchestration.

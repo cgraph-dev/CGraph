@@ -1,7 +1,7 @@
 # CGraph Codebase Concerns
 
-> **Generated**: February 26, 2026 | **Updated**: March 11, 2026 | **Source**: Full monorepo
-> analysis | **Codebase Version**: 1.0.0 | **Composite Score**: 8.7/10
+> **Generated**: February 26, 2026 | **Updated**: March 14, 2026 | **Source**: Full monorepo
+> analysis | **Codebase Version**: 1.1.0 | **Composite Score**: 8.7/10
 
 ---
 
@@ -34,7 +34,7 @@ Both external security reviews are **overdue** (targeted Q1 2026, never started)
 - **Session invalidation on device lock**: Not implemented (`docs/SECURITY_AUDIT_CHECKLIST.md` §4.1)
 - **Remote session revocation**: Only partial implementation
 - **Device binding**: Not implemented — JWT claims contain only `jti/iat/kid`, no device fingerprint
-  (`docs/V1_ACTION_PLAN.md` §2.6)
+  (`.archived/docs/V1_ACTION_PLAN.md` §2.6)
 
 ### 1.4 Audit Logging Incomplete
 
@@ -83,7 +83,7 @@ This is the **single biggest compliance failure** in the World-Class Gap Analysi
 | Web test coverage ratio | ~16.1%    | 100%         | ~83.9%             |
 | CI coverage gate        | 40% lines | 70%+         | Gate too low       |
 
-Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
+Source: `.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
 
 ### 2.2 Per-Module Test Coverage Breakdown
 
@@ -105,7 +105,7 @@ Source: `docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 9
 ### 2.3 CI Coverage Thresholds Too Low
 
 CI enforcement thresholds have been raised but the hard gate in `ci.yml` remains low
-(`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 13):
+(`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 13):
 
 - Vitest (`apps/web/vite.config.ts`): statements 40%, branches 55%, functions 50%, lines 40%
 - CI hard gate in `.github/workflows/ci.yml`: `WEB_PCT < 40` (aligned with vitest lines threshold)
@@ -128,7 +128,7 @@ CI enforcement thresholds have been raised but the hard gate in `ci.yml` remains
 ### 3.1 No Successful Production/Staging Load Test Runs
 
 k6 test scripts exist and have been **attempted** but produced no usable results
-(`docs/LOAD_TEST_RESULTS.md`):
+(`.archived/docs/LOAD_TEST_RESULTS.md`):
 
 - 8 k6 scripts ready:
   `infrastructure/load-tests/k6/{smoke,load,stress,websocket,writes,realistic-traffic,rich-media,websocket-10k}.js`
@@ -138,7 +138,7 @@ k6 test scripts exist and have been **attempted** but produced no usable results
 - Only a local dev smoke test baseline exists (179ms avg, 5.24 RPS, 10 VUs)
 - Auth duration p95=383ms **exceeded** the 300ms SLO threshold even in local dev
 - Operational Maturity Registry scores load testing at **3/10**
-  (`docs/OPERATIONAL_MATURITY_REGISTRY.md` §4)
+  (`.archived/docs/OPERATIONAL_MATURITY_REGISTRY.md` §4)
 
 ### 3.2 No Baseline Metrics
 
@@ -153,19 +153,19 @@ connection limits, database connection pool saturation point, or message write t
 
 Active TODOs found in production code:
 
-| File                                                                         | TODO                                                                                             |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `apps/mobile/src/lib/crypto/e2ee.ts:585`                                     | `TODO: DH4 = ECDH(EK_A, OPK_B)` — one-time prekey DH computation not implemented                 |
-| `apps/mobile/src/lib/deepLinks.ts:251`                                       | `TODO: Add GroupInviteAccept screen` — invite flow not built                                     |
-| `apps/mobile/src/stores/index.ts:193`                                        | `TODO: wire to forum store` — forums facade returns empty array                                  |
-| `apps/mobile/src/stores/index.ts:270`                                        | `TODO: wire to gamification store coins` — balance hardcoded to 0 (XP system removed, stub only) |
-| `apps/mobile/src/features/messaging/hooks/index.ts:40`                       | `TODO: Implement with expo-av` — voice recording stub                                            |
-| `apps/mobile/src/features/messaging/components/index.ts:21`                  | `TODO: Create when needed` — placeholder component barrel                                        |
-| `apps/backend/test/cgraph_web/channels/chat_channel_test.exs:15,33`          | `TODO: Create conversation fixture` / `TODO: Set up joined socket` — incomplete test setup       |
-| `apps/backend/lib/cgraph/collaboration/document_server.ex:291`               | `TODO(P2): Implement server-side Yjs state compaction` — unbounded state growth                  |
-| ~~`apps/web/src/pages/customize/progression-customization/mock-data.ts:10`~~ | ~~`@todo(api) Create achievements API endpoints`~~ — **RESOLVED**: file deleted (Phase 26)       |
-| `apps/mobile/src/screens/calls/call-history-screen.tsx:86`                   | `TODO: get from auth store in production` — hardcoded user ID                                    |
-| `apps/backend/lib/cgraph/ai/moderation.ex:23`                                | `TODO: Integrate vision model (GPT-4V / Claude) for image analysis` — image moderation stub      |
+| File                                                                         | TODO                                                                                                            |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `apps/mobile/src/lib/deepLinks.ts:245`                                       | `TODO: Add GroupInviteAccept screen` — invite flow not built                                                    |
+| `apps/backend/test/cgraph_web/channels/chat_channel_test.exs:15,33`          | `TODO: Create conversation fixture` / `TODO: Set up joined socket` — incomplete test setup                      |
+| `apps/backend/lib/cgraph/ai/moderation.ex:23`                                | `TODO: Integrate vision model (OpenAI GPT-4V / Claude) for image analysis` — image moderation stub              |
+| ~~`apps/mobile/src/lib/crypto/e2ee.ts:585`~~                                 | ~~`TODO: DH4 = ECDH(EK_A, OPK_B)`~~ — **RESOLVED**: TODO removed                                                |
+| ~~`apps/mobile/src/stores/index.ts:193`~~                                    | ~~`TODO: wire to forum store`~~ — **RESOLVED**: TODO removed                                                    |
+| ~~`apps/mobile/src/stores/index.ts:270`~~                                    | ~~`TODO: wire to gamification store coins`~~ — **RESOLVED**: TODO removed                                       |
+| ~~`apps/mobile/src/features/messaging/hooks/index.ts:40`~~                   | ~~`TODO: Implement with expo-av`~~ — **RESOLVED**: real implementation added                                    |
+| ~~`apps/mobile/src/features/messaging/components/index.ts:21`~~              | ~~`TODO: Create when needed`~~ — **RESOLVED**: components now exported                                          |
+| ~~`apps/mobile/src/screens/calls/call-history-screen.tsx:86`~~               | ~~`TODO: get from auth store in production`~~ — **RESOLVED**: uses `useAuthStore`                               |
+| ~~`apps/backend/lib/cgraph/collaboration/document_server.ex:291`~~           | ~~`TODO(P2): Implement server-side Yjs state compaction`~~ — **RESOLVED**: `compact_updates` now has real logic |
+| ~~`apps/web/src/pages/customize/progression-customization/mock-data.ts:10`~~ | ~~`@todo(api) Create achievements API endpoints`~~ — **RESOLVED**: file deleted (Phase 26)                      |
 
 **Web `TODO(phase-26)` Rewire Comments** (~20+ across 34 files, ~53 markers):
 
@@ -175,14 +175,14 @@ ProgressionCustomization, ReferralDashboard) were deleted and replaced with stub
 affected areas: `pages/profile/`, `pages/customize/`, `pages/settings/`, `pages/forums/`,
 `pages/messages/`, `pages/referrals/`.
 
-### 4.2 eslint-disable Suppressions (168 in mobile/packages, 450 total with web)
+### 4.2 eslint-disable Suppressions (167 in mobile/packages, 449 total with web)
 
 Widespread use of `eslint-disable` comments indicating type safety workarounds:
 
-**Mobile app** (~139 suppressions):
+**Mobile app** (~138 suppressions):
 
 - `@typescript-eslint/no-explicit-any`: 14+ files (`apps/mobile/src/screens/moderation/`,
-  `apps/mobile/src/hooks/useGamification.ts`, `apps/mobile/src/screens/settings/`, etc.)
+  `apps/mobile/src/screens/settings/`, etc.)
 - `@typescript-eslint/no-non-null-assertion`: 6+ files
   (`apps/mobile/src/screens/settings/profile-screen.tsx`,
   `apps/mobile/src/screens/community/leaderboard/`)
@@ -200,14 +200,14 @@ Widespread use of `eslint-disable` comments indicating type safety workarounds:
   (6), `packages/socket/src/phoenixClient.ts` (3), `packages/api-client/src/client.ts` (4),
   `packages/crypto/src/tripleRatchet.ts`
 
-### 4.3 Type Assertion Debt — 348 Annotated Casts (Originally 952)
+### 4.3 Type Assertion Debt — 345 Annotated Casts (Originally 952)
 
-348 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
+345 `as X` type assertions remain annotated with `// type assertion:` comments (originally 952,
 partially refactored). While annotated with reason comments, these represent **structural type
 safety debt**:
 
 - `scripts/fix-type-assertions.mjs` documents the situation
-- Affects ~101 web files (0 mobile files)
+- Affects ~99 web files (0 mobile files)
 - Original intent was to replace with runtime type guards; only ~40 were actually replaced
 - Rule 11 (Type Safety) now rated **PASS** in gap analysis — 0 unannotated casts remain
 
@@ -228,7 +228,7 @@ Active `@deprecated` annotations across the codebase (includes 7 XP/gamification
 | `apps/web/src/modules/admin/components/admin-dashboard/shared-components.tsx:159`           | Use `DashboardChart` instead                                                        |
 | `apps/web/src/components/enhanced/ui/holographic-ui-v4.tsx`                                 | Import from `./holographic-ui` instead                                              |     | `apps/web/src/components/enhanced/ui/holographic-ui.tsx` | Use the v4 API from `./holographic-ui` directly |
 | `apps/web/src/pages/customize/effects-customization.tsx`                                    | Import from `./effects-customization/index` instead                                 |
-| `apps/web/src/pages/leaderboard/leaderboard-page.tsx`                                       | Import from `@/pages/leaderboard` instead                                           |
+| ~~`apps/web/src/pages/leaderboard/leaderboard-page.tsx`~~                                   | ~~Import from `@/pages/leaderboard` instead~~ — **RESOLVED**: file deleted          |
 | `apps/web/src/modules/forums/components/thread-view.tsx`                                    | Import from `./thread-view/index` instead for modular access                        |
 | `apps/web/src/components/ui/animated-avatar.tsx`                                            | Import from `@/components/ui/animated-avatar` instead                               |
 | `packages/shared-types/src/subscription.ts:48`                                              | Use `Invoice` from `./billing` instead                                              |
@@ -245,29 +245,31 @@ Ratchet is deferred to Phase 2 (`docs/SECURITY_AUDIT_CHECKLIST.md` §2.1). The m
 contains 7 deprecated type definitions awaiting replacement with portable types from
 `@cgraph/crypto`.
 
-### 5.2 CRDT Document Server — Unbounded State Growth
+### 5.2 CRDT Document Server — State Compaction Implemented
 
-`apps/backend/lib/cgraph/collaboration/document_server.ex:291` has a TODO for Yjs state compaction.
-The `compact_updates` function is a no-op. This means CRDT document state grows unboundedly in
-memory, which will cause issues with long-lived documents (`docs/V1_ACTION_PLAN.md` Session 37 §P1).
+`compact_updates` now has real server-side compaction logic — it monitors `yjs_state` byte size and
+broadcasts compaction requests to connected clients when state exceeds 512KB. The original TODO at
+`document_server.ex:291` has been resolved. However, compaction relies on client cooperation (client
+must respond to compaction broadcast), so documents with no active clients cannot be compacted
+server-side. Originally tracked as P1 in `.archived/docs/V1_ACTION_PLAN.md` Session 37 §P1.
 
 ### 5.3 useMemo/useCallback Debt — ~2,461 Instances
 
 ~2,487 `useMemo`/`useCallback` hook usages across ~588 files cannot be removed until React Compiler
 (`babel-plugin-react-compiler`) is enabled. These are technically unnecessary with React 19 but
 required without the compiler. Rule 12 (React 19 Patterns) is now rated **PASS** in gap analysis
-(`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
+(`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 12).
 
 ### 5.4 Mobile File Size Non-Compliance
 
 **138 mobile TSX files exceed the 300-line limit** (up from 133 at last audit). CI warns but does
 not block. 6 were split in Session 59 (→ 31 sub-files), but the backlog has grown. Note: Rule 8
 (File Size) is rated **PASS** for web (16 tracked files all split), but mobile remains non-compliant
-(`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 8).
+(`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 8).
 
 ### 5.5 Wave 4 (Database & Scaling) — Largely Incomplete
 
-5 of 7 Wave 4 tasks are NOT DONE (`docs/WORLD_CLASS_GAP_ANALYSIS.md`):
+5 of 7 Wave 4 tasks are NOT DONE (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md`):
 
 | Task                                                      | Status   |
 | --------------------------------------------------------- | -------- |
@@ -290,7 +292,7 @@ feature parity.
 ### 6.1 Nested Preload Depth
 
 Conversation messages query has 3-level nested preloads triggering 4+ additional queries. From
-`docs/QUERY_PERFORMANCE_AUDIT.md` query #5:
+`.archived/docs/QUERY_PERFORMANCE_AUDIT.md` query #5:
 
 > `sender: :customization`, `reactions: :user`, `reply_to: [sender: :customization]` **Note**:
 > 3-level nested preload triggers 4+ additional queries. At scale, consider batch loading or lateral
@@ -299,31 +301,31 @@ Conversation messages query has 3-level nested preloads triggering 4+ additional
 ### 6.2 Auth Duration Exceeds SLO
 
 Even in local dev smoke test, auth p95 latency was **383ms** vs the **300ms SLO target**
-(`docs/V1_ACTION_PLAN.md` §3.6). This will worsen under production load.
+(`.archived/docs/V1_ACTION_PLAN.md` §3.6). This will worsen under production load.
 
 ### 6.3 MeiliSearch Not Deployed
 
 Search currently falls back to PostgreSQL `ILIKE` with GIN trigram indexes. MeiliSearch integration
 code exists (`lib/cgraph/search/search_engine.ex`) but is not deployed in production. This affects
-search latency at scale (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Wave 4.4).
+search latency at scale (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Wave 4.4).
 
 ### 6.4 PgBouncer Not Deployed
 
-Connection pooling via PgBouncer is planned but not deployed (`docs/WORLD_CLASS_GAP_ANALYSIS.md`
-Wave 4.1). Under high concurrency, database connection exhaustion is identified as a
-Medium-likelihood/High-impact threat (`docs/THREAT_MODEL.md` T-D4).
+Connection pooling via PgBouncer is planned but not deployed
+(`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Wave 4.1). Under high concurrency, database connection
+exhaustion is identified as a Medium-likelihood/High-impact threat (`docs/THREAT_MODEL.md` T-D4).
 
 ### 6.5 Monitored Performance Concerns (Not Bugs)
 
-From `docs/V1_ACTION_PLAN.md` Session 37:
+From `.archived/docs/V1_ACTION_PLAN.md` Session 37:
 
-| ID  | Area      | Description                                                                      |
-| --- | --------- | -------------------------------------------------------------------------------- |
-| P1  | CRDT      | DocumentServer Yjs state grows unboundedly — `compact_updates` is a TODO no-op   |
-| P3  | CRDT      | Race condition: incremental updates could arrive before initial state in mailbox |
-| P4  | Collab    | `useCollaborativeEditor` creates extra `Y.Doc()` on every render                 |
-| P5  | AI Config | `enabled: false` vs `api_key` presence check disconnected in runtime.exs         |
-| P6  | Sync      | `list_user_conversations_since` doesn't filter soft-deleted conversations        |
+| ID  | Area      | Description                                                                           |
+| --- | --------- | ------------------------------------------------------------------------------------- |
+| P1  | CRDT      | DocumentServer Yjs `compact_updates` now implemented — broadcasts compaction at 512KB |
+| P3  | CRDT      | Race condition: incremental updates could arrive before initial state in mailbox      |
+| P4  | Collab    | `useCollaborativeEditor` creates extra `Y.Doc()` on every render                      |
+| P5  | AI Config | `enabled: false` vs `api_key` presence check disconnected in runtime.exs              |
+| P6  | Sync      | `list_user_conversations_since` doesn't filter soft-deleted conversations             |
 
 ---
 
@@ -336,7 +338,7 @@ Dockerfile pins Elixir **1.17.3** on Erlang/OTP **27.1.2** while local developme
 - **Erlang/OTP**: 27.1.2 vs 28.3 — one major version apart
 
 This can cause production behavior differences, especially with Elixir 1.18/1.19 language features
-and OTP 28 runtime changes (`docs/CURRENT_STATE_DASHBOARD.md` Version Matrix).
+and OTP 28 runtime changes (`.archived/docs/CURRENT_STATE_DASHBOARD.md` Version Matrix).
 
 ---
 
@@ -344,7 +346,7 @@ and OTP 28 runtime changes (`docs/CURRENT_STATE_DASHBOARD.md` Version Matrix).
 
 ~100+ inline animation values remain that couldn't be migrated to presets because they are dynamic
 or layout-dependent. 319 of 339 identified inline values were migrated, but the remainder needs
-incremental migration (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 4).
+incremental migration (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 4).
 
 ---
 
@@ -379,8 +381,9 @@ Key rotation is currently a manual process. Automation is listed as P1 priority
 ### 10.1 Vulnerability Status Unknown
 
 The Current State Dashboard shows TBD for medium/low npm and Elixir dependency vulnerabilities, and
-TBD for container image high-severity CVEs (`docs/CURRENT_STATE_DASHBOARD.md` Vulnerability Status
-table). While critical CVEs are at 0, the full vulnerability picture is not tracked.
+TBD for container image high-severity CVEs (`.archived/docs/CURRENT_STATE_DASHBOARD.md`
+Vulnerability Status table). While critical CVEs are at 0, the full vulnerability picture is not
+tracked.
 
 ### 10.2 Mobile App Still in Beta
 
@@ -395,7 +398,7 @@ listed as P0 for v1.0 but marked as "In Progress" (`docs/ROADMAP.md`).
 
 `eslint-plugin-jsdoc` is configured but `require-jsdoc` and `require-description` rules remain at
 **warn** (not error) because 150+ exported functions still lack JSDoc. Escalation blocked until
-JSDoc backfill is complete (`docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 6).
+JSDoc backfill is complete (`.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Rule 6).
 
 ### 11.2 Mock Data in Production Code — RESOLVED
 
@@ -440,14 +443,14 @@ From `docs/ROADMAP.md` launch checklist, these remain unchecked:
 
 ### 13.2 Overall World-Class Compliance
 
-From `docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
+From `.archived/docs/WORLD_CLASS_GAP_ANALYSIS.md` Part 5 scorecard:
 
 | Dimension                    | Status                                                                     |
 | ---------------------------- | -------------------------------------------------------------------------- |
 | Animation Standards (Rule 4) | **PASS** — ~100+ dynamic inline values remain but all migratable ones done |
 | Mobile File Size (Rule 8)    | **PASS** (web) — but 138 mobile TSX files still over 300 lines             |
 | Testing (Rule 9)             | **FAIL** — 16.1% web test coverage vs 100% target (357/2218)               |
-| Type Safety (Rule 11)        | **PASS** — 348 `as` casts annotated, 0 unannotated remain                  |
+| Type Safety (Rule 11)        | **PASS** — 345 `as` casts annotated, 0 unannotated remain                  |
 | React 19 (Rule 12)           | **PASS** — React Compiler not enabled, ~2,461 useMemo/useCallback remain   |
 
 ### 13.3 Wave Task Completion
@@ -471,22 +474,23 @@ Only **~67% of 106 wave tasks are done** (~71/106). Major incomplete waves:
 
 ### P1 — High Priority
 
-5. **Raise web test coverage** — 15.9% is the single biggest compliance failure; target 60%+
+5. **Raise web test coverage** — 16.1% is the single biggest compliance failure; target 60%+
 6. **Deploy PgBouncer** — Database connection pooling needed before scaling
 7. **Activate MeiliSearch in production** — Search falls back to PostgreSQL ILIKE
 8. **Fix Elixir/OTP version mismatch** — Dockerfile 1.17.3/OTP-27 vs local 1.19.4/OTP-28
 9. **Complete audit logging** — Auth lifecycle, admin access, billing events not logged
-10. **Implement CRDT state compaction** — DocumentServer Yjs state grows unboundedly
+10. ~~**Implement CRDT state compaction**~~ — **RESOLVED**: `compact_updates` now has real logic
 
 ### P2 — Medium Priority
 
 11. **Split 138 oversized mobile TSX files** — CI warns but doesn't block
-12. **Refactor 348 type assertion annotations** — Replace with type guards
+12. **Refactor 345 type assertion annotations** — Replace with type guards
 13. **Enable React Compiler** — Allows removal of ~2,461 useMemo/useCallback hooks
 14. **Clean up deprecated files** — 20 deprecated shims still in codebase
 15. **Implement anomaly detection** — Currently no system for detecting attack patterns
 16. **Automate key rotation** — Currently manual process
-17. **Wire mobile store facades** — Forums returns empty array, balance hardcoded to 0
+17. ~~**Wire mobile store facades** — Forums returns empty array, balance hardcoded to 0~~
+    **RESOLVED** (store TODOs removed, facades now wired)
 18. ~~**Replace mock data with real API** — Progression customization uses placeholder data~~
     **RESOLVED** (Phase 26 deletion)
 19. **Fix conditional hooks violation** —
@@ -573,7 +577,7 @@ to remove once confirmed no consumers check the field.
 ### 15.6 eslint-disable Suppressions — Updated Count (P2)
 
 Web app eslint-disable count is now **282** (down from 271 at last audit — slight increase likely
-from new code). Total across monorepo is now ~450 (282 web + ~139 mobile + ~29 packages).
+from new code). Total across monorepo is now ~449 (282 web + ~138 mobile + ~29 packages).
 
 ---
 
@@ -585,9 +589,9 @@ from new code). Total across monorepo is now ~450 (282 web + ~139 mobile + ~29 p
 | P1 High priority items         | 6                                         |
 | P2 Medium priority items       | 10                                        |
 | P3 Long-term items             | 8                                         |
-| Active TODO comments in code   | 11 + ~53 phase-26 rewire TODOs            |
-| eslint-disable suppressions    | ~450 (282 web, ~139 mobile, ~29 packages) |
-| Type assertion annotations     | 348                                       |
+| Active TODO comments in code   | 4 + ~53 phase-26 rewire TODOs             |
+| eslint-disable suppressions    | ~449 (282 web, ~138 mobile, ~29 packages) |
+| Type assertion annotations     | 345                                       |
 | Deprecated files/annotations   | 20 (incl. gamification.ex stubs)          |
 | Missing web test files         | ~1,861                                    |
 | Oversized mobile TSX files     | 138                                       |
@@ -600,5 +604,5 @@ from new code). Total across monorepo is now ~450 (282 web + ~139 mobile + ~29 p
 
 ---
 
-<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 11, 2026 • Based on
+<sub>**CGraph Codebase Concerns** • Generated February 26, 2026 • Updated March 14, 2026 • Based on
 full monorepo analysis</sub>

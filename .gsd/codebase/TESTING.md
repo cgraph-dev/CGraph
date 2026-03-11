@@ -68,7 +68,7 @@ apps/web/src/
 ├── stores/__tests__/         # Store unit tests
 │   ├── authStore.test.ts
 │   ├── chatStore.test.ts
-│   └── ... (16 store test files)
+│   └── ... (15 store test files)
 ├── hooks/__tests__/          # Hook unit tests (9 direct + 5 facade tests = 14)
 │   ├── useDebounce.test.ts
 │   ├── useClickOutside.test.ts
@@ -365,10 +365,10 @@ apps/backend/test/
 │   ├── data_case.ex          # Case template for database tests (Ecto sandbox)
 │   ├── conn_case.ex          # Case template for controller/HTTP tests
 │   ├── channel_case.ex       # Case template for Phoenix channel tests
-│   ├── factory.ex            # ExMachina factory (937 lines, all domain entities)
+│   ├── factory.ex            # ExMachina factory (788 lines, all domain entities)
 │   ├── fixtures.ex           # Legacy fixtures module (UserFixtures, etc.)
 │   └── aliases.ex            # Shared aliases
-├── cgraph/                   # Context/domain unit tests (~111 test files)
+├── cgraph/                   # Context/domain unit tests (~109 test files)
 │   ├── accounts_test.exs
 │   ├── messaging/
 │   ├── forums/
@@ -377,13 +377,13 @@ apps/backend/test/
 │   ├── performance/
 │   └── ...
 ├── cgraph_web/               # Web layer tests
-│   ├── controllers/          # Controller tests (~18 files + admin/ + api/ subdirs, ~90 total)
+│   ├── controllers/          # Controller tests (~13 files + admin/ + api/ subdirs, ~83 total)
 │   ├── channels/             # Channel tests
 │   └── plugs/                # Plug tests
 └── integration/              # Integration tests (E2EE, real-time messaging, etc.)
 ```
 
-~219 test files total across the backend.
+~210 test files total across the backend.
 
 #### Context/Domain Test Pattern
 
@@ -451,7 +451,7 @@ end
 - `build_list(5, :user)` — creates multiple
 - Factories exist for: users, conversations, messages, groups, forums, achievements, stickers,
   secret conversations, cosmetics (avatar borders, profile themes, chat effects), subscriptions,
-  marketplace listings, creator monetization, seasonal events, battle pass tiers, etc.
+  etc.
 
 #### Test Isolation
 
@@ -904,7 +904,7 @@ coverageThreshold: {
 coverageReporters: ['text', 'lcov', 'html'],
 ```
 
-### Target Coverage Goals (from `CONTRIBUTING.md`)
+### Target Coverage Goals (from `.archived/root/CONTRIBUTING.md`)
 
 | Package          | Target | Current (approx) |
 | ---------------- | ------ | ---------------- |

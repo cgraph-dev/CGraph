@@ -263,10 +263,10 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 
 ### Docker
 
-| Image    | Base                                                              | Purpose                          |
-| -------- | ----------------------------------------------------------------- | -------------------------------- |
-| Backend  | `hexpm/elixir:1.18.4-erlang-28.3.3-alpine-3.21.6` → `alpine:3.21` | Multi-stage Elixir release build |
-| Web (CI) | `node:22-alpine` → `nginx:1.27-alpine`                            | CI build + static server         |
+| Image    | Base                                                                | Purpose                          |
+| -------- | ------------------------------------------------------------------- | -------------------------------- |
+| Backend  | `hexpm/elixir:1.18.4-erlang-28.3.3-alpine-3.21.6` → `alpine:3.21.6` | Multi-stage Elixir release build |
+| Web (CI) | `node:22-alpine` → `nginx:1.27-alpine`                              | CI build + static server         |
 
 Sources: [`apps/backend/Dockerfile`](apps/backend/Dockerfile),
 [`apps/web/Dockerfile`](apps/web/Dockerfile)
@@ -295,7 +295,7 @@ Sources: [`apps/backend/Dockerfile`](apps/backend/Dockerfile),
 | [`backup.yml`](.github/workflows/backup.yml)                             | —                           | Database backup automation                                                                                                    |
 | [`release.yml`](.github/workflows/release.yml)                           | —                           | Release management                                                                                                            |
 | [`release-mobile.yml`](.github/workflows/release-mobile.yml)             | —                           | Mobile app release (EAS Build + Submit)                                                                                       |
-| [`docs.yml`](.github/workflows/docs.yml)                                 | —                           | Documentation site build                                                                                                      |
+| [`docs.yml`](.github/workflows/docs.yml)                                 | —                           | TypeDoc API docs (⚠️ references archived docs-website/)                                                                       |
 | [`docs-check.yml`](.github/workflows/docs-check.yml)                     | —                           | Docs validation                                                                                                               |
 
 ### CI Quality Gate (Required Status Checks)

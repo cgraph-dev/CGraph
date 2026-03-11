@@ -1,6 +1,6 @@
 # CGraph Directory Structure
 
-> Generated: 2026-03-11 | Version: 1.2.0 (audited)
+> Generated: 2026-03-11 | Version: 1.3.0 (audited)
 
 ## 1. Top-Level Layout
 
@@ -19,11 +19,7 @@
 │   ├── socket/                    # Phoenix Channel typed client
 │   ├── ui/                        # Liquid Glass UI component library
 │   └── utils/                     # Format, validation, permissions, HTTP factory
-├── design-system/                 # Design system prototypes
-│   ├── cgraph-liquid-glass/       # Liquid Glass design system
-│   └── cgraph-web/                # Web design system
 ├── docs/                          # Project documentation
-├── docs-website/                  # Docusaurus documentation site
 ├── infrastructure/                # Deployment, observability, IaC
 ├── scripts/                       # Codemods and maintenance scripts
 ├── package.json                   # Root package.json (workspaces, turbo scripts)
@@ -36,11 +32,10 @@
 ├── vercel.json                    # Vercel deployment config
 ├── renovate.json                  # Dependency update automation
 ├── .size-limit.json               # Bundle size budgets
-├── .pre-commit-config.yaml        # Pre-commit hooks (secret scanning)
-├── .secrets.baseline              # detect-secrets baseline
 ├── .husky/                        # Git hooks (commitlint, lint-staged)
 ├── .github/                       # GitHub Actions, skills, issue templates
-└── ...                            # Plus: LICENSE, README.md, CHANGELOG.md, SECURITY.md, etc.
+├── .archived/                     # Archived files (design-system/, docs-website/, stale docs)
+└── ...                            # Plus: LICENSE, README.md, SECURITY.md, CODE_OF_CONDUCT.md, etc.
 ```
 
 ---
@@ -489,7 +484,6 @@ apps/backend/
 │   │   ├── uploads/                   # File upload management
 │   │   ├── redis/                     # Redis wrapper
 │   │   ├── rate_limiter/              # Rate limiting
-│   │   ├── guardian/                  # Guardian JWT config
 │   │   ├── permissions/               # RBAC permission checking
 │   │   ├── feature_flags/             # Runtime feature toggles
 │   │   ├── telemetry/                 # Application telemetry
@@ -523,7 +517,6 @@ apps/backend/
 │   │   │   ├── paid_forum_subscription.ex # Paid forum subscriptions
 │   │   │   ├── paid_subscription.ex  # Paid subscriptions
 │   │   │   └── payout.ex             # Payout logic
-│   │   ├── shop/                      # Coin shop context (empty — pending implementation)
 │   │   ├── cluster/                   # Cluster management
 │   │   │   └── connection_monitor.ex  # Cluster connection monitoring
 │   │   ├── explore.ex                 # Explore/discovery feature
@@ -1310,16 +1303,20 @@ docs/
 ├── README.md                          # Documentation index
 ├── ROADMAP.md                         # Product roadmap
 ├── CGRAPH_ESSENTIALS.md               # Core concepts guide
-├── PROJECT_STATUS.md                  # Current project status
-├── V1_ACTION_PLAN.md                  # V1 release plan
 │
 ├── architecture/                      # Architecture documentation
+│   ├── ARCHITECTURE.md               # System architecture
+│   ├── DATABASE.md                   # Database architecture
+│   ├── AI_INTEGRATION.md            # AI integration design
+│   ├── PRESENCE_ARCHITECTURE.md      # Presence system design
+│   ├── REALTIME_COMMUNICATION.md     # Real-time communication design
+│   └── TECHNICAL_OVERVIEW.md         # Technical overview
 ├── ARCHITECTURE_DIAGRAMS.md           # Visual architecture diagrams
 ├── ARCHITECTURE_ENFORCEMENT.md        # ESLint architectural rules
-├── ARCHITECTURE_TRANSFORMATION_PLAN.md # Architecture evolution plan
 │
-├── API_DOCUMENTATION.md               # API reference
 ├── api/                               # Detailed API docs
+│   ├── API_REFERENCE.md              # API reference
+│   └── openapi.yaml                  # OpenAPI specification
 │
 ├── adr/                               # Architecture Decision Records
 │   ├── 001-monorepo-structure.md
@@ -1335,7 +1332,17 @@ docs/
 │   └── README.md
 │
 ├── guides/                            # Developer guides
-├── CURRENT_STATE_DASHBOARD.md         # Real-time status dashboard
+│   ├── CI_CD_SECRETS.md              # CI/CD secrets management
+│   ├── DEPLOYMENT.md                 # Deployment guide
+│   ├── FRONTEND.md                   # Frontend development guide
+│   ├── MOBILE.md                     # Mobile development guide
+│   ├── MONITORING.md                 # Monitoring guide
+│   ├── OPERATIONS.md                 # Operations guide
+│   ├── QUICKSTART.md                 # Quick start guide
+│   ├── SECURITY.md                   # Security guide
+│   ├── STORE_ARCHITECTURE.md         # Store architecture guide
+│   ├── TESTING.md                    # Testing guide
+│   └── TROUBLESHOOTING.md           # Troubleshooting guide
 ├── QUALITY_GATES.md                   # Quality gate definitions
 ├── TESTING_STRATEGY.md                # Testing approach
 │
@@ -1345,23 +1352,16 @@ docs/
 ├── THREAT_MODEL.md                    # Threat model
 │
 ├── SCHEMA_OWNERSHIP.md                # Database schema owners
-├── QUERY_PERFORMANCE_AUDIT.md         # Query performance analysis
-├── DATABASE_SHARDING_ROADMAP.md       # Sharding strategy
+├── API_CONTRACTS.md                   # API contract definitions
 │
 ├── COMPONENTS.md                      # Component documentation
 ├── CUSTOMIZATION_SYSTEM.md            # Customization system docs
-├── GAMIFICATION_SYSTEM.md             # Gamification system docs
-├── API_CONTRACTS.md                   # API contract definitions
-├── PARITY_AUDIT.md                    # Feature parity audit
+├── GAMIFICATION_SYSTEM.md             # Gamification system docs (historical reference)
 │
 ├── OPERATIONAL_RUNBOOKS.md            # Ops runbooks
-├── OPERATIONAL_MATURITY_REGISTRY.md   # Ops maturity tracking
 ├── SLO_DOCUMENT.md                    # Service level objectives
-├── LOAD_TEST_RESULTS.md               # Load testing results
-├── WORLD_CLASS_GAP_ANALYSIS.md        # Gap analysis
 │
 ├── design/                            # Design documentation
-├── archive/                           # Archived documentation
 ├── assets/                            # Documentation assets
 ├── LEGAL/                             # Legal documentation
 └── PrivateFolder/                     # Private documentation
@@ -1376,25 +1376,10 @@ scripts/
 ├── add-jsdoc.mjs                     # Add JSDoc comments to files
 ├── add-specs.mjs                     # Add TypeScript @spec annotations
 ├── add-reset-to-stores.mjs           # Add reset methods to Zustand stores
-├── merge-duplicate-imports.mjs        # Deduplicate imports
-├── fix-all-errors.mjs                # Batch fix TypeScript errors
-├── fix-circular-barrel.mjs           # Fix circular barrel imports
-├── fix-jsx-errors.mjs                # Fix JSX-specific errors
-├── fix-non-null-assertions.mjs       # Remove non-null assertions
 ├── fix-type-assertions.mjs           # Fix type assertion patterns
-├── fix-unused-vars.mjs               # Remove unused variables
-├── fix-remaining-errors.mjs          # Fix remaining TS errors
 ├── fix-jsdoc-desc.mjs                # Fix JSDoc descriptions
 ├── clean-jsdoc-directives.mjs        # Clean JSDoc directives
 ├── generate-lottie-borders.mjs       # Generate Lottie border definitions
-├── rename-to-kebab.mjs               # Rename files to kebab-case
-├── rename-dirs-to-kebab.mjs          # Rename directories to kebab-case
-├── codemod-react-fc.py               # Convert React.FC patterns (Python)
-├── codemod-springs.mjs               # Migrate spring animations
-├── codemod-transitions.mjs           # Migrate transition animations
-├── codemod-web-durations.mjs         # Migrate web animation durations
-├── codemod-mobile-durations.mjs      # Migrate mobile animation durations
-├── codemod-structured-logging.mjs    # Migrate to structured logging
 ├── list-web-errors.mjs               # List all web TypeScript errors
 ├── find-null-warnings.mjs            # Find null safety issues
 └── monitor_code.sh                   # Code monitoring script

@@ -1,6 +1,6 @@
 # CGraph Architecture
 
-> Generated: 2026-03-11 | Version: 1.1.0
+> Generated: 2026-03-11 | Version: 1.2.0
 
 ## 1. Overall System Architecture
 
@@ -12,16 +12,16 @@ forums, a Nodes virtual-currency economy, and end-to-end encryption. The archite
 - **Web client:** React 19 SPA (Vite + TypeScript)
 - **Mobile client:** React Native (Expo SDK 54) + TypeScript
 - **Landing page:** React SPA (Vite + TypeScript)
-- **Shared packages:** 6 cross-platform TypeScript packages
+- **Shared packages:** 7 cross-platform TypeScript packages
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    Clients                               │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐│
-│  │  Web App  │  │Mobile App│  │ Landing  │  │Docs Site││
-│  │ React 19  │  │  Expo 54 │  │(Vite+React)│ │Docusaurus││
-│  │  Vite     │  │  RN 0.81 │  │          │  │         ││
-│  └─────┬─────┘  └────┬─────┘  └──────────┘  └─────────┘│
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
+│  │  Web App  │  │Mobile App│  │ Landing  │              │
+│  │ React 19  │  │  Expo 54 │  │(Vite+React)│             │
+│  │  Vite     │  │  RN 0.81 │  │          │              │
+│  └─────┬─────┘  └────┬─────┘  └──────────┘              │
 │        │              │                                  │
 │  ┌─────┴──────────────┴─────┐                           │
 │  │   Shared Packages        │                           │
@@ -30,6 +30,7 @@ forums, a Nodes virtual-currency economy, and end-to-end encryption. The archite
 │  │ @cgraph/api-client        │                           │
 │  │ @cgraph/shared-types      │                           │
 │  │ @cgraph/utils             │                           │
+│  │ @cgraph/ui                │                           │
 │  │ @cgraph/animation-constants│                          │
 │  └─────────────┬────────────┘                           │
 └────────────────┼────────────────────────────────────────┘
@@ -448,6 +449,9 @@ src/modules/<feature>/
 - **Premium domain:** `usePremiumStore` (in `src/modules/premium/store`)
 - **Theme domain:** `useThemeStore`, `useForumThemeStore`, `useCustomizationStore`
 - **Utility domain:** `useNotificationStore`, `useSearchStore`, `usePluginStore`, `useCalendarStore`
+- **Admin domain:** `useAdminStore` (in `src/modules/admin/store`)
+- **Creator domain:** `useCreatorStore` (in `src/modules/creator/store`)
+- **Discovery domain:** `useDiscoveryStore` (in `src/modules/discovery/store`)
 - **Feature flags:** `useFeatureFlagStore` (in `src/stores/featureFlagStore.ts`)
 - **Voice:** `useVoiceStateStore` (in `src/stores/voiceStateStore.ts`)
 
@@ -589,6 +593,7 @@ storage (expo-secure-store). Also includes `src/lib/wallet/` — WalletConnect i
 | `@cgraph/crypto`              | Signal Protocol E2EE (X3DH, PQXDH, Double/Triple Ratchet, AES-256-GCM)                                                                                                                                                          | Web, Mobile |
 | `@cgraph/socket`              | Phoenix Channel client with typed channels (conversation, group, forum, user)                                                                                                                                                   | Web, Mobile |
 | `@cgraph/utils`               | Format, validation (Zod), permissions, HTTP client factory                                                                                                                                                                      | Web, Mobile |
+| `@cgraph/ui`                  | Liquid Glass UI component library (button, card, modal, input, etc.)                                                                                                                                                            | Web         |
 | `@cgraph/animation-constants` | Cross-platform animation durations, easings, springs, stagger values, transitions                                                                                                                                               | Web, Mobile |
 
 ---
@@ -608,7 +613,8 @@ storage (expo-secure-store). Also includes `src/lib/wallet/` — WalletConnect i
 ### 10.2 Deployment
 
 - **Backend:** Fly.io with DNS-based clustering for multi-region, Bandit HTTP server
-- **Web/Landing:** Vercel with edge rewrites (API proxy)
+- **Web:** Cloudflare Pages
+- **Landing:** Vercel with edge rewrites (API proxy)
 - **CDN/WAF:** Cloudflare (Terraform-managed: WAF rules, rate limiting, caching, DNS)
 - **Database:** PostgreSQL (Supabase-hosted, SSL)
 - **Infrastructure-as-Code:** Terraform for Cloudflare configuration
