@@ -5,7 +5,8 @@ config :cgraph,
   ecto_repos: [CGraph.Repo],
   env: Mix.env(),
   generators: [timestamp_type: :utc_datetime, binary_id: true],
-  session_signing_salt: "cgraph_session_v1"
+  session_signing_salt: "cgraph_session_v1",
+  nodes_exchange_rate: 0.008
 
 # Configures the endpoint
 config :cgraph, CGraphWeb.Endpoint,

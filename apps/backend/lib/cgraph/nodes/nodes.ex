@@ -30,6 +30,9 @@ defmodule CGraph.Nodes do
   @hold_days 21
   @min_withdrawal 1000
   @eur_per_100_nodes Decimal.new("0.80")
+  # Exchange rate: 0.008 EUR per Node (equivalent to @eur_per_100_nodes / 100).
+  # Sourced from config for runtime override flexibility.
+  @exchange_rate_eur Application.compile_env(:cgraph, :nodes_exchange_rate, 0.008)
 
   # ==================== WALLET MANAGEMENT ====================
 
