@@ -14,6 +14,8 @@ defmodule CGraphWeb.NodesController do
 
   action_fallback CGraphWeb.FallbackController
 
+  plug CGraphWeb.Plugs.RateLimiterV2, [tier: :strict] when action in [:tip]
+
   @doc """
   GET /api/v1/nodes/wallet
   Returns the user's node wallet (balance, pending, lifetime stats).
