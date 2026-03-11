@@ -14,11 +14,16 @@ interface TipModalProps {
   recipientName: string;
   isOpen: boolean;
   onClose: () => void;
+  /** Source context where the tip was initiated */
+  context?: 'dm' | 'profile' | 'forum';
 }
 
 const PRESETS = [10, 50, 100, 500] as const;
 
-export function TipModal({ recipientId, recipientName, isOpen, onClose }: TipModalProps) {
+// TODO: import from @cgraph/shared-types/nodes once 34-01 lands
+const MIN_TIP = 10;
+
+export function TipModal({ recipientId, recipientName, isOpen, onClose, context }: TipModalProps) {
   const [amount, setAmount] = useState<number>(PRESETS[0]);
   const [customMode, setCustomMode] = useState(false);
   const { data: wallet } = useNodeWallet();
@@ -27,12 +32,13 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose }: TipMod
   if (!isOpen) return null;
 
   const available = wallet?.available_balance ?? 0;
-  const canTip = amount > 0 && amount <= available;
+  const belowMinimum = amount < MIN_TIP;
+  const canTip = amount >= MIN_TIP && amount <= available;
   const creatorReceives = Math.floor(amount * 0.8);
 
   const handleSend = () => {
     tipMutation.mutate(
-      { recipientId, amount },
+      { recipientId, amount, context },
       {
         onSuccess: () => {
           toast.success(`Tipped \u2115 ${amount} to @${recipientName}`);
@@ -104,9 +110,12 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose }: TipMod
         {/* Info */}
         <div className="mt-3 space-y-1 text-xs text-zinc-500">
           <p>Creator receives {'\u2115'} {creatorReceives} (80%)</p>
+          {belowMinimum && (
+            <p className="text-red-400">Minimum tip is {MIN_TIP} Nodes</p>
+          )}
           <p>
             Your balance: {'\u2115'} {available.toLocaleString()}
-            {!canTip && amount > 0 && (
+            {!canTip && amount >= MIN_TIP && (
               <span className="ml-1 text-red-400">— insufficient</span>
             )}
           </p>
