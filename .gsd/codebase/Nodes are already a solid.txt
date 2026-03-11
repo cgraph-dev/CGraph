@@ -1,0 +1,362 @@
+Nodes are already a solid Stripe-backed virtual currency; you’re missing a coherent “economy design” on top of the existing wallet/transactions API. Below is a professional system that turns Nodes into a full creator/consumer economy across DMs, forums, and cosmetics.
+
+Core Nodes Model (Baseline)
+From your docs, Nodes already support: wallets, bundles, tips, content unlock, subscriptionreceived/subscriptionsent, withdrawals, with a 20% platform cut and 21-day holds for earnings. The backend context CGraph.Nodes handles wallet CRUD, credit/debit with row locks, bundles, and withdrawals, and the web app has a Nodes wallet page, shop, tip button/modal, content unlock, and withdrawal UI.
+
+We’ll extend the model conceptually, but keep those primitives.
+
+1. Tipping System (DMs, Forums, Profiles)
+Tipping semantics
+Where you can tip:
+
+Direct messages: tip entire user or specific message.
+
+Forum posts & comments: tip the author for a specific post/comment.
+
+Profiles: tip directly on user profile nameplate/card.
+
+Tip flow:
+
+Sender chooses an amount (preset + custom), sees breakdown:
+
+“You send: 100 Nodes → Creator receives: 80 Nodes (20% platform cut).”
+
+On success:
+
+tip_sent transaction for sender (negative amount).
+
+tip_received transaction for receiver (positive net, 21-day hold).
+
+Platform cut tracked as separate internal transaction.
+​
+
+UX rules:
+
+One-click presets: 10/50/100/500 Nodes, plus custom slider.
+
+“Tip again” shortcut for repeat tipping in same thread/DM.
+
+Optional public badge: “Tipped by X users” on post.
+
+Professional details
+Minimum tip: 5–10 Nodes to avoid spam.
+
+Anti-abuse: rate limit tips per minute per pair of users via your existing rate limiter.
+​
+
+Refund policy: no refunds by default; only manual support reversals with audit log.
+
+2. Paid Files in Direct Chat
+Concept
+Users can send “locked” files in DMs (or small group chats) that require a Node payment to unlock.
+
+Flow
+Sender uploads file as usual (backend already has S3/R2 via CGraph.Storage).
+​
+
+When attaching, they toggle “Sell this file” and set:
+
+Price in Nodes (min + max).
+
+License notes (e.g., “personal use only”).
+
+In chat:
+
+Message shows placeholder: “Locked file – 200 Nodes to unlock.”
+
+Receiver clicks “Unlock for 200 Nodes”:
+
+content_unlock Nodes transaction triggers, 20% platform cut, 80% to seller in 21-day hold.
+​
+
+On success, the message transforms to a normal downloadable file for that buyer.
+
+Same receiver can re-download for free; another user in same chat needs to pay again (unless you choose shared unlock per-conversation).
+
+Rules
+Allowed in:
+
+DMs (1:1).
+
+Small private groups (e.g., up to 20 members), configurable.
+
+Not allowed in:
+
+Public forums (use paywalled posts instead).
+
+Anti-fraud:
+
+Report/flag “scam file” which can trigger mod review and potential chargebacks.
+
+Add category tags: Software, Art, Guides, Replays, etc.
+
+3. Unlockable Forum Content (Gated Posts / Threads)
+You already model FeedThread with is_content_gated and gate_price_nodes, so the concept exists.
+​
+
+Content gating types
+For threads and posts (and optionally attachments), support:
+
+One-time unlock:
+
+Pay once per user; persistent access forever.
+
+Time-based unlock:
+
+30-day, 90-day access passes (re-pay after expiry).
+
+Tier-based (subscription):
+
+Access when subscribed to a creator/forum tier (see next section).
+
+Flow
+When creating/editing a thread/post, creator can:
+
+Mark it “Free”, “Gated”, or “Tier-only”.
+
+For gated content: set Node price and optional time limit.
+
+On forum view:
+
+Card shows teaser (title, excerpt, maybe blurred content) + “Unlock for X Nodes.”
+
+On unlock:
+
+content_unlock transaction.
+
+Access token stored in DB (user_id, content_id, expiration_at).
+
+Gating types can be restricted by forum:
+
+Some forums might allow only free content.
+
+Others allow gating only above X reputation or with verified seller status.
+​
+
+4. Forum-Level Monetization (Per-Forum Nodes Config)
+Monetization modes for forum owners
+Forum owners (using your existing forum hosting and admin modules) can choose:
+
+Free forum:
+
+No paywalls, tips only.
+
+Node-gated forum:
+
+Access requires:
+
+One-time Node payment (permanent access).
+
+Monthly Node subscription.
+
+Yearly Node subscription.
+
+Hybrid:
+
+Free basic boards; premium boards behind Node tiers.
+
+This plugs into existing CGraph.Subscriptions and CGraph.Creators contexts for paid subscriptions and Creators payouts.
+​
+
+Access tiers
+Each forum defines up to e.g. 3 paid tiers:
+
+Tier 1 (Supporter):
+
+Monthly: 500 Nodes
+
+Yearly: 5000 Nodes
+
+Tier 2 (Pro):
+
+Monthly: 2000 Nodes
+
+Yearly: 20000 Nodes
+
+Tier 3 (Lifetime/Founder):
+
+One-time: 50,000 Nodes
+
+Each tier maps to feature flags:
+
+Private boards access.
+
+Special nameplates/badges/themes for that forum.
+
+Higher attach size, more threads/day, etc. (using your tier_limits system).
+​
+
+Revenue share
+Default: 80% creator/forum, 20% platform.
+​
+
+Ability later to configure special deals per large community.
+
+5. Other Node Use Cases
+5.1 Cosmetic Purchases
+You already have cosmetics (borders, badges, titles, nameplates); we tie purchases to Nodes:
+
+Shop:
+
+Buy borders, nameplates, effects, secret themes using Nodes.
+
+Forum skins:
+
+Some themes can be “premium” and require Nodes per user or per forum (owner purchases theme for their community).
+
+Temporary boosts:
+
+Limited-time animated nameplates or effects that expire in N days.
+
+All purchases: cosmetic_purchase transaction type, non-refundable, optionally time-limited.
+​
+
+5.2 Boosts & Promotions
+Forum Boost:
+
+Members can spend Nodes to “boost” a forum, increasing its position in discovery (Pulse/Discovery contexts).
+​
+
+Thread Boost:
+
+Push a thread higher in the Pulse/Fresh feed for X hours (with guardrails to prevent abuse).
+
+Profile Spotlight:
+
+Pay Nodes to appear in “Featured creators” or “New rising accounts” carousel for a limited time.
+
+5.3 Reputation-Linked Rewards
+Convert reputation milestones into Node rewards:
+
+First 100 helpful votes → 100 Nodes bonus.
+
+Monthly top 10 posters per forum → prize pool in Nodes.
+
+Fund these Nodes from:
+
+Platform marketing budget.
+
+Portion of boost revenue.
+
+This aligns your “CGraph rewards users, like Telegram Stars” goal.
+
+6. Creator Payouts & Compliance
+You already have NodeWallet, NodeTransaction, WithdrawalRequest, and creators/payouts contexts, plus Stripe integration.
+
+Payout rules
+Minimum withdrawal: e.g. 1000 Nodes.
+
+Exchange rate configurable, e.g. 1 Node = €0.008 (already in wallet modal).
+​
+
+Rolling 21-day hold on earnings from:
+
+Tips.
+
+Gated content.
+
+Forum subscriptions.
+
+Payout via:
+
+SEPA / card via Stripe.
+
+Later: local payout partners per region.
+
+Compliance
+KYC threshold:
+
+Require identity verification at certain lifetime earnings (e.g. €500).
+
+AML:
+
+Flag suspicious patterns (many high tips from one account, circular tips).
+
+Tax/receipts:
+
+Generate downloadable earnings reports per month/year.
+
+7. Mobile Integration Strategy
+Currently, mobile has zero awareness of Nodes; all nodes functionality is web-only.
+​
+
+Minimal viable mobile integration
+Wallet screen:
+
+Balance, transaction history.
+
+“Buy Nodes” (Stripe via mobile web or in-app purchase depending on store policy).
+
+Tip button:
+
+On profile and in DM message long-press menu.
+
+Simple preset amounts, no advanced breakdown.
+
+Unlock button:
+
+For gated forum posts and DM files.
+
+Later enhancements
+Full Nodes shop UI.
+
+Forum monetization settings for owners in mobile admin.
+
+Nodes-based boosts as a mobile-friendly action (e.g. long-press thread → “Boost with 50 Nodes”).
+
+8. Economic Guardrails
+To keep this sustainable and not P2W cancer:
+
+Hard caps:
+
+Max price per DM file/post without manual review.
+
+Max boosts/day per user or per forum.
+
+Reputation gating:
+
+Only users with certain reputation level can:
+
+Sell files.
+
+Create Node-gated forums.
+
+Discovery fairness:
+
+Paid boosts influence ranking but do not completely override organic quality metrics (Pulse/Discovery scores).
+
+Transparency:
+
+Show breakdown: “Platform cut: 20%” clearly to both sides.
+
+9. Concrete API Extensions (High-Level)
+You already expose wallet/tips/unlock endpoints:
+​
+
+POST /api/v1/nodes/tip – tip user.
+
+POST /api/v1/nodes/unlock – unlock content.
+
+POST /api/v1/nodes/withdraw – withdrawal.
+
+You’d add:
+
+DM file monetization:
+
+POST /api/v1/messages/:id/sell-file (set price, flags).
+
+POST /api/v1/messages/:id/unlock-file (charge Nodes, mark access).
+
+Forum monetization settings:
+
+PUT /api/v1/forums/:id/monetization (mode, tiers, Node prices).
+
+Boosts:
+
+POST /api/v1/forums/:id/boost
+
+POST /api/v1/threads/:id/boost
+
+All of this sits cleanly inside CGraph.Nodes + CGraph.Creators + CGraph.Forums contexts, and reuses your existing wallet and transaction tables.
+
+

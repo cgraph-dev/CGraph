@@ -1,0 +1,439 @@
+CGraph Complete Cosmetics & Reward System Design
+Reference: What You Actually Have Right Now
+Based on your feature map, here is the exact inventory of what exists today:
+​
+
+Avatar Borders: 42 in BorderPickerModal.tsx (mobile), 150+ referenced in web borders-section.tsx with 6 rarity tiers (FREE→MYTHIC)
+​
+
+Titles: 30+ with animated styles in titles-section.tsx, selectable in both web and mobile
+​
+
+Badges: 40+ badges, equip up to 5, fully wired on both platforms
+​
+
+Nameplates: Present in both NameplatePicker.tsx (mobile) and nameplates-section.tsx (web)
+​
+
+Profile Themes: 20+ presets in useThemeStore
+​
+
+Profile Effects: Full equip system on mobile (ProfileEffectPicker.tsx), equip selector on web
+​
+
+Chat Bubbles: 9 styles + 7 message effects + fine sliders on web; separate ChatBubbles settings screen on mobile
+​
+
+Particle/Background/UI Effects: 12 particles + 10 background + 8 animation presets on web only
+​
+
+Secret Chat Themes: 12 named themes (void, redacted, midnight, signal, ghost, cipher, onyx, eclipse, static, shadow, obsidian, abyss)
+​
+
+Name Styles: Font + effect + dual color pickers on web; 5 effects (solid/gradient/neon/toon/pop) on mobile
+​
+
+The problem is zero unlock conditions on any cosmetic — the cosmetics API endpoints (/api/v1/cosmetics/borders, /api/v1/cosmetics/titles, /api/v1/cosmetics/badges) all return [] as TODOs. You have a fully built cosmetic wardrobe with no door. This document gives every cosmetic a door.
+​
+
+The MOBA/Gacha Reference Model
+Games like League of Legends and Genshin Impact have perfected cosmetic reward systems over a decade of iteration. The principles that make them work:
+
+LoL Honor System: 6 levels of behavioral reputation, each with capsules and orbs gated behind consistent positive play — cosmetics are proof of social standing, not just time investment.
+​
+
+Genshin Namecards: Unlocked via completing entire Achievement categories, reaching Friendship Level 10 with characters, Reputation levels per nation, Battle Pass, and limited events — each namecard type signals what kind of player you are.
+​
+
+The core insight: "Cosmetic incentives such as namecards motivate players to try harder in events" because the reward has social signal value even though it has zero gameplay impact.
+​
+
+Scarcity principle: The most prized cosmetic rewards are the ones tied to activities that most players will never complete — scarcity creates prestige.
+​
+
+CGraph is both a messaging app (like Discord) and a community builder (like Reddit + phpBB). This means your user archetypes are far broader than a MOBA: you have chatters, forum contributors, group admins, content creators, social butterflies, security-conscious users, moderation contributors, and power users. Every archetype deserves a cosmetic path.
+​
+
+The Rarity System (6 Tiers, Unified)
+All cosmetics — borders, titles, badges, nameplates, profile effects, name styles — use the same 6 rarity tiers already defined in your constants.ts and mobile themeStore.ts.
+​
+
+Generated chart: rarity_tiers.png
+Tier	Color	How to Get	Roughly How Hard
+FREE	Gray	Default, everyone gets it	Day 0
+COMMON	Green	Basic activity milestones	1–7 days
+UNCOMMON	Blue	Sustained use, moderate effort	1–4 weeks
+RARE	Purple	Significant platform investment	1–3 months
+EPIC	Orange	Long-term dedication or Nodes	3–12 months
+LEGENDARY	Red	Top-tier activity or large Nodes spend	12+ months or exclusive
+MYTHIC	Gold	Essentially unobtainable for most; prestige absolute	Seasonal, staff-only, or extreme Nodes
+Generated chart: cosmetics_sources.png
+Avatar Borders — Keep All 42, Add Purpose
+The 42 borders in BorderPickerModal.tsx are kept exactly as they are visually. What changes is that every single one gets an unlock_condition. Borders are distributed across ALL rarity tiers so every user type has something to chase.
+​
+
+Messaging / DM Track (7 borders)
+Rewarding users who primarily use CGraph for private communication:
+
+Border	Rarity	Unlock Condition
+First Contact	FREE	Send your first DM
+Conversationalist	COMMON	Exchange 500 messages total
+Daily Talker	UNCOMMON	30-day streak of at least 1 DM sent per day
+Deep Connector	RARE	10,000 messages sent in DMs
+Secret Keeper	RARE	Use Secret Chat for 30 days total
+Encrypted Soul	EPIC	Verify E2EE keys with 10+ different users
+Ghost Protocol	LEGENDARY	90 consecutive days of Secret Chat usage with panic-wipe enabled
+Forum / Community Track (8 borders)
+For your forum builders, contributors, and threadmakers:
+
+Border	Rarity	Unlock Condition
+First Post	FREE	Post your first forum thread
+Regular	COMMON	50 forum posts
+Contributor	UNCOMMON	250 posts + at least 100 helpful votes received
+Veteran	RARE	1,000 forum posts
+Forum Builder	RARE	Create a forum that reaches 50 members
+Post Master	EPIC	5,000 forum posts
+Forum Legend	EPIC	Own a forum with 500+ active members
+Grand Architect	LEGENDARY	Own 3+ forums each with 200+ members simultaneously
+Group / Channel Track (5 borders)
+For Discord-style group users, channel owners, voice/video users:
+
+Border	Rarity	Unlock Condition
+Channel Lurker	COMMON	Join 5 different groups
+Channel Regular	UNCOMMON	Active in a group channel for 30+ days
+Voice Veteran	RARE	100 hours of voice calls total
+Community Pillar	EPIC	Admin of a group with 100+ members for 3+ months
+Server Sovereign	LEGENDARY	Admin of a group with 500+ members
+Social Track (5 borders)
+For the socially active users — friends, connections, referrals:
+
+Border	Rarity	Unlock Condition
+Friendly	COMMON	Add 10 friends
+Social Circle	UNCOMMON	50 friends added
+Connector	RARE	Referred 10 users who joined and stayed 30 days
+Networker	EPIC	200 friends + mutual groups with 50+ users
+Influencer	LEGENDARY	Referred 50+ active users
+Account / Security Track (5 borders)
+For users who invest in platform security and longevity:
+
+Border	Rarity	Unlock Condition
+Verified	UNCOMMON	Email + phone verified + 2FA enabled
+Trusted	RARE	Account age 6 months + 2FA + no violations
+Loyal	RARE	1 year on the platform with no bans/warnings
+Sentinel	EPIC	Verified + 2FA + reported a confirmed security issue
+Immortal	LEGENDARY	2 years active, zero violations, 2FA, all security steps complete
+Creator / Nodes Economy Track (5 borders)
+For users participating in the Nodes economy:
+
+Border	Rarity	Unlock Condition
+First Tip	COMMON	Send your first tip to another user
+Generous	UNCOMMON	Tip 50+ Nodes to other users total
+Patron	RARE	Tip 1,000+ Nodes across any number of users
+Creator	RARE	Earn 5,000 Nodes from content/tips
+Top Creator	EPIC	Earn 50,000 Nodes lifetime
+Nodes Shop Borders (7 borders — purchased only)
+These are purely visual premium borders not earnable through activity. Animated, holographic, exclusive visual styles:
+
+Border	Rarity	Nodes Cost
+Neon Surge	RARE	500 Nodes
+Liquid Glass	RARE	500 Nodes
+Stellar Drift	EPIC	1,200 Nodes
+Prismatic	EPIC	1,200 Nodes
+Arcane Flame	LEGENDARY	3,000 Nodes
+Void Pulse	LEGENDARY	3,000 Nodes
+Celestial	MYTHIC	8,000 Nodes (limited stock per season)
+Total: 42 borders. Zero removed, all given purpose.
+​
+
+Titles — 55 Total (Expanded from 30+)
+Titles are the text displayed under your display name — profile-name-section.tsx on web, DisplayName.tsx on mobile. The expansion covers all user archetypes.
+​
+
+Generated chart: cosmetics_catalog_count.png
+Messaging / DM Titles (8)
+Title	Rarity	Unlock Condition
+"Newcomer"	FREE	Default — everyone starts here
+"Regular"	COMMON	30 days active with at least 1 message/day
+"Chatterbox"	COMMON	1,000 total DMs sent
+"Night Owl"	UNCOMMON	Send 500 messages between midnight–5am
+"Voice Regular"	UNCOMMON	50 hours of voice calls
+"Deep Thinker"	RARE	Start 100+ threads across DM groups
+"Ghost"	RARE	Complete 60 days with Secret Chat sessions
+"Cipher"	EPIC	Have E2EE keys verified by 25+ different users + Secret Chat for 90 days
+Forum / Thread Titles (12)
+Title	Rarity	Unlock Condition
+"Lurker"	FREE	Read 50 forum threads without posting
+"Thread Starter"	COMMON	Post 10 forum threads
+"Contributor"	COMMON	100 forum posts
+"Helpful"	UNCOMMON	Receive 50 helpful votes
+"Writer"	UNCOMMON	500 forum posts
+"Forum Elder"	RARE	Active on the same forum for 12+ months
+"Veteran"	RARE	1,000 forum posts
+"Debate King/Queen"	EPIC	200+ comments with 500+ total helpful votes
+"Post Master"	EPIC	5,000 total forum posts
+"Forum Founder"	EPIC	Own a forum with 200+ members
+"Legend"	LEGENDARY	10,000 forum posts
+"Grand Sage"	MYTHIC	Top 10 all-time poster platform-wide (recalculated monthly, title awarded for that month)
+Group / Channel Titles (8)
+Title	Rarity	Unlock Condition
+"Channel Hopper"	COMMON	Join 10+ different groups
+"Regular"	UNCOMMON	Active in any one group for 30+ days
+"Community Member"	UNCOMMON	Member of 5+ groups simultaneously
+"Channel Admin"	RARE	Admin in any group for 30+ days
+"Builder"	RARE	Create a group that reaches 100 members
+"Community Leader"	EPIC	Admin of group with 200+ members for 6 months
+"Guild Master"	EPIC	Simultaneously admin 2+ groups totaling 500+ members
+"Overlord"	LEGENDARY	Group with 1,000+ members, active for 1+ year
+Social / Friends Titles (7)
+Title	Rarity	Unlock Condition
+"Friend"	COMMON	Add 5 friends
+"Social"	UNCOMMON	Add 25 friends
+"Connector"	RARE	Referred 5 users who remained active 30 days
+"Networker"	RARE	100 friends on platform
+"Recruiter"	EPIC	Referred 25+ active users
+"Ambassador"	EPIC	Referred 50+ active users
+"CGraph Evangelist"	LEGENDARY	Referred 100+ active users who stayed 30+ days
+Creator / Economy Titles (8)
+Title	Rarity	Unlock Condition
+"Tipper"	COMMON	Send tips to 5 different users
+"Supporter"	UNCOMMON	Tip 500+ Nodes total
+"Patron"	RARE	Tip 5,000+ Nodes total
+"Content Creator"	RARE	Earn 10,000 Nodes from content
+"Rising Creator"	EPIC	Earn 50,000 Nodes lifetime
+"Top Creator"	EPIC	Earn 100,000 Nodes lifetime
+"Wealthy"	LEGENDARY	Hold 50,000+ Nodes in wallet at one time
+"Whale"	MYTHIC	Spend 500,000+ Nodes in shop / tips lifetime
+Security / Account Titles (5)
+Title	Rarity	Unlock Condition
+"Verified"	UNCOMMON	2FA + email + phone verified
+"Trusted Member"	RARE	1 year on platform, zero violations
+"Security Minded"	RARE	All security features enabled + 6 months clean
+"Loyal"	EPIC	2 years active, no violations
+"Founding Member"	LEGENDARY	Joined before platform hit 1,000 users (permanent, non-strippable)
+Nodes Shop Titles (7 — purchased only)
+Title	Rarity	Nodes Cost
+"Neon Wanderer"	RARE	400 Nodes
+"Cyber Ghost"	RARE	400 Nodes
+"Digital Nomad"	EPIC	1,000 Nodes
+"Void Walker"	EPIC	1,000 Nodes
+"Arcane Scholar"	LEGENDARY	2,500 Nodes
+"Celestial"	LEGENDARY	2,500 Nodes
+"Mythic One"	MYTHIC	10,000 Nodes (5 copies per season)
+Total: 55 titles. Covers every app usage pattern.
+
+Badges — 60 Total (Expanded from 40+)
+Badges are proof of something — equipped up to 5 visible on your nameplate. Inspired directly by how City of Heroes and WoW made certain badges the most prized precisely because they were impossible for most players to get.
+​
+
+Activity Badges — Messaging (8)
+Badge	Rarity	Trigger
+📨 First Message	FREE	Send your first DM
+💬 Chatterbox	COMMON	1,000 messages total
+🔒 Encrypted	UNCOMMON	Use Secret Chat 10+ times
+📅 Consistent	UNCOMMON	30-day messaging streak
+🎙️ Voice Regular	RARE	100 hours voice calls
+🔐 Cipher Master	RARE	E2EE keys verified with 10+ users
+👻 Ghost Protocol	EPIC	90 days Secret Chat usage
+🛡️ Zero Trace	LEGENDARY	365 days E2EE-only, all messages encrypted, no plain DMs ever
+Activity Badges — Forums (10)
+Badge	Rarity	Trigger
+📝 First Post	FREE	Post first forum thread
+🙋 Contributor	COMMON	100 forum posts
+👍 Helpful	COMMON	25 helpful votes received
+📖 Avid Reader	UNCOMMON	Read 500 forum threads
+✍️ Writer	UNCOMMON	500 posts
+🧠 Knowledge Base	RARE	100 helpful votes received
+🏆 Top Poster	RARE	1,000 posts
+📜 Lorekeeper	EPIC	5,000 posts + 500 helpful votes
+💡 Oracle	EPIC	1,000 helpful votes received lifetime
+🗺️ Forum Cartographer	LEGENDARY	Created 5+ distinct forums, each active for 6+ months
+Activity Badges — Groups & Channels (7)
+Badge	Rarity	Trigger
+🏠 Member	COMMON	Join 5 groups
+🎤 Speaker	COMMON	Participate in 10 voice sessions
+🛠️ Builder	UNCOMMON	Create a group
+👑 Admin	RARE	Admin of group with 50+ members for 60 days
+🏰 Guild Master	EPIC	Admin of group with 200+ members
+⚡ Overlord	LEGENDARY	3 simultaneous groups each 200+ members
+🌐 Empire Builder	MYTHIC	5+ groups all 500+ members at the same time
+Activity Badges — Social (7)
+Badge	Rarity	Trigger
+🤝 First Friend	FREE	Add your first friend
+👥 Social	COMMON	25 friends
+🔗 Connector	UNCOMMON	100 friends
+📣 Recruiter	RARE	Referred 10 active users
+🌟 Influencer	EPIC	Referred 50 active users
+🚀 Viral	LEGENDARY	Referred 100+ active users
+💎 CGraph Legend	MYTHIC	Referred 500+ active users (top recruiter of all time)
+Activity Badges — Creator Economy (8)
+Badge	Rarity	Trigger
+💸 First Tip	COMMON	Send your first tip
+🎁 Generous	UNCOMMON	Tip 500+ Nodes total
+🪙 Patron	RARE	Tip 5,000+ Nodes total
+🎨 Creator	RARE	Earn first 1,000 Nodes from content
+🌱 Rising Star	EPIC	Earn 50,000 Nodes lifetime
+💰 Top Creator	EPIC	Earn 100,000 Nodes lifetime
+🐳 Whale	LEGENDARY	Spend 100,000+ Nodes total
+👑 Creator Royalty	MYTHIC	Earn 1,000,000 Nodes lifetime (absolute top creators)
+Account / Security Badges (6)
+Badge	Rarity	Trigger
+✅ Verified	UNCOMMON	Email + phone + 2FA
+🕐 Early Adopter	RARE	Joined before 1,000-user milestone
+🏅 Founding Member	RARE	Joined before 5,000-user milestone
+🔑 Security Expert	RARE	All security features enabled, bug report submitted
+💙 Loyal	EPIC	1 year, zero violations
+🌌 OG	LEGENDARY	Joined in first month of launch (manually awarded)
+Role / Staff Badges (assigned, non-earnable — 7)
+Badge	Who Gets It
+🔨 Moderator	Active moderators
+⚙️ Admin	Platform admins
+👨‍💻 Developer	CGraph team developers
+🤝 CGraph Partner	Official partner accounts
+🎙️ Verified Creator	Verified content creator program
+🏷️ Verified Seller	Verified Nodes marketplace seller
+🧪 Beta Tester	Closed beta participants
+Nodes Shop Badges (7 — purchased only)
+Badge	Rarity	Nodes Cost
+⚡ Spark	UNCOMMON	200 Nodes
+🌙 Night Rider	RARE	500 Nodes
+🔮 Mystic	RARE	500 Nodes
+🌊 Oceanic	EPIC	1,200 Nodes
+🔥 Inferno	EPIC	1,200 Nodes
+❄️ Glacial	LEGENDARY	3,000 Nodes
+✨ Mythic Star	MYTHIC	Seasonal rotating, 8,000 Nodes per season
+Total: 60 badges.
+
+Nameplates — 30 Total
+Nameplates are the full background card behind your avatar + name combo. In Genshin, namecards are one of the most-collected cosmetics because each one tells your story. CGraph nameplates do the same.
+​
+
+Free / Default (3)
+Basic, clean styles: Minimal, Dark, Light — everyone gets all three by default.
+
+Earned via Activity (12)
+Nameplate	How to Earn
+Chat Veteran	10,000 total messages sent
+Forum Scholar	1,000 forum posts
+Voice Champion	100+ hours voice calls
+Community Founder	Own a forum with 100+ members
+Early Network	100 friends added
+Creator Plate	Earn 10,000 Nodes from content
+Security Shield	All security features complete
+1-Year Plate	1 full year on platform
+2-Year Plate	2 full years on platform
+Top Contributor	Reach EPIC rarity on any cosmetic via activity
+Forum Elder	Active same forum 12+ months
+Group Empire	Own 3+ active groups simultaneously
+Seasonal / Event (8 — rotated quarterly)
+One exclusive nameplate per season, earned by completing the season event challenge. Cannot be purchased; once the season ends, gone forever. Examples: Winter Solstice, Spring Bloom, Cyber Noir, Harvest Moon. Inspired by Genshin event namecards that require Platinum-tier event completion.
+​
+
+Nodes Shop (7 — permanent premium)
+Nameplate	Rarity	Nodes Cost
+Neon Grid	RARE	600 Nodes
+Deep Space	RARE	600 Nodes
+Lava Flow	EPIC	1,500 Nodes
+Aurora	EPIC	1,500 Nodes
+Prismatic Wave	LEGENDARY	4,000 Nodes
+Void Rift	LEGENDARY	4,000 Nodes
+Divine Light	MYTHIC	12,000 Nodes (10 per season)
+Total: 30 nameplates.
+
+Profile Themes — Keep 25 Total
+Profile themes (the background of your own profile page) are kept largely as-is from useThemeStore's 20+ presets. 5 are added for completeness:
+​
+
+Free (5): Minimal Dark, Minimal Light, Slate, Navy, Forest
+
+Earned (5): Awarded at XP milestones (Year 1, 5K posts, 100K Nodes earned, etc.)
+
+Nodes Shop (15): Premium animated backgrounds — 500 to 3,000 Nodes each
+
+Profile Effects — Reclassified, NOT Removed
+Profile effects (the ProfileEffectPicker.tsx on mobile and profile-effects-section.tsx on web) stay in the system but are reclassified as EPIC/LEGENDARY/MYTHIC tier cosmetics — they should feel like a big deal, not a routine toggle. Instead of being a standard tab option next to border selection, they become a separate "rare equip" slot visible only when you own one.
+​
+
+3 are earned (EPIC): Long-term milestones (2 years active, 1M Nodes earned, Platform Top 100 leaderboard)
+
+7 are shop-only (LEGENDARY/MYTHIC): 2,500–10,000 Nodes; includes animated Particle Aura, Flame Halo, Void Shimmer, Crystal Rain, etc.
+
+Chat Customization — Kept, Organized by Unlock
+Your 9 bubble styles + effects + fine sliders stay. They are reorganized into tiers:
+​
+
+Free for all users
+Default bubble style, Pill, Sharp
+
+Message entrance: None, Fade
+
+Unlocked by activity
+Glass bubble (UNCOMMON): 1,000 messages sent
+
+Neon bubble (RARE): 5,000 messages sent + E2EE enabled
+
+Asymmetric / Aero / Compact (UNCOMMON): 500 messages sent
+
+Comic bubble (RARE): 2,000 messages sent
+
+Message effects (bounce, slide, scale, pop, rotate): UNCOMMON → 500 messages or 30-day streak
+
+Fine Controls (sliders for border-radius, shadow, glass, bubble tail)
+Unlocked for Premium subscribers (subscription benefit, not Nodes). This makes the advanced customization a subscription perk without hiding the baseline styles.
+
+Secret Chat Themes (12 themes — keep all)
+All 12 secret themes (void, redacted, midnight, signal, ghost, cipher, etc.) are unlocked progressively through Secret Chat usage:
+​
+
+First 3 (void, midnight, signal): Unlocked by using Secret Chat at all
+
+Middle 6 (ghost, cipher, onyx, eclipse, static, shadow): Unlocked by 10+ Secret Chat sessions
+
+Top 3 (redacted, obsidian, abyss): LEGENDARY — 60+ days of Secret Chat usage or 2,000 Nodes purchase each
+
+Particle + Background + UI Animation Effects
+These 30+ effects on web (12 particles, 10 background, 8 animation sets) are sorted into:
+​
+
+Effect Type	Access
+3 particle presets (stars, snowfall, confetti)	Free
+Remaining 9 particle presets	UNCOMMON activity unlock OR 300 Nodes each
+5 background effect presets	UNCOMMON or 300 Nodes
+Remaining 5 background presets	RARE or 500 Nodes
+8 UI animation sets	Premium subscription benefit
+These effects also come to mobile as part of the parity catch-up — they're placed in the existing effects-customization-screen.tsx with a device tier check (already implemented via optimizeForDevice in mobile customizationStore.ts).
+​
+
+The Nodes Shop Catalog Summary
+Category	Items	Price Range
+Borders	7	500–8,000 Nodes
+Titles	7	400–10,000 Nodes
+Badges	7	200–8,000 Nodes
+Nameplates	7	600–12,000 Nodes
+Profile Effects	7	2,500–10,000 Nodes
+Secret Chat Themes	3	2,000 Nodes each
+Particle Effects	9	300 each
+Background Effects	5	300–500 each
+Milestone Trigger Architecture
+Every unlock condition above maps to a domain event in your existing backend contexts.
+​
+
+text
+CGraph.Messaging    → message_sent, secret_chat_session, e2ee_key_verified
+CGraph.Forums       → post_created, helpful_vote_received, forum_created
+CGraph.Groups       → group_joined, group_created, member_count_threshold
+CGraph.Accounts     → account_age_milestone, security_feature_enabled
+CGraph.Nodes        → tip_sent, nodes_earned_milestone, nodes_spent_milestone
+CGraph.Social       → friend_added, referral_converted
+Each event fires CGraph.Cosmetics.Unlock.check_and_grant/2 — evaluates the user against all unlock conditions for that event type, grants any newly eligible cosmetics, and pushes a user:cosmetic_unlocked notification via UserChannel. This is intentionally lightweight — no XP system, no quest log, no level bar. Just silent milestone checking triggered by real activity, exactly how LoL's honor system rewards behavior without making it the center of attention.
+​
+​
+
+Cosmetics in Profile: What Is Visible Where
+Surface	What Shows
+DM conversation header	Avatar + active border + nameplate background (compact) + title
+Forum post author card	Avatar + border + title + up to 3 badges
+Group member list	Avatar + border + title
+Friend list	Avatar + border + online status
+Full profile page	Everything: nameplate, border, all 5 badges, title, name style, profile theme, profile effect, achievements showcase
+Search results	Avatar + border only
+This ensures identity cosmetics are seen constantly by other users in every context — the social pressure to collect is always present, which is exactly why LoL's ward skins and nameplates drive players to grind honor
