@@ -137,8 +137,7 @@ config :cgraph, Oban,
     media: 3,
     sync: 5,
     link_previews: 5,
-    rankings: 5,
-    gamification: 5
+    rankings: 5
   ]
 
 # Swoosh mailer configuration

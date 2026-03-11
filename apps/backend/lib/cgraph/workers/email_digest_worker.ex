@@ -160,15 +160,9 @@ defmodule CGraph.Workers.EmailDigestWorker do
     |> Kernel.||(0)
   end
 
-  defp calculate_xp_earned(user_id, since) do
-    from(xt in "xp_transactions",
-      where: xt.user_id == ^user_id,
-      where: xt.inserted_at >= ^since,
-      select: coalesce(sum(xt.amount), 0)
-    )
-    |> Repo.one()
-    |> Kernel.||(0)
-  end
+  # ARCHIVED: xp_transactions table was dropped by migration 20260723120000.
+  # This function previously queried that table. Returns 0 to prevent runtime crash.
+  defp calculate_xp_earned(_user_id, _since), do: 0
 
   defp count_new_achievements(user_id, since) do
     from(ua in "user_achievements",

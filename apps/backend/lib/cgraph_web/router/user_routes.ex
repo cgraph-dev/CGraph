@@ -53,9 +53,6 @@ defmodule CGraphWeb.Router.UserRoutes do
         get "/themes/default", ThemeController, :default
         get "/themes/presets", ThemeController, :presets
 
-        # Global Leaderboard
-        get "/leaderboard", LeaderboardController, :index
-
         # Users
         get "/users/leaderboard", UserController, :leaderboard
         get "/users/check-username", UserController, :check_username_availability
