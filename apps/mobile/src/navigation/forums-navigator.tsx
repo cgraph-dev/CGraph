@@ -16,7 +16,6 @@ import ForumBoardScreen from '../screens/forums/forum-board-screen';
 import ForumSettingsScreen from '../screens/forums/forum-settings-screen';
 import ForumAdminScreen from '../screens/forums/forum-admin-screen';
 import ForumLeaderboardScreen from '../screens/forums/forum-leaderboard-screen';
-import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen';
 import ForumSearchScreen from '../screens/forums/forum-search-screen';
 import ForumUserGroupsScreen from '../screens/forums/forum-user-groups-screen';
 import BoardPermissionsScreen from '../screens/forums/board-permissions-screen';
@@ -24,11 +23,11 @@ import BoardPermissionsScreen from '../screens/forums/board-permissions-screen';
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
 /**
- *
+ * Forums stack navigator with threaded discussion, search, and moderation screens.
  */
 export default function ForumsNavigator() {
   const { colors } = useThemeStore();
-  
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -42,21 +41,9 @@ export default function ForumsNavigator() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
-        name="ForumList"
-        component={ForumListScreen}
-        options={{ title: 'Forums' }}
-      />
-      <Stack.Screen
-        name="Forum"
-        component={ForumScreen}
-        options={{ title: '' }}
-      />
-      <Stack.Screen
-        name="Post"
-        component={PostScreen}
-        options={{ title: '' }}
-      />
+      <Stack.Screen name="ForumList" component={ForumListScreen} options={{ title: 'Forums' }} />
+      <Stack.Screen name="Forum" component={ForumScreen} options={{ title: '' }} />
+      <Stack.Screen name="Post" component={PostScreen} options={{ title: '' }} />
       <Stack.Screen
         name="CreatePost"
         component={CreatePostScreen}
@@ -68,11 +55,7 @@ export default function ForumsNavigator() {
         options={{ title: 'Create Forum', presentation: 'modal' }}
       />
       {/* MyBB-style forum screens */}
-      <Stack.Screen
-        name="ForumBoard"
-        component={ForumBoardScreen}
-        options={{ title: 'Board' }}
-      />
+      <Stack.Screen name="ForumBoard" component={ForumBoardScreen} options={{ title: 'Board' }} />
       <Stack.Screen
         name="ForumSettings"
         component={ForumSettingsScreen}
@@ -87,11 +70,6 @@ export default function ForumsNavigator() {
         name="ForumLeaderboard"
         component={ForumLeaderboardScreen}
         options={{ title: 'Leaderboard' }}
-      />
-      <Stack.Screen
-        name="PluginMarketplace"
-        component={PluginMarketplaceScreen}
-        options={{ title: 'Plugins' }}
       />
       <Stack.Screen
         name="ForumSearch"

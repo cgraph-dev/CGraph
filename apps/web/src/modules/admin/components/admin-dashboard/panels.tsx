@@ -10,7 +10,6 @@
 // Panel components
 export { DashboardOverview } from './dashboard-overview';
 export { EventsManagement } from './events-management';
-export { MarketplaceModeration } from './marketplace-moderation';
 export { UsersManagement } from './users-management';
 export { AnalyticsDashboard } from './analytics-dashboard';
 export { SystemSettings } from './system-settings';

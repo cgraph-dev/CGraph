@@ -15,7 +15,6 @@ import {
   ForumSettings,
   ForumBoardView,
   ForumAdmin,
-  PluginMarketplace,
   ModerationQueue,
   ForumSearchResults,
 } from '../lazyPages';
@@ -45,14 +44,6 @@ export function ForumRoutes() {
         element={
           <RouteErrorBoundary routeName="Create Forum">
             <CreateForum />
-          </RouteErrorBoundary>
-        }
-      />
-      <Route
-        path="forums/plugins"
-        element={
-          <RouteErrorBoundary routeName="Plugin Marketplace">
-            <PluginMarketplace />
           </RouteErrorBoundary>
         }
       />
@@ -133,14 +124,6 @@ export function ForumRoutes() {
         element={
           <RouteErrorBoundary routeName="Forum Thread">
             <ForumPost />
-          </RouteErrorBoundary>
-        }
-      />
-      <Route
-        path="forums/:forumSlug/plugins"
-        element={
-          <RouteErrorBoundary routeName="Forum Plugins">
-            <PluginMarketplace />
           </RouteErrorBoundary>
         }
       />

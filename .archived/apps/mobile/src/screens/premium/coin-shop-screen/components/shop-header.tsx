@@ -37,12 +37,7 @@ export function ShopHeader({
   }));
 
   return (
-    <Animated.View
-      style={[
-        styles.header,
-        headerAnimatedStyle,
-      ]}
-    >
+    <Animated.View style={[styles.header, headerAnimatedStyle]}>
       <TouchableOpacity style={styles.backButton} onPress={onGoBack} activeOpacity={0.7}>
         <Ionicons name="arrow-back" size={24} color={textColor} />
       </TouchableOpacity>

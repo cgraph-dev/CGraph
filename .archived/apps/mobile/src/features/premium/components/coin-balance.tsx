@@ -1,6 +1,6 @@
 /**
  * Coin Balance Component
- * 
+ *
  * Displays user's coin balance with animated effects.
  */
 
@@ -8,9 +8,9 @@ import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withSequence,
   withTiming,
@@ -27,39 +27,32 @@ interface CoinBalanceProps {
 /**
  *
  */
-export default function CoinBalance({ 
-  balance, 
-  onPress,
-  showAddButton = true 
-}: CoinBalanceProps) {
+export default function CoinBalance({ balance, onPress, showAddButton = true }: CoinBalanceProps) {
   const scale = useSharedValue(1);
   const prevBalance = React.useRef(balance);
-  
+
   React.useEffect(() => {
     if (balance !== prevBalance.current) {
       // Animate on balance change
-      scale.value = withSequence(
-        withTiming(1.2, { duration: durations.fast.ms }),
-        withSpring(1)
-      );
-      
+      scale.value = withSequence(withTiming(1.2, { duration: durations.fast.ms }), withSpring(1));
+
       if (balance > prevBalance.current) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      
+
       prevBalance.current = balance;
     }
   }, [balance]);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress?.();
   };
-  
+
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
       <LinearGradient
@@ -71,11 +64,11 @@ export default function CoinBalance({
         <View style={styles.coinIcon}>
           <Ionicons name="logo-bitcoin" size={20} color="#FEF3C7" />
         </View>
-        
+
         <Animated.Text style={[styles.balance, animatedStyle]}>
           {balance.toLocaleString()}
         </Animated.Text>
-        
+
         {showAddButton && (
           <View style={styles.addButton}>
             <Ionicons name="add" size={16} color="#F59E0B" />

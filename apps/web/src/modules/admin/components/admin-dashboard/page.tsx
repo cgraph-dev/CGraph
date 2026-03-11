@@ -10,7 +10,6 @@ import { NAV_ITEMS } from './constants';
 import {
   DashboardOverview,
   EventsManagement,
-  MarketplaceModeration,
   UsersManagement,
   AnalyticsDashboard,
   SystemSettings,
@@ -65,8 +64,6 @@ export function AdminDashboard() {
         return <DashboardOverview />;
       case 'events':
         return <EventsManagement />;
-      case 'marketplace':
-        return <MarketplaceModeration />;
       case 'users':
         return <UsersManagement />;
       case 'analytics':

@@ -17,7 +17,6 @@ export { NAV_ITEMS, RISK_COLORS, STATUS_COLORS, EVENT_FILTERS } from './constant
 export {
   DashboardOverview,
   EventsManagement,
-  MarketplaceModeration,
   UsersManagement,
   AnalyticsDashboard,
   SystemSettings,

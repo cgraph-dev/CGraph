@@ -19,7 +19,7 @@ import HolographicDemoScreen from '../screens/settings/holographic-demo-screen';
 import ProfileVisibilityScreen from '../screens/settings/profile-visibility-screen';
 import RSSFeedsScreen from '../screens/settings/rss-feeds-screen';
 import CustomEmojiScreen from '../screens/settings/custom-emoji/custom-emoji-screen';
-import { PremiumScreen, CoinShopScreen } from '../screens/premium';
+import { PremiumScreen } from '../screens/premium';
 import { CalendarScreen } from '../screens/calendar';
 
 import { ReferralScreen } from '../screens/referrals';
@@ -97,7 +97,6 @@ export default function SettingsNavigator() {
         component={PremiumScreen}
         options={{ title: 'CGraph Premium' }}
       />
-      <Stack.Screen name="CoinShop" component={CoinShopScreen} options={{ title: 'Coin Shop' }} />
       <Stack.Screen
         name="Calendar"
         component={CalendarScreen}

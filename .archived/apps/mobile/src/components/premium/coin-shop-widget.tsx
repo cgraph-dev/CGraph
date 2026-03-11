@@ -77,7 +77,6 @@ export function CoinShopWidget({
       >
         <GlassCard
           style={
-             
             [
               variant === 'compact' ? styles.compactPackage : styles.packageCard,
               (pkg.popular || pkg.bestValue) && styles.highlightedPackage,
@@ -219,7 +218,7 @@ export function CoinShopWidget({
       </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

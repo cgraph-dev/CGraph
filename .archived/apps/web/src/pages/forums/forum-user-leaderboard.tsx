@@ -17,21 +17,13 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
-import {
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  MinusIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets';
 
 import { useForumLeaderboardStore } from '@/modules/forums/store/forumStore.leaderboard';
 import { LeaderboardPodium } from '@/modules/forums/components/leaderboard-widget/leaderboard-podium';
 import { RankBadge } from '@/modules/forums/components/leaderboard-widget/rank-badge';
-import type {
-  LeaderboardPeriod,
-  LeaderboardEntry,
-  ForumRank,
-} from '@cgraph/shared-types';
+import type { LeaderboardPeriod, LeaderboardEntry, ForumRank } from '@cgraph/shared-types';
 import { LEADERBOARD_PERIOD_LABELS } from '@cgraph/shared-types';
 
 // ── Period Tab Bar ─────────────────────────────────────────────────────
@@ -100,9 +92,7 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
       className="flex items-center gap-3 rounded-lg bg-white/[0.04] px-4 py-3 transition-colors hover:bg-white/[0.08]"
     >
       {/* Position */}
-      <span className="w-8 text-center text-sm font-bold text-gray-400">
-        #{entry.position}
-      </span>
+      <span className="w-8 text-center text-sm font-bold text-gray-400">#{entry.position}</span>
 
       {/* Avatar */}
       {entry.user.avatarUrl ? (
@@ -162,9 +152,9 @@ function MyRankCard() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-primary-500/20 bg-gradient-to-r from-primary-500/10 to-purple-500/10 p-4"
+      className="border-primary-500/20 from-primary-500/10 rounded-xl border bg-gradient-to-r to-purple-500/10 p-4"
     >
-      <h3 className="mb-2 text-sm font-semibold text-primary-400">Your Rank</h3>
+      <h3 className="text-primary-400 mb-2 text-sm font-semibold">Your Rank</h3>
 
       <div className="flex items-center justify-between">
         <div>
@@ -195,12 +185,8 @@ function MyRankCard() {
       {progress.nextRank && (
         <div className="mt-3">
           <div className="mb-1 flex items-center justify-between text-xs">
-            <span style={{ color: progress.currentRank.color }}>
-              {progress.currentRank.name}
-            </span>
-            <span style={{ color: progress.nextRank.color }}>
-              {progress.nextRank.name}
-            </span>
+            <span style={{ color: progress.currentRank.color }}>{progress.currentRank.name}</span>
+            <span style={{ color: progress.nextRank.color }}>{progress.nextRank.name}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-white/[0.08]">
             <motion.div
@@ -243,7 +229,8 @@ function RanksSidebar({ ranks }: { ranks: ForumRank[] }) {
               size="md"
             />
             <span className="text-xs text-gray-500">
-              {r.minScore}{r.maxScore != null ? `–${r.maxScore}` : '+'} pts
+              {r.minScore}
+              {r.maxScore != null ? `–${r.maxScore}` : '+'} pts
             </span>
           </div>
         ))}
@@ -284,7 +271,7 @@ export default function ForumUserLeaderboard() {
   return (
     <div className="relative flex flex-1 overflow-hidden">
       {/* Background */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950" />
+      <div className="from-dark-950 via-dark-900 to-dark-950 pointer-events-none absolute inset-0 bg-gradient-to-b" />
 
       {/* Main content */}
       <div className="relative z-10 flex flex-1 gap-6 overflow-y-auto p-6">
@@ -317,9 +304,7 @@ export default function ForumUserLeaderboard() {
                   ))}
                 </div>
               ) : (
-                restOfList.map((entry) => (
-                  <LeaderboardRow key={entry.user.id} entry={entry} />
-                ))
+                restOfList.map((entry) => <LeaderboardRow key={entry.user.id} entry={entry} />)
               )}
             </AnimatePresence>
 

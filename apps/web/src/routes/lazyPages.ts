@@ -66,13 +66,14 @@ export const CreatePost = lazyRetry(() => import('@/pages/forums/create-post'));
 export const ForumSettings = lazyRetry(() => import('@/pages/forums/forum-settings'));
 export const ForumBoardView = lazyRetry(() => import('@/pages/forums/forum-board-view'));
 export const ForumAdmin = lazyRetry(() => import('@/pages/forums/forum-admin'));
-export const PluginMarketplace = lazyRetry(() => import('@/pages/forums/plugin-marketplace'));
 export const ModerationQueue = lazyRetry(() => import('@/pages/forums/moderation-queue'));
 export const ForumSearchResults = lazyRetry(() => import('@/pages/forums/forum-search-results'));
 
 // ── Discovery (Phase 31) ──────────────────────────────────────────────
 export const FeedPage = lazyRetry(() => import('@/pages/feed/feed-page'));
-export const DiscoverySettings = lazyRetry(() => import('@/pages/settings/discovery/discovery-settings'));
+export const DiscoverySettings = lazyRetry(
+  () => import('@/pages/settings/discovery/discovery-settings')
+);
 
 // ── Settings & Profile ─────────────────────────────────────────────────
 export const Settings = lazyRetry(() => import('@/pages/settings/settings'));

@@ -6,4 +6,3 @@
  */
 
 export { default as PremiumScreen } from './premium-screen';
-export { default as CoinShopScreen } from './coin-shop-screen';

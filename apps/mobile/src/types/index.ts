@@ -442,7 +442,6 @@ export type ForumsStackParamList = {
   ForumSettings: { forumId: string };
   ForumAdmin: { forumId: string };
   ForumLeaderboard: { forumId?: string };
-  PluginMarketplace: { forumId?: string };
   ForumUserGroups: { forumId: string };
   BoardPermissions: { forumId: string; boardId: string; boardName?: string };
 };
@@ -459,7 +458,6 @@ export type SettingsStackParamList = {
   DndSchedule: undefined;
   Privacy: undefined;
   Premium: undefined;
-  CoinShop: undefined;
   Calendar: undefined;
   Leaderboard: undefined;
   Referrals: undefined;

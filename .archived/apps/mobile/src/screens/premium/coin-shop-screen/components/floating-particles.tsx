@@ -97,12 +97,7 @@ export function FloatingParticles({ count = 12 }: FloatingParticlesProps) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {particles.map((particle, index) => (
-        <ParticleItem
-          key={index}
-          index={index}
-          size={particle.size}
-          color={particle.color}
-        />
+        <ParticleItem key={index} index={index} size={particle.size} color={particle.color} />
       ))}
     </View>
   );

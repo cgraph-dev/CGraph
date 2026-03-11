@@ -7,9 +7,8 @@ import type { NavItem } from './types';
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard', shortcut: '⌘1' },
   { id: 'events', icon: '🎉', label: 'Events', shortcut: '⌘2' },
-  { id: 'marketplace', icon: '🏪', label: 'Marketplace', shortcut: '⌘3' },
-  { id: 'users', icon: '👥', label: 'Users', shortcut: '⌘4' },
-  { id: 'analytics', icon: '📈', label: 'Analytics', shortcut: '⌘5' },
+  { id: 'users', icon: '👥', label: 'Users', shortcut: '⌘3' },
+  { id: 'analytics', icon: '📈', label: 'Analytics', shortcut: '⌘4' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ];
 

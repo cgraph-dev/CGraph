@@ -144,13 +144,13 @@ export default function PluginMarketplace() {
           <div className="flex flex-col gap-4 md:flex-row">
             {/* Search */}
             <div className="relative flex-1">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search plugins..."
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-3 pl-12 pr-4 text-white placeholder-white/30 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.06] py-3 pr-4 pl-12 text-white placeholder-white/30 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
             </div>
 

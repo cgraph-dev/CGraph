@@ -121,7 +121,6 @@ export function useCoinShop() {
                 );
               }
             } catch (err) {
-               
               const error = err as Error & {
                 response?: { status: number; data?: { message?: string } };
               };
@@ -167,7 +166,6 @@ export function useCoinShop() {
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               Alert.alert('Success!', `You've purchased ${item.name}!`);
             } catch (err) {
-               
               const error = err as Error & {
                 response?: { status: number; data?: { message?: string } };
               };
@@ -214,7 +212,6 @@ export function useCoinShop() {
         [{ text: 'Awesome!', style: 'default' }]
       );
     } catch (err) {
-       
       const error = err as Error & { response?: { status: number; data?: { message?: string } } };
       console.error('[CoinShop] Daily claim error:', error);
 

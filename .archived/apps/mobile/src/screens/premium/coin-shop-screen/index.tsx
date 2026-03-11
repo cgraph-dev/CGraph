@@ -90,7 +90,7 @@ function CoinShopScreen(): React.ReactElement {
       </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
