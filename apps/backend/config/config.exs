@@ -113,7 +113,9 @@ config :cgraph, Oban,
        # Clean up abandoned/expired file transfers hourly
        {"0 * * * *", CGraph.Workers.FileCleanupWorker},
        # Pulse reputation decay — daily at 2 AM UTC
-       {"0 2 * * *", CGraph.Workers.PulseDecayWorker}
+       {"0 2 * * *", CGraph.Workers.PulseDecayWorker},
+       # Release held nodes (21+ days) — daily at 3 AM UTC
+       {"0 3 * * *", CGraph.Workers.HeldNodesReleaseWorker}
      ]}
   ],
   queues: [
