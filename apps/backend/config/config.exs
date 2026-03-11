@@ -133,12 +133,17 @@ config :cgraph, Oban,
     email_notifications: 5,
     archival: 1,
     search: 5,
-    critical: 10,
+    critical: 20,
     emails: 5,
     media: 3,
     sync: 5,
     link_previews: 5,
-    rankings: 5
+    rankings: 5,
+    payments: 5,
+    cosmetics: 10,
+    reputation_calc: 5,
+    forum_indexing: 10,
+    unlocks: 10
   ]
 
 # Swoosh mailer configuration
