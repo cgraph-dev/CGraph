@@ -8,7 +8,9 @@
     ".": "./src/index.ts",
     "./api": "./src/api.ts",
     "./models": "./src/models.ts",
-    "./events": "./src/events.ts"
+    "./events": "./src/events.ts",
+    "./rarity": "./src/rarity.ts",
+    "./cosmetics": "./src/cosmetics.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

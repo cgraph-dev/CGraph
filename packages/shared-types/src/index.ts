@@ -3,6 +3,8 @@ export * from './models';
 export * from './api';
 export * from './events';
 export * from './tiers';
+export * from './rarity';
+export * from './cosmetics';
 export * from './notifications';
 export * from './messages';
 export * from './forum-customization';
