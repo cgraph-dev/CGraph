@@ -23,9 +23,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useThemeStore } from '@/stores';
+import { useThemeStore, useDiscoveryStore } from '@/stores';
 import api from '../../lib/api';
 import CommunityCard, { type Community } from './community-card';
+import FrequencyPicker from '../../components/discovery/frequency-picker';
+import TopicSelector from '../../components/discovery/topic-selector';
 
 type ExploreNavigation = NativeStackNavigationProp<{
   Group: { groupId: string };
@@ -39,8 +41,16 @@ const SORT_OPTIONS = [
 ];
 
 const CATEGORIES = [
-  'gaming', 'technology', 'art', 'music', 'education',
-  'programming', 'science', 'social', 'sports', 'entertainment',
+  'gaming',
+  'technology',
+  'art',
+  'music',
+  'education',
+  'programming',
+  'science',
+  'social',
+  'sports',
+  'entertainment',
 ];
 
 /**
@@ -49,6 +59,7 @@ const CATEGORIES = [
 export default function ExploreScreen() {
   const { colors } = useThemeStore();
   const navigation = useNavigation<ExploreNavigation>();
+  const discoveryStore = useDiscoveryStore();
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [category, setCategory] = useState<string | null>(null);
@@ -150,13 +161,13 @@ export default function ExploreScreen() {
     [handleCommunityPress]
   );
 
-  const keyExtractor = useCallback(
-    (item: Community) => `${item.type}-${item.id}`,
-    []
-  );
+  const keyExtractor = useCallback((item: Community) => `${item.type}-${item.id}`, []);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.titleRow}>
@@ -165,7 +176,12 @@ export default function ExploreScreen() {
         </View>
 
         {/* Search bar */}
-        <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.searchBar,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
             value={search}
@@ -199,7 +215,12 @@ export default function ExploreScreen() {
                 : { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 },
             ]}
           >
-            <Text style={[styles.categoryText, { color: category === null ? '#fff' : colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.categoryText,
+                { color: category === null ? '#fff' : colors.textSecondary },
+              ]}
+            >
               All
             </Text>
           </TouchableOpacity>
@@ -217,7 +238,10 @@ export default function ExploreScreen() {
               <Text
                 style={[
                   styles.categoryText,
-                  { color: category === cat ? '#fff' : colors.textSecondary, textTransform: 'capitalize' },
+                  {
+                    color: category === cat ? '#fff' : colors.textSecondary,
+                    textTransform: 'capitalize',
+                  },
                 ]}
               >
                 {cat}
@@ -251,6 +275,25 @@ export default function ExploreScreen() {
           ))}
         </View>
       </View>
+
+      {/* Discovery feed mode selector */}
+      <FrequencyPicker
+        activeMode={discoveryStore.activeMode}
+        onModeChange={(mode) => discoveryStore.setMode(mode)}
+      />
+
+      {/* Topic filter chips */}
+      <TopicSelector
+        topics={discoveryStore.topics}
+        selected={discoveryStore.filters.topics ?? []}
+        onToggle={(topic) => {
+          const current = discoveryStore.filters.topics ?? [];
+          const next = current.includes(topic)
+            ? current.filter((t) => t !== topic)
+            : [...current, topic];
+          discoveryStore.setFilters({ ...discoveryStore.filters, topics: next });
+        }}
+      />
 
       {/* Community list */}
       {isLoading && communities.length === 0 ? (
