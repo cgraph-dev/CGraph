@@ -104,3 +104,6 @@ export interface WithdrawalRequest {
   requested_at: string;
   processed_at?: string;
 }
+
+/** Context in which a tip was sent. */
+export type TipContext = 'dm' | 'profile' | 'forum' | 'post';

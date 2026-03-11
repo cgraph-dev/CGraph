@@ -81,3 +81,8 @@ export {
   IAP,
   BILLING,
 } from './endpoints';
+
+// ---------------------------------------------------------------------------
+// Typed API methods — Nodes
+// ---------------------------------------------------------------------------
+export { getWallet, getTransactions, getBundles, tipUser, unlockContent, withdraw } from './nodes';
