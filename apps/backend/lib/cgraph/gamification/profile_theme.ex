@@ -16,7 +16,16 @@ defmodule CGraph.Gamification.ProfileTheme do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  @presets ~w(minimalist-dark minimalist-light gradient-aurora cyberpunk-neon fantasy-castle space-explorer ocean-deep forest-mystic retro-arcade kawaii-pastel dark-gothic royal-purple nature-zen sunset-warm arctic-frost volcanic-fire galaxy-dream steampunk-brass cherry-blossom neon-city holographic custom)
+
+  # Unified 25-theme set: 5 free + 5 earned + 15 shop
+  # Canonical slugs shared with frontend (profileThemes.ts)
+  @presets ~w(
+    default midnight sakura forest ocean
+    sunset cyber gothic gold arctic
+    aurora neon-city steampunk galaxy volcanic
+    holographic retro-arcade kawaii royal-purple nature-zen
+    minimalist-dark minimalist-light cherry-blossom space-explorer custom
+  )
   @layout_types ~w(minimal compact detailed gaming social creator custom)
   @hover_effects ~w(none scale tilt glow border-animate parallax float)
   @unlock_types ~w(default achievement level purchase event season)
