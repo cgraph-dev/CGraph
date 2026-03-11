@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useSendTip, useNodeWallet } from '../hooks/useNodes';
+import { MIN_TIP } from '@cgraph/shared-types/nodes';
 import toast from 'react-hot-toast';
 
 interface TipModalProps {
@@ -20,10 +21,14 @@ interface TipModalProps {
 
 const PRESETS = [10, 50, 100, 500] as const;
 
-// TODO: import from @cgraph/shared-types/nodes once 34-01 lands
-const MIN_TIP = 10;
-
-export function TipModal({ recipientId, recipientName, isOpen, onClose, context }: TipModalProps) {
+/** Tip modal — lets the user send Nodes to another user. */
+export function TipModal({
+  recipientId,
+  recipientName,
+  isOpen,
+  onClose,
+  context: _context,
+}: TipModalProps) {
   const [amount, setAmount] = useState<number>(PRESETS[0]);
   const [customMode, setCustomMode] = useState(false);
   const { data: wallet } = useNodeWallet();
@@ -38,7 +43,7 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
 
   const handleSend = () => {
     tipMutation.mutate(
-      { recipientId, amount, context },
+      { recipientId, amount },
       {
         onSuccess: () => {
           toast.success(`Tipped \u2115 ${amount} to @${recipientName}`);
@@ -47,16 +52,14 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
         onError: () => {
           toast.error('Tip failed. Please try again.');
         },
-      },
+      }
     );
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-xs rounded-xl border border-zinc-800 bg-zinc-900 p-5 shadow-xl">
-        <h3 className="text-base font-bold text-zinc-100">
-          Tip @{recipientName}
-        </h3>
+        <h3 className="text-base font-bold text-zinc-100">Tip @{recipientName}</h3>
 
         {/* Preset Amounts */}
         <div className="mt-4 grid grid-cols-4 gap-2">
@@ -72,7 +75,7 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
                 'rounded-lg py-2 text-sm font-medium transition-colors',
                 !customMode && amount === preset
                   ? 'bg-purple-600 text-white'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700',
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               )}
             >
               {'\u2115'} {preset}
@@ -86,9 +89,7 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
           onClick={() => setCustomMode(true)}
           className={cn(
             'mt-2 w-full rounded-lg py-2 text-sm font-medium transition-colors',
-            customMode
-              ? 'bg-purple-600 text-white'
-              : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700',
+            customMode ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
           )}
         >
           Custom Amount
@@ -109,10 +110,10 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
 
         {/* Info */}
         <div className="mt-3 space-y-1 text-xs text-zinc-500">
-          <p>Creator receives {'\u2115'} {creatorReceives} (80%)</p>
-          {belowMinimum && (
-            <p className="text-red-400">Minimum tip is {MIN_TIP} Nodes</p>
-          )}
+          <p>
+            Creator receives {'\u2115'} {creatorReceives} (80%)
+          </p>
+          {belowMinimum && <p className="text-red-400">Minimum tip is {MIN_TIP} Nodes</p>}
           <p>
             Your balance: {'\u2115'} {available.toLocaleString()}
             {!canTip && amount >= MIN_TIP && (
@@ -136,7 +137,7 @@ export function TipModal({ recipientId, recipientName, isOpen, onClose, context 
             disabled={!canTip || tipMutation.isPending}
             className={cn(
               'flex-1 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition-colors',
-              'hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500',
+              'hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500'
             )}
           >
             {tipMutation.isPending ? 'Sending…' : `Send \u2115 ${amount}`}
