@@ -14,6 +14,7 @@ import type { AvatarBorderType } from '@/modules/settings/store/customization';
 export const RARITIES: RarityOption[] = [
   { value: 'free', label: 'Free', color: 'text-gray-500' },
   { value: 'common', label: 'Common', color: 'text-gray-400' },
+  { value: 'uncommon', label: 'Uncommon', color: 'text-green-400' },
   { value: 'rare', label: 'Rare', color: 'text-blue-400' },
   { value: 'epic', label: 'Epic', color: 'text-purple-400' },
   { value: 'legendary', label: 'Legendary', color: 'text-yellow-400' },
@@ -65,6 +66,7 @@ export function getRarityColor(rarity: Rarity): string {
   const colors: Record<Rarity, string> = {
     free: 'text-gray-500',
     common: 'text-gray-400',
+    uncommon: 'text-green-400',
     rare: 'text-blue-400',
     epic: 'text-purple-400',
     legendary: 'text-yellow-400',

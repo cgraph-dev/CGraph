@@ -8,7 +8,14 @@
  */
 
 /** Rarity tiers matching the border system */
-export type ProfileEffectRarity = 'FREE' | 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'MYTHICAL';
+export type ProfileEffectRarity =
+  | 'free'
+  | 'common'
+  | 'uncommon'
+  | 'rare'
+  | 'epic'
+  | 'legendary'
+  | 'mythic';
 
 /** A single profile effect entry */
 export interface ProfileEffectEntry {
@@ -36,7 +43,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_none',
     name: 'None',
-    rarity: 'FREE',
+    rarity: 'free',
     free: true,
     lottieFile: null,
     description: 'No effect',
@@ -44,7 +51,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_sparkle',
     name: 'Sparkle',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'effect_sparkle.json',
     description: 'Gentle floating sparkles',
@@ -52,7 +59,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_autumn',
     name: 'Autumn Leaves',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'effect_autumn.json',
     description: 'Drifting autumn leaves',
@@ -60,7 +67,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_snow',
     name: 'Snowfall',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'effect_snow.json',
     description: 'Soft snowflakes falling',
@@ -68,7 +75,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_fireflies',
     name: 'Fireflies',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'effect_fireflies.json',
     description: 'Glowing fireflies drifting',
@@ -76,7 +83,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_sakura_petals',
     name: 'Sakura Drift',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'effect_sakura.json',
     description: 'Cherry blossom petals',
@@ -84,7 +91,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_magician',
     name: 'The Magician',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'effect_magician.json',
     description: 'Arcane energy and spell circles',
@@ -92,7 +99,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_neon_rain',
     name: 'Neon Rain',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'effect_neon_rain.json',
     description: 'Cyberpunk neon drip',
@@ -100,7 +107,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_galaxy_drift',
     name: 'Galaxy Drift',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'effect_galaxy.json',
     description: 'Stars and nebula swirling',
@@ -108,7 +115,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_fire_vortex',
     name: 'Fire Vortex',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'effect_fire_vortex.json',
     description: 'Raging flame tornado',
@@ -116,7 +123,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_divine_light',
     name: 'Divine Light',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'effect_divine.json',
     description: 'Heavenly rays and orbs',
@@ -124,7 +131,7 @@ export const PROFILE_EFFECT_REGISTRY: readonly ProfileEffectEntry[] = [
   {
     id: 'effect_void_rift',
     name: 'Void Rift',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'effect_void_rift.json',
     description: 'Dark dimensional tear',

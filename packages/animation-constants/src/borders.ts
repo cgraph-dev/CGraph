@@ -8,7 +8,14 @@
  */
 
 /** Rarity tier for avatar borders */
-export type BorderRarity = 'FREE' | 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'MYTHIC';
+export type BorderRarity =
+  | 'free'
+  | 'common'
+  | 'uncommon'
+  | 'rare'
+  | 'epic'
+  | 'legendary'
+  | 'mythic';
 
 /** Visual theme for avatar borders */
 export type BorderTheme =
@@ -26,57 +33,61 @@ export type BorderTheme =
 
 /** Fixed hex color arrays per theme */
 export const BORDER_THEME_PALETTES: Record<BorderTheme, readonly string[]> = {
-  '8BIT':            ['#00ff41', '#ff00ff', '#00ffff', '#ffff00'],
-  JAPANESE:          ['#e8105f', '#c0392b', '#1a1a2e', '#f0a500'],
-  ANIME:             ['#ff6b9d', '#c44dff', '#44d4ff', '#fffb87'],
-  CYBERPUNK:         ['#00f5ff', '#ff0055', '#7b2fff', '#1a0a2e'],
-  GOTHIC:            ['#6b21a8', '#1e1e2e', '#dc143c', '#c0c0c0'],
-  KAWAII:            ['#ffb3d9', '#b3ecff', '#ffe4b5', '#c8f7c5'],
-  ELEMENTAL_FIRE:    ['#ff4500', '#ff8c00', '#ffd700'],
-  ELEMENTAL_WATER:   ['#006994', '#00bfff', '#7fffd4'],
-  ELEMENTAL_EARTH:   ['#3d2b1f', '#8b4513', '#228b22'],
-  ELEMENTAL_AIR:     ['#e0f7ff', '#b0e0e6', '#ffffff'],
-  COSMIC:            ['#0d0d2b', '#4b0082', '#7b2fff', '#c0f0ff', '#ffffff'],
+  '8BIT': ['#00ff41', '#ff00ff', '#00ffff', '#ffff00'],
+  JAPANESE: ['#e8105f', '#c0392b', '#1a1a2e', '#f0a500'],
+  ANIME: ['#ff6b9d', '#c44dff', '#44d4ff', '#fffb87'],
+  CYBERPUNK: ['#00f5ff', '#ff0055', '#7b2fff', '#1a0a2e'],
+  GOTHIC: ['#6b21a8', '#1e1e2e', '#dc143c', '#c0c0c0'],
+  KAWAII: ['#ffb3d9', '#b3ecff', '#ffe4b5', '#c8f7c5'],
+  ELEMENTAL_FIRE: ['#ff4500', '#ff8c00', '#ffd700'],
+  ELEMENTAL_WATER: ['#006994', '#00bfff', '#7fffd4'],
+  ELEMENTAL_EARTH: ['#3d2b1f', '#8b4513', '#228b22'],
+  ELEMENTAL_AIR: ['#e0f7ff', '#b0e0e6', '#ffffff'],
+  COSMIC: ['#0d0d2b', '#4b0082', '#7b2fff', '#c0f0ff', '#ffffff'],
 } as const;
 
 /** Outer glow radius per rarity */
 export const BORDER_RARITY_GLOW_RADIUS: Record<BorderRarity, number> = {
-  FREE: 0,
-  COMMON: 0,
-  RARE: 4,
-  EPIC: 8,
-  LEGENDARY: 14,
-  MYTHIC: 22,
+  free: 0,
+  common: 0,
+  uncommon: 2,
+  rare: 4,
+  epic: 8,
+  legendary: 14,
+  mythic: 22,
 } as const;
 
 /** Maximum concurrent animation layers per rarity */
 export const BORDER_RARITY_MAX_ANIMATIONS: Record<BorderRarity, number> = {
-  FREE: 0,
-  COMMON: 0,
-  RARE: 1,
-  EPIC: 2,
-  LEGENDARY: 3,
-  MYTHIC: 4,
+  free: 0,
+  common: 0,
+  uncommon: 0,
+  rare: 1,
+  epic: 2,
+  legendary: 3,
+  mythic: 4,
 } as const;
 
 /** Lottie playback speed per rarity (0 = static, no Lottie) */
 export const BORDER_RARITY_LOTTIE_SPEED: Record<BorderRarity, number> = {
-  FREE: 0,
-  COMMON: 0,
-  RARE: 0.6,
-  EPIC: 0.8,
-  LEGENDARY: 1.0,
-  MYTHIC: 1.3,
+  free: 0,
+  common: 0,
+  uncommon: 0,
+  rare: 0.6,
+  epic: 0.8,
+  legendary: 1.0,
+  mythic: 1.3,
 } as const;
 
 /** Scale multiplier for the outer border container relative to avatar size */
 export const BORDER_RARITY_SCALE: Record<BorderRarity, number> = {
-  FREE: 1.0,
-  COMMON: 1.0,
-  RARE: 1.08,
-  EPIC: 1.12,
-  LEGENDARY: 1.2,
-  MYTHIC: 1.28,
+  free: 1.0,
+  common: 1.0,
+  uncommon: 1.04,
+  rare: 1.08,
+  epic: 1.12,
+  legendary: 1.2,
+  mythic: 1.28,
 } as const;
 
 /** Particle shape used by border overlay effects */
@@ -123,7 +134,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_8bit_free_01',
     name: 'Pixel Ring',
-    rarity: 'FREE',
+    rarity: 'free',
     theme: '8BIT',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -132,7 +143,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_kawaii_free_01',
     name: 'Pastel Circle',
-    rarity: 'FREE',
+    rarity: 'free',
     theme: 'KAWAII',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -141,7 +152,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_water_free_01',
     name: 'Calm Ripple',
-    rarity: 'FREE',
+    rarity: 'free',
     theme: 'ELEMENTAL_WATER',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -150,7 +161,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_gothic_free_01',
     name: 'Iron Band',
-    rarity: 'FREE',
+    rarity: 'free',
     theme: 'GOTHIC',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -161,7 +172,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_anime_common_01',
     name: 'Soft Glow',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'ANIME',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -170,7 +181,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cyberpunk_common_01',
     name: 'Neon Trace',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'CYBERPUNK',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -179,7 +190,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_japanese_common_01',
     name: 'Ink Stroke',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'JAPANESE',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -188,7 +199,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_fire_common_01',
     name: 'Warm Ember',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'ELEMENTAL_FIRE',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -197,7 +208,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_earth_common_01',
     name: 'Moss Ring',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'ELEMENTAL_EARTH',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -206,7 +217,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_air_common_01',
     name: 'Breeze Halo',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'ELEMENTAL_AIR',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -215,7 +226,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cosmic_common_01',
     name: 'Starlight Band',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'COSMIC',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -224,7 +235,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_gothic_common_01',
     name: 'Silver Chain',
-    rarity: 'COMMON',
+    rarity: 'common',
     theme: 'GOTHIC',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -235,7 +246,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_8bit_rare_01',
     name: 'Retro Spinner',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: '8BIT',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -244,7 +255,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_anime_rare_01',
     name: 'Sakura Drift',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'ANIME',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -253,7 +264,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cyberpunk_rare_01',
     name: 'Circuit Loop',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'CYBERPUNK',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -262,7 +273,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_japanese_rare_01',
     name: 'Torii Gate',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'JAPANESE',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -271,7 +282,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_gothic_rare_01',
     name: 'Crimson Thorn',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'GOTHIC',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -280,7 +291,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_kawaii_rare_01',
     name: 'Rainbow Ribbon',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'KAWAII',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -289,7 +300,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_fire_rare_01',
     name: 'Flame Wheel',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'ELEMENTAL_FIRE',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -298,7 +309,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_water_rare_01',
     name: 'Tide Ring',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'ELEMENTAL_WATER',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -307,7 +318,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_earth_rare_01',
     name: 'Root Braid',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'ELEMENTAL_EARTH',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -316,7 +327,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cosmic_rare_01',
     name: 'Nebula Arc',
-    rarity: 'RARE',
+    rarity: 'rare',
     theme: 'COSMIC',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -327,7 +338,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_8bit_epic_01',
     name: 'Glitch Frame',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: '8BIT',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -336,7 +347,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_anime_epic_01',
     name: 'Spirit Flame',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'ANIME',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -345,7 +356,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cyberpunk_epic_01',
     name: 'Holo Grid',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'CYBERPUNK',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -354,7 +365,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_japanese_epic_01',
     name: 'Dragon Scale',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'JAPANESE',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -363,7 +374,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_kawaii_epic_01',
     name: 'Sugar Rush',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'KAWAII',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -372,7 +383,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_fire_epic_01',
     name: 'Inferno Ring',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'ELEMENTAL_FIRE',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -381,7 +392,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_air_epic_01',
     name: 'Storm Vortex',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'ELEMENTAL_AIR',
     rotationDirection: 'cw',
     particleShape: 'none',
@@ -390,7 +401,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cosmic_epic_01',
     name: 'Void Gate',
-    rarity: 'EPIC',
+    rarity: 'epic',
     theme: 'COSMIC',
     rotationDirection: 'ccw',
     particleShape: 'none',
@@ -401,7 +412,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_8bit_legendary_01',
     name: 'Arcade Champion',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: '8BIT',
     rotationDirection: 'cw',
     particleShape: 'orb',
@@ -410,7 +421,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_anime_legendary_01',
     name: 'Super Saiyan',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'ANIME',
     rotationDirection: 'ccw',
     particleShape: 'spark',
@@ -419,7 +430,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cyberpunk_legendary_01',
     name: 'Netrunner',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'CYBERPUNK',
     rotationDirection: 'cw',
     particleShape: 'diamond',
@@ -428,7 +439,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_japanese_legendary_01',
     name: 'Shogun Crest',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'JAPANESE',
     rotationDirection: 'ccw',
     particleShape: 'orb',
@@ -437,7 +448,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_gothic_legendary_01',
     name: 'Blood Moon',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'GOTHIC',
     rotationDirection: 'cw',
     particleShape: 'spark',
@@ -446,7 +457,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_water_legendary_01',
     name: 'Maelstrom',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'ELEMENTAL_WATER',
     rotationDirection: 'ccw',
     particleShape: 'orb',
@@ -455,7 +466,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_earth_legendary_01',
     name: 'World Tree',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'ELEMENTAL_EARTH',
     rotationDirection: 'cw',
     particleShape: 'diamond',
@@ -464,7 +475,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cosmic_legendary_01',
     name: 'Supernova',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     theme: 'COSMIC',
     rotationDirection: 'ccw',
     particleShape: 'spark',
@@ -475,7 +486,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cyberpunk_mythic_01',
     name: 'Digital Ascension',
-    rarity: 'MYTHIC',
+    rarity: 'mythic',
     theme: 'CYBERPUNK',
     rotationDirection: 'cw',
     particleShape: 'spark',
@@ -484,7 +495,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_cosmic_mythic_01',
     name: 'Event Horizon',
-    rarity: 'MYTHIC',
+    rarity: 'mythic',
     theme: 'COSMIC',
     rotationDirection: 'ccw',
     particleShape: 'diamond',
@@ -493,7 +504,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_elemental_fire_mythic_01',
     name: 'Phoenix Rebirth',
-    rarity: 'MYTHIC',
+    rarity: 'mythic',
     theme: 'ELEMENTAL_FIRE',
     rotationDirection: 'cw',
     particleShape: 'spark',
@@ -502,7 +513,7 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
   {
     id: 'border_anime_mythic_01',
     name: 'Kami Mode',
-    rarity: 'MYTHIC',
+    rarity: 'mythic',
     theme: 'ANIME',
     rotationDirection: 'ccw',
     particleShape: 'diamond',

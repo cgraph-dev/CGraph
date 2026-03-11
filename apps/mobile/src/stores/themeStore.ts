@@ -161,6 +161,7 @@ export const lightColors = {
 
   // Gamification / Rarity colors
   rarity: {
+    free: '#6b7280',
     common: '#6b7280',
     uncommon: '#22c55e',
     rare: '#3b82f6',
@@ -287,6 +288,7 @@ export const darkColors = {
 
   // Gamification / Rarity colors
   rarity: {
+    free: '#9ca3af',
     common: '#9ca3af',
     uncommon: '#4ade80',
     rare: '#60a5fa',

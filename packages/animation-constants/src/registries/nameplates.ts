@@ -18,7 +18,14 @@
  */
 
 /** Rarity tiers matching the global system */
-export type NameplateRarity = 'FREE' | 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'MYTHICAL';
+export type NameplateRarity =
+  | 'free'
+  | 'common'
+  | 'uncommon'
+  | 'rare'
+  | 'epic'
+  | 'legendary'
+  | 'mythic';
 
 /** Text effect applied to the username on this nameplate */
 export type NameplateTextEffect =
@@ -48,13 +55,7 @@ export type NameplateParticleType =
   | 'mist';
 
 /** Border style around the nameplate bar */
-export type NameplateBorderStyle =
-  | 'none'
-  | 'solid'
-  | 'gradient'
-  | 'animated'
-  | 'double'
-  | 'glow';
+export type NameplateBorderStyle = 'none' | 'solid' | 'gradient' | 'animated' | 'double' | 'glow';
 
 /** A single nameplate entry */
 export interface NameplateEntry {
@@ -101,7 +102,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_none',
     name: 'None',
-    rarity: 'FREE',
+    rarity: 'free',
     free: true,
     lottieFile: null,
     textColor: '#ffffff',
@@ -118,7 +119,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_simple_dark',
     name: 'Shadow',
-    rarity: 'FREE',
+    rarity: 'free',
     free: true,
     lottieFile: 'plate_shadow.json',
     textColor: '#ffffff',
@@ -135,7 +136,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_starter',
     name: 'Starter',
-    rarity: 'FREE',
+    rarity: 'free',
     free: true,
     lottieFile: null,
     textColor: '#e2e8f0',
@@ -153,7 +154,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_gold_shimmer',
     name: 'Gold',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'plate_gold.json',
     textColor: '#1a1a1a',
@@ -170,7 +171,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_sakura',
     name: 'Sakura',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'plate_sakura.json',
     textColor: '#4a0020',
@@ -187,7 +188,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_ocean_wave',
     name: 'Ocean Wave',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'plate_ocean.json',
     textColor: '#ffffff',
@@ -204,7 +205,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_silver',
     name: 'Silver',
-    rarity: 'COMMON',
+    rarity: 'common',
     free: false,
     lottieFile: 'plate_silver.json',
     textColor: '#1a1a2e',
@@ -222,7 +223,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_cyber_bar',
     name: 'Cyber Bar',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'plate_cyber.json',
     textColor: '#00f5ff',
@@ -239,7 +240,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_fire',
     name: 'Flame',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'plate_fire.json',
     textColor: '#ffffff',
@@ -256,7 +257,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_galaxy',
     name: 'Galaxy',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'plate_galaxy.json',
     textColor: '#ffffff',
@@ -273,7 +274,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_frost',
     name: 'Frost',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'plate_frost.json',
     textColor: '#e0f2fe',
@@ -290,7 +291,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_forest_spirit',
     name: 'Forest Spirit',
-    rarity: 'RARE',
+    rarity: 'rare',
     free: false,
     lottieFile: 'plate_forest.json',
     textColor: '#d1fae5',
@@ -308,7 +309,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_hearts',
     name: 'Love',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'plate_hearts.json',
     textColor: '#ffffff',
@@ -325,7 +326,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_void',
     name: 'Void',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'plate_void.json',
     textColor: '#c0f0ff',
@@ -342,7 +343,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_aurora',
     name: 'Aurora Borealis',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'plate_aurora.json',
     textColor: '#ffffff',
@@ -359,7 +360,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_thunder',
     name: 'Thunder',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'plate_thunder.json',
     textColor: '#fef08a',
@@ -376,7 +377,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_blood_moon',
     name: 'Blood Moon',
-    rarity: 'EPIC',
+    rarity: 'epic',
     free: false,
     lottieFile: 'plate_blood_moon.json',
     textColor: '#fca5a5',
@@ -394,7 +395,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_divine',
     name: 'Divine',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'plate_divine.json',
     textColor: '#ffd700',
@@ -411,7 +412,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_phoenix',
     name: 'Phoenix',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'plate_phoenix.json',
     textColor: '#fef3c7',
@@ -428,7 +429,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_dragon_scale',
     name: 'Dragon Scale',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'plate_dragon.json',
     textColor: '#fde68a',
@@ -445,7 +446,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_eternal_frost',
     name: 'Eternal Frost',
-    rarity: 'LEGENDARY',
+    rarity: 'legendary',
     free: false,
     lottieFile: 'plate_eternal_frost.json',
     textColor: '#e0f2fe',
@@ -459,11 +460,11 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
     borderColor: '#06b6d4',
     category: 'elemental',
   },
-  // ─── MYTHICAL ──────────────────────────────────────
+  // ─── MYTHIC ────────────────────────────────────────
   {
     id: 'plate_cosmic_sovereign',
     name: 'Cosmic Sovereign',
-    rarity: 'MYTHICAL',
+    rarity: 'mythic',
     free: false,
     lottieFile: 'plate_cosmic_sovereign.json',
     textColor: '#ffffff',
@@ -480,7 +481,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_inferno_lord',
     name: 'Inferno Lord',
-    rarity: 'MYTHICAL',
+    rarity: 'mythic',
     free: false,
     lottieFile: 'plate_inferno_lord.json',
     textColor: '#fef3c7',
@@ -497,7 +498,7 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
   {
     id: 'plate_void_emperor',
     name: 'Void Emperor',
-    rarity: 'MYTHICAL',
+    rarity: 'mythic',
     free: false,
     lottieFile: 'plate_void_emperor.json',
     textColor: '#c4b5fd',
@@ -515,8 +516,17 @@ export const NAMEPLATE_REGISTRY: readonly NameplateEntry[] = [
 
 /** All available nameplate categories for filtering */
 export const NAMEPLATE_CATEGORIES = [
-  'all', 'basic', 'metallic', 'nature', 'cyberpunk',
-  'elemental', 'cosmic', 'fantasy', 'dark', 'divine', 'mythical',
+  'all',
+  'basic',
+  'metallic',
+  'nature',
+  'cyberpunk',
+  'elemental',
+  'cosmic',
+  'fantasy',
+  'dark',
+  'divine',
+  'mythical',
 ] as const;
 export type NameplateCategory = (typeof NAMEPLATE_CATEGORIES)[number];
 
