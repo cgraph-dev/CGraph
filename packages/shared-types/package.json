@@ -10,7 +10,9 @@
     "./models": "./src/models.ts",
     "./events": "./src/events.ts",
     "./rarity": "./src/rarity.ts",
-    "./cosmetics": "./src/cosmetics.ts"
+    "./cosmetics": "./src/cosmetics.ts",
+    "./nodes": "./src/nodes.ts",
+    "./forums": "./src/forums.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

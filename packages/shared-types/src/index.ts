@@ -11,6 +11,10 @@ export * from './forum-customization';
 export * from './forum-leaderboard';
 export * from './forum-permissions';
 export * from './forum-user-groups';
+export * from './forum-emoji';
+export * from './forum-moderation';
+export * from './forum-plugin';
+export * from './forum-rss';
 export {
   type SubscriptionTier,
   type SubscriptionStatus,
