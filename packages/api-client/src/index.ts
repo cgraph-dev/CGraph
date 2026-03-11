@@ -37,3 +37,47 @@ export type {
 export { createApiClient } from './client';
 
 export type { ApiClientConfig, ApiClient, ApiRequestOptions } from './client';
+
+// ---------------------------------------------------------------------------
+// Typed endpoint constants
+// ---------------------------------------------------------------------------
+export type { HttpVerb, EndpointDef } from './endpoints';
+export {
+  HEALTH,
+  WEBHOOKS,
+  TELEMETRY,
+  AUTH,
+  OAUTH,
+  WALLET_AUTH,
+  TWO_FACTOR,
+  TIERS,
+  EXPLORE,
+  ME,
+  SETTINGS,
+  USERS,
+  CONVERSATIONS,
+  MESSAGES,
+  GROUPS,
+  INVITES,
+  NODES,
+  SHOP,
+  AVATAR_BORDERS,
+  PROFILE_THEMES,
+  CHAT_EFFECTS,
+  FORUMS,
+  POSTS,
+  PULSE,
+  DISCOVERY,
+  CREATOR,
+  AI,
+  SYNC,
+  ANIMATIONS,
+  SEARCH,
+  NOTIFICATIONS,
+  FRIENDS,
+  TITLES,
+  ACHIEVEMENTS,
+  PREMIUM,
+  IAP,
+  BILLING,
+} from './endpoints';
