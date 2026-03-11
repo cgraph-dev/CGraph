@@ -120,4 +120,17 @@ defmodule CGraphWeb.CosmeticsController.Serializers do
       }
     }
   end
+
+  @doc "Serialize a unified inventory item."
+  @spec serialize_inventory_item(term()) :: map()
+  def serialize_inventory_item(item) do
+    %{
+      id: item.id,
+      itemType: item.item_type,
+      itemId: item.item_id,
+      equippedAt: item.equipped_at,
+      obtainedAt: item.obtained_at,
+      obtainedVia: item.obtained_via
+    }
+  end
 end

@@ -25,8 +25,10 @@ defmodule CGraphWeb.CosmeticsController do
   use CGraphWeb, :controller
 
   import Ecto.Query, warn: false
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Accounts
+  alias CGraph.Cosmetics
   alias CGraph.Customizations
   alias CGraph.Gamification
   alias CGraph.Gamification.{AvatarBorder, ChatEffect, ProfileTheme, UserAvatarBorder, UserChatEffect, UserProfileTheme}
@@ -409,6 +411,79 @@ defmodule CGraphWeb.CosmeticsController do
           end
         end
     end
+  end
+
+  # ==================== UNIFIED INVENTORY ====================
+
+  @doc """
+  GET /api/v1/cosmetics/inventory
+  Lists all cosmetic items in the current user's inventory.
+  Accepts optional `item_type` query param for filtering.
+  """
+  @spec inventory(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def inventory(conn, params) do
+    user = conn.assigns.current_user
+    opts = if params["item_type"], do: [item_type: params["item_type"]], else: []
+    items = Cosmetics.list_user_inventory(user.id, opts)
+
+    render_data(conn, %{
+      items: Enum.map(items, &serialize_inventory_item/1),
+      total: length(items)
+    })
+  end
+
+  @doc """
+  PUT /api/v1/cosmetics/equip
+  Equips a cosmetic item. Expects `item_type` and `item_id` in body.
+  """
+  @spec equip(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def equip(conn, %{"item_type" => item_type, "item_id" => item_id}) do
+    user = conn.assigns.current_user
+
+    case Cosmetics.equip_item(user.id, item_type, item_id) do
+      {:ok, entry} ->
+        render_data(conn, %{equipped: serialize_inventory_item(entry)})
+
+      {:error, :not_owned} ->
+        render_error(conn, :forbidden, "Item not owned")
+
+      {:error, :already_equipped} ->
+        render_error(conn, :conflict, "Item already equipped")
+
+      {:error, reason} ->
+        render_error(conn, :bad_request, to_string(reason))
+    end
+  end
+
+  def equip(conn, _params) do
+    render_error(conn, :unprocessable_entity, "item_type and item_id are required")
+  end
+
+  @doc """
+  DELETE /api/v1/cosmetics/unequip
+  Unequips a cosmetic item. Expects `item_type` and `item_id` in body.
+  """
+  @spec unequip(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def unequip(conn, %{"item_type" => item_type, "item_id" => item_id}) do
+    user = conn.assigns.current_user
+
+    case Cosmetics.unequip_item(user.id, item_type, item_id) do
+      {:ok, entry} ->
+        render_data(conn, %{unequipped: serialize_inventory_item(entry)})
+
+      {:error, :not_owned} ->
+        render_error(conn, :forbidden, "Item not owned")
+
+      {:error, :not_equipped} ->
+        render_error(conn, :conflict, "Item not equipped")
+
+      {:error, reason} ->
+        render_error(conn, :bad_request, to_string(reason))
+    end
+  end
+
+  def unequip(conn, _params) do
+    render_error(conn, :unprocessable_entity, "item_type and item_id are required")
   end
 
   # ==================== PRIVATE HELPERS ====================
