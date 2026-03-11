@@ -1,6 +1,6 @@
 # CGraph Directory Structure
 
-> Generated: 2026-03-11 | Version: 1.1.0
+> Generated: 2026-03-11 | Version: 1.2.0 (audited)
 
 ## 1. Top-Level Layout
 
@@ -98,24 +98,20 @@ apps/backend/
 │   │   │   │   ├── subscription_controller.ex
 │   │   │   │   └── username_controller.ex
 │   │   │   ├── admin/             # Admin dashboard controllers
+│   │   │   │   └── events_helpers.ex  # Admin event helpers
 │   │   │   ├── fallback_controller.ex  # Standardized error responses
 │   │   │   ├── changeset_json.ex      # Ecto changeset error rendering
 │   │   │   ├── error_json.ex          # Error JSON views
 │   │   │   ├── health_controller.ex   # Health check endpoint
 │   │   │   ├── stripe_webhook_controller.ex
-│   │   │   ├── coin_shop_controller.ex    # Coin shop
-│   │   │   ├── coins_controller.ex / coins_json.ex  # Coins
 │   │   │   ├── cosmetics_controller.ex / cosmetics_controller/ # Cosmetics
 │   │   │   ├── customization_json.ex      # Customization views
-│   │   │   ├── events_controller.ex / events_controller/  # Events
 │   │   │   ├── friend_controller.ex       # Friend operations
 │   │   │   ├── gamification_controller.ex / gamification_json.ex
 │   │   │   ├── iap_controller.ex          # In-app purchases
-│   │   │   ├── marketplace_controller.ex / marketplace_controller/
 │   │   │   ├── metrics_controller.ex      # Metrics endpoint
+│   │   │   ├── nodes_controller.ex / nodes_json.ex  # Nodes economy
 │   │   │   ├── premium_controller.ex      # Premium features
-│   │   │   ├── prestige_controller.ex     # Prestige system
-│   │   │   ├── quest_controller.ex / quest_json.ex
 │   │   │   ├── settings_controller.ex     # Settings
 │   │   │   ├── shop_controller.ex / shop_json.ex
 │   │   │   ├── title_controller.ex / title_json.ex
@@ -268,26 +264,23 @@ apps/backend/
 │   │   │
 │   │   ├── gamification/              # Gamification context (DEPRECATED — stub-only)
 │   │   │   ├── achievement.ex         # Achievement schema (retained for data migration)
-│   │   │   ├── quest.ex              # Quest schema (retained for data migration)
-│   │   │   ├── shop_item.ex          # Shop item schema
-│   │   │   ├── marketplace_item.ex   # Marketplace item schema
-│   │   │   ├── coin_transaction.ex   # Virtual currency transactions
-│   │   │   ├── xp_transaction.ex     # XP transactions
-│   │   │   ├── title.ex              # User title schema
-│   │   │   ├── avatar_border.ex      # Avatar border schema
-│   │   │   ├── chat_effect.ex        # Chat effect schema
-│   │   │   ├── seasonal_event.ex     # Seasonal event schema
-│   │   │   ├── battle_pass_tier.ex   # Battle pass schema
-│   │   │   ├── achievement_system.ex # Achievement logic (stub)
-│   │   │   ├── quest_system.ex       # Quest logic (stub)
-│   │   │   ├── currency_system.ex    # Economy logic (stub)
-│   │   │   ├── leaderboard_system.ex # Leaderboard logic (stub)
-│   │   │   ├── marketplace.ex        # Marketplace logic (stub)
-│   │   │   ├── event_system.ex       # Event logic (stub)
-│   │   │   ├── title_shop_system.ex  # Title shop logic (stub)
-│   │   │   ├── events/               # Event sub-modules
-│   │   │   ├── repositories/         # Data access layer
-│   │   │   └── ... (34 entries total — schemas retained, systems stubbed)
+│   │   │   ├── achievement_system.ex  # Achievement logic (stub)
+│   │   │   ├── achievement_triggers.ex # Achievement trigger definitions
+│   │   │   ├── avatar_border.ex       # Avatar border schema
+│   │   │   ├── chat_effect.ex         # Chat effect schema
+│   │   │   ├── profile_theme.ex       # Profile theme schema
+│   │   │   ├── repositories.ex        # Repository facade
+│   │   │   ├── repositories/          # Data access layer
+│   │   │   │   └── achievement_repository.ex
+│   │   │   ├── shop_item.ex           # Shop item schema
+│   │   │   ├── title.ex               # User title schema
+│   │   │   ├── title_shop_system.ex   # Title shop logic (stub)
+│   │   │   ├── user_achievement.ex    # User achievement join schema
+│   │   │   ├── user_avatar_border.ex  # User avatar border join schema
+│   │   │   ├── user_chat_effect.ex    # User chat effect join schema
+│   │   │   ├── user_profile_theme.ex  # User profile theme join schema
+│   │   │   ├── user_purchase.ex       # User purchase schema
+│   │   │   └── user_title.ex          # User title join schema
 │   │   ├── gamification.ex            # Gamification context facade (stub — returns empty/noop)
 │   │   │
 │   │   ├── nodes/                     # Nodes Economy context (NEW)
@@ -325,8 +318,10 @@ apps/backend/
 │   │   │
 │   │   ├── notifications/             # Notifications context
 │   │   │   ├── notification.ex        # Schema
+│   │   │   ├── notification_preference.ex # User notification preference schema
 │   │   │   ├── notifications.ex       # CRUD
 │   │   │   ├── delivery.ex           # Delivery logic
+│   │   │   ├── preferences.ex        # Notification preferences logic
 │   │   │   ├── push_service/         # Push notification service
 │   │   │   ├── push_service.ex       # Push notification top-level module
 │   │   │   ├── push_tokens.ex        # Device push token management
@@ -364,7 +359,12 @@ apps/backend/
 │   │   │   ├── participant.ex        # Call participant schema
 │   │   │   ├── calls.ex              # Call operations
 │   │   │   ├── call_history.ex       # Call history tracking
-│   │   │   └── room_utils.ex         # Room utilities
+│   │   │   ├── call_encryption.ex    # Call encryption utilities
+│   │   │   ├── call_quality.ex       # Call quality monitoring
+│   │   │   ├── livekit.ex            # LiveKit integration
+│   │   │   ├── livekit_token.ex      # LiveKit token generation
+│   │   │   ├── room_utils.ex         # Room utilities
+│   │   │   └── voice_channel_manager.ex # Voice channel management
 │   │   │
 │   │   ├── auth/                      # Auth utilities
 │   │   │   ├── token_manager/        # JWT token lifecycle management
@@ -401,6 +401,9 @@ apps/backend/
 │   │   │   ├── reports.ex            # Reports context
 │   │   │   ├── appeal.ex             # Appeal schema
 │   │   │   ├── appeals.ex            # Appeals context
+│   │   │   ├── audit_log.ex          # Audit log schema
+│   │   │   ├── audit_logs.ex         # Audit logs context
+│   │   │   ├── auto_action.ex        # Automatic moderation actions
 │   │   │   ├── enforcement.ex        # Enforcement actions
 │   │   │   ├── review_action.ex      # Review action schema
 │   │   │   ├── user_restriction.ex   # User restrictions
@@ -414,13 +417,11 @@ apps/backend/
 │   │   │   ├── messages.ex           # Message search
 │   │   │   └── users.ex             # User search
 │   │   │
-│   │   ├── workers/                   # Oban background workers (28 workers)
+│   │   ├── workers/                   # Oban background workers (30 workers)
 │   │   │   ├── notification_worker.ex
 │   │   │   ├── scheduled_message_worker.ex
 │   │   │   ├── search_index_worker.ex
 │   │   │   ├── message_archival_worker.ex
-│   │   │   ├── leaderboard_warm.ex
-│   │   │   ├── event_reward_distributor.ex
 │   │   │   ├── cleanup_worker.ex
 │   │   │   ├── database_backup.ex
 │   │   │   ├── webhook_delivery_worker.ex
@@ -432,7 +433,11 @@ apps/backend/
 │   │   │   ├── ranking_update_worker.ex # Forum ranking updates
 │   │   │   ├── status_expiry_worker.ex # User status expiry
 │   │   │   ├── orchestrator/          # Multi-step job orchestrator
-│   │   │   └── ... (email, push, dead letter, partition manager, critical alert)
+│   │   │   └── ... (plus: base, critical_alert_dispatcher, dead_letter, delete_expired_messages,
+│   │   │         delete_expired_secret_messages, document_compaction, email_digest,
+│   │   │         expire_secret_conversations, file_cleanup, notification_retry,
+│   │   │         partition_manager, pulse_decay, send_email_notification,
+│   │   │         send_push_notification, send_scheduled_message)
 │   │   │
 │   │   ├── supervisors/               # OTP supervisors
 │   │   │   ├── cache_supervisor.ex    # Cache service supervision
@@ -456,6 +461,7 @@ apps/backend/
 │   │   ├── presence/                  # Online presence tracking
 │   │   │   ├── tracker.ex            # Presence tracker
 │   │   │   ├── store.ex              # Presence store
+│   │   │   ├── ghost_mode.ex         # Ghost mode (invisible presence)
 │   │   │   ├── sampled.ex            # Sampled presence module
 │   │   │   ├── sampled/              # Sampled presence for scale
 │   │   │   └── queries.ex            # Presence queries
@@ -512,15 +518,11 @@ apps/backend/
 │   │   │   ├── paid_forum_subscription.ex # Paid forum subscriptions
 │   │   │   ├── paid_subscription.ex  # Paid subscriptions
 │   │   │   └── payout.ex             # Payout logic
-│   │   ├── shop/                      # Coin shop context
-│   │   │   ├── coin_bundles.ex       # Coin bundle definitions
-│   │   │   ├── coin_checkout.ex      # Coin checkout logic
-│   │   │   └── coin_purchase.ex      # Coin purchase processing
+│   │   ├── shop/                      # Coin shop context (empty — pending implementation)
 │   │   ├── cluster/                   # Cluster management
 │   │   │   └── connection_monitor.ex  # Cluster connection monitoring
 │   │   ├── explore.ex                 # Explore/discovery feature
 │   │   ├── themes.ex                  # Theme management
-│   │   ├── marketplace.ex             # Marketplace facade
 │   │   ├── release.ex                 # Release tasks (migrations, seeds)
 │   │   ├── ... (many contexts also have companion .ex facade files, e.g. accounts.ex, messaging.ex, etc.)
 │   │   ├── services/registry/         # Service registry
@@ -535,7 +537,7 @@ apps/backend/
 │
 ├── priv/
 │   ├── repo/
-│   │   ├── migrations/                # 90+ Ecto migrations (2024-12 to 2026-02)
+│   │   ├── migrations/                # 135+ Ecto migrations (2024-12 to 2026-07)
 │   │   │   ├── 20241201000001_create_users.exs
 │   │   │   ├── 20241201000003_create_conversations_and_messages.exs
 │   │   │   ├── 20241201000004_create_groups.exs
@@ -544,7 +546,7 @@ apps/backend/
 │   │   │   ├── 20260213000001_partition_messages_table.exs
 │   │   │   ├── 20260220000001_create_e2ee_kyber_prekeys.exs
 │   │   │   ├── 20260220120000_create_collaboration_documents.exs
-│   │   │   └── ... (90+ migration files total)
+│   │   │   └── ... (135+ migration files total)
 │   │   ├── seeds.exs                  # Database seed script
 │   │   └── seeds/                     # Seed data modules
 │   └── static/                        # Static assets served by Phoenix
@@ -857,8 +859,7 @@ apps/web/
 ├── playwright/                        # Playwright utilities
 ├── public/                            # Public static files
 ├── .storybook/                        # Storybook configuration
-├── scripts/                           # Web-specific scripts
-└── docs/                              # Web-specific documentation
+└── scripts/                           # Web-specific scripts
 ```
 
 ---
@@ -1088,7 +1089,7 @@ src/
 ├── forum-plugin.ts         # Forum plugin types
 ├── forum-rss.ts            # Forum RSS types
 ├── forum-user-groups.ts    # Forum user group types
-├── gamification.ts         # Gamification types
+├── achievements.ts     # Achievement/gamification types
 ├── messages.ts             # Message types
 ├── models.ts      # Domain model interfaces (User, Message, Group, etc.)
 ├── notifications.ts  # Notification types
@@ -1162,8 +1163,13 @@ src/
 ```
 src/
 ├── index.ts       # Main exports
+├── backgrounds.ts # Background animation constants
+├── borders.ts     # Border animation constants
+├── buttons.ts     # Button animation constants
 ├── durations.ts   # Animation duration constants
 ├── easings.ts     # Easing function constants
+├── layout-ids.ts  # Layout ID constants
+├── registries/    # Animation registries
 ├── springs.ts     # Spring physics constants
 ├── stagger.ts     # Stagger timing constants
 └── transitions.ts # Transition constants
@@ -1305,13 +1311,19 @@ docs/
 ├── QUERY_PERFORMANCE_AUDIT.md         # Query performance analysis
 ├── DATABASE_SHARDING_ROADMAP.md       # Sharding strategy
 │
+├── COMPONENTS.md                      # Component documentation
+├── CUSTOMIZATION_SYSTEM.md            # Customization system docs
+├── GAMIFICATION_SYSTEM.md             # Gamification system docs
+├── API_CONTRACTS.md                   # API contract definitions
+├── PARITY_AUDIT.md                    # Feature parity audit
+│
 ├── OPERATIONAL_RUNBOOKS.md            # Ops runbooks
 ├── OPERATIONAL_MATURITY_REGISTRY.md   # Ops maturity tracking
 ├── SLO_DOCUMENT.md                    # Service level objectives
 ├── LOAD_TEST_RESULTS.md               # Load testing results
 ├── WORLD_CLASS_GAP_ANALYSIS.md        # Gap analysis
 │
-├── release-notes/                     # Release notes
+├── design/                            # Design documentation
 ├── archive/                           # Archived documentation
 ├── assets/                            # Documentation assets
 ├── LEGAL/                             # Legal documentation
@@ -1337,6 +1349,7 @@ scripts/
 ├── fix-remaining-errors.mjs          # Fix remaining TS errors
 ├── fix-jsdoc-desc.mjs                # Fix JSDoc descriptions
 ├── clean-jsdoc-directives.mjs        # Clean JSDoc directives
+├── generate-lottie-borders.mjs       # Generate Lottie border definitions
 ├── rename-to-kebab.mjs               # Rename files to kebab-case
 ├── rename-dirs-to-kebab.mjs          # Rename directories to kebab-case
 ├── codemod-react-fc.py               # Convert React.FC patterns (Python)
@@ -1378,13 +1391,13 @@ scripts/
 
 ### Schema & Migration Files
 
-| Path                                           | Description              |
-| ---------------------------------------------- | ------------------------ |
-| `apps/backend/priv/repo/migrations/`           | 90+ Ecto migration files |
-| `apps/backend/lib/cgraph/accounts/user.ex`     | User schema              |
-| `apps/backend/lib/cgraph/messaging/message.ex` | Message schema           |
-| `apps/backend/lib/cgraph/groups/group.ex`      | Group schema             |
-| `apps/backend/lib/cgraph/forums/forum.ex`      | Forum schema             |
+| Path                                           | Description               |
+| ---------------------------------------------- | ------------------------- |
+| `apps/backend/priv/repo/migrations/`           | 135+ Ecto migration files |
+| `apps/backend/lib/cgraph/accounts/user.ex`     | User schema               |
+| `apps/backend/lib/cgraph/messaging/message.ex` | Message schema            |
+| `apps/backend/lib/cgraph/groups/group.ex`      | Group schema              |
+| `apps/backend/lib/cgraph/forums/forum.ex`      | Forum schema              |
 
 ### Router & API Definitions
 

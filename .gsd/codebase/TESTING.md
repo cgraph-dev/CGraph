@@ -89,7 +89,9 @@ apps/web/e2e/                 # Playwright E2E tests
 ├── navigation.spec.ts
 ├── groups-forums.spec.ts
 ├── premium.spec.ts
-└── accessibility.spec.ts
+├── accessibility.spec.ts
+├── phase26-verification.spec.ts
+└── phase27-verification.spec.ts
 
 apps/mobile/src/
 ├── test/
@@ -366,7 +368,7 @@ apps/backend/test/
 │   ├── factory.ex            # ExMachina factory (937 lines, all domain entities)
 │   ├── fixtures.ex           # Legacy fixtures module (UserFixtures, etc.)
 │   └── aliases.ex            # Shared aliases
-├── cgraph/                   # Context/domain unit tests (~70 test files)
+├── cgraph/                   # Context/domain unit tests (~111 test files)
 │   ├── accounts_test.exs
 │   ├── messaging/
 │   ├── forums/
@@ -375,7 +377,7 @@ apps/backend/test/
 │   ├── performance/
 │   └── ...
 ├── cgraph_web/               # Web layer tests
-│   ├── controllers/          # Controller tests (~20 files + admin/ + api/ subdirs)
+│   ├── controllers/          # Controller tests (~18 files + admin/ + api/ subdirs, ~90 total)
 │   ├── channels/             # Channel tests
 │   └── plugs/                # Plug tests
 └── integration/              # Integration tests (E2EE, real-time messaging, etc.)
@@ -643,17 +645,17 @@ test.describe('Authentication Flows', () => {
 
 ### E2E Test Files
 
-| File                    | Coverage                                |
-| ----------------------- | --------------------------------------- |
-| `auth.setup.ts`         | Authentication fixture                  |
-| `auth.spec.ts`          | Login, register, logout, password reset |
-| `messaging.spec.ts`     | Chat and messaging flows                |
-| `navigation.spec.ts`    | Routing and navigation                  |
-| `groups-forums.spec.ts` | Group/forum features                    |
-| `premium.spec.ts`       | Premium subscription flows              |
-| `accessibility.spec.ts` | WCAG compliance checks                  |
-| `phase26-verification.spec.ts` | Phase 26 feature verification    |
-| `phase27-verification.spec.ts` | Phase 27 feature verification    |
+| File                           | Coverage                                |
+| ------------------------------ | --------------------------------------- |
+| `auth.setup.ts`                | Authentication fixture                  |
+| `auth.spec.ts`                 | Login, register, logout, password reset |
+| `messaging.spec.ts`            | Chat and messaging flows                |
+| `navigation.spec.ts`           | Routing and navigation                  |
+| `groups-forums.spec.ts`        | Group/forum features                    |
+| `premium.spec.ts`              | Premium subscription flows              |
+| `accessibility.spec.ts`        | WCAG compliance checks                  |
+| `phase26-verification.spec.ts` | Phase 26 feature verification           |
+| `phase27-verification.spec.ts` | Phase 27 feature verification           |
 
 ---
 

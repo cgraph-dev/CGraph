@@ -5,8 +5,8 @@
 ## 1. Overall System Architecture
 
 CGraph is a **pnpm/Turborepo monorepo** implementing a secure real-time messaging platform with
-forums, a Nodes virtual-currency economy, and end-to-end encryption. The architecture follows a **client–server
-model** with:
+forums, a Nodes virtual-currency economy, and end-to-end encryption. The architecture follows a
+**client–server model** with:
 
 - **Backend:** Elixir/Phoenix API server (REST JSON API + Phoenix Channels for real-time)
 - **Web client:** React 19 SPA (Vite + TypeScript)
@@ -100,40 +100,45 @@ CGraph.Supervisor
 
 Each context is a bounded module with its own schemas, queries, and business logic:
 
-| Context            | Module                  | Purpose                                                                                                                             |
-| ------------------ | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Accounts**       | `CGraph.Accounts`       | Users, profiles, friends, sessions, settings, registration, wallet auth                                                             |
-| **Messaging**      | `CGraph.Messaging`      | Conversations, messages, reactions, read receipts, delivery tracking, voice messages, saved messages                                |
-| **Groups**         | `CGraph.Groups`         | Group CRUD, channels, channel categories, roles, members, invites, bans, custom emojis, automod                                     |
-| **Forums**         | `CGraph.Forums`         | Forum boards, threads, posts, comments, polls, votes, categories, RSS, custom emojis, permissions, leaderboard                      |
-| **Gamification**   | `CGraph.Gamification`   | **DEPRECATED (stub-only)** — XP, quests, levels, streaks removed; facade returns empty/noop. Schemas remain for data migration |
+| Context            | Module                  | Purpose                                                                                                                                 |
+| ------------------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Accounts**       | `CGraph.Accounts`       | Users, profiles, friends, sessions, settings, registration, wallet auth                                                                 |
+| **Messaging**      | `CGraph.Messaging`      | Conversations, messages, reactions, read receipts, delivery tracking, voice messages, saved messages                                    |
+| **Groups**         | `CGraph.Groups`         | Group CRUD, channels, channel categories, roles, members, invites, bans, custom emojis, automod                                         |
+| **Forums**         | `CGraph.Forums`         | Forum boards, threads, posts, comments, polls, votes, categories, RSS, custom emojis, permissions, leaderboard                          |
+| **Gamification**   | `CGraph.Gamification`   | **DEPRECATED (stub-only)** — XP, quests, levels, streaks removed; facade returns empty/noop. Schemas remain for data migration          |
 | **Nodes**          | `CGraph.Nodes`          | Virtual currency (Nodes) economy: wallets, transactions, tipping, content unlock, withdrawal requests, node bundles, platform cut (20%) |
-| **Pulse**          | `CGraph.Pulse`          | Pulse engagement scoring: pulse scores, tiers, pulse transactions, transaction processing |
-| **Discovery**      | `CGraph.Discovery`      | Content discovery feed: community health, topics, post metrics, user frequency, feed generation |
-| **Stickers**       | `CGraph.Stickers`       | Sticker system: sticker packs, user sticker packs, sticker schemas |
-| **Animations**     | `CGraph.Animations`     | Lottie animation management: caching, manifests, Noto emoji scraping |
-| **Notifications**  | `CGraph.Notifications`  | Push notifications, in-app notifications, delivery system                                                                           |
-| **Encryption**     | `CGraph.Encryption`     | Server-side encrypted fields, key management, hashing                                                                               |
-| **AI**             | `CGraph.AI`             | LLM client, sentiment analysis, smart replies, content moderation, summarizer                                                       |
-| **Collaboration**  | `CGraph.Collaboration`  | Real-time document editing (Yjs CRDT sync), document server GenServer                                                               |
-| **WebRTC**         | `CGraph.WebRTC`         | Voice/video calls, signaling, room management, participant tracking                                                                 |
-| **Moderation**     | `CGraph.Moderation`     | Reports, appeals, enforcement, user restrictions                                                                                    |
-| **Search**         | `CGraph.Search`         | Full-text search engine, indexing, user/message search                                                                              |
-| **Subscriptions**  | `CGraph.Subscriptions`  | Tier system, premium features, tier limits                                                                                          |
-| **OAuth**          | `CGraph.OAuth`          | Google, Apple, Facebook, TikTok providers (via Assent)                                                                              |
-| **Referrals**      | `CGraph.Referrals`      | Referral system, tracking                                                                                                           |
-| **Reputation**     | `CGraph.Reputation`     | User reputation scoring                                                                                                             |
-| **Calendar**       | `CGraph.Calendar`       | Calendar events                                                                                                                     |
-| **Announcements**  | `CGraph.Announcements`  | System announcements, dismissals                                                                                                    |
-| **Customizations** | `CGraph.Customizations` | User themes, visual customizations                                                                                                  |
-| **Webhooks**       | `CGraph.Webhooks`       | Outbound webhook delivery, signature verification                                                                                   |
-| **Data Export**    | `CGraph.DataExport`     | GDPR data export (processor → formatter → delivery)                                                                                 |
-| **Audit**          | `CGraph.Audit`          | Audit logging                                                                                                                       |
-| **Permissions**    | `CGraph.Permissions`    | Role-based permission checking                                                                                                      |
-| **Presence**       | `CGraph.Presence`       | Online/offline status tracking (sampled)                                                                                            |
-| **Storage**        | `CGraph.Storage`        | File uploads via Waffle → S3/R2                                                                                                     |
-| **Cache**          | `CGraph.Cache`          | 3-tier caching: L1 (ETS), L2 (Cachex), L3 (Redis), with stampede protection                                                         |
-| **Feature Flags**  | `CGraph.FeatureFlags`   | Runtime feature toggles                                                                                                             |
+| **Pulse**          | `CGraph.Pulse`          | Pulse engagement scoring: pulse scores, tiers, pulse transactions, transaction processing                                               |
+| **Discovery**      | `CGraph.Discovery`      | Content discovery feed: community health, topics, post metrics, user frequency, feed generation                                         |
+| **Stickers**       | `CGraph.Stickers`       | Sticker system: sticker packs, user sticker packs, sticker schemas                                                                      |
+| **Animations**     | `CGraph.Animations`     | Lottie animation management: caching, manifests, Noto emoji scraping                                                                    |
+| **Notifications**  | `CGraph.Notifications`  | Push notifications, in-app notifications, delivery system                                                                               |
+| **Encryption**     | `CGraph.Encryption`     | Server-side encrypted fields, key management, hashing                                                                                   |
+| **AI**             | `CGraph.AI`             | LLM client, sentiment analysis, smart replies, content moderation, summarizer                                                           |
+| **Collaboration**  | `CGraph.Collaboration`  | Real-time document editing (Yjs CRDT sync), document server GenServer                                                                   |
+| **WebRTC**         | `CGraph.WebRTC`         | Voice/video calls, signaling, room management, participant tracking                                                                     |
+| **Moderation**     | `CGraph.Moderation`     | Reports, appeals, enforcement, user restrictions                                                                                        |
+| **Search**         | `CGraph.Search`         | Full-text search engine, indexing, user/message search                                                                                  |
+| **Subscriptions**  | `CGraph.Subscriptions`  | Tier system, premium features, tier limits                                                                                              |
+| **OAuth**          | `CGraph.OAuth`          | Google, Apple, Facebook, TikTok providers (via Assent)                                                                                  |
+| **Referrals**      | `CGraph.Referrals`      | Referral system, tracking                                                                                                               |
+| **Reputation**     | `CGraph.Reputation`     | User reputation scoring                                                                                                                 |
+| **Calendar**       | `CGraph.Calendar`       | Calendar events                                                                                                                         |
+| **Announcements**  | `CGraph.Announcements`  | System announcements, dismissals                                                                                                        |
+| **Customizations** | `CGraph.Customizations` | User themes, visual customizations                                                                                                      |
+| **Webhooks**       | `CGraph.Webhooks`       | Outbound webhook delivery, signature verification                                                                                       |
+| **Data Export**    | `CGraph.DataExport`     | GDPR data export (processor → formatter → delivery)                                                                                     |
+| **Creators**       | `CGraph.Creators`       | Creator economy: earnings, payouts, paid subscriptions, connect onboarding, content gating                                              |
+| **Events**         | `CGraph.Events`         | Domain event system, typed events                                                                                                       |
+| **Chaos**          | `CGraph.Chaos`          | Chaos engineering: fault injection, circuit breaker validation, scenario simulation                                                     |
+| **Admin**          | `CGraph.Admin`          | Admin metrics and dashboard data                                                                                                        |
+| **Explore**        | `CGraph.Explore`        | Explore feed, trending content                                                                                                          |
+| **Audit**          | `CGraph.Audit`          | Audit logging                                                                                                                           |
+| **Permissions**    | `CGraph.Permissions`    | Role-based permission checking                                                                                                          |
+| **Presence**       | `CGraph.Presence`       | Online/offline status tracking (sampled)                                                                                                |
+| **Storage**        | `CGraph.Storage`        | File uploads via Waffle → S3/R2                                                                                                         |
+| **Cache**          | `CGraph.Cache`          | 3-tier caching: L1 (ETS), L2 (Cachex), L3 (Redis), with stampede protection                                                             |
+| **Feature Flags**  | `CGraph.FeatureFlags`   | Runtime feature toggles                                                                                                                 |
 
 ### 2.3 Web Layer (`lib/cgraph_web/`)
 
@@ -168,12 +173,11 @@ Each context is a bounded module with its own schemas, queries, and business log
 
 **Controllers:** Versioned under `controllers/api/v1/` — over 100 controller/JSON view pairs
 organized by resource (auth, users, messages, groups, forums, gamification, etc.). Additional
-top-level controllers outside `v1/` include: `coin_shop_controller`, `coins_controller`,
-`cosmetics_controller`, `events_controller`, `friend_controller`, `gamification_controller`,
-`iap_controller`, `marketplace_controller`, `metrics_controller`, `premium_controller`,
-`prestige_controller`, `quest_controller`, `settings_controller`, `shop_controller`,
-`title_controller`, `wallet_auth_controller`, plus `payment_controller`, `subscription_controller`,
-`username_controller` under `api/`.
+top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_controller`,
+`gamification_controller`, `health_controller`, `iap_controller`, `metrics_controller`,
+`nodes_controller`, `premium_controller`, `settings_controller`, `shop_controller`,
+`stripe_webhook_controller`, `title_controller`, `wallet_auth_controller`, plus
+`payment_controller`, `subscription_controller`, `username_controller` under `api/`.
 
 **Plug middleware stack:**
 
@@ -198,14 +202,12 @@ top-level controllers outside `v1/` include: `coin_shop_controller`, `coins_cont
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (notable workers):
+**Oban** job processing system with 27 workers in `lib/cgraph/workers/` (notable workers):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
 - `SearchIndexWorker` — search index updates
 - `MessageArchivalWorker` — message archiving
-- `LeaderboardWarm` — leaderboard cache warming
-- `EventRewardDistributor` — seasonal event reward distribution
 - `CleanupWorker` — data cleanup
 - `DatabaseBackup` — backup orchestration
 - `DeadLetterWorker` — failed job retry
@@ -213,14 +215,19 @@ top-level controllers outside `v1/` include: `coin_shop_controller`, `coins_cont
 - `HardDeleteUser` — GDPR hard delete
 - `SendEmailNotification` / `SendPushNotification` — delivery workers
 - `CriticalAlertDispatcher` — high-priority alert delivery
-- `DeleteExpiredMessages` / `EmailDigestWorker` / `EventExporter` / `NotificationRetryWorker` /
-  `PartitionManager`
+- `DeleteExpiredMessages` / `DeleteExpiredSecretMessages` — message expiry
+- `EmailDigestWorker` / `NotificationRetryWorker` / `PartitionManager`
 - `AppealNotificationWorker` — moderation appeal notifications
 - `CleanupLinkPreviewCache` — link preview cache cleanup
 - `FetchLinkPreview` — link preview fetching
 - `ModerationWorker` — moderation task processing
 - `RankingUpdateWorker` — forum ranking updates
 - `StatusExpiryWorker` — user status expiry
+- `PulseDecayWorker` — pulse score decay processing
+- `DocumentCompactionWorker` — collaborative document compaction
+- `ExpireSecretConversations` — secret chat session expiry
+- `FileCleanupWorker` — orphaned file cleanup
+- `SendScheduledMessage` — scheduled message dispatch
 - Worker orchestrator (`base.ex`) for complex multi-step jobs
 
 ---
@@ -266,12 +273,10 @@ WebSocket endpoint at `/socket` with JWT authentication. Channel topology:
 | `VoiceStateChannel`   | `voice:*`        | Voice state tracking                              |
 | `SecretChatChannel`   | `secret_chat:*`  | E2EE secret chat sessions                         |
 
-| `ForumChannel`        | `forum:*`        | Forum-level real-time updates                     |
-| `ThreadChannel`       | `thread:*`       | Thread-level real-time updates                    |
-| `BoardChannel`        | `board:*`        | Board-level real-time updates                     |
-| `AIChannel`           | `ai:*`           | Streaming AI responses                            |
-| `DocumentChannel`     | `document:*`     | Collaborative editing (Yjs CRDT sync)             |
-| `QrAuthChannel`       | `qr_auth:*`      | QR code login authentication                      |
+| `ForumChannel` | `forum:*` | Forum-level real-time updates | | `ThreadChannel` | `thread:*` |
+Thread-level real-time updates | | `BoardChannel` | `board:*` | Board-level real-time updates | |
+`AIChannel` | `ai:*` | Streaming AI responses | | `DocumentChannel` | `document:*` | Collaborative
+editing (Yjs CRDT sync) | | `QrAuthChannel` | `qr_auth:*` | QR code login authentication |
 
 **Backpressure:** Channel backpressure module prevents message flooding.
 
@@ -399,7 +404,7 @@ indexes, security indexes, pagination indexes.
 - **Server state:** TanStack React Query v5 with offline-first, persistent cache (localStorage)
 - **Styling:** Tailwind CSS + CVA (class-variance-authority) + tailwind-merge
 - **UI primitives:** Radix UI (dialog, popover, tabs, tooltip, etc.)
-- **Animation:** Framer Motion 12 + GSAP
+- **Animation:** Motion 12 (formerly Framer Motion) + GSAP
 - **i18n:** i18next with browser-detected language + HTTP backend
 - **Real-time:** Phoenix JS client via `@cgraph/socket` package
 - **E2EE:** Custom Signal Protocol implementation via `@cgraph/crypto` package
@@ -435,7 +440,8 @@ src/modules/<feature>/
 - **Community domain:** `useForumStore`, `useForumHostingStore`, `useAnnouncementStore`,
   `useGroupStore`, `useModerationStore`
 - **Nodes Economy domain:** `useNodesStore` (in `src/modules/nodes/store`)
-- **Secret Chat domain:** `useSecretChatStore` (in `src/modules/secret-chat/store`) — ghost mode, panic wipe, session management
+- **Secret Chat domain:** `useSecretChatStore` (in `src/modules/secret-chat/store`) — ghost mode,
+  panic wipe, session management
 - **Premium domain:** `usePremiumStore` (in `src/modules/premium/store`)
 - **Theme domain:** `useThemeStore`, `useForumThemeStore`, `useCustomizationStore`
 - **Utility domain:** `useNotificationStore`, `useSearchStore`, `usePluginStore`, `useCalendarStore`
@@ -515,8 +521,8 @@ RootNavigator (native-stack)
 
 ### 7.3 Module Architecture
 
-Mirrors web module structure in `src/modules/`: `auth`, `calls`, `chat`, `forums`,
-`groups`, `moderation`, `premium`, `profile`, `search`, `settings`, `social`
+Mirrors web module structure in `src/modules/`: `auth`, `calls`, `chat`, `forums`, `groups`,
+`moderation`, `premium`, `profile`, `search`, `settings`, `social`
 
 Each module has own `components/`, `hooks/`, `store/` etc.
 

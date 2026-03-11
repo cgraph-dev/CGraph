@@ -166,7 +166,7 @@ Docker dev setup: [`docker-compose.dev.yml`](docker-compose.dev.yml)
 
 | Tool                     | Version                                                        | Where                                          |
 | ------------------------ | -------------------------------------------------------------- | ---------------------------------------------- |
-| **Vitest**               | `^3.1.0` (web), `^3.2.4` (landing), `^1.x`–`^3.0.0` (packages) | Unit tests (TS)                                |
+| **Vitest**               | `^3.1.0` (web), `^3.2.4` (landing), `^1.x`–`^3.1.0` (packages) | Unit tests (TS)                                |
 | **Jest**                 | `^29.7.0`                                                      | Mobile tests                                   |
 | **jest-expo**            | `~54.0.0`                                                      | Expo test runner                               |
 | **Playwright**           | `^1.49.0` (web), `^1.58.2` (landing)                           | E2E browser tests                              |

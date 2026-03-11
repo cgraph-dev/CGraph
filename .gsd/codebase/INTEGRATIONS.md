@@ -37,7 +37,7 @@
 - **Config**: `MEILISEARCH_URL`, `MEILISEARCH_API_KEY`
   ([`apps/backend/config/runtime.exs`](apps/backend/config/runtime.exs))
 - **Fallback**: Gracefully degrades to PostgreSQL `ILIKE` queries when not configured
-- **Indexes**: Messages, Users, Posts (via `CGraph.Search.Indexer`)
+- **Indexes**: Messages, Users, Posts, Groups (via `CGraph.Search.Indexer`)
 
 ### WatermelonDB (Mobile Offline Database)
 
@@ -463,8 +463,10 @@
 
 ### Animations
 
-- **Web**: `motion ^12.0.0` (Framer Motion), `gsap ^3.14.2`, `lottie-web ^5.13.0` (Lottie avatar borders)
-- **Mobile**: `react-native-reanimated ~4.1.1`, `react-native-gesture-handler ~2.28.0`, `lottie-react-native ^7.3.6`
+- **Web**: `motion ^12.0.0` (Framer Motion), `gsap ^3.14.2`, `lottie-web ^5.13.0` (Lottie avatar
+  borders)
+- **Mobile**: `react-native-reanimated ~4.1.1`, `react-native-gesture-handler ~2.28.0`,
+  `lottie-react-native ^7.3.6`
 - **Shared**: `@cgraph/animation-constants` workspace package
 
 ### Confetti
