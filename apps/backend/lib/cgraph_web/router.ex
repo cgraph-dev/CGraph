@@ -43,6 +43,7 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.BoostRoutes
   import CGraphWeb.Router.ForumIdentityRoutes
   import CGraphWeb.Router.ForumTagsRoutes
+  import CGraphWeb.Router.ForumAdminRoutes
 
   # ============================================================================
   # Pipelines
@@ -149,4 +150,5 @@ defmodule CGraphWeb.Router do
   boost_routes()
   forum_identity_routes()
   forum_tags_routes()
+  forum_admin_routes()
 end

@@ -27,7 +27,9 @@ defmodule CGraph.Forums.ForumPermission do
   @derive {Jason.Encoder, only: [
     :id, :forum_id, :user_group_id, :applies_to,
     :can_view, :can_view_boards, :can_create_threads, :can_reply,
-    :can_manage_boards, :can_manage_groups, :can_manage_settings
+    :can_manage_boards, :can_manage_groups, :can_manage_settings,
+    :can_manage_tags, :can_manage_templates, :can_manage_scheduled_posts,
+    :can_view_analytics, :can_manage_identity
   ]}
 
   schema "forum_permissions" do
@@ -46,6 +48,13 @@ defmodule CGraph.Forums.ForumPermission do
     field :can_manage_groups, :string, default: "inherit"
     field :can_manage_settings, :string, default: "inherit"
 
+    # Extended permissions (Wave 2)
+    field :can_manage_tags, :string, default: "inherit"
+    field :can_manage_templates, :string, default: "inherit"
+    field :can_manage_scheduled_posts, :string, default: "inherit"
+    field :can_view_analytics, :string, default: "inherit"
+    field :can_manage_identity, :string, default: "inherit"
+
     belongs_to :forum, CGraph.Forums.Forum
     belongs_to :user_group, CGraph.Forums.ForumUserGroup
 
@@ -59,7 +68,9 @@ defmodule CGraph.Forums.ForumPermission do
   def permission_fields do
     [
       :can_view, :can_view_boards, :can_create_threads, :can_reply,
-      :can_manage_boards, :can_manage_groups, :can_manage_settings
+      :can_manage_boards, :can_manage_groups, :can_manage_settings,
+      :can_manage_tags, :can_manage_templates, :can_manage_scheduled_posts,
+      :can_view_analytics, :can_manage_identity
     ]
   end
 
