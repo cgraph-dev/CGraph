@@ -71,7 +71,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '0.9.31',
+    version: '1.0.0',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -90,7 +90,7 @@ module.exports = ({ config }) => {
       ...config.ios,
       supportsTablet: true,
       bundleIdentifier: `org.cgraph.app${getAppVariantSuffix()}`,
-      buildNumber: '4',
+      buildNumber: '5',
       config: {
         usesNonExemptEncryption: false,
       },
@@ -160,7 +160,7 @@ module.exports = ({ config }) => {
         backgroundColor: '#10b981',
       },
       package: `org.cgraph.app${getAppVariantSuffix().replace('.', '')}`,
-      versionCode: 4,
+      versionCode: 5,
       // Android App Links (Deep Links)
       intentFilters: [
         {
