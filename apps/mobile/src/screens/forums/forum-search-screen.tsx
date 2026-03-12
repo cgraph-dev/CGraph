@@ -19,6 +19,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +28,8 @@ import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 import { useForumStore } from '@/stores';
 import { ForumsStackParamList } from '../../types';
+import TagChips from '../../components/forums/tag-chips';
+import type { Tag } from '../../components/forums/tag-chips';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -87,15 +90,52 @@ export default function ForumSearchScreen({ navigation }: Props) {
 
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Clean up on unmount
+  // Fetch available tags on mount
   useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/v1/forums/tags');
+        if (res.ok) {
+          const json = await res.json();
+          setAvailableTags(json.data || []);
+        }
+      } catch {
+        // Tags are a nice-to-have — fail silently
+      }
+    })();
+
     return () => {
       clearSearch();
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
+
+  const handleTagToggle = useCallback(
+    (tagId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setSelectedTagIds((prev) => {
+        const next = prev.includes(tagId)
+          ? prev.filter((id) => id !== tagId)
+          : [...prev, tagId];
+
+        // Re-run search with new tag filters
+        if (query.trim()) {
+          const filterParam = filter === 'all' ? undefined : filter;
+          searchForums(query.trim(), {
+            ...(filterParam ? { type: filterParam } : {}),
+            tag_ids: next.length > 0 ? next : undefined,
+          });
+        }
+
+        return next;
+      });
+    },
+    [query, filter, searchForums],
+  );
 
   const handleSearch = useCallback(
     (text: string) => {
@@ -273,6 +313,15 @@ export default function ForumSearchScreen({ navigation }: Props) {
           );
         })}
       </View>
+
+      {/* Tag filter chips */}
+      {availableTags.length > 0 && (
+        <TagChips
+          tags={availableTags}
+          selectedIds={selectedTagIds}
+          onToggle={handleTagToggle}
+        />
+      )}
 
       {/* Results */}
       <FlatList
