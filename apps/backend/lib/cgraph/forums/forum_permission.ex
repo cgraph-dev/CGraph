@@ -19,7 +19,7 @@ defmodule CGraph.Forums.ForumPermission do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  @timestamps_opts [type: :utc_datetime_usec]
+  @timestamps_opts [type: :utc_datetime]
 
   @permission_values ["inherit", "allow", "deny"]
   @applies_to_values ["group", "guest", "all_members"]

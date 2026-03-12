@@ -10,6 +10,7 @@
  * @module modules/forums/components/identity-card
  */
 
+import React from 'react';
 import { motion } from 'motion/react';
 import { StarIcon, ShieldCheckIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { cn } from '@/lib/utils';
@@ -56,7 +57,7 @@ function getReputationBg(rep: number): string {
   return 'bg-red-500/20';
 }
 
-const BADGE_ICONS: HeroIcon[] = [StarIcon, ShieldCheckIcon, TrophyIcon];
+const BADGE_ICONS = [StarIcon, ShieldCheckIcon, TrophyIcon] as const;
 
 // ── Component ──────────────────────────────────────────────────────────
 
@@ -152,7 +153,7 @@ export default function IdentityCard({
           {visibleBadges.length > 0 && (
             <div className="mt-1.5 flex flex-wrap items-center gap-1">
               {visibleBadges.map((badge, i) => {
-                const IconComp = BADGE_ICONS[i % BADGE_ICONS.length];
+                const IconComp = BADGE_ICONS[i % BADGE_ICONS.length] as React.ComponentType<React.SVGProps<SVGSVGElement>>;
                 return (
                   <span
                     key={badge.id}

@@ -18,7 +18,7 @@ defmodule CGraph.Forums.ForumMember do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  @timestamps_opts [type: :utc_datetime_usec]
+  @timestamps_opts [type: :utc_datetime]
 
   @derive {Jason.Encoder, only: [
     :id, :display_name, :title, :avatar_url, :post_count, :thread_count,

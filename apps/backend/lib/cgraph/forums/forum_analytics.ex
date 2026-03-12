@@ -9,8 +9,7 @@ defmodule CGraph.Forums.ForumAnalytics do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{Forum, Post, Thread, ThreadPost}
-  alias CGraph.Accounts.User
+  alias CGraph.Forums.{Thread, ThreadPost}
   alias CGraph.Repo
 
   # ── Top threads ──────────────────────────────────────────────────────

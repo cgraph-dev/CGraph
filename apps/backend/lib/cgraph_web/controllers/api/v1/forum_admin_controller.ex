@@ -9,7 +9,7 @@ defmodule CGraphWeb.API.V1.ForumAdminController do
   import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_data: 3, render_error: 3]
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{CustomForum, ModerationLog}
+  alias CGraph.Forums.{CustomForum, ForumMember, ModerationLog}
   alias CGraph.Repo
 
   action_fallback CGraphWeb.FallbackController
@@ -82,23 +82,55 @@ defmodule CGraphWeb.API.V1.ForumAdminController do
       %CustomForum{owner_id: owner_id} when owner_id != user.id ->
         render_error(conn, 403, "not_forum_owner")
 
-      %CustomForum{} = _forum ->
+      %CustomForum{} = forum ->
         action = params["action"]
         target_user_id = params["user_id"]
-        role = params["role"]
+        role = params["role"] || "member"
 
         case action do
           "add" ->
-            log_moderation_action(user.id, "add_member", "user", target_user_id, %{role: role})
-            render_data(conn, %{status: "member_added", user_id: target_user_id, role: role})
+            attrs = %{forum_id: forum.id, user_id: target_user_id, role: role}
+
+            case %ForumMember{} |> ForumMember.changeset(attrs) |> Repo.insert() do
+              {:ok, _member} ->
+                log_moderation_action(user.id, "add_member", "user", target_user_id, %{role: role})
+                render_data(conn, %{status: "member_added", user_id: target_user_id, role: role})
+
+              {:error, changeset} ->
+                conn
+                |> put_status(:unprocessable_entity)
+                |> render_error(422, format_errors(changeset))
+            end
 
           "remove" ->
-            log_moderation_action(user.id, "remove_member", "user", target_user_id)
-            render_data(conn, %{status: "member_removed", user_id: target_user_id})
+            query = from(m in ForumMember, where: m.forum_id == ^forum.id and m.user_id == ^target_user_id)
+
+            case Repo.delete_all(query) do
+              {0, _} ->
+                render_error(conn, 404, "member_not_found")
+
+              {_count, _} ->
+                log_moderation_action(user.id, "remove_member", "user", target_user_id)
+                render_data(conn, %{status: "member_removed", user_id: target_user_id})
+            end
 
           "change_role" ->
-            log_moderation_action(user.id, "change_role", "user", target_user_id, %{role: role})
-            render_data(conn, %{status: "role_changed", user_id: target_user_id, role: role})
+            case Repo.get_by(ForumMember, forum_id: forum.id, user_id: target_user_id) do
+              nil ->
+                render_error(conn, 404, "member_not_found")
+
+              member ->
+                case member |> Ecto.Changeset.change(%{role: role}) |> Repo.update() do
+                  {:ok, _updated} ->
+                    log_moderation_action(user.id, "change_role", "user", target_user_id, %{role: role})
+                    render_data(conn, %{status: "role_changed", user_id: target_user_id, role: role})
+
+                  {:error, changeset} ->
+                    conn
+                    |> put_status(:unprocessable_entity)
+                    |> render_error(422, format_errors(changeset))
+                end
+            end
 
           _ ->
             render_error(conn, 400, "invalid_action")

@@ -30,8 +30,8 @@ defmodule CGraph.Forums.ScheduledPost do
     field :status, :string, default: "pending"
     field :published_at, :utc_datetime
 
-    field :author_id, :binary_id
-    field :forum_id, :binary_id
+    belongs_to :author, CGraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
 
     timestamps()
   end
@@ -47,6 +47,8 @@ defmodule CGraph.Forums.ScheduledPost do
     |> validate_required(@required_fields)
     |> validate_inclusion(:status, @statuses)
     |> validate_future_schedule()
+    |> foreign_key_constraint(:author_id)
+    |> foreign_key_constraint(:forum_id)
   end
 
   defp validate_future_schedule(changeset) do

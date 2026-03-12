@@ -29,9 +29,23 @@ defmodule CGraphWeb.API.V1.TagController do
   POST /api/v1/forums/:forum_id/threads/:thread_id/tags
   Applies a tag to a thread. Requires authenticated user.
   """
+  @max_tags_per_thread 10
+
   def create(conn, %{"thread_id" => thread_id} = params) do
     user = conn.assigns.current_user
 
+    existing_count =
+      from(t in ThreadTag, where: t.thread_id == ^thread_id, select: count(t.id))
+      |> Repo.one()
+
+    if existing_count >= @max_tags_per_thread do
+      render_error(conn, :unprocessable_entity, "Maximum of #{@max_tags_per_thread} tags per thread")
+    else
+      do_create_tag(conn, thread_id, params, user)
+    end
+  end
+
+  defp do_create_tag(conn, thread_id, params, user) do
     attrs = %{
       thread_id: thread_id,
       tag_category_id: params["tag_category_id"],

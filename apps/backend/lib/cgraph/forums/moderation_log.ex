@@ -13,7 +13,7 @@ defmodule CGraph.Forums.ModerationLog do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime]
 
-  @target_types ["thread", "post", "user"]
+  @target_types ["thread", "post", "user", "forum", "tag", "template"]
 
   @derive {Jason.Encoder, only: [
     :id, :moderator_id, :action, :target_type, :target_id,

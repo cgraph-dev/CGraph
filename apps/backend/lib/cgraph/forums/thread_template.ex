@@ -26,12 +26,13 @@ defmodule CGraph.Forums.ThreadTemplate do
   @timestamps_opts [type: :utc_datetime]
 
   @derive {Jason.Encoder,
-           only: [:id, :name, :structure, :is_default, :inserted_at, :updated_at]}
+           only: [:id, :name, :structure, :is_default, :required_fields, :inserted_at, :updated_at]}
 
   schema "forum_thread_templates" do
     field :name, :string
     field :structure, :map, default: %{}
     field :is_default, :boolean, default: false
+    field :required_fields, {:array, :string}, default: []
 
     belongs_to :forum, CGraph.Forums.Forum
 
@@ -39,7 +40,7 @@ defmodule CGraph.Forums.ThreadTemplate do
   end
 
   @required_fields ~w(name forum_id)a
-  @optional_fields ~w(structure is_default)a
+  @optional_fields ~w(structure is_default required_fields)a
 
   @doc "Changeset for creating or updating a thread template."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
