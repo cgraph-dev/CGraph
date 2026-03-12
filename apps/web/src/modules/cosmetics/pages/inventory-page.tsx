@@ -83,7 +83,7 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
     (item: CosmeticItem) => {
       onSelectItem?.(item);
     },
-    [onSelectItem],
+    [onSelectItem]
   );
 
   // -------------------------------------------------------------------------
@@ -98,9 +98,7 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
           <h1 className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-2xl font-bold text-transparent">
             My Inventory
           </h1>
-          <p className="mt-1 text-sm text-gray-400">
-            {inventory.length} items collected
-          </p>
+          <p className="mt-1 text-sm text-gray-400">{inventory.length} items collected</p>
         </div>
 
         {/* Type tabs */}
@@ -112,9 +110,7 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
                 type="button"
                 onClick={() => setActiveType(tab.id)}
                 className={`relative whitespace-nowrap px-4 py-2 text-sm font-medium transition-all ${
-                  activeType === tab.id
-                    ? 'text-cyan-400'
-                    : 'text-gray-400 hover:text-white'
+                  activeType === tab.id ? 'text-cyan-400' : 'text-gray-400 hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -145,7 +141,15 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
           {/* Rarity dropdown */}
           <select
             value={rarityFilter}
-            onChange={(e) => setRarityFilter(e.target.value as RarityTier | 'all')}
+            onChange={(e) => {
+              const val = e.target.value;
+              const validTiers: ReadonlyArray<string> = [...RARITY_TIERS, 'all'];
+              if (validTiers.includes(val)) {
+                setRarityFilter(
+                  val === 'all' ? 'all' : (RARITY_TIERS.find((t) => t === val) ?? 'all')
+                );
+              }
+            }}
             className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-500/50"
           >
             <option value="all">All Rarities</option>
