@@ -93,6 +93,17 @@ defmodule CGraph.RequestContext.Access do
   end
 
   @doc """
+  Get the current organization ID.
+  """
+  @spec get_org_id() :: binary() | nil
+  def get_org_id do
+    case get() do
+      %{org_id: id} -> id
+      _ -> nil
+    end
+  end
+
+  @doc """
   Get custom metadata value.
   """
   @spec get_metadata(atom() | binary()) :: term()

@@ -29,6 +29,7 @@ defmodule CGraph.RequestContext do
           parent_span_id: span_id() | nil,
           user_id: user_id() | nil,
           tenant_id: tenant_id() | nil,
+          org_id: String.t() | nil,
           correlation_id: String.t() | nil,
           started_at: DateTime.t(),
           metadata: map()
@@ -47,7 +48,8 @@ defmodule CGraph.RequestContext do
     request_id_header: "x-request-id",
     correlation_id_header: "x-correlation-id",
     tenant_header: "x-tenant-id",
-    user_header: "x-user-id"
+    user_header: "x-user-id",
+    org_header: "x-organization-id"
   }
 
   # ---------------------------------------------------------------------------
@@ -61,6 +63,7 @@ defmodule CGraph.RequestContext do
   defdelegate get_user_id(), to: Access
   defdelegate get_current_user(), to: Access
   defdelegate get_tenant_id(), to: Access
+  defdelegate get_org_id(), to: Access
   defdelegate get_correlation_id(), to: Access
   defdelegate get_metadata(key), to: Access
   defdelegate get_duration_ms(), to: Access
@@ -110,6 +113,7 @@ defmodule CGraph.RequestContext do
       parent_span_id: opts[:parent_span_id],
       user_id: opts[:user_id],
       tenant_id: opts[:tenant_id],
+      org_id: opts[:org_id],
       correlation_id: opts[:correlation_id],
       started_at: DateTime.utc_now(),
       metadata: opts[:metadata] || %{}
@@ -131,6 +135,7 @@ defmodule CGraph.RequestContext do
     correlation_id = get_header(conn, get_config(:correlation_id_header))
     tenant_id = get_header(conn, get_config(:tenant_header))
     user_id = get_header(conn, get_config(:user_header))
+    org_id = get_header(conn, get_config(:org_header))
 
     # Parse W3C Trace Context
     {trace_id, parent_span_id} = Propagation.parse_traceparent(conn)
@@ -142,7 +147,8 @@ defmodule CGraph.RequestContext do
         parent_span_id: parent_span_id,
         correlation_id: correlation_id,
         tenant_id: tenant_id,
-        user_id: user_id
+        user_id: user_id,
+        org_id: org_id
       })
 
     # Add context to conn for access in controllers
@@ -181,7 +187,8 @@ defmodule CGraph.RequestContext do
       trace_id: context.trace_id,
       span_id: context.span_id,
       user_id: context.user_id,
-      tenant_id: context.tenant_id
+      tenant_id: context.tenant_id,
+      org_id: context.org_id
     )
   end
 

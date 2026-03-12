@@ -79,6 +79,23 @@ defmodule CGraph.Enterprise.Organizations do
     end
   end
 
+  @doc "Get an organization by ID, including soft-deleted (admin use)."
+  @spec get_org_including_deleted(binary()) :: {:ok, Organization.t()} | {:error, :not_found}
+  def get_org_including_deleted(id) do
+    case Repo.get(Organization, id) |> Repo.preload([:settings, :memberships]) do
+      nil -> {:error, :not_found}
+      org -> {:ok, org}
+    end
+  end
+
+  @doc "Restore a soft-deleted organization."
+  @spec restore_org(Organization.t()) :: {:ok, Organization.t()} | {:error, Ecto.Changeset.t()}
+  def restore_org(%Organization{} = org) do
+    org
+    |> Ecto.Changeset.change(deleted_at: nil)
+    |> Repo.update()
+  end
+
   @doc "List all organizations with pagination."
   @spec list_orgs(keyword()) :: {list(), map()}
   def list_orgs(opts \\ []) do
