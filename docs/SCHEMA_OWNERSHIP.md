@@ -1,6 +1,6 @@
 # Database Schema Ownership
 
-> **Version: 0.9.36** | Last Updated: February 2026
+> **Version: 0.9.48** | Last Updated: March 2026
 
 This document defines ownership and responsibility for all database tables in CGraph.
 
@@ -180,7 +180,7 @@ This document defines ownership and responsibility for all database tables in CG
 
 ---
 
-## Customization
+## Customization & Cosmetics
 
 | Table            | Owner Team     | Priority | Notes                 |
 | ---------------- | -------------- | -------- | --------------------- |
@@ -188,6 +188,76 @@ This document defines ownership and responsibility for all database tables in CG
 | `user_themes`    | @frontend-team | 🟢       | User theme selections |
 | `avatar_borders` | @frontend-team | 🟢       | Border definitions    |
 | `user_cosmetics` | @frontend-team | 🟢       | User cosmetic unlocks |
+
+### Cosmetics System (Phase 33 + 35)
+
+| Table                    | Owner Team    | Priority | Notes                                                  |
+| ------------------------ | ------------- | -------- | ------------------------------------------------------ |
+| `badges`                 | @backend-team | 🟡       | 70 badges across 7 rarity tiers                        |
+| `nameplates`             | @backend-team | 🟡       | 45 nameplates (identity display)                       |
+| `nameplate_settings`     | @backend-team | 🟢       | Per-user nameplate preferences                         |
+| `profile_effects`        | @backend-team | 🟡       | Animated profile effects                               |
+| `profile_frames`         | @backend-team | 🟡       | 55 profile frames across 7 rarity tiers                |
+| `name_styles`            | @backend-team | 🟢       | 50 name text styles (fonts, effects, colors)           |
+| `user_inventory`         | @backend-team | 🟡       | Unified cosmetic inventory per user                    |
+| `cosmetics_join_tables`  | @backend-team | 🟢       | Many-to-many cosmetic-user associations                |
+
+> All cosmetics use the canonical 7-tier rarity system: `free`, `common`, `uncommon`, `rare`, `epic`, `legendary`, `mythic`. 340+ items seeded.
+
+---
+
+## Nodes Economy (Phase 34)
+
+| Table                | Owner Team     | Priority | Notes                                             |
+| -------------------- | -------------- | -------- | ------------------------------------------------- |
+| `node_wallets`       | @payments-team | 🔴       | Per-user Nodes currency wallet                    |
+| `node_transactions`  | @payments-team | 🔴       | All Nodes transactions (tips, unlocks, purchases) |
+| `node_bundles`       | @payments-team | 🟡       | Purchasable Nodes bundles (via Stripe)             |
+| `withdrawal_requests`| @payments-team | 🔴       | Creator withdrawal requests                       |
+
+---
+
+## Discovery (Phase 34)
+
+| Table              | Owner Team    | Priority | Notes                                        |
+| ------------------ | ------------- | -------- | -------------------------------------------- |
+| `topics`           | @backend-team | 🟢       | Discovery feed topics                        |
+| `post_metrics`     | @backend-team | 🟢       | Engagement scoring per post                   |
+| `user_frequencies` | @backend-team | 🟢       | User topic frequency weights                  |
+| `community_health` | @backend-team | 🟢       | Community health scores for feed ranking       |
+
+---
+
+## Creator Economy (Phase 36)
+
+| Table                       | Owner Team     | Priority | Notes                                      |
+| --------------------------- | -------------- | -------- | ------------------------------------------ |
+| `paid_dm_files`             | @payments-team | 🟡       | Paid file attachments in DMs               |
+| `paid_dm_settings`          | @payments-team | 🟡       | Per-user paid DM configuration             |
+| `premium_threads`           | @payments-team | 🟡       | Gated premium forum threads                |
+| `subscription_tiers`        | @payments-team | 🟡       | Creator subscription tier definitions       |
+| `revenue_splits`            | @payments-team | 🔴       | Revenue distribution rules (80/20 default) |
+| `boosts`                    | @payments-team | 🟡       | Content boost purchases                    |
+| `boost_effects`             | @payments-team | 🟢       | Boost effect configurations                |
+| `paid_forum_subscriptions`  | @payments-team | 🟡       | Forum-level paid subscriptions             |
+| `creator_earnings`          | @payments-team | 🔴       | Creator earnings ledger                    |
+| `creator_payouts`           | @payments-team | 🔴       | Creator payout requests + processing       |
+
+---
+
+## Forum Transformation (Phase 37)
+
+| Table                       | Owner Team    | Priority | Notes                                      |
+| --------------------------- | ------------- | -------- | ------------------------------------------ |
+| `identity_cards`            | @backend-team | 🟡       | User identity cards for forum display       |
+| `forum_tag_categories`      | @backend-team | 🟢       | Tag category definitions                    |
+| `forum_thread_tags`         | @backend-team | 🟢       | Thread-to-tag associations                  |
+| `forum_thread_templates`    | @backend-team | 🟢       | Thread creation templates                   |
+| `forum_scheduled_posts`     | @backend-team | 🟢       | Scheduled post queue                        |
+| `custom_forums`             | @backend-team | 🟡       | User-created custom forums                  |
+| `moderation_logs`           | @backend-team | 🟡       | Forum moderation action audit trail         |
+| `forum_permissions`         | @backend-team | 🟡       | Extended permission system (21 flags)       |
+| `reputation_entries`        | @backend-team | 🟢       | Per-forum reputation scores                 |
 
 ---
 

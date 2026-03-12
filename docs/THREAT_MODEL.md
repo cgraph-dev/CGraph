@@ -1,6 +1,6 @@
 # CGraph Threat Model
 
-> **Version: 0.9.36** | Last Updated: February 2026 **Classification:** Internal Engineering
+> **Version: 0.9.48** | Last Updated: March 2026 **Classification:** Internal Engineering
 
 A systematic analysis of potential threats to CGraph and corresponding mitigations.
 
@@ -20,6 +20,10 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 | Server private keys | Critical    | MITM attacks possible                             |
 | Database backups    | Critical    | Historical data exposure                          |
 | Source code         | Medium      | Competitive disadvantage, vulnerability discovery |
+| Node wallet balances | High       | Financial loss, platform trust erosion             |
+| Creator earnings     | High       | Revenue theft, payout fraud                        |
+| Paid DM content      | High       | Leaked premium content, privacy violation          |
+| Cosmetics inventory  | Medium     | Virtual asset theft, market manipulation            |
 
 ### Trust Boundaries
 
@@ -120,6 +124,28 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 | T-E2   | Vertical privilege escalation   | Low        | Critical | RBAC, principle of least privilege        |
 | T-E3   | SQL injection                   | Very Low   | Critical | Parameterized queries via Ecto            |
 | T-E4   | XSS to admin escalation         | Low        | High     | CSP, input sanitization, httpOnly cookies |
+
+### 2.7 Financial / Monetization Threats (Phases 34-36)
+
+| Threat | Description                            | Likelihood | Impact   | Mitigation                                        |
+| ------ | -------------------------------------- | ---------- | -------- | ------------------------------------------------- |
+| T-F1   | Node wallet balance manipulation       | Medium     | High     | Server-side balance tracking, signed transactions |
+| T-F2   | Fake withdrawal requests               | Low        | High     | KYC verification, withdrawal limits, admin review |
+| T-F3   | Creator payout fraud                   | Low        | Critical | Stripe Connect verification, earning audit trail  |
+| T-F4   | Revenue split manipulation             | Low        | High     | Server-enforced splits, immutable split records   |
+| T-F5   | Premium content bypass (Paid DM/Thread)| Medium     | High     | Server-side access gating, no client-only checks  |
+| T-F6   | Boost effect stacking exploits         | Medium     | Medium   | Server-side boost validation, effect cap limits   |
+| T-F7   | Subscription tier spoofing             | Low        | High     | Stripe webhook verification, server-side tier check|
+| T-F8   | Cosmetics duplication/injection        | Low        | Medium   | Server-side inventory validation, rarity enforcement|
+
+### 2.8 Forum Moderation Threats (Phase 37)
+
+| Threat | Description                            | Likelihood | Impact   | Mitigation                                        |
+| ------ | -------------------------------------- | ---------- | -------- | ------------------------------------------------- |
+| T-M1   | Moderator privilege abuse              | Medium     | High     | Moderation audit logs, permission templates       |
+| T-M2   | Identity card spoofing                 | Low        | Medium   | Server-validated identity cards, verified badges  |
+| T-M3   | Scheduled post manipulation            | Low        | Medium   | Author ownership checks, admin override logging   |
+| T-M4   | Automod bypass via encoding            | Medium     | Medium   | Unicode normalization, multi-layer content checks |
 
 ---
 
@@ -345,4 +371,4 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 
 ---
 
-<sub>**CGraph Threat Model** • Version 0.9.36 • Internal Use Only</sub>
+<sub>**CGraph Threat Model** • Version 0.9.48 • Internal Use Only</sub>

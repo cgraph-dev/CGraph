@@ -1,6 +1,6 @@
 # Security Audit Readiness Checklist
 
-> **Version:** 0.9.37 | **Last Updated:** February 21, 2026 **Purpose:** Pre-audit readiness
+> **Version:** 0.9.48 | **Last Updated:** March 2026 **Purpose:** Pre-audit readiness
 > verification before external E2EE audit and penetration test
 
 ---
@@ -40,6 +40,12 @@
 | File Upload        | Media attachments, avatars, exports                                                | Content-type validation, size limits |
 | Admin Panel        | `apps/web/src/modules/admin/`                                                      | Marketplace, events, moderation      |
 | Payment (Stripe)   | `apps/backend/lib/cgraph/subscriptions/` + `controllers/api/payment_controller.ex` | Webhooks, checkout, portal           |
+| Nodes Economy      | `apps/backend/lib/cgraph/nodes/` + `controllers/api/v1/nodes_controller.ex`        | Wallet balances, transactions, withdrawals |
+| Creator Economy    | `apps/backend/lib/cgraph/creators/` + `controllers/api/v1/creator_controller.ex`   | Earnings, payouts, revenue splits    |
+| Paid DM            | `apps/backend/lib/cgraph/paid_dm/` + `controllers/api/v1/paid_dm_controller.ex`    | File access gating, payment verification |
+| Boosts             | `apps/backend/lib/cgraph/boosts/` + `controllers/api/v1/boost_controller.ex`       | Effect validation, stacking limits   |
+| Cosmetics Shop     | `apps/backend/lib/cgraph/cosmetics/` + `controllers/api/v1/cosmetics_controller.ex`| Inventory manipulation, purchase validation |
+| Forum Moderation   | `apps/backend/lib/cgraph/forums/` + `controllers/api/v1/forum_admin_controller.ex` | Permission escalation, mod log integrity |
 
 ---
 

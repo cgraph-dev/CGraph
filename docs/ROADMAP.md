@@ -22,24 +22,23 @@ CGraph is the **most trusted collaboration platform** for communities, teams, an
 
 ```
        2026                                              2027
-┌──────────────────────────────────────────────────┬─────────────────────────────────┐
-│ Q2 2026        │ Q3 2026        │ Q4 2026        │ Q1 2027   │ Q2 2027   │ H2 2027 │
-├────────────────┼────────────────┼────────────────┼───────────┼───────────┼─────────┤
-│ v1.1           │ v1.2           │ v1.3           │ v1.4      │ v1.5      │ v2.0    │
-│ Parity +       │ Cosmetics +    │ Creator        │ Forum     │ Infra     │ Enter-  │
-│ Mobile Nodes   │ Unlock Engine  │ Economy        │ Transform │ Scale     │ prise   │
-│                │                │                │           │           │         │
-│ • Mobile Nodes │ • Rarity sys   │ • Paid DM      │ • Board   │ • DB      │ • Admin │
-│ • Mobile       │ • 42 borders   │   files        │   hier-   │   shard-  │   con-  │
-│   Secret Chat  │   w/ unlock    │ • Forum        │   archy   │   ing     │   sole  │
-│ • Mobile       │ • 55 titles    │   monetize     │ • 10      │ • 3-tier  │ • SSO   │
-│   Discovery    │   w/ unlock    │ • Boosts       │   themes  │   cache   │ • Self  │
-│ • Web parity   │ • Badge sys    │ • Creator      │ • Mobile  │ • 1M+     │   host  │
-│   (friends,    │ • Nameplate    │   payouts      │   forum   │   users   │ • Desk- │
-│   profile,     │   system       │ • KYC/AML      │   sockets │           │   top   │
-│   settings)    │ • Nodes shop   │ • Guardrails   │ • BBCode  │           │   apps  │
-│ • API unify    │   cosmetics    │                │   mobile  │           │         │
-└────────────────┴────────────────┴────────────────┴───────────┴───────────┴─────────┘
+┌──────────────────────────────────────────────────┬─────────────────────────────────────┐
+│ Q1 2026        │ Q1 2026        │ Q1 2026        │ Q1 2026    │ Q1 2026    │ H2 2027  │
+├────────────────┼────────────────┼────────────────┼────────────┼────────────┼──────────┤
+│ v1.1 ✅        │ v1.2 ✅        │ v1.3 ✅        │ v1.4 ✅    │ v1.5 ✅    │ v2.0     │
+│ Parity +       │ Cosmetics +    │ Creator        │ Forum      │ Infra      │ Enter-   │
+│ Mobile Nodes   │ Unlock Engine  │ Economy        │ Transform  │ Scale      │ prise    │
+│ (Phase 34)     │ (Phase 33+35)  │ (Phase 36)     │ (Phase 37) │ (Phase 38) │          │
+│                │                │                │            │            │          │
+│ ✅ Mobile      │ ✅ Rarity sys  │ ✅ Paid DM     │ ✅ Identity│ ✅ DB      │ • Admin  │
+│   Nodes+SC+Disc│ ✅ 325 items   │   files        │   cards    │   shard-   │   con-   │
+│ ✅ Web parity  │ ✅ Badge sys   │ ✅ Forum       │ ✅ Tags    │   ing      │   sole   │
+│ ✅ Privacy 15  │ ✅ Nameplate   │   monetize     │ ✅ Custom  │ ✅ 3-tier  │ • SSO    │
+│   toggles      │ ✅ Unlock eng  │ ✅ Boosts      │   forums   │   cache    │ • Self   │
+│ ✅ API unify   │   5 evaluators │ ✅ Compliance  │ ✅ Mod log │ ✅ 1M+     │   host   │
+│                │ ✅ Nodes shop  │ ✅ Creator $   │ ✅ Perms   │   users    │ • Desk-  │
+│                │                │                │   21 flags │            │   top    │
+└────────────────┴────────────────┴────────────────┴────────────┴────────────┴──────────┘
 ```
 
 ---
@@ -47,6 +46,8 @@ CGraph is the **most trusted collaboration platform** for communities, teams, an
 ## v1.0.0 — Shipped (March 2026)
 
 > **All 69 planned features shipped (100%).** 3 major capabilities added in v0.9.33–v0.9.34 (AI Service, CRDT Collaboration, Offline-First Mobile). Composite score: 8.7/10. All repo-facing files at v1.0.0. GitHub metadata updated. Codebase docs audited (75 inaccuracies corrected).
+>
+> **Post v1.0 progress (Phases 33-38):** 6 additional phases shipped with 94 commits implementing Canonical Reconciliation, Web/Mobile Parity, Cosmetics + Unlock Engine, Creator Economy, Forum Transformation, and Infrastructure Scaling.
 
 ### ✅ Completed Features
 
@@ -87,11 +88,11 @@ Identified by the Web/Mobile Feature Map audit — these drive the v1.1+ roadmap
 
 ---
 
-## v1.1.0 — Web/Mobile Feature Parity + Mobile Nodes (Q2 2026)
+## v1.1.0 — Web/Mobile Feature Parity + Mobile Nodes ✅ SHIPPED (Phase 34)
 
 **Theme:** Close the critical platform gap. Mobile users get Nodes, Secret Chat, and Discovery. Web gets mobile-only social features. APIs unified.
 
-**Target Date:** June 2026
+**Shipped:** March 2026 (26 commits: ad690db3…95b9058b)
 
 ### Mobile — Critical Missing (P0)
 
@@ -144,22 +145,22 @@ Identified by the Web/Mobile Feature Map audit — these drive the v1.1+ roadmap
 
 ### v1.1 Launch Checklist
 
-- [ ] Mobile Nodes wallet/shop/tip functional
-- [ ] Mobile Secret Chat operational with all 12 themes
-- [ ] Mobile Discovery shows 5 feed modes
-- [ ] Web friend favorites/nicknames/mutual working
-- [ ] Web user wall functional
-- [ ] API endpoints unified (no 404s cross-platform)
-- [ ] Privacy toggles aligned (15 fields both platforms)
+- [x] Mobile Nodes wallet/shop/tip functional
+- [x] Mobile Secret Chat operational with all 12 themes
+- [x] Mobile Discovery shows 5 feed modes
+- [x] Web friend favorites/nicknames/mutual working
+- [x] Web user wall functional
+- [x] API endpoints unified (no 404s cross-platform)
+- [x] Privacy toggles aligned (15 fields both platforms)
 - [ ] Mobile in TestFlight/Play Store (public beta)
 
 ---
 
-## v1.2.0 — Cosmetics & Unlock Engine (Q3 2026)
+## v1.2.0 — Cosmetics & Unlock Engine ✅ SHIPPED (Phase 33 + 35)
 
 **Theme:** Every cosmetic gets a door. The rarity system, unlock conditions engine, and Nodes shop turn the cosmetic wardrobe into a living economy. Cosmetics APIs stop returning `[]`.
 
-**Target Date:** September 2026
+**Shipped:** March 2026 (Phase 33: 15 commits c37878ef…789e5d60 + Phase 35: 18 commits 324f6a3d…26d95be6)
 
 **Source:** Complete Cosmetics System design doc + Forums Next-Gen Plan §3
 
@@ -247,11 +248,11 @@ Nameplates combine border + badge + title into a single identity card visible ac
 
 ---
 
-## v1.3.0 — Creator Economy (Q4 2026)
+## v1.3.0 — Creator Economy ✅ SHIPPED (Phase 36)
 
 **Theme:** Nodes becomes a full creator/consumer economy. Paid files in DMs, forum monetization tiers, boosts, reputation rewards, and creator compliance.
 
-**Target Date:** December 2026
+**Shipped:** March 2026 (5 commits: 3f8125f7…8c8c5997)
 
 **Source:** Nodes Economy design doc
 
@@ -341,11 +342,11 @@ Nameplates combine border + badge + title into a single identity card visible ac
 
 ---
 
-## v1.4.0 — Forum Transformation (Q1 2027)
+## v1.4.0 — Forum Transformation ✅ SHIPPED (Phase 37)
 
 **Theme:** Evolve forums from Reddit-like flat model to enterprise-grade board hierarchy with persistent cross-platform identity (nameplates), 10 forum themes, and full mobile forum parity.
 
-**Target Date:** March 2027
+**Shipped:** March 2026 (10 commits: 09b0a817…c2f2d65f)
 
 **Source:** Forums Next-Gen Plan
 
@@ -406,11 +407,11 @@ Nameplates combine border + badge + title into a single identity card visible ac
 
 ---
 
-## v1.5.0 — Infrastructure Scaling (Q2 2027)
+## v1.5.0 — Infrastructure Scaling ✅ SHIPPED (Phase 38)
 
 **Theme:** Scale from 10K to 1M+ concurrent users. Database sharding, three-tier caching, multi-queue async processing, and search optimization.
 
-**Target Date:** June 2027
+**Shipped:** March 2026 (20 commits: 30600950…db992cfb)
 
 **Source:** Forums Infrastructure doc
 

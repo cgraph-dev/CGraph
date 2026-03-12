@@ -106,7 +106,7 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **Accounts**       | `CGraph.Accounts`       | Users, profiles, friends, sessions, settings, registration, wallet auth                                                                 |
 | **Messaging**      | `CGraph.Messaging`      | Conversations, messages, reactions, read receipts, delivery tracking, voice messages, saved messages                                    |
 | **Groups**         | `CGraph.Groups`         | Group CRUD, channels, channel categories, roles, members, invites, bans, custom emojis, automod                                         |
-| **Forums**         | `CGraph.Forums`         | Forum boards, threads, posts, comments, polls, votes, categories, RSS, custom emojis, permissions, leaderboard                          |
+| **Forums**         | `CGraph.Forums`         | Forum boards, threads, posts, comments, polls, votes, categories, RSS, custom emojis, permissions, leaderboard, identity cards, thread tags, @mentions, templates, scheduled posts, analytics, custom forums, moderation log, 21-flag permission system (Phase 37) |
 | **Gamification**   | `CGraph.Gamification`   | **DEPRECATED (stub-only)** — XP, quests, levels, streaks removed; facade returns empty/noop. Schemas remain for data migration          |
 | **Nodes**          | `CGraph.Nodes`          | Virtual currency (Nodes) economy: wallets, transactions, tipping, content unlock, withdrawal requests, node bundles, platform cut (20%) |
 | **Pulse**          | `CGraph.Pulse`          | Pulse engagement scoring: pulse scores, tiers, pulse transactions, transaction processing                                               |
@@ -129,7 +129,11 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **Customizations** | `CGraph.Customizations` | User themes, visual customizations                                                                                                      |
 | **Webhooks**       | `CGraph.Webhooks`       | Outbound webhook delivery, signature verification                                                                                       |
 | **Data Export**    | `CGraph.DataExport`     | GDPR data export (processor → formatter → delivery)                                                                                     |
-| **Creators**       | `CGraph.Creators`       | Creator economy: earnings, payouts, paid subscriptions, connect onboarding, content gating                                              |
+| **Cosmetics**      | `CGraph.Cosmetics`      | Cosmetics system: 325 items across 11 types, 7-tier rarity, unified inventory, unlock engine with 5 evaluators, visibility rules (Phase 33+35) |
+| **PaidDm**         | `CGraph.PaidDm`         | Paid DM file monetization: send/unlock/settings, per-user pricing (Phase 36)                                                            |
+| **Boosts**         | `CGraph.Boosts`         | Content boost system: forum + thread promotion with configurable effects (Phase 36)                                                     |
+| **Compliance**     | `CGraph.Compliance`     | Regulatory compliance: AgeGate (regional age verification), TaxReporter (1099 / earnings reports) (Phase 36)                            |
+| **Creators**       | `CGraph.Creators`       | Creator economy: earnings, payouts, paid subscriptions, connect onboarding, content gating, revenue splits (80/20) (Phase 36)           |
 | **Events**         | `CGraph.Events`         | Domain event system, typed events                                                                                                       |
 | **Chaos**          | `CGraph.Chaos`          | Chaos engineering: fault injection, circuit breaker validation, scenario simulation                                                     |
 | **Admin**          | `CGraph.Admin`          | Admin metrics and dashboard data                                                                                                        |
@@ -169,6 +173,12 @@ Each context is a bounded module with its own schemas, queries, and business log
 - `AIRoutes` — AI-powered features
 - `SyncRoutes` — offline data sync
 - `CreatorRoutes` — creator economy endpoints (earnings, payouts, onboarding)
+- `PaidDmRoutes` — paid DM file send/unlock/settings (Phase 36)
+- `BoostRoutes` — content boost endpoints (Phase 36)
+- `CosmeticsRoutes` — cosmetics inventory/equip/unequip, badges, nameplates (Phase 35)
+- `ForumIdentityRoutes` — identity card CRUD (Phase 37)
+- `ForumTagsRoutes` — thread tag management (Phase 37)
+- `ForumAdminRoutes` — custom forum admin, moderation log (Phase 37)
 
 **Pipelines (plug chains):**
 
@@ -212,8 +222,8 @@ top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_con
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 28 workers in `lib/cgraph/workers/` (30 files including
-`base.ex` and `orchestrator.ex`):
+**Oban** job processing system with 35+ workers in `lib/cgraph/workers/` (plus forum-specific
+workers in `lib/cgraph/forums/`):
 
 - `NotificationWorker` — push/email notification delivery
 - `ScheduledMessageWorker` — timed message delivery
@@ -239,6 +249,16 @@ top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_con
 - `ExpireSecretConversations` — secret chat session expiry
 - `FileCleanupWorker` — orphaned file cleanup
 - `SendScheduledMessage` — scheduled message dispatch
+- `HeldNodesReleaseWorker` — held Nodes release after hold period (Phase 34)
+- `UnlockCheckWorker` — cosmetic unlock condition evaluation (Phase 35)
+- `SeasonalRotationWorker` — quarterly cosmetic rotation (Phase 35)
+- `RevenueSplitWorker` — async creator revenue split processing (Phase 36)
+- `ScheduledPostWorker` — forum scheduled post publishing (Phase 37) (in `lib/cgraph/forums/`)
+- `ForumAnalyticsWorker` — forum engagement metrics aggregation (Phase 37) (in `lib/cgraph/forums/`)
+- `ReputationRecalcWorker` — forum reputation recalculation (Phase 37) (in `lib/cgraph/forums/`)
+- `DigestWorker` — forum digest email generation (Phase 37) (in `lib/cgraph/forums/`)
+- `RankingUpdateWorker` — forum ranking updates (Phase 37)
+- `ScheduledMessageWorker` — scheduled message dispatch (Phase 37)
 - Worker base module (`base.ex`) for shared worker behaviour
 - Worker orchestrator (`orchestrator.ex`) for complex multi-step jobs
 
@@ -354,7 +374,7 @@ Client                        Backend
 - `CGraph.Repo` — Primary write repository
 - `CGraph.ReadRepo` — Read replica (falls back to primary)
 
-**Schema highlights (from 90+ migrations):**
+**Schema highlights (from 115+ migrations):**
 
 - `users` — Core user table with random UID, wallet fields, OAuth fields, deactivation
 - `sessions` — Session tracking
@@ -380,6 +400,18 @@ Client                        Backend
 - `webhook_endpoints` / `webhook_deliveries` — Webhook system
 - `search_history` / `dismissed_suggestions` — Search UX
 - `user_customizations` / `user_theme_preferences` — Visual personalization
+- `badges` / `nameplates` / `profile_effects` / `profile_frames` / `name_styles` / `user_inventory` — Cosmetics system (Phase 35, 325 items, 7-tier rarity)
+- `node_wallets` / `node_transactions` / `node_bundles` / `withdrawal_requests` — Nodes economy (Phase 34)
+- `topics` / `post_metrics` / `user_frequencies` / `community_health` — Discovery feed (Phase 34)
+- `paid_dm_files` / `paid_dm_settings` — Paid DM file monetization (Phase 36)
+- `premium_threads` / `subscription_tiers` / `revenue_splits` — Creator premium content (Phase 36)
+- `boosts` / `boost_effects` — Content boost system (Phase 36)
+- `creator_earnings` / `creator_payouts` / `paid_forum_subscriptions` — Creator economy (Phase 36)
+- `identity_cards` / `forum_tag_categories` / `forum_thread_tags` — Forum identity & tags (Phase 37)
+- `custom_forums` / `moderation_logs` — Custom forums & moderation (Phase 37)
+- `forum_thread_templates` / `forum_scheduled_posts` — Templates & scheduling (Phase 37)
+- `archive_messages` / `archive_forum_posts` — Archival tables (Phase 38)
+- `messages.shard_key` / `posts.shard_key` — Shard routing columns (Phase 38)
 
 **ID strategy:** Snowflake IDs for messages (ordering), random UIDs for users (privacy, converted
 from sequential via migration `20260111000001`).
@@ -461,6 +493,10 @@ src/modules/<feature>/
 - **Admin domain:** `useAdminStore` (in `src/modules/admin/store`)
 - **Creator domain:** `useCreatorStore` (in `src/modules/creator/store`)
 - **Discovery domain:** `useDiscoveryStore` (in `src/modules/discovery/store`)
+- **Paid DM domain:** `usePaidDmStore` (in `src/modules/paid-dm/`) — paid file management (Phase 36)
+- **Forum Admin domain:** `useForumAdminStore` (in `src/modules/forums/store/forumStore.admin.ts`) — custom forum admin (Phase 37)
+- **Forum Moderation domain:** `useForumModerationStore` (in `src/modules/forums/store/forumStore.moderation.ts`) — mod queue/actions (Phase 37)
+- **Forum Permissions domain:** `useForumPermissionsStore` (in `src/modules/forums/store/forumStore.permissions.ts`) — 21-flag permissions (Phase 37)
 - **Feature flags:** `useFeatureFlagStore` (in `src/stores/featureFlagStore.ts`)
 - **Voice:** `useVoiceStateStore` (in `src/stores/voiceStateStore.ts`)
 
@@ -597,7 +633,7 @@ storage (expo-secure-store). Also includes `src/lib/wallet/` — WalletConnect i
 
 | Package                       | Purpose                                                                                                                                                                                                                         | Consumers            |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `@cgraph/shared-types`        | TypeScript interfaces for API, auth, billing, creator, events, forum (customization, emoji, leaderboard, moderation, permissions, plugin, RSS, user-groups), achievements, messages, models, notifications, subscription, tiers | Web, Mobile, Landing |
+| `@cgraph/shared-types`        | TypeScript interfaces for API, auth, billing, creator, cosmetics (11 types + rarity), events, forum (customization, emoji, leaderboard, moderation, permissions, plugin, RSS, user-groups), achievements, messages, models, nodes (wallet, transactions, bundles, tips), notifications, rarity, subscription, tiers | Web, Mobile, Landing |
 | `@cgraph/api-client`          | Resilient HTTP client with circuit breaker, retry, timeout                                                                                                                                                                      | Web                  |
 | `@cgraph/crypto`              | Signal Protocol E2EE (X3DH, PQXDH, Double/Triple Ratchet, AES-256-GCM)                                                                                                                                                          | Web, Mobile          |
 | `@cgraph/socket`              | Phoenix Channel client with typed channels (conversation, group, forum, user)                                                                                                                                                   | Web, Mobile          |

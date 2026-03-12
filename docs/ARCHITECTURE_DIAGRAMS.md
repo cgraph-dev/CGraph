@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.37** | Last Updated: February 21, 2026
+> **Version: 0.9.48** | Last Updated: March 12, 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -668,7 +668,163 @@ flowchart TB
 
 ---
 
-## 11. Infrastructure Scaling Architecture (Phase 38)
+## 17. Cosmetics & Unlock Engine Architecture (Phase 33 + 35)
+
+```mermaid
+flowchart TB
+    subgraph Rarity["Canonical Rarity System (Phase 33)"]
+        RT["Rarity Module<br/>7-tier: free → mythic"]
+        CM["Cosmetics Manifest<br/>325 items total"]
+    end
+
+    subgraph Schemas["Cosmetic Schemas (Phase 35)"]
+        B["Badge (70)"]
+        NP["Nameplate (45)"]
+        PE["ProfileEffect"]
+        PF["ProfileFrame (55)"]
+        NS["NameStyle (50)"]
+        INV["Inventory<br/>Unified per-user"]
+    end
+
+    subgraph Engine["Unlock Engine"]
+        UE["UnlockEngine<br/>evaluate conditions"]
+        AE["AchievementEvaluator"]
+        CE["CollectionEvaluator"]
+        EE["EventEvaluator"]
+        LE["LevelEvaluator"]
+        PE2["PurchaseEvaluator"]
+        VR["VisibilityRules<br/>rarity + ownership gating"]
+        UE --> AE & CE & EE & LE & PE2
+    end
+
+    subgraph Workers["Background Processing"]
+        UCW["UnlockCheckWorker<br/>Oban — evaluates on activity"]
+        SRW["SeasonalRotationWorker<br/>quarterly rotation"]
+    end
+
+    subgraph API["REST API"]
+        CC["CosmeticsController<br/>inventory / equip / unequip"]
+        BC["BadgeController"]
+        NC["NameplateController"]
+    end
+
+    RT --> Schemas
+    Schemas --> INV
+    INV --> UE
+    UE --> VR
+    Workers --> UE
+    API --> INV
+
+    style Engine fill:#a855f7,color:#fff
+    style Rarity fill:#f59e0b,color:#000
+```
+
+> **Phase 33** unified rarity to 7 tiers and created the cosmetics manifest (325 items). **Phase 35** implemented all schemas, the unlock engine with 5 evaluators, unified inventory, API controllers, and frontend UI (web + mobile).
+
+---
+
+## 18. Creator Economy Architecture (Phase 36)
+
+```mermaid
+flowchart TB
+    subgraph PaidDM["Paid DM Files"]
+        PDS["PaidDmSetting<br/>per-user pricing config"]
+        PDF["PaidDmFile<br/>locked file + price"]
+        PDC["PaidDmController<br/>send / unlock / settings"]
+    end
+
+    subgraph Premium["Premium Content"]
+        PT["PremiumThread<br/>gated forum threads"]
+        ST["SubscriptionTier<br/>up to 3 tiers per forum"]
+        RS["RevenueSplit<br/>80% creator / 20% platform"]
+        RSW["RevenueSplitWorker<br/>async payout processing"]
+    end
+
+    subgraph Boosts["Content Boosts"]
+        BO["Boost<br/>forum + thread boosts"]
+        BE["BoostEffect<br/>visibility multiplier"]
+        BOC["BoostController"]
+    end
+
+    subgraph Compliance["Compliance Layer"]
+        AG["AgeGate<br/>regional age verification"]
+        TR["TaxReporter<br/>earnings reports + 1099"]
+    end
+
+    subgraph Creator["Creator Dashboard"]
+        CR["Creators Context<br/>earnings / payouts / onboarding"]
+        CC["CreatorController<br/>status / analytics / tiers"]
+        CAC["CreatorAnalyticsController"]
+    end
+
+    PaidDM --> RS
+    Premium --> RS
+    Boosts --> RS
+    RS --> RSW
+    Creator --> Compliance
+
+    style PaidDM fill:#3b82f6,color:#fff
+    style Premium fill:#8b5cf6,color:#fff
+    style Compliance fill:#ef4444,color:#fff
+```
+
+> **Phase 36** added the full creator economy: paid DM file monetization, premium threads with subscription tiers, content boosts, revenue splits (80/20), compliance layer (AgeGate + TaxReporter), GDPR export extension, and creator dashboard UI on web + mobile.
+
+---
+
+## 19. Forum Transformation Architecture (Phase 37)
+
+```mermaid
+flowchart TB
+    subgraph Identity["Identity System"]
+        IC["IdentityCard<br/>per-user forum identity"]
+        PCF["PostCreationFlow<br/>structured post flow"]
+        REP["Reputation<br/>per-forum scoring"]
+    end
+
+    subgraph Tags["Thread Organization"]
+        TC["TagCategory<br/>category groupings"]
+        TT["ThreadTag<br/>thread classification"]
+        TTP["ThreadTemplate<br/>structured templates"]
+    end
+
+    subgraph Social["Social Features"]
+        AM["AtMention<br/>@user notifications"]
+        SP["ScheduledPost<br/>time-delayed publishing"]
+        FA["ForumAnalytics<br/>engagement metrics"]
+    end
+
+    subgraph Admin["Administration"]
+        CF["CustomForum<br/>user-created forums"]
+        ML["ModerationLog<br/>audit trail"]
+        FP["ForumPermission<br/>21-flag permission system"]
+        PT["PermissionTemplate<br/>reusable permission sets"]
+        FAC["ForumAdminController"]
+        FMC["ForumModerationController"]
+    end
+
+    subgraph Workers2["Background Workers"]
+        SPW["ScheduledPostWorker"]
+        FAW["ForumAnalyticsWorker"]
+        RRW["ReputationRecalcWorker"]
+        DW["DigestWorker"]
+    end
+
+    Identity --> Social
+    Tags --> Social
+    Social --> Workers2
+    Admin --> ML
+
+    style Identity fill:#10b981,color:#fff
+    style Admin fill:#ef4444,color:#fff
+    style Tags fill:#f59e0b,color:#000
+```
+
+> **Phase 37** transformed forums with identity cards, thread tags/categories, @mentions, templates, analytics, scheduled posts, custom forums, moderation log, extended permissions (21 flags + templates), and full web + mobile UI (13+ web components, 12+ mobile components).
+
+---
+
+## 20. Infrastructure Scaling Architecture (Phase 38)
 
 ```mermaid
 flowchart TB

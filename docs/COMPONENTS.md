@@ -101,6 +101,59 @@
 | ChannelItem      | `modules/groups/components/channel-list/`         | text, voice, announcement; active, muted, unread | ✅ |
 | ForumThreadCard  | `pages/forums/forum-thread-card.stories.tsx`      | default, pinned, locked, high-activity        | ✅    |
 
+## Discovery (Phase 34)
+
+| Component         | Path                                                   | Variants / Props                              | Story |
+| ----------------- | ------------------------------------------------------ | --------------------------------------------- | ----- |
+| FeedModeTabs      | `modules/discovery/components/feed-mode-tabs.tsx`      | 5 modes (Pulse/Fresh/Rising/Deep Cut/Frequency) | —   |
+| FrequencyPicker   | `modules/discovery/components/frequency-picker.tsx`    | topic multi-select with weight sliders         | —    |
+| TopicCard         | `modules/discovery/components/topic-card.tsx`          | topic display with health score                | —    |
+
+## Cosmetics (Phase 35)
+
+| Component              | Path                                                           | Variants / Props                                | Story |
+| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------- | ----- |
+| CosmeticCard           | `modules/cosmetics/components/cosmetic-card.tsx`              | rarity-based glow, equipped indicator           | —     |
+| CosmeticRenderer       | `modules/cosmetics/components/cosmetic-renderer.tsx`          | renders any cosmetic type                       | —     |
+| EquipPanel             | `modules/cosmetics/components/equip-panel.tsx`                | equip/unequip with confirmation                 | —     |
+| RarityBadge            | `modules/cosmetics/components/rarity-badge.tsx`               | 7-tier rarity display with colors               | —     |
+| InventoryPage          | `modules/cosmetics/pages/inventory-page.tsx`                  | full inventory grid with filters                | —     |
+| ShopPage               | `modules/cosmetics/pages/shop-page.tsx`                       | Nodes-priced cosmetics shop                     | —     |
+| CosmeticsSettingsPanel | `modules/settings/components/cosmetics-settings-panel.tsx`    | cosmetics preferences                           | —     |
+
+## Creator Economy (Phase 36)
+
+| Component             | Path                                                           | Variants / Props                               | Story |
+| --------------------- | -------------------------------------------------------------- | ---------------------------------------------- | ----- |
+| CreatorDashboardPage  | `modules/creator/pages/creator-dashboard-page.tsx`            | earnings chart, payout history, analytics       | —     |
+| EarningsChart         | `modules/creator/components/earnings-chart.tsx`               | monthly earnings with Recharts                  | —     |
+| PremiumThreadManager  | `modules/creator/components/premium-thread-manager.tsx`       | create/manage gated threads                     | —     |
+| PaidFileCard          | `modules/paid-dm/components/paid-file-card.tsx`               | locked file preview + price badge               | —     |
+| FileUnlockModal       | `modules/paid-dm/components/file-unlock-modal.tsx`            | Nodes payment confirmation                      | —     |
+| PaidDmSettingsPage    | `modules/paid-dm/pages/paid-dm-settings-page.tsx`             | pricing config for paid DMs                     | —     |
+| BoostPanel            | `modules/forums/components/boost-panel.tsx`                   | boost forum/thread controls                     | —     |
+| PremiumThreadGate     | `modules/forums/components/premium-thread-gate.tsx`           | paywall overlay with "Unlock" CTA               | —     |
+| PaidBadge             | `components/forums/paid-badge.tsx`                            | paid content indicator badge                    | —     |
+| CreatorLayout         | `modules/social/components/profile-card/creator-layout.tsx`   | creator-specific profile card variant           | —     |
+
+## Forum Transformation (Phase 37)
+
+| Component                | Path                                                              | Variants / Props                              | Story |
+| ------------------------ | ----------------------------------------------------------------- | --------------------------------------------- | ----- |
+| IdentityCard             | `modules/forums/components/identity-card.tsx`                    | user identity display (title + badge + border) | —    |
+| MentionAutocomplete      | `modules/forums/components/mention-autocomplete.tsx`             | @mention user search dropdown                  | —    |
+| TagSelector              | `modules/forums/components/tag-selector.tsx`                     | multi-tag picker with categories                | —    |
+| ThreadTemplatePicker     | `modules/forums/components/thread-template-picker.tsx`           | template selection for new threads              | —    |
+| ScheduledPostForm        | `modules/forums/components/scheduled-post-form.tsx`              | date/time picker for scheduled publishing       | —    |
+| ForumModDashboard        | `modules/forums/components/forum-moderation/forum-mod-dashboard.tsx` | moderation queue + actions                  | —    |
+| WarningPanel             | `modules/forums/components/forum-moderation/warning-panel.tsx`   | user warnings management                        | —    |
+| ForumAutomodSettings     | `modules/forums/components/forum-moderation/forum-automod-settings.tsx` | automod rule configuration              | —    |
+| ForumPermissionsPanel    | `modules/forums/components/forum-permissions/forum-permissions-panel.tsx` | 21-flag permission matrix              | —    |
+| PermissionTemplateManager| `modules/forums/components/forum-permissions/permission-template-manager.tsx` | CRUD permission templates        | —    |
+| PermissionMatrix         | `modules/forums/components/forum-permissions/permission-matrix.tsx` | visual permission grid                     | —    |
+| ForumSearchPage          | `modules/forums/pages/forum-search-page.tsx`                     | forum-scoped search results                     | —    |
+| IdentityCustomization    | `pages/customize/identity-customization/identity-customization.tsx` | identity card editor with preview           | —    |
+
 ## Notifications
 
 | Component        | Path                                                 | Variants / Props                        | Story |
@@ -134,6 +187,54 @@
 | Badge           | `ui/badge.tsx`                   | color, size, dot indicator                |
 | BottomSheet     | `ui/bottom-sheet.tsx`            | snapping points, drag handle              |
 | Carousel        | `ui/carousel.tsx`                | horizontal swipe, pagination dots         |
+
+## Mobile — Nodes & Secret Chat (Phase 34)
+
+| Component              | Path                                                        | Variants / Props                          |
+| ---------------------- | ----------------------------------------------------------- | ----------------------------------------- |
+| NodesWalletScreen      | `screens/nodes/nodes-wallet-screen.tsx`                     | balance, transactions, buy CTA            |
+| ShopScreen             | `screens/nodes/shop-screen.tsx`                             | bundle grid (5 bundles)                   |
+| WithdrawalScreen       | `screens/nodes/withdrawal-screen.tsx`                       | withdrawal form, status tracking          |
+| SecretChatScreen       | `screens/secret-chat/secret-chat-screen.tsx`                | ghost mode, 12 themes, panic wipe         |
+| SecretChatSettingsScreen | `screens/secret-chat/secret-chat-settings-screen.tsx`     | timer, theme, key verification            |
+| SecretChatHeader       | `components/secret-chat/secret-chat-header.tsx`             | ghost indicator, timer badge              |
+| SecretChatMessage      | `components/secret-chat/secret-chat-message.tsx`            | E2EE badge, disappearing indicator        |
+| SecretChatInput        | `components/secret-chat/secret-chat-input.tsx`              | encrypted input with send button          |
+| DiscoverySection       | `screens/search/search-screen/components/discovery-section.tsx` | 5 feed modes in search tab            |
+| CustomizeScreen        | `screens/customize/customize-screen.tsx`                    | 5 customization categories                |
+| PrivacyScreen          | `screens/settings/privacy-screen.tsx`                       | 15 privacy toggles                        |
+
+## Mobile — Cosmetics (Phase 35)
+
+| Component            | Path                                                   | Variants / Props                          |
+| -------------------- | ------------------------------------------------------ | ----------------------------------------- |
+| InventoryScreen      | `screens/cosmetics/inventory-screen.tsx`                | full cosmetic inventory                   |
+| EquipScreen          | `screens/cosmetics/equip-screen.tsx`                    | equip/unequip cosmetics                   |
+| CosmeticRenderer     | `components/cosmetics/cosmetic-renderer.tsx`            | renders any cosmetic surface              |
+
+## Mobile — Creator Economy (Phase 36)
+
+| Component              | Path                                                    | Variants / Props                          |
+| ---------------------- | ------------------------------------------------------- | ----------------------------------------- |
+| CreatorDashboardScreen | `screens/creator/creator-dashboard-screen.tsx`           | earnings, analytics, payouts              |
+| PaidFileCard           | `components/paid-dm/paid-file-card.tsx`                  | locked file + Nodes price                 |
+| PaidDmSettingsScreen   | `screens/paid-dm/paid-dm-settings-screen.tsx`            | pricing configuration                     |
+
+## Mobile — Forum Transformation (Phase 37)
+
+| Component              | Path                                                     | Variants / Props                          |
+| ---------------------- | -------------------------------------------------------- | ----------------------------------------- |
+| IdentityCardScreen     | `screens/forums/identity-card-screen.tsx`                | view/edit identity card                   |
+| ForumAdminScreen       | `screens/forums/forum-admin-screen.tsx`                  | admin panels (10 sections)                |
+| ForumSearchScreen      | `screens/forums/forum-search-screen.tsx`                 | forum-scoped search                       |
+| ForumLeaderboardScreen | `screens/forums/forum-leaderboard-screen.tsx`            | reputation rankings                       |
+| ForumUserGroupsScreen  | `screens/forums/forum-user-groups-screen.tsx`            | user group management                     |
+| ForumModerationScreen  | `screens/forums/forum-moderation-screen.tsx`             | moderation queue + actions                |
+| IdentityCard           | `components/forums/identity-card.tsx`                    | compact identity display                  |
+| MentionInput           | `components/forums/mention-input.tsx`                    | @mention autocomplete input               |
+| TagChips               | `components/forums/tag-chips.tsx`                        | tag display chips                         |
+| ThreadPrefixBadge      | `components/forums/thread-prefix-badge.tsx`              | thread prefix indicator                   |
+| IdentityCustomization  | `screens/customize/identity-customization-screen.tsx`    | mobile identity card editor               |
 
 ---
 

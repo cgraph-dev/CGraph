@@ -74,6 +74,33 @@ API surface, so testing focuses on unit tests for core logic and integration tes
 | CDN | `CDNManager`, `ImageOptimizer` | Low | 60% |
 | Presence | `DistributedPresence` | Medium | 70% |
 
+### Feature Modules (Phases 33-37) — Test Targets
+
+Phases 33-37 introduced domain features with user-facing API surfaces. Testing covers contexts,
+controllers, evaluators, and workers.
+
+| Phase | Module Group | Key Modules | Test Priority | Target Coverage |
+| --- | --- | --- | --- | --- |
+| 33 | Rarity | `Cosmetics.Rarity` | High | 90% |
+| 34 | Nodes | `Nodes`, `NodeWallet`, `NodeTransaction` | High | 85% |
+| 34 | Discovery | `Discovery`, `Feed`, `PostMetric` | Medium | 75% |
+| 34 | Customizations | `Customizations`, `UserCustomization` | Medium | 70% |
+| 35 | Cosmetics | `Cosmetics`, `UnlockEngine`, `VisibilityRules` | High | 85% |
+| 35 | Evaluators | `AchievementEval`, `CollectionEval`, `EventEval`, `LevelEval`, `PurchaseEval` | High | 90% |
+| 35 | Cosmetic Schemas | `Badge`, `Nameplate`, `ProfileEffect`, `ProfileFrame`, `NameStyle` | Medium | 75% |
+| 35 | Controllers | `CosmeticsController`, `BadgeController`, `NameplateController` | High | 80% |
+| 36 | PaidDM | `PaidDm`, `PaidDmFile`, `PaidDmSetting` | High | 80% |
+| 36 | Creators | `Creators`, `Earnings`, `Payout`, `RevenueSplit` | High | 85% |
+| 36 | Boosts | `Boosts`, `Boost`, `BoostEffect` | Medium | 70% |
+| 36 | Compliance | `AgeGate`, `TaxReporter` | High | 90% |
+| 36 | Controllers | `CreatorController`, `PaidDmController`, `BoostController`, `TierController` | High | 80% |
+| 37 | Forum Identity | `IdentityCard`, `PostCreationFlow`, `Reputation` | Medium | 75% |
+| 37 | Tags/Templates | `ThreadTag`, `TagCategory`, `ThreadTemplate` | Medium | 70% |
+| 37 | Social Features | `AtMention`, `ScheduledPost`, `ForumAnalytics` | Medium | 70% |
+| 37 | Admin/Moderation | `CustomForum`, `ModerationLog`, `ForumPermission` | High | 80% |
+| 37 | Controllers | `IdentityCardController`, `TagController`, `ForumAdminController`, `ForumModerationController` | High | 80% |
+| 37 | Workers | `ScheduledPostWorker`, `ForumAnalyticsWorker`, `ReputationRecalcWorker`, `DigestWorker` | Medium | 70% |
+
 ---
 
 ## 1. Backend Testing (Elixir)

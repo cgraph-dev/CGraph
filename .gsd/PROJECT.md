@@ -175,13 +175,19 @@ These rules are **absolute** — no exceptions, no shortcuts:
 
 ### Active
 
-<!-- Next work scope. To be defined via /discovery and /plan phases. -->
+<!-- Post-v1.0 phases. Phases 20-38 shipped. -->
 
 - ✓ Liquid Glass UI (10 plans) — Phase 20
 - ✓ UI Interactions & Motion (10 plans) — Phase 21
 - ✓ Cinematic UI Parity (8 plans) — Phase 25
+- ✓ Canonical Reconciliation — Phase 33
+- ✓ Parity + Mobile Nodes Economy — Phase 34
+- ✓ Cosmetics + Unlock Engine — Phase 35
+- ✓ Creator Economy (Paid DM, Boosts, Compliance) — Phase 36
+- ✓ Forum Transformation (Identity, Tags, Moderation) — Phase 37
+- ✓ Infrastructure Scaling (Sharding, Archival, Ops) — Phase 38
 
-(Pending — run `/discovery` to define next milestone scope)
+(Phase 39 remaining — run `/discovery` to define next milestone scope)
 
 ### Out of Scope
 
@@ -194,13 +200,14 @@ These rules are **absolute** — no exceptions, no shortcuts:
 - Desktop native app — web covers desktop, no Electron
 - Self-hosting support — single deployment target (Fly.io) for now
 - ~~Database sharding~~ — **Implemented in Phase 38** (ConsistentHash, ShardRouter, ShardManager, ShardMigration)
-- Self-hosting support — single deployment target (Fly.io) for now
 
 ## Context
 
-**Current State (v1.0.0):** All 19 phases shipped. 142 requirements complete. The codebase has 27+
-backend domain contexts, 2,200+ web components, a full mobile app, and comprehensive infrastructure.
-All features built, connected, and tested across platforms.
+**Current State (v1.0.0+):** All 19 base phases shipped. 142 core requirements complete. Post-v1.0
+phases 20-38 delivered an additional 94 commits covering Liquid Glass UI, cinematic parity,
+cosmetics + unlock engine, nodes economy, creator economy, forum transformation, and infrastructure
+scaling. The codebase has 58+ backend domain contexts, 2,200+ web components, a full mobile app,
+and comprehensive infrastructure.
 
 **Codebase Documentation:** 7 verified docs in `.gsd/codebase/` (updated March 4, 2026):
 
@@ -221,8 +228,8 @@ All features built, connected, and tested across platforms.
 - 133 oversized mobile files (>300 lines)
 - Load test results show 0 passing checks (no production baseline)
 
-**Backend:** Elixir/Phoenix at `apps/backend/` — 28 workers, 24 Oban queues, 18 controllers, 17
-plugs, 6 Phoenix channels. Managed separately (backend project).
+**Backend:** Elixir/Phoenix at `apps/backend/` — 35+ workers, 24 Oban queues, 24+ controllers, 17
+plugs, 6 Phoenix channels, 115+ migrations. Managed separately (backend project).
 
 **Prior v1.0.0 Roadmap:** 19 phases archived at `.gsd/archive/ROADMAP-v1.0.0.md`.
 
