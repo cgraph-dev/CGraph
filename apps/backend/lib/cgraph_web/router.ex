@@ -40,6 +40,7 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.NodesRoutes
   import CGraphWeb.Router.CosmeticsRoutes
   import CGraphWeb.Router.PaidDmRoutes
+  import CGraphWeb.Router.BoostRoutes
 
   # ============================================================================
   # Pipelines
@@ -143,4 +144,5 @@ defmodule CGraphWeb.Router do
   discovery_routes()
   nodes_routes()
   paid_dm_routes()
+  boost_routes()
 end

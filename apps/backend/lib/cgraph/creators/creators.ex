@@ -6,7 +6,7 @@ defmodule CGraph.Creators do
   Delegates to specialized sub-modules while keeping the public API clean.
   """
 
-  alias CGraph.Creators.{ConnectOnboarding, PaidSubscription, Earnings, Payout}
+  alias CGraph.Creators.{ConnectOnboarding, PaidSubscription, Earnings, Payout, PremiumContent}
 
   # ── Connect Onboarding ──────────────────────────────────────────
 
@@ -37,4 +37,13 @@ defmodule CGraph.Creators do
   defdelegate update_payout_status(stripe_transfer_id, status, extra \\ %{}), to: Payout
   defdelegate list_payouts(creator_id, opts \\ []), to: Payout
   defdelegate minimum_payout_cents(), to: Payout
+
+  # ── Premium Content ──────────────────────────────────────────
+
+  defdelegate create_premium_thread(creator_id, thread_id, attrs), to: PremiumContent
+  defdelegate purchase_thread_access(user_id, thread_id, opts), to: PremiumContent
+  defdelegate create_subscription_tier(creator_id, forum_id, attrs), to: PremiumContent
+  defdelegate subscribe_to_tier(user_id, tier_id, opts), to: PremiumContent
+  defdelegate list_creator_tiers(creator_id), to: PremiumContent
+  defdelegate calculate_revenue_split(thread_id, amount), to: PremiumContent
 end

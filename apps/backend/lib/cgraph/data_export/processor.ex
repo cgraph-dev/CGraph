@@ -22,7 +22,12 @@ defmodule CGraph.DataExport.Processor do
     connections: {CGraph.Connections, :export_user_connections},
     notifications: {CGraph.Notifications, :export_user_notifications},
     notification_preferences: {CGraph.Notifications.Preferences, :export_for_user},
-    push_tokens: {CGraph.Notifications.PushTokens, :export_for_user}
+    push_tokens: {CGraph.Notifications.PushTokens, :export_for_user},
+    cosmetics_inventory: {CGraph.Cosmetics, :export_user_inventory},
+    nodes_transactions: {CGraph.Nodes, :export_user_transactions},
+    paid_dm_files: {CGraph.PaidDm, :export_user_files},
+    boost_history: {CGraph.Boosts, :export_user_boosts},
+    creator_earnings: {CGraph.Creators.Earnings, :export_user_earnings}
   }
 
   # ---------------------------------------------------------------------------

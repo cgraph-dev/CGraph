@@ -34,6 +34,14 @@ defmodule CGraphWeb.Router.CreatorRoutes do
         get "/creator/analytics/earnings", CreatorAnalyticsController, :earnings
         get "/creator/analytics/subscribers", CreatorAnalyticsController, :subscribers
         get "/creator/analytics/content", CreatorAnalyticsController, :content
+
+        # ── Premium Content ────────────────────────────────────
+        post "/creator/premium-threads", CreatorController, :create_premium_thread
+        put "/threads/:id/purchase", CreatorController, :purchase_access
+        get "/creator/tiers", CreatorController, :list_tiers
+        post "/creator/tiers", CreatorController, :create_tier
+        put "/creator/tiers/:id", CreatorController, :update_tier
+        get "/creator/revenue-splits", CreatorController, :revenue_splits
       end
     end
   end

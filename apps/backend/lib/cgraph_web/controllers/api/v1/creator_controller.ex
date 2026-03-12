@@ -245,4 +245,150 @@ defmodule CGraphWeb.API.V1.CreatorController do
     |> validate_number(:subscription_price_cents, greater_than: 0)
     |> Repo.update()
   end
+
+  # ── Premium Content ─────────────────────────────────────────────
+
+  @doc "POST /api/v1/creator/premium-threads — Mark a thread as premium."
+  def create_premium_thread(conn, params) do
+    user = conn.assigns.current_user
+
+    case Creators.create_premium_thread(user.id, params["thread_id"], %{
+           price_nodes: params["price_nodes"],
+           subscriber_only: params["subscriber_only"] || false,
+           preview_length: params["preview_length"] || 200
+         }) do
+      {:ok, pt} ->
+        conn
+        |> put_status(:created)
+        |> json(%{data: %{id: pt.id, thread_id: pt.thread_id, price_nodes: pt.price_nodes}})
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: %{message: ErrorHelpers.safe_error_message(changeset, context: "premium_thread")}})
+    end
+  end
+
+  @doc "PUT /api/v1/threads/:id/purchase — Purchase access to a premium thread."
+  def purchase_access(conn, %{"id" => thread_id}) do
+    user = conn.assigns.current_user
+
+    case Creators.purchase_thread_access(user.id, thread_id, %{}) do
+      {:ok, result} ->
+        json(conn, %{data: result})
+
+      {:error, :not_premium} ->
+        conn |> put_status(:not_found) |> json(%{error: %{message: "Thread is not premium"}})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: %{message: ErrorHelpers.safe_error_message(reason, context: "purchase_access")}})
+    end
+  end
+
+  @doc "GET /api/v1/creator/tiers — List creator subscription tiers."
+  def list_tiers(conn, _params) do
+    user = conn.assigns.current_user
+    tiers = Creators.list_creator_tiers(user.id)
+
+    json(conn, %{
+      data:
+        Enum.map(tiers, fn t ->
+          %{
+            id: t.id,
+            name: t.name,
+            price_monthly_nodes: t.price_monthly_nodes,
+            benefits: t.benefits,
+            max_subscribers: t.max_subscribers,
+            active: t.active
+          }
+        end)
+    })
+  end
+
+  @doc "POST /api/v1/creator/tiers — Create a subscription tier."
+  def create_tier(conn, %{"forum_id" => forum_id} = params) do
+    user = conn.assigns.current_user
+
+    case Creators.create_subscription_tier(user.id, forum_id, %{
+           name: params["name"],
+           price_monthly_nodes: params["price_monthly_nodes"],
+           benefits: params["benefits"] || %{},
+           max_subscribers: params["max_subscribers"]
+         }) do
+      {:ok, tier} ->
+        conn
+        |> put_status(:created)
+        |> json(%{data: %{id: tier.id, name: tier.name, price_monthly_nodes: tier.price_monthly_nodes}})
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: %{message: ErrorHelpers.safe_error_message(changeset, context: "create_tier")}})
+    end
+  end
+
+  @doc "PUT /api/v1/creator/tiers/:id — Update a subscription tier."
+  def update_tier(conn, %{"id" => tier_id} = params) do
+    alias CGraph.Creators.SubscriptionTier
+
+    case Repo.get(SubscriptionTier, tier_id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: %{message: "Tier not found"}})
+
+      tier ->
+        user = conn.assigns.current_user
+
+        if tier.creator_id != user.id do
+          conn |> put_status(:forbidden) |> json(%{error: %{message: "Not your tier"}})
+        else
+          changeset =
+            SubscriptionTier.changeset(tier, %{
+              name: params["name"] || tier.name,
+              price_monthly_nodes: params["price_monthly_nodes"] || tier.price_monthly_nodes,
+              benefits: params["benefits"] || tier.benefits,
+              max_subscribers: params["max_subscribers"] || tier.max_subscribers,
+              active: Map.get(params, "active", tier.active)
+            })
+
+          case Repo.update(changeset) do
+            {:ok, updated} ->
+              json(conn, %{data: %{id: updated.id, name: updated.name, active: updated.active}})
+
+            {:error, changeset} ->
+              conn
+              |> put_status(:unprocessable_entity)
+              |> json(%{error: %{message: ErrorHelpers.safe_error_message(changeset, context: "update_tier")}})
+          end
+        end
+    end
+  end
+
+  @doc "GET /api/v1/creator/revenue-splits — Get revenue split info for creator threads."
+  def revenue_splits(conn, _params) do
+    user = conn.assigns.current_user
+    alias CGraph.Creators.{PremiumThread, RevenueSplit}
+    import Ecto.Query
+
+    threads =
+      PremiumThread
+      |> where([pt], pt.creator_id == ^user.id)
+      |> Repo.all()
+
+    splits =
+      Enum.map(threads, fn pt ->
+        split = Repo.get_by(RevenueSplit, thread_id: pt.thread_id)
+
+        %{
+          thread_id: pt.thread_id,
+          price_nodes: pt.price_nodes,
+          creator_share: split && split.creator_share,
+          platform_share: split && split.platform_share,
+          referral_share: split && split.referral_share
+        }
+      end)
+
+    json(conn, %{data: splits})
+  end
 end
