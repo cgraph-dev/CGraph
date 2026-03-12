@@ -93,23 +93,24 @@ defmodule CGraph.Sharding.ConsistentHash do
   if needed.
   """
   @spec get_node(t(), String.t()) :: {:ok, node_id()} | {:error, :empty_ring}
-  def get_node(%__MODULE__{ring: ring}, _key) when ring == :gb_trees.empty() do
-    {:error, :empty_ring}
-  end
+  def get_node(%__MODULE__{} = ch_ring, key) do
+    if :gb_trees.is_empty(ch_ring.ring) do
+      {:error, :empty_ring}
+    else
+      ring = ch_ring.ring
+      hash = hash_key(key)
+      # Find the first node with hash >= key hash (walk clockwise)
+      iter = :gb_trees.iterator_from(hash, ring)
 
-  def get_node(%__MODULE__{ring: ring}, key) do
-    hash = hash_key(key)
-    # Find the first node with hash >= key hash (walk clockwise)
-    iter = :gb_trees.iterator_from(hash, ring)
+      case :gb_trees.next(iter) do
+        {_pos, node_id, _iter2} ->
+          {:ok, node_id}
 
-    case :gb_trees.next(iter) do
-      {_pos, node_id, _iter2} ->
-        {:ok, node_id}
-
-      :none ->
-        # Wrap around — take the smallest key in the ring
-        {_pos, node_id, _val} = :gb_trees.smallest(ring)
-        {:ok, node_id}
+        :none ->
+          # Wrap around — take the smallest key in the ring
+          {_pos, node_id, _val} = :gb_trees.smallest(ring)
+          {:ok, node_id}
+      end
     end
   end
 
@@ -119,17 +120,21 @@ defmodule CGraph.Sharding.ConsistentHash do
   Returns up to `n` distinct physical nodes in clockwise order.
   """
   @spec get_nodes(t(), String.t(), pos_integer()) :: [node_id()]
-  def get_nodes(%__MODULE__{ring: ring, nodes: nodes}, _key, _n) when ring == :gb_trees.empty() do
-    []
-  end
-
-  def get_nodes(%__MODULE__{ring: ring} = ch_ring, key, n) do
+  def get_nodes(%__MODULE__{} = ch_ring, key, n) do
+    if :gb_trees.is_empty(ch_ring.ring) do
+      []
+    else
+      ring = ch_ring.ring
     total_nodes = MapSet.size(ch_ring.nodes)
     n = min(n, total_nodes)
 
-    hash = hash_key(key)
-    iter = :gb_trees.iterator_from(hash, ring)
-    collect_unique_nodes(iter, ring, n, MapSet.new(), [])
+      total_nodes = MapSet.size(ch_ring.nodes)
+      n = min(n, total_nodes)
+
+      hash = hash_key(key)
+      iter = :gb_trees.iterator_from(hash, ring)
+      collect_unique_nodes(iter, ring, n, MapSet.new(), [])
+    end
   end
 
   @doc """
