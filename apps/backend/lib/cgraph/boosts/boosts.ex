@@ -186,15 +186,15 @@ defmodule CGraph.Boosts do
   defp parse_duration(_), do: {:error, :invalid_duration}
 
   defp debit_nodes(user_id, amount) do
-    case function_exported?(CGraph.Nodes, :debit, 2) do
-      true -> CGraph.Nodes.debit(user_id, amount)
+    case function_exported?(CGraph.Nodes, :debit_nodes, 4) do
+      true -> CGraph.Nodes.debit_nodes(user_id, amount, "boost_purchase", [])
       false -> {:ok, %{balance: 0}}
     end
   end
 
   defp credit_nodes(user_id, amount) do
-    case function_exported?(CGraph.Nodes, :credit, 2) do
-      true -> CGraph.Nodes.credit(user_id, amount)
+    case function_exported?(CGraph.Nodes, :credit_nodes, 4) do
+      true -> CGraph.Nodes.credit_nodes(user_id, amount, "boost_refund", [])
       false -> {:ok, %{balance: 0}}
     end
   end
