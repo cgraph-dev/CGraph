@@ -668,4 +668,79 @@ flowchart TB
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.37 • Last updated: February 21, 2026</sub>
+## 11. Infrastructure Scaling Architecture (Phase 38)
+
+```mermaid
+flowchart TB
+    subgraph Sharding["Database Sharding"]
+        SM["ShardManager<br/>GenServer"]
+        CH["ConsistentHash<br/>256 vnodes / ring"]
+        SR["ShardRouter<br/>route(table, key, mode)"]
+        SMIG["ShardMigration<br/>split / merge / verify"]
+        SM --> CH
+        SR --> SM
+        SMIG --> SM
+    end
+
+    subgraph Caching["Multi-Tier Cache"]
+        MTC["MultiTierCache<br/>build_key / fetch / put"]
+        L1["L1 — ETS<br/>1 min TTL"]
+        L2["L2 — Cachex<br/>15 min TTL"]
+        L3["L3 — Redis<br/>24 h TTL"]
+        CW["CacheWarmer<br/>boot + periodic"]
+        CI["CacheInvalidator<br/>PubSub-driven"]
+        MTC --> L1 --> L2 --> L3
+        CW --> MTC
+        CI --> MTC
+    end
+
+    subgraph Queues["Queue & Search"]
+        PQ["PriorityQueue<br/>critical / high / normal / low"]
+        DLQ["DeadLetterQueue<br/>ETS + admin API"]
+        EA["ElasticAdapter<br/>ES / OpenSearch / pg fallback"]
+        SI["SearchIndexer<br/>bulk indexing"]
+        PQ --> DLQ
+        EA --> SI
+    end
+
+    subgraph Monitoring["Monitoring Stack"]
+        HD["HealthDashboard<br/>component status"]
+        AL["Alerting<br/>Slack + PagerDuty"]
+        MC["MetricsCollector<br/>SLO tracking"]
+        HD --> AL
+        MC --> AL
+    end
+
+    subgraph Operations["Operations Toolkit"]
+        RB["Runbook<br/>define_runbook macro"]
+        CP["CapacityPlanner<br/>linear regression"]
+        DR["DisasterRecovery<br/>failover / promote"]
+        PP["PerformanceProfiler<br/>flame graph / slow queries"]
+    end
+
+    subgraph Archival["Data Archival"]
+        AP["ArchivePolicy<br/>365-day threshold"]
+        AR["Archival Context<br/>archive / restore"]
+        AW["ArchivalWorker<br/>monthly Oban cron"]
+        AP --> AR --> AW
+    end
+
+    subgraph CDN["CDN Management"]
+        CM["CDNManager<br/>R2 / S3 backend"]
+        IO["ImageOptimizer<br/>resize / WebP / srcset"]
+        CM --> IO
+    end
+
+    subgraph Presence["Distributed Presence"]
+        DP["DistributedPresence<br/>CRDT multi-node"]
+    end
+```
+
+> **Phase 38 adds 26 Elixir modules** across 8 subsystems covering database sharding,
+> multi-tier caching, data archival, priority queues, search infrastructure, distributed
+> presence, CDN management, monitoring, and operations toolkit. All modules are optionally
+> enabled via runtime configuration.
+
+---
+
+<sub>**CGraph Architecture Diagrams** • Version 0.9.48 • Last updated: March 12, 2026</sub>

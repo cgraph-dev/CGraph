@@ -57,6 +57,23 @@ Comprehensive testing approach across all CGraph applications.
 - **Mobile**: Jest coverage
   - Threshold: 60% lines
 
+### Infrastructure Modules (Phase 38) — Test Targets
+
+Phase 38 introduced 26 infrastructure modules. These are primarily internal plumbing with no external
+API surface, so testing focuses on unit tests for core logic and integration tests for data flows.
+
+| Module Group | Key Modules | Test Priority | Target Coverage |
+| --- | --- | --- | --- |
+| Sharding | `ConsistentHash`, `ShardRouter`, `ShardManager` | High | 80% |
+| Cache | `MultiTierCache`, `CacheWarmer`, `CacheInvalidator` | High | 75% |
+| Archival | `Archival`, `ArchivePolicy`, `ArchivalWorker` | Medium | 70% |
+| Queues | `PriorityQueue`, `DeadLetterQueue` | Medium | 75% |
+| Search | `ElasticAdapter`, `SearchIndexer` | Medium | 70% |
+| Monitoring | `HealthDashboard`, `Alerting`, `MetricsCollector` | Medium | 70% |
+| Operations | `Runbook`, `CapacityPlanner`, `DisasterRecovery`, `PerformanceProfiler` | Low | 60% |
+| CDN | `CDNManager`, `ImageOptimizer` | Low | 60% |
+| Presence | `DistributedPresence` | Medium | 70% |
+
 ---
 
 ## 1. Backend Testing (Elixir)

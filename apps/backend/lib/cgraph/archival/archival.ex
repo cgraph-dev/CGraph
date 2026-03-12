@@ -66,7 +66,7 @@ defmodule CGraph.Archival do
     restore(policy.archive_table, policy.target_table, ids)
   end
 
-  def restore(archive_table, target_table, ids) when is_binary(archive_table) and is_list(ids) do
+  defp restore(archive_table, target_table, ids) when is_binary(archive_table) and is_list(ids) do
     if ids == [] do
       {:ok, 0}
     else

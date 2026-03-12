@@ -203,6 +203,17 @@ This document defines ownership and responsibility for all database tables in CG
 
 ---
 
+## Archival & Sharding (Phase 38)
+
+| Table                  | Owner Team   | Priority | Notes                                        |
+| ---------------------- | ------------ | -------- | -------------------------------------------- |
+| `archive_messages`     | @devops-team | 🟡       | Archived messages (365+ days old)            |
+| `archive_forum_posts`  | @devops-team | 🟡       | Archived forum posts (365+ days old)         |
+| `messages.shard_key`   | @devops-team | 🟡       | Shard routing column (16 shards, hash-based) |
+| `posts.shard_key`      | @devops-team | 🟡       | Shard routing column (8 shards, hash-based)  |
+
+---
+
 ## Change Management Rules
 
 ### 🔴 Critical Tables
@@ -247,4 +258,4 @@ This document defines ownership and responsibility for all database tables in CG
 
 ---
 
-<sub>**CGraph Schema Ownership** • Version 0.9.36 • Last updated: February 2026</sub>
+<sub>**CGraph Schema Ownership** • Version 0.9.48 • Last updated: March 2026</sub>

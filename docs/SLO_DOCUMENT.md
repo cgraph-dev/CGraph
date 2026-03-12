@@ -194,8 +194,22 @@ Alerts are defined in `infrastructure/prometheus/rules/cgraph-slo-rules.yml`.
 
 1. **Database restore**: `fly postgres restore --app cgraph-db --target-time <ISO8601>`
 2. **Full redeploy**: `fly deploy --app cgraph-backend --strategy canary`
-3. **Cache warm-up**: Automatic on first request; no manual intervention needed
+3. **Cache warm-up**: Automatic on first request; `CGraph.Cache.CacheWarmer.warm_on_boot/0` preloads hot data
 4. **DNS failover**: Cloudflare auto-failover configured with 30s health checks
+5. **DR failover**: `infrastructure/scripts/dr_failover.sh` — 7-step automated failover with `--auto` mode
+6. **Zero-downtime migration**: `infrastructure/scripts/zero_downtime_migration.sh` — pre-flight + backup + migrate + rollback
+7. **Blue-green deploy**: `infrastructure/scripts/blue_green_deploy.sh` — staged deploy with health check gate
+
+### Infrastructure Modules (Phase 38)
+
+| Module | Purpose | SLO Relevance |
+| --- | --- | --- |
+| `CGraph.Monitoring.MetricsCollector` | Business metrics + SLO tracking (`update_slo/3`, `check_slo/1`) | Direct SLO measurement |
+| `CGraph.Monitoring.Alerting` | Threshold-based alerts (Slack + PagerDuty) | SLO breach notifications |
+| `CGraph.Monitoring.HealthDashboard` | Aggregated health status across all components | Availability SLI |
+| `CGraph.Operations.CapacityPlanner` | Linear regression forecasting, scaling recommendations | Proactive SLO protection |
+| `CGraph.Operations.DisasterRecovery` | Failover/promote/restore procedures | RTO compliance |
+| `CGraph.Operations.PerformanceProfiler` | Flame graph, slow query report, memory analysis | Latency SLI debugging |
 
 ### Testing Schedule
 

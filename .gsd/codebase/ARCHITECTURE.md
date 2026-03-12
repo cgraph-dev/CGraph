@@ -140,6 +140,15 @@ Each context is a bounded module with its own schemas, queries, and business log
 | **Storage**        | `CGraph.Storage`        | File uploads via Waffle → S3/R2                                                                                                         |
 | **Cache**          | `CGraph.Cache`          | 3-tier caching: L1 (ETS), L2 (Cachex), L3 (Redis), with stampede protection                                                             |
 | **Feature Flags**  | `CGraph.FeatureFlags`   | Runtime feature toggles                                                                                                                 |
+| **Sharding**       | `CGraph.Sharding`       | Consistent hash ring (256 vnodes), shard routing/management, live split/merge migrations (Phase 38)                                     |
+| **Multi-Tier Cache** | `CGraph.Cache.MultiTierCache` | Per-tier TTL cache (L1: 1min, L2: 15min, L3: 24h), warming, PubSub invalidation (Phase 38)                                       |
+| **Archival**       | `CGraph.Archival`       | Policy-based data archival (365-day threshold), restore, monthly cron worker (Phase 38)                                                 |
+| **Queue**          | `CGraph.Queue`          | Priority queue (4 levels wrapping Oban), dead letter queue with admin API (Phase 38)                                                    |
+| **Search Infra**   | `CGraph.Search.ElasticAdapter` | Behaviour-based search (ES/OpenSearch/pg fallback), bulk indexing (Phase 38)                                                      |
+| **CDN**            | `CGraph.CDN`            | CDN management (R2/S3), image optimization, signed URLs (Phase 38)                                                                      |
+| **Monitoring**     | `CGraph.Monitoring`     | Health dashboard, threshold alerting (Slack/PagerDuty), business metrics + SLO tracking (Phase 38)                                      |
+| **Operations**     | `CGraph.Operations`     | Executable runbooks, capacity planner, disaster recovery, performance profiler (Phase 38)                                               |
+| **Distributed Presence** | `CGraph.Presence.DistributedPresence` | Multi-node CRDT presence with conflict resolution, cluster stats (Phase 38)                                          |
 
 ### 2.3 Web Layer (`lib/cgraph_web/`)
 

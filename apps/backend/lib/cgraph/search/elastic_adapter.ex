@@ -109,7 +109,7 @@ defmodule CGraph.Search.ElasticAdapter do
   @doc """
   Index a single document.
   """
-  @spec index(index_name(), document_id(), document()) :: :ok | {:error, term()}
+  @spec index(index_name(), document_id(), document()) :: :ok | {:ok, atom()} | {:error, term()}
   def index(index, id, body) do
     start_time = System.monotonic_time(:millisecond)
 
@@ -135,7 +135,7 @@ defmodule CGraph.Search.ElasticAdapter do
   @doc """
   Delete a document from an index.
   """
-  @spec delete(index_name(), document_id()) :: :ok | {:error, term()}
+  @spec delete(index_name(), document_id()) :: :ok | {:ok, atom()} | {:error, term()}
   def delete(index, id) do
     start_time = System.monotonic_time(:millisecond)
 
@@ -161,7 +161,7 @@ defmodule CGraph.Search.ElasticAdapter do
   @doc """
   Bulk index multiple documents.
   """
-  @spec bulk(index_name(), [document()]) :: :ok | {:error, term()}
+  @spec bulk(index_name(), [document()]) :: :ok | {:ok, atom()} | {:error, term()}
   def bulk(index, documents) when is_list(documents) do
     start_time = System.monotonic_time(:millisecond)
 

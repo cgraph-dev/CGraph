@@ -193,7 +193,8 @@ These rules are **absolute** — no exceptions, no shortcuts:
 - Key backup/recovery UX — blocked on audit decisions
 - Desktop native app — web covers desktop, no Electron
 - Self-hosting support — single deployment target (Fly.io) for now
-- Database sharding — PostgreSQL handles current scale, shard post-100K users
+- ~~Database sharding~~ — **Implemented in Phase 38** (ConsistentHash, ShardRouter, ShardManager, ShardMigration)
+- Self-hosting support — single deployment target (Fly.io) for now
 
 ## Context
 

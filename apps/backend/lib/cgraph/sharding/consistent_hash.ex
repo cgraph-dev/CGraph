@@ -108,7 +108,7 @@ defmodule CGraph.Sharding.ConsistentHash do
 
         :none ->
           # Wrap around — take the smallest key in the ring
-          {_pos, node_id, _val} = :gb_trees.smallest(ring)
+          {_pos, node_id} = :gb_trees.smallest(ring)
           {:ok, node_id}
       end
     end

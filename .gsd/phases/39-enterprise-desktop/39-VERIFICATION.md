@@ -1,72 +1,115 @@
-# Phase 39 — Enterprise + Desktop: Verification Report
+# Phase 39 — Enterprise Features: Verification Report
 
 **Verified by**: GSD Verifier  
-**Date**: February 2026  
-**Plans audited**: 39-01, 39-02, 39-03  
-**Errors found**: 15 (4 P0, 7 P1, 4 P2)  
-**Errors fixed**: 15/15  
+**Date**: March 2026 (v2 — scope revision)  
+**Plans audited**: 39-01, 39-02, 39-03 + 39-CONTEXT  
+**Scope changes applied**: 2 (self-hosting REMOVED, desktop DEFERRED)  
+**Previous errors (v1)**: 15 found, 15 fixed  
+**New errors found (v2)**: 3 (all fixed in this pass)  
 
 ---
 
-## Error Catalog
+## Scope Changes Applied
 
-### P0 — Critical (would cause execution failure)
+### 1. Self-Hosting REMOVED (Task 6.3)
 
-| # | Plan | Error | Fix |
-|---|------|-------|-----|
-| 1 | 39-01 | `admin_routes.ex` marked as `(new)` but **ALREADY EXISTS** with 44+ routes, already imported in router.ex line 33. Creating a new file would overwrite existing admin routes. | Changed to `(ALREADY EXISTS)` with explicit "EXTEND" instruction |
-| 2 | 39-01 | `controllers/auth/sso_controller.ex` — the `controllers/auth/` directory **DOES NOT EXIST**. All auth controllers are under `controllers/api/v1/`. | Changed path to `controllers/api/v1/sso_controller.ex` |
-| 3 | 39-01 | key_links references `controllers/auth/` as "existing auth controllers" — **wrong path**. Auth controllers are at `controllers/api/v1/` (auth_controller.ex, oauth_controller.ex, qr_auth_controller.ex, wallet_auth_controller.ex). | Fixed path and listed actual auth controller files |
-| 4 | 39-02 | Tenant schema uses `plan (free\|pro\|enterprise)` — the tier `pro` does **NOT EXIST**. Canonical tiers are `free\|premium\|enterprise` (established in Session 29). | Changed to `free\|premium\|enterprise` with warning |
+CGraph will host everything like Reddit/Discord — no on-premise deployment.
 
-### P1 — High (would cause confusion or incorrect implementation)
+**Removed from 39-02-PLAN.md:**
+- `self_hosting.ex` context (provision_instance, configure_tenant, migrate_tenant)
+- `tenant.ex` schema (name, domain, plan, config_id, status)
+- `tenant_config.ex` schema (database_url, redis_url, storage_provider, max_users, features)
+- `infrastructure/docker/self-hosted-compose.yml`
+- `infrastructure/docker/Dockerfile.self-hosted`
+- Docker/Helm packaging tasks
 
-| # | Plan | Error | Fix |
-|---|------|-------|-----|
-| 5 | 39-01 | Plan says "create AdminRoutes macro module" but it **already exists**. Task 2 action instructs to "Create CGraphWeb.Router.AdminRoutes macro module" when it should say EXTEND. | Changed action to "EXTEND existing" with existing route count |
-| 6 | 39-01 | Plan ignores existing AdminController (15 actions: metrics, list_users, ban_user, list_reports, audit_log, config/update_config, maintenance, GDPR). New controllers would create massive overlap. | Added ⚠️ warning listing existing actions, "provide ENTERPRISE features not already covered" |
-| 7 | 39-01 | Plan ignores existing audit infrastructure (CGraph.Audit GenServer, CGraph.Accounts.AuditLog, CGraph.Groups.AuditLog, CGraph.Moderation.AuditLog). New enterprise/audit_log.ex would create schema name collision. | Added ⚠️ warning listing existing modules, suggesting Enterprise.AuditEntry name |
-| 8 | 39-01 | `controllers/admin/` listed as location for new controllers but only `events_helpers.ex` exists. Real admin controllers are at `api/v1/admin_controller.ex` and `api/admin/` (ModerationController, FeatureFlagController). | Added ⚠️ warnings documenting actual locations |
-| 9 | 39-02 | No reference to existing `request_context.ex` tenant infrastructure (tenant_id type, get_tenant_id(), set_tenant(), X-Tenant-Id header parsing). New Tenant schema should wire into this. | Added ⚠️ warning to wire into existing infrastructure |
-| 10 | 39-03 | `apps/web/src/modules/admin/` marked as `(new — admin dashboard SPA)` but it **ALREADY EXISTS** with 79+ files (admin-dashboard, moderation-dashboard, feature-flags-panel, 7 API modules, 5+ hooks). | Changed to `(ALREADY EXISTS)` with full inventory, "EXTEND" instruction |
-| 11 | 39-03 | key_links claims `compliance/` directory "does NOT pre-exist Phase 36" — **WRONG**. It ALREADY EXISTS with age_gate.ex and tax_reporter.ex. Plan incorrectly claims gdpr_export.ex exists there (it doesn't). | Fixed to reflect actual current state |
+**Replaced with:** Enterprise Organization model (Organization, OrgSettings, OrgMembership schemas)
 
-### P2 — Medium (inaccurate but unlikely to block)
+### 2. Desktop App DEFERRED (Task 6.4)
 
-| # | Plan | Error | Fix |
-|---|------|-------|-----|
-| 12 | 39-02 | `infrastructure/docker/` directory existence not mentioned. It already exists (contains `init-db.sql/` only). | Added ⚠️ note about existing directory |
-| 13 | 39-03 | `controllers/admin/` described as "from 39-01" without noting it currently only has events_helpers.ex and real admin controllers are elsewhere. | Added ⚠️ clarifying actual state |
-| 14 | 39-03 | Task 3 action says to create pages for Dashboard, Users, Content Moderation — these ALREADY EXIST in the admin SPA. Only Compliance + Analytics are truly new. | Changed to "EXTEND existing" with list of what already exists vs what's new |
-| 15 | 39-01 | GamificationRoutes pattern reference includes "See CGraphWeb.Router.GamificationRoutes for pattern" but AdminRoutes already has its own established pattern (`scope "/api/v1/admin", CGraphWeb.API.V1`). Misleading to reference a different pattern. | Changed to document AdminRoutes' own existing pattern |
+Enterprise and normal users use the SAME web/mobile app. Desktop app will be developed in a future phase.
+
+**Removed from 39-02-PLAN.md:**
+- `apps/desktop/` Tauri scaffold
+- `tauri.conf.json`, `main.rs`
+- System tray, native notifications, auto-update tasks
+
+**Replaced with:** Organization context + controller (CRUD, member management, settings)
 
 ---
 
-## Codebase State Summary
+## Error Catalog (v2 — Scope Revision Pass)
 
-| Component | Plan Assumption | Actual State |
-|-----------|----------------|--------------|
-| `enterprise/` directory | New (does not exist) | ✅ Correct — entirely new |
-| `admin_routes.ex` | New | ❌ **Already exists** (44+ routes, imported in router.ex) |
-| `controllers/auth/` | Exists | ❌ **Does not exist** — auth is at `api/v1/` |
-| `controllers/admin/` | New | ⚠️ Exists but only `events_helpers.ex`; real admin at `api/v1/` and `api/admin/` |
-| AdminController | Not mentioned | ⚠️ **Already has 15 actions** at api/v1/ |
-| Audit modules | New | ⚠️ **4 audit modules already exist** (Audit, Accounts.AuditLog, Groups.AuditLog, Moderation.AuditLog) |
-| `assent` dep | Exists | ✅ Correct — `~> 0.2` in mix.exs |
-| `samly`/`ueberauth` | Not in deps | ✅ Correct — must be added if needed |
-| `compliance/` | Created by Phase 36 | ⚠️ **Already exists** with age_gate.ex, tax_reporter.ex |
-| `web admin SPA` | New | ❌ **Already exists** with 79+ files |
-| Tenant support | New | ⚠️ `request_context.ex` has tenant_id infrastructure |
-| `apps/desktop/` | New | ✅ Correct — does not exist |
-| Docker infra | New | ⚠️ `infrastructure/docker/` exists (init-db.sql/ only) |
-| Tier naming | `free\|pro\|enterprise` | ❌ Must be `free\|premium\|enterprise` |
+### Errors Found and Fixed
+
+| # | File | Error | Severity | Fix |
+|---|------|-------|----------|-----|
+| 1 | 39-01 | `SSOProvider.tenant_id` — references tenants which no longer exist. SSO providers should belong to Organizations. | P0 | Changed to `org_id (ref organizations)` in both `truths` and Task 3 action |
+| 2 | 39-03 | `DataResidency: route data based on tenant config` — tenants removed. Should route by organization config. | P1 | Changed to `based on organization config` with clarifying note |
+| 3 | 39-03 | `tenant_breakdown`, `tenant_metrics` — stale tenant references in analytics. | P1 | Changed to `org_breakdown`, `org_metrics` throughout |
+
+### Previously Fixed Errors (v1 — still applied)
+
+All 15 errors from v1 verification remain fixed:
+- **P0 (4)**: admin_routes.ex path, controllers/auth/ path, auth key_links path, tier naming
+- **P1 (7)**: AdminRoutes create→extend, AdminController overlap, audit module collision,
+  controllers/admin/ state, request_context tenant infra, web admin SPA existence, compliance dir
+- **P2 (4)**: Docker infra dir, controllers/admin/ clarification, existing admin pages, route pattern
+
+---
+
+## Codebase State Summary (Updated)
+
+| Component | Plan Assumption | Actual State | Verified |
+|-----------|----------------|--------------|----------|
+| `enterprise/` directory | New (does not exist) | ✅ Correct — entirely new | ✅ |
+| `admin_routes.ex` | Already exists, EXTEND | ✅ Correct — ~34-39 routes, imported in router.ex | ✅ |
+| `controllers/auth/` | Does not exist | ✅ Correct — auth is at `api/v1/` | ✅ |
+| `controllers/admin/` | Only events_helpers.ex | ✅ Correct — verified | ✅ |
+| AdminController | 15 actions at api/v1/ | ✅ Correct — noted in plan | ✅ |
+| Audit modules | 4 existing modules | ✅ Correct — all 4 verified exist | ✅ |
+| `assent` dep | `~> 0.2` in mix.exs | ✅ Correct | ✅ |
+| `compliance/` | Already exists | ✅ Correct — age_gate.ex + tax_reporter.ex | ✅ |
+| `web admin SPA` | Already exists, 79+ files | ✅ Correct — verified 79 files | ✅ |
+| `monitoring/` | Exists from Phase 38 | ✅ Correct — 3 files | ✅ |
+| Organization model | New | ✅ Correct — does not exist yet | ✅ |
+| Groups schema | group.ex with org_id needed | ✅ Correct — needs optional FK | ✅ |
+| Subscriptions | Per-user (user.subscription_tier) | ✅ Correct — org extends this | ✅ |
+| `request_context.ex` | Has tenant_id infra | ✅ Correct — can wire org_id | ✅ |
+| Tier naming | `free\|premium\|enterprise` | ✅ Correct | ✅ |
+| Self-hosting files | ❌ REMOVED from plan | ✅ N/A — no longer in scope | ✅ |
+| Desktop app | ❌ DEFERRED to future | ✅ N/A — no longer in scope | ✅ |
+
+---
+
+## Plan Structure Summary
+
+### 39-01: Admin Console + SSO (Wave 1)
+- 3 tasks: Admin schemas, Admin context + controllers, SSO integration
+- SSO providers now tied to Organizations (org_id FK)
+- Pre-task: audit assent for SAML/OIDC support
+
+### 39-02: Enterprise Organizations (Wave 1) — REWRITTEN
+- 2 tasks: Organization schemas + migration, Organizations context + controller
+- Organization, OrgSettings, OrgMembership schemas
+- Optional org_id FK on existing Groups table
+- Replaces removed self-hosting + desktop tasks
+
+### 39-03: Compliance + Analytics + White-Label (Wave 2)
+- 3 tasks: Compliance + data residency, White label + analytics, Web admin SPA
+- DataResidency routes by organization config (not tenants)
+- WhiteLabel reads from OrgSettings.branding JSONB
+- Analytics uses per-organization breakdown
 
 ---
 
 ## Verification Confidence
 
-- **39-01 (Admin + SSO)**: HIGH confidence after fixes. All paths corrected, overlaps documented. SSO pre-task (assent audit) is well-scoped.
-- **39-02 (Self-Hosting + Desktop)**: HIGH confidence after fixes. Tier naming corrected, tenant infrastructure linkage added. Desktop is greenfield — straightforward.
-- **39-03 (Compliance + Analytics)**: HIGH confidence after fixes. Existing admin SPA properly acknowledged, compliance directory state corrected.
+- **39-01 (Admin + SSO)**: HIGH — SSO tenant_id→org_id fixed. All paths verified.
+- **39-02 (Enterprise Orgs)**: HIGH — Clean rewrite. All codebase references accurate.
+- **39-03 (Compliance + Analytics)**: HIGH — Tenant→org cascading fixes applied. Existing admin SPA properly acknowledged.
+- **39-CONTEXT**: HIGH — Self-hosting/desktop removed, Organization model added, deferred items updated.
 
-**Overall**: Plans are well-structured with good wave ordering and dependency management. The dominant error pattern was **claiming files are "new" when they already exist** — 4 of 15 errors were this category. This is the same pattern seen in Phase 37/38 verifications.
+**Overall**: Plans are clean and aligned with codebase. The admin_routes.ex route count (claimed 44+ vs actual ~34-39) is the only minor inaccuracy remaining — not actionable since the plan correctly says "EXTEND".
+
+**Remaining risk**: `assent` library SAML/OIDC support scope (pre-task addresses this).
