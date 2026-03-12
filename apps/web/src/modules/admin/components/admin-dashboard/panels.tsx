@@ -13,6 +13,10 @@ export { EventsManagement } from './events-management';
 export { UsersManagement } from './users-management';
 export { AnalyticsDashboard } from './analytics-dashboard';
 export { SystemSettings } from './system-settings';
+export { OrganizationsPanel } from './organizations-panel';
+export { SSOSettingsPanel } from './sso-settings-panel';
+export { ComplianceDashboard } from './compliance-dashboard';
+export { EnterpriseAnalytics } from './enterprise-analytics';
 
 // Shared components (for extensibility)
 export {

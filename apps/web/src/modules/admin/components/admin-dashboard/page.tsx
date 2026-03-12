@@ -13,6 +13,10 @@ import {
   UsersManagement,
   AnalyticsDashboard,
   SystemSettings,
+  OrganizationsPanel,
+  SSOSettingsPanel,
+  ComplianceDashboard,
+  EnterpriseAnalytics,
 } from './panels';
 
 // ==================== NAV ITEM COMPONENT ====================
@@ -70,6 +74,14 @@ export function AdminDashboard() {
         return <AnalyticsDashboard />;
       case 'settings':
         return <SystemSettings />;
+      case 'organizations':
+        return <OrganizationsPanel />;
+      case 'sso':
+        return <SSOSettingsPanel />;
+      case 'compliance':
+        return <ComplianceDashboard />;
+      case 'enterprise-analytics':
+        return <EnterpriseAnalytics />;
       default:
         return <DashboardOverview />;
     }

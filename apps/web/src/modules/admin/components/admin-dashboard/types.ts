@@ -3,7 +3,16 @@
  * Extracted from AdminDashboard.tsx
  */
 
-export type AdminTab = 'dashboard' | 'events' | 'users' | 'analytics' | 'settings';
+export type AdminTab =
+  | 'dashboard'
+  | 'events'
+  | 'users'
+  | 'analytics'
+  | 'settings'
+  | 'organizations'
+  | 'sso'
+  | 'compliance'
+  | 'enterprise-analytics';
 
 export interface AdminStats {
   activeUsers: number;

@@ -10,6 +10,10 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'users', icon: '👥', label: 'Users', shortcut: '⌘3' },
   { id: 'analytics', icon: '📈', label: 'Analytics', shortcut: '⌘4' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
+  { id: 'organizations', icon: '🏢', label: 'Organizations' },
+  { id: 'sso', icon: '🔐', label: 'SSO' },
+  { id: 'compliance', icon: '✅', label: 'Compliance' },
+  { id: 'enterprise-analytics', icon: '📊', label: 'Enterprise Analytics' },
 ];
 
 export const RISK_COLORS = {
