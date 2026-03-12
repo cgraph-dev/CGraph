@@ -41,6 +41,7 @@ defmodule CGraph.Groups.Group do
 
     # Associations
     belongs_to :owner, CGraph.Accounts.User
+    belongs_to :organization, CGraph.Enterprise.Organization, foreign_key: :org_id
     has_many :channels, CGraph.Groups.Channel
     has_many :members, CGraph.Groups.Member
     has_many :roles, CGraph.Groups.Role

@@ -77,6 +77,91 @@ defmodule CGraphWeb.Router.AdminRoutes do
         pipe_through [:api, :api_admin]
       end
 
+      # ======================================================================
+      # Enterprise Routes
+      # ======================================================================
+
+      # Enterprise Admin Console (super-admin only)
+      scope "/api/v1/admin/enterprise", CGraphWeb.API.V1 do
+        pipe_through [:api, :api_admin]
+
+        # Admin user management
+        get "/admins", EnterpriseAdminController, :list_admins
+        post "/admins", EnterpriseAdminController, :create_admin
+        get "/admins/:id", EnterpriseAdminController, :show_admin
+        put "/admins/:id", EnterpriseAdminController, :update_admin
+        delete "/admins/:id", EnterpriseAdminController, :delete_admin
+
+        # Admin roles
+        get "/roles", EnterpriseAdminController, :list_roles
+        post "/roles", EnterpriseAdminController, :create_role
+
+        # Audit entries
+        get "/audit", EnterpriseAdminController, :list_audit_entries
+        get "/audit/export", EnterpriseAdminController, :export_audit
+        get "/audit/:id", EnterpriseAdminController, :show_audit_entry
+
+        # Platform stats
+        get "/stats", EnterpriseAdminController, :platform_stats
+
+        # SSO provider management (admin)
+        get "/sso/providers", SSOController, :list_providers
+        post "/sso/providers", SSOController, :create_provider
+        put "/sso/providers/:id", SSOController, :update_provider
+        delete "/sso/providers/:id", SSOController, :delete_provider
+
+        # Enterprise analytics
+        get "/analytics/overview", EnterpriseAnalyticsController, :overview
+        get "/analytics/time-series", EnterpriseAnalyticsController, :time_series
+        get "/analytics/org/:org_id", EnterpriseAnalyticsController, :org_breakdown
+        get "/analytics/org/:org_id/export", EnterpriseAnalyticsController, :export
+
+        # Compliance
+        get "/compliance/:org_id/status", ComplianceController, :status
+        post "/compliance/:org_id/audit", ComplianceController, :audit
+        get "/compliance/regions", ComplianceController, :list_regions
+        post "/compliance/regions/verify", ComplianceController, :verify_residency
+        get "/compliance/:org_id/branding", ComplianceController, :get_branding
+        get "/compliance/:org_id/theme", ComplianceController, :get_theme
+        put "/compliance/:org_id/branding", ComplianceController, :update_branding
+
+        # Organization management (admin-level)
+        get "/organizations", OrganizationController, :admin_list
+        get "/organizations/:id", OrganizationController, :admin_show
+        post "/organizations/:id/suspend", OrganizationController, :suspend
+        delete "/organizations/:id/suspend", OrganizationController, :unsuspend
+      end
+
+      # Organization management (authenticated users)
+      scope "/api/v1/organizations", CGraphWeb.API.V1 do
+        pipe_through [:api, :api_auth]
+
+        get "/", OrganizationController, :index
+        post "/", OrganizationController, :create
+        get "/:slug", OrganizationController, :show
+        put "/:slug", OrganizationController, :update
+        delete "/:slug", OrganizationController, :delete
+
+        # Members
+        get "/:slug/members", OrganizationController, :list_members
+        post "/:slug/members", OrganizationController, :add_member
+        delete "/:slug/members/:user_id", OrganizationController, :remove_member
+
+        # Settings
+        put "/:slug/settings", OrganizationController, :update_settings
+
+        # Ownership transfer
+        post "/:slug/transfer", OrganizationController, :transfer_ownership
+      end
+
+      # SSO auth flow (public — no auth required for initiate/callback)
+      scope "/api/v1/sso", CGraphWeb.API.V1 do
+        pipe_through [:api]
+
+        post "/:provider_id/initiate", SSOController, :initiate
+        post "/:provider_id/callback", SSOController, :callback
+      end
+
       # LiveDashboard (dev/admin only)
       if Mix.env() in [:dev, :test] do
         import Phoenix.LiveDashboard.Router
