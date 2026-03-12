@@ -98,10 +98,30 @@ defmodule CGraph.Enterprise.AnalyticsDashboard do
     _ -> 0
   end
 
-  defp synthetic_value(_metric, _date) do
-    # Placeholder — real implementation would query aggregate tables
-    0
+  defp synthetic_value(metric, date) do
+    # Query actual counts from the database for the given metric and date
+    start_of_day = DateTime.new!(date, ~T[00:00:00], "Etc/UTC")
+    end_of_day = DateTime.new!(date, ~T[23:59:59], "Etc/UTC")
+
+    table = metric_to_table(metric)
+
+    Repo.aggregate(
+      from(r in table,
+        where: r.inserted_at >= ^start_of_day and r.inserted_at <= ^end_of_day
+      ),
+      :count
+    ) || 0
+  rescue
+    # If the table doesn't exist or query fails (e.g., no inserted_at column),
+    # return 0 gracefully rather than crashing the analytics endpoint
+    _ -> 0
   end
+
+  defp metric_to_table("users"), do: "users"
+  defp metric_to_table("messages"), do: "messages"
+  defp metric_to_table("groups"), do: "groups"
+  defp metric_to_table("organizations"), do: "enterprise_organizations"
+  defp metric_to_table(_), do: "users"
 
   defp format_now do
     DateTime.to_iso8601(DateTime.utc_now())
