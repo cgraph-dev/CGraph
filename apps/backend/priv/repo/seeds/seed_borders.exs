@@ -897,10 +897,26 @@ borders = [
 
 now = DateTime.utc_now() |> DateTime.truncate(:second)
 
+theme_to_track = %{
+  "8bit" => "shop",
+  "kawaii" => "social",
+  "celestial" => "forum",
+  "nature" => "group",
+  "cyberpunk" => "messaging",
+  "gothic" => "security",
+  "minimal" => "shop",
+  "holographic" => "creator",
+  "anime" => "social",
+  "japanese" => "forum",
+  "cosmic" => "creator",
+  "elemental" => "group"
+}
+
 Enum.each(borders, fn border ->
   # Build the column/value lists for the upsert
   slug = border.slug
-  values = Map.merge(border, %{inserted_at: now, updated_at: now})
+  track = Map.get(theme_to_track, border.theme)
+  values = Map.merge(border, %{inserted_at: now, updated_at: now, track: track})
   |> Map.drop([:slug])
 
   # Upsert: insert or update by slug
@@ -913,7 +929,7 @@ Enum.each(borders, fn border ->
       lottie_url, lottie_config,
       unlock_type, unlock_requirement, coin_cost,
       is_purchasable, is_tradeable, sort_order, is_active,
-      metadata, inserted_at, updated_at
+      metadata, track, inserted_at, updated_at
     ) VALUES (
       gen_random_uuid(), $1, $2, $3, $4, $5, $6,
       $7, $8, $9,
@@ -921,7 +937,7 @@ Enum.each(borders, fn border ->
       $10, $11,
       $12, $13, $14,
       $15, $16, $17, $18,
-      $19, $20, $21
+      $19, $20, $21, $22
     )
     ON CONFLICT (slug) WHERE deactivated_at IS NULL
     DO UPDATE SET
@@ -943,6 +959,7 @@ Enum.each(borders, fn border ->
       sort_order = EXCLUDED.sort_order,
       is_active = EXCLUDED.is_active,
       metadata = EXCLUDED.metadata,
+      track = EXCLUDED.track,
       updated_at = EXCLUDED.updated_at
     """,
     [
@@ -965,6 +982,7 @@ Enum.each(borders, fn border ->
       values.sort_order,
       values.is_active,
       values.metadata,
+      values.track,
       values.inserted_at,
       values.updated_at
     ]

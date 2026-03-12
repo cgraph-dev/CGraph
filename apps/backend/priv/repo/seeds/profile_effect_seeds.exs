@@ -1,5 +1,5 @@
-# Seed: 18 profile effects (NEW cosmetic type, not in manifest)
-# free: 2, common: 4, uncommon: 4, rare: 3, epic: 2, legendary: 2, mythic: 1
+# Seed: 30 profile effects (NEW cosmetic type, not in manifest)
+# free: 3, common: 6, uncommon: 6, rare: 5, epic: 4, legendary: 3, mythic: 3
 #
 # Profile effects are visual enhancements (particle, aura, trail) applied
 # to user profiles. Types: particle, aura, trail.
@@ -81,7 +81,61 @@ effects =
     # ─── MYTHIC (1) ───
     %{slug: "reality-warp", name: "Reality Warp", type: "aura", rarity: "mythic",
       config: %{"color" => "#e6cc80", "secondary_color" => "#ff00ff", "tertiary_color" => "#00f5ff", "intensity" => 1.0, "radius" => 40, "animated" => true, "particles" => true, "particle_count" => 24, "distortion" => true, "bloom" => true},
-      preview_url: "/images/effects/reality-warp.webp"}
+      preview_url: "/images/effects/reality-warp.webp"},
+
+    # ═══════════════════════════════════════════════════════════════════
+    # PHASE-40 EXPANSION: +12 effects
+    # ═══════════════════════════════════════════════════════════════════
+
+    # ─── FREE +1 ───
+    %{slug: "calm-breeze", name: "Calm Breeze", type: "trail", rarity: "free",
+      config: %{"color" => "#b0e0e6", "length" => 15, "fade" => 0.9, "width" => 2, "secondary_color" => "#e0f7ff"},
+      preview_url: "/images/effects/calm-breeze.webp"},
+
+    # ─── COMMON +2 ───
+    %{slug: "snowfall", name: "Snowfall", type: "particle", rarity: "common",
+      config: %{"color" => "#ffffff", "count" => 10, "speed" => 0.3, "size" => 3, "drift" => true, "opacity" => 0.7},
+      preview_url: "/images/effects/snowfall.webp"},
+    %{slug: "ember-glow", name: "Ember Glow", type: "aura", rarity: "common",
+      config: %{"color" => "#ff6347", "intensity" => 0.4, "radius" => 12, "secondary_color" => "#ffa07a", "pulse" => true},
+      preview_url: "/images/effects/ember-glow.webp"},
+
+    # ─── UNCOMMON +2 ───
+    %{slug: "fireflies", name: "Fireflies", type: "particle", rarity: "uncommon",
+      config: %{"color" => "#ffff00", "count" => 12, "speed" => 0.4, "size" => 2, "glow" => true, "drift" => true, "opacity" => 0.8},
+      preview_url: "/images/effects/fireflies.webp"},
+    %{slug: "ocean-wave", name: "Ocean Wave", type: "trail", rarity: "uncommon",
+      config: %{"color" => "#006994", "length" => 25, "fade" => 0.7, "width" => 3, "secondary_color" => "#00bfff", "glow" => true},
+      preview_url: "/images/effects/ocean-wave.webp"},
+
+    # ─── RARE +2 ───
+    %{slug: "cosmic-dust-ii", name: "Cosmic Dust II", type: "particle", rarity: "rare",
+      config: %{"color" => "#9370db", "secondary_color" => "#4b0082", "count" => 25, "speed" => 0.6, "size" => 3, "glow" => true, "drift" => true},
+      preview_url: "/images/effects/cosmic-dust-ii.webp"},
+    %{slug: "thunderstorm", name: "Thunderstorm", type: "particle", rarity: "rare",
+      config: %{"color" => "#f0e68c", "secondary_color" => "#4169e1", "count" => 18, "speed" => 1.2, "size" => 4, "glow" => true, "opacity" => 0.9},
+      preview_url: "/images/effects/thunderstorm.webp"},
+
+    # ─── EPIC +2 ───
+    %{slug: "sakura-petals", name: "Sakura Petals", type: "particle", rarity: "epic",
+      config: %{"color" => "#ffb7c5", "secondary_color" => "#ff69b4", "count" => 28, "speed" => 0.4, "size" => 5, "drift" => true, "glow" => true, "opacity" => 0.85},
+      preview_url: "/images/effects/sakura-petals.webp"},
+    %{slug: "digital-rain", name: "Digital Rain", type: "particle", rarity: "epic",
+      config: %{"color" => "#00ff41", "secondary_color" => "#003300", "count" => 35, "speed" => 0.9, "size" => 2, "glow" => true, "opacity" => 0.75},
+      preview_url: "/images/effects/digital-rain.webp"},
+
+    # ─── LEGENDARY +1 ───
+    %{slug: "northern-lights", name: "Northern Lights", type: "aura", rarity: "legendary",
+      config: %{"color" => "#00ff7f", "secondary_color" => "#4169e1", "intensity" => 0.85, "radius" => 35, "animated" => true, "morph" => true, "pulse" => true},
+      preview_url: "/images/effects/northern-lights.webp"},
+
+    # ─── MYTHIC +2 ───
+    %{slug: "time-rift", name: "Time Rift", type: "aura", rarity: "mythic",
+      config: %{"color" => "#daa520", "secondary_color" => "#8b4513", "intensity" => 1.0, "radius" => 38, "animated" => true, "morph" => true, "pulse" => true},
+      preview_url: "/images/effects/time-rift.webp"},
+    %{slug: "genesis-burst", name: "Genesis Burst", type: "particle", rarity: "mythic",
+      config: %{"color" => "#ffd700", "secondary_color" => "#ff00ff", "count" => 50, "speed" => 0.7, "size" => 4, "glow" => true, "drift" => true, "opacity" => 0.95},
+      preview_url: "/images/effects/genesis-burst.webp"}
   ]
   |> Enum.with_index(1)
   |> Enum.map(fn {effect, idx} ->
