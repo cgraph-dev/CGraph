@@ -61,144 +61,147 @@ defmodule CGraph.Operations.Runbook do
 
   # ── Registry of runbooks ────────────────────────────────────
 
-  @builtin_runbooks %{
-    scale_up: %{
-      name: :scale_up,
-      description: "Scale application instances up",
-      steps: [
-        %{
-          name: :check_health,
-          description: "Verify current system health before scaling",
-          prereqs: [],
-          run: &CGraph.Operations.Runbook.BuiltIn.check_system_health/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :check_metrics,
-          description: "Confirm scaling is warranted by current metrics",
-          prereqs: [:check_health],
-          run: &CGraph.Operations.Runbook.BuiltIn.check_scaling_metrics/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :scale_instances,
-          description: "Increase Fly.io machine count",
-          prereqs: [:check_metrics],
-          run: &CGraph.Operations.Runbook.BuiltIn.scale_up_instances/1,
-          rollback: &CGraph.Operations.Runbook.BuiltIn.rollback_scale_up/1
-        },
-        %{
-          name: :verify_scaling,
-          description: "Verify new instances are healthy",
-          prereqs: [:scale_instances],
-          run: &CGraph.Operations.Runbook.BuiltIn.verify_instance_health/1,
-          rollback: fn _ctx -> :ok end
-        }
-      ]
-    },
-    scale_down: %{
-      name: :scale_down,
-      description: "Scale application instances down with graceful drain",
-      steps: [
-        %{
-          name: :check_load,
-          description: "Verify load is low enough to scale down",
-          prereqs: [],
-          run: &CGraph.Operations.Runbook.BuiltIn.check_low_load/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :drain_connections,
-          description: "Drain WebSocket connections from target instances",
-          prereqs: [:check_load],
-          run: &CGraph.Operations.Runbook.BuiltIn.drain_connections/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :scale_instances,
-          description: "Reduce Fly.io machine count",
-          prereqs: [:drain_connections],
-          run: &CGraph.Operations.Runbook.BuiltIn.scale_down_instances/1,
-          rollback: &CGraph.Operations.Runbook.BuiltIn.rollback_scale_down/1
-        },
-        %{
-          name: :verify_capacity,
-          description: "Verify remaining instances handle load",
-          prereqs: [:scale_instances],
-          run: &CGraph.Operations.Runbook.BuiltIn.verify_capacity_after_scale_down/1,
-          rollback: fn _ctx -> :ok end
-        }
-      ]
-    },
-    rotate_credentials: %{
-      name: :rotate_credentials,
-      description: "Rotate application secrets and API keys",
-      steps: [
-        %{
-          name: :generate_new_credentials,
-          description: "Generate new credential values",
-          prereqs: [],
-          run: &CGraph.Operations.Runbook.BuiltIn.generate_credentials/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :backup_old_credentials,
-          description: "Store old credentials for rollback",
-          prereqs: [:generate_new_credentials],
-          run: &CGraph.Operations.Runbook.BuiltIn.backup_credentials/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :update_secrets,
-          description: "Update Fly.io secrets with new credentials",
-          prereqs: [:backup_old_credentials],
-          run: &CGraph.Operations.Runbook.BuiltIn.update_fly_secrets/1,
-          rollback: &CGraph.Operations.Runbook.BuiltIn.restore_old_credentials/1
-        },
-        %{
-          name: :verify_auth,
-          description: "Verify services authenticate with new credentials",
-          prereqs: [:update_secrets],
-          run: &CGraph.Operations.Runbook.BuiltIn.verify_authentication/1,
-          rollback: fn _ctx -> :ok end
-        }
-      ]
-    },
-    clear_cache: %{
-      name: :clear_cache,
-      description: "Flush all application caches",
-      steps: [
-        %{
-          name: :check_cache_status,
-          description: "Check current cache utilization",
-          prereqs: [],
-          run: &CGraph.Operations.Runbook.BuiltIn.check_cache_status/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :flush_ets,
-          description: "Clear ETS-based caches",
-          prereqs: [:check_cache_status],
-          run: &CGraph.Operations.Runbook.BuiltIn.flush_ets_caches/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :flush_redis,
-          description: "Clear Redis cache",
-          prereqs: [:flush_ets],
-          run: &CGraph.Operations.Runbook.BuiltIn.flush_redis_cache/1,
-          rollback: fn _ctx -> :ok end
-        },
-        %{
-          name: :warm_critical,
-          description: "Pre-warm critical cache entries",
-          prereqs: [:flush_redis],
-          run: &CGraph.Operations.Runbook.BuiltIn.warm_critical_caches/1,
-          rollback: fn _ctx -> :ok end
-        }
-      ]
+  @doc false
+  def builtin_runbooks do
+    %{
+      scale_up: %{
+        name: :scale_up,
+        description: "Scale application instances up",
+        steps: [
+          %{
+            name: :check_health,
+            description: "Verify current system health before scaling",
+            prereqs: [],
+            run: &CGraph.Operations.Runbook.BuiltIn.check_system_health/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :check_metrics,
+            description: "Confirm scaling is warranted by current metrics",
+            prereqs: [:check_health],
+            run: &CGraph.Operations.Runbook.BuiltIn.check_scaling_metrics/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :scale_instances,
+            description: "Increase Fly.io machine count",
+            prereqs: [:check_metrics],
+            run: &CGraph.Operations.Runbook.BuiltIn.scale_up_instances/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.rollback_scale_up/1
+          },
+          %{
+            name: :verify_scaling,
+            description: "Verify new instances are healthy",
+            prereqs: [:scale_instances],
+            run: &CGraph.Operations.Runbook.BuiltIn.verify_instance_health/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          }
+        ]
+      },
+      scale_down: %{
+        name: :scale_down,
+        description: "Scale application instances down with graceful drain",
+        steps: [
+          %{
+            name: :check_load,
+            description: "Verify load is low enough to scale down",
+            prereqs: [],
+            run: &CGraph.Operations.Runbook.BuiltIn.check_low_load/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :drain_connections,
+            description: "Drain WebSocket connections from target instances",
+            prereqs: [:check_load],
+            run: &CGraph.Operations.Runbook.BuiltIn.drain_connections/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :scale_instances,
+            description: "Reduce Fly.io machine count",
+            prereqs: [:drain_connections],
+            run: &CGraph.Operations.Runbook.BuiltIn.scale_down_instances/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.rollback_scale_down/1
+          },
+          %{
+            name: :verify_capacity,
+            description: "Verify remaining instances handle load",
+            prereqs: [:scale_instances],
+            run: &CGraph.Operations.Runbook.BuiltIn.verify_capacity_after_scale_down/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          }
+        ]
+      },
+      rotate_credentials: %{
+        name: :rotate_credentials,
+        description: "Rotate application secrets and API keys",
+        steps: [
+          %{
+            name: :generate_new_credentials,
+            description: "Generate new credential values",
+            prereqs: [],
+            run: &CGraph.Operations.Runbook.BuiltIn.generate_credentials/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :backup_old_credentials,
+            description: "Store old credentials for rollback",
+            prereqs: [:generate_new_credentials],
+            run: &CGraph.Operations.Runbook.BuiltIn.backup_credentials/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :update_secrets,
+            description: "Update Fly.io secrets with new credentials",
+            prereqs: [:backup_old_credentials],
+            run: &CGraph.Operations.Runbook.BuiltIn.update_fly_secrets/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.restore_old_credentials/1
+          },
+          %{
+            name: :verify_auth,
+            description: "Verify services authenticate with new credentials",
+            prereqs: [:update_secrets],
+            run: &CGraph.Operations.Runbook.BuiltIn.verify_authentication/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          }
+        ]
+      },
+      clear_cache: %{
+        name: :clear_cache,
+        description: "Flush all application caches",
+        steps: [
+          %{
+            name: :check_cache_status,
+            description: "Check current cache utilization",
+            prereqs: [],
+            run: &CGraph.Operations.Runbook.BuiltIn.check_cache_status/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :flush_ets,
+            description: "Clear ETS-based caches",
+            prereqs: [:check_cache_status],
+            run: &CGraph.Operations.Runbook.BuiltIn.flush_ets_caches/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :flush_redis,
+            description: "Clear Redis cache",
+            prereqs: [:flush_ets],
+            run: &CGraph.Operations.Runbook.BuiltIn.flush_redis_cache/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          },
+          %{
+            name: :warm_critical,
+            description: "Pre-warm critical cache entries",
+            prereqs: [:flush_redis],
+            run: &CGraph.Operations.Runbook.BuiltIn.warm_critical_caches/1,
+            rollback: &CGraph.Operations.Runbook.BuiltIn.noop_rollback/1
+          }
+        ]
+      }
     }
-  }
+  end
 
   # ── Macro for defining custom runbooks ──────────────────────
 
@@ -269,7 +272,7 @@ defmodule CGraph.Operations.Runbook do
   @spec execute(atom(), context()) ::
           {:ok, context()} | {:error, step_name(), term(), [rollback_result()]}
   def execute(name, initial_context \\ %{}) when is_atom(name) do
-    case Map.get(@builtin_runbooks, name) do
+    case Map.get(builtin_runbooks(), name) do
       nil ->
         {:error, :unknown_runbook, "No built-in runbook named #{name}", []}
 
@@ -410,7 +413,7 @@ defmodule CGraph.Operations.Runbook do
   """
   @spec list_runbooks() :: [%{name: atom(), description: String.t(), step_count: non_neg_integer()}]
   def list_runbooks do
-    @builtin_runbooks
+    builtin_runbooks()
     |> Enum.map(fn {_key, rb} ->
       %{name: rb.name, description: rb.description, step_count: length(rb.steps)}
     end)
@@ -422,7 +425,7 @@ defmodule CGraph.Operations.Runbook do
   """
   @spec dry_run(atom()) :: {:ok, [step_name()]} | {:error, term()}
   def dry_run(name) when is_atom(name) do
-    case Map.get(@builtin_runbooks, name) do
+    case Map.get(builtin_runbooks(), name) do
       nil ->
         {:error, :unknown_runbook}
 
@@ -459,6 +462,9 @@ defmodule CGraph.Operations.Runbook.BuiltIn do
   # These wrap operational commands and return {:ok, context} | {:error, reason}.
 
   require Logger
+
+  @doc false
+  def noop_rollback(_ctx), do: :ok
 
   # ── Scale Up steps ──
 

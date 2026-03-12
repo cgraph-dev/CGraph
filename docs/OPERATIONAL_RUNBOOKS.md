@@ -1,6 +1,6 @@
 # CGraph Operational Runbooks
 
-> **Version: 1.0.0** | Last Updated: February 2026
+> **Version: 1.1.0** | Last Updated: March 2026
 
 Step-by-step guides for common operational tasks and incident response.
 
@@ -18,6 +18,119 @@ Step-by-step guides for common operational tasks and incident response.
 8. [MeiliSearch Failure](#meilisearch-failure)
 9. [Circuit Breaker Management](#circuit-breaker-management)
 10. [SLO & Error Budget](#slo--error-budget)
+11. [Operations Toolkit](#operations-toolkit)
+
+---
+
+## Operations Toolkit
+
+> Code modules in `apps/backend/lib/cgraph/operations/` provide automated
+> operational procedures. See individual module docs for full API details.
+
+### Runbook Framework
+
+**Module:** [`CGraph.Operations.Runbook`](../apps/backend/lib/cgraph/operations/runbook.ex)
+
+Executable runbook steps as functions with prerequisite checks and automatic rollback.
+
+**Built-in runbooks:**
+
+| Runbook              | Description                              | Steps |
+| -------------------- | ---------------------------------------- | ----- |
+| `:scale_up`          | Increase Fly.io instance count           | 4     |
+| `:scale_down`        | Decrease instances with connection drain | 4     |
+| `:rotate_credentials`| Rotate secrets and API keys              | 4     |
+| `:clear_cache`       | Flush Redis + ETS caches                 | 4     |
+
+```elixir
+# Execute a built-in runbook
+{:ok, result} = CGraph.Operations.Runbook.execute(:scale_up, %{target_count: 4})
+
+# List available runbooks
+CGraph.Operations.Runbook.list_runbooks()
+
+# Dry-run validation
+{:ok, steps} = CGraph.Operations.Runbook.dry_run(:scale_up)
+```
+
+### Capacity Planner
+
+**Module:** [`CGraph.Operations.CapacityPlanner`](../apps/backend/lib/cgraph/operations/capacity_planner.ex)
+
+Growth forecasting (linear regression) and scaling recommendations.
+
+```elixir
+# Forecast growth from historical data
+{:ok, forecast} = CGraph.Operations.CapacityPlanner.forecast_growth(:daily_active_users,
+  data: historical_data_points)
+
+# Get scaling recommendations
+recs = CGraph.Operations.CapacityPlanner.recommend_scaling(%{
+  cpu_percent: 72, memory_percent: 68, db_connections_percent: 45
+})
+
+# Full capacity report
+report = CGraph.Operations.CapacityPlanner.generate_report()
+```
+
+### Disaster Recovery
+
+**Module:** [`CGraph.Operations.DisasterRecovery`](../apps/backend/lib/cgraph/operations/disaster_recovery.ex)
+**Script:** [`infrastructure/scripts/dr_failover.sh`](../infrastructure/scripts/dr_failover.sh)
+
+Automated failover with manual verification gates.
+
+```elixir
+# Full failover sequence (Elixir)
+{:ok, result} = CGraph.Operations.DisasterRecovery.initiate_failover(%{
+  primary_app: "cgraph-db",
+  replica_app: "cgraph-db-replica",
+  backend_app: "cgraph-backend"
+})
+
+# Verify replica health
+{:ok, status} = CGraph.Operations.DisasterRecovery.verify_replica(%{
+  primary_app: "cgraph-db",
+  replica_app: "cgraph-db-replica"
+})
+
+# Restore from backup
+{:ok, result} = CGraph.Operations.DisasterRecovery.restore_from_backup(
+  "backup-id", %{source_app: "cgraph-db", target_app: "cgraph-db-restored"})
+```
+
+```bash
+# Shell-based failover (interactive)
+./infrastructure/scripts/dr_failover.sh
+
+# Automated failover (CI/scripts)
+./infrastructure/scripts/dr_failover.sh --auto
+
+# Dry run (validate only)
+./infrastructure/scripts/dr_failover.sh --dry-run
+```
+
+### Performance Profiler
+
+**Module:** [`CGraph.Operations.PerformanceProfiler`](../apps/backend/lib/cgraph/operations/performance_profiler.ex)
+
+CPU profiling, slow query analysis, and memory inspection. Complements
+`CGraph.Performance.QueryOptimizer` (per-query EXPLAIN) and `CGraph.Performance.SLO` (runtime tracking).
+
+```elixir
+# CPU profiling with flame graph data
+{:ok, profile} = CGraph.Operations.PerformanceProfiler.flame_graph(fn ->
+  MyApp.heavy_computation()
+end, profiler: :eprof, top: 20)
+
+# Slow query report from pg_stat_statements
+{:ok, report} = CGraph.Operations.PerformanceProfiler.slow_query_report(
+  limit: 20, sort_by: :mean_time, min_calls: 10)
+
+# BEAM memory analysis
+{:ok, analysis} = CGraph.Operations.PerformanceProfiler.memory_analysis(
+  top_processes: 20)
+```
 
 ---
 
@@ -551,7 +664,7 @@ iex> CGraph.FeatureFlags.disable(:new_feature)
 
 ---
 
-<sub>**CGraph Operational Runbooks** • Version 1.0.0 • Last updated: February 2026</sub>
+<sub>**CGraph Operational Runbooks** • Version 1.1.0 • Last updated: March 2026</sub>
 
 ---
 
