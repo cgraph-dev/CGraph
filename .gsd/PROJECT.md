@@ -206,7 +206,7 @@ These rules are **absolute** — no exceptions, no shortcuts:
 **Current State (v1.0.0+):** All 19 base phases shipped. 142 core requirements complete. Post-v1.0
 phases 20-38 delivered an additional 94 commits covering Liquid Glass UI, cinematic parity,
 cosmetics + unlock engine, nodes economy, creator economy, forum transformation, and infrastructure
-scaling. The codebase has 58+ backend domain contexts, 2,200+ web components, a full mobile app,
+scaling. The codebase has 70+ backend domain contexts, 2,200+ web components, a full mobile app,
 and comprehensive infrastructure.
 
 **Codebase Documentation:** 7 verified docs in `.gsd/codebase/` (updated March 4, 2026):
@@ -228,8 +228,8 @@ and comprehensive infrastructure.
 - 133 oversized mobile files (>300 lines)
 - Load test results show 0 passing checks (no production baseline)
 
-**Backend:** Elixir/Phoenix at `apps/backend/` — 35+ workers, 24 Oban queues, 24+ controllers, 17
-plugs, 6 Phoenix channels, 115+ migrations. Managed separately (backend project).
+**Backend:** Elixir/Phoenix at `apps/backend/` — 42 workers, 24 Oban queues, 100+ controllers, 17
+plugs, 15 Phoenix channels, 157 migrations. Managed separately (backend project).
 
 **Prior v1.0.0 Roadmap:** 19 phases archived at `.gsd/archive/ROADMAP-v1.0.0.md`.
 

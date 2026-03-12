@@ -18,11 +18,13 @@ Web clients: httpOnly cookie auto-translated by CookieAuth plug
 | conversation:*  | DM/group chat, typing      |
 | group:*         | Group events, members      |
 | user:*          | Notifications, presence    |
-| gamification:*  | XP, level-up, achievements |
+| presence:*      | User presence tracking     |
 | ai:*            | Streaming AI responses     |
 | document:*      | Yjs CRDT sync              |
 | forum:*         | Forum real-time updates    |
 | call:*          | WebRTC signaling           |
+| voice:*         | Voice state updates        |
+| webrtc:lobby    | WebRTC lobby signaling     |
 
 ## Shared Types
 All types in packages/shared-types/src/ — NEVER redefine them in apps.

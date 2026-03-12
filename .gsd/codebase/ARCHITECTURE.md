@@ -222,7 +222,7 @@ top-level controllers outside `v1/` include: `cosmetics_controller`, `friend_con
 
 ### 2.4 Background Workers
 
-**Oban** job processing system with 35+ workers in `lib/cgraph/workers/` (plus forum-specific
+**Oban** job processing system with 42 workers in `lib/cgraph/workers/` (plus forum-specific
 workers in `lib/cgraph/forums/`):
 
 - `NotificationWorker` — push/email notification delivery
@@ -374,7 +374,7 @@ Client                        Backend
 - `CGraph.Repo` — Primary write repository
 - `CGraph.ReadRepo` — Read replica (falls back to primary)
 
-**Schema highlights (from 115+ migrations):**
+**Schema highlights (from 157 migrations):**
 
 - `users` — Core user table with random UID, wallet fields, OAuth fields, deactivation
 - `sessions` — Session tracking

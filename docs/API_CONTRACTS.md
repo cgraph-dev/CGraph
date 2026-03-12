@@ -18,11 +18,17 @@ Web clients: httpOnly cookie auto-translated by CookieAuth plug
 | conversation:*  | DM/group chat, typing      |
 | group:*         | Group events, members      |
 | user:*          | Notifications, presence    |
-| gamification:*  | XP, level-up, achievements |
+| presence:*      | User presence tracking     |
 | ai:*            | Streaming AI responses     |
 | document:*      | Yjs CRDT sync              |
 | forum:*         | Forum real-time updates    |
 | call:*          | WebRTC signaling           |
+| voice:*         | Voice state updates        |
+| webrtc:lobby    | WebRTC lobby signaling     |
+| thread:*        | Thread real-time updates   |
+| board:*         | Board real-time updates    |
+| secret_chat:*   | E2EE secret chat sessions  |
+| qr_auth:*       | QR code login auth         |
 
 ## Shared Types
 All types in packages/shared-types/src/ — NEVER redefine them in apps.
@@ -39,19 +45,20 @@ All types in packages/shared-types/src/ — NEVER redefine them in apps.
 - GET /feed               → {posts[], mode, page}  — 5 feed modes (Pulse/Fresh/Rising/DeepCut/Frequency)
 - GET /topics             → {topics[]}
 - GET /frequencies        → {frequencies[]}
-- POST /frequencies       → {frequency}
+- PUT /frequencies        → {frequency}
 
 ### Nodes Economy (Phase 34)
 - GET /nodes/wallet       → {wallet}
 - GET /nodes/transactions → {transactions[], pagination}
 - GET /nodes/bundles      → {bundles[]}
+- POST /nodes/checkout    → {checkout_session}
 - POST /nodes/tip         → {transaction}
 - POST /nodes/unlock      → {transaction, content}
 - POST /nodes/withdraw    → {withdrawal_request}
 
 ### Customization (Phase 34)
-- GET /customizations     → {customizations}
-- PATCH /customizations   → {customizations}
+- GET /me/customizations     → {customizations}
+- PATCH /me/customizations   → {customizations}
 
 ### Cosmetics (Phase 35)
 - GET /cosmetics/inventory   → {items[], equipped[]}
@@ -83,7 +90,7 @@ All types in packages/shared-types/src/ — NEVER redefine them in apps.
 - PUT /threads/:id/purchase          → {access_token}
 - GET /creator/tiers                 → {tiers[]}
 - POST /creator/tiers                → {tier}
-- PUT /creator/tiers                 → {tier}
+- PUT /creator/tiers/:id             → {tier}
 - GET /creator/revenue-splits        → {splits[]}
 
 ### Paid DM (Phase 36)
@@ -110,23 +117,13 @@ All types in packages/shared-types/src/ — NEVER redefine them in apps.
 - PUT /forum-admin/forums/:id                  → {forum}
 - POST /forum-admin/forums/:id/members         → {member}
 - GET /forum-admin/forums/:id/moderation-log   → {log_entries[], pagination}
-- GET /moderation/queue                         → {queue_items[]}
-- POST /moderation/action                       → {action_result}
-
-### WebSocket Channels (Updated)
-| Topic Pattern   | Purpose                           |
-|-----------------|-----------------------------------|
-| conversation:*  | DM/group chat, typing             |
-| group:*         | Group events, members             |
-| user:*          | Notifications, presence           |
-| forum:*         | Forum real-time updates           |
-| thread:*        | Thread real-time updates          |
-| board:*         | Board real-time updates           |
-| ai:*            | Streaming AI responses            |
-| document:*      | Yjs CRDT sync                     |
-| call:*          | WebRTC signaling                  |
-| secret_chat:*   | E2EE secret chat sessions         |
-| qr_auth:*       | QR code login authentication      |
+- GET /forums/:forum_id/moderation/queue         → {queue_items[]}
+- POST /forums/:forum_id/moderation/action        → {action_result}
+- GET /forums/:forum_id/moderation/warnings       → {warnings[]}
+- POST /forums/:forum_id/moderation/warn          → {warning}
+- GET /forums/:forum_id/moderation/automod        → {automod_config}
+- PUT /forums/:forum_id/moderation/automod        → {automod_config}
+- GET /forums/:forum_id/moderation/stats          → {stats}
 
 ## Changelog
 | Date       | Change                                        |

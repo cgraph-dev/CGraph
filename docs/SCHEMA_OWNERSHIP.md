@@ -199,8 +199,7 @@ This document defines ownership and responsibility for all database tables in CG
 | `profile_effects`        | @backend-team | 🟡       | Animated profile effects                               |
 | `profile_frames`         | @backend-team | 🟡       | 55 profile frames across 7 rarity tiers                |
 | `name_styles`            | @backend-team | 🟢       | 50 name text styles (fonts, effects, colors)           |
-| `user_inventory`         | @backend-team | 🟡       | Unified cosmetic inventory per user                    |
-| `cosmetics_join_tables`  | @backend-team | 🟢       | Many-to-many cosmetic-user associations                |
+| `user_inventory`         | @backend-team | 🟡       | Unified cosmetic inventory per user (polymorphic join) |
 
 > All cosmetics use the canonical 7-tier rarity system: `free`, `common`, `uncommon`, `rare`, `epic`, `legendary`, `mythic`. 340+ items seeded.
 
@@ -212,8 +211,9 @@ This document defines ownership and responsibility for all database tables in CG
 | -------------------- | -------------- | -------- | ------------------------------------------------- |
 | `node_wallets`       | @payments-team | 🔴       | Per-user Nodes currency wallet                    |
 | `node_transactions`  | @payments-team | 🔴       | All Nodes transactions (tips, unlocks, purchases) |
-| `node_bundles`       | @payments-team | 🟡       | Purchasable Nodes bundles (via Stripe)             |
 | `withdrawal_requests`| @payments-team | 🔴       | Creator withdrawal requests                       |
+
+> `NodeBundles` is a plain Elixir module with hardcoded `@bundles` data — not a DB table.
 
 ---
 
@@ -224,7 +224,8 @@ This document defines ownership and responsibility for all database tables in CG
 | `topics`           | @backend-team | 🟢       | Discovery feed topics                        |
 | `post_metrics`     | @backend-team | 🟢       | Engagement scoring per post                   |
 | `user_frequencies` | @backend-team | 🟢       | User topic frequency weights                  |
-| `community_health` | @backend-team | 🟢       | Community health scores for feed ranking       |
+
+> `CommunityHealth` is a service module with ETS cache (15-min TTL) — not a DB table.
 
 ---
 
@@ -235,7 +236,7 @@ This document defines ownership and responsibility for all database tables in CG
 | `paid_dm_files`             | @payments-team | 🟡       | Paid file attachments in DMs               |
 | `paid_dm_settings`          | @payments-team | 🟡       | Per-user paid DM configuration             |
 | `premium_threads`           | @payments-team | 🟡       | Gated premium forum threads                |
-| `subscription_tiers`        | @payments-team | 🟡       | Creator subscription tier definitions       |
+| `subscription_tiers`        | @payments-team | 🟡       | Creator subscription tier definitions (same table as Payments section, now under Creators context) |
 | `revenue_splits`            | @payments-team | 🔴       | Revenue distribution rules (80/20 default) |
 | `boosts`                    | @payments-team | 🟡       | Content boost purchases                    |
 | `boost_effects`             | @payments-team | 🟢       | Boost effect configurations                |
