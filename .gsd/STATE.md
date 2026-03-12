@@ -8,22 +8,24 @@
 
 See: .gsd/PROJECT.md (updated 2026-03-04)
 
-**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 37 —
-Forum Transformation COMPLETE. Identity card system (schema, ETS cache, PostCreationFlow with
-identity snapshots), thread tags + categories, consolidated reputation system (calculate_score,
-recalc worker), @mention parser + notifications, thread templates, forum analytics (top threads,
-engagement, growth), search extended with tag filtering, scheduled posts + worker, forum permissions
-extended (5 new tri-state fields), custom forums, moderation logging, admin controller, web UI
-(7 components: identity card, tag selector, mention autocomplete, thread poll, scheduled post form,
-search page, template picker), mobile UI (identity card/screen, tag chips, mention input, poll view,
-extended search/create-forum/admin screens, forumAdminStore, navigation).
+**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 38 —
+Infrastructure Scaling COMPLETE. Database sharding (ConsistentHash 256 vnodes, ShardRouter,
+ShardManager GenServer, ShardMigration), multi-tier caching (L1 ETS→L2 Cachex→L3 Redis with per-tier
+TTLs, CacheWarmer, CacheInvalidator, CacheWarmerWorker), archival system (ArchivePolicy, Archival
+context, ArchivalWorker monthly cron), priority queues + dead letter queue (wrapping Oban),
+search infrastructure (ElasticAdapter behaviour-based, SearchIndexer, SearchIndexWorker extended),
+distributed presence (CRDT-style multi-node), CDN management (R2/S3 backend), monitoring stack
+(HealthDashboard, threshold-based Alerting with Slack/PagerDuty, MetricsCollector with SLO tracking),
+deployment scripts (zero-downtime migration, blue-green deploy for Fly.io), operations toolkit
+(Runbook macro framework, CapacityPlanner linear regression, DisasterRecovery failover/promote/restore,
+PerformanceProfiler flame graph/slow queries/memory, DR failover script).
 
 ## Current Position
 
-Phase: 37 of 39 (Forum Transformation) Plan: 6 of 6 Status: COMPLETE Last activity: 2026-03-12
-— Phase 37 completed (6 plans, 3 waves, 10 commits)
+Phase: 38 of 39 (Infrastructure Scaling) Plan: 5 of 5 Status: COMPLETE Last activity: 2026-03-12
+— Phase 38 completed (5 plans, 3 waves, 20 commits)
 
-Progress: [██████████████████████████████████████████░] 95% (37/39 phases)
+Progress: [██████████████████████████████████████████████░] 97% (38/39 phases)
 
 ## Performance Metrics
 
@@ -78,6 +80,13 @@ Recent decisions logged in PROJECT.md Key Decisions table.
   analytics + search extension + scheduled posts, permissions extension + custom forums + moderation
   log + admin controller, web UI (7 components/pages), mobile UI (6 components + 4 screen extensions
   + forumAdminStore + navigation))
+- ~~Phase 38: Infrastructure Scaling~~ — COMPLETE (5 plans, 20 commits: 30600950…db992cfb. DB
+  sharding (ConsistentHash, ShardRouter, ShardManager, ShardMigration), multi-tier caching
+  (MultiTierCache, CacheWarmer, CacheInvalidator, CacheWarmerWorker), archival system (ArchivePolicy,
+  Archival context, ArchivalWorker), priority queues + DLQ, search infrastructure (ElasticAdapter,
+  SearchIndexer), distributed presence, CDN management (R2/S3), monitoring stack (HealthDashboard,
+  Alerting, MetricsCollector), deploy scripts (zero-downtime migration, blue-green deploy), operations
+  toolkit (Runbook, CapacityPlanner, DisasterRecovery, PerformanceProfiler, DR failover script))
 
 ### Blockers/Concerns
 
@@ -90,9 +99,9 @@ Recent decisions logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-12 Stopped at: Phase 37 complete. Phases 38–39 remain. Resume file:
-.gsd/phases/37-forum-transformation/
+Last session: 2026-03-12 Stopped at: Phase 38 complete. Phase 39 remains. Resume file:
+.gsd/phases/38-infrastructure-scaling/
 
 ---
 
-_Last updated: 2026-03-12 (Phase 37 complete — Forum Transformation finished)_
+_Last updated: 2026-03-12 (Phase 38 complete — Infrastructure Scaling finished)_

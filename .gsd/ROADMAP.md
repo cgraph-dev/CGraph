@@ -1376,4 +1376,46 @@ Plans:
 
 ---
 
-_Roadmap: 35 phases · 135+ requirements · Updated: 2026-03-12_
+### Phase 36: Creator Economy ✅
+
+**Completed:** 2026-03-12 | **Plans:** 5/5
+
+**Goal:** Paid DM files backend, premium threads + tiers + revenue splits, content boosts,
+compliance (TaxReporter, AgeGate), GDPR export extension, web UI (paid DM, creator dashboard,
+boosts, premium gate), mobile UI (paid DM, creator dashboard extension, navigation).
+
+---
+
+### Phase 37: Forum Transformation ✅
+
+**Completed:** 2026-03-12 | **Plans:** 6/6
+
+**Goal:** Identity card system + PostCreationFlow, thread tags + categories + reputation, @mentions
++ templates + analytics + search extension + scheduled posts, permissions extension + custom forums
++ moderation log + admin controller, web UI (7 components/pages), mobile UI (6 components + 4 screen
+extensions + forumAdminStore + navigation).
+
+---
+
+### Phase 38: Infrastructure Scaling ✅
+
+**Completed:** 2026-03-12 | **Plans:** 5/5
+
+**Goal:** Database sharding (ConsistentHash, ShardRouter, ShardManager, ShardMigration), multi-tier
+caching (L1→L2→L3 with per-tier TTLs), archival system (policies, worker, archive tables), priority
+queues + dead letter queue, search infrastructure (ElasticAdapter, SearchIndexer), distributed
+presence, CDN management (R2/S3), monitoring stack (HealthDashboard, Alerting, MetricsCollector),
+deployment scripts (zero-downtime migration, blue-green deploy), operations toolkit (Runbooks,
+CapacityPlanner, DisasterRecovery, PerformanceProfiler, DR failover script).
+
+Plans:
+
+- [x] 38-01-PLAN.md — Database sharding: ConsistentHash, ShardRouter, ShardManager, ShardMigration
+- [x] 38-02-PLAN.md — Caching + archival: MultiTierCache, CacheWarmer, CacheInvalidator, Archival
+- [x] 38-03-PLAN.md — Queues, search, presence: PriorityQueue, DLQ, ElasticAdapter, DistributedPresence
+- [x] 38-04-PLAN.md — CDN, monitoring, deploy: CDNManager, HealthDashboard, Alerting, deploy scripts
+- [x] 38-05-PLAN.md — Operations toolkit: Runbooks, CapacityPlanner, DisasterRecovery, PerformanceProfiler
+
+---
+
+_Roadmap: 38 phases · 150+ requirements · Updated: 2026-03-12_
