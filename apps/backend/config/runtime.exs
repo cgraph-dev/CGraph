@@ -483,4 +483,37 @@ if config_env() == :prod do
     }
 
   IO.puts("[AI] AI features are disabled (placeholder for future Claude integration)")
+
+  # ==========================================================================
+  # Database Sharding Configuration
+  # ==========================================================================
+  # Horizontal sharding for high-volume tables. Currently uses logical sharding
+  # (shard_key column + hash routing) within a single database. When ready to
+  # scale to physical shards, each shard maps to its own Ecto Repo.
+  #
+  # SHARDING_ENABLED=true activates the ShardManager GenServer.
+  # Shard counts can be overridden via environment variables.
+  # ==========================================================================
+
+  sharding_enabled = System.get_env("SHARDING_ENABLED") in ~w(true 1)
+
+  messages_shards = String.to_integer(System.get_env("MESSAGES_SHARD_COUNT") || "16")
+  posts_shards = String.to_integer(System.get_env("POSTS_SHARD_COUNT") || "8")
+  health_interval = String.to_integer(System.get_env("SHARD_HEALTH_CHECK_INTERVAL") || "30000")
+
+  config :cgraph, :sharding, %{
+    enabled: sharding_enabled,
+    tables: %{
+      messages: %{shard_count: messages_shards, vnodes: 256},
+      posts: %{shard_count: posts_shards, vnodes: 256}
+    },
+    health_check_interval: health_interval,
+    failover_to_read_replica: System.get_env("SHARD_FAILOVER_ENABLED") in ~w(true 1)
+  }
+
+  if sharding_enabled do
+    IO.puts("[Sharding] Enabled — messages: #{messages_shards} shards, posts: #{posts_shards} shards")
+  else
+    IO.puts("[Sharding] Disabled — using single-repo topology")
+  end
 end
