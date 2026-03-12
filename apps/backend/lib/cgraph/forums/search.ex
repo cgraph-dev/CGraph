@@ -19,7 +19,7 @@ defmodule CGraph.Forums.Search do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{Comment, CursorPagination, Post, Thread, ThreadPost}
+  alias CGraph.Forums.{Comment, CursorPagination, Post, Thread, ThreadPost, ThreadTag}
   alias CGraph.Pagination
 
   # ── Public API ───────────────────────────────────────────────────────
@@ -73,6 +73,7 @@ defmodule CGraph.Forums.Search do
     date_to = Keyword.get(opts, :date_to)
     sort = Keyword.get(opts, :sort, "relevance")
     cursor = Keyword.get(opts, :cursor)
+    tag_ids = Keyword.get(opts, :tag_ids)
 
     query =
       from(t in Thread,
@@ -83,6 +84,7 @@ defmodule CGraph.Forums.Search do
       |> maybe_filter(:author_id, author_id)
       |> maybe_filter_date(:date_from, date_from)
       |> maybe_filter_date(:date_to, date_to)
+      |> maybe_filter_tags(tag_ids)
       |> apply_sort(sort, tsquery)
 
     {query, cursor_sort} =
@@ -264,6 +266,18 @@ defmodule CGraph.Forums.Search do
   defp maybe_filter_date(query, :date_from, dt), do: from(q in query, where: q.inserted_at >= ^dt)
   defp maybe_filter_date(query, :date_to, nil), do: query
   defp maybe_filter_date(query, :date_to, dt), do: from(q in query, where: q.inserted_at <= ^dt)
+
+  defp maybe_filter_tags(query, nil), do: query
+  defp maybe_filter_tags(query, []), do: query
+
+  defp maybe_filter_tags(query, tag_ids) when is_list(tag_ids) do
+    from(q in query,
+      join: tt in ThreadTag,
+      on: tt.thread_id == q.id,
+      where: tt.tag_category_id in ^tag_ids,
+      distinct: true
+    )
+  end
 
   defp apply_sort(query, "new", _tsquery), do: from(q in query, order_by: [desc: q.inserted_at])
   defp apply_sort(query, "top", _tsquery), do: from(q in query, order_by: [desc: q.score])
