@@ -321,4 +321,31 @@ defmodule CGraph.Cosmetics do
       {event, payload}
     )
   end
+
+  # ── GDPR Export ──────────────────────────────────────────────────────
+
+  @doc """
+  Export all cosmetic inventory items for a user (GDPR data export).
+  Used by CGraph.DataExport.Processor.
+  """
+  @spec export_user_inventory(String.t()) :: {:ok, list(map())}
+  def export_user_inventory(user_id) do
+    items =
+      from(i in Inventory,
+        where: i.user_id == ^user_id,
+        order_by: [desc: i.inserted_at]
+      )
+      |> Repo.all()
+      |> Enum.map(fn i ->
+        %{
+          id: i.id,
+          item_type: i.item_type,
+          item_id: i.item_id,
+          equipped: i.equipped,
+          acquired_at: i.inserted_at
+        }
+      end)
+
+    {:ok, items}
+  end
 end

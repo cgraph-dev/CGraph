@@ -147,4 +147,33 @@ defmodule CGraph.PaidDm do
   defp calculate_creator_amount(nodes_required) do
     trunc(nodes_required * (100 - @platform_cut_percent) / 100)
   end
+
+  # ── GDPR Export ──────────────────────────────────────────────────────
+
+  @doc """
+  Export all paid DM file records for a user (as sender or receiver).
+  Used by CGraph.DataExport.Processor for GDPR data exports.
+  """
+  @spec export_user_files(String.t()) :: {:ok, list(map())}
+  def export_user_files(user_id) do
+    files =
+      from(f in PaidDmFile,
+        where: f.sender_id == ^user_id or f.receiver_id == ^user_id,
+        order_by: [desc: f.inserted_at]
+      )
+      |> Repo.all()
+      |> Enum.map(fn f ->
+        %{
+          id: f.id,
+          role: (if f.sender_id == user_id, do: "sender", else: "receiver"),
+          file_type: f.file_type,
+          nodes_required: f.nodes_required,
+          status: f.status,
+          expires_at: f.expires_at,
+          created_at: f.inserted_at
+        }
+      end)
+
+    {:ok, files}
+  end
 end

@@ -517,4 +517,32 @@ defmodule CGraph.Nodes do
   def content_unlocked?(user_id, thread_id) do
     already_unlocked?(user_id, thread_id)
   end
+
+  # ── GDPR Export ──────────────────────────────────────────────────────
+
+  @doc """
+  Export all node transactions for a user (GDPR data export).
+  Used by CGraph.DataExport.Processor.
+  """
+  @spec export_user_transactions(String.t()) :: {:ok, list(map())}
+  def export_user_transactions(user_id) do
+    transactions =
+      from(t in NodeTransaction,
+        where: t.user_id == ^user_id,
+        order_by: [desc: t.inserted_at]
+      )
+      |> Repo.all()
+      |> Enum.map(fn t ->
+        %{
+          id: t.id,
+          type: t.type,
+          amount: t.amount,
+          balance_after: t.balance_after,
+          description: t.description,
+          created_at: t.inserted_at
+        }
+      end)
+
+    {:ok, transactions}
+  end
 end

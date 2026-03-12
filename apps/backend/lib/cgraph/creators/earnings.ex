@@ -209,4 +209,56 @@ defmodule CGraph.Creators.Earnings do
   defp period_start_date(now, :last_30_days), do: DateTime.add(now, -30 * 86_400, :second)
   defp period_start_date(now, :last_90_days), do: DateTime.add(now, -90 * 86_400, :second)
   defp period_start_date(now, _), do: DateTime.add(now, -30 * 86_400, :second)
+
+  # ── GDPR Export ──────────────────────────────────────────────────────
+
+  @doc """
+  Export all earning records for a user (GDPR data export).
+  Used by CGraph.DataExport.Processor.
+  """
+  @spec export_user_earnings(String.t()) :: {:ok, list(map())}
+  def export_user_earnings(user_id) do
+    earnings =
+      from(e in CreatorEarning,
+        where: e.creator_id == ^user_id,
+        order_by: [desc: e.inserted_at]
+      )
+      |> Repo.all()
+      |> Enum.map(fn e ->
+        %{
+          id: e.id,
+          gross_amount_cents: e.gross_amount_cents,
+          platform_fee_cents: e.platform_fee_cents,
+          net_amount_cents: e.net_amount_cents,
+          source_type: e.source_type,
+          created_at: e.inserted_at
+        }
+      end)
+
+    {:ok, earnings}
+  end
+
+  # ── Tax Reporting ────────────────────────────────────────────────────
+
+  @doc """
+  Calculate total net earnings for a creator in a given calendar year.
+  Used by CGraph.Compliance.TaxReporter for 1099-K threshold checks.
+  """
+  @spec total_for_year(String.t(), integer()) :: {:ok, integer()}
+  def total_for_year(creator_id, year) do
+    year_start = DateTime.new!(Date.new!(year, 1, 1), ~T[00:00:00], "Etc/UTC")
+    year_end = DateTime.new!(Date.new!(year + 1, 1, 1), ~T[00:00:00], "Etc/UTC")
+
+    total =
+      from(e in CreatorEarning,
+        where:
+          e.creator_id == ^creator_id and
+            e.inserted_at >= ^year_start and
+            e.inserted_at < ^year_end,
+        select: coalesce(sum(e.net_amount_cents), 0)
+      )
+      |> Repo.one()
+
+    {:ok, total}
+  end
 end
