@@ -38,12 +38,16 @@ export default function CreatorDashboardScreen(): React.ReactElement {
     isCreator,
     balance,
     analyticsOverview: overview,
+    premiumThreads,
+    tiers,
     isLoading,
     isLoadingBalance,
     error,
     fetchStatus,
     fetchBalance,
     fetchAnalyticsOverview,
+    fetchPremiumThreads,
+    fetchTiers,
     onboard,
     refreshOnboard,
   } = useCreatorStore();
@@ -52,7 +56,9 @@ export default function CreatorDashboardScreen(): React.ReactElement {
     await fetchStatus();
     fetchBalance();
     fetchAnalyticsOverview();
-  }, [fetchStatus, fetchBalance, fetchAnalyticsOverview]);
+    fetchPremiumThreads();
+    fetchTiers();
+  }, [fetchStatus, fetchBalance, fetchAnalyticsOverview, fetchPremiumThreads, fetchTiers]);
 
   useEffect(() => {
     loadData();
@@ -206,6 +212,64 @@ export default function CreatorDashboardScreen(): React.ReactElement {
         </TouchableOpacity>
       ))}
 
+      {/* ── Premium Content (Phase 36) ────────────────────────── */}
+      <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 20 }]}>Premium Threads</Text>
+      {premiumThreads.length === 0 ? (
+        <Text style={[styles.emptyHint, { color: colors.textSecondary }]}>
+          No premium threads yet
+        </Text>
+      ) : (
+        premiumThreads.map((thread: any, idx: number) => (
+          <View
+            key={thread.id ?? idx}
+            style={[styles.actionCard, { borderColor: colors.border }]}
+          >
+            <Text style={styles.actionEmoji}>🔒</Text>
+            <View style={styles.actionTextWrap}>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>
+                {thread.title ?? `Thread #${idx + 1}`}
+              </Text>
+              <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
+                {thread.priceNodes ?? 0} nodes
+                {thread.subscriberOnly ? ' • Subscribers only' : ''}
+              </Text>
+            </View>
+          </View>
+        ))
+      )}
+      <TouchableOpacity
+        style={[styles.secondaryButton, { borderColor: colors.primary }]}
+        onPress={() => { /* navigate to create premium thread */ }}
+      >
+        <Text style={[styles.secondaryButtonText, { color: colors.primary }]}>
+          + Create Premium Thread
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 20 }]}>Subscription Tiers</Text>
+      {tiers.length === 0 ? (
+        <Text style={[styles.emptyHint, { color: colors.textSecondary }]}>
+          No subscription tiers yet
+        </Text>
+      ) : (
+        tiers.map((tier: any, idx: number) => (
+          <View
+            key={tier.id ?? idx}
+            style={[styles.actionCard, { borderColor: colors.border }]}
+          >
+            <Text style={styles.actionEmoji}>⭐</Text>
+            <View style={styles.actionTextWrap}>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>
+                {tier.name ?? `Tier #${idx + 1}`}
+              </Text>
+              <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
+                {tier.priceMonthlyNodes ?? 0} nodes/month
+              </Text>
+            </View>
+          </View>
+        ))
+      )}
+
       {error && (
         <Text style={styles.errorText}>{error}</Text>
       )}
@@ -263,4 +327,15 @@ const styles = StyleSheet.create({
   actionTitle: { fontSize: 15, fontWeight: '600' },
   actionDesc: { fontSize: 13, marginTop: 2 },
   errorText: { color: '#ef4444', textAlign: 'center', marginTop: 12, fontSize: 14 },
+  emptyHint: { fontSize: 14, paddingHorizontal: 16, marginBottom: 12 },
+  secondaryButton: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  secondaryButtonText: { fontSize: 15, fontWeight: '600' },
 });

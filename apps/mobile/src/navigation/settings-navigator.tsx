@@ -54,6 +54,7 @@ import ShopScreen from '../screens/nodes/shop-screen';
 import WithdrawalScreen from '../screens/nodes/withdrawal-screen';
 import CosmeticsInventoryScreen from '../screens/cosmetics/inventory-screen';
 import CosmeticsEquipScreen from '../screens/cosmetics/equip-screen';
+import PaidDmSettingsScreen from '../screens/paid-dm/paid-dm-settings-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -293,6 +294,12 @@ export default function SettingsNavigator() {
         name="CosmeticsEquip"
         component={CosmeticsEquipScreen}
         options={{ title: 'Equip Cosmetic', headerShown: false }}
+      />
+      {/* Phase 36 Creator Economy Screens */}
+      <Stack.Screen
+        name="PaidDmSettings"
+        component={PaidDmSettingsScreen}
+        options={{ title: 'Paid DM Settings' }}
       />
     </Stack.Navigator>
   );

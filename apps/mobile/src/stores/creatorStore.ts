@@ -17,6 +17,8 @@ import {
   getAnalyticsOverview,
   onboard as onboardApi,
   refreshOnboard as refreshOnboardApi,
+  listPremiumThreads,
+  listTiers,
   type CreatorStatus,
   type CreatorBalance,
   type PayoutRequest,
@@ -40,6 +42,11 @@ interface CreatorState {
   // Analytics
   analyticsOverview: AnalyticsOverview | null;
 
+  // Premium content
+  premiumThreads: any[];
+  tiers: any[];
+  isLoadingPremium: boolean;
+
   // Loading
   isLoading: boolean;
   isLoadingBalance: boolean;
@@ -54,6 +61,8 @@ interface CreatorState {
   fetchAnalyticsOverview: (params?: { period?: string }) => Promise<void>;
   onboard: () => Promise<{ url: string } | null>;
   refreshOnboard: () => Promise<{ url: string } | null>;
+  fetchPremiumThreads: () => Promise<void>;
+  fetchTiers: () => Promise<void>;
   reset: () => void;
 }
 
@@ -66,6 +75,9 @@ const initialState = {
   balance: null,
   payouts: [],
   analyticsOverview: null,
+  premiumThreads: [] as any[],
+  tiers: [] as any[],
+  isLoadingPremium: false,
   isLoading: false,
   isLoadingBalance: false,
   isLoadingPayouts: false,
@@ -159,6 +171,23 @@ export const useCreatorStore = create<CreatorState>()((set) => ({
       set({ isLoading: false, error: 'Failed to refresh onboarding link' });
       return null;
     }
+  },
+
+  fetchPremiumThreads: async () => {
+    set({ isLoadingPremium: true });
+    try {
+      const data = await listPremiumThreads();
+      set({ premiumThreads: data, isLoadingPremium: false });
+    } catch {
+      set({ isLoadingPremium: false });
+    }
+  },
+
+  fetchTiers: async () => {
+    try {
+      const data = await listTiers();
+      set({ tiers: data });
+    } catch {}
   },
 
   reset: () => set(initialState),

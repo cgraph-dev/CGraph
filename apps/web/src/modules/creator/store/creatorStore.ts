@@ -44,6 +44,9 @@ const initialState = {
   isLoadingPayouts: false,
   isLoadingAnalytics: false,
   error: null,
+  premiumThreads: [] as any[],
+  tiers: [] as any[],
+  isLoadingPremium: false,
 };
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -166,6 +169,22 @@ export const useCreatorStore = create<CreatorState>()(
           set({ isLoading: false, error: 'Failed to refresh onboarding link' });
           return null;
         }
+      },
+
+      fetchPremiumThreads: async () => {
+        set({ isLoadingPremium: true });
+        try {
+          const data = await creatorService.listPremiumThreads();
+          set({ premiumThreads: data, isLoadingPremium: false });
+        } catch {
+          set({ isLoadingPremium: false });
+        }
+      },
+      fetchTiers: async () => {
+        try {
+          const data = await creatorService.listTiers();
+          set({ tiers: data });
+        } catch {}
       },
 
       reset: () => set(initialState),

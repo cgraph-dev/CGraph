@@ -55,6 +55,11 @@ export interface CreatorState {
   subscriberAnalytics: SubscriberAnalytics | null;
   contentAnalytics: ContentAnalytics | null;
 
+  // Premium
+  premiumThreads: any[];
+  tiers: any[];
+  isLoadingPremium: boolean;
+
   // Loading
   isLoading: boolean;
   isLoadingBalance: boolean;
@@ -71,6 +76,8 @@ export interface CreatorState {
   fetchAnalyticsEarnings: (params?: { period?: string }) => Promise<void>;
   fetchAnalyticsSubscribers: () => Promise<void>;
   fetchAnalyticsContent: () => Promise<void>;
+  fetchPremiumThreads: () => Promise<void>;
+  fetchTiers: () => Promise<void>;
   onboard: () => Promise<{ url: string } | null>;
   refreshOnboard: () => Promise<{ url: string } | null>;
   reset: () => void;

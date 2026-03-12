@@ -131,3 +131,38 @@ export async function updateMonetization(forumId: string, settings: Record<strin
   const response = await api.put(`/api/v1/forums/${forumId}/monetization`, settings);
   return response.data?.data;
 }
+
+// ── Premium Threads & Tiers (Phase 36) ────────────────────────────────
+
+/** List premium threads for the current creator */
+export async function listPremiumThreads() {
+  const response = await api.get('/api/v1/creator/premium-threads');
+  return response.data?.data;
+}
+
+/** Create a premium thread */
+export async function createPremiumThread(attrs: {
+  threadId: string;
+  priceNodes: number;
+  subscriberOnly?: boolean;
+  previewLength?: number;
+}) {
+  const response = await api.post('/api/v1/creator/premium-threads', attrs);
+  return response.data?.data;
+}
+
+/** List subscription tiers for the current creator */
+export async function listTiers() {
+  const response = await api.get('/api/v1/creator/tiers');
+  return response.data?.data;
+}
+
+/** Create a subscription tier */
+export async function createTier(attrs: {
+  forumId: string;
+  name: string;
+  priceMonthlyNodes: number;
+}) {
+  const response = await api.post('/api/v1/creator/tiers', attrs);
+  return response.data?.data;
+}

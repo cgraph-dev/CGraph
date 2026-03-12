@@ -44,6 +44,8 @@ import {
   CreatorEarnings,
   CreatorPayouts,
   CreatorAnalytics,
+  CreatorDashboardPage,
+  PaidDmSettings,
   // Hubs
   Customize,
   Social,
@@ -134,6 +136,8 @@ export function AppRoutes() {
         <Route path="creator/earnings" element={<CreatorEarnings />} />
         <Route path="creator/payouts" element={<CreatorPayouts />} />
         <Route path="creator/analytics" element={<CreatorAnalytics />} />
+        <Route path="creator/dashboard" element={<CreatorDashboardPage />} />
+        <Route path="paid-dm/settings" element={<PaidDmSettings />} />
 
         {/* Cosmetics */}
         <Route path="cosmetics" element={<CosmeticsInventoryPage />} />

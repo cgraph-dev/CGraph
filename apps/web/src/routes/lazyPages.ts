@@ -114,6 +114,8 @@ export const CreatorDashboard = lazyRetry(() => import('@/pages/creator/creator-
 export const CreatorEarnings = lazyRetry(() => import('@/pages/creator/earnings-page'));
 export const CreatorPayouts = lazyRetry(() => import('@/pages/creator/payout-page'));
 export const CreatorAnalytics = lazyRetry(() => import('@/pages/creator/analytics-page'));
+export const CreatorDashboardPage = lazyRetry(() => import('@/modules/creator/pages/creator-dashboard-page'));
+export const PaidDmSettings = lazyRetry(() => import('@/modules/paid-dm/pages/paid-dm-settings-page'));
 
 // ── Hub Pages ──────────────────────────────────────────────────────────
 export const Customize = lazyRetry(() => import('@/pages/customize/customize'));

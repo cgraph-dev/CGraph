@@ -162,4 +162,26 @@ export const creatorService = {
     const response = await api.put(`/api/v1/forums/${forumId}/monetization`, settings);
     return response.data.data;
   },
+
+  // ── Premium Content ──────────────────────────────────────────
+  async listPremiumThreads() {
+    const response = await api.get<{ data: any[] }>('/api/v1/creator/premium-threads');
+    return response.data.data;
+  },
+  async createPremiumThread(attrs: { threadId: string; priceNodes: number; subscriberOnly?: boolean; previewLength?: number }) {
+    const response = await api.post<{ data: any }>('/api/v1/creator/premium-threads', attrs);
+    return response.data.data;
+  },
+  async listTiers() {
+    const response = await api.get<{ data: any[] }>('/api/v1/creator/tiers');
+    return response.data.data;
+  },
+  async createTier(attrs: { forumId: string; name: string; priceMonthlyNodes: number; benefits?: Record<string, boolean>; maxSubscribers?: number }) {
+    const response = await api.post<{ data: any }>('/api/v1/creator/tiers', attrs);
+    return response.data.data;
+  },
+  async purchaseThreadAccess(threadId: string) {
+    const response = await api.put<{ data: any }>(`/api/v1/threads/${threadId}/purchase`);
+    return response.data.data;
+  },
 };
