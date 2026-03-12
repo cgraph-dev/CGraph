@@ -125,9 +125,6 @@ defmodule CGraph.Sharding.ConsistentHash do
       []
     else
       ring = ch_ring.ring
-    total_nodes = MapSet.size(ch_ring.nodes)
-    n = min(n, total_nodes)
-
       total_nodes = MapSet.size(ch_ring.nodes)
       n = min(n, total_nodes)
 

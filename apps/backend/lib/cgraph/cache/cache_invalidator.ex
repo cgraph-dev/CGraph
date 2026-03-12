@@ -61,6 +61,12 @@ defmodule CGraph.Cache.CacheInvalidator do
     :ok
   end
 
+  @doc "Returns current invalidation stats."
+  @spec stats() :: map()
+  def stats do
+    GenServer.call(__MODULE__, :stats)
+  end
+
   # ── GenServer callbacks ───────────────────────────────────────────────────
 
   @impl true

@@ -65,7 +65,7 @@ defmodule CGraph.Presence.DistributedPresence do
   require Logger
 
   alias CGraph.Presence
-  alias CGraph.Presence.{Queries, Store, GhostMode}
+  alias CGraph.Presence.{Queries, GhostMode}
 
   @online_topic "users:online"
   @stats_interval :timer.seconds(30)

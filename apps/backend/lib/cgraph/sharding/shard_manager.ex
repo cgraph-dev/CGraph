@@ -106,7 +106,7 @@ defmodule CGraph.Sharding.ShardManager do
   end
 
   @impl true
-  def handle_call({:get_ring, table}, _from, %{enabled: false} = state) do
+  def handle_call({:get_ring, _table}, _from, %{enabled: false} = state) do
     {:reply, {:error, :not_sharded}, state}
   end
 

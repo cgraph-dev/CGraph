@@ -24,7 +24,7 @@ defmodule CGraph.Sharding.ShardMigration do
   require Logger
 
   alias CGraph.Repo
-  alias CGraph.Sharding.{ShardManager, ShardRouter}
+  alias CGraph.Sharding.ShardManager
 
   @type shard_id :: atom()
   @type split_phase :: :preparing | :dual_write | :backfilling | :cutover | :complete | :failed
@@ -99,13 +99,7 @@ defmodule CGraph.Sharding.ShardMigration do
 
     emit_telemetry(:merge_started, %{sources: source_shards, target: target_shard})
 
-    total_rows =
-      Enum.reduce_while(source_shards, {:ok, 0}, fn source, {:ok, acc} ->
-        case copy_shard_data(source, target_shard, table, batch_size) do
-          {:ok, count} -> {:cont, {:ok, acc + count}}
-          {:error, _} = err -> {:halt, err}
-        end
-      end)
+    total_rows = merge_shard_data(source_shards, target_shard, table, batch_size)
 
     case total_rows do
       {:ok, count} ->
@@ -273,6 +267,17 @@ defmodule CGraph.Sharding.ShardMigration do
   defp copy_shard_data(_source, _target, _table, _batch_size) do
     # In single-DB mode, no actual data copy needed — just re-key via shard_key
     {:ok, 0}
+  end
+
+  @spec merge_shard_data([shard_id()], shard_id(), atom(), pos_integer()) ::
+          {:ok, non_neg_integer()} | {:error, term()}
+  defp merge_shard_data([], _target, _table, _batch_size), do: {:ok, 0}
+
+  defp merge_shard_data([source | rest], target, table, batch_size) do
+    with {:ok, count} <- copy_shard_data(source, target, table, batch_size),
+         {:ok, rest_count} <- merge_shard_data(rest, target, table, batch_size) do
+      {:ok, count + rest_count}
+    end
   end
 
   defp backfill_in_batches(db_table, partition_col, shard_count, batch_size, total_updated) do
