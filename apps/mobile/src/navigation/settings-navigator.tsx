@@ -52,6 +52,8 @@ import ProfileLayoutsScreen from '../screens/customize/profile-layouts-screen';
 import NodesWalletScreen from '../screens/nodes/nodes-wallet-screen';
 import ShopScreen from '../screens/nodes/shop-screen';
 import WithdrawalScreen from '../screens/nodes/withdrawal-screen';
+import CosmeticsInventoryScreen from '../screens/cosmetics/inventory-screen';
+import CosmeticsEquipScreen from '../screens/cosmetics/equip-screen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -280,6 +282,17 @@ export default function SettingsNavigator() {
         name="Withdrawal"
         component={WithdrawalScreen}
         options={{ title: 'Withdraw Nodes', headerShown: false }}
+      />
+      {/* Phase 35 Cosmetics Screens */}
+      <Stack.Screen
+        name="CosmeticsInventory"
+        component={CosmeticsInventoryScreen}
+        options={{ title: 'Cosmetics Inventory', headerShown: false }}
+      />
+      <Stack.Screen
+        name="CosmeticsEquip"
+        component={CosmeticsEquipScreen}
+        options={{ title: 'Equip Cosmetic', headerShown: false }}
       />
     </Stack.Navigator>
   );

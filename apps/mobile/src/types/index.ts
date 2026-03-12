@@ -506,6 +506,9 @@ export type SettingsStackParamList = {
   NodesWallet: undefined;
   NodesShop: undefined;
   Withdrawal: undefined;
+  // Phase 35 cosmetics screens
+  CosmeticsInventory: undefined;
+  CosmeticsEquip: { itemId: string; item: unknown };
 };
 
 // Friend types
