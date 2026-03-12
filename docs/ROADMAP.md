@@ -565,9 +565,9 @@ SPA.
 
 ---
 
-## v2.1.0 — 100% Completion 🔲 PLANNED (Phase 40)
+## v2.1.0 — 100% Completion ✅ SHIPPED (Phase 40)
 
-**Theme:** Close all remaining gaps from 5-document audit: reputation rewards, forum monetization
+**Theme:** Closed all remaining gaps from 5-document audit: reputation rewards, forum monetization
 enum + tiers, KYC/AML compliance, reputation levels, thread archiving, boost profile type, economic
 guardrails, identity cards in DMs, profile spotlight UI, 48 profile frames, 12 profile effects,
 border track metadata.
@@ -576,12 +576,12 @@ border track metadata.
 
 ### Execution Plan
 
-| Plan  | Scope                                                                                    | Wave | Status  |
-| ----- | ---------------------------------------------------------------------------------------- | ---- | ------- |
-| 40-01 | Backend: reputation rewards, forum monetization enum + tiers, KYC/AML, reputation levels | 1    | Planned |
-| 40-02 | Backend: thread archiving, boost profile type, economic guardrails                       | 1    | Planned |
-| 40-03 | Frontend: identity cards in DMs, profile spotlight UI                                    | 2    | Planned |
-| 40-04 | Data: 48 profile frames, 12 profile effects, border track metadata                      | 3    | Planned |
+| Plan  | Scope                                                                            | Wave | Status  |
+| ----- | -------------------------------------------------------------------------------- | ---- | ------- |
+| 40-01 | Backend: reputation rewards, forum monetization enum + tiers                     | 1    | ✅ Done |
+| 40-02 | Backend: KYC/AML, reputation levels, thread archiving, boost profile, guardrails | 1    | ✅ Done |
+| 40-03 | Frontend: identity cards in DMs, forum monetization UI, profile spotlight        | 2    | ✅ Done |
+| 40-04 | Data: 48 profile frames, 12 profile effects, border track metadata               | 3    | ✅ Done |
 
 ### Wave Schedule
 
