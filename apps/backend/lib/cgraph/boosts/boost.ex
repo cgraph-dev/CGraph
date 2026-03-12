@@ -13,7 +13,7 @@ defmodule CGraph.Boosts.Boost do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime]
 
-  @target_types ~w(thread post forum)
+  @target_types ~w(thread post forum profile)
   @boost_types ~w(visibility pinned highlighted)
   @statuses ~w(active expired cancelled)
 

@@ -61,6 +61,9 @@ defmodule CGraph.Forums.Thread do
     field :downvotes, :integer, default: 0
     field :hot_score, :float, default: 0.0
 
+    # Archiving
+    field :is_archived, :boolean, default: false
+
     # Content gating (Phase 31 — Discovery)
     field :is_content_gated, :boolean, default: false
     field :gate_price_nodes, :integer
@@ -89,7 +92,7 @@ defmodule CGraph.Forums.Thread do
     thread
     |> cast(attrs, [
       :title, :slug, :content, :content_html, :thread_type,
-      :is_locked, :is_pinned, :is_hidden, :is_approved,
+      :is_locked, :is_pinned, :is_hidden, :is_approved, :is_archived,
       :prefix, :prefix_color, :board_id, :author_id, :icon_id,
       :is_content_gated, :gate_price_nodes, :gate_preview_chars
     ])

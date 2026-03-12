@@ -135,12 +135,13 @@ defmodule CGraph.Forums.Forum do
     has_many :members, CGraph.Forums.ForumMember
     has_many :announcements, CGraph.Forums.ForumAnnouncement
     has_many :custom_fields, CGraph.Forums.CustomField
+    has_many :monetization_tiers, CGraph.Forums.ForumMonetizationTier
 
     # Customization engine — 55 options stored as JSONB
     field :customization_options, :map, default: %{}
 
     # Monetization (Phase 17 — creator paid forum subscriptions)
-    field :monetization_enabled, :boolean, default: false
+    field :monetization_type, :string, default: "free"
     field :subscription_price_cents, :integer
     field :subscription_currency, :string, default: "usd"
 
@@ -224,6 +225,16 @@ defmodule CGraph.Forums.Forum do
     |> validate_length(:custom_footer_html, max: 10_000)
     |> sanitize_css()
     |> sanitize_html()
+  end
+
+  @doc """
+  Update monetization settings (type enum).
+  """
+  @spec monetization_changeset(t(), map()) :: Ecto.Changeset.t()
+  def monetization_changeset(forum, attrs) do
+    forum
+    |> cast(attrs, [:monetization_type])
+    |> validate_inclusion(:monetization_type, ~w(free gated hybrid))
   end
 
   @doc """

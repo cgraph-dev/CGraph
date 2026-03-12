@@ -29,11 +29,31 @@ defmodule CGraph.Nodes do
   @platform_cut_percent 20
   @hold_days 21
   @min_withdrawal 1000
+  @max_paid_dm_price 10_000
   @eur_per_100_nodes Decimal.new("0.80")
   # Exchange rate: 0.008 EUR per Node (equivalent to @eur_per_100_nodes / 100).
   # Sourced from config for runtime override flexibility.
   @exchange_rate_eur Application.compile_env(:cgraph, :nodes_exchange_rate, 0.008)
   @min_tip 10
+
+  @doc "Maximum price for paid DM file transfers."
+  def max_paid_dm_price, do: @max_paid_dm_price
+
+  @doc """
+  Check if a user meets the minimum Pulse reputation score (>= 10)
+  for economic actions. Returns :ok or {:error, :low_reputation}.
+  """
+  @spec reputation_gate(String.t()) :: :ok | {:error, :low_reputation}
+  def reputation_gate(user_id) do
+    scores = CGraph.Pulse.PulseSystem.get_user_pulse(user_id)
+
+    total =
+      scores
+      |> Enum.map(& &1.score)
+      |> Enum.sum()
+
+    if total >= 10, do: :ok, else: {:error, :low_reputation}
+  end
 
   # ==================== WALLET MANAGEMENT ====================
 

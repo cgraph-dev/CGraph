@@ -148,7 +148,8 @@ config :cgraph, Oban,
     reputation_calc: 5,
     forum_indexing: 10,
     unlocks: 10,
-    reputation_rewards: 2
+    reputation_rewards: 2,
+    aml_scan: 1
   ]
 
 # Swoosh mailer configuration

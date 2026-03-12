@@ -32,6 +32,7 @@ defmodule CGraph.PaidDm.PaidDmSetting do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> validate_number(:price_per_file, greater_than: 0)
+    |> validate_number(:price_per_file, less_than_or_equal_to: 10_000)
     |> unique_constraint(:user_id)
   end
 end

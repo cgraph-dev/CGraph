@@ -39,7 +39,7 @@ defmodule CGraph.Creators.PaidSubscription do
 
       creator ->
         cond do
-          !forum.monetization_enabled ->
+          forum.monetization_type == "free" ->
             {:error, :not_a_paid_forum}
 
           is_nil(creator.stripe_connect_id) ->

@@ -85,7 +85,9 @@ config :cgraph, Oban,
       # Expire secret conversations past their expires_at (privacy-critical)
       {"* * * * *", CGraph.Workers.ExpireSecretConversations},
       # Pulse reputation decay — daily at 2 AM UTC
-      {"0 2 * * *", CGraph.Workers.PulseDecayWorker}
+      {"0 2 * * *", CGraph.Workers.PulseDecayWorker},
+      # Expire active boosts hourly
+      {"0 * * * *", CGraph.Workers.BoostExpirationWorker}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}

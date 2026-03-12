@@ -88,7 +88,7 @@ defmodule CGraphWeb.API.V1.CreatorController do
          {:ok, updated} <- update_forum_monetization(forum, params) do
       json(conn, %{data: %{
         forum_id: updated.id,
-        monetization_enabled: updated.monetization_enabled,
+        monetization_type: updated.monetization_type,
         subscription_price_cents: updated.subscription_price_cents,
         subscription_currency: updated.subscription_currency
       }})
@@ -238,10 +238,11 @@ defmodule CGraphWeb.API.V1.CreatorController do
 
     forum
     |> cast(%{
-      monetization_enabled: params["enabled"],
+      monetization_type: params["type"] || params["enabled"] && "gated" || "free",
       subscription_price_cents: params["price_cents"],
       subscription_currency: params["currency"] || "usd"
-    }, [:monetization_enabled, :subscription_price_cents, :subscription_currency])
+    }, [:monetization_type, :subscription_price_cents, :subscription_currency])
+    |> validate_inclusion(:monetization_type, ~w(free gated hybrid))
     |> validate_number(:subscription_price_cents, greater_than: 0)
     |> Repo.update()
   end

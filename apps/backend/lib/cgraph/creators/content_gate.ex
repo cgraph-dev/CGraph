@@ -2,7 +2,7 @@ defmodule CGraph.Creators.ContentGate do
   @moduledoc """
   Content gating logic for paid forums.
 
-  When a forum has `monetization_enabled: true`, threads are gated by default.
+  When a forum has `monetization_type` set to "gated" or "hybrid", threads are gated by default.
   Non-subscribers only see the title and a teaser (first 200 chars).
   Forum owners can also mark individual threads as `access: "free"` to allow
   public viewing even in paid forums.
@@ -31,7 +31,7 @@ defmodule CGraph.Creators.ContentGate do
   def gate_thread(thread, forum, current_user) do
     cond do
       # Forum is not monetized — always full access
-      !forum.monetization_enabled ->
+      forum.monetization_type == "free" ->
         {:ok, :full_access}
 
       # Thread explicitly marked as free
@@ -61,15 +61,15 @@ defmodule CGraph.Creators.ContentGate do
     has_access = has_full_access?(forum, current_user)
 
     Enum.map(threads, fn thread ->
-      is_gated = !has_access && forum.monetization_enabled && Map.get(thread, :access) != "free"
+      is_gated = !has_access && forum.monetization_type != "free" && Map.get(thread, :access) != "free"
       Map.put(thread, :is_gated, is_gated)
     end)
   end
 
   @doc "Checks whether a user has full access to a paid forum's content."
   @spec has_full_access?(Forum.t(), map() | nil) :: boolean()
-  def has_full_access?(forum, nil), do: !forum.monetization_enabled
-  def has_full_access?(%Forum{monetization_enabled: false}, _user), do: true
+  def has_full_access?(forum, nil), do: forum.monetization_type == "free"
+  def has_full_access?(%Forum{monetization_type: "free"}, _user), do: true
   def has_full_access?(%Forum{owner_id: owner_id}, %{id: user_id}) when owner_id == user_id, do: true
   def has_full_access?(%Forum{id: forum_id}, %{id: user_id}) do
     PaidSubscription.has_active_subscription?(user_id, forum_id)

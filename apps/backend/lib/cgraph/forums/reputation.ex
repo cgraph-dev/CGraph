@@ -19,8 +19,10 @@ defmodule CGraph.Forums.Reputation do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{ForumMember, Members}
+  alias CGraph.Forums.{ForumMember, Members, ReputationLevel}
   alias CGraph.Repo
+
+  defdelegate level_for_score(score), to: ReputationLevel
 
   @doc """
   Calculate a weighted reputation score from activity stats.

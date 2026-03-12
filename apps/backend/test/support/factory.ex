@@ -721,7 +721,7 @@ defmodule CGraph.Factory do
   @doc "Forum with monetization enabled."
   def monetized_forum_factory do
     build(:forum,
-      monetization_enabled: true,
+      monetization_type: "gated",
       subscription_price_cents: 999,
       subscription_currency: "usd"
     )
