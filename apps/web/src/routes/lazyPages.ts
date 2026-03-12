@@ -99,6 +99,12 @@ export const CallHistory = lazyRetry(() => import('@/pages/calls/call-history'))
 // ── Premium & Gamification ─────────────────────────────────────────────
 export const PremiumPage = lazyRetry(() => import('@/pages/premium/premium-page'));
 
+// ── Cosmetics ──────────────────────────────────────────────────────────
+export const CosmeticsInventoryPage = lazyRetry(
+  () => import('@/modules/cosmetics/pages/inventory-page')
+);
+export const CosmeticsShopPage = lazyRetry(() => import('@/modules/cosmetics/pages/shop-page'));
+
 // ── Nodes ──────────────────────────────────────────────────────────────
 export const NodesWalletPage = lazyRetry(() => import('@/pages/nodes/nodes-wallet'));
 export const NodesShopPage = lazyRetry(() => import('@/pages/nodes/nodes-shop'));

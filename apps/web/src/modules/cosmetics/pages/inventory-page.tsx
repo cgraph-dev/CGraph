@@ -30,6 +30,8 @@ const TYPE_TABS: { id: CosmeticType | 'all'; label: string }[] = [
   { id: 'badge', label: 'Badges' },
   { id: 'nameplate', label: 'Nameplates' },
   { id: 'profile_effect', label: 'Effects' },
+  { id: 'profile_frame', label: 'Frames' },
+  { id: 'name_style', label: 'Name Styles' },
   { id: 'chat_bubble', label: 'Chat Bubbles' },
   { id: 'emoji_pack', label: 'Emoji Packs' },
   { id: 'sound_pack', label: 'Sound Packs' },
@@ -216,3 +218,5 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
     </div>
   );
 }
+
+export default InventoryPage;

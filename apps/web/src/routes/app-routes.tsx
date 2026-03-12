@@ -33,6 +33,9 @@ import {
   CallHistory,
   // Premium
   PremiumPage,
+  // Cosmetics
+  CosmeticsInventoryPage,
+  CosmeticsShopPage,
   // Nodes
   NodesWalletPage,
   NodesShopPage,
@@ -131,6 +134,10 @@ export function AppRoutes() {
         <Route path="creator/earnings" element={<CreatorEarnings />} />
         <Route path="creator/payouts" element={<CreatorPayouts />} />
         <Route path="creator/analytics" element={<CreatorAnalytics />} />
+
+        {/* Cosmetics */}
+        <Route path="cosmetics" element={<CosmeticsInventoryPage />} />
+        <Route path="cosmetics/shop" element={<CosmeticsShopPage />} />
 
         {/* Customize Hub */}
         <Route path="customize" element={<Navigate to="/customize/identity" replace />} />

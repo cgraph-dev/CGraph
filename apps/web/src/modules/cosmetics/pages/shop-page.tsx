@@ -23,6 +23,8 @@ const SHOP_SECTIONS: { type: CosmeticType; label: string; icon: string }[] = [
   { type: 'badge', label: 'Badges', icon: '🛡️' },
   { type: 'nameplate', label: 'Nameplates', icon: '📛' },
   { type: 'profile_effect', label: 'Profile Effects', icon: '✨' },
+  { type: 'profile_frame', label: 'Profile Frames', icon: '🖼️' },
+  { type: 'name_style', label: 'Name Styles', icon: '✍️' },
   { type: 'border', label: 'Avatar Borders', icon: '🔲' },
   { type: 'title', label: 'Titles', icon: '🏷️' },
   { type: 'chat_bubble', label: 'Chat Bubbles', icon: '💬' },
@@ -160,3 +162,5 @@ export function ShopPage({
     </div>
   );
 }
+
+export default ShopPage;

@@ -175,6 +175,8 @@ const RENDERERS: Record<CosmeticType, SubRendererFn> = {
   badge: BadgeRenderer,
   nameplate: NameplateRenderer,
   profile_effect: ProfileEffectRenderer,
+  profile_frame: FallbackRenderer,
+  name_style: FallbackRenderer,
   chat_bubble: FallbackRenderer,
   emoji_pack: FallbackRenderer,
   sound_pack: FallbackRenderer,

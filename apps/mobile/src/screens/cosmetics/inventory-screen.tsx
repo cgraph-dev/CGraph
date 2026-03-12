@@ -50,6 +50,8 @@ const TYPE_FILTERS: {
   { id: 'badge', label: 'Badges', icon: 'shield-outline' },
   { id: 'nameplate', label: 'Nameplates', icon: 'card-outline' },
   { id: 'profile_effect', label: 'Effects', icon: 'sparkles-outline' },
+  { id: 'profile_frame', label: 'Frames', icon: 'image-outline' },
+  { id: 'name_style', label: 'Styles', icon: 'text-outline' },
   { id: 'chat_bubble', label: 'Chat', icon: 'chatbubble-outline' },
 ];
 
