@@ -33,7 +33,9 @@ export type CosmeticType =
   | 'chat_bubble'
   | 'emoji_pack'
   | 'sound_pack'
-  | 'theme';
+  | 'theme'
+  | 'profile_frame'
+  | 'name_style';
 
 /** Animation playback mode. */
 export type AnimationType = 'none' | 'lottie' | 'css' | 'sprite' | 'video';
@@ -150,4 +152,74 @@ export interface CosmeticVisibilityRule {
   readonly showInMemberList: boolean;
   /** Show in friend lists. */
   readonly showInFriendList: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Specific cosmetic item types
+// ---------------------------------------------------------------------------
+
+/** A badge cosmetic (e.g. "Early Supporter", "Bug Hunter"). */
+export interface Badge {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly iconUrl: string;
+  readonly rarity: RarityTier;
+  readonly category: string;
+  readonly unlockCondition: UnlockCondition;
+}
+
+/** A nameplate cosmetic shown behind a user's name. */
+export interface Nameplate {
+  readonly id: string;
+  readonly name: string;
+  readonly backgroundUrl: string;
+  readonly textColor: string;
+  readonly borderStyle: string;
+  readonly rarity: RarityTier;
+  readonly animated: boolean;
+}
+
+/** A profile effect applied to a user's profile page. */
+export interface ProfileEffect {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly config: Record<string, unknown>;
+  readonly rarity: RarityTier;
+  readonly previewUrl: string;
+}
+
+/** A decorative frame around a user's profile. */
+export interface ProfileFrame {
+  readonly id: string;
+  readonly name: string;
+  readonly frameUrl: string;
+  readonly animated: boolean;
+  readonly rarity: RarityTier;
+}
+
+/** A custom name style (font, color scheme, animation). */
+export interface NameStyle {
+  readonly id: string;
+  readonly name: string;
+  readonly fontFamily: string;
+  readonly colorScheme: readonly string[];
+  readonly animation: string | null;
+  readonly rarity: RarityTier;
+}
+
+// ---------------------------------------------------------------------------
+// Inventory
+// ---------------------------------------------------------------------------
+
+/** A single item in a user's cosmetic inventory. */
+export interface InventoryItem {
+  readonly id: string;
+  readonly userId: string;
+  readonly itemType: CosmeticType;
+  readonly itemId: string;
+  readonly equippedAt: string | null;
+  readonly obtainedAt: string;
+  readonly obtainedVia: string;
 }
