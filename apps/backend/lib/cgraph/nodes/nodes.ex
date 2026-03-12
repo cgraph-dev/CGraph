@@ -434,6 +434,12 @@ defmodule CGraph.Nodes do
   @spec request_withdrawal(String.t(), pos_integer()) ::
           {:ok, WithdrawalRequest.t()} | {:error, atom()}
   def request_withdrawal(user_id, nodes_amount) when nodes_amount >= @min_withdrawal do
+    with {:ok, :passed} <- CGraph.Compliance.KYCEnforcement.enforce_kyc!(user_id) do
+      do_request_withdrawal(user_id, nodes_amount)
+    end
+  end
+
+  defp do_request_withdrawal(user_id, nodes_amount) do
     fiat_amount =
       Decimal.mult(Decimal.new(nodes_amount), Decimal.div(@eur_per_100_nodes, Decimal.new(100)))
 
