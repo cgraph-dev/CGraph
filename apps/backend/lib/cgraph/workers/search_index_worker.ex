@@ -11,6 +11,7 @@ defmodule CGraph.Workers.SearchIndexWorker do
     priority: 2
 
   alias CGraph.Search.Engine
+  alias CGraph.Search.ElasticAdapter
 
   require Logger
 
@@ -53,8 +54,79 @@ defmodule CGraph.Workers.SearchIndexWorker do
     end
   end
 
+  # ---------------------------------------------------------------------------
+  # ElasticAdapter Operations (Elasticsearch/OpenSearch)
+  # ---------------------------------------------------------------------------
+
+  def perform(%Oban.Job{args: %{"operation" => "elastic_index", "index" => index, "document_id" => id, "document" => doc}}) do
+    case ElasticAdapter.index(index, id, doc) do
+      :ok -> :ok
+      {:ok, :postgres_is_source_of_truth} -> :ok
+      {:error, reason} ->
+        Logger.warning("elastic_index_failed",
+          index: index,
+          document_id: id,
+          reason: inspect(reason)
+        )
+
+        {:error, reason}
+    end
+  end
+
+  def perform(%Oban.Job{args: %{"operation" => "elastic_delete", "index" => index, "document_id" => id}}) do
+    case ElasticAdapter.delete(index, id) do
+      :ok -> :ok
+      {:ok, :postgres_is_source_of_truth} -> :ok
+      {:error, reason} ->
+        Logger.warning("elastic_delete_failed",
+          index: index,
+          document_id: id,
+          reason: inspect(reason)
+        )
+
+        {:error, reason}
+    end
+  end
+
+  def perform(%Oban.Job{args: %{"operation" => "elastic_bulk", "index" => index, "documents" => docs}}) do
+    emit_batch_telemetry(:start, index, length(docs))
+
+    case ElasticAdapter.bulk(index, docs) do
+      :ok ->
+        emit_batch_telemetry(:complete, index, length(docs))
+        :ok
+
+      {:ok, :postgres_is_source_of_truth} ->
+        emit_batch_telemetry(:complete, index, length(docs))
+        :ok
+
+      {:error, reason} ->
+        emit_batch_telemetry(:error, index, length(docs))
+
+        Logger.warning("elastic_bulk_index_failed",
+          index: index,
+          count: length(docs),
+          reason: inspect(reason)
+        )
+
+        {:error, reason}
+    end
+  end
+
   def perform(%Oban.Job{args: args}) do
     Logger.warning("unknown_search_index_operation", args: inspect(args))
     :ok
+  end
+
+  # ---------------------------------------------------------------------------
+  # Batch Telemetry
+  # ---------------------------------------------------------------------------
+
+  defp emit_batch_telemetry(event, index, count) do
+    :telemetry.execute(
+      [:cgraph, :search, :batch, event],
+      %{count: count, timestamp: System.system_time(:millisecond)},
+      %{index: index}
+    )
   end
 end
