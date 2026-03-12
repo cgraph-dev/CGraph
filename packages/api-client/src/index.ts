@@ -86,3 +86,19 @@ export {
 // Typed API methods — Nodes
 // ---------------------------------------------------------------------------
 export { getWallet, getTransactions, getBundles, tipUser, unlockContent, withdraw } from './nodes';
+
+// ---------------------------------------------------------------------------
+// Typed API methods — Cosmetics
+// ---------------------------------------------------------------------------
+export {
+  getInventory,
+  equipItem,
+  unequipItem,
+  getBadges,
+  getUserBadges,
+  getNameplates,
+  getUserNameplates,
+  getProfileEffects,
+  getProfileFrames,
+  getNameStyles,
+} from './cosmetics';
