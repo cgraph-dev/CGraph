@@ -4,7 +4,8 @@
  */
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar } from '@/components/ui';
+import { ChatIdentityCard } from './chat-identity-card';
+import { useChatIdentity } from '../hooks/useChatIdentity';
 
 interface MessageGroupProps {
   /** Author info */
@@ -39,34 +40,55 @@ function formatFullTimestamp(date: Date): string {
  * First message shows avatar + name + timestamp; subsequent show only content.
  */
 export function MessageGroup({ author, timestamp, children, className }: MessageGroupProps) {
+  const { title, badges } = useChatIdentity(author.id);
+  const visibleBadges = badges.slice(0, 3);
+
   return (
     <div
       className={cn(
         'group relative flex gap-4 px-4 py-0.5 transition-colors',
         'hover:bg-white/[0.02]',
-        className,
+        className
       )}
     >
       {/* Avatar column — fixed 40px */}
       <div className="flex w-10 shrink-0 items-start pt-0.5">
-        <Avatar
-          src={author.avatar}
-          name={author.name}
-          size="lg"
-          status="online"
+        <ChatIdentityCard
+          userId={author.id}
+          avatarUrl={author.avatar}
+          avatarName={author.name}
+          avatarSize="lg"
         />
       </div>
 
       {/* Content column */}
       <div className="min-w-0 flex-1">
-        {/* Header: name + timestamp */}
+        {/* Header: name + title + badges + timestamp */}
         <div className="flex items-baseline gap-2">
           <span
-            className="text-sm font-semibold leading-snug hover:underline cursor-pointer"
+            className="cursor-pointer text-sm font-semibold leading-snug hover:underline"
             style={{ color: author.roleColor ?? '#ffffff' }}
           >
             {author.name}
           </span>
+          {title && (
+            <span className="text-xs opacity-70" style={{ color: title.color ?? undefined }}>
+              {title.text}
+            </span>
+          )}
+          {visibleBadges.length > 0 && (
+            <span className="flex items-center gap-0.5">
+              {visibleBadges.map((badge) => (
+                <img
+                  key={badge.id}
+                  src={badge.icon_url}
+                  alt={badge.name}
+                  title={badge.name}
+                  className="inline-block h-4 w-4"
+                />
+              ))}
+            </span>
+          )}
           <span className="text-[11px] leading-snug text-white/30">
             {formatFullTimestamp(timestamp)}
           </span>
@@ -79,20 +101,23 @@ export function MessageGroup({ author, timestamp, children, className }: Message
   );
 }
 
-/** Compact continuation message within a group — no avatar, just content */
+/**
+ * Compact continuation message within a group — no avatar, just content.
+ */
 interface GroupedMessageProps {
   timestamp: Date;
   children: ReactNode;
   className?: string;
 }
 
+/** Compact continuation message within a group — no avatar, just content. */
 export function GroupedMessage({ timestamp, children, className }: GroupedMessageProps) {
   return (
     <div
       className={cn(
         'group/msg relative flex gap-4 px-4 py-px transition-colors',
         'hover:bg-white/[0.02]',
-        className,
+        className
       )}
     >
       {/* Timestamp revealed on hover (in avatar column space) */}
