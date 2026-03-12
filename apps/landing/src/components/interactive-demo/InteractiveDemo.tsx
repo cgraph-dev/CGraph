@@ -5,7 +5,7 @@ import { DEMO_TABS } from './constants';
 import { ChatDemo } from './ChatDemo';
 import { TitlesDemo } from './TitlesDemo';
 import { AchievementsDemo } from './AchievementsDemo';
-import { GamificationDemo } from './GamificationDemo';
+import { ForumsDemo } from './ForumsDemo';
 import { FlowingBorder } from '../customization-demo/effects';
 
 export const InteractiveDemo = memo(function InteractiveDemo({
@@ -14,9 +14,9 @@ export const InteractiveDemo = memo(function InteractiveDemo({
   const [activeTab, setActiveTab] = useState('chat');
   const footerMessages: Record<string, string> = {
     chat: '🔒 End-to-end encrypted • Try it yourself!',
-    titles: '🏷️ Preview premium titles and badge styles instantly.',
+    titles: '🏷️ Preview premium cosmetics and badge styles instantly.',
     achievements: '🏆 Track milestone progress and unlock achievements.',
-    gamify: '🎮 Explore XP, levels, and progression rewards in action.',
+    forums: '💬 Explore community forums with threads, voting, and karma.',
   };
 
   return (
@@ -56,7 +56,7 @@ export const InteractiveDemo = memo(function InteractiveDemo({
             {activeTab === 'chat' && <ChatDemo />}
             {activeTab === 'titles' && <TitlesDemo />}
             {activeTab === 'achievements' && <AchievementsDemo />}
-            {activeTab === 'gamify' && <GamificationDemo />}
+            {activeTab === 'forums' && <ForumsDemo />}
           </motion.div>
         </AnimatePresence>
       </div>

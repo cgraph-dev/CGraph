@@ -8,7 +8,7 @@
  * - DetailedProfileCard.tsx - Full profile with stats/badges
  * - CompactProfileCard.tsx - Minimal inline profile
  * - ExpandedProfileCard.tsx - Full-width with cover image
- * - GamingProfileCard.tsx - Gaming-themed with XP bar
+ * - GamingProfileCard.tsx - Gaming-themed with Pulse reputation
  * - types.ts - Type definitions
  * - constants.ts - Mock data and utilities
  */

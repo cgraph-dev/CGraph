@@ -12,6 +12,309 @@
 import type { BlogArticleData } from './types';
 
 export const blogArticles: Record<string, BlogArticleData> = {
+  'v1-release': {
+    title: 'CGraph v1.0: 38 Phases Later',
+    category: 'Release',
+    author: 'Burca Lucas',
+    date: 'March 4, 2026',
+    readTime: '10 min read',
+    image: '🚀',
+    tags: ['Release', 'v1.0', 'Retrospective'],
+    content: `
+<p>CGraph v1.0 is here. 38 completed development phases, 6,900+ passing tests, 94 database tables, and a complete identity transformation — from gamification-heavy to cosmetics-driven self-expression. This is the full retrospective.</p>
+
+<h3>By the Numbers</h3>
+
+<table>
+<thead><tr><th>Metric</th><th>v0.1</th><th>v1.0</th></tr></thead>
+<tbody>
+<tr><td>Phases Completed</td><td>1</td><td>38/39</td></tr>
+<tr><td>Passing Tests</td><td>0</td><td>6,900+</td></tr>
+<tr><td>Database Tables</td><td>12</td><td>94</td></tr>
+<tr><td>Backend Controllers</td><td>5</td><td>83</td></tr>
+<tr><td>Architecture Score</td><td>3.2/10</td><td>8.7/10</td></tr>
+<tr><td>Compile Warnings</td><td>200+</td><td>0</td></tr>
+<tr><td>Credo Issues</td><td>1,277</td><td>0</td></tr>
+<tr><td>Cosmetic Items</td><td>0</td><td>325</td></tr>
+</tbody>
+</table>
+
+<h3>The Identity Shift</h3>
+
+<p>The most important decision in CGraph's history was <strong>Phase 26: The Great Delete</strong>. We ripped out every gamification UI element — XP bars, level badges, leaderboards, quests, battle pass, prestige, skill trees, seasonal events, and the shop. The backend achievement and cosmetics systems were intentionally preserved.</p>
+
+<p>What replaced it: <strong>Cosmetics & Self-Expression</strong> (325 items across 7 categories), <strong>Pulse Reputation</strong> (organic trust signals), <strong>Nodes Currency</strong> (creator economy), and <strong>Discovery</strong> (finding communities and content).</p>
+
+<h3>Platform Architecture</h3>
+
+<p>CGraph runs on a dual-app architecture: a marketing landing page at <code>cgraph.org</code> and the authenticated app at <code>app.cgraph.org</code>. The backend is Elixir/Phoenix 1.8 deployed on Fly.io with a hierarchical supervision tree, 7 circuit breakers, and multi-tier caching (ETS → Cachex → Redis → PostgreSQL).</p>
+
+<h3>Security</h3>
+
+<p>Post-quantum E2EE with <strong>PQXDH (ML-KEM-768 + P-256)</strong> and <strong>Triple Ratchet</strong> protocol. AES-256-GCM for message encryption. Guardian JWT with JTI revocation, HTTP-only cookies, fail-closed token blacklist. 7 circuit breakers protect every external dependency.</p>
+
+<h3>What Ships in v1.0</h3>
+
+<ul>
+<li><strong>Messaging</strong>: DMs, group conversations, threads, reactions, read receipts, typing indicators</li>
+<li><strong>Forums</strong>: Boards, threads, nested comments, voting, cursor-based pagination</li>
+<li><strong>Communities</strong>: Servers with channels, roles, permissions, invites, custom emojis</li>
+<li><strong>Voice/Video</strong>: WebRTC peer connections with ICE/TURN, call history persistence</li>
+<li><strong>Cosmetics</strong>: 325 items (badges, titles, nameplates, themes, name styles, frames, forum themes)</li>
+<li><strong>Creator Economy</strong>: Nodes currency, paid DMs, premium threads, tipping, revenue sharing</li>
+<li><strong>Secret Chat</strong>: Disappearing messages, screenshot detection, forward-restricted messages</li>
+<li><strong>Enterprise</strong>: SSO/SAML, compliance tooling, audit logging, admin dashboard</li>
+<li><strong>Mobile</strong>: React Native + Expo 54 with full feature parity, offline-first (WatermelonDB)</li>
+</ul>
+
+<h3>What's Next</h3>
+
+<p>Phase 19 (production credentials) is the only remaining blocker for public launch. After that: public beta, Stripe live billing, Apple/Google store submissions, and MeiliSearch production deployment. The codebase is ready — 8.7/10 architecture score, zero compile warnings, zero Credo issues, and comprehensive test coverage across all 4 apps.</p>
+`,
+  },
+  'enterprise-ready': {
+    title: 'Enterprise Ready: SSO, SAML, Compliance & Audit Logging',
+    category: 'Product',
+    author: 'Burca Lucas',
+    date: 'February 28, 2026',
+    readTime: '7 min read',
+    image: '🏢',
+    tags: ['Enterprise', 'SSO', 'SAML', 'Compliance'],
+    content: `
+<p>Phase 39 made CGraph enterprise-ready. SSO/SAML authentication, compliance tooling, audit logging with database persistence, and expanded admin dashboard panels. Organizations can now deploy CGraph with the security controls they require.</p>
+
+<h3>SSO & SAML Authentication</h3>
+
+<p>Enterprise organizations need centralized identity management. CGraph now supports <strong>SAML 2.0</strong> for single sign-on alongside existing OAuth providers (Google, Apple, Facebook). Users authenticate through their organization's identity provider — no separate CGraph password required.</p>
+
+<p>The implementation follows the standard SAML flow: SP-initiated login → IdP authentication → assertion validation → session creation. Combined with our existing Guardian JWT system, refresh tokens, and HTTP-only cookies.</p>
+
+<h3>Audit Logging</h3>
+
+<p>Every sensitive operation is now tracked with actor, action, target, and timestamp. The <code>CGraph.Audit</code> GenServer buffers events in memory and flushes to the database via <code>CGraph.Accounts.AuditLog</code>. On shutdown, <code>terminate/2</code> ensures no events are lost.</p>
+
+<p>Audit categories: authentication events, admin actions, compliance operations, data access, and security incidents. Retention policies automatically clean up old entries by category.</p>
+
+<h3>Compliance Tooling</h3>
+
+<p>GDPR data export, right to erasure, and data portability are handled through the existing <code>DataExportWorker</code> Oban job. The admin dashboard now includes compliance-specific panels for managing user data requests and reviewing audit trails.</p>
+
+<h3>Admin Dashboard Expansion</h3>
+
+<p>Four dashboard panels (DashboardOverview, UsersManagement, EventsManagement, MarketplaceModeration) now use real API calls instead of placeholder data. Role-based access via the <code>RequireAdmin</code> plug ensures only administrators can access these endpoints.</p>
+`,
+  },
+  'creator-economy': {
+    title: 'Creator Economy: Nodes Currency, Paid DMs & Revenue Sharing',
+    category: 'Product',
+    author: 'Burca Lucas',
+    date: 'February 25, 2026',
+    readTime: '8 min read',
+    image: '💰',
+    tags: ['Creator Economy', 'Monetization', 'Nodes'],
+    content: `
+<p>Phase 36 introduced the creator economy — a system where content creators earn real value from their contributions. The foundation: <strong>Nodes</strong>, CGraph's platform currency that powers paid interactions, content boosts, and revenue sharing.</p>
+
+<h3>Nodes Currency</h3>
+
+<p>Nodes are CGraph's universal currency. Users earn Nodes through engagement and can spend them on premium interactions. The system is backed by Stripe for real-money purchases and payouts, with the backend handling all ledger operations through Ecto transactions.</p>
+
+<table>
+<thead><tr><th>Action</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>Paid DM to a creator</td><td>Variable (set by creator)</td></tr>
+<tr><td>Premium thread access</td><td>Variable (set by creator)</td></tr>
+<tr><td>Content boost</td><td>50-500 Nodes</td></tr>
+<tr><td>Tip a post</td><td>Any amount</td></tr>
+</tbody>
+</table>
+
+<h3>Revenue Sharing</h3>
+
+<p>Creators receive a share of Node transactions on their content. Paid DMs, premium thread access, and tips flow directly to the creator's balance. Payouts are processed through Stripe Connect, giving creators a real revenue stream from their community contributions.</p>
+
+<h3>Paid DMs</h3>
+
+<p>Creators can set a Node cost for direct messages from non-followers. This solves the spam problem without blocking legitimate outreach — if someone is willing to pay for your attention, the message is likely worth reading. Creators keep the majority of the Node payment.</p>
+
+<h3>Premium Threads</h3>
+
+<p>Forum threads can be gated behind a Node payment. Creators share exclusive content, analysis, or resources, and interested community members pay to access. The creator economy gives forum participation a tangible value beyond karma.</p>
+
+<h3>Integration with Cosmetics</h3>
+
+<p>Nodes are also used to unlock certain cosmetic items — premium profile frames, exclusive name styles, and rare forum themes. This connects the creator economy with the cosmetics system: earn Nodes through quality content, spend them on self-expression.</p>
+`,
+  },
+  'cosmetics-engine': {
+    title: 'Cosmetics Engine: 325 Items, 7 Rarity Tiers, 5 Unlock Evaluators',
+    category: 'Engineering',
+    author: 'Burca Lucas',
+    date: 'February 23, 2026',
+    readTime: '9 min read',
+    image: '✨',
+    tags: ['Cosmetics', 'Self-Expression', 'Elixir'],
+    content: `
+<p>Phase 35 built the Cosmetics Unlock Engine — the system that replaced gamification as CGraph's primary self-expression mechanism. 325 items across 7 categories, 7 rarity tiers from Common to Mythic, and 5 rule-based unlock evaluators.</p>
+
+<h3>Item Categories</h3>
+
+<table>
+<thead><tr><th>Category</th><th>Count</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>Badges</td><td>70</td><td>Profile badges shown next to username</td></tr>
+<tr><td>Titles</td><td>70</td><td>Displayed below username (e.g., "Founding Member")</td></tr>
+<tr><td>Nameplates</td><td>45</td><td>Background decoration for username area</td></tr>
+<tr><td>Profile Themes</td><td>25</td><td>Full profile page color schemes</td></tr>
+<tr><td>Name Styles</td><td>50</td><td>Font and color effects on displayed name</td></tr>
+<tr><td>Profile Frames</td><td>55</td><td>Decorative borders around profile picture</td></tr>
+<tr><td>Forum Themes</td><td>10</td><td>Custom styling for forum posts</td></tr>
+</tbody>
+</table>
+
+<h3>Rarity Tiers</h3>
+
+<p>Every item has a rarity that determines its visual treatment and unlock difficulty:</p>
+
+<ul>
+<li><strong>Common</strong> — Available to everyone, basic visual treatments</li>
+<li><strong>Uncommon</strong> — Slight activity requirements</li>
+<li><strong>Rare</strong> — Moderate engagement milestones</li>
+<li><strong>Epic</strong> — Significant community contribution</li>
+<li><strong>Legendary</strong> — Exceptional commitment to the platform</li>
+<li><strong>Mythic</strong> — Extraordinarily rare, often time-limited</li>
+<li><strong>Limited</strong> — Seasonal or event-exclusive, never returning</li>
+</ul>
+
+<h3>Unlock Evaluators</h3>
+
+<p>Five rule-based evaluators determine when a user earns a cosmetic item:</p>
+
+<ol>
+<li><strong>Achievement Evaluator</strong> — Triggered when a user completes an achievement (70 achievements total)</li>
+<li><strong>Milestone Evaluator</strong> — Based on cumulative metrics (messages sent, posts created, reactions given)</li>
+<li><strong>Subscription Evaluator</strong> — Premium and Enterprise tiers unlock exclusive cosmetics</li>
+<li><strong>Purchase Evaluator</strong> — Items available through the Nodes currency system</li>
+<li><strong>Event Evaluator</strong> — Time-limited items tied to seasonal events or platform milestones</li>
+</ol>
+
+<h3>Backend Architecture</h3>
+
+<p>The cosmetics system is built as an Elixir context module with a manifest-driven approach. The <code>COSMETICS_MANIFEST.md</code> defines all 325 items with their category, rarity, unlock conditions, and visual metadata. The unlock engine evaluates conditions on relevant events (achievement earned, subscription changed, milestone reached) and grants items automatically.</p>
+
+<p>Items are stored as user associations in PostgreSQL. Equipped items (active badge, title, nameplate, theme, name style, frame, forum theme) are tracked per-user with efficient ETS caching for frequently-accessed profiles.</p>
+`,
+  },
+  'secret-chat-discovery': {
+    title: 'Secret Chat & Discovery System: Privacy Meets Discoverability',
+    category: 'Product',
+    author: 'Burca Lucas',
+    date: 'February 20, 2026',
+    readTime: '7 min read',
+    image: '🔍',
+    tags: ['Secret Chat', 'Discovery', 'Privacy'],
+    content: `
+<p>Two complementary systems shipped in Phases 29 and 31: <strong>Secret Chat</strong> for maximum privacy and <strong>Discovery</strong> for finding the right communities and content. Privacy and discoverability coexisting in the same platform.</p>
+
+<h3>Secret Chat (Phase 29)</h3>
+
+<p>Secret Chat adds ephemeral messaging on top of CGraph's existing post-quantum E2EE. Messages in a secret chat have additional protections beyond standard encryption:</p>
+
+<ul>
+<li><strong>Disappearing Messages</strong> — Configurable timers (30 seconds to 7 days). Messages auto-delete from both sender and recipient devices after the timer expires.</li>
+<li><strong>Screenshot Detection</strong> — The client detects screenshot attempts and notifies the sender. On mobile, the screen content is obscured in the app switcher.</li>
+<li><strong>Forward Restriction</strong> — Messages cannot be forwarded, copied, or shared outside the conversation.</li>
+<li><strong>No Server Storage</strong> — Secret chat messages are never persisted on the server beyond delivery.</li>
+</ul>
+
+<p>The backend handles secret chat through a dedicated Phoenix Channel (<code>secret:{conversation_id}</code>) with additional authorization checks. Message delivery is fire-and-forget — once both parties receive the ciphertext, the server discards it.</p>
+
+<h3>Discovery System (Phase 31)</h3>
+
+<p>The Discovery system makes CGraph's communities, users, and content findable without compromising privacy. Built on MeiliSearch with PostgreSQL ILIKE as an automatic fallback:</p>
+
+<ul>
+<li><strong>Community Discovery</strong> — Browse public servers by category, member count, and activity level</li>
+<li><strong>User Discovery</strong> — Find users by username, display name, or shared communities</li>
+<li><strong>Content Discovery</strong> — Search across public forum posts, threads, and comments</li>
+<li><strong>Trending</strong> — Algorithmically surfaced communities and content based on recent activity</li>
+</ul>
+
+<p>Privacy is respected throughout: private conversations never appear in search results. Users can opt out of being discoverable entirely through their privacy settings (7 per-field visibility controls added in Phase 25).</p>
+
+<h3>The Balance</h3>
+
+<p>Secret Chat and Discovery represent two sides of CGraph's philosophy: you should be able to find people and communities easily, but your private conversations should be truly private. The same platform supports both use cases without compromise.</p>
+`,
+  },
+  'the-great-delete': {
+    title: 'The Great Delete: Why We Removed All Gamification UI',
+    category: 'Product',
+    author: 'Burca Lucas',
+    date: 'February 18, 2026',
+    readTime: '12 min read',
+    image: '🗑️',
+    tags: ['Product', 'Identity', 'Architecture'],
+    content: `
+<p>Phase 26 was the most consequential decision in CGraph's development. We deleted every gamification UI element — XP bars, level badges, leaderboards, quests, battle pass, prestige system, skill trees, seasonal events, and the shop UI. Thousands of lines of frontend code, removed in a single phase. Here's why.</p>
+
+<h3>What We Deleted</h3>
+
+<table>
+<thead><tr><th>System</th><th>What It Did</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>XP Bars & Levels</td><td>Numeric progression on every profile</td><td>Removed</td></tr>
+<tr><td>Leaderboards</td><td>Competitive rankings by XP earned</td><td>Removed</td></tr>
+<tr><td>Quests</td><td>Daily/weekly task lists for XP</td><td>Removed</td></tr>
+<tr><td>Battle Pass</td><td>Seasonal progression track</td><td>Removed</td></tr>
+<tr><td>Prestige System</td><td>Reset XP for special badges</td><td>Removed</td></tr>
+<tr><td>Skill Trees</td><td>Spec into communication styles</td><td>Removed</td></tr>
+<tr><td>Seasonal Events</td><td>Time-limited XP challenges</td><td>Removed</td></tr>
+<tr><td>Shop UI</td><td>Buy items with earned currency</td><td>Removed</td></tr>
+<tr><td>Achievements (backend)</td><td>70 milestones</td><td><strong>Kept</strong></td></tr>
+<tr><td>Cosmetics (backend)</td><td>325 items, 7 categories</td><td><strong>Kept</strong></td></tr>
+<tr><td>Titles (backend)</td><td>70 display titles</td><td><strong>Kept</strong></td></tr>
+</tbody>
+</table>
+
+<h3>Why Gamification Was Wrong</h3>
+
+<p>The fundamental problem: <strong>gamification incentivizes quantity over quality</strong>. When every message earns XP, users send low-effort messages to grind. When leaderboards rank by XP, the most valuable community members aren't at the top — the grinders are. Quests and battle passes create obligation, not engagement.</p>
+
+<p>We were building a messaging platform that accidentally encouraged spam. That's backwards.</p>
+
+<h3>What Replaced It</h3>
+
+<p>Four new systems replaced the gamification layer, each designed to reward quality over quantity:</p>
+
+<ol>
+<li><strong>Pulse Reputation (Phase 30)</strong> — Organic trust signals based on community standing, not XP accumulation. Your reputation grows from others' endorsements, not from grinding tasks.</li>
+<li><strong>Nodes Currency (Phase 32)</strong> — A creator economy currency that has real value. Earn Nodes through quality contributions, spend them on paid DMs, premium threads, and cosmetics.</li>
+<li><strong>Cosmetics & Self-Expression (Phase 35)</strong> — 325 items across 7 categories. Unlock through achievements, milestones, subscriptions, purchases, and events — not by grinding XP.</li>
+<li><strong>Discovery System (Phase 31)</strong> — Find communities and content through search and algorithmic surfacing, not through competitive leaderboards.</li>
+</ol>
+
+<h3>What We Intentionally Kept</h3>
+
+<p>The backend systems were preserved because they serve real purposes:</p>
+
+<ul>
+<li><strong>70 Achievements</strong> — Milestones that mark genuine accomplishments (first post, 100 messages, 1-year membership). No XP reward — just the achievement itself and a cosmetic unlock.</li>
+<li><strong>Cosmetics System</strong> — 325 items that let users express themselves. Badges, titles, nameplates, profile themes, name styles, profile frames, and forum themes.</li>
+<li><strong>Karma</strong> — Forum post voting (upvote/downvote) that surfaces quality content. This is Reddit-style content curation, not gamification.</li>
+</ul>
+
+<h3>The Technical Side</h3>
+
+<p>The Great Delete was surgically precise. We removed all frontend gamification components while keeping the backend Elixir context modules (<code>gamification.ex</code>, achievements, titles, cosmetics) intact. The Zustand stores were cleaned up — gamification facades removed, cosmetics-specific stores created. Mobile followed the same pattern.</p>
+
+<p>The architecture score actually went up after the delete (8.2 → 8.5) because we were removing complexity, not adding it. Less code, fewer bugs, clearer purpose.</p>
+
+<h3>Lesson Learned</h3>
+
+<p>If your engagement system can be gamed by spamming, it's not measuring engagement — it's measuring spam tolerance. Build systems that reward the behavior you actually want.</p>
+`,
+  },
   'architecture-refactor': {
     title: 'Architecture Refactor: Router Split, Component Organization & Build Hardening',
     category: 'Architecture',
@@ -36,7 +339,7 @@ export const blogArticles: Record<string, BlogArticleData> = {
 <tr><td>user_routes.ex</td><td>257</td><td>User CRUD, profiles, settings</td></tr>
 <tr><td>messaging_routes.ex</td><td>87</td><td>DMs, conversations, voice</td></tr>
 <tr><td>forum_routes.ex</td><td>117</td><td>Forums, posts, comments, votes</td></tr>
-<tr><td>gamification_routes.ex</td><td>124</td><td>XP, achievements, quests, leaderboards</td></tr>
+<tr><td>gamification_routes.ex</td><td>124</td><td>Achievements, cosmetics, Pulse, Nodes</td></tr>
 <tr><td>admin_routes.ex</td><td>135</td><td>Admin panel, moderation, metrics</td></tr>
 </tbody>
 </table>
@@ -185,8 +488,8 @@ export const blogArticles: Record<string, BlogArticleData> = {
 <tr><td>Video Calls</td><td>Yes</td><td>Yes</td><td>WebRTC with adaptive bitrate</td></tr>
 <tr><td>Screen Sharing</td><td>Yes</td><td>Yes</td><td>Desktop + mobile screen capture</td></tr>
 <tr><td>User Profiles</td><td>Yes</td><td>Yes</td><td>Avatars, bios, status</td></tr>
-<tr><td>Gamification / XP</td><td>Yes</td><td>Yes</td><td>RPG-style leveling, achievements</td></tr>
-<tr><td>Marketplace</td><td>Yes</td><td>Yes</td><td>Virtual currency + item trading</td></tr>
+<tr><td>Achievements & Cosmetics</td><td>Yes</td><td>Yes</td><td>325 cosmetic items, Pulse reputation</td></tr>
+<tr><td>Creator Economy</td><td>Yes</td><td>Yes</td><td>Nodes currency, tipping, premium threads</td></tr>
 <tr><td>Settings &amp; Preferences</td><td>Yes</td><td>Yes</td><td>Theme, notifications, privacy</td></tr>
 <tr><td>Community Management</td><td>Yes</td><td>Yes</td><td>Roles, permissions, moderation</td></tr>
 <tr><td>File Sharing</td><td>Yes</td><td>Yes</td><td>Drag-drop on web, picker on mobile</td></tr>
@@ -217,7 +520,7 @@ export const blogArticles: Record<string, BlogArticleData> = {
 <p>Parity without tests is just hope. The suite now has <strong>1,342 passing tests</strong>:</p>
 
 <ul>
-<li><strong>132 facade tests</strong> — ensuring every store facade (Auth, Chat, Gamification, Settings, Community, Marketplace, UI) correctly composes from underlying stores</li>
+<li><strong>132 facade tests</strong> — ensuring every store facade (Auth, Chat, Achievements, Settings, Community, Creator Economy, UI) correctly composes from underlying stores</li>
 <li><strong>192 E2EE tests</strong> — comprehensive Triple Ratchet test suite covering PQXDH key exchange, hybrid ratcheting, post-quantum forward secrecy, adversarial scenarios, and stress testing</li>
 <li><strong>200+ component tests</strong> — rendering, interaction, and accessibility tests for shared UI components</li>
 <li><strong>Platform-specific tests</strong> — mobile gesture handlers, navigation flows, and native module mocks</li>
@@ -269,8 +572,8 @@ export const blogArticles: Record<string, BlogArticleData> = {
 │   ├── community/      # Servers, roles, permissions, moderation
 │   ├── e2ee/           # Triple Ratchet / PQXDH, key management
 │   ├── forums/         # Threads, posts, nested comments
-│   ├── gamification/   # XP, levels, achievements, leaderboards
-│   ├── marketplace/    # Items, currency, transactions
+│   ├── achievements/   # Achievements, cosmetics, Pulse, Nodes
+│   ├── creator-economy/ # Tipping, premium threads, Nodes
 │   ├── media/          # Voice, video, screen sharing (WebRTC)
 │   ├── notifications/  # Push, in-app, preferences
 │   ├── profiles/       # User profiles, avatars, status
@@ -280,8 +583,8 @@ export const blogArticles: Record<string, BlogArticleData> = {
 │   ├── useAuth.ts
 │   ├── useChat.ts
 │   ├── useCommunity.ts
-│   ├── useGamification.ts
-│   ├── useMarketplace.ts
+│   ├── useAchievements.ts
+│   ├── useCreatorEconomy.ts
 │   ├── useSettings.ts
 │   └── useUI.ts
 └── shared/
@@ -318,10 +621,10 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 <tbody>
 <tr><td>useAuth</td><td>authStore, sessionStore, oauthStore, tokenStore</td><td>18</td></tr>
 <tr><td>useChat</td><td>messageStore, channelStore, dmStore, reactionStore, presenceStore, threadStore</td><td>24</td></tr>
-<tr><td>useGamification</td><td>xpStore, levelStore, achievementStore, leaderboardStore</td><td>16</td></tr>
+<tr><td>useAchievements</td><td>achievementStore, cosmeticsStore, pulseStore, nodesStore</td><td>16</td></tr>
 <tr><td>useSettings</td><td>preferencesStore, themeStore, notificationSettingsStore, privacyStore</td><td>14</td></tr>
 <tr><td>useCommunity</td><td>serverStore, roleStore, permissionStore, moderationStore, memberStore</td><td>20</td></tr>
-<tr><td>useMarketplace</td><td>itemStore, currencyStore, transactionStore, inventoryStore</td><td>12</td></tr>
+<tr><td>useCreatorEconomy</td><td>tippingStore, premiumThreadStore, nodesStore, transactionStore</td><td>12</td></tr>
 <tr><td>useUI</td><td>modalStore, sidebarStore, toastStore, layoutStore, navigationStore</td><td>28</td></tr>
 </tbody>
 </table>
@@ -532,8 +835,8 @@ export function useChat() {
 <h4>2. useChat — Messaging &amp; Channels</h4>
 <p>The largest facade, composing 6 stores. Handles messages, channels, DMs, reactions, presence, and threading. 24 tests cover message CRUD, optimistic updates, real-time sync, and reaction toggling.</p>
 
-<h4>3. useGamification — XP &amp; Achievements</h4>
-<p>Composes <code>xpStore</code>, <code>levelStore</code>, <code>achievementStore</code>, and <code>leaderboardStore</code>. Exposes XP tracking, level progression, achievement unlocking, and leaderboard queries. 16 tests verify XP calculations and level-up triggers.</p>
+<h4>3. useAchievements — Achievements &amp; Cosmetics</h4>
+<p>Composes <code>achievementStore</code>, <code>cosmeticsStore</code>, <code>pulseStore</code>, and <code>nodesStore</code>. Exposes achievement tracking, cosmetics equipping, Pulse reputation queries, and Nodes balance management. 16 tests verify unlock triggers and cosmetics state.</p>
 
 <h4>4. useSettings — Preferences &amp; Privacy</h4>
 <p>Composes <code>preferencesStore</code>, <code>themeStore</code>, <code>notificationSettingsStore</code>, and <code>privacyStore</code>. Manages all user preferences with persistence. 14 tests validate theme switching, notification preferences, and privacy setting enforcement.</p>
@@ -541,8 +844,8 @@ export function useChat() {
 <h4>5. useCommunity — Servers &amp; Moderation</h4>
 <p>Composes 5 stores for server management, roles, permissions, moderation actions, and member lists. 20 tests cover role-based access control, permission inheritance, and moderation workflows.</p>
 
-<h4>6. useMarketplace — Commerce</h4>
-<p>Composes <code>itemStore</code>, <code>currencyStore</code>, <code>transactionStore</code>, and <code>inventoryStore</code>. Handles the virtual marketplace with item listings, purchases, and inventory management. 12 tests validate transaction integrity and currency balance updates.</p>
+<h4>6. useCreatorEconomy — Tipping &amp; Nodes</h4>
+<p>Composes <code>tippingStore</code>, <code>premiumThreadStore</code>, <code>nodesStore</code>, and <code>transactionStore</code>. Handles the creator economy with tipping, premium threads, Nodes balance, and transaction history. 12 tests validate transaction integrity and Nodes balance updates.</p>
 
 <h4>7. useUI — Interface State</h4>
 <p>Composes <code>modalStore</code>, <code>sidebarStore</code>, <code>toastStore</code>, <code>layoutStore</code>, and <code>navigationStore</code>. Manages all ephemeral UI state — modals, sidebars, toasts, and layout preferences. 28 tests ensure UI state transitions are predictable.</p>
@@ -925,9 +1228,9 @@ try {
 
 <p>The <code>one_for_one</code> strategy at the top level means if any major subsystem crashes, only that subsystem restarts — the rest of the application continues serving requests. The <code>rest_for_one</code> strategy on the cache supervisor ensures that if the ETS cache crashes, Cachex and Redis are also restarted to maintain consistency.</p>
 
-<h3>PostgreSQL 16 with 91 Tables</h3>
+<h3>PostgreSQL 16 with 94 Tables</h3>
 
-<p>The data layer is <strong>PostgreSQL 16</strong> with Ecto. Schema has 91 tables:</p>
+<p>The data layer is <strong>PostgreSQL 16</strong> with Ecto. Schema has 94 tables:</p>
 
 <table>
 <thead><tr><th>Domain</th><th>Tables</th><th>Key Tables</th></tr></thead>
@@ -936,8 +1239,8 @@ try {
 <tr><td>Messaging</td><td>18</td><td>messages, channels, channel_members, reactions, threads</td></tr>
 <tr><td>Communities</td><td>14</td><td>servers, roles, permissions, invites, bans</td></tr>
 <tr><td>E2EE</td><td>8</td><td>prekey_bundles, signed_prekeys, one_time_prekeys, sessions</td></tr>
-<tr><td>Gamification</td><td>11</td><td>xp_events, levels, achievements, leaderboards, streaks</td></tr>
-<tr><td>Marketplace</td><td>9</td><td>items, transactions, inventories, currencies</td></tr>
+<tr><td>Achievements & Cosmetics</td><td>11</td><td>achievements, cosmetics, pulse_scores, nodes_balances, titles</td></tr>
+<tr><td>Creator Economy</td><td>9</td><td>tips, premium_threads, transactions, creator_payouts</td></tr>
 <tr><td>Subscriptions</td><td>7</td><td>plans, subscriptions, invoices, payment_methods</td></tr>
 <tr><td>Moderation</td><td>6</td><td>reports, audit_logs, content_filters, auto_mod_rules</td></tr>
 <tr><td>System</td><td>6</td><td>settings, feature_flags, rate_limits, migrations</td></tr>
@@ -972,7 +1275,7 @@ try {
 
 <p>Background work runs on <strong>GenServer</strong> modules — OTP’s generic server pattern. Each worker is supervised:</p>
 
-<pre><code>defmodule CGraph.Workers.XPCalculator do
+<pre><code>defmodule CGraph.Workers.PulseCalculator do
   use GenServer
 
   @impl true
@@ -982,22 +1285,22 @@ try {
   end
 
   @impl true
-  def handle_cast({:award_xp, user_id, action, metadata}, state) do
-    xp_amount = calculate_xp(action, metadata)
-    {:ok, _} = Gamification.award_xp(user_id, xp_amount, action)
-    check_level_up(user_id)
+  def handle_cast({:update_pulse, user_id, action, metadata}, state) do
+    delta = calculate_pulse_delta(action, metadata)
+    {:ok, _} = Achievements.update_pulse(user_id, delta, action)
+    check_cosmetic_unlocks(user_id)
     {:noreply, state}
   end
 
   @impl true
   def handle_info(:batch_process, state) do
-    process_pending_xp_events()
+    process_pending_pulse_events()
     schedule_batch_processing()
     {:noreply, state}
   end
 end</code></pre>
 
-<p>If a GenServer crashes — bad XP event, whatever — the supervisor restarts it in milliseconds. Pending work lives in PostgreSQL so nothing is lost. That’s the BEAM being the BEAM.</p>
+<p>If a GenServer crashes — bad Pulse event, whatever — the supervisor restarts it in milliseconds. Pending work lives in PostgreSQL so nothing is lost. That’s the BEAM being the BEAM.</p>
 
 <h4>The Bottom Line</h4>
 
@@ -1014,7 +1317,7 @@ end</code></pre>
     image: '🚀',
     tags: ['Product', 'Vision', 'Launch'],
     content: `
-<p>Your team uses one app for chat, another for forums, maybe a gamification plugin held together with tape. CGraph puts all of it in one place — <strong>actually encrypted</strong>, with a gamification system that makes people want to participate.</p>
+<p>Your team uses one app for chat, another for forums, and separate tools for self-expression. CGraph puts all of it in one place — <strong>actually encrypted</strong>, with a cosmetics and achievement system that makes people want to participate.</p>
 
 <h3>What CGraph Does</h3>
 
@@ -1041,28 +1344,32 @@ end</code></pre>
 
 <p>E2EE is on by default for DMs and available for group channels. The server stores encrypted blobs — we can’t read your messages. Safety numbers let you verify identities, and key changes show a visible warning.</p>
 
-<h4>4. RPG Gamification</h4>
-<p>This is the part that keeps people coming back. CGraph treats participation like an RPG:</p>
+<h4>4. Cosmetics & Self-Expression</h4>
+<p>This is the part that keeps people coming back. CGraph gives users 325 collectible items to express themselves:</p>
 
 <ul>
-<li><strong>Experience Points (XP)</strong> — Earned for sending messages, creating forum posts, helping others, participating in voice chats, and community events</li>
-<li><strong>Leveling System</strong> — XP accumulates into levels with visible progression. Higher levels unlock new features, cosmetics, and permissions</li>
-<li><strong>Achievements</strong> — Badges for milestones like "First Post," "100 Messages Sent," "Helped 10 Users," and challenge-based achievements</li>
-<li><strong>Leaderboards</strong> — Server-wide and global rankings that update in real-time</li>
-<li><strong>Streaks</strong> — Daily login and participation streaks with XP multipliers</li>
+<li><strong>Badges</strong> — 70 badges across categories earned through participation and achievements</li>
+<li><strong>Titles</strong> — 70 titles with 7 rarity tiers from Common to Mythic, displayed next to your name</li>
+<li><strong>Nameplates</strong> — 45 custom nameplates for profile personalization</li>
+<li><strong>Profile Themes</strong> — 25 themes that transform your entire profile appearance</li>
+<li><strong>Name Styles</strong> — 50 name color and animation styles</li>
+<li><strong>Profile Frames</strong> — 55 animated frames around your avatar</li>
+<li><strong>Forum Themes</strong> — 10 themes for customizing your forum experience</li>
 </ul>
 
-<h3>The Marketplace</h3>
+<h3>Creator Economy</h3>
 
-<p>CGraph includes a virtual marketplace where users can spend virtual currency earned through participation:</p>
+<p>CGraph includes a creator economy powered by the Nodes currency system:</p>
 
 <ul>
-<li><strong>Profile Cosmetics</strong> — Custom badges, avatar frames, name colors, and profile backgrounds</li>
-<li><strong>Server Enhancements</strong> — Emoji slots, channel themes, custom roles</li>
-<li><strong>Virtual Items</strong> — Tradeable collectibles and limited-edition items for community events</li>
+<li><strong>Paid DMs</strong> — Creators can charge for direct messages, setting their own rates</li>
+<li><strong>Premium Threads</strong> — Gate forum threads with subscription requirements</li>
+<li><strong>Content Boosts</strong> — Promote posts and threads for wider reach</li>
+<li><strong>Tipping</strong> — Send Nodes to creators for content you appreciate</li>
+<li><strong>Revenue Sharing</strong> — Earn from your contributions to the platform</li>
 </ul>
 
-<p>You earn virtual currency by participating (not buying). Server admins can create custom items for their communities.</p>
+<p>Users earn Nodes through participation and can spend them across the platform. The creator economy is designed to reward quality content, not just volume.</p>
 
 <h3>Subscription Tiers</h3>
 
@@ -1071,9 +1378,9 @@ end</code></pre>
 <table>
 <thead><tr><th>Tier</th><th>Price</th><th>Key Features</th></tr></thead>
 <tbody>
-<tr><td>Free</td><td>Free forever</td><td>Full messaging, E2EE, forums, basic gamification, 1 forum, 100MB storage</td></tr>
-<tr><td>Premium</td><td>TBD</td><td>HD/4K video, custom emojis, extended file uploads, priority support, advanced analytics, API access</td></tr>
-<tr><td>Enterprise</td><td>Custom</td><td>On-premise option, dedicated support, SLA, SSO, audit logs, compliance tools, custom integrations</td></tr>
+<tr><td>Free</td><td>Free forever</td><td>Full messaging, E2EE, forums, 70 achievements, 1 forum, 100MB storage</td></tr>
+<tr><td>Premium</td><td>$9.99/mo</td><td>Full cosmetics collection, creator economy tools, HD/4K video, priority support, API access</td></tr>
+<tr><td>Enterprise</td><td>Custom</td><td>SSO / SAML, dedicated support, SLA, audit logs, compliance tools, admin dashboard</td></tr>
 </tbody>
 </table>
 
@@ -1081,7 +1388,7 @@ end</code></pre>
 
 <h3>Built for Communities</h3>
 
-<p>CGraph is built for <strong>communities</strong> — gaming guilds, study groups, company teams, and project collaborators. The stack (Elixir/Phoenix, React/React Native, Triple Ratchet, PostgreSQL with 91 tables) is designed to handle everything from a 10-person group to 100k members without rearchitecting.</p>
+<p>CGraph is built for <strong>communities</strong> — gaming guilds, study groups, company teams, and project collaborators. The stack (Elixir/Phoenix, React/React Native, Triple Ratchet, PostgreSQL with 94 tables) is designed to handle everything from a 10-person group to 100k members without rearchitecting.</p>
 
 <h4>Join the Beta</h4>
 

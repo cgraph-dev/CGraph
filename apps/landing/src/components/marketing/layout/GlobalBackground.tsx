@@ -1,4 +1,3 @@
-import React from 'react';
 import { NeuralBackground } from '../effects/NeuralBackground';
 
 /**

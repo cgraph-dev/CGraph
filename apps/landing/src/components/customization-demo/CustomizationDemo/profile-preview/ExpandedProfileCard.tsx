@@ -51,10 +51,10 @@ export const ExpandedProfileCard = memo(function ExpandedProfileCard({
         {/* Stats */}
         <div className="mb-4 grid grid-cols-4 gap-2">
           {[
-            { label: 'Level', value: '42' },
+            { label: 'Pulse', value: '1.4K' },
             { label: 'Posts', value: '1.2K' },
             { label: 'Karma', value: '8.5K' },
-            { label: 'Streak', value: '30d' },
+            { label: 'Cosmetics', value: '47' },
           ].map((stat) => (
             <div key={stat.label} className="rounded-lg bg-white/5 p-2">
               <div className="text-base font-bold" style={{ color: colors.primary }}>

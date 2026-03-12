@@ -18,14 +18,14 @@ export const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#34d399',
     readTime: '3 min read',
     content: `
-<p>CGraph is a <strong>community platform</strong> that combines real-time messaging, forum discussions, and end-to-end encryption in one app — with RPG-style gamification baked in.</p>
+<p>CGraph is a <strong>community platform</strong> that combines real-time messaging, forum discussions, and end-to-end encryption in one app — with achievements, cosmetics, and a creator economy baked in.</p>
 
 <h3>Core Features</h3>
 <ul>
   <li><strong>Real-Time Messaging</strong> — Text, voice, and video chat with servers, channels, and direct messages. WebSocket-powered with typing indicators, read receipts, and presence.</li>
   <li><strong>Community Forums</strong> — Threaded discussions with voting, karma, nested comments, polls, and rich text editing using a custom BBCode parser.</li>
   <li><strong>Post-Quantum Encryption</strong> — End-to-end encryption using Triple Ratchet (PQXDH + ML-KEM-768) for all private messages.</li>
-  <li><strong>RPG Gamification</strong> — 30+ achievements across 6 categories, XP/level progression, daily and weekly quests, streak multipliers, and a virtual marketplace.</li>
+  <li><strong>Achievements & Cosmetics</strong> — 30+ achievements, 325 cosmetic items (badges, titles, nameplates, themes, frames), Pulse reputation, and Nodes currency with a creator economy.</li>
 </ul>
 
 <h3>Technical Foundation</h3>
@@ -42,7 +42,7 @@ export const docArticles: Record<string, DocArticleData> = {
 </table>
 
 <h3>Current Status</h3>
-<p>CGraph is in active development at <strong>v0.9.26</strong> with 59 of 69 planned features complete (85%), 1,633 passing tests, and an architecture quality score of 9.2/10. The platform is approaching its v1.0 public launch.</p>
+<p>CGraph <strong>v1.0.0</strong> is live with all 39 phases complete, 142 requirements shipped, 6,900+ passing tests, and an architecture quality score of 8.7/10.</p>
 `,
   },
   'creating-your-account': {
@@ -91,7 +91,7 @@ export const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#34d399',
     readTime: '5 min read',
     content: `
-<p>Servers are the core organizational unit in CGraph — with built-in forums and gamification.</p>
+<p>Servers are the core organizational unit in CGraph — with built-in forums, achievements, and cosmetics.</p>
 
 <h3>Creating a Server</h3>
 <ol>
@@ -659,46 +659,43 @@ export const docArticles: Record<string, DocArticleData> = {
 <p>We acknowledge all valid reports and credit researchers (with permission) in our security advisories. A formal bug bounty program with monetary rewards is planned for a future release.</p>
 `,
   },
-  'xp-levels-how-progression-works': {
-    title: 'XP, Levels & How Progression Works',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
+  'cosmetics-system-325-items-across-7-categories': {
+    title: 'Cosmetics System: 325 Items Across 7 Categories',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
     categoryColor: '#fbbf24',
     readTime: '6 min read',
     content: `
-<p>CGraph's gamification system adds RPG-style progression to community participation, rewarding active and helpful members.</p>
+<p>CGraph's cosmetics system lets you personalize your identity with 325 items across 7 categories. All cosmetics are earned through achievements, Pulse reputation, or Nodes currency — never through pay-to-win mechanics.</p>
 
-<h3>XP Sources</h3>
+<h3>7 Cosmetic Categories</h3>
 <table>
-  <thead><tr><th>Action</th><th>XP Reward</th><th>Cooldown</th></tr></thead>
+  <thead><tr><th>Category</th><th>Count</th><th>Examples</th></tr></thead>
   <tbody>
-    <tr><td>Send a message</td><td>10 XP</td><td>1 per minute</td></tr>
-    <tr><td>Create a forum post</td><td>25 XP</td><td>5 per hour</td></tr>
-    <tr><td>Receive an upvote</td><td>15 XP</td><td>None</td></tr>
-    <tr><td>Complete daily quest</td><td>50-200 XP</td><td>Daily reset</td></tr>
-    <tr><td>Complete weekly quest</td><td>200-500 XP</td><td>Weekly reset</td></tr>
-    <tr><td>Unlock achievement</td><td>100-1000 XP</td><td>One-time</td></tr>
-    <tr><td>Voice call participation</td><td>5 XP/min</td><td>Max 100/session</td></tr>
+    <tr><td><strong>Badges</strong></td><td>70</td><td>Achievement badges, community role indicators, event badges</td></tr>
+    <tr><td><strong>Titles</strong></td><td>70</td><td>Display titles shown next to your name (e.g., "Cyber Punk," "Shadow Walker")</td></tr>
+    <tr><td><strong>Nameplates</strong></td><td>45</td><td>Decorative backgrounds behind your username</td></tr>
+    <tr><td><strong>Profile Themes</strong></td><td>25</td><td>Full profile page color schemes and layouts</td></tr>
+    <tr><td><strong>Name Styles</strong></td><td>50</td><td>Gradient, animated, and styled text effects for your display name</td></tr>
+    <tr><td><strong>Profile Frames</strong></td><td>55</td><td>Animated borders around your avatar</td></tr>
+    <tr><td><strong>Forum Themes</strong></td><td>10</td><td>Custom styling for your forum posts</td></tr>
   </tbody>
 </table>
 
-<h3>Level Curve</h3>
-<p>Leveling uses a polynomial curve: <code>XP needed = 100 × level^1.5</code>. This means early levels are fast (encouraging new users) while higher levels require sustained engagement.</p>
-
-<h3>Level Rewards</h3>
+<h3>How to Get Cosmetics</h3>
 <ul>
-  <li>Custom profile borders and badges at milestone levels</li>
-  <li>Unlock server creation permissions at level 5</li>
-  <li>Custom emoji slots at level 10</li>
-  <li>Bonus file upload size at level 20</li>
-  <li>Special animated avatar effects at level 50</li>
+  <li><strong>Achievements</strong> — Unlock specific cosmetics by completing achievement milestones</li>
+  <li><strong>Pulse reputation</strong> — Reach Pulse thresholds to unlock exclusive items</li>
+  <li><strong>Nodes currency</strong> — Purchase from the cosmetics catalog with earned Nodes</li>
+  <li><strong>Events</strong> — Limited-time seasonal cosmetics available during special events</li>
+  <li><strong>Premium</strong> — Premium subscribers get access to exclusive cosmetic tiers</li>
 </ul>
 `,
   },
   '30-achievements-across-6-categories': {
     title: '30+ Achievements Across 6 Categories',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
     categoryColor: '#fbbf24',
     readTime: '8 min read',
     content: `
@@ -713,7 +710,7 @@ export const docArticles: Record<string, DocArticleData> = {
     <tr><td><strong>Security</strong></td><td>Secure</td><td>Key Exchange, Verified Contact, 2FA Enabled</td></tr>
     <tr><td><strong>Voice</strong></td><td>Voice</td><td>First Call, Group Caller, Screen Sharer</td></tr>
     <tr><td><strong>Community</strong></td><td>Home</td><td>Server Creator, Event Host, Helper</td></tr>
-    <tr><td><strong>Loyalty</strong></td><td>Star</td><td>7-Day Streak, Monthly Active, Veteran</td></tr>
+    <tr><td><strong>Loyalty</strong></td><td>Star</td><td>7-Day Active, Monthly Active, Veteran</td></tr>
   </tbody>
 </table>
 
@@ -725,124 +722,143 @@ export const docArticles: Record<string, DocArticleData> = {
   <li><strong>Platinum</strong> — Elite (e.g., send 10,000 messages)</li>
 </ul>
 
-<h3>Achievement Notifications</h3>
-<p>When you unlock an achievement, you receive an animated notification with a sound effect. Achievements are displayed on your profile and contribute XP toward your level progression.</p>
+<h3>Achievement Rewards</h3>
+<p>When you unlock an achievement, you receive an animated notification with a sound effect. Each tier awards Nodes currency (50/150/400/1,000) and may unlock exclusive cosmetic items — badges, titles, nameplates, or profile frames tied to that achievement.</p>
 `,
   },
-  'daily-weekly-quests': {
-    title: 'Daily & Weekly Quests',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
+  'nodes-currency-creator-economy': {
+    title: 'Nodes Currency & Creator Economy',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
+    categoryColor: '#fbbf24',
+    readTime: '5 min read',
+    content: `
+<p>Nodes is CGraph's earned virtual currency. It cannot be purchased with real money — you earn it through community participation and achievements.</p>
+
+<h3>Earning Nodes</h3>
+<table>
+  <thead><tr><th>Source</th><th>Nodes Earned</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Unlock an achievement (Bronze)</td><td>50 Nodes</td><td>One-time per achievement</td></tr>
+    <tr><td>Unlock an achievement (Silver)</td><td>150 Nodes</td><td>One-time per achievement</td></tr>
+    <tr><td>Unlock an achievement (Gold)</td><td>400 Nodes</td><td>One-time per achievement</td></tr>
+    <tr><td>Unlock an achievement (Platinum)</td><td>1,000 Nodes</td><td>One-time per achievement</td></tr>
+    <tr><td>Receive a tip from another user</td><td>Variable</td><td>Creator Economy feature</td></tr>
+    <tr><td>Premium thread revenue share</td><td>Variable</td><td>70/30 creator split</td></tr>
+  </tbody>
+</table>
+
+<h3>Spending Nodes</h3>
+<ul>
+  <li><strong>Cosmetic items</strong> — Purchase badges, titles, nameplates, themes, frames, and more from the cosmetics catalog</li>
+  <li><strong>Tipping</strong> — Send Nodes to other users to reward great content</li>
+  <li><strong>Premium thread access</strong> — Pay Nodes to access creator-gated threads</li>
+</ul>
+
+<h3>Economy Design</h3>
+<p>Nodes are designed to be earned, not bought. This ensures that cosmetic items represent genuine community engagement. Premium subscribers earn Nodes at 2x rate from achievements.</p>
+`,
+  },
+  'pulse-reputation-system': {
+    title: 'Pulse Reputation System',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
     categoryColor: '#fbbf24',
     readTime: '4 min read',
     content: `
-<p>Quests provide daily and weekly goals that encourage engagement and reward consistent participation.</p>
+<p>Pulse is CGraph's karma-based reputation system. Unlike XP-based progression, Pulse reflects the quality of your contributions as judged by the community.</p>
 
-<h3>Daily Quests (Reset at 00:00 UTC)</h3>
+<h3>How Pulse Works</h3>
 <ul>
-  <li><strong>Daily Check-in</strong> — Open the app (+50 XP)</li>
-  <li><strong>Messenger</strong> — Send 5 messages (+75 XP)</li>
-  <li><strong>Social Butterfly</strong> — React to 3 messages (+50 XP)</li>
-  <li><strong>Forum Contributor</strong> — Create or comment on a post (+100 XP)</li>
-  <li><strong>Voice Active</strong> — Spend 10 minutes in voice (+75 XP)</li>
+  <li>Pulse goes up when your posts and comments receive upvotes</li>
+  <li>Pulse goes down when you receive downvotes</li>
+  <li>Each server tracks Pulse separately — your reputation is contextual</li>
+  <li>Your global Pulse is the aggregate across all servers</li>
 </ul>
 
-<h3>Weekly Quests (Reset Monday 00:00 UTC)</h3>
-<ul>
-  <li><strong>Community Champion</strong> — Send 50 messages across different channels (+300 XP)</li>
-  <li><strong>Thread Master</strong> — Create 3 forum threads (+250 XP)</li>
-  <li><strong>Helpful Hand</strong> — Receive 10 upvotes on forum posts (+400 XP)</li>
-  <li><strong>Voice Leader</strong> — Host a group call with 3+ participants (+500 XP)</li>
-</ul>
-
-<h3>Quest Completion Bonus</h3>
-<p>Completing all daily quests grants a <strong>bonus chest</strong> with random rewards. Completing all weekly quests grants a <strong>premium chest</strong> with guaranteed rare items for the virtual marketplace.</p>
-`,
-  },
-  'streak-system-multipliers': {
-    title: 'Streak System & Multipliers',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
-    categoryColor: '#fbbf24',
-    readTime: '3 min read',
-    content: `
-<p>The streak system rewards consistent daily activity with XP multipliers.</p>
-
-<h3>How Streaks Work</h3>
-<ul>
-  <li>Log in and complete at least one quest per day to maintain your streak</li>
-  <li>Streak counter resets if you miss a day (grace period: 1 day for premium users)</li>
-  <li>Visual flame indicator grows with longer streaks</li>
-</ul>
-
-<h3>XP Multipliers</h3>
+<h3>Pulse Thresholds</h3>
 <table>
-  <thead><tr><th>Streak Length</th><th>XP Multiplier</th><th>Badge</th></tr></thead>
+  <thead><tr><th>Pulse Level</th><th>Threshold</th><th>Perks</th></tr></thead>
   <tbody>
-    <tr><td>3 days</td><td>1.25x</td><td>Warm</td></tr>
-    <tr><td>7 days</td><td>1.5x</td><td>Hot</td></tr>
-    <tr><td>14 days</td><td>1.75x</td><td>Blazing</td></tr>
-    <tr><td>30 days</td><td>2.0x</td><td>Legendary</td></tr>
-    <tr><td>100 days</td><td>2.5x</td><td>Unstoppable</td></tr>
+    <tr><td>Newcomer</td><td>0+</td><td>Standard access</td></tr>
+    <tr><td>Contributor</td><td>50+</td><td>Reduced rate limits, cosmetic unlock</td></tr>
+    <tr><td>Trusted</td><td>200+</td><td>Access to trusted-only channels, cosmetic unlock</td></tr>
+    <tr><td>Pillar</td><td>1,000+</td><td>Moderation nomination eligibility, cosmetic unlock</td></tr>
+    <tr><td>Legend</td><td>5,000+</td><td>Unique "Legend" title, Mythic cosmetic unlock</td></tr>
   </tbody>
 </table>
+
+<h3>Anti-Gaming</h3>
+<p>Pulse is protected against manipulation: self-voting is impossible, vote brigading is detected, and new accounts have reduced voting weight. This ensures Pulse genuinely reflects community trust.</p>
 `,
   },
-  'virtual-currency-marketplace': {
-    title: 'Virtual Currency & Marketplace',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
+  'creator-economy-tipping-premium-threads': {
+    title: 'Creator Economy: Tipping & Premium Threads',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
     categoryColor: '#fbbf24',
     readTime: '5 min read',
     content: `
-<p>CGraph features a virtual economy with earned currency and a marketplace for cosmetic items.</p>
+<p>CGraph's creator economy empowers community members to earn and share Nodes currency through content creation.</p>
 
-<h3>CGraph Coins</h3>
+<h3>Tipping</h3>
 <ul>
-  <li>Earned through quests, achievements, and level-ups</li>
-  <li>Cannot be purchased with real money (earned only)</li>
-  <li>Used to buy cosmetic items in the marketplace</li>
-  <li>Premium subscribers earn coins at 2x rate</li>
+  <li>Send Nodes to any user as a thank-you for great content</li>
+  <li>Tips appear as a notification with the sender's name and amount</li>
+  <li>Minimum tip: 10 Nodes — no maximum</li>
+  <li>Tipping history visible in your profile settings</li>
 </ul>
 
-<h3>Marketplace Items</h3>
+<h3>Premium Threads</h3>
+<p>Creators can gate forum threads behind a Nodes paywall:</p>
 <table>
-  <thead><tr><th>Category</th><th>Examples</th><th>Price Range</th></tr></thead>
+  <thead><tr><th>Feature</th><th>Details</th></tr></thead>
   <tbody>
-    <tr><td><strong>Profile Borders</strong></td><td>Animated frames, seasonal themes</td><td>100-500 coins</td></tr>
-    <tr><td><strong>Badges</strong></td><td>Custom badges, rare collectibles</td><td>200-1000 coins</td></tr>
-    <tr><td><strong>Chat Effects</strong></td><td>Message animations, special fonts</td><td>150-750 coins</td></tr>
-    <tr><td><strong>Themes</strong></td><td>Exclusive color themes and backgrounds</td><td>300-1000 coins</td></tr>
+    <tr><td><strong>Price range</strong></td><td>10–10,000 Nodes per thread</td></tr>
+    <tr><td><strong>Revenue split</strong></td><td>70% to creator, 30% platform fee</td></tr>
+    <tr><td><strong>Preview</strong></td><td>First paragraph visible to all, rest gated</td></tr>
+    <tr><td><strong>Refunds</strong></td><td>Automatic refund if thread is deleted within 24h</td></tr>
   </tbody>
 </table>
+
+<h3>Creator Dashboard</h3>
+<p>Creators can view their earnings, tip history, and subscriber count from their profile. Top creators are highlighted in server member lists with a creator badge.</p>
 `,
   },
-  'leaderboards-seasonal-events': {
-    title: 'Leaderboards & Seasonal Events',
-    category: 'Gamification & Rewards',
-    categoryIcon: '🎮',
+  'cosmetics-unlock-engine-rarity-tiers': {
+    title: 'Cosmetics Unlock Engine & Rarity Tiers',
+    category: 'Achievements & Cosmetics',
+    categoryIcon: '🏆',
     categoryColor: '#fbbf24',
-    readTime: '5 min read',
+    readTime: '6 min read',
     content: `
-<p>Compete with your community and participate in limited-time events.</p>
+<p>The Cosmetics Unlock Engine determines how each of the 325 cosmetic items can be earned. Every item has a rarity tier and one or more unlock evaluators.</p>
 
-<h3>Leaderboard Types</h3>
+<h3>7 Rarity Tiers</h3>
+<table>
+  <thead><tr><th>Tier</th><th>Drop Rate</th><th>Examples</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Common</strong></td><td>Easiest</td><td>Basic badges, simple name styles</td></tr>
+    <tr><td><strong>Uncommon</strong></td><td>Easy</td><td>Colored nameplates, themed frames</td></tr>
+    <tr><td><strong>Rare</strong></td><td>Moderate</td><td>Animated badges, gradient name styles</td></tr>
+    <tr><td><strong>Epic</strong></td><td>Hard</td><td>Particle-effect frames, premium titles</td></tr>
+    <tr><td><strong>Legendary</strong></td><td>Very hard</td><td>Full profile themes, animated nameplates</td></tr>
+    <tr><td><strong>Mythic</strong></td><td>Seasonal only</td><td>Limited-edition event cosmetics</td></tr>
+    <tr><td><strong>Unique</strong></td><td>One-of-a-kind</td><td>Contest prizes, founding member items</td></tr>
+  </tbody>
+</table>
+
+<h3>5 Unlock Evaluators</h3>
 <ul>
-  <li><strong>Global</strong> — Top users across all of CGraph</li>
-  <li><strong>Server</strong> — Rankings within your server</li>
-  <li><strong>Weekly</strong> — Resets every Monday, rewards top performers</li>
-  <li><strong>Category</strong> — Separate boards for messaging, forums, voice, etc.</li>
+  <li><strong>Achievement-based</strong> — Unlock by completing specific achievements</li>
+  <li><strong>Pulse-based</strong> — Unlock by reaching Pulse reputation thresholds</li>
+  <li><strong>Nodes-purchasable</strong> — Buy directly with earned Nodes currency</li>
+  <li><strong>Time-based</strong> — Unlock after membership duration milestones</li>
+  <li><strong>Event-based</strong> — Available only during limited-time seasonal events</li>
 </ul>
 
-<h3>Seasonal Events</h3>
-<p>Limited-time events with exclusive rewards:</p>
-<ul>
-  <li>Themed quests and challenges</li>
-  <li>Exclusive cosmetic rewards (not available after event)</li>
-  <li>Double XP weekends</li>
-  <li>Community-wide goals with shared rewards</li>
-  <li>Seasonal leaderboard with top-100 prizes</li>
-</ul>
+<h3>How Unlocks Work</h3>
+<p>Each cosmetic item is tagged with one or more evaluators. When you take an action (earn an achievement, reach a Pulse threshold, etc.), the engine checks your progress against all locked items and unlocks any that match. Newly unlocked items appear as an animated notification.</p>
 `,
   },
   'authentication-jwt-bearer-tokens': {
@@ -1164,8 +1180,8 @@ export const docArticles: Record<string, DocArticleData> = {
     <tr><td>4</td><td><strong>Forums</strong></td><td>Threaded discussions, voting, moderation</td></tr>
     <tr><td>5</td><td><strong>Servers</strong></td><td>Server management, channels, roles</td></tr>
     <tr><td>6</td><td><strong>DMs</strong></td><td>Direct messages, E2EE</td></tr>
-    <tr><td>7</td><td><strong>Gamification</strong></td><td>XP, achievements, quests, leaderboards</td></tr>
-    <tr><td>8</td><td><strong>Marketplace</strong></td><td>Virtual currency, item shop</td></tr>
+    <tr><td>7</td><td><strong>Achievements</strong></td><td>Achievements, cosmetics, Pulse reputation</td></tr>
+    <tr><td>8</td><td><strong>Creator Economy</strong></td><td>Nodes currency, tipping, premium threads</td></tr>
     <tr><td>9</td><td><strong>Settings</strong></td><td>User preferences, privacy, security settings</td></tr>
     <tr><td>10</td><td><strong>Notifications</strong></td><td>Push notifications, in-app alerts</td></tr>
     <tr><td>11</td><td><strong>Search</strong></td><td>Full-text search across messages and forums</td></tr>
@@ -1178,10 +1194,10 @@ export const docArticles: Record<string, DocArticleData> = {
 <ul>
   <li><code>useAuth()</code> — Login state, tokens, user profile</li>
   <li><code>useChat()</code> — Messages, channels, typing, reactions</li>
-  <li><code>useGamification()</code> — XP, level, achievements, quests</li>
+  <li><code>useAchievements()</code> — Achievements, cosmetics, Pulse reputation</li>
   <li><code>useSettings()</code> — Theme, language, notification prefs</li>
   <li><code>useCommunity()</code> — Servers, members, roles, forums</li>
-  <li><code>useMarketplace()</code> — Currency, inventory, shop items</li>
+  <li><code>useCreatorEconomy()</code> — Nodes currency, tipping, premium threads</li>
   <li><code>useUI()</code> — Modals, toasts, sidebar state, navigation</li>
 </ul>
 `,
@@ -1564,8 +1580,8 @@ end
 
 <h3>Voting System</h3>
 <ul>
-  <li><strong>Upvote</strong> — +1 to post score, +15 XP to author</li>
-  <li><strong>Downvote</strong> — -1 to post score (no XP penalty)</li>
+  <li><strong>Upvote</strong> — +1 to post score, +1 Pulse to author</li>
+  <li><strong>Downvote</strong> — -1 to post score, -1 Pulse to author</li>
   <li>One vote per user per post/comment</li>
   <li>Votes are anonymous by default (configurable per server)</li>
 </ul>

@@ -117,7 +117,7 @@ const infrastructureDetails = [
       {
         label: 'Database',
         value: 'PostgreSQL 16 (Supabase)',
-        detail: '91 tables, ULID primary keys',
+        detail: '94 tables, UUID primary keys',
       },
       {
         label: 'Cache Layer 1',
@@ -197,9 +197,9 @@ export default function Status() {
                 className="mx-auto max-w-2xl text-sm leading-relaxed"
                 style={{ color: 'var(--color-gray)' }}
               >
-                All <strong className="text-white">19 development phases</strong> are complete.
-                The platform is <strong className="text-white">deployed and operational</strong>{' '}
-                with live status monitoring and real-time uptime tracking.
+                All <strong className="text-white">19 development phases</strong> are complete. The
+                platform is <strong className="text-white">deployed and operational</strong> with
+                live status monitoring and real-time uptime tracking.
               </p>
 
               {/* Progress indicator */}

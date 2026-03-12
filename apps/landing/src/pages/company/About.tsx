@@ -15,9 +15,9 @@ import { MarketingLayout } from '@/components/marketing';
 import { NeonIcon } from '@/components/marketing/ui';
 
 const platformStats = [
-  { label: 'Features Shipped', value: '142', detail: '19 phases complete' },
-  { label: 'Database Tables', value: '91', detail: 'PostgreSQL 16 + Supabase' },
-  { label: 'Passing Tests', value: '1,342', detail: 'across web, mobile & backend' },
+  { label: 'Features Shipped', value: '142', detail: '38 phases complete' },
+  { label: 'Database Tables', value: '94', detail: 'PostgreSQL 16 + Supabase' },
+  { label: 'Passing Tests', value: '6,900+', detail: 'across web, mobile & backend' },
   { label: 'Shared Packages', value: '7', detail: 'monorepo modules' },
 ];
 
@@ -47,10 +47,10 @@ const capabilities = [
       'Posts with voting, karma, nested threads, rich text editor, BBCode parser, poll system, and moderator tools.',
   },
   {
-    icon: '🎮',
-    title: 'Gamification Engine',
+    icon: '✨',
+    title: 'Cosmetics & Self-Expression',
     description:
-      '30+ achievements across 6 categories, XP & levels, daily/weekly quests, streak multipliers, leaderboards, and virtual currency.',
+      '325 collectible items across 7 categories — badges, titles, nameplates, profile themes, name styles, profile frames, and forum themes. 7 rarity tiers and 70 achievements.',
   },
   {
     icon: '📹',
@@ -65,7 +65,7 @@ const techStack = [
     category: 'Backend',
     items: [
       { name: 'Elixir 1.17+ / Phoenix 1.8', role: 'API, WebSockets, PubSub' },
-      { name: 'PostgreSQL 16', role: '91 tables, ULID IDs, full-text search' },
+      { name: 'PostgreSQL 16', role: '94 tables, UUID IDs, full-text search' },
       { name: 'Redis 7', role: 'Distributed cache, PubSub, rate limiting' },
       { name: 'Oban', role: 'Background job processing' },
     ],
@@ -145,7 +145,7 @@ const milestones = [
     date: 'Mar 4, 2026',
     title: 'v1.0 Release',
     description:
-      'All 19 phases complete. 142 requirements shipped. Full E2EE, forums, gamification, voice/video, monetization, and mobile parity.',
+      '38 phases complete. 142 requirements shipped. Full E2EE, forums, cosmetics, voice/video, creator economy, and mobile parity.',
     completed: true,
   },
 ];
@@ -185,7 +185,7 @@ const values = [
     icon: '🏗️',
     title: 'Engineering Excellence',
     description:
-      '9.2/10 architecture score. Strict TypeScript, 0 ESLint errors, conventional commits, automated quality gates, and comprehensive CI pipeline.',
+      '8.7/10 architecture score. Strict TypeScript, 0 ESLint errors, conventional commits, automated quality gates, and comprehensive CI pipeline.',
   },
 ];
 
@@ -193,7 +193,7 @@ export default function About() {
   return (
     <MarketingLayout
       title="About CGraph"
-      subtitle="The all-in-one secure communication platform — real-time messaging, community forums, E2EE, and gamification."
+      subtitle="The all-in-one secure communication platform — real-time messaging, community forums, E2EE, cosmetics, and creator economy."
       eyebrow="Our Story"
     >
       {/* Mission Section */}
@@ -210,7 +210,8 @@ export default function About() {
               I got tired of needing one app for chat, another for forums, and a separate plugin for
               anything engaging.{' '}
               <span className="marketing-hero__highlight">
-                CGraph puts messaging, forums, encryption, and gamification in one place
+                CGraph puts messaging, forums, encryption, cosmetics, and creator economy in one
+                place
               </span>
               . Private by default. Fun to use. That’s the whole idea.
             </p>
@@ -651,8 +652,8 @@ export default function About() {
           >
             <h2 className="marketing-section__title">What's Next</h2>
             <p className="marketing-section__desc mx-auto max-w-2xl" style={{ lineHeight: 1.8 }}>
-              v1.0 is live. Next up: message threads, SSO/SAML for teams, desktop apps, and
-              scaling. The roadmap goes through 2027.
+              v1.0 is live. Next up: message threads, SSO/SAML for teams, desktop apps, and scaling.
+              The roadmap goes through 2027.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <a

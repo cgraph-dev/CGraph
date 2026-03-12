@@ -2438,156 +2438,147 @@
   padding-top: 0.25rem;
 }
 
-/* Gamification Demo */
-/* ── Gamification Dashboard ── */
-.demo-gamify {
+/* ── Forums Demo ────────────────────────────────────────────────── */
+
+.demo-forums {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.demo-gamify__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
 
-.demo-gamify__stat {
+.demo-forums__boards {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.demo-forums__board-tag {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.6875rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.demo-forums__board-tag:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.demo-forums__board-tag--active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.demo-forums__threads {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-forums__thread {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.demo-forums__thread:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.demo-forums__vote-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.875rem 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  gap: 0.125rem;
+  min-width: 2.5rem;
+  flex-shrink: 0;
 }
 
-.demo-gamify__stat-icon {
-  font-size: 1.25rem;
+.demo-forums__vote-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  font-size: 0.625rem;
+  padding: 0.125rem;
+  transition: color 0.15s ease;
+  line-height: 1;
 }
 
-.demo-gamify__stat-value {
-  font-size: 1.25rem;
+.demo-forums__vote-btn:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.demo-forums__vote-btn--active-up {
+  color: #10b981;
+}
+
+.demo-forums__vote-btn--active-down {
+  color: #ef4444;
+}
+
+.demo-forums__vote-count {
+  font-size: 0.8125rem;
   font-weight: 700;
   color: white;
   font-variant-numeric: tabular-nums;
 }
 
-.demo-gamify__stat-label {
-  font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.demo-gamify__xp-section {
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.demo-gamify__xp-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
-}
-
-.demo-gamify__xp-numbers {
-  font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-}
-
-.demo-gamify__xp-track {
-  height: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.demo-gamify__xp-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981, #8b5cf6);
-  border-radius: 5px;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-}
-
-.demo-gamify__milestones {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.demo-gamify__milestone {
+.demo-forums__thread-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.125rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  opacity: 0.4;
+  gap: 0.25rem;
+  min-width: 0;
   flex: 1;
-  transition: all 0.3s ease;
 }
 
-.demo-gamify__milestone--done {
-  opacity: 1;
-  background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.2);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
-}
-
-.demo-gamify__milestone-icon {
-  font-size: 1rem;
-}
-
-.demo-gamify__milestone-label {
-  font-size: 0.625rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 500;
-}
-
-.demo-gamify__feed {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.demo-gamify__feed-title {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-}
-
-.demo-gamify__feed-item {
+.demo-forums__thread-header {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.375rem;
 }
 
-.demo-gamify__feed-icon {
-  font-size: 0.875rem;
-  flex-shrink: 0;
+.demo-forums__pin {
+  font-size: 0.6875rem;
 }
 
-.demo-gamify__feed-text {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+.demo-forums__board-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.demo-forums__thread-title {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.demo-forums__thread-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.demo-forums__footer {
+  text-align: center;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.35);
+  padding-top: 0.25rem;
 }

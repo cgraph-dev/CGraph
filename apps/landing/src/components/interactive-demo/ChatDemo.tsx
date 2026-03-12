@@ -15,8 +15,6 @@ function DemoProfilePopup({
   author: string;
   avatar: string;
 }) {
-  const xpPercent = Math.round((profile.xp / profile.maxXp) * 100);
-
   return (
     <motion.div
       className="demo-profile-popup"
@@ -57,32 +55,11 @@ function DemoProfilePopup({
         </span>
       </div>
 
-      {/* Level + XP */}
-      <div className="demo-profile-popup__level-row">
-        <span className="demo-profile-popup__level">Level {profile.level}</span>
-        <span className="demo-profile-popup__xp-text">
-          {profile.xp.toLocaleString()} / {profile.maxXp.toLocaleString()} XP
-        </span>
-      </div>
-      <div className="demo-profile-popup__xp-bar">
-        <motion.div
-          className="demo-profile-popup__xp-fill"
-          initial={{ width: 0 }}
-          animate={{ width: `${xpPercent}%` }}
-          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-          style={{ backgroundImage: profile.borderStyle }}
-        />
-      </div>
-
       {/* Stats */}
       <div className="demo-profile-popup__stats">
         <div className="demo-profile-popup__stat">
           <span className="demo-profile-popup__stat-value">{profile.karma.toLocaleString()}</span>
           <span className="demo-profile-popup__stat-label">Karma</span>
-        </div>
-        <div className="demo-profile-popup__stat">
-          <span className="demo-profile-popup__stat-value">✕ {profile.streak}</span>
-          <span className="demo-profile-popup__stat-label">Streak</span>
         </div>
       </div>
 
@@ -357,7 +334,7 @@ function ClickTutorial({ phase }: { phase: string }) {
           >
             <span className="demo-input-tutorial__badge-icon">✓</span>
             <span className="demo-input-tutorial__badge-label">Swipe ↑ to approve</span>
-            <span className="demo-input-tutorial__badge-xp">+10 XP</span>
+            <span className="demo-input-tutorial__badge-xp">+1 Karma</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -377,7 +354,7 @@ function ClickTutorial({ phase }: { phase: string }) {
             </span>
             <span className="demo-input-tutorial__badge-label">Swipe ↓ to disapprove</span>
             <span className="demo-input-tutorial__badge-xp demo-input-tutorial__badge-xp--red">
-              −5 XP
+              −1 Karma
             </span>
           </motion.div>
         )}

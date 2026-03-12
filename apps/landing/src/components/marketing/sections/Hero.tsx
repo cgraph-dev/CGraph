@@ -52,9 +52,9 @@ const itemVariants = {
 // Cycling subtitles — showcases different product features
 const subtitles = [
   'End-to-end encrypted messaging with post-quantum security.',
-  'Real-time community forums with gamification & XP.',
+  'Real-time community forums with threads, voting, and moderation.',
   'Voice & video calls powered by WebRTC — sub-200ms.',
-  'Custom themes, achievements, and subscription tiers.',
+  '325 cosmetics, creator economy, and self-expression tools.',
   'Web3-ready authentication with wallet connect.',
 ] as const;
 

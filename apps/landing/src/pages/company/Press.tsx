@@ -13,9 +13,9 @@ import { NeonIcon } from '@/components/marketing/ui';
 const pressReleases = [
   {
     date: 'March 2026',
-    title: 'CGraph v1.0: 19 Phases Complete, Full Platform Live',
+    title: 'CGraph v1.0: 38 Phases Complete, Full Platform Live',
     summary:
-      'CGraph reaches v1.0 with end-to-end encrypted messaging, community forums, gamification, voice & video calls, and full mobile parity. 142 requirements shipped across 19 development phases.',
+      'CGraph reaches v1.0 with end-to-end encrypted messaging, community forums, cosmetics & self-expression, voice & video calls, creator economy, and full mobile parity. 142 requirements shipped across 38 development phases.',
     link: '/press-kit/press-release-2026-03.md',
   },
   {

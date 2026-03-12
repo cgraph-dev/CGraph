@@ -212,7 +212,7 @@ const sections = [
         <li>Increased storage limits and file upload sizes</li>
         <li>Group video calls with more participants</li>
         <li>Custom badges, titles, and profile features</li>
-        <li>Bonus XP, exclusive achievements, and seasonal rewards</li>
+        <li>Exclusive cosmetics, achievements, and premium profile features</li>
         <li>Priority support and advanced analytics</li>
       </ul>
       
@@ -229,7 +229,7 @@ const sections = [
       <p>Purchases made through the Apple App Store or Google Play Store are subject to the respective store's terms and refund policies. CGraph cannot issue refunds for purchases made through these platforms — contact Apple or Google directly. <em>Note: Mobile apps are currently in development and not yet available on app stores.</em></p>
       
       <h4>10.4 Free Tier</h4>
-      <p>The free tier includes full messaging, end-to-end encryption, forums, and basic gamification. We will not retroactively remove core features from the free tier.</p>
+      <p>The free tier includes full messaging, end-to-end encryption, forums, and achievements. We will not retroactively remove core features from the free tier.</p>
     `,
   },
   {

@@ -5,7 +5,6 @@
 /** Per-user profile metadata for the chat demo */
 export interface DemoUserProfile {
   titleId: string;
-  level: number;
   title: string;
   borderStyle: string;
   borderType: 'legendary' | 'electric' | 'fire' | 'ice' | 'none' | 'static';
@@ -24,10 +23,7 @@ export interface DemoUserProfile {
   bubbleBorder: string;
   nameColor: string;
   badges: { icon: string; label: string }[];
-  xp: number;
-  maxXp: number;
   karma: number;
-  streak: number;
 }
 
 /** Chat message in the demo conversation */
@@ -72,6 +68,5 @@ export interface DemoAchievement {
   icon: string;
   desc: string;
   rarity: string;
-  xp: number;
   category: string;
 }

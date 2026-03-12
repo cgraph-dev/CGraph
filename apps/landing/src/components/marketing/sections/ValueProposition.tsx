@@ -15,12 +15,12 @@ import type { ValuePropData } from '../../../data/landing-data';
 import { SectionHeader } from '../ui/SectionHeader';
 import { FlowingBorder } from '../../customization-demo/effects';
 
-type ValueIconVariant = 'encryption' | 'forums' | 'gamification' | 'realtime';
+type ValueIconVariant = 'encryption' | 'forums' | 'cosmetics' | 'realtime';
 
 const getValueIconVariant = (title: string): ValueIconVariant => {
   if (title === 'Post-Quantum Encryption') return 'encryption';
   if (title === 'Forums Built In') return 'forums';
-  if (title === 'Gamification That Works') return 'gamification';
+  if (title === 'Cosmetics & Self-Expression') return 'cosmetics';
   return 'realtime';
 };
 
@@ -71,7 +71,7 @@ const ValueCardIcon = ({ title, index }: { title: string; index: number }) => {
     );
   }
 
-  if (variant === 'gamification') {
+  if (variant === 'cosmetics') {
     return (
       <svg
         className={className}
@@ -84,14 +84,13 @@ const ValueCardIcon = ({ title, index }: { title: string; index: number }) => {
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M8.25 5.25h7.5v2.25a3.75 3.75 0 01-3.75 3.75A3.75 3.75 0 018.25 7.5V5.25z"
+          d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
         />
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M9.75 11.25v2.25a2.25 2.25 0 01-2.25 2.25H6.75m7.5-4.5v2.25a2.25 2.25 0 002.25 2.25h.75"
+          d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"
         />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 18.75h3m-4.5 0h6" />
       </svg>
     );
   }
@@ -179,8 +178,8 @@ export default function ValueProposition(): React.JSX.Element {
         {[
           { feature: 'E2E Encryption', us: '✓', them: 'Limited' },
           { feature: 'Built-in Forums', us: '✓', them: '✗' },
-          { feature: 'Gamification', us: '✓', them: '✗' },
-          { feature: 'Web3 Auth', us: '✓', them: '✗' },
+          { feature: 'Cosmetics & Self-Expression', us: '✓', them: '✗' },
+          { feature: 'Creator Economy', us: '✓', them: '✗' },
         ].map((row, i) => (
           <motion.div
             key={row.feature}

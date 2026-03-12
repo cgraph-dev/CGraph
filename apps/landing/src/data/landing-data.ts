@@ -61,10 +61,10 @@ export const features: readonly FeatureData[] = [
       'SIWE (EIP-4361) standard auth with WalletConnect v2. MetaMask, Coinbase, Rainbow — 100+ wallets supported.',
   },
   {
-    icon: '👑',
-    title: 'Gamified Communities',
+    icon: '✨',
+    title: 'Cosmetics & Achievements',
     description:
-      'XP, levels, achievements, quests, battle pass, and a cosmetic shop. Active members get recognized.',
+      '325 collectible cosmetics across 7 rarity tiers — badges, titles, nameplates, profile themes, name styles, and frames. Unlock through 70 achievements.',
   },
   {
     icon: '📂',
@@ -80,15 +80,15 @@ export const features: readonly FeatureData[] = [
   },
   {
     icon: '💰',
-    title: 'Creator Monetization',
+    title: 'Creator Economy',
     description:
-      'Stripe Connect integration lets creators earn from paid forum subscriptions. 85% revenue share.',
+      'Paid DMs, premium threads, content boosts, and Nodes virtual currency. Creators earn through tipping, content unlocks, and revenue sharing.',
   },
   {
     icon: '⭐',
-    title: 'Premium Subscriptions',
+    title: 'Subscription Tiers',
     description:
-      'Free, Premium ($14.99/mo), and Enterprise ($29.99/mo) tiers with tiered features and limits.',
+      'Free, Premium ($9.99/mo), and Enterprise tiers with tiered storage, forums, cosmetics, and enterprise features like SSO/SAML.',
   },
   {
     icon: '⏰',
@@ -247,10 +247,11 @@ export const valueProps: readonly ValuePropData[] = [
     highlight: 'All-in-One',
   },
   {
-    icon: '🎮',
-    title: 'Gamification That Works',
-    description: 'XP, achievements, quests, and leaderboards. People actually come back.',
-    highlight: '50+ Rewards',
+    icon: '✨',
+    title: 'Cosmetics & Self-Expression',
+    description:
+      '325 collectible items across badges, titles, nameplates, frames, profile themes, and name styles. 7 rarity tiers from free to mythic.',
+    highlight: '325 Items',
   },
   {
     icon: '⚡',

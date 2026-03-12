@@ -24,6 +24,11 @@ export const defaultCategoryColor: CategoryColor = categoryColors.Engineering ??
 /** Ordered list of all article slugs (newest first) */
 export const articleSlugs = [
   'v1-release',
+  'enterprise-ready',
+  'creator-economy',
+  'cosmetics-engine',
+  'secret-chat-discovery',
+  'the-great-delete',
   'architecture-refactor',
   'compliance-pass',
   'platform-parity',
@@ -38,4 +43,11 @@ export const articleSlugs = [
 ] as const;
 
 /** Available filter categories for the blog listing */
-export const categories = ['All', 'Engineering', 'Security', 'Architecture', 'Product', 'Release'] as const;
+export const categories = [
+  'All',
+  'Engineering',
+  'Security',
+  'Architecture',
+  'Product',
+  'Release',
+] as const;

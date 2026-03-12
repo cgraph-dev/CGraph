@@ -73,18 +73,19 @@ export const docCategories: DocCategory[] = [
     ],
   },
   {
-    id: 'gamification',
-    icon: '🎮',
-    title: 'Gamification & Rewards',
+    id: 'achievements-cosmetics',
+    icon: '🏆',
+    title: 'Achievements & Cosmetics',
     color: '#fbbf24',
-    description: '30+ achievements, XP/levels, quests, streaks, and the virtual marketplace.',
+    description:
+      '325 cosmetic items, 30+ achievements, Pulse reputation, Nodes currency, and the creator economy.',
     articles: [
-      { title: 'XP, Levels & How Progression Works', time: '6 min read' },
+      { title: 'Cosmetics System: 325 Items Across 7 Categories', time: '6 min read' },
       { title: '30+ Achievements Across 6 Categories', time: '8 min read' },
-      { title: 'Daily & Weekly Quests', time: '4 min read' },
-      { title: 'Streak System & Multipliers', time: '3 min read' },
-      { title: 'Virtual Currency & Marketplace', time: '5 min read' },
-      { title: 'Leaderboards & Seasonal Events', time: '5 min read' },
+      { title: 'Nodes Currency & Creator Economy', time: '5 min read' },
+      { title: 'Pulse Reputation System', time: '4 min read' },
+      { title: 'Creator Economy: Tipping & Premium Threads', time: '5 min read' },
+      { title: 'Cosmetics Unlock Engine & Rarity Tiers', time: '6 min read' },
     ],
   },
   {

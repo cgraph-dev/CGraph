@@ -10,7 +10,7 @@ const getFeatureIconVariant = (title: string): NeonFeatureIconVariant => {
   if (title.includes('Encrypted') || title.includes('Encrypte')) return 'shield';
   if (title.includes('Real-Time')) return 'bolt';
   if (title.includes('Web3')) return 'chain';
-  if (title.includes('Gamified')) return 'crown';
+  if (title.includes('Cosmetics') || title.includes('Achievements')) return 'crown';
   if (title.includes('File Sharing')) return 'folder';
   return 'spark';
 };

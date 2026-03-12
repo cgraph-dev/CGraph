@@ -27,8 +27,8 @@ export const AchievementsDemo = memo(function AchievementsDemo() {
           <span className="demo-ach-tab__stat-label">Unlocked</span>
         </div>
         <div className="demo-ach-tab__stat">
-          <span className="demo-ach-tab__stat-value">6,050</span>
-          <span className="demo-ach-tab__stat-label">Total XP</span>
+          <span className="demo-ach-tab__stat-value">12</span>
+          <span className="demo-ach-tab__stat-label">Cosmetics</span>
         </div>
         <div className="demo-ach-tab__stat">
           <span className="demo-ach-tab__stat-value">6</span>
@@ -78,13 +78,12 @@ export const AchievementsDemo = memo(function AchievementsDemo() {
                 >
                   {ach.rarity}
                 </span>
-                <span className="demo-ach-card__xp">+{ach.xp.toLocaleString()} XP</span>
               </div>
               {(ach.coins || ach.titleReward || ach.itemReward) && (
                 <div className="demo-ach-card__rewards">
                   {ach.coins && (
                     <span className="demo-ach-card__reward demo-ach-card__reward--coins">
-                      💎 +{ach.coins}
+                      💎 +{ach.coins} Nodes
                     </span>
                   )}
                   {ach.titleReward && (

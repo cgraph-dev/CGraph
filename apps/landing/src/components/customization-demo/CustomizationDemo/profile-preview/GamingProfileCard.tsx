@@ -1,5 +1,5 @@
 /**
- * GamingProfileCard - Gaming-themed profile with XP bar
+ * GamingProfileCard - Gaming-themed profile with Pulse reputation
  */
 
 import { memo } from 'react';
@@ -16,7 +16,7 @@ export const GamingProfileCard = memo(function GamingProfileCard({
 }: CardProps) {
   return (
     <div>
-      {/* Gaming-style header with XP bar */}
+      {/* Gaming-style header with Pulse bar */}
       <div className="mb-4">
         <div className="mb-3 flex items-center gap-4">
           <AnimatedAvatar
@@ -29,7 +29,7 @@ export const GamingProfileCard = memo(function GamingProfileCard({
             <h3 className="mb-1 text-lg font-bold text-white">CGraph User</h3>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold" style={{ color: colors.primary }}>
-                Level 42
+                Pillar
               </span>
               <span className="text-xs text-gray-500">•</span>
               <span className="text-xs text-gray-400">Legendary Tier</span>
@@ -37,11 +37,11 @@ export const GamingProfileCard = memo(function GamingProfileCard({
           </div>
         </div>
 
-        {/* XP Progress Bar */}
+        {/* Pulse Progress Bar */}
         <div>
           <div className="mb-1 flex justify-between text-xs text-gray-400">
-            <span>XP Progress</span>
-            <span>8,420 / 10,000</span>
+            <span>Pulse Reputation</span>
+            <span>1,420 / 5,000</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-gray-700">
             <motion.div
@@ -50,7 +50,7 @@ export const GamingProfileCard = memo(function GamingProfileCard({
                 background: `linear-gradient(90deg, ${colors.primary}, ${colors.secondary})`,
               }}
               initial={{ width: 0 }}
-              animate={{ width: '84%' }}
+              animate={{ width: '28%' }}
               transition={{ duration: 1, delay: 0.3 }}
             />
           </div>
@@ -60,9 +60,9 @@ export const GamingProfileCard = memo(function GamingProfileCard({
       {/* Gaming Stats Grid */}
       <div className="mb-4 grid grid-cols-2 gap-2">
         {[
-          { icon: '⚔️', label: 'Victories', value: '234' },
-          { icon: '🎯', label: 'Accuracy', value: '92%' },
-          { icon: '🔥', label: 'Streak', value: '30 days' },
+          { icon: '⚔️', label: 'Achievements', value: '24' },
+          { icon: '🎯', label: 'Cosmetics', value: '47' },
+          { icon: '💎', label: 'Nodes', value: '3,200' },
           { icon: '👑', label: 'Rank', value: '#127' },
         ].map((stat) => (
           <motion.div

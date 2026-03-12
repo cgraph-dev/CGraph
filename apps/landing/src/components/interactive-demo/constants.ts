@@ -2,9 +2,9 @@ import type { DemoTab, DemoUserProfile, DemoTitle } from './types';
 
 export const DEMO_TABS: DemoTab[] = [
   { id: 'chat', label: 'Chat', icon: '' },
-  { id: 'titles', label: 'Titles', icon: '' },
+  { id: 'titles', label: 'Cosmetics', icon: '' },
   { id: 'achievements', label: 'Achievements', icon: '' },
-  { id: 'gamify', label: 'Gamification', icon: '' },
+  { id: 'forums', label: 'Forums', icon: '' },
 ];
 
 export const DEMO_MESSAGES: Array<{
@@ -60,7 +60,6 @@ export const ACHIEVEMENTS = [
     icon: '🌟',
     desc: 'Send your first message',
     rarity: 'common' as const,
-    xp: 50,
     category: 'social',
   },
   {
@@ -69,7 +68,6 @@ export const ACHIEVEMENTS = [
     icon: '🦋',
     desc: 'Make 25 friends',
     rarity: 'uncommon' as const,
-    xp: 250,
     category: 'social',
   },
   {
@@ -78,7 +76,6 @@ export const ACHIEVEMENTS = [
     icon: '✕',
     desc: '7-day login streak',
     rarity: 'rare' as const,
-    xp: 500,
     category: 'mastery',
     coins: 100,
   },
@@ -88,7 +85,6 @@ export const ACHIEVEMENTS = [
     icon: '🏛️',
     desc: 'Create a community forum',
     rarity: 'rare' as const,
-    xp: 500,
     category: 'content',
   },
   {
@@ -97,7 +93,6 @@ export const ACHIEVEMENTS = [
     icon: '🛡️',
     desc: 'Enable all security features',
     rarity: 'rare' as const,
-    xp: 750,
     category: 'exploration',
     itemReward: 'Shield Border',
   },
@@ -107,7 +102,6 @@ export const ACHIEVEMENTS = [
     icon: '💬',
     desc: 'Receive 1,000 upvotes',
     rarity: 'epic' as const,
-    xp: 1500,
     category: 'content',
     coins: 200,
     titleReward: 'Master of Discourse',
@@ -118,7 +112,6 @@ export const ACHIEVEMENTS = [
     icon: '💻',
     desc: 'Contribute to the project',
     rarity: 'legendary' as const,
-    xp: 2500,
     category: 'special',
     coins: 500,
     itemReward: 'Golden Border',
@@ -129,7 +122,6 @@ export const ACHIEVEMENTS = [
     icon: '👑',
     desc: 'Reach 10,000 upvotes',
     rarity: 'mythic' as const,
-    xp: 5000,
     category: 'legendary',
     coins: 1000,
     titleReward: 'Living Legend',
@@ -177,7 +169,7 @@ export const DEMO_TITLES: DemoTitle[] = [
     rarity: 'rare' as const,
     color: '#00ffff',
     animation: 'electric',
-    unlock: '1,500 coins',
+    unlock: '1,500 Nodes',
   },
   {
     id: 'master-discourse',
@@ -193,7 +185,7 @@ export const DEMO_TITLES: DemoTitle[] = [
     rarity: 'epic' as const,
     color: '#4a148c',
     animation: 'pulse',
-    unlock: '2,000 coins',
+    unlock: '2,000 Nodes',
   },
   {
     id: 'cosmic-traveler',
@@ -201,7 +193,7 @@ export const DEMO_TITLES: DemoTitle[] = [
     rarity: 'epic' as const,
     color: '#8b5cf6',
     animation: 'sparkle',
-    unlock: '2,500 coins',
+    unlock: '2,500 Nodes',
   },
   {
     id: 'flame-bearer',
@@ -209,7 +201,7 @@ export const DEMO_TITLES: DemoTitle[] = [
     rarity: 'legendary' as const,
     color: '#ff4400',
     animation: 'fire',
-    unlock: '3,500 coins',
+    unlock: '3,500 Nodes',
   },
   {
     id: 'founding-member',
@@ -264,7 +256,6 @@ const createDemoUserProfile = (seed: DemoUserProfileSeed): DemoUserProfile => {
 export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
   Alex: createDemoUserProfile({
     titleId: 'social-butterfly',
-    level: 50,
     borderStyle: 'linear-gradient(135deg, #06b6d4, #3b82f6, #06b6d4)',
     borderType: 'ice',
     borderColor: 'cyan',
@@ -275,14 +266,10 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
       { icon: '❄️', label: 'Frost' },
       { icon: '🦋', label: 'Social' },
     ],
-    xp: 4200,
-    maxXp: 5000,
     karma: 1847,
-    streak: 42,
   }),
   Jordan: createDemoUserProfile({
     titleId: 'cosmic-traveler',
-    level: 32,
     borderStyle: 'linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6)',
     borderType: 'electric',
     borderColor: 'purple',
@@ -293,14 +280,10 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
       { icon: '⚡', label: 'Storm' },
       { icon: '🌌', label: 'Cosmic' },
     ],
-    xp: 2100,
-    maxXp: 3500,
     karma: 923,
-    streak: 18,
   }),
   Sam: createDemoUserProfile({
     titleId: 'flame-bearer',
-    level: 78,
     borderStyle: 'linear-gradient(135deg, #f97316, #ef4444, #f97316)',
     borderType: 'legendary',
     borderColor: 'gold',
@@ -311,10 +294,7 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
       { icon: '✕', label: 'Legend' },
       { icon: '⚔️', label: 'Warrior' },
     ],
-    xp: 7800,
-    maxXp: 8500,
     karma: 3241,
-    streak: 67,
   }),
 };
 

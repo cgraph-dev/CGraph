@@ -26,7 +26,7 @@ const sections = [
           <tr><td><strong>Profile Data</strong></td><td>Bio, display name, avatar</td><td>Until account deletion</td></tr>
           <tr><td><strong>Wallet Address</strong></td><td>Web3 authentication (optional)</td><td>Until account deletion</td></tr>
           <tr><td><strong>Forum Content</strong></td><td>Posts, comments, votes, community membership</td><td>Until deleted by user</td></tr>
-          <tr><td><strong>Gamification Data</strong></td><td>XP, achievements, quest progress, leaderboard rankings</td><td>Until account deletion</td></tr>
+          <tr><td><strong>Achievements & Cosmetics</strong></td><td>Achievements, cosmetics unlocks, Pulse reputation, Nodes balance</td><td>Until account deletion</td></tr>
         </tbody>
       </table>
       

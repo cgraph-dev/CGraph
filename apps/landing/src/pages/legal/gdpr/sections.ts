@@ -44,7 +44,7 @@ export const sections: GDPRSection[] = [
           <tr><td><strong>Account Creation</strong></td><td>Contract</td><td>Necessary to provide the Service</td></tr>
           <tr><td><strong>Message Delivery</strong></td><td>Contract</td><td>Core service functionality</td></tr>
           <tr><td><strong>Forum & Communities</strong></td><td>Contract</td><td>Community features and discussions</td></tr>
-          <tr><td><strong>Gamification System</strong></td><td>Contract</td><td>XP, achievements, leaderboards</td></tr>
+          <tr><td><strong>Achievements & Cosmetics</strong></td><td>Contract</td><td>Achievements, cosmetics, Pulse reputation</td></tr>
           <tr><td><strong>Security Measures</strong></td><td>Legitimate Interest</td><td>Protecting users and the platform</td></tr>
           <tr><td><strong>Analytics</strong></td><td>Consent</td><td>Understanding service usage</td></tr>
           <tr><td><strong>Marketing Emails</strong></td><td>Consent</td><td>Only with explicit opt-in</td></tr>

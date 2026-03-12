@@ -63,8 +63,8 @@ export default function Blog() {
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
                   Every planned phase shipped. 142 requirements across E2EE messaging, forums,
-                  gamification, voice & video, monetization, and mobile parity. All packages synced
-                  to v1.0.0. Production deployed on Fly.io, Vercel, and Supabase.
+                  achievements & cosmetics, voice & video, creator economy, and mobile parity. All
+                  packages synced to v1.0.0. Production deployed on Fly.io, Vercel, and Supabase.
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">
