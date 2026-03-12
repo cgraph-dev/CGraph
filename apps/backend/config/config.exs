@@ -115,7 +115,9 @@ config :cgraph, Oban,
        # Pulse reputation decay — daily at 2 AM UTC
        {"0 2 * * *", CGraph.Workers.PulseDecayWorker},
        # Release held nodes (21+ days) — daily at 3 AM UTC
-       {"0 3 * * *", CGraph.Workers.HeldNodesReleaseWorker}
+       {"0 3 * * *", CGraph.Workers.HeldNodesReleaseWorker},
+       # Reputation reward milestone checks — daily at 4 AM UTC
+       {"0 4 * * *", CGraph.Workers.ReputationRewardWorker}
      ]}
   ],
   queues: [
@@ -145,7 +147,8 @@ config :cgraph, Oban,
     cosmetics: 10,
     reputation_calc: 5,
     forum_indexing: 10,
-    unlocks: 10
+    unlocks: 10,
+    reputation_rewards: 2
   ]
 
 # Swoosh mailer configuration

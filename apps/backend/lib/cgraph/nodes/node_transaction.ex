@@ -25,7 +25,7 @@ defmodule CGraph.Nodes.NodeTransaction do
     field :inserted_at, :utc_datetime, autogenerate: {DateTime, :utc_now, []}
   end
 
-  @valid_types ~w(purchase tip_received tip_sent content_unlock subscription_received subscription_sent withdrawal cosmetic_purchase)
+  @valid_types ~w(purchase tip_received tip_sent content_unlock subscription_received subscription_sent withdrawal cosmetic_purchase reputation_reward)
 
   @doc false
   def changeset(transaction, attrs) do
