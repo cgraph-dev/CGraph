@@ -34,7 +34,9 @@ const DURATION_OPTIONS: DurationOption[] = [
 
 /** Spotlight card for boosting profile visibility in Featured Creators. */
 export function ProfileSpotlightCard({ userId, userName, avatarUrl }: ProfileSpotlightCardProps) {
-  const [selectedDuration, setSelectedDuration] = useState<DurationOption>(DURATION_OPTIONS[1]);
+  const [selectedDuration, setSelectedDuration] = useState<DurationOption>(
+    () => DURATION_OPTIONS[1] ?? { hours: 6, label: '6 hours', cost: 200 }
+  );
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [result, setResult] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 

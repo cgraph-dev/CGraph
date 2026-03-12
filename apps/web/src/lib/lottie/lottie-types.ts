@@ -32,7 +32,7 @@ export interface LottieAnimationData {
 // ── Animated Emoji ─────────────────────────────────────────────────
 
 /** Metadata for a single animated Noto emoji from the catalog. */
-export interface AnimatedEmoji {
+export interface AnimatedEmojiMeta {
   /** Unicode codepoint (hex string, e.g. "1f600"). */
   codepoint: string;
   /** The emoji character. */
@@ -94,6 +94,8 @@ export interface LottieRendererProps {
   className?: string;
   /** WebP fallback URL for reduced motion / load failure. */
   fallbackSrc?: string;
+  /** Optional raw Lottie JSON data (for custom/uploaded emojis). */
+  animationData?: Record<string, unknown>;
 }
 
 // ── Cache Types ────────────────────────────────────────────────────

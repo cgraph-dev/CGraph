@@ -3,7 +3,7 @@
  * @module modules/chat/components/emoji-picker
  */
 
-import type { AnimatedEmoji } from '@/lib/lottie';
+import type { AnimatedEmojiMeta } from '@/lib/lottie';
 import { ANIMATED_EMOJI_CATALOG, NOTO_CDN } from '@/lib/lottie/animated-emoji-catalog';
 import type { EmojiCategories, EmojiItem } from './types';
 
@@ -467,17 +467,17 @@ export const DISPLAY_RECENT_COUNT = 10;
 
 // ── Animated emoji catalog ─────────────────────────────────────────
 
-let animatedCatalog: Map<string, AnimatedEmoji> | null = null;
+let animatedCatalog: Map<string, AnimatedEmojiMeta> | null = null;
 
 /**
  * Returns the animated emoji catalog, built from the static embedded data.
  * No network requests needed — the catalog is bundled in the JS.
  */
-export async function fetchAnimatedEmojiCatalog(): Promise<Map<string, AnimatedEmoji>> {
+export async function fetchAnimatedEmojiCatalog(): Promise<Map<string, AnimatedEmojiMeta>> {
   if (animatedCatalog) return animatedCatalog;
 
   animatedCatalog = new Map(
-    ANIMATED_EMOJI_CATALOG.map((entry): [string, AnimatedEmoji] => [
+    ANIMATED_EMOJI_CATALOG.map((entry): [string, AnimatedEmojiMeta] => [
       entry.e,
       {
         codepoint: entry.c,
@@ -497,7 +497,7 @@ export async function fetchAnimatedEmojiCatalog(): Promise<Map<string, AnimatedE
 }
 
 /** Enrich a plain emoji string with animation metadata from the catalog. */
-export function enrichEmoji(emoji: string, catalog: Map<string, AnimatedEmoji>): EmojiItem {
+export function enrichEmoji(emoji: string, catalog: Map<string, AnimatedEmojiMeta>): EmojiItem {
   const animated = catalog.get(emoji);
   if (animated) {
     return {
@@ -513,6 +513,6 @@ export function enrichEmoji(emoji: string, catalog: Map<string, AnimatedEmoji>):
 }
 
 /** Get the animated catalog (synchronous; returns null if not yet loaded). */
-export function getAnimatedCatalog(): Map<string, AnimatedEmoji> | null {
+export function getAnimatedCatalog(): Map<string, AnimatedEmojiMeta> | null {
   return animatedCatalog;
 }

@@ -6,14 +6,14 @@
 import { motion } from 'motion/react';
 
 import { LottieRenderer } from '@/lib/lottie';
-import type { AnimatedEmoji } from '@/lib/lottie';
+import type { AnimatedEmojiMeta } from '@/lib/lottie';
 
 interface EmojiGridProps {
   emojis: string[];
   onEmojiClick: (emoji: string) => void;
   searchQuery?: string;
   /** Catalog of animated emojis (loaded from API). */
-  animatedCatalog?: Map<string, AnimatedEmoji> | null;
+  animatedCatalog?: Map<string, AnimatedEmojiMeta> | null;
   /** Show only animated emojis. */
   animatedOnly?: boolean;
 }

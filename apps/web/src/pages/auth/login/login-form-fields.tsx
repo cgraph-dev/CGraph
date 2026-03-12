@@ -34,7 +34,7 @@ export function LoginFormFields({
   showPassword,
   setShowPassword,
   itemVariants,
-  reduced,
+  reduced: _reduced,
 }: LoginFormFieldsProps) {
   const { t } = useTranslation('auth');
   return (

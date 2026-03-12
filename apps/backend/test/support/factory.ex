@@ -48,7 +48,6 @@ defmodule CGraph.Factory do
       is_premium: false,
       xp: 0,
       level: 1,
-      coins: 0,
       streak_days: 0,
       last_active_at: DateTime.truncate(DateTime.utc_now(), :second),
       inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
@@ -62,15 +61,13 @@ defmodule CGraph.Factory do
 
   def premium_user_factory do
     build(:user,
-      is_premium: true,
-      coins: 1000
+      is_premium: true
     )
   end
 
   def premium_plus_user_factory do
     build(:user,
-      is_premium: true,
-      coins: 5000
+      is_premium: true
     )
   end
 
@@ -773,16 +770,9 @@ defmodule CGraph.Factory do
     }
   end
 
-  @doc "Coin purchase record."
-  def coin_purchase_factory do
-    %CGraph.Shop.CoinPurchase{
-      user_id: nil,
-      bundle_id: "starter",
-      coins_awarded: 100,
-      price_cents: 99,
-      currency: "usd",
-      stripe_session_id: sequence(:stripe_session_id, &"cs_test_#{&1}"),
-      status: "pending"
-    }
-  end
+  # NOTE: CoinPurchase struct removed — module no longer exists
+  # @doc "Coin purchase record."
+  # def coin_purchase_factory do
+  #   ...
+  # end
 end

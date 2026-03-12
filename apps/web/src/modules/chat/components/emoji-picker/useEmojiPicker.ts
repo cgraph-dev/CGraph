@@ -5,7 +5,7 @@
 
 import { useState, useEffect, RefObject } from 'react';
 
-import type { AnimatedEmoji } from '@/lib/lottie';
+import type { AnimatedEmojiMeta } from '@/lib/lottie';
 import { preloadAnimations } from '@/lib/lottie';
 import {
   EMOJI_CATEGORIES,
@@ -92,7 +92,7 @@ export function useFilteredEmojis(searchQuery: string, activeCategory: EmojiCate
  * Hook to load animated emoji catalog and preload visible animations.
  */
 export function useAnimatedEmojiCatalog(isOpen: boolean) {
-  const [catalog, setCatalog] = useState<Map<string, AnimatedEmoji> | null>(null);
+  const [catalog, setCatalog] = useState<Map<string, AnimatedEmojiMeta> | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

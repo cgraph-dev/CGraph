@@ -27,12 +27,12 @@ function useIsVisible(ref: React.RefObject<HTMLElement | null>, rootMargin = '20
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           setVisible(true);
           io.disconnect(); // stay visible once seen — avoids thrashing
         }
       },
-      { rootMargin },
+      { rootMargin }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -111,8 +111,8 @@ export function LottieRenderer({
     <div
       ref={(node) => {
         // Assign both refs to the same node
-        (wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        wrapperRef.current = node;
+        containerRef.current = node;
       }}
       className={className}
       style={{ width: size, height: size, position: 'relative' }}

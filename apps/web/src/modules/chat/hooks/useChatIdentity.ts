@@ -100,9 +100,13 @@ export function useChatIdentity(userId: string): ChatIdentity {
     borderItem?.item_data && isBorder(borderItem.item_data) ? borderItem.item_data : null;
   const title: Title | null =
     titleItem?.item_data && isTitle(titleItem.item_data) ? titleItem.item_data : null;
-  const badges: Badge[] = badgeItems
-    .map((b) => (b.item_data && isBadge(b.item_data) ? b.item_data : null))
-    .filter((b): b is Badge => b !== null);
+  const badges: Badge[] = badgeItems.reduce<Badge[]>((acc, b) => {
+    if (b.item_data && isBadge(b.item_data)) {
+      const { id, name, icon_url, rarity } = b.item_data;
+      acc.push({ id, name, icon_url, rarity });
+    }
+    return acc;
+  }, []);
 
   return { border, title, badges, isLoading };
 }

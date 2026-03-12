@@ -22,7 +22,7 @@ export {
 } from './lottie-cache';
 export type {
   LottieAnimationData,
-  AnimatedEmoji,
+  AnimatedEmojiMeta,
   LottieConfig,
   LottieRendererProps,
   LottieCacheEntry,
