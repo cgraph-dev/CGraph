@@ -1336,4 +1336,44 @@ Plans:
 
 ---
 
-_Roadmap: 32 phases · 135+ requirements · Updated: 2026-03-10_
+### Phase 33: Canonical Reconciliation ✅
+
+**Completed:** 2026-03-11 | **Plans:** 3/3
+
+**Goal:** Unify rarity system (7-tier), create COSMETICS_MANIFEST.json, API catalog, profile themes
+(25-set), Oban queue reconciliation (27 queues).
+
+---
+
+### Phase 34: Parity + Mobile Nodes ✅
+
+**Completed:** 2026-03-12 | **Plans:** 6/6
+
+**Goal:** Backend tip hardening, web tip/unlock UI, mobile nodes/secret-chat/discovery/customize
+parity, privacy expansion (15 toggles), chat effects, friend favorites/nicknames, TipContext.
+
+---
+
+### Phase 35: Cosmetics + Unlock Engine ✅
+
+**Completed:** 2026-03-12 | **Plans:** 7/7
+
+**Goal:** Backend schemas for all cosmetic types (Badge, Nameplate, ProfileEffect, ProfileFrame,
+NameStyle), unified inventory, cosmetics context + controllers + routes, unlock engine with 5
+evaluators, Oban workers, visibility rules, seed data (340+ items), web + mobile inventory/equip UI,
+shared types + API client.
+
+Plans:
+
+- [x] 35-01-PLAN.md — Backend schemas (Badge, Nameplate, ProfileEffect, ProfileFrame)
+- [x] 35-02-PLAN.md — Unified inventory, NameplateSetting, NameStyle schemas
+- [x] 35-03-PLAN.md — Cosmetics context, controllers, routes
+- [x] 35-04-PLAN.md — Unlock engine, 5 evaluators, Oban workers, visibility rules
+- [x] 35-05-PLAN.md — Web + mobile inventory/equip UI, CosmeticRenderer
+- [x] 35-06-PLAN.md — Seed data (70 badges, 70 titles, 45 nameplates, 55 frames, 50 styles, 18
+      effects)
+- [x] 35-07-PLAN.md — Shared types, API client, unlock_log migration
+
+---
+
+_Roadmap: 35 phases · 135+ requirements · Updated: 2026-03-12_

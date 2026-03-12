@@ -8,25 +8,24 @@
 
 See: .gsd/PROJECT.md (updated 2026-03-04)
 
-**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 34 —
-Parity + Mobile Nodes COMPLETE. All v2.0 phases (26–33) done. Phase 34 (Parity + Mobile Nodes)
-completed — 6 plans, 26 commits. Backend tip hardening, web tip/unlock UI, mobile nodes wallet/shop,
-secret chat mobile, discovery feed (5 modes), customization parity (5 screens), privacy expansion
-(6→15 toggles), chat effects store, friend favorites/nicknames, shared TipContext type, api-client
-nodes methods.
+**Core value:** Secure real-time communication that works end-to-end. **Current focus:** Phase 35 —
+Cosmetics + Unlock Engine COMPLETE. All v2.0 phases (26–34) done. Phase 35 completed — 7 plans, 18
+commits. Backend schemas (Badge, Nameplate, ProfileEffect, ProfileFrame, NameStyle), unified
+inventory, cosmetics context + controllers + routes, unlock engine with 5 evaluators, Oban workers,
+visibility rules, 340+ seed items, web + mobile inventory/equip UI, shared types + API client.
 
 ## Current Position
 
-Phase: 34 of 39 (Parity + Mobile Nodes) Plan: 6 of 6 Status: COMPLETE Last activity: 2026-03-12 —
-Phase 34 completed (6 plans, 26 commits: ad690db3…95b9058b)
+Phase: 35 of 39 (Cosmetics + Unlock Engine) Plan: 7 of 7 Status: COMPLETE Last activity: 2026-03-12
+— Phase 35 completed (7 plans, 18 commits)
 
-Progress: [████████████████████████████████████░░░░] 87% (34/39 phases)
+Progress: [██████████████████████████████████████░░] 90% (35/39 phases)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 14 (this milestone)
+- Total plans completed: 21 (this milestone)
 - Average duration: ~35min per plan
 - Total execution time: ~8.0 hours
 
@@ -62,6 +61,10 @@ Recent decisions logged in PROJECT.md Key Decisions table.
   tip hardening, web tip/unlock UI, mobile nodes wallet/shop/withdrawal, mobile secret chat,
   discovery feed 5 modes, customization parity 5 screens, privacy 15 toggles, chat effects store,
   friend favorites/nicknames, TipContext type, api-client nodes methods)
+- ~~Phase 35: Cosmetics + Unlock Engine~~ — COMPLETE (7 plans, 18 commits: 324f6a3d…26d95be6.
+  Backend schemas (Badge, Nameplate, ProfileEffect, ProfileFrame, NameStyle), unified inventory,
+  cosmetics context + controllers + routes, unlock engine with 5 evaluators, Oban workers,
+  visibility rules, 340+ seed items, web + mobile inventory/equip UI, shared types + API client)
 
 ### Blockers/Concerns
 
@@ -74,9 +77,9 @@ Recent decisions logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-12 Stopped at: Phase 34 complete. Phases 35–39 remain. Resume file:
-.gsd/phases/34-parity-mobile-nodes/
+Last session: 2026-03-12 Stopped at: Phase 35 complete. Phases 36–39 remain. Resume file:
+.gsd/phases/35-cosmetics-unlock-engine/
 
 ---
 
-_Last updated: 2026-03-12 (Phase 34 complete — Parity + Mobile Nodes finished)_
+_Last updated: 2026-03-12 (Phase 35 complete — Cosmetics + Unlock Engine finished)_
