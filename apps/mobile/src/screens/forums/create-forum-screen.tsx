@@ -24,6 +24,19 @@ type Props = {
   navigation: NativeStackNavigationProp<ForumsStackParamList, 'CreateForum'>;
 };
 
+const FORUM_THEMES = [
+  { id: 'default', name: 'Default', color: '#6366F1' },
+  { id: 'neon_cyber', name: 'Neon Cyber', color: '#00FFFF' },
+  { id: 'royal_gold', name: 'Royal Gold', color: '#FFD700' },
+  { id: 'midnight_ocean', name: 'Midnight Ocean', color: '#1E3A5F' },
+  { id: 'sakura_blossom', name: 'Sakura Blossom', color: '#FFB7C5' },
+  { id: 'lava_flow', name: 'Lava Flow', color: '#FF4500' },
+  { id: 'forest_mist', name: 'Forest Mist', color: '#2D6A4F' },
+  { id: 'retro_arcade', name: 'Retro Arcade', color: '#FF00FF' },
+  { id: 'arctic_frost', name: 'Arctic Frost', color: '#E0F7FA' },
+  { id: 'sunset_blaze', name: 'Sunset Blaze', color: '#FF6B35' },
+];
+
 /**
  * CreateForumScreen - Mobile version of forum creation
  *
@@ -41,6 +54,9 @@ export default function CreateForumScreen({ navigation }: Props) {
   const [isPublic, setIsPublic] = useState(true);
   const [isNsfw, setIsNsfw] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState('default');
+  const [requireIdentityCard, setRequireIdentityCard] = useState(false);
+  const [allowAnonymous, setAllowAnonymous] = useState(false);
 
   // Name validation - only allow valid characters
   const handleNameChange = (text: string) => {
@@ -68,6 +84,11 @@ export default function CreateForumScreen({ navigation }: Props) {
         description: description.trim() || undefined,
         is_nsfw: isNsfw,
         is_private: !isPublic,
+        theme: selectedTheme,
+        settings: {
+          require_identity_card: requireIdentityCard,
+          allow_anonymous: allowAnonymous,
+        },
       });
 
       const forum = response.data?.forum || response.data;
@@ -197,9 +218,84 @@ export default function CreateForumScreen({ navigation }: Props) {
             </Text>
           </View>
 
-          {/* Settings */}
+          {/* Theme Picker */}
           <View style={styles.settingsSection}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Settings</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Theme</Text>
+            <View style={styles.themeGrid}>
+              {FORUM_THEMES.map((theme) => {
+                const isActive = selectedTheme === theme.id;
+                return (
+                  <TouchableOpacity
+                    key={theme.id}
+                    style={[
+                      styles.themeOption,
+                      {
+                        borderColor: isActive ? theme.color : colors.border,
+                        backgroundColor: isActive ? theme.color + '15' : colors.input,
+                      },
+                    ]}
+                    onPress={() => setSelectedTheme(theme.id)}
+                  >
+                    <View style={[styles.themeSwatch, { backgroundColor: theme.color }]} />
+                    <Text
+                      style={[
+                        styles.themeLabel,
+                        { color: isActive ? theme.color : colors.textSecondary },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {theme.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Identity Card Defaults */}
+          <View style={styles.settingsSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Identity Cards</Text>
+
+            <View style={[styles.settingRow, { borderColor: colors.border }]}>
+              <View style={styles.settingInfo}>
+                <Ionicons name="person-circle-outline" size={24} color={colors.primary} />
+                <View style={styles.settingText}>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>Require Identity Card</Text>
+                  <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
+                    Members must set up their identity card
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={requireIdentityCard}
+                onValueChange={setRequireIdentityCard}
+                trackColor={{ false: colors.surfaceHover, true: colors.primary }}
+                thumbColor="#fff"
+              />
+            </View>
+
+            <View style={[styles.settingRow, { borderColor: colors.border }]}>
+              <View style={styles.settingInfo}>
+                <Ionicons name="eye-off-outline" size={24} color={colors.textTertiary} />
+                <View style={styles.settingText}>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>Allow Anonymous Posts</Text>
+                  <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
+                    Members can post without showing identity
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={allowAnonymous}
+                onValueChange={setAllowAnonymous}
+                trackColor={{ false: colors.surfaceHover, true: colors.warning }}
+                thumbColor="#fff"
+              />
+            </View>
+          </View>
+
+          {/* Privacy Settings */}
+          <View style={styles.settingsSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Privacy</Text>
 
             {/* Public Toggle */}
             <View style={[styles.settingRow, { borderColor: colors.border }]}>
@@ -402,5 +498,28 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  themeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  themeOption: {
+    width: '30%',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    gap: 6,
+  },
+  themeSwatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  themeLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });

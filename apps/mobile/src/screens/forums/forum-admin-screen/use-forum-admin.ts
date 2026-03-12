@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import api from '../../../lib/api';
-import type { ModerationItem, BannedUser, Moderator, ForumStats, UserBasic } from './types';
+import type { ModerationItem, BannedUser, Moderator, ForumStats, UserBasic, ModerationLogEntry, IdentityCardEntry } from './types';
 
 export function useForumAdmin(forumId: string) {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,17 +11,21 @@ export function useForumAdmin(forumId: string) {
   const [modQueue, setModQueue] = useState<ModerationItem[]>([]);
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
   const [moderators, setModerators] = useState<Moderator[]>([]);
+  const [moderationLogs, setModerationLogs] = useState<ModerationLogEntry[]>([]);
+  const [identityCards, setIdentityCards] = useState<IdentityCardEntry[]>([]);
   const [showBanModal, setShowBanModal] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserBasic | null>(null);
 
   const fetchAdminData = async () => {
     try {
-      const [statsRes, modQueueRes, bannedRes, modsRes] = await Promise.all([
+      const [statsRes, modQueueRes, bannedRes, modsRes, logsRes, identityRes] = await Promise.all([
         api.get(`/api/v1/forums/${forumId}/admin/stats`).catch(() => ({ data: { data: null } })),
         api.get(`/api/v1/forums/${forumId}/modqueue`).catch(() => ({ data: { data: [] } })),
         api.get(`/api/v1/forums/${forumId}/admin/banned`).catch(() => ({ data: { data: [] } })),
         api.get(`/api/v1/forums/${forumId}/admin/moderators`).catch(() => ({ data: { data: [] } })),
+        api.get(`/api/v1/forums/${forumId}/admin/moderation-logs`).catch(() => ({ data: { data: [] } })),
+        api.get(`/api/v1/forums/${forumId}/admin/identity-cards`).catch(() => ({ data: { data: [] } })),
       ]);
 
       setStats(
@@ -33,6 +37,8 @@ export function useForumAdmin(forumId: string) {
       setModQueue(modQueueRes.data?.data || []);
       setBannedUsers(bannedRes.data?.data || []);
       setModerators(modsRes.data?.data || []);
+      setModerationLogs(logsRes.data?.data || []);
+      setIdentityCards(identityRes.data?.data || []);
     } catch (error) {
       console.error('Error fetching admin data:', error);
     } finally {
@@ -110,6 +116,7 @@ export function useForumAdmin(forumId: string) {
 
   return {
     isLoading, refreshing, stats, modQueue, bannedUsers, moderators,
+    moderationLogs, identityCards,
     showBanModal, setShowBanModal, banReason, setBanReason,
     selectedUser, setSelectedUser,
     fetchAdminData, onRefresh,

@@ -109,7 +109,7 @@ export default function MentionAutocomplete({
     const match = textBefore.match(/(?:^|[^@\w])@(\w*)$/);
 
     if (match) {
-      const mentionQuery = match[1];
+      const mentionQuery = match[1] ?? '';
       setQuery(mentionQuery);
       setIsOpen(true);
 

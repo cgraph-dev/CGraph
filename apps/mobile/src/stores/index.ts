@@ -84,6 +84,13 @@ export {
   useForumError,
 } from './forumStore';
 
+// ─── Forum Admin ─────────────────────────────────────────────────────────────
+export {
+  useForumAdminStore,
+  useModerationLogs,
+  useForumAdminLoading,
+} from './forumAdminStore';
+
 // ─── Customization ──────────────────────────────────────────────────────────
 export { useCustomizationStore } from './customizationStore';
 

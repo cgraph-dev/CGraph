@@ -22,7 +22,10 @@ import { ForumsStackParamList } from '../../types';
 import type { AdminTab } from './forum-admin-screen/types';
 import { styles } from './forum-admin-screen/styles';
 import { useForumAdmin } from './forum-admin-screen/use-forum-admin';
-import { OverviewGrid, ModQueueItem, BannedUserItem, ModeratorItem } from './forum-admin-screen/components/admin-tab-views';
+import {
+  OverviewGrid, ModQueueItem, BannedUserItem, ModeratorItem,
+  ModerationLogItem, IdentityManagementItem,
+} from './forum-admin-screen/components/admin-tab-views';
 import { BanUserModal } from './forum-admin-screen/components/ban-user-modal';
 
 type Props = {
@@ -49,6 +52,8 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
     { key: 'modqueue', label: 'Mod Queue', icon: 'flag-outline' },
     { key: 'banned', label: 'Banned', icon: 'ban-outline' },
     { key: 'moderators', label: 'Mods', icon: 'shield-outline' },
+    { key: 'modlog', label: 'Mod Log', icon: 'list-outline' },
+    { key: 'identity', label: 'Identity', icon: 'person-circle-outline' },
   ];
 
   if (admin.isLoading) {
@@ -131,6 +136,38 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
             <View style={styles.emptyState}>
               <Ionicons name="people-outline" size={64} color={colors.textSecondary} />
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No moderators yet</Text>
+            </View>
+          }
+        />
+      )}
+
+      {activeTab === 'modlog' && (
+        <FlatList
+          data={admin.moderationLogs}
+          renderItem={({ item }) => <ModerationLogItem item={item} colors={colors} />}
+          keyExtractor={(item) => item.id}
+          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          contentContainerStyle={styles.content}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="document-text-outline" size={64} color={colors.textSecondary} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No moderation logs yet</Text>
+            </View>
+          }
+        />
+      )}
+
+      {activeTab === 'identity' && (
+        <FlatList
+          data={admin.identityCards}
+          renderItem={({ item }) => <IdentityManagementItem item={item} colors={colors} />}
+          keyExtractor={(item) => item.user_id}
+          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          contentContainerStyle={styles.content}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="person-circle-outline" size={64} color={colors.textSecondary} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No identity cards configured</Text>
             </View>
           }
         />

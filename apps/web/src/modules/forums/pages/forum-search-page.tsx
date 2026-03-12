@@ -19,7 +19,6 @@ import { MagnifyingGlassIcon, TagIcon, DocumentTextIcon } from '@heroicons/react
 import { cn } from '@/lib/utils';
 import { ForumSearch } from '@/modules/forums/components/forum-search';
 import { FiltersPanel } from '@/modules/forums/components/forum-search/filters-panel';
-import { SearchResults } from '@/modules/forums/components/forum-search/search-results';
 import { DEFAULT_FILTERS } from '@/modules/forums/components/forum-search/constants';
 import type { SearchFilters, SearchResult } from '@/modules/forums/components/forum-search/types';
 import type { ForumCategory } from '@/modules/forums/store';

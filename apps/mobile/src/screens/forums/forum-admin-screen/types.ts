@@ -42,6 +42,28 @@ export interface ForumStats {
   active_users_24h: number;
 }
 
-export type AdminTab = 'overview' | 'modqueue' | 'banned' | 'moderators';
+export type AdminTab = 'overview' | 'modqueue' | 'banned' | 'moderators' | 'modlog' | 'identity';
+
+export interface ModerationLogEntry {
+  id: string;
+  action: string;
+  target_type: string;
+  target_id: string;
+  moderator: UserBasic;
+  reason?: string;
+  details?: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface IdentityCardEntry {
+  user_id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  frame?: { id: string; name: string; color: string };
+  badges?: { id: string; name: string; color: string }[];
+  title?: string;
+  reputation?: number;
+}
 
 export type { UserBasic };

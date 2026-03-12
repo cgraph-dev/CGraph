@@ -446,6 +446,7 @@ export type ForumsStackParamList = {
   ForumLeaderboard: { forumId?: string };
   ForumUserGroups: { forumId: string };
   BoardPermissions: { forumId: string; boardId: string; boardName?: string };
+  IdentityCard: undefined;
 };
 
 export type SettingsStackParamList = {

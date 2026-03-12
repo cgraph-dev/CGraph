@@ -56,7 +56,7 @@ function getReputationBg(rep: number): string {
   return 'bg-red-500/20';
 }
 
-const BADGE_ICONS = [StarIcon, ShieldCheckIcon, TrophyIcon];
+const BADGE_ICONS: HeroIcon[] = [StarIcon, ShieldCheckIcon, TrophyIcon];
 
 // ── Component ──────────────────────────────────────────────────────────
 

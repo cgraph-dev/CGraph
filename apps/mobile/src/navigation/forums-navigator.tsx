@@ -19,6 +19,7 @@ import ForumLeaderboardScreen from '../screens/forums/forum-leaderboard-screen';
 import ForumSearchScreen from '../screens/forums/forum-search-screen';
 import ForumUserGroupsScreen from '../screens/forums/forum-user-groups-screen';
 import BoardPermissionsScreen from '../screens/forums/board-permissions-screen';
+import IdentityCardScreen from '../screens/forums/identity-card-screen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
@@ -85,6 +86,11 @@ export default function ForumsNavigator() {
         name="BoardPermissions"
         component={BoardPermissionsScreen}
         options={{ title: 'Board Permissions' }}
+      />
+      <Stack.Screen
+        name="IdentityCard"
+        component={IdentityCardScreen}
+        options={{ title: 'Identity Card', presentation: 'modal' }}
       />
     </Stack.Navigator>
   );

@@ -23,7 +23,16 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
-import { type Poll, type CreatePollData } from '@/modules/forums/store';
+import { type Poll } from '@/modules/forums/store';
+
+interface CreatePollData {
+  question: string;
+  options: string[];
+  allowMultiple: boolean;
+  maxSelections?: number;
+  timeout?: string;
+  public: boolean;
+}
 import PollWidget from './poll-widget';
 import { PollCard } from './poll-card';
 

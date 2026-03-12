@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { ForumStats, ModerationItem, BannedUser, Moderator } from '../types';
+import type { ForumStats, ModerationItem, BannedUser, Moderator, ModerationLogEntry, IdentityCardEntry } from '../types';
 import { styles } from '../styles';
 
 interface ColorsType {
@@ -141,6 +141,115 @@ export function ModeratorItem({ item, colors }: { item: Moderator; colors: Color
         </View>
       </View>
       <Ionicons name="shield-checkmark" size={24} color={colors.primary} />
+    </View>
+  );
+}
+
+const ACTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  ban: 'ban-outline',
+  unban: 'checkmark-circle-outline',
+  remove_post: 'trash-outline',
+  remove_comment: 'chatbubble-outline',
+  approve: 'checkmark-outline',
+  pin: 'pin-outline',
+  lock: 'lock-closed-outline',
+  default: 'document-text-outline',
+};
+
+const ACTION_COLORS: Record<string, string> = {
+  ban: '#EF4444',
+  unban: '#10B981',
+  remove_post: '#EF4444',
+  remove_comment: '#F59E0B',
+  approve: '#10B981',
+  pin: '#3B82F6',
+  lock: '#F59E0B',
+};
+
+export function ModerationLogItem({ item, colors }: { item: ModerationLogEntry; colors: ColorsType }) {
+  const icon = ACTION_ICONS[item.action] || ACTION_ICONS.default;
+  const actionColor = ACTION_COLORS[item.action] || colors.textSecondary;
+
+  return (
+    <View style={[styles.modItem, { backgroundColor: colors.surface }]}>
+      <View style={styles.modItemHeader}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Ionicons name={icon} size={18} color={actionColor} />
+          <Text style={[styles.typeBadgeText, { color: actionColor, textTransform: 'uppercase', fontSize: 12, fontWeight: '600' }]}>
+            {item.action.replace(/_/g, ' ')}
+          </Text>
+        </View>
+        <Text style={[styles.modItemDate, { color: colors.textSecondary }]}>
+          {new Date(item.created_at).toLocaleDateString()}
+        </Text>
+      </View>
+      <Text style={[styles.modItemAuthor, { color: colors.textSecondary }]}>
+        By: {item.moderator?.username || 'System'}
+      </Text>
+      {item.reason && (
+        <Text style={[styles.modItemReason, { color: colors.warning }]}>
+          Reason: {item.reason}
+        </Text>
+      )}
+      <Text style={[{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }]}>
+        Target: {item.target_type} #{item.target_id?.slice(0, 8)}
+      </Text>
+    </View>
+  );
+}
+
+export function IdentityManagementItem({ item, colors }: { item: IdentityCardEntry; colors: ColorsType }) {
+  return (
+    <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
+      <View style={styles.userInfo}>
+        <View
+          style={[
+            styles.avatar,
+            {
+              backgroundColor: item.frame?.color || colors.primary,
+              borderWidth: item.frame ? 2 : 0,
+              borderColor: item.frame?.color || 'transparent',
+            },
+          ]}
+        >
+          <Text style={styles.avatarText}>
+            {(item.username || '?').charAt(0).toUpperCase()}
+          </Text>
+        </View>
+        <View style={styles.userDetails}>
+          <Text style={[styles.username, { color: colors.text }]}>
+            {item.display_name || item.username}
+          </Text>
+          {item.title && (
+            <Text style={[styles.modPermissions, { color: colors.textSecondary, fontStyle: 'italic' }]}>
+              {item.title}
+            </Text>
+          )}
+          <View style={{ flexDirection: 'row', gap: 4, marginTop: 2 }}>
+            {(item.badges || []).slice(0, 3).map((badge) => (
+              <View
+                key={badge.id}
+                style={{
+                  backgroundColor: badge.color + '20',
+                  paddingHorizontal: 6,
+                  paddingVertical: 1,
+                  borderRadius: 6,
+                }}
+              >
+                <Text style={{ fontSize: 10, color: badge.color, fontWeight: '500' }}>
+                  {badge.name}
+                </Text>
+              </View>
+            ))}
+          </View>
+          {item.reputation != null && (
+            <Text style={[styles.banDate, { color: colors.textSecondary }]}>
+              Rep: {item.reputation.toLocaleString()}
+            </Text>
+          )}
+        </View>
+      </View>
+      <Ionicons name="person-circle" size={24} color={colors.primary} />
     </View>
   );
 }
