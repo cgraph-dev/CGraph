@@ -289,7 +289,6 @@ defmodule CGraph.Notifications.PushService do
     update_in(state, [:stats, :sent], &(&1 + sent))
     |> update_in([:stats, :failed], &(&1 + failed))
   end
-  defp update_stats(state, _), do: state
 
   defp emit_telemetry(event, metadata) do
     :telemetry.execute(

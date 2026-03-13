@@ -93,7 +93,7 @@ defmodule CGraph.Presence.Tracker do
   @doc """
   Untrack user from a room.
   """
-  @spec untrack_user(Phoenix.Socket.t(), String.t(), String.t()) :: :ok
+  @spec untrack_user(pid() | Phoenix.Socket.t(), String.t(), String.t()) :: :ok
   def untrack_user(socket, user_id, room_id) do
     Presence.untrack(socket, Presence.room_topic(room_id), user_id)
   end

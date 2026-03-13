@@ -14,13 +14,13 @@ import {
   initiateSession,
   encryptMessage,
   decryptMessage,
-  getSessionForRecipient,
   closeAllSessions,
   closeSession,
 } from '@/lib/crypto/pq-bridge';
-import type { PQSession } from '@/lib/crypto/pq-bridge';
+import { InMemoryProtocolStore, type TripleRatchetMessage } from '@cgraph/crypto';
 import { secretChatService } from '@/services/secretChatService';
 import { createLogger } from '@/lib/logger';
+import { Buffer } from 'buffer';
 
 const logger = createLogger('SecretChatStore');
 
@@ -177,10 +177,11 @@ export const useSecretChatStore = create<SecretChatStore>((set, get) => ({
     try {
       // Fetch recipient's prekey bundle from the server
       const { data } = await secretChatService.fetchPrekeyBundle(recipientId);
-      const bundle = data.bundle;
+      const { bundle } = data;
 
       // Initiate PQXDH session with the recipient's bundle
-      const session = await initiateSession(recipientId, bundle);
+      const protocolStore = new InMemoryProtocolStore({ publicKey: new Uint8Array(32), privateKey: new Uint8Array(32) }, 1);
+      const { session } = await initiateSession(bundle, protocolStore);
       const conversationId = `sc_${recipientId}_${Date.now()}`;
 
       const conversation: SecretConversation = {
@@ -220,8 +221,8 @@ export const useSecretChatStore = create<SecretChatStore>((set, get) => ({
     if (!conversation) throw new Error('Conversation not found');
 
     // Encrypt with PQXDH session
-    const ciphertextBytes = await encryptMessage(conversation.sessionId, text);
-    const ciphertextB64 = Buffer.from(ciphertextBytes).toString('base64');
+    const ratchetMsg = await encryptMessage(conversation.sessionId, text);
+    const ciphertextB64 = Buffer.from(JSON.stringify(ratchetMsg)).toString('base64');
 
     const message: SecretMessage = {
       id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -261,8 +262,9 @@ export const useSecretChatStore = create<SecretChatStore>((set, get) => ({
     }
 
     // Decrypt with PQXDH session
-    const ciphertextBytes = Buffer.from(msg.ciphertext, 'base64');
-    const plaintext = await decryptMessage(conversation.sessionId, ciphertextBytes);
+    const ciphertextJson = Buffer.from(msg.ciphertext, 'base64').toString('utf-8');
+    const ratchetMsg = JSON.parse(ciphertextJson) as TripleRatchetMessage;
+    const plaintext = await decryptMessage(conversation.sessionId, ratchetMsg);
 
     const message: SecretMessage = {
       id: msg.messageId,

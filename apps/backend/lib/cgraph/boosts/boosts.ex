@@ -187,14 +187,14 @@ defmodule CGraph.Boosts do
 
   defp debit_nodes(user_id, amount) do
     case function_exported?(CGraph.Nodes, :debit_nodes, 4) do
-      true -> CGraph.Nodes.debit_nodes(user_id, amount, "boost_purchase", [])
+      true -> CGraph.Nodes.debit_nodes(user_id, amount, :boost_purchase, [])
       false -> {:ok, %{balance: 0}}
     end
   end
 
   defp credit_nodes(user_id, amount) do
     case function_exported?(CGraph.Nodes, :credit_nodes, 4) do
-      true -> CGraph.Nodes.credit_nodes(user_id, amount, "boost_refund", [])
+      true -> CGraph.Nodes.credit_nodes(user_id, amount, :boost_refund, [])
       false -> {:ok, %{balance: 0}}
     end
   end

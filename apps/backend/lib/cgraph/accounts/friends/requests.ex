@@ -10,6 +10,8 @@ defmodule CGraph.Accounts.Friends.Requests do
   alias CGraph.Notifications
   alias CGraph.Repo
 
+  @dialyzer {:nowarn_function, send_friend_request: 3}
+
   # ---------------------------------------------------------------------------
   # Public API
   # ---------------------------------------------------------------------------

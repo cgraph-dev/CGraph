@@ -429,7 +429,6 @@ defmodule CGraph.Search.ElasticAdapter do
   defp default_config(:index_prefix), do: "cgraph_"
   defp default_config(:request_timeout), do: 5_000
   defp default_config(:api_key), do: nil
-  defp default_config(_), do: nil
 
   defp backend, do: config(:backend)
 

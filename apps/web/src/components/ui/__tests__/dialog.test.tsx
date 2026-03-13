@@ -5,8 +5,29 @@
  * DialogTitle, DialogDescription, and DialogFooter components.
  */
 
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+
+// Mock motion/react so Dialog renders plain elements in jsdom
+vi.mock('motion/react', () => ({
+  motion: {
+    div: React.forwardRef(({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>, ref: React.Ref<HTMLDivElement>) => {
+      const { initial, animate, exit, transition, ...domProps } = props as Record<string, unknown>;
+      return React.createElement('div', { ...domProps, ref }, children);
+    }),
+  },
+  AnimatePresence: ({ children }: React.PropsWithChildren) => React.createElement(React.Fragment, null, children),
+}));
+
+vi.mock('@/hooks/useReducedMotion', () => ({
+  useReducedMotion: () => true,
+}));
+
+vi.mock('@/lib/animation-presets', () => ({
+  durationsSec: { fast: 0.15, normal: 0.25, slow: 0.4 },
+}));
+
 import {
   Dialog,
   DialogContent,
@@ -49,7 +70,7 @@ describe('Dialog', () => {
     );
 
     // The backdrop is the first child with bg-black/50
-    const backdrop = document.querySelector('.fixed.inset-0.bg-black\\/50');
+    const backdrop = document.querySelector('.fixed.inset-0.bg-black\\/60');
     if (backdrop) {
       fireEvent.click(backdrop);
     }

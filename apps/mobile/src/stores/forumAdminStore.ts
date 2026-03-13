@@ -62,7 +62,7 @@ const STORAGE_KEY = '@cgraph/forum-admin';
 // Store
 // ---------------------------------------------------------------------------
 
-export const useForumAdminStore = create<ForumAdminState>((set, get) => ({
+export const useForumAdminStore = create<ForumAdminState>((set, _get) => ({
   moderationLogs: [],
   isLoading: false,
   error: null,

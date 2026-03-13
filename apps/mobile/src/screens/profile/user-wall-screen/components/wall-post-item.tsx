@@ -38,7 +38,6 @@ export function WallPostItem({ item, index, colors, onLike, navigation }: Props)
             onPress={() => navigation.navigate('UserProfile', { userId: item.userId })}>
             <AnimatedAvatar
               source={item.userAvatar ? { uri: item.userAvatar }
-                // @ts-expect-error - require returns number type
                 : require('@/assets/default-avatar.png')}
               size={44} borderAnimation={item.isPremium ? 'glow' : 'none'}
               shape="circle" levelBadge={item.userLevel} isPremium={item.isPremium} />

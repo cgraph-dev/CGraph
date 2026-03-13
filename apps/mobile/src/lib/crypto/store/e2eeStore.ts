@@ -284,10 +284,10 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     // Check if we already have an active PQ session for this recipient
     if (hasSessionForRecipient(recipientId)) {
       const session = getSessionForRecipient(recipientId)!;
-      const ciphertextBytes = await pqEncrypt(session.sessionId, plaintext);
+      const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
       return {
-        ciphertext: Buffer.from(ciphertextBytes).toString('base64'),
+        ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
         ephemeralPublicKey: '',
         senderIdentityKey: '',
         recipientIdentityKeyId: recipientId,
@@ -316,10 +316,10 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     registerRecipientSession(recipientId, session.sessionId);
 
     // Encrypt via Triple Ratchet
-    const ciphertextBytes = await pqEncrypt(session.sessionId, plaintext);
+    const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
     return {
-      ciphertext: Buffer.from(ciphertextBytes).toString('base64'),
+      ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
       ephemeralPublicKey: '',
       senderIdentityKey: '',
       recipientIdentityKeyId: recipientId,
@@ -360,15 +360,17 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
           throw new Error('PQ identity key not found — cannot decrypt PQXDH message');
         }
         const protocolStore = new InMemoryProtocolStore(identityKey, 1);
-        const ciphertextBytes = Buffer.from(encryptedMessage.ciphertext, 'base64');
-        const newSession = await pqRespondToSession(new Uint8Array(ciphertextBytes), protocolStore);
+        const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
+        const ratchetMsg = JSON.parse(ciphertextJson) as import('@cgraph/crypto').TripleRatchetMessage;
+        const newSession = await pqRespondToSession(new Uint8Array(Buffer.from(encryptedMessage.ciphertext, 'base64')), protocolStore);
         registerRecipientSession(senderId, newSession.sessionId);
         // After session is established, the ciphertext itself is the ratchet message
-        return await pqDecrypt(newSession.sessionId, new Uint8Array(ciphertextBytes));
+        return await pqDecrypt(newSession.sessionId, ratchetMsg);
       }
 
-      const ciphertextBytes = Buffer.from(encryptedMessage.ciphertext, 'base64');
-      return await pqDecrypt(resolvedSessionId, new Uint8Array(ciphertextBytes));
+      const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
+      const ratchetMsg = JSON.parse(ciphertextJson) as import('@cgraph/crypto').TripleRatchetMessage;
+      return await pqDecrypt(resolvedSessionId, ratchetMsg);
     }
 
     // Legacy X3DH fallback for classical_v1, classical_v2, or unversioned messages

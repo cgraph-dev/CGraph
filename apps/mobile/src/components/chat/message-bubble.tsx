@@ -96,7 +96,7 @@ export const MessageBubble = memo(function MessageBubble({
 /** Compute border radii for connected-corner effect */
 function getBubbleRadius(isOwn: boolean, position: BubblePosition) {
   const full = radius.xl; // 16
-  const small = radius.xs; // 4
+  const small = radius.sm; // 4
 
   // Which corner connects to the next/prev bubble
   if (isOwn) {

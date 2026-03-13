@@ -27,7 +27,7 @@ import LightboxModal from './lightbox-modal';
 
 const RichMediaEmbed = memo(function RichMediaEmbed({
   content,
-  _isOwnMessage = false,
+  isOwnMessage = false,
   onLoad,
   maxEmbeds = 3,
 }: RichMediaEmbedProps): React.ReactElement | null {

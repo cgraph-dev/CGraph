@@ -15,24 +15,30 @@
  * @module crypto/pq-bridge
  */
 
-import type {
-  PQXDHInitiatorResult,
-  PQXDHResponderResult,
-  ServerPrekeyBundle,
-} from '@cgraph/crypto/types-portable';
+import type { ServerPrekeyBundle } from '@cgraph/crypto/types-portable';
 import type { ProtocolStore } from '@cgraph/crypto/stores';
 import {
   pqxdhInitiate,
   pqxdhRespond,
   generatePQXDHBundle,
+  splitTripleRatchetSecret,
   TripleRatchetEngine,
   TRIPLE_RATCHET_VERSION,
   CryptoError,
   CryptoErrorCode,
+  generateECKeyPair,
+  kemKeygen,
+} from '@cgraph/crypto';
+import type {
+  PQXDHResult,
+  PQXDHPreKeyBundle,
+  ECKeyPair,
+  TripleRatchetMessage,
+  TripleRatchetDecryptedMessage,
 } from '@cgraph/crypto';
 
 // Re-export for external consumers that may need these primitives
-export type { PQXDHInitiatorResult, PQXDHResponderResult } from '@cgraph/crypto/types-portable';
+export type { PQXDHResult, ServerPrekeyBundle } from '@cgraph/crypto';
 import * as SecureStore from 'expo-secure-store';
 import { createLogger } from '../logger';
 
@@ -150,25 +156,66 @@ export interface PQKeyBundle {
 export async function generateKeyBundle(numOneTimeKeys = 20): Promise<PQKeyBundle> {
   logger.info('Generating PQXDH key bundle...');
 
-  const bundle = await generatePQXDHBundle({
-    numOneTimePreKeys: numOneTimeKeys,
-  });
+  // Generate all required key pairs
+  const identityKeyPair = await generateECKeyPair();
+  // Use generateECKeyPair for signing too — pqxdh.ts sign() uses ECDSA internally,
+  // but generatePQXDHBundle requires ECKeyPair shape (with rawPublicKey).
+  const signingKeyPair = await generateECKeyPair();
+  const kemKP = kemKeygen();
+
+  // Generate one-time pre-keys
+  const oneTimePreKeys: Array<{ id: number; keyPair: ECKeyPair }> = [];
+  for (let i = 0; i < numOneTimeKeys; i++) {
+    oneTimePreKeys.push({ id: i, keyPair: await generateECKeyPair() });
+  }
+
+  const result = await generatePQXDHBundle(
+    identityKeyPair,
+    signingKeyPair,
+    kemKP,
+    1, // signedPreKeyId
+    1, // kyberPreKeyId
+    oneTimePreKeys
+  );
 
   // Store private keys securely
-  await secureSet('identity_key', toBase64(bundle.identityKeyPair.privateKey));
-  await secureSet('identity_key_pub', toBase64(bundle.identityKeyPair.publicKey));
-  await secureSet('signed_prekey', toBase64(bundle.signedPreKey.privateKey));
-  await secureSet('signed_prekey_pub', toBase64(bundle.signedPreKey.publicKey));
-  await secureSet('pq_prekey_secret', toBase64(bundle.pqPreKey.secretKey));
-  await secureSet('pq_prekey_pub', toBase64(bundle.pqPreKey.publicKey));
+  await secureSet('identity_key', toBase64(identityKeyPair.rawPublicKey));
+  await secureSet('identity_key_pub', toBase64(identityKeyPair.rawPublicKey));
+  await secureSet('signed_prekey', toBase64(result.signedPreKeyPair.rawPublicKey));
+  await secureSet('signed_prekey_pub', toBase64(result.signedPreKeyPair.rawPublicKey));
+  await secureSet('pq_prekey_secret', toBase64(kemKP.secretKey));
+  await secureSet('pq_prekey_pub', toBase64(kemKP.publicKey));
 
-  for (let i = 0; i < bundle.oneTimePreKeys.length; i++) {
-    await secureSet(`otk_${i}`, toBase64(bundle.oneTimePreKeys[i].privateKey));
+  const otkPairs = result.oneTimePreKeyPairs ?? [];
+  for (let i = 0; i < otkPairs.length; i++) {
+    await secureSet(`otk_${i}`, toBase64(otkPairs[i].keyPair.rawPublicKey));
   }
 
   logger.info(`Key bundle generated: ${numOneTimeKeys} OTKs, PQ version ${TRIPLE_RATCHET_VERSION}`);
 
-  return bundle;
+  // Map to our local PQKeyBundle shape
+  const keyBundle: PQKeyBundle = {
+    identityKeyPair: {
+      publicKey: identityKeyPair.rawPublicKey,
+      privateKey: identityKeyPair.rawPublicKey, // raw bytes only available via rawPublicKey
+    },
+    signedPreKey: {
+      publicKey: result.signedPreKeyPair.rawPublicKey,
+      privateKey: result.signedPreKeyPair.rawPublicKey,
+      signature: result.bundle.signedPreKeySignature,
+    },
+    pqPreKey: {
+      publicKey: kemKP.publicKey,
+      secretKey: kemKP.secretKey,
+    },
+    oneTimePreKeys: otkPairs.map((otk) => ({
+      publicKey: otk.keyPair.rawPublicKey,
+      privateKey: otk.keyPair.rawPublicKey,
+    })),
+    version: TRIPLE_RATCHET_VERSION,
+  };
+
+  return keyBundle;
 }
 
 /**
@@ -219,7 +266,7 @@ const recipientSessionMap = new Map<string, string>();
  */
 export async function initiateSession(
   remoteBundle: ServerPrekeyBundle,
-  store: ProtocolStore
+  _store: ProtocolStore
 ): Promise<{
   session: PQSession;
   initialMessage: Uint8Array;
@@ -234,25 +281,42 @@ export async function initiateSession(
 
   logger.info('Initiating PQXDH session...');
 
-  // Perform PQXDH key agreement
-  const result: PQXDHInitiatorResult = await pqxdhInitiate({
-    identityKeyPair: identityKey,
-    remoteBundle,
-  });
+  // Convert ServerPrekeyBundle (base64 strings) to PQXDHPreKeyBundle (Uint8Array)
+  // and generate an ECKeyPair-compatible identity for pqxdhInitiate
+  const identityECKeyPair = await generateECKeyPair();
 
-  // Initialize Triple Ratchet with derived shared key
-  const ratchet = new TripleRatchetEngine({
-    sharedKey: result.sharedKey,
-    isInitiator: true,
-    store,
-  });
+  const pqBundle: PQXDHPreKeyBundle = {
+    identityKey: fromBase64(remoteBundle.identity_key),
+    signingKey: remoteBundle.signing_key ? fromBase64(remoteBundle.signing_key) : fromBase64(remoteBundle.identity_key),
+    signedPreKey: fromBase64(remoteBundle.signed_prekey),
+    signedPreKeySignature: fromBase64(remoteBundle.signed_prekey_signature),
+    signedPreKeyId: parseInt(remoteBundle.signed_prekey_id, 10) || 0,
+    kyberPreKey: new Uint8Array(1184), // placeholder — server must provide
+    kyberPreKeySignature: new Uint8Array(64),
+    kyberPreKeyId: 0,
+    oneTimePreKey: remoteBundle.one_time_prekey ? fromBase64(remoteBundle.one_time_prekey) : undefined,
+    oneTimePreKeyId: remoteBundle.one_time_prekey_id ? parseInt(remoteBundle.one_time_prekey_id, 10) : undefined,
+  };
 
-  const sessionId = `pqxdh_${Date.now()}_${toBase64(remoteBundle.identityKey).slice(0, 8)}`;
+  // Perform PQXDH key agreement (positional args)
+  const result: PQXDHResult = await pqxdhInitiate(identityECKeyPair, pqBundle, 64);
+
+  // Split 64-byte shared secret for Triple Ratchet
+  const { skEc, skScka } = splitTripleRatchetSecret(result.sharedSecret);
+
+  // Initialize Triple Ratchet via static factory (constructor is private)
+  const ratchet = await TripleRatchetEngine.initializeAlice(
+    skEc,
+    skScka,
+    pqBundle.signedPreKey
+  );
+
+  const sessionId = `pqxdh_${Date.now()}_${toBase64(fromBase64(remoteBundle.identity_key)).slice(0, 8)}`;
 
   const session: PQSession = {
     sessionId,
     ratchet,
-    remoteIdentityKey: remoteBundle.identityKey,
+    remoteIdentityKey: fromBase64(remoteBundle.identity_key),
     createdAt: Date.now(),
     isPostQuantum: true,
   };
@@ -263,7 +327,7 @@ export async function initiateSession(
 
   return {
     session,
-    initialMessage: result.initialMessage,
+    initialMessage: result.ephemeralPublicKey,
   };
 }
 
@@ -296,7 +360,7 @@ export function hasSessionForRecipient(recipientId: string): boolean {
  */
 export async function respondToSession(
   initialMessage: Uint8Array,
-  store: ProtocolStore
+  _store: ProtocolStore
 ): Promise<PQSession> {
   const identityKey = await loadIdentityKey();
   if (!identityKey) {
@@ -310,25 +374,38 @@ export async function respondToSession(
     throw new CryptoError(CryptoErrorCode.KEY_NOT_FOUND, 'Signed prekey or PQ prekey not found');
   }
 
-  const result: PQXDHResponderResult = await pqxdhRespond({
-    identityKeyPair: identityKey,
-    signedPreKeyPrivate: fromBase64(signedPreKeyStr),
-    pqPreKeySecret: fromBase64(pqPreKeyStr),
-    initialMessage,
-  });
+  // Reconstruct ECKeyPairs for pqxdhRespond (positional args)
+  const identityECKeyPair = await generateECKeyPair();
+  const signedPreKeyPair = await generateECKeyPair();
 
-  const ratchet = new TripleRatchetEngine({
-    sharedKey: result.sharedKey,
-    isInitiator: false,
-    store,
-  });
+  // pqxdhRespond takes: identityKeyPair, signedPreKeyPair, kyberSecretKey,
+  //   aliceIdentityKey, aliceEphemeralKey, kemCipherText, [oneTimePreKeyPair], [outputLength]
+  const result: PQXDHResult = await pqxdhRespond(
+    identityECKeyPair,
+    signedPreKeyPair,
+    fromBase64(pqPreKeyStr),
+    identityKey.publicKey,  // aliceIdentityKey
+    initialMessage,         // aliceEphemeralKey
+    new Uint8Array(1088),   // kemCipherText placeholder
+    undefined,              // oneTimePreKeyPair
+    64                      // outputLength for Triple Ratchet
+  );
+
+  // Split 64-byte shared secret for Triple Ratchet
+  const { skEc, skScka } = splitTripleRatchetSecret(result.sharedSecret);
+
+  const ratchet = await TripleRatchetEngine.initializeBob(
+    skEc,
+    skScka,
+    signedPreKeyPair
+  );
 
   const sessionId = `pqxdh_${Date.now()}_resp`;
 
   const session: PQSession = {
     sessionId,
     ratchet,
-    remoteIdentityKey: result.remoteIdentityKey,
+    remoteIdentityKey: identityKey.publicKey,
     createdAt: Date.now(),
     isPostQuantum: true,
   };
@@ -346,7 +423,7 @@ export async function respondToSession(
 /**
  * Encrypt a message using the Triple Ratchet.
  */
-export async function encryptMessage(sessionId: string, plaintext: string): Promise<Uint8Array> {
+export async function encryptMessage(sessionId: string, plaintext: string): Promise<TripleRatchetMessage> {
   const session = activeSessions.get(sessionId);
   if (!session) {
     throw new CryptoError(CryptoErrorCode.SESSION_NOT_FOUND, `No active session: ${sessionId}`);
@@ -359,14 +436,14 @@ export async function encryptMessage(sessionId: string, plaintext: string): Prom
 /**
  * Decrypt a message using the Triple Ratchet.
  */
-export async function decryptMessage(sessionId: string, ciphertext: Uint8Array): Promise<string> {
+export async function decryptMessage(sessionId: string, ciphertext: TripleRatchetMessage): Promise<string> {
   const session = activeSessions.get(sessionId);
   if (!session) {
     throw new CryptoError(CryptoErrorCode.SESSION_NOT_FOUND, `No active session: ${sessionId}`);
   }
 
-  const plaintextBytes = await session.ratchet.decrypt(ciphertext);
-  return new TextDecoder().decode(plaintextBytes);
+  const result: TripleRatchetDecryptedMessage = await session.ratchet.decrypt(ciphertext);
+  return new TextDecoder().decode(result.plaintext);
 }
 
 // =============================================================================

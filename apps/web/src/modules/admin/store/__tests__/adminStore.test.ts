@@ -227,10 +227,10 @@ describe('adminStore', () => {
       await useAdminStore.getState().fetchStats();
 
       const state = useAdminStore.getState();
-      // Falls back to mock data instead of setting error
-      expect(state.stats).not.toBeNull();
+      // API failure sets error, stats remain null
+      expect(state.stats).toBeNull();
+      expect(state.error).toBe('Failed to load dashboard stats');
       expect(state.isLoading).toBe(false);
-      expect(state.statsLastUpdated).toBeInstanceOf(Date);
     });
 
     it('should set isLoading while fetching', async () => {
@@ -271,7 +271,9 @@ describe('adminStore', () => {
       await useAdminStore.getState().fetchModerationQueue();
 
       const state = useAdminStore.getState();
-      expect(state.moderationQueue.length).toBeGreaterThan(0);
+      // API failure sets error, moderationQueue stays empty
+      expect(state.moderationQueue).toHaveLength(0);
+      expect(state.error).toBe('Failed to load moderation queue');
       expect(state.isLoading).toBe(false);
     });
 
@@ -373,7 +375,9 @@ describe('adminStore', () => {
       await useAdminStore.getState().fetchEvents();
 
       const state = useAdminStore.getState();
-      expect(state.events.length).toBeGreaterThan(0);
+      // API failure sets error, events stays empty
+      expect(state.events).toHaveLength(0);
+      expect(state.error).toBe('Failed to load events');
       expect(state.isLoading).toBe(false);
     });
 
@@ -423,9 +427,9 @@ describe('adminStore', () => {
       await useAdminStore.getState().createEvent(newEvent);
 
       const state = useAdminStore.getState();
-      expect(state.events).toHaveLength(1);
-      expect(state.events[0]!.name).toBe('Local Event');
-      expect(state.events[0]!.id).toMatch(/^event_/);
+      // API failure sets error, no local event created
+      expect(state.events).toHaveLength(0);
+      expect(state.error).toBe('Failed to create event');
       expect(state.isLoading).toBe(false);
     });
 
@@ -502,7 +506,9 @@ describe('adminStore', () => {
       await useAdminStore.getState().fetchUsers();
 
       const state = useAdminStore.getState();
-      expect(state.users.length).toBeGreaterThan(0);
+      // API failure sets error, users stays empty
+      expect(state.users).toHaveLength(0);
+      expect(state.error).toBe('Failed to load users');
       expect(state.isLoading).toBe(false);
     });
 
@@ -678,7 +684,9 @@ describe('adminStore', () => {
       await useAdminStore.getState().fetchSettings();
 
       const state = useAdminStore.getState();
-      expect(state.systemSettings.length).toBeGreaterThan(0);
+      // API failure sets error, settings stays empty
+      expect(state.systemSettings).toHaveLength(0);
+      expect(state.error).toBe('Failed to load system settings');
       expect(state.isLoading).toBe(false);
     });
 

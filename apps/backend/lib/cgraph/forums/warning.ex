@@ -14,6 +14,8 @@ defmodule CGraph.Forums.Warning do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
+  @type t :: %__MODULE__{}
+
   schema "forum_warnings" do
     field :reason, :string
     field :points, :integer, default: 1

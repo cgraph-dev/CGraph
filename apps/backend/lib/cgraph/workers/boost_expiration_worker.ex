@@ -16,12 +16,8 @@ defmodule CGraph.Workers.BoostExpirationWorker do
     Logger.info("[BoostExpirationWorker] Starting boost expiration check")
 
     case CGraph.Boosts.expire_boosts() do
-      {:ok, count} ->
+      {count, _} when is_integer(count) ->
         Logger.info("[BoostExpirationWorker] Expired #{count} boosts")
-        :ok
-
-      result ->
-        Logger.info("[BoostExpirationWorker] Result: #{inspect(result)}")
         :ok
     end
   end

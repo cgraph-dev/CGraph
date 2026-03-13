@@ -14,6 +14,7 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["./src/*"],
       "@features/*": ["./src/features/*"],
@@ -23,6 +24,7 @@
       "@services/*": ["./src/services/*"],
       "@lib/*": ["./src/lib/*"],
       "@cgraph/shared-types": ["../../packages/shared-types/src"],
+      "@cgraph/shared-types/*": ["../../packages/shared-types/src/*"],
       "@cgraph/utils": ["../../packages/utils/src"],
       "@cgraph/socket": ["../../packages/socket/src"],
       "@cgraph/animation-constants": ["../../packages/animation-constants/src"],

@@ -209,7 +209,7 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
           </View>
 
           {/* Search */}
-          <View style={[styles.searchContainer, { backgroundColor: colors.input || colors.surfaceHover }]}>
+          <View style={[styles.searchContainer, { backgroundColor: colors.input }]}>
             <Ionicons name="search" size={18} color={colors.textSecondary} />
             <TextInput
               ref={inputRef}
@@ -238,7 +238,7 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => handleCategoryPress(item.query)}
-                  style={[styles.categoryChip, { backgroundColor: colors.surfaceHover || colors.border }]}
+                  style={[styles.categoryChip, { backgroundColor: colors.surfaceHover }]}
                 >
                   <Text style={[styles.categoryText, { color: colors.text }]}>{item.label}</Text>
                 </TouchableOpacity>

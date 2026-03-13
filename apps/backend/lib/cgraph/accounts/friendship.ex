@@ -15,6 +15,8 @@ defmodule CGraph.Accounts.Friendship do
 
   @statuses [:pending, :accepted, :blocked]
 
+  @type t :: %__MODULE__{}
+
   schema "friendships" do
     field :status, Ecto.Enum, values: @statuses, default: :pending
     field :nickname, :string  # Custom nickname for the friend

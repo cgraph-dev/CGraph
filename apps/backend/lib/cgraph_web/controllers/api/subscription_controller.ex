@@ -40,7 +40,6 @@ defmodule CGraphWeb.API.SubscriptionController do
       |> render_data(format_subscription(subscription))
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
-      {:error, reason} -> {:error, reason}
     end
   end
 

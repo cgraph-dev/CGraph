@@ -25,8 +25,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useVoiceStateStore, type VoiceMember } from '@/stores/voiceStateStore';
 import { useThemeStore } from '@/stores';
-import { MobileLiveKitService } from '@/lib/webrtc/livekitService';
-import { isMobileEncrypted } from '@/lib/webrtc/callEncryption';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -151,12 +149,7 @@ export default function VoiceChannelScreen({ navigation, route }: Props) {
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
             {members.length} {members.length === 1 ? 'member' : 'members'} connected
           </Text>
-          {isMobileEncrypted() && (
-            <View style={styles.encryptionBadge}>
-              <Ionicons name="lock-closed" size={12} color="#22c55e" />
-              <Text style={styles.encryptionText}>E2EE</Text>
-            </View>
-          )}
+          {/* E2EE badge would require a LiveKit Room instance */}
         </View>
         <TouchableOpacity onPress={handleToggleParticipants} style={styles.headerAction}>
           <Ionicons

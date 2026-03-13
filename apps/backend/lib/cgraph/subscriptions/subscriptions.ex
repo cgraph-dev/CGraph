@@ -25,6 +25,8 @@ defmodule CGraph.Subscriptions do
   alias CGraph.Repo
   require Logger
 
+  @dialyzer {:nowarn_function, create_checkout_session: 2, create_checkout_session: 3}
+
   # NOTE: Price IDs are read at RUNTIME from config, not compile-time.
   # Set via runtime.exs: config :cgraph, CGraph.Subscriptions, stripe_price_ids: %{...}
   # Compile-time defaults are placeholder-only for dev/test.

@@ -16,10 +16,10 @@ import Animated, {
   useSharedValue,
   useAnimatedProps,
   useDerivedValue,
-  _withTiming,
+  withTiming,
   withSpring,
-  _interpolate,
-  _Easing,
+  interpolate,
+  Easing,
   SharedValue,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, LinearGradient, Stop, G } from 'react-native-svg';
@@ -73,7 +73,7 @@ export function ProgressRing({
   valuePrefix = '',
   valueSuffix = '%',
   animated = true,
-  _animationDuration = 1000,
+  animationDuration = 1000,
   springPreset = 'bouncy',
   lineCap = 'round',
   rotation = -90,
@@ -189,7 +189,7 @@ function AnimatedProgressValue({ value, prefix, suffix, color }: AnimatedProgres
 
   return (
      
-    <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as unknown}>
+    <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as any}>
       {prefix}
       {Math.round(value.value)}
       {suffix}

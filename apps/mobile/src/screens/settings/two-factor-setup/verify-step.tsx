@@ -18,7 +18,7 @@ interface VerifyStepProps {
   verificationCode: string[];
   isLoading: boolean;
   error: string;
-  inputRefs: React.MutableRefObject<TextInput[]>;
+  inputRefs: React.MutableRefObject<(TextInput | null)[]>;
   onCodeChange: (index: number, value: string) => void;
   onKeyPress: (index: number, key: string) => void;
   onVerify: () => void;

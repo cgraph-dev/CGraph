@@ -6,6 +6,8 @@ defmodule CGraphWeb.API.V1.PollController do
 
   alias CGraph.Forums.Polls
 
+  @dialyzer [{:nowarn_function, create: 2}, {:nowarn_function, vote: 2}]
+
   action_fallback CGraphWeb.FallbackController
 
   @doc """

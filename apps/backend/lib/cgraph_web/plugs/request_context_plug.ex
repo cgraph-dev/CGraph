@@ -60,7 +60,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
   # ---------------------------------------------------------------------------
 
   @impl true
-  @spec init(keyword()) :: keyword()
+  @spec init(keyword()) :: map()
   def init(opts) do
     %{
       generate_request_id: Keyword.get(opts, :generate_request_id, true),
@@ -160,5 +160,4 @@ defmodule CGraphWeb.Plugs.RequestContext do
 
   defp format_ip({a, b, c, d}), do: "#{a}.#{b}.#{c}.#{d}"
   defp format_ip({a, b, c, d, e, f, g, h}), do: "#{a}:#{b}:#{c}:#{d}:#{e}:#{f}:#{g}:#{h}"
-  defp format_ip(_), do: "unknown"
 end

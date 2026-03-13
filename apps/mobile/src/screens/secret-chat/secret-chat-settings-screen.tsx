@@ -14,12 +14,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useSecretChatStore } from '@/stores/secretChatStore';
-import type { SecretThemeId } from '@/stores/secretChatStore';
+import { useSecretChatStore, type SecretThemeId } from '@/stores/secretChatStore';
 import { PanicWipeButton } from '@/components/secret-chat/panic-wipe-button';
 import { SECRET_THEMES, getSecretThemeColors } from './theme-colors';
 
@@ -27,7 +25,6 @@ import { SECRET_THEMES, getSecretThemeColors } from './theme-colors';
 // Types
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type RootStackParamList = {
   SecretChat: { conversationId: string };
   SecretChatSettings: { conversationId: string };

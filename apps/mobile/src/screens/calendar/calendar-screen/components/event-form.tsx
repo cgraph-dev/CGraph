@@ -17,7 +17,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
-import type { CalendarEvent, EVENT_TYPE_CONFIG, EventType } from '../types';
+import { EVENT_TYPE_CONFIG } from '../types';
+import type { CalendarEvent, EventType } from '../types';
 
 interface EventFormProps {
   visible: boolean;

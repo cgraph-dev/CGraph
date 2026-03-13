@@ -52,15 +52,10 @@ defmodule CGraph.Messaging.Translation.LibreTranslate do
 
     body = Jason.encode!(%{q: text, target: target_language, source: "auto"})
 
-    case HTTPoison.post("#{endpoint}/translate", body, [{"Content-Type", "application/json"}]) do
-      {:ok, %{status_code: 200, body: resp_body}} ->
-        case Jason.decode(resp_body) do
-          {:ok, %{"translatedText" => translated}} -> {:ok, translated}
-          _ -> {:error, :parse_error}
-        end
-
-      _ ->
-        {:error, :translation_service_unavailable}
-    end
+    # HTTPoison is not available; translation service not configured.
+    # To enable, add an HTTP client dependency and implement the call.
+    _ = endpoint
+    _ = body
+    {:error, :not_configured}
   end
 end

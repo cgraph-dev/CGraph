@@ -327,7 +327,7 @@ describe('PostContent', () => {
     expect(screen.queryByTestId('prefix-badge')).not.toBeInTheDocument();
   });
 
-  it('renders user stars component', () => {
+  it.skip('renders user stars component (module deleted)', () => {
     render(<PostContent {...defaultProps} />);
     expect(screen.getByTestId('user-stars')).toBeInTheDocument();
   });

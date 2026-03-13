@@ -8,6 +8,8 @@
  * @version 1.0.0
  */
 
+// Type declarations for livekit-client live in src/types/livekit-client.d.ts
+
 import {
   Room,
   RoomEvent,
@@ -18,7 +20,7 @@ import {
   type LocalParticipant,
   type Participant,
   type RoomOptions,
-} from '@livekit/react-native';
+} from 'livekit-client';
 import { registerGlobals } from '@livekit/react-native';
 
 // Register LiveKit globals (WebRTC polyfills for React Native)

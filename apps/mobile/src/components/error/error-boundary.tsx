@@ -81,16 +81,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Send to error tracking service
-    addBreadcrumb({
-      category: 'error',
-      message: `Error Boundary triggered: ${name}`,
-      level: 'error',
-      data: { componentStack: errorInfo.componentStack?.substring(0, 500) },
-    });
+    addBreadcrumb(
+      'ui',
+      `Error Boundary triggered: ${name}`,
+      { componentStack: errorInfo.componentStack?.substring(0, 500) },
+    );
     captureError(error, {
       component: name,
       action: 'error_boundary_catch',
-      level: 'fatal',
       metadata: { componentStack: errorInfo.componentStack },
     });
   }
@@ -278,7 +276,7 @@ export function ComponentErrorBoundary({
 export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   boundaryName?: string
-): (props: P) => React.ReactElement {
+): ((props: P) => React.ReactElement) & { displayName?: string } {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   const name = boundaryName || displayName;
 

@@ -10,6 +10,11 @@ import type { EncryptionResult } from './types';
 const AES_KEY_LENGTH = 256;
 const NONCE_LENGTH = 12; // 96 bits for GCM
 
+/** Duck-type check for CryptoKey (not available as a runtime value in all environments) */
+function isCryptoKey(key: unknown): key is CryptoKey {
+  return typeof key === 'object' && key !== null && 'type' in key && 'algorithm' in key && 'extractable' in key;
+}
+
 /**
  * Generate a random AES-256 key
  */
@@ -45,7 +50,7 @@ export async function encryptAES(
   plaintext: string,
   key: CryptoKey | ArrayBuffer
 ): Promise<EncryptionResult> {
-  const cryptoKey = key instanceof CryptoKey ? key : await importAESKey(key);
+  const cryptoKey = isCryptoKey(key) ? key : await importAESKey(key as ArrayBuffer);
   const encoder = new TextEncoder();
   const data = encoder.encode(plaintext);
 
@@ -81,7 +86,7 @@ export async function decryptAES(
   nonce: ArrayBuffer,
   key: CryptoKey | ArrayBuffer
 ): Promise<string> {
-  const cryptoKey = key instanceof CryptoKey ? key : await importAESKey(key);
+  const cryptoKey = isCryptoKey(key) ? key : await importAESKey(key as ArrayBuffer);
 
   const decrypted = await crypto.subtle.decrypt(
     {

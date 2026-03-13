@@ -14,6 +14,8 @@ defmodule CGraph.Accounts.UserSettings do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
+  @type t :: %__MODULE__{}
+
   schema "user_settings" do
     belongs_to :user, CGraph.Accounts.User
 

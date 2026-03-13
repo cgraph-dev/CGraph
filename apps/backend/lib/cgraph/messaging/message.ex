@@ -26,6 +26,8 @@ defmodule CGraph.Messaging.Message do
 
   @content_types ["text", "image", "video", "audio", "file", "voice", "sticker", "gif", "system"]
 
+  @type t :: %__MODULE__{}
+
   schema "messages" do
     # Snowflake ID for guaranteed chronological ordering.
     # Monotonic ordering ID — cursor pagination currently uses inserted_at

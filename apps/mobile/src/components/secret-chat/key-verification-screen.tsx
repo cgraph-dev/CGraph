@@ -51,7 +51,7 @@ async function generateSafetyNumber(
   // Sort keys to ensure both parties compute the same number
   const concat = new Uint8Array(localKey.length + remoteKey.length);
   const [first, second] =
-    localKey[0]! <= remoteKey[0]! ? [localKey, remoteKey] : [remoteKey, localKey];
+    (localKey[0] ?? 0) <= (remoteKey[0] ?? 0) ? [localKey, remoteKey] : [remoteKey, localKey];
   concat.set(first, 0);
   concat.set(second, first.length);
 
@@ -105,10 +105,10 @@ export function KeyVerificationScreen({
         }
 
         const localKeyBytes = new Uint8Array(
-          Buffer.from(identity.publicKey, 'base64')
+          Buffer.from(String(identity.publicKey), 'base64')
         );
         const remoteKeyBytes = new Uint8Array(
-          Buffer.from(recipientPublicKey, 'base64')
+          Buffer.from(String(recipientPublicKey), 'base64')
         );
 
         const number = await generateSafetyNumber(localKeyBytes, remoteKeyBytes);

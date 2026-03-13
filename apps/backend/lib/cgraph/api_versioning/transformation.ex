@@ -52,7 +52,7 @@ defmodule CGraph.ApiVersioning.Transformation do
   # ---------------------------------------------------------------------------
 
   @doc false
-  @spec do_register_transformer(atom(), integer(), (term() -> term())) :: true
+  @spec do_register_transformer(atom(), integer(), (term() -> term())) :: :ok
   def do_register_transformer(resource_type, version, transformer) do
     key = {resource_type, version}
     :ets.insert(@transformers_table, {key, transformer})

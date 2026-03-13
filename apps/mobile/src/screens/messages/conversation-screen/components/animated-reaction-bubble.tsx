@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
-  _withDelay,
+  withDelay,
   FadeIn,
   FadeOut,
   Easing,
@@ -128,7 +128,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
             },
           ]}
         >
-          <Animated.View style={[styles.reactionEmoji, emojiStyle]}>
+          <Animated.View style={[styles.reactionEmoji, emojiStyle as any]}>
             <LottieRenderer
               emoji={reaction.emoji}
               size={16}

@@ -35,7 +35,7 @@ vi.mock('../connectionLifecycle', () => ({
 }));
 
 vi.mock('../socketUtils', () => ({
-  sendTyping: vi.fn(),
+  sendTypingDebounced: vi.fn(),
   sendReaction: vi.fn(),
   peekConversationsPresence: vi.fn().mockResolvedValue(() => {}),
 }));
@@ -87,7 +87,7 @@ import { SocketManager } from '../socket-manager';
 
 // Import mocked modules so we can assert on them
 import { connectSocket, disconnectSocket } from '../connectionLifecycle';
-import { sendTyping, sendReaction } from '../socketUtils';
+import { sendTypingDebounced, sendReaction } from '../socketUtils';
 import {
   joinUserChannel as joinUserChannelImpl,
   leaveUserChannel as leaveUserChannelImpl,
@@ -376,7 +376,7 @@ describe('SocketManager', () => {
   describe('sendTyping', () => {
     it('delegates to sendTyping implementation', () => {
       manager.sendTyping('conversation:conv-1', true);
-      expect(sendTyping).toHaveBeenCalledWith('conversation:conv-1', true, expect.any(Map));
+      expect(sendTypingDebounced).toHaveBeenCalledWith('conversation:conv-1', true, expect.any(Map));
     });
   });
 

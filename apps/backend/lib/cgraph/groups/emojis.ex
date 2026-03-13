@@ -7,6 +7,8 @@ defmodule CGraph.Groups.Emojis do
 
   import Ecto.Query, warn: false
 
+  @dialyzer {:nowarn_function, check_manage_emojis_permission: 2, create_group_emoji_with_permission: 4, delete_group_emoji_with_permission: 3}
+
   alias CGraph.Groups.GroupEmoji
   alias CGraph.Groups.Roles
   alias CGraph.Repo

@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  _Dimensions,
+  Dimensions,
   Alert,
   TextInput,
 } from 'react-native';
@@ -21,14 +21,14 @@ import * as Clipboard from 'expo-clipboard';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DURATIONS } from '@cgraph/animation-constants';
+import { durations } from '@cgraph/animation-constants';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../lib/api';
 import {
   TwoFactorSetupData,
   SetupStep,
   STEPS,
-  _SCREEN_WIDTH,
+  SCREEN_WIDTH,
 } from './two-factor-setup/two-factor-types';
 import { IntroStep } from './two-factor-setup/intro-step';
 import { ScanStep } from './two-factor-setup/scan-step';
@@ -37,6 +37,17 @@ import { BackupStep } from './two-factor-setup/backup-step';
 import { CompleteStep } from './two-factor-setup/complete-step';
 
 const STEP_ORDER: SetupStep[] = ['intro', 'scan', 'verify', 'backup', 'complete'];
+
+const COLORS: Record<string, string> = {
+  text: '#ffffff',
+  textSecondary: '#9ca3af',
+  primary: '#6366f1',
+  secondary: '#8b5cf6',
+  surface: '#1f2937',
+  background: '#111827',
+  success: '#10b981',
+  warning: '#f59e0b',
+};
 
 /**
  *
@@ -48,6 +59,8 @@ export default function TwoFactorSetupScreen() {
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
   const [isVerifying, setIsVerifying] = useState(false);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [copiedSecret, setCopiedSecret] = useState(false);
+  const [copiedBackup, setCopiedBackup] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -58,7 +71,7 @@ export default function TwoFactorSetupScreen() {
   useEffect(() => {
     Animated.timing(progressAnim, {
       toValue: stepIndex / (STEP_ORDER.length - 1),
-      duration: DURATIONS.normal,
+      duration: durations.normal.ms,
       useNativeDriver: false,
     }).start();
   }, [stepIndex, progressAnim]);
@@ -68,13 +81,13 @@ export default function TwoFactorSetupScreen() {
       HapticFeedback.light();
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: DURATIONS.fast,
+        duration: durations.fast.ms,
         useNativeDriver: true,
       }).start(() => {
         setCurrentStep(step);
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: DURATIONS.fast,
+          duration: durations.fast.ms,
           useNativeDriver: true,
         }).start();
       });
@@ -148,12 +161,14 @@ export default function TwoFactorSetupScreen() {
   const copySecret = useCallback(async () => {
     if (!setupData?.secret) return;
     await Clipboard.setStringAsync(setupData.secret);
+    setCopiedSecret(true);
     HapticFeedback.light();
     Alert.alert('Copied', 'Secret key copied to clipboard');
   }, [setupData]);
 
   const copyBackupCodes = useCallback(async () => {
     await Clipboard.setStringAsync(backupCodes.join('\n'));
+    setCopiedBackup(true);
     HapticFeedback.light();
     Alert.alert('Copied', 'Backup codes copied to clipboard');
   }, [backupCodes]);
@@ -161,37 +176,45 @@ export default function TwoFactorSetupScreen() {
   const renderStep = () => {
     switch (currentStep) {
       case 'intro':
-        return <IntroStep onGetStarted={generateSecret} />;
+        return <IntroStep colors={COLORS} onContinue={generateSecret} />;
       case 'scan':
         return (
           <ScanStep
-            qrCodeUrl={setupData?.qr_code_url || ''}
-            secret={setupData?.secret || ''}
+            colors={COLORS}
+            isLoading={!setupData}
+            setupData={setupData}
+            copiedSecret={copiedSecret}
             onCopySecret={copySecret}
-            onNext={() => goToStep('verify')}
+            onContinue={() => goToStep('verify')}
           />
         );
       case 'verify':
         return (
           <VerifyStep
-            code={verificationCode}
-            isVerifying={isVerifying}
+            colors={COLORS}
+            verificationCode={verificationCode}
+            isLoading={isVerifying}
+            error=""
             inputRefs={codeInputRefs}
             onCodeChange={handleCodeChange}
             onKeyPress={handleKeyPress}
             onVerify={handleVerify}
+            onBack={() => goToStep('scan')}
           />
         );
       case 'backup':
         return (
           <BackupStep
-            codes={backupCodes}
-            onCopyCodes={copyBackupCodes}
-            onContinue={handleComplete}
+            colors={COLORS}
+            backupCodes={backupCodes}
+            isLoading={false}
+            copiedBackup={copiedBackup}
+            onCopyBackupCodes={copyBackupCodes}
+            onComplete={handleComplete}
           />
         );
       case 'complete':
-        return <CompleteStep onDone={() => navigation.goBack()} />;
+        return <CompleteStep colors={COLORS} onDone={() => navigation.goBack()} />;
       default:
         return null;
     }

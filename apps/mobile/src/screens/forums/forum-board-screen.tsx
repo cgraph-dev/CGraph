@@ -74,7 +74,7 @@ type SortOption = 'newest' | 'popular' | 'active';
  *
  */
 export default function ForumBoardScreen({ navigation, route }: Props) {
-  const { forumId, boardId, _boardName } = route.params;
+  const { forumId, boardId, boardName } = route.params;
   const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -251,7 +251,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
       <View style={styles.boardInfo}>
         <View style={[styles.boardIcon, { backgroundColor: colors.primary }]}>
           { }
-          <Ionicons name={(board?.icon as string) || 'chatbubbles'} size={24} color="#fff" />
+          <Ionicons name={(board?.icon as any) || 'chatbubbles'} size={24} color="#fff" />
         </View>
         <View style={styles.boardDetails}>
           <Text style={[styles.boardName, { color: colors.text }]}>{board?.name}</Text>

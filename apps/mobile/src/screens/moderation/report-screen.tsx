@@ -141,7 +141,7 @@ export function ReportScreen() {
                   <View style={styles.categoryIcon}>
                     <Ionicons
                        
-                      name={category.icon as string}
+                      name={category.icon as any}
                       size={20}
                       color={
                         selectedCategory === category.value ? colors.primary : colors.textSecondary

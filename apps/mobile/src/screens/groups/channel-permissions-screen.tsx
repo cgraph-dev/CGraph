@@ -17,7 +17,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { useThemeStore } from '@/stores';
+import { useThemeStore, type ThemeColors } from '@/stores';
 import { GroupsStackParamList } from '../../types';
 import { api } from '../../services/api';
 
@@ -110,8 +110,8 @@ const ALL_PERMISSIONS: PermissionInfo[] = [
 type PermState = 'inherit' | 'allow' | 'deny';
 
 function getPermState(allow: number, deny: number, bit: number): PermState {
-  if ((allow & bit) !== 0) return 'allow';
-  if ((deny & bit) !== 0) return 'deny';
+  if (allow & bit) return 'allow';
+  if (deny & bit) return 'deny';
   return 'inherit';
 }
 
@@ -124,8 +124,8 @@ function setPermState(
   // Clear bit from both
   let newAllow = allow & ~bit;
   let newDeny = deny & ~bit;
-  if (state === 'allow') newAllow = newAllow | bit;
-  if (state === 'deny') newDeny = newDeny | bit;
+  if (state === 'allow') newAllow |= bit;
+  if (state === 'deny') newDeny |= bit;
   return { allow: newAllow, deny: newDeny };
 }
 
@@ -140,7 +140,7 @@ function PermissionSegmentedControl({
 }: {
   state: PermState;
   onChange: (s: PermState) => void;
-  colors: Record<string, string>;
+  colors: ThemeColors;
 }) {
   const options: { value: PermState; label: string; activeColor: string }[] = [
     { value: 'deny', label: '✗', activeColor: '#E74C3C' },
@@ -269,7 +269,7 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
   };
 
   const handleDeleteOverwrite = (ow: PermissionOverwrite) => {
-    const roleName = roles.find((r) => r.id === ow.role_id)?.name || 'this override';
+    const roleName = roles.find((r) => r.id === ow.role_id)?.name ?? 'this override';
     Alert.alert('Delete Override', `Remove permission override for ${roleName}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -296,7 +296,7 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
         allow: 0,
         deny: 0,
       });
-      const newOw = res.data?.data || res.data;
+      const newOw = res.data?.data ?? res.data;
       fetchData();
       if (newOw?.id) {
         handleEditOverwrite({ ...newOw, allow: 0, deny: 0 });

@@ -134,7 +134,7 @@ describe('ConversationScreen', () => {
     it('should debounce scroll events', () => {
       jest.useFakeTimers();
 
-      const _scrollCount = 0;
+      let scrollCount = 0;
       const DEBOUNCE_MS = 100;
 
       const handleScroll = jest.fn(() => {
@@ -266,7 +266,7 @@ describe('ConversationScreen', () => {
       jest.useFakeTimers();
 
       const TYPING_DEBOUNCE = 1000;
-      const _typingEventSent = false;
+      let typingEventSent = false;
 
       const sendTyping = jest.fn(() => {
         typingEventSent = true;

@@ -5,6 +5,17 @@ import { ConversationHeader } from '../conversation-header';
 
 // Mock dependencies
 
+vi.mock('motion/react', () => ({
+  motion: new Proxy({} as Record<string, unknown>, {
+    get: (_t: unknown, prop: string) =>
+      ({ children, ...rest }: any) => {
+        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...safe } = rest;
+        return <div data-motion={prop} {...safe}>{children}</div>;
+      },
+  }),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, ...props }: any) => <div {...props}>{children}</div>,
 }));

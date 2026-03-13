@@ -213,7 +213,6 @@ defmodule CGraph.Forums.RankingEngine do
       :score -> from f in base_query, order_by: [desc: f.score]
       :weekly -> from f in base_query, order_by: [desc: f.weekly_score]
       :members -> from f in base_query, order_by: [desc: f.member_count]
-      _ -> from f in base_query, order_by: [desc: f.hot_score]
     end
 
     Repo.all(query)

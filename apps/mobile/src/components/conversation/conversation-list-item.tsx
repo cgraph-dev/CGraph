@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { Avatar } from '../ui/avatar';
+import Avatar from '../ui/avatar';
 import { space, radius } from '../../theme/tokens';
 
 interface ConversationListItemProps {

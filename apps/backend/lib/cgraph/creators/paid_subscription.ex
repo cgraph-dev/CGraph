@@ -22,6 +22,8 @@ defmodule CGraph.Creators.PaidSubscription do
 
   @default_platform_fee_percent 15
 
+  @dialyzer {:nowarn_function, create_stripe_subscription: 3}
+
   @doc """
   Subscribes a user to a paid forum.
 

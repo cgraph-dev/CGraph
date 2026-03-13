@@ -93,7 +93,7 @@ export default function Carousel<T extends CarouselItem>({
   peekAmount = 30,
   hapticFeedback = true,
 }: CarouselProps<T>) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(initialIndex);

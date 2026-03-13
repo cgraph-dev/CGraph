@@ -180,7 +180,7 @@ export default function SavedMessagesScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search Bar */}
       <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.searchBar, { backgroundColor: colors.input || colors.surfaceHover }]}>
+        <View style={[styles.searchBar, { backgroundColor: colors.input }]}>
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}

@@ -248,7 +248,7 @@ export default function ErrorState({
         ]}
       >
         { }
-        <IconComponent name={preset.icon as string} size={iconSize} color={preset.color} />
+        <IconComponent name={preset.icon as any} size={iconSize} color={preset.color} />
       </Animated.View>
     );
   };

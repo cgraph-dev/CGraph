@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 import { View, Text, Pressable, StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Avatar } from './ui/avatar';
+import Avatar from './ui/avatar';
 import { space, radius } from '../theme/tokens';
 
 interface ProfileHeaderProps {

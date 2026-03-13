@@ -19,7 +19,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 
 type NotificationMode = 'all' | 'mentions_only' | 'none';
 

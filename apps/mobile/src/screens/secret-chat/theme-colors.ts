@@ -233,5 +233,5 @@ export function getSecretThemeColors(id: SecretThemeId): SecretThemeColors {
  * Falls back to 'void' if not found.
  */
 export function getSecretThemeMeta(id: SecretThemeId): SecretThemeMeta {
-  return SECRET_THEMES.find((t) => t.id === id) ?? SECRET_THEMES[0]!;
+  return SECRET_THEMES.find((t) => t.id === id) ?? SECRET_THEMES[0];
 }

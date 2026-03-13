@@ -20,8 +20,7 @@ import {
   Text,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useSecretChatStore } from '@/stores/secretChatStore';
-import type { SecretMessage } from '@/stores/secretChatStore';
+import { useSecretChatStore, type SecretMessage } from '@/stores/secretChatStore';
 import { SecretChatHeader } from '@/components/secret-chat/secret-chat-header';
 import { SecretChatMessage } from '@/components/secret-chat/secret-chat-message';
 import { SecretChatInput } from '@/components/secret-chat/secret-chat-input';
@@ -32,7 +31,6 @@ import { getSecretThemeColors } from './theme-colors';
 // Types
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type RootStackParamList = {
   SecretChat: { conversationId: string };
   SecretChatSettings: { conversationId: string };

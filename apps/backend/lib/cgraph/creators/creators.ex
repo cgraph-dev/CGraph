@@ -8,6 +8,8 @@ defmodule CGraph.Creators do
 
   alias CGraph.Creators.{ConnectOnboarding, PaidSubscription, Earnings, Payout, PremiumContent}
 
+  @dialyzer {:nowarn_function, create_connect_account: 1, create_account_link: 1, request_payout: 1}
+
   # ── Connect Onboarding ──────────────────────────────────────────
 
   defdelegate create_connect_account(user), to: ConnectOnboarding

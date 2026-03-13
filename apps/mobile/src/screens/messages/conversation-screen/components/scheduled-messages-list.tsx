@@ -177,7 +177,7 @@ export function ScheduledMessagesList({
         card: {
           marginHorizontal: 16,
           marginVertical: 6,
-          backgroundColor: colors.surfaceHover ?? colors.input ?? '#222',
+          backgroundColor: colors.surfaceHover,
           borderRadius: 12,
           padding: 14,
         },

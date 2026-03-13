@@ -198,6 +198,7 @@ defmodule CGraph.Sharding.ShardManager do
 
         {updated_ring, updated_topo, updated_health} =
           Enum.reduce(0..(shard_count - 1), {ring, topo_acc, health_acc}, fn idx, {r, t, h} ->
+            # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
             shard_id = :"#{table_name}_shard_#{idx}"
 
             # In production, each shard maps to its own Repo.

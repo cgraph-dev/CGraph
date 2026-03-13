@@ -63,7 +63,7 @@ const PRESETS = [
 ];
 
 export function ThemePicker({ activePreset, onSelect }: ThemePickerProps) {
-  const appTheme = useThemeStore((s) => s.theme);
+  const appColors = useThemeStore((s) => s.colors);
 
   return (
     <ScrollView
@@ -80,7 +80,7 @@ export function ThemePicker({ activePreset, onSelect }: ThemePickerProps) {
               styles.card,
               {
                 backgroundColor: preset.colors.background_color,
-                borderColor: isActive ? appTheme.colors.primary : 'rgba(255,255,255,0.1)',
+                borderColor: isActive ? appColors.primary : 'rgba(255,255,255,0.1)',
                 borderWidth: isActive ? 2 : 1,
               },
             ]}
@@ -110,7 +110,7 @@ export function ThemePicker({ activePreset, onSelect }: ThemePickerProps) {
 
             {/* Active check */}
             {isActive && (
-              <View style={[styles.checkBadge, { backgroundColor: appTheme.colors.primary }]}>
+              <View style={[styles.checkBadge, { backgroundColor: appColors.primary }]}>
                 <Ionicons name="checkmark" size={12} color="#fff" />
               </View>
             )}

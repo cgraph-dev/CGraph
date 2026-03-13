@@ -20,10 +20,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNodesStore } from '@/stores';
-import { useThemeStore } from '@/stores';
-import type { NodeTransaction, NodeTransactionType } from '@cgraph/shared-types/src/nodes';
-import { NODES_EXCHANGE_RATE_EUR } from '@cgraph/shared-types/src/nodes';
+import { useNodesStore, useThemeStore } from '@/stores';
+import type { NodeTransaction, NodeTransactionType } from '@cgraph/shared-types/nodes';
 
 // ---------------------------------------------------------------------------
 // Constants

@@ -55,7 +55,6 @@ export function useRegister() {
     try {
       await register(email, username.trim() || null, password);
     } catch (error: unknown) {
-      // @ts-expect-error - error shape from backend
       const err = error as {
         response?: {
           data?: {
@@ -70,7 +69,7 @@ export function useRegister() {
       let errorMessage = 'Could not create account';
 
       if (err.response?.data) {
-        const data = err.response.data;
+        const { data } = err.response;
         if (data.details && typeof data.details === 'object') {
           const errorMessages: string[] = [];
           for (const [field, messages] of Object.entries(data.details)) {
@@ -94,12 +93,10 @@ export function useRegister() {
       }
 
       if (__DEV__) {
-        if (__DEV__) {
-          console.warn(
-            'Registration error:',
-            JSON.stringify(err.response?.data || err.message, null, 2)
-          );
-        }
+        console.warn(
+          'Registration error:',
+          JSON.stringify(err.response?.data || err.message, null, 2)
+        );
       }
 
       Alert.alert('Registration Failed', errorMessage);

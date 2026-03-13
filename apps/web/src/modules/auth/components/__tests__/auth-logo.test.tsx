@@ -15,9 +15,9 @@ describe('AuthLogo', () => {
     vi.clearAllMocks();
   });
 
-  it('renders CGraph text', () => {
+  it('renders CGraph logo', () => {
     render(<AuthLogo size="md" />);
-    expect(screen.getByText('CGraph')).toBeInTheDocument();
+    expect(screen.getByAltText('CGraph')).toBeInTheDocument();
   });
 
   it('renders logo image', () => {
@@ -34,21 +34,21 @@ describe('AuthLogo', () => {
   it('renders sm size with correct dimensions', () => {
     render(<AuthLogo size="sm" />);
     const img = screen.getByAltText('CGraph');
-    expect(img).toHaveAttribute('height', '32');
-    expect(img).toHaveAttribute('width', '32');
+    expect(img).toHaveAttribute('height', '96');
+    expect(img).toHaveAttribute('width', '96');
   });
 
   it('renders md size with correct dimensions', () => {
     render(<AuthLogo size="md" />);
     const img = screen.getByAltText('CGraph');
-    expect(img).toHaveAttribute('height', '40');
-    expect(img).toHaveAttribute('width', '40');
+    expect(img).toHaveAttribute('height', '128');
+    expect(img).toHaveAttribute('width', '128');
   });
 
   it('renders lg size with correct dimensions', () => {
     render(<AuthLogo size="lg" />);
     const img = screen.getByAltText('CGraph');
-    expect(img).toHaveAttribute('height', '48');
-    expect(img).toHaveAttribute('width', '48');
+    expect(img).toHaveAttribute('height', '192');
+    expect(img).toHaveAttribute('width', '192');
   });
 });

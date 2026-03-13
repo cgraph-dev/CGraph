@@ -13,7 +13,7 @@ import type { Message } from '../../../../types';
 
 interface UsePinnedMessagesOptions {
   messages: Message[];
-  flatListRef: React.RefObject<FlatList>;
+  flatListRef: React.RefObject<FlatList | null>;
 }
 
 interface UsePinnedMessagesReturn {

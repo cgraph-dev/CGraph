@@ -86,7 +86,7 @@ const api = createHttpClient({
       >;
       return {
          
-        accessToken: (tokens.access_token || tokens.token) as string | undefined,
+        accessToken: ((tokens.access_token || tokens.token) as string | undefined) ?? '',
          
         refreshToken: tokens.refresh_token as string | undefined,
       };

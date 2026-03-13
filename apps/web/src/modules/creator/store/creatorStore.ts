@@ -184,7 +184,9 @@ export const useCreatorStore = create<CreatorState>()(
         try {
           const data = await creatorService.listTiers();
           set({ tiers: data });
-        } catch {}
+        } catch {
+          // Tier fetch failures are non-critical — cached data remains
+        }
       },
 
       reset: () => set(initialState),

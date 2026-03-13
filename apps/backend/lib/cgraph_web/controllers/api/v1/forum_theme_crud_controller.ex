@@ -147,14 +147,11 @@ defmodule CGraphWeb.API.V1.ForumThemeCrudController do
   # ===========================================================================
 
   defp get_forum(forum_id) do
-    case Forums.get_forum(forum_id) do
-      nil -> {:error, :not_found}
-      forum -> {:ok, forum}
-    end
+    Forums.get_forum(forum_id)
   end
 
   defp authorize_admin(forum, user) do
-    if forum.owner_id == user.id || Forums.is_moderator?(forum.id, user.id) do
+    if forum.owner_id == user.id || Forums.moderator?(forum, user) do
       :ok
     else
       {:error, :forbidden}

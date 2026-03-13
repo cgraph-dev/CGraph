@@ -7,7 +7,8 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import type { TabType, tabs } from '../types';
+import { tabs } from '../types';
+import type { TabType } from '../types';
 
 export interface NotificationTabsProps {
   activeTab: TabType;

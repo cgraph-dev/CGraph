@@ -54,7 +54,6 @@ export default function VideoCallScreen() {
           <LinearGradient colors={[Colors.dark[800], Colors.dark[900]]} style={StyleSheet.absoluteFill} />
           <AnimatedAvatar
             source={vc.recipientAvatar ? { uri: vc.recipientAvatar }
-              // @ts-expect-error - require returns number type
               : require('@/assets/default-avatar.png')}
             size={100} borderAnimation="glow" shape="circle"
           />

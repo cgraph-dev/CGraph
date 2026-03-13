@@ -16,6 +16,8 @@ defmodule CGraph.Cosmetics.Nameplate do
 
   @unlock_types ~w(default achievement level purchase event season gift prestige)
 
+  @type t :: %__MODULE__{}
+
   schema "nameplates" do
     field :slug, :string
     field :name, :string

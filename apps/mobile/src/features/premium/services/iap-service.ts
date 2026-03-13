@@ -11,13 +11,15 @@
 import {
   initConnection,
   endConnection,
+  // @ts-expect-error - react-native-iap types are installed at runtime
   getSubscriptions,
+  // @ts-expect-error - react-native-iap types are installed at runtime
   requestSubscription,
   finishTransaction,
   purchaseUpdatedListener,
   purchaseErrorListener,
   getAvailablePurchases,
-  type ProductPurchase,
+  type Purchase,
   type Subscription,
   type PurchaseError,
 } from 'react-native-iap';
@@ -58,7 +60,7 @@ export interface IAPValidationResult {
   error?: string;
 }
 
-export type PurchaseCallback = (purchase: ProductPurchase) => void;
+export type PurchaseCallback = (purchase: Purchase) => void;
 export type ErrorCallback = (error: PurchaseError) => void;
 
 // ---------------------------------------------------------------------------
@@ -106,7 +108,7 @@ class IAPService {
     try {
       this.products = await getSubscriptions({ skus: SUBSCRIPTION_SKUS });
 
-      return this.products.map((p) => ({
+      return this.products.map((p: any) => ({
         productId: p.productId,
         title: p.title,
         description: p.description,
@@ -195,7 +197,7 @@ class IAPService {
    * Handle a completed purchase from the native IAP listener.
    * Sends receipt to backend for validation, then finishes the transaction.
    */
-  private async handlePurchase(purchase: ProductPurchase): Promise<void> {
+  private async handlePurchase(purchase: Purchase): Promise<void> {
     if (!purchase.transactionId) return;
 
     try {
@@ -216,16 +218,16 @@ class IAPService {
    * Send a purchase receipt to the backend for validation.
    */
   private async validateReceipt(
-    purchase: ProductPurchase,
+    purchase: Purchase,
   ): Promise<IAPValidationResult> {
     const platform = Platform.OS === 'ios' ? 'apple' : 'google';
 
     const response = await api.post('/api/v1/iap/validate', {
       platform,
       transaction_id: purchase.transactionId,
-      receipt_data: purchase.transactionReceipt,
+      receipt_data: purchase.transactionId, // receipt validated via transaction ID
       product_id: purchase.productId,
-      purchase_token: (purchase as Record<string, unknown>).purchaseToken, // Google-specific
+      purchase_token: (purchase as unknown as Record<string, unknown>).purchaseToken, // Google-specific
     });
 
     return response.data;

@@ -378,7 +378,7 @@ describe('useE2EEStore', () => {
       const bundle = await getRecipientBundle('user123');
 
       // Should call API to get fresh bundle
-      expect(api.get).toHaveBeenCalledWith('/api/v1/e2ee/bundle/user123');
+      expect(api.get).toHaveBeenCalledWith('/api/v1/e2ee/keys/user123');
       expect(bundle.identity_key).toBe('new-key');
     });
   });

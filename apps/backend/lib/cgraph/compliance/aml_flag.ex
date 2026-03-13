@@ -12,6 +12,8 @@ defmodule CGraph.Compliance.AMLFlag do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime]
 
+  @type t :: %__MODULE__{}
+
   @severity_values ~w(low medium high)
   @status_values ~w(open reviewed dismissed escalated)
 

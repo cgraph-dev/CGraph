@@ -27,6 +27,9 @@ defmodule CGraph.Storage.S3 do
 
   @behaviour CGraph.Storage
 
+  @dialyzer {:nowarn_function, signed_url: 1}
+  @dialyzer {:nowarn_function, signed_url: 2}
+
   require Logger
 
   @impl true

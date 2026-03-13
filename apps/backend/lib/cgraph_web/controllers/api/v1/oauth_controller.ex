@@ -41,6 +41,10 @@ defmodule CGraphWeb.API.V1.OAuthController do
 
   plug :validate_provider
 
+  # Dialyzer infers narrower types from validate_provider plug and
+  # String.to_existing_atom/1 but the runtime branches are reachable.
+  @dialyzer {:nowarn_function, callback: 2}
+
   @doc """
   Get the authorization URL for a provider.
 
@@ -389,7 +393,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
 
   defp get_user_info_from_tokens(:tiktok, %{"access_token" => token}) do
     url = "https://open.tiktokapis.com/v2/user/info/?fields=open_id,avatar_url,display_name"
-    headers = [{"Authorization", "Bearer #{token}"}]
+    headers = [{~c"Authorization", String.to_charlist("Bearer #{token}")}]
 
     case :httpc.request(:get, {String.to_charlist(url), headers}, [], []) do
       {:ok, {{_, 200, _}, _, body}} ->

@@ -9,7 +9,6 @@ defmodule CGraphWeb.API.V1.CallController do
 
   alias CGraph.WebRTC.Calls
   alias CGraph.WebRTC.Signaling
-  alias CGraphWeb.ErrorHelpers
 
   action_fallback CGraphWeb.FallbackController
 
@@ -39,23 +38,17 @@ defmodule CGraphWeb.API.V1.CallController do
       |> maybe_put(:cursor, params["cursor"])
       |> maybe_put(:limit, parse_limit(params["limit"]))
 
-    case Calls.list_call_history(user.id, opts) do
-      {:ok, calls, page_info} ->
-        conn
-        |> put_status(:ok)
-        |> json(%{
-          data: Enum.map(calls, &serialize_call/1),
-          meta: %{
-            cursor: page_info[:end_cursor] || page_info[:cursor],
-            has_more: page_info[:has_next_page] || page_info[:has_more] || false
-          }
-        })
+    {:ok, calls, page_info} = Calls.list_call_history(user.id, opts)
 
-      {:error, reason} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: ErrorHelpers.safe_error_message(reason, context: "call_history")})
-    end
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      data: Enum.map(calls, &serialize_call/1),
+      meta: %{
+        cursor: page_info[:end_cursor] || page_info[:cursor],
+        has_more: page_info[:has_next_page] || page_info[:has_more] || false
+      }
+    })
   end
 
   @doc """

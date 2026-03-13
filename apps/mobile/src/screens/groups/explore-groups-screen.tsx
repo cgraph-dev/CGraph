@@ -50,7 +50,7 @@ export default function ExploreGroupsScreen({ navigation }: Props) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [joiningId, setJoiningId] = useState<string | null>(null);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const fetchGroups = useCallback(
     async (searchQuery?: string) => {

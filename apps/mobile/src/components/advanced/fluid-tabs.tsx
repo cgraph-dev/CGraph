@@ -265,8 +265,7 @@ export function FluidTabs({
 
   // Calculate tab width for equal width mode
   const tabWidth = useMemo(() => {
-    if (!equalWidth || variant === 'scrollable') return undefined;
-    return containerWidth / tabs.length;
+    return (!equalWidth || variant === 'scrollable') ? undefined : containerWidth / tabs.length;
   }, [equalWidth, variant, containerWidth, tabs.length]);
 
   // Render tabs
@@ -400,9 +399,8 @@ function TabButton({
 
     return {
       color: isActive ? activeTextColor : inactiveTextColor,
-       
-      fontWeight: fontWeight as unknown,
-    };
+      fontWeight,
+    } as Record<string, unknown>;
   });
 
   return (

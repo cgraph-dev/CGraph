@@ -15,6 +15,8 @@ defmodule CGraph.Cosmetics.NameplateSetting do
 
   @valid_layouts ~w(default compact expanded minimal)
 
+  @type t :: %__MODULE__{}
+
   schema "nameplate_settings" do
     field :custom_text_color, :string
     field :custom_border_color, :string

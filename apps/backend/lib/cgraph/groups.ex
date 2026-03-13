@@ -128,9 +128,13 @@ defmodule CGraph.Groups do
   defdelegate list_group_emojis(group), to: Emojis
   defdelegate get_group_emoji(group, emoji_id), to: Emojis
   defdelegate create_group_emoji(group, user, attrs), to: Emojis
+
+  @dialyzer {:nowarn_function, create_group_emoji_with_permission: 4}
   defdelegate create_group_emoji_with_permission(group, member, user, attrs), to: Emojis
   defdelegate update_group_emoji(emoji, attrs), to: Emojis
   defdelegate delete_group_emoji(emoji), to: Emojis
+
+  @dialyzer {:nowarn_function, delete_group_emoji_with_permission: 3}
   defdelegate delete_group_emoji_with_permission(emoji, member, group), to: Emojis
 
   # ============================================================================

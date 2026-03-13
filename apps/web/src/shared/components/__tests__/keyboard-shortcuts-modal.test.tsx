@@ -3,6 +3,17 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { KeyboardShortcutsModal } from '../keyboard-shortcuts-modal';
 
+vi.mock('motion/react', () => ({
+  motion: new Proxy({} as Record<string, unknown>, {
+    get: (_t: unknown, prop: string) =>
+      ({ children, ...rest }: any) => {
+        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...safe } = rest;
+        return <div data-motion={prop} {...safe}>{children}</div>;
+      },
+  }),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
 vi.mock('@/lib/animation-presets', () => ({
   entranceVariants: { fadeUp: {} },
   springs: { gentle: {} },

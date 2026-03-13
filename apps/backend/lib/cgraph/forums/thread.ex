@@ -30,6 +30,8 @@ defmodule CGraph.Forums.Thread do
 
   @thread_types ["normal", "sticky", "announcement", "poll"]
 
+  @type t :: %__MODULE__{}
+
   schema "threads" do
     field :title, :string
     field :slug, :string

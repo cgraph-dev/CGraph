@@ -196,7 +196,7 @@ export class WebRTCManager {
       this.state.isVideoEnabled = options.video ?? true;
 
       // Join signaling channel
-      this.channel = this.socket?.channel('call:lobby', {});
+      this.channel = this.socket?.channel('call:lobby', {}) ?? null;
       await this.joinChannel();
 
       // Create call room
@@ -211,7 +211,7 @@ export class WebRTCManager {
       this.state.status = 'ringing';
 
       // Join the room channel
-      this.channel = this.socket?.channel(`call:${roomId}`, {});
+      this.channel = this.socket?.channel(`call:${roomId}`, {}) ?? null;
       await this.joinChannel();
       this.setupChannelHandlers();
 
@@ -246,7 +246,7 @@ export class WebRTCManager {
       this.state.isVideoEnabled = options.video ?? true;
 
       // Join call room channel
-      this.channel = this.socket?.channel(`call:${roomId}`, {});
+      this.channel = this.socket?.channel(`call:${roomId}`, {}) ?? null;
       await this.joinChannel();
       this.setupChannelHandlers();
 
@@ -338,6 +338,7 @@ export class WebRTCManager {
   async rejectCall(roomId: string): Promise<void> {
     try {
       const channel = this.socket?.channel(`call:${roomId}`, {});
+      if (!channel) return;
       await new Promise<void>((resolve, reject) => {
         channel
           .join()
@@ -346,7 +347,7 @@ export class WebRTCManager {
             channel.leave();
             resolve();
           })
-          .receive('error', reject);
+          .receive('error', () => reject(new Error('Failed to join channel')));
       });
     } catch (error) {
       console.error('[WebRTC] Error rejecting call:', error);
@@ -359,9 +360,10 @@ export class WebRTCManager {
     return new Promise((resolve, reject) => {
       this.channel?.join()
         .receive('ok', () => resolve())
-        .receive('error', (resp: { reason?: string }) =>
-          reject(new Error(resp?.reason || 'Failed to join channel'))
-        );
+        .receive('error', (resp: unknown) => {
+          const reason = (resp as { reason?: string })?.reason || 'Failed to join channel';
+          reject(new Error(reason));
+        });
     });
   }
 
@@ -369,9 +371,10 @@ export class WebRTCManager {
     return new Promise((resolve, reject) => {
       this.channel?.push(event, payload)
         .receive('ok', resolve)
-        .receive('error', (resp: { reason?: string }) =>
-          reject(new Error(resp?.reason || 'Push failed'))
-        );
+        .receive('error', (resp: unknown) => {
+          const reason = (resp as { reason?: string })?.reason || 'Push failed';
+          reject(new Error(reason));
+        });
     });
   }
 
@@ -471,14 +474,14 @@ export class WebRTCManager {
 
     // Add local tracks
     if (this.localStream) {
-      this.localStream.getTracks().forEach((track: RTCMediaStreamTrack) => {
+      this.localStream.getTracks().forEach((track) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        pc.addTrack(track, this.localStream!);
+        pc.addTrack(track as any, this.localStream!);
       });
     }
 
     // Handle ICE candidates
-    pc.onicecandidate = (event: RTCIceCandidateEvent) => {
+    (pc as any).onicecandidate = (event: any) => {
       if (event.candidate) {
         this.pushToChannel('ice_candidate', {
           to: userId,
@@ -488,14 +491,14 @@ export class WebRTCManager {
     };
 
     // Handle remote tracks
-    pc.ontrack = (event: RTCTrackEvent) => {
+    (pc as any).ontrack = (event: any) => {
       const [stream] = event.streams;
       this.state.remoteStreams.set(userId, stream);
       this.eventHandlers.onRemoteStream?.(userId, stream);
     };
 
     // Handle connection state changes
-    pc.onconnectionstatechange = () => {
+    (pc as any).onconnectionstatechange = () => {
       // eslint-disable-next-line no-console
       if (__DEV__) console.log(`[WebRTC] Connection state for ${userId}: ${pc.connectionState}`);
       if (pc.connectionState === 'connected') {

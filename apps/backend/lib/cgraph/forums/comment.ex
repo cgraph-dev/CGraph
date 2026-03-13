@@ -16,6 +16,8 @@ defmodule CGraph.Forums.Comment do
     :is_edited, :author_id, :post_id, :parent_id, :inserted_at, :updated_at
   ]}
 
+  @type t :: %__MODULE__{}
+
   schema "comments" do
     field :content, :string
     field :score, :integer, default: 0

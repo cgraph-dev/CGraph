@@ -68,7 +68,7 @@ const EMOJI_CATEGORIES = [
  *
  */
 export default function MessageReactions({
-  _messageId,
+  messageId,
   reactions,
   onAddReaction,
   onRemoveReaction,

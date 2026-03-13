@@ -153,8 +153,8 @@ export function ForwardMessageModal({
         >
           {/* Avatar */}
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-            {item.avatar_url ? (
-              <Image source={{ uri: item.avatar_url }} style={styles.avatarImage} />
+            {(item as any).avatar_url ? (
+              <Image source={{ uri: (item as any).avatar_url }} style={styles.avatarImage} />
             ) : (
               <Text style={styles.avatarText}>
                 {(item.name || '?').charAt(0).toUpperCase()}

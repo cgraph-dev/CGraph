@@ -10,7 +10,7 @@
  * @module modules/forums/components/tag-selector
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronDownIcon,
@@ -72,7 +72,7 @@ export default function TagSelector({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const selectedIds = new Set(selectedTags.map((t) => t.id));
+  const selectedIds = useMemo(() => new Set(selectedTags.map((t) => t.id)), [selectedTags]);
 
   const isMaxReached = selectedTags.length >= maxTotal;
 

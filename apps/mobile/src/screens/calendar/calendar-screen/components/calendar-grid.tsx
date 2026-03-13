@@ -7,7 +7,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
-import type { CalendarEvent, DAYS, getEventsForDate } from '../types';
+import { DAYS, getEventsForDate } from '../types';
+import type { CalendarEvent } from '../types';
 import { DayCell } from './day-cell';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

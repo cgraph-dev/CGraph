@@ -181,7 +181,6 @@ defmodule CGraph.Presence.Sampled do
   def get_channel_tier(channel_id) do
     case Tiers.approximate_count(channel_id) do
       {:ok, count} -> Tiers.get_tier(count)
-      _ -> List.first(Tiers.default_tiers())
     end
   end
 

@@ -18,6 +18,7 @@ import {
 } from './components';
 import type { SearchCategory } from './constants';
 import { styles } from './styles';
+import type { ThemeColors } from '@/stores';
 
 interface SearchResultsProps {
   loading: boolean;
@@ -33,7 +34,7 @@ interface SearchResultsProps {
   onRemoveSearch: (q: string) => void;
   onClearRecentSearches: () => void;
   onFocusInput: () => void;
-  colors: Record<string, string>;
+  colors: ThemeColors;
   isDark: boolean;
 }
 

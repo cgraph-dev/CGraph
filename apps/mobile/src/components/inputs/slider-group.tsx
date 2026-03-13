@@ -16,11 +16,11 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  _withTiming,
+  withTiming,
   runOnJS,
-  _interpolate,
-  _interpolateColor,
-  _Extrapolate,
+  interpolate,
+  interpolateColor,
+  Extrapolate,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';

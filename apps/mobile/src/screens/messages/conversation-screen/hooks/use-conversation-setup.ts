@@ -6,7 +6,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { FlatList, TextInput, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import type { Message } from '../../../types';
+import type { Message } from '../../../../types';
 import type { GifResult } from '../components/gif-picker-modal';
 import { createLogger } from '../../../../lib/logger';
 import {
@@ -31,20 +31,31 @@ import {
   getMessageStatusInfo,
 } from '../utils';
 import { usePrivacySettings } from '../../../../stores/settingsStore';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { MessagesStackParamList, UserBasic } from '../../../../types';
+import type { EncryptedMessage } from '../../../../lib/crypto/e2ee';
+import type { AttachmentItem } from './useAttachments';
 
 const logger = createLogger('useConversationSetup');
 
 interface SetupParams {
   conversationId: string;
-  user: { id: string } | null;
+  user: UserBasic | null;
   isE2EEInitialized: boolean;
   otherParticipantId: string | null;
-  encryptMessage: (recipientId: string, plaintext: string) => Promise<string>;
+  encryptMessage: (recipientId: string, plaintext: string) => Promise<EncryptedMessage>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   deletedMessageIdsRef: React.MutableRefObject<Set<string>>;
-  navigation: unknown;
-  colors: Record<string, unknown>;
+  navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
+  colors: {
+    text: string;
+    textSecondary: string;
+    textTertiary: string;
+    surface: string;
+    surfaceHover: string;
+    [key: string]: unknown;
+  };
 }
 
  
@@ -72,8 +83,8 @@ export function useConversationSetup(params: SetupParams) {
 
   // ── Refs ─────────────────────────────────────────────────────
   const isMountedRef = useRef(true);
-  const flatListRef = useRef<FlatList>(null);
-  const inputRef = useRef<TextInput>(null);
+  const flatListRef = useRef<FlatList<Message>>(null);
+  const inputRef = useRef<TextInput | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -128,12 +139,12 @@ export function useConversationSetup(params: SetupParams) {
   }, []);
 
   const header = useConversationHeader({
-    navigation, colors,
+    navigation, colors: colors as { text: string; textSecondary: string; surface: string; surfaceHover: string },
     isOtherUserOnline: presence.isOtherUserOnline,
     isOtherUserTyping: showTypingIndicators && presence.isOtherUserTyping,
     otherParticipantLastSeen: presence.otherParticipantLastSeen,
     otherParticipantId,
-    otherUser: null, // set from outside
+    otherUser: null as UserBasic | null, // set from outside
     onStartCall: handleStartCall,
     onOpenDisappearingMessages: () => setShowDisappearingMessages(true),
   });
@@ -167,7 +178,7 @@ export function useConversationSetup(params: SetupParams) {
     if (isSending) return;
     setIsSending(true);
     try {
-      const response = await (await import('../../../lib/api')).default.post(
+      const response = await (await import('../../../../lib/api')).default.post(
         `/api/v1/conversations/${conversationId}/messages`,
         { content: gif.url, content_type: 'gif', metadata: { gif_id: gif.id, title: gif.title, preview_url: gif.previewUrl, width: gif.width, height: gif.height } }
       );
@@ -207,7 +218,10 @@ export function useConversationSetup(params: SetupParams) {
     setReplyingTo: messageActions.setReplyingTo,
     closeMessageActions: messageActions.closeMessageActions,
     clearReply: messageActions.clearReply,
-    hasReacted: reactions.hasReacted,
+    hasReacted: (message: Message | null, emoji: string) => {
+      if (!message) return false;
+      return reactions.hasReacted(message, emoji);
+    },
     handleQuickReactionBase: messageReactions.handleQuickReaction,
     openReactionPickerBase: reactions.openReactionPicker,
     handleTogglePinBase: pinAndDelete.handleTogglePin,
@@ -225,15 +239,15 @@ export function useConversationSetup(params: SetupParams) {
   const handleAttachmentPickerSelect = useCallback(
     (assets: Array<{ uri: string; type: 'image' | 'video' | 'file'; name?: string; mimeType?: string; duration?: number }>) => {
       if (assets.length === 0) return;
-      const newAttachments = assets.map((a) => ({ uri: a.uri, type: a.type, name: a.name, mimeType: a.mimeType, duration: a.duration }));
-      attachments.setPendingAttachments((prev: unknown[]) => [...prev, ...newAttachments]);
+      const newAttachments: AttachmentItem[] = assets.map((a) => ({ uri: a.uri, type: a.type as 'image' | 'file' | 'video', name: a.name, mimeType: a.mimeType, duration: a.duration }));
+      attachments.setPendingAttachments((prev: AttachmentItem[]) => [...prev, ...newAttachments]);
       attachments.openAttachmentPreview();
     }, [attachments]);
 
   const getMessageStatus = useCallback((message: Message, isOwn: boolean) => {
     if (!isOwn) return null;
     const status = message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-    return getMessageStatusInfo(status, colors);
+    return getMessageStatusInfo(status, colors as { textTertiary: string });
   }, [colors]);
 
   const formatTime = useCallback((dateString: string | undefined | null): string => formatSimpleTime(dateString), []);

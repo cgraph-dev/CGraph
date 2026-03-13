@@ -137,7 +137,7 @@ export function MorphingButton({
   onLongPress,
   disabled = false,
   hapticFeedback = true,
-  _morphDuration = 300,
+  morphDuration = 300,
   pressScale = 0.95,
   springPreset = 'snappy',
   autoResetAfterSuccess = true,
@@ -251,7 +251,7 @@ export function MorphingButton({
 
   // Animated container style
   const containerStyle = useAnimatedStyle(() => {
-    const height = sizeConfig.height;
+    const { height } = sizeConfig;
     const expandedWidth = sizeConfig.padding * 2 + 100; // Approximate text width
     const collapsedWidth = height; // Circle when collapsed
 

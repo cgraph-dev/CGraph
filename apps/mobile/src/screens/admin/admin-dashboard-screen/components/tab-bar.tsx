@@ -6,7 +6,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import type { AdminTab, tabs } from '../types';
+import { tabs } from '../types';
+import type { AdminTab } from '../types';
 
 export interface TabBarProps {
   activeTab: AdminTab;

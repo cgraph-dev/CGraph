@@ -89,7 +89,7 @@ export default function ForumSearchPage({
       setPageResults(results);
       return results;
     },
-    [onSearch, selectedTags, selectedTemplate],
+    [onSearch],
   );
 
   const handleFilterChange = useCallback(

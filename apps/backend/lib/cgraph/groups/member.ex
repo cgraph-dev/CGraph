@@ -13,6 +13,8 @@ defmodule CGraph.Groups.Member do
     :id, :nickname, :joined_at, :is_muted, :is_banned, :user_id, :group_id
   ]}
 
+  @type t :: %__MODULE__{}
+
   schema "group_members" do
     field :nickname, :string
     field :joined_at, :utc_datetime

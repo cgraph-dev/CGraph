@@ -4,7 +4,7 @@
  */
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import api from '../../../../lib/api';
 import { createLogger } from '../../../../lib/logger';
 import type { UserProfile } from '../types';
@@ -16,7 +16,7 @@ interface UseProfileActionsParams {
   setUser: React.Dispatch<React.SetStateAction<UserProfile | null>>;
   setActionLoading: (loading: boolean) => void;
   setShowFriendMenu: (show: boolean) => void;
-  navigation: { goBack: () => void; dispatch: (action: unknown) => void };
+  navigation: Pick<NavigationProp<ParamListBase>, 'goBack' | 'dispatch'>;
 }
 
 export function useProfileActions({

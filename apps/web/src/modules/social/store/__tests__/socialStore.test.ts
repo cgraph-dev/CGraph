@@ -229,13 +229,13 @@ describe('removeFriend', () => {
   it('removes friend from list optimistically', async () => {
     useFriendStore.setState({ friends: [makeFriend()] });
     mockApi.delete.mockResolvedValueOnce({});
-    await useFriendStore.getState().removeFriend('f-1');
+    await useFriendStore.getState().removeFriend('fs-1');
     expect(useFriendStore.getState().friends).toHaveLength(0);
   });
 
   it('sets error on failure', async () => {
     mockApi.delete.mockRejectedValueOnce(new Error('fail'));
-    await expect(useFriendStore.getState().removeFriend('f-1')).rejects.toThrow();
+    await expect(useFriendStore.getState().removeFriend('fs-1')).rejects.toThrow();
     expect(useFriendStore.getState().error).toBeTruthy();
   });
 });

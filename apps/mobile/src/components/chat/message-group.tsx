@@ -4,7 +4,7 @@
  */
 import React, { memo, type ReactNode } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Avatar } from '../ui/avatar';
+import Avatar from '../ui/avatar';
 import { space, radius } from '../../theme/tokens';
 
 interface Author {

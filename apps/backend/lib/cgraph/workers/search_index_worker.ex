@@ -23,7 +23,6 @@ defmodule CGraph.Workers.SearchIndexWorker do
 
     case Engine.index(index_atom, doc) do
       :ok -> :ok
-      {:ok, :postgres_is_source_of_truth} -> :ok
       {:error, reason} ->
         Logger.warning("search_index_failed_for", index: index, reason: inspect(reason))
         {:error, reason}
@@ -35,7 +34,6 @@ defmodule CGraph.Workers.SearchIndexWorker do
 
     case Engine.bulk_index(index_atom, docs) do
       :ok -> :ok
-      {:ok, :postgres_is_source_of_truth} -> :ok
       {:error, reason} ->
         Logger.warning("search_bulk_index_failed_for", index: index, reason: inspect(reason))
         {:error, reason}
@@ -46,8 +44,7 @@ defmodule CGraph.Workers.SearchIndexWorker do
     index_atom = String.to_existing_atom(index)
 
     case Engine.delete(index_atom, id) do
-      :ok -> :ok
-      {:ok, :postgres_is_source_of_truth} -> :ok
+      {:ok, _} -> :ok
       {:error, reason} ->
         Logger.warning("search_delete_failed_for", index: index, id: id, reason: inspect(reason))
         {:error, reason}

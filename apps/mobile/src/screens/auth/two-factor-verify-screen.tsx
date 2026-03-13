@@ -47,7 +47,7 @@ type Props = {
  * Two-factor verification screen for login.
  */
 export default function TwoFactorVerifyScreen({ navigation, route }: Props) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
   const { verifyLoginTwoFactor } = useAuthStore();
   const twoFactorToken = route.params?.twoFactorToken;
 
@@ -138,7 +138,7 @@ export default function TwoFactorVerifyScreen({ navigation, route }: Props) {
       let errorMessage = 'Invalid verification code';
 
       if (err.response?.data) {
-        const data = err.response.data;
+        const { data } = err.response;
         if (typeof data.error === 'object' && data.error?.message) {
           errorMessage = data.error.message;
         } else if (typeof data.error === 'string') {

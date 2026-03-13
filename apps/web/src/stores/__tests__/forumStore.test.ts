@@ -1125,7 +1125,8 @@ describe('forumStore', () => {
 
   describe('thread prefix actions', () => {
     it('should fetch thread prefixes (returns hardcoded standard prefixes)', async () => {
-      // Note: fetchThreadPrefixes currently uses hardcoded prefixes, no API call
+      // API call will fail, triggering the catch block with hardcoded fallback prefixes
+      mockedApi.get.mockRejectedValueOnce(new Error('Not available'));
       await useForumStore.getState().fetchThreadPrefixes('forum-1');
 
       const state = useForumStore.getState();

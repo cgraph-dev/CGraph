@@ -33,7 +33,7 @@ vi.mock('@/lib/api', () => ({ api: mockApi }));
 
 vi.mock('@/lib/socket', () => ({
   socketManager: {
-    joinPresenceLobby: vi.fn(() => ({})),
+    joinPresenceLobby: vi.fn(() => ({ on: vi.fn(() => ({})), off: vi.fn() })),
     getOnlineFriends: vi.fn(() => []),
     isFriendOnline: vi.fn(() => false),
     isUserOnline: vi.fn(() => false),

@@ -138,9 +138,14 @@ defmodule CGraph.PaidDm do
     now = DateTime.utc_now()
 
     case Repo.get_by(PaidDmFile, id: file_id, receiver_id: receiver_id, status: "pending") do
-      nil -> {:error, :not_found}
-      %PaidDmFile{expires_at: exp} when exp <= now -> {:error, :expired}
-      file -> {:ok, file}
+      nil ->
+        {:error, :not_found}
+
+      %PaidDmFile{expires_at: exp} = file when not is_nil(exp) ->
+        if DateTime.compare(exp, now) in [:lt, :eq], do: {:error, :expired}, else: {:ok, file}
+
+      file ->
+        {:ok, file}
     end
   end
 

@@ -17,8 +17,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  _withTiming,
-  _runOnJS,
+  withTiming,
+  runOnJS,
   FadeIn,
   FadeOut,
 } from 'react-native-reanimated';

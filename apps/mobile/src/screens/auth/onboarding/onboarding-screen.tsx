@@ -35,7 +35,8 @@ import * as Haptics from 'expo-haptics';
 import { useAuthStore, useThemeStore } from '@/stores';
 import { MatrixAuthBackground } from '../../../components/matrix';
 import api from '../../../lib/api';
-import type { FEATURES, NotificationSettings, OnboardingProps, SCREEN_WIDTH, STEPS } from './types';
+import { FEATURES, SCREEN_WIDTH, STEPS } from './types';
+import type { NotificationSettings, OnboardingProps } from './types';
 import { styles } from './styles';
 
 /**

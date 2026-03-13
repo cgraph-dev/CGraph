@@ -148,7 +148,7 @@ export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn
   const loadUpcoming = useCallback(
     async (limit = 10) => {
       if (isCacheValid(cacheRef.current.upcoming)) {
-        setState((prev) => ({ ...prev, upcomingEvents: cacheRef.current.upcoming?.data }));
+        setState((prev) => ({ ...prev, upcomingEvents: cacheRef.current.upcoming!.data }));
         return;
       }
 

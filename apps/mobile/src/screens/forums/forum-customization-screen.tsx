@@ -53,7 +53,7 @@ const FONT_SIZE_OPTIONS = [
 ];
 
 export default function ForumCustomizationScreen({ navigation, route }: Props) {
-  const theme = useThemeStore((s) => s.theme);
+  const colors = useThemeStore((s) => s.colors);
   const forumId = route.params?.forumId;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -104,8 +104,8 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -116,20 +116,20 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
     >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: theme.colors.text }]}>Customize Forum</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Customize Forum</Text>
         <TouchableOpacity
           onPress={() => handleSave('appearance', appearance)}
           disabled={saving}
         >
-          <Text style={[styles.saveButton, { color: theme.colors.primary }]}>
+          <Text style={[styles.saveButton, { color: colors.primary }]}>
             {saving ? 'Saving...' : 'Save'}
           </Text>
         </TouchableOpacity>
@@ -137,7 +137,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
       {/* Theme Presets */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Theme Presets</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Theme Presets</Text>
         <ThemePicker
           activePreset={activePreset}
           onSelect={handlePresetSelect}
@@ -146,10 +146,10 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
       {/* Colors */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Colors</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Colors</Text>
         {COLOR_FIELDS.map(({ key, label }) => (
           <View key={key} style={styles.colorRow}>
-            <Text style={[styles.label, { color: theme.colors.secondaryText }]}>{label}</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
             <View style={styles.colorPreview}>
               <View
                 style={[
@@ -160,9 +160,9 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
               <TextInput
                 value={(appearance[key] as string) ?? ''}
                 onChangeText={(v) => updateAppearance(key, v)}
-                style={[styles.colorInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
+                style={[styles.colorInput, { color: colors.text, borderColor: colors.border }]}
                 placeholder="#000000"
-                placeholderTextColor={theme.colors.secondaryText}
+                placeholderTextColor={colors.textSecondary}
                 maxLength={7}
               />
             </View>
@@ -172,7 +172,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
       {/* Font Size */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Font Size</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Font Size</Text>
         <View style={styles.fontSizeRow}>
           {FONT_SIZE_OPTIONS.map(({ value, label }) => (
             <TouchableOpacity
@@ -182,8 +182,8 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                 {
                   backgroundColor:
                     appearance.font_size_base === value
-                      ? theme.colors.primary
-                      : theme.colors.card,
+                      ? colors.primary
+                      : colors.card,
                 },
               ]}
               onPress={() => updateAppearance('font_size_base', value)}
@@ -193,7 +193,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                   styles.fontSizeLabel,
                   {
                     color:
-                      appearance.font_size_base === value ? '#fff' : theme.colors.text,
+                      appearance.font_size_base === value ? '#fff' : colors.text,
                   },
                 ]}
               >
@@ -206,7 +206,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
       {/* Layout Toggles */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Layout</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Layout</Text>
         {[
           { key: 'sticky_header', label: 'Sticky Header' },
           { key: 'show_breadcrumbs', label: 'Show Breadcrumbs' },
@@ -215,7 +215,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
           const source = from === 'appearance' ? appearance : layout;
           return (
             <View key={key} style={styles.toggleRow}>
-              <Text style={[styles.label, { color: theme.colors.secondaryText }]}>{label}</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
               <Switch
                 value={!!source[key]}
                 onValueChange={(v) => {
@@ -225,7 +225,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                     handleSave('layout', { [key]: v });
                   }
                 }}
-                trackColor={{ false: '#444', true: theme.colors.primary }}
+                trackColor={{ false: '#444', true: colors.primary }}
               />
             </View>
           );
@@ -234,9 +234,9 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
 
       {/* Karma Name */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Reputation</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Reputation</Text>
         <View style={styles.inputRow}>
-          <Text style={[styles.label, { color: theme.colors.secondaryText }]}>Karma Name</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>Karma Name</Text>
           <TextInput
             value={(reputation.karma_name as string) ?? 'Karma'}
             onChangeText={(v) =>
@@ -246,13 +246,13 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                   : null
               )
             }
-            style={[styles.textInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
+            style={[styles.textInput, { color: colors.text, borderColor: colors.border }]}
             placeholder="Karma"
-            placeholderTextColor={theme.colors.secondaryText}
+            placeholderTextColor={colors.textSecondary}
           />
         </View>
         <View style={styles.inputRow}>
-          <Text style={[styles.label, { color: theme.colors.secondaryText }]}>Upvote Label</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>Upvote Label</Text>
           <TextInput
             value={(reputation.upvote_label as string) ?? 'Upvote'}
             onChangeText={(v) =>
@@ -262,13 +262,13 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                   : null
               )
             }
-            style={[styles.textInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
+            style={[styles.textInput, { color: colors.text, borderColor: colors.border }]}
             placeholder="Upvote"
-            placeholderTextColor={theme.colors.secondaryText}
+            placeholderTextColor={colors.textSecondary}
           />
         </View>
         <TouchableOpacity
-          style={[styles.saveSection, { backgroundColor: theme.colors.primary }]}
+          style={[styles.saveSection, { backgroundColor: colors.primary }]}
           onPress={() => handleSave('reputation_and_ranks', reputation)}
           disabled={saving}
         >

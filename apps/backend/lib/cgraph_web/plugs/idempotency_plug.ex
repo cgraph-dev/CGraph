@@ -16,7 +16,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
   @header "idempotency-key"
 
   @doc "Initializes plug options."
-  @spec init(keyword()) :: keyword()
+  @spec init(keyword()) :: map()
   def init(opts) do
     %{
       ttl_ms: Keyword.get(opts, :ttl_ms, 10_000)

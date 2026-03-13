@@ -236,7 +236,7 @@ export default function SessionsScreen({ navigation }: Props) {
         renderItem={({ item: session, index: idx }) => (
           <View style={[styles.sectionContent, idx === 0 ? { backgroundColor: colors.surface, borderTopLeftRadius: 12, borderTopRightRadius: 12 } : { backgroundColor: colors.surface }, idx === otherSessions.length - 1 ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 } : {}]}>
             <View style={styles.sessionItem}>
-              <View style={[styles.iconCircle, { backgroundColor: colors.surfaceHover || colors.border }]}>
+              <View style={[styles.iconCircle, { backgroundColor: colors.surfaceHover }]}>
                 <Ionicons
                   name={getDeviceIcon(session.user_agent)}
                   size={22}

@@ -9,6 +9,8 @@ defmodule CGraph.Nodes.NodeTransaction do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "node_transactions" do
     belongs_to :user, CGraph.Accounts.User, type: :binary_id

@@ -110,7 +110,7 @@ function transformOrg(raw: RawOrg): Organization {
 }
 
 function transformMembership(raw: RawMembership): OrgMembership {
-  const user = raw.user;
+  const { user } = raw;
   return {
     id: raw.id,
     orgId: raw.org_id,

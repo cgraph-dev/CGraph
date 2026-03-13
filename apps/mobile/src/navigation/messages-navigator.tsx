@@ -59,7 +59,7 @@ export default function MessagesNavigator() {
       {/* Phase 34 Screens */}
       <Stack.Screen
         name="SecretChat"
-        component={SecretChatScreen}
+        component={SecretChatScreen as any}
         options={{ title: 'Secret Chat', headerShown: false }}
       />
       <Stack.Screen

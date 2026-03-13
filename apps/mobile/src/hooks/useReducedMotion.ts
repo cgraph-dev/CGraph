@@ -12,7 +12,7 @@ import { useSettingsStore } from '@/stores/settingsStore';
  */
 export function useReducedMotion(): boolean {
   const osReduced = useReanimatedReducedMotion();
-  const appReduced = useSettingsStore((s) => s.reduceMotion);
+  const appReduced = useSettingsStore((s) => s.settings.appearance.reduceMotion);
   return osReduced || appReduced;
 }
 

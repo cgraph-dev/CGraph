@@ -19,7 +19,7 @@ import {
   leaveGroup as leaveGroupApi,
   createGroup as createGroupApi,
   type Group,
-  type _GroupChannel,
+  type GroupChannel,
   type GroupMember,
   type CreateGroupRequest,
 } from '../services/groupsService';

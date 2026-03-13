@@ -173,7 +173,7 @@ export default function MentionInput({
         style={[
           styles.input,
           {
-            backgroundColor: colors.input || colors.surface,
+            backgroundColor: colors.input,
             color: colors.text,
             borderColor: colors.border,
           },

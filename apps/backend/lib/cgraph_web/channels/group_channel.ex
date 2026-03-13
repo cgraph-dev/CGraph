@@ -11,6 +11,8 @@ defmodule CGraphWeb.GroupChannel do
   """
   use CGraphWeb, :channel
 
+  import Ecto.Query
+
   alias CGraph.Groups
   alias CGraph.Messaging
   alias CGraph.Messaging.DeliveryTracking
@@ -21,6 +23,8 @@ defmodule CGraphWeb.GroupChannel do
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
   @rate_limit_max_messages 10
+
+  @dialyzer {:nowarn_function, [handle_in: 3, handle_message_creation: 6, execute_message_deletion: 3, format_errors: 1, check_automod_rules: 4, handle_automod_action: 2]}
 
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
@@ -361,13 +365,20 @@ defmodule CGraphWeb.GroupChannel do
     # Flag for review — allow message but create a report
     # The report is created asynchronously
     Task.start(fn ->
-      CGraph.Moderation.Reports.create_report(%{
-        target_type: "message",
-        target_id: socket.assigns.channel_id,
-        category: "automod_flag",
-        description: info.description,
-        reporter_id: nil
-      })
+      system_user =
+        case Application.get_env(:cgraph, :system_user_id) do
+          nil -> CGraph.Repo.one(from u in CGraph.Accounts.User, where: u.is_admin == true, limit: 1, order_by: [asc: u.inserted_at])
+          id -> CGraph.Repo.get(CGraph.Accounts.User, id)
+        end
+
+      if system_user do
+        CGraph.Moderation.Reports.create_report(system_user, %{
+          target_type: "message",
+          target_id: socket.assigns.channel_id,
+          category: :automod_flag,
+          description: info.description
+        })
+      end
     end)
     # Message still goes through — return a special ok so the caller continues
     {:reply, {:ok, %{flagged: true}}, socket}

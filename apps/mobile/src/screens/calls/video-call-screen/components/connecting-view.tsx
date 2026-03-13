@@ -33,7 +33,6 @@ export function ConnectingView({
             source={
               recipientAvatar
                 ? { uri: recipientAvatar }
-                // @ts-expect-error - require returns number type for images
                 : require('@/assets/default-avatar.png')
             }
             size={140}

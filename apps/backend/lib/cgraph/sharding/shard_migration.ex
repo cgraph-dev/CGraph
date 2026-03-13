@@ -118,11 +118,6 @@ defmodule CGraph.Sharding.ShardMigration do
         Logger.info("[ShardMigration] Merge complete: #{count} rows merged")
 
         {:ok, report}
-
-      {:error, reason} = err ->
-        emit_telemetry(:merge_failed, %{sources: source_shards, reason: inspect(reason)})
-        Logger.error("[ShardMigration] Merge failed: #{inspect(reason)}")
-        err
     end
   end
 
@@ -165,7 +160,7 @@ defmodule CGraph.Sharding.ShardMigration do
       counts = Enum.map(distribution, fn [_bucket, count] -> count end)
 
       {cv, mean} =
-        if length(counts) > 0 do
+        if counts != [] do
           m = Enum.sum(counts) / length(counts)
 
           variance =

@@ -108,6 +108,7 @@ export async function setupMobileE2EE(
       } as any,
     };
 
+    // @ts-expect-error - setE2EEEnabled exists at runtime but may be missing from type defs
     await room.setE2EEEnabled(true, e2eeOptions);
 
     roomE2EEState.set(room.name, {

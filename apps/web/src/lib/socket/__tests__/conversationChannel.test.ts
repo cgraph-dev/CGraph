@@ -37,9 +37,21 @@ vi.mock('@/modules/chat/store', () => ({
   },
 }));
 
-vi.mock('../../logger', () => ({
-  socketLogger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
-}));
+vi.mock('../../logger', () => {
+  const loggerMock = { log: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(), info: vi.fn() };
+  return {
+    socketLogger: loggerMock,
+    createLogger: vi.fn(() => ({ ...loggerMock })),
+    logger: loggerMock,
+    e2eeLogger: loggerMock,
+    authLogger: loggerMock,
+    apiLogger: loggerMock,
+    forumLogger: loggerMock,
+    chatLogger: loggerMock,
+    themeLogger: loggerMock,
+    routeLogger: loggerMock,
+  };
+});
 
 vi.mock('../../apiUtils', () => ({
   normalizeMessage: vi.fn((msg: unknown) => msg),

@@ -6,18 +6,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  HeartIcon: ({ className }: { className?: string }) => (
-    <span data-testid="heart-icon" className={className} />
-  ),
-  ClockIcon: ({ className }: { className?: string }) => (
-    <span data-testid="clock-icon" className={className} />
-  ),
-  MagnifyingGlassIcon: ({ className }: { className?: string }) => (
-    <span data-testid="search-icon" className={className} />
-  ),
-}));
-
 import { EmptyState } from '../gif-picker/empty-state';
 
 describe('GifPicker EmptyState', () => {
@@ -33,7 +21,7 @@ describe('GifPicker EmptyState', () => {
 
   it('renders heart icon for favorites', () => {
     render(<EmptyState type="favorites" />);
-    expect(screen.getByTestId('heart-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-HeartIcon')).toBeInTheDocument();
   });
 
   it('renders recent empty state', () => {
@@ -48,7 +36,7 @@ describe('GifPicker EmptyState', () => {
 
   it('renders clock icon for recent', () => {
     render(<EmptyState type="recent" />);
-    expect(screen.getByTestId('clock-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-ClockIcon')).toBeInTheDocument();
   });
 
   it('renders search empty state', () => {
@@ -63,6 +51,6 @@ describe('GifPicker EmptyState', () => {
 
   it('renders search icon for search', () => {
     render(<EmptyState type="search" />);
-    expect(screen.getByTestId('search-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-MagnifyingGlassIcon')).toBeInTheDocument();
   });
 });

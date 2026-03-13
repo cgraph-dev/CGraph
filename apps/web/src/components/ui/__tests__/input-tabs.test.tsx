@@ -53,14 +53,14 @@ describe('Input', () => {
   it('applies error styling when error is set', () => {
     render(<Input error="Invalid input" data-testid="err-input" />);
     const input = screen.getByTestId('err-input');
-    expect(input.className).toContain('border-red-300');
+    expect(input.className).toContain('border-red-500/60');
   });
 
   it('applies normal border when no error', () => {
     render(<Input data-testid="ok-input" />);
     const input = screen.getByTestId('ok-input');
-    expect(input.className).toContain('border-gray-300');
-    expect(input.className).not.toContain('border-red-300');
+    expect(input.className).toContain('border-white/[0.08]');
+    expect(input.className).not.toContain('border-red-500/60');
   });
 
   it('error message has error color', () => {

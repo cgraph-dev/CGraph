@@ -9,7 +9,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSecretChatStore } from '@/stores/secretChatStore';
 import type { SecretThemeColors } from '@/screens/secret-chat/theme-colors';
@@ -26,7 +26,7 @@ interface PanicWipeButtonProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export function PanicWipeButton({ themeColors }: PanicWipeButtonProps) {
+export function PanicWipeButton({ themeColors: _themeColors }: PanicWipeButtonProps) {
   const panicWipe = useSecretChatStore((s) => s.panicWipe);
   const [isWiping, setIsWiping] = useState(false);
 

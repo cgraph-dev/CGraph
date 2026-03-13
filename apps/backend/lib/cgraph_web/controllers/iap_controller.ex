@@ -87,35 +87,29 @@ defmodule CGraphWeb.IAPController do
   def restore(conn, _params) do
     user = conn.assigns.current_user
 
-    case IAPValidator.restore_purchases(user) do
-      {:ok, receipts} ->
-        Logger.info("iap_purchases_restored",
-          user_id: user.id,
-          count: length(receipts)
-        )
+    {:ok, receipts} = IAPValidator.restore_purchases(user)
 
-        conn
-        |> put_status(:ok)
-        |> json(%{
-          success: true,
-          data: %{
-            restored_count: length(receipts),
-            receipts:
-              Enum.map(receipts, fn r ->
-                %{
-                  platform: r.platform,
-                  product_id: r.product_id,
-                  expires_at: r.expires_at && DateTime.to_iso8601(r.expires_at)
-                }
-              end)
-          }
-        })
+    Logger.info("iap_purchases_restored",
+      user_id: user.id,
+      count: length(receipts)
+    )
 
-      {:error, reason} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{success: false, error: format_error(reason)})
-    end
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      success: true,
+      data: %{
+        restored_count: length(receipts),
+        receipts:
+          Enum.map(receipts, fn r ->
+            %{
+              platform: r.platform,
+              product_id: r.product_id,
+              expires_at: r.expires_at && DateTime.to_iso8601(r.expires_at)
+            }
+          end)
+      }
+    })
   end
 
   # ---------------------------------------------------------------------------
@@ -231,7 +225,7 @@ defmodule CGraphWeb.IAPController do
     end
   end
 
-  defp verify_apple_certificate_chain(%{"x5c" => x5c_chain}) when is_list(x5c_chain) and length(x5c_chain) > 0 do
+  defp verify_apple_certificate_chain(%{"x5c" => x5c_chain}) when is_list(x5c_chain) and x5c_chain != [] do
     # Verify the leaf certificate chains up to a known Apple root CA
     try do
       leaf_der = Base.decode64!(List.first(x5c_chain))
@@ -348,5 +342,4 @@ defmodule CGraphWeb.IAPController do
 
   defp error_code(reason) when is_atom(reason), do: Atom.to_string(reason)
   defp error_code({tag, _}), do: Atom.to_string(tag)
-  defp error_code(_), do: "unknown"
 end

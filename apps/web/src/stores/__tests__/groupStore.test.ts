@@ -348,7 +348,7 @@ describe('groupStore', () => {
       expect(mockedApi.post).toHaveBeenCalledWith('/api/v1/groups', {
         name: 'Test Group',
         description: 'A test group',
-        isPublic: false,
+        visibility: 'private',
       });
     });
 

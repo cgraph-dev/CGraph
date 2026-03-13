@@ -17,7 +17,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  _FlatList,
+  FlatList,
   RefreshControl,
   SectionList,
 } from 'react-native';

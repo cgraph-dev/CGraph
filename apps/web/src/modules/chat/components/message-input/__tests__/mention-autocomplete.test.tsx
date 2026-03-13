@@ -2,6 +2,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 
+vi.mock('motion/react', () => ({
+  motion: new Proxy({} as Record<string, unknown>, {
+    get: (_t: unknown, prop: string) =>
+      ({ children, ...rest }: any) => {
+        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...safe } = rest;
+        return <div data-motion={prop} {...safe}>{children}</div>;
+      },
+  }),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
 vi.mock('@/stores/theme', () => ({
   useThemeStore: vi.fn((sel?: (s: Record<string, unknown>) => unknown) => {
     const __ts = {
@@ -183,7 +194,18 @@ vi.mock('@/stores/theme', () => ({
 
 vi.mock('@/lib/api', () => ({
   api: {
-    get: vi.fn().mockRejectedValue(new Error('API unavailable')),
+    get: vi.fn().mockImplementation((_url: string, opts?: { params?: { q?: string } }) => {
+      const q = (opts?.params?.q ?? '').toLowerCase();
+      const allUsers = [
+        { id: '1', username: 'alice', display_name: 'Alice', avatar_url: null },
+        { id: '2', username: 'bob', display_name: 'Bob', avatar_url: null },
+        { id: '3', username: 'charlie', display_name: 'Charlie', avatar_url: null },
+      ];
+      const filtered = allUsers.filter(
+        (u) => u.username.includes(q) || u.display_name.toLowerCase().includes(q)
+      );
+      return Promise.resolve({ data: { users: filtered } });
+    }),
   },
 }));
 
@@ -236,8 +258,10 @@ describe('MentionAutocomplete', () => {
     render(<MentionAutocomplete query="bob" onSelect={onSelect} onClose={onClose} />);
     await flushDebounce();
     expect(screen.getByText('@bob')).toBeInTheDocument();
-    const btn = screen.getByText('@bob').closest('button');
-    if (btn) fireEvent.click(btn);
+    // motion.button renders as <div data-motion="button">, so use closest('[data-motion="button"]')
+    const btn = screen.getByText('@bob').closest('[data-motion="button"]');
+    expect(btn).not.toBeNull();
+    fireEvent.click(btn!);
     expect(onSelect).toHaveBeenCalledWith('bob');
   });
 

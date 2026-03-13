@@ -57,7 +57,7 @@ export function useBiometricAuth() {
 /**
  * Re-export the context hook with haptic feedback wrappers
  */
-export function useAuthStore() {
+export function useAuthWithHaptics() {
   const auth = useAuthStore();
   
   const loginWithHaptics = useCallback(async (email: string, password: string) => {

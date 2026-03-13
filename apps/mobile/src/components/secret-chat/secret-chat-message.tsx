@@ -39,7 +39,7 @@ function formatTime(timestamp: number): string {
 
 export function SecretChatMessage({ message, themeColors }: SecretChatMessageProps) {
   const timeStr = useMemo(() => formatTime(message.timestamp), [message.timestamp]);
-  const isOwn = message.isOwn;
+  const { isOwn } = message;
 
   return (
     <View style={[styles.container, isOwn ? styles.containerSent : styles.containerReceived]}>

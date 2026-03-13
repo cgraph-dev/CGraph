@@ -23,38 +23,33 @@ defmodule CGraph.Workers.RevenueSplitWorker do
       }) do
     referral_id = Map.get(args, "referral_id")
 
-    case PremiumContent.calculate_revenue_split(thread_id, price_nodes) do
-      {:ok, split_result} ->
-        Logger.info(
-          "Revenue split processed for thread #{thread_id}: " <>
-            "creator=#{split_result.creator_amount}, " <>
-            "platform=#{split_result.platform_amount}, " <>
-            "referral=#{split_result.referral_amount}"
-        )
+    {:ok, split_result} = PremiumContent.calculate_revenue_split(thread_id, price_nodes)
 
-        # Record creator earnings
-        CGraph.Creators.record_earning(creator_id, %{
-          amount_cents: Decimal.to_integer(Decimal.round(split_result.creator_amount)),
-          source: "premium_thread",
-          source_id: thread_id,
-          currency: "nodes"
-        })
+    Logger.info(
+      "Revenue split processed for thread #{thread_id}: " <>
+        "creator=#{split_result.creator_amount}, " <>
+        "platform=#{split_result.platform_amount}, " <>
+        "referral=#{split_result.referral_amount}"
+    )
 
-        # Record referral earnings if applicable
-        if referral_id && Decimal.gt?(split_result.referral_amount, Decimal.new(0)) do
-          CGraph.Creators.record_earning(referral_id, %{
-            amount_cents: Decimal.to_integer(Decimal.round(split_result.referral_amount)),
-            source: "referral",
-            source_id: thread_id,
-            currency: "nodes"
-          })
-        end
+    # Record creator earnings
+    CGraph.Creators.record_earning(creator_id, %{
+      amount_cents: Decimal.to_integer(Decimal.round(split_result.creator_amount)),
+      source: "premium_thread",
+      source_id: thread_id,
+      currency: "nodes"
+    })
 
-        :ok
-
-      {:error, reason} ->
-        Logger.error("Revenue split failed for thread #{thread_id}: #{inspect(reason)}")
-        {:error, reason}
+    # Record referral earnings if applicable
+    if referral_id && Decimal.gt?(split_result.referral_amount, Decimal.new(0)) do
+      CGraph.Creators.record_earning(referral_id, %{
+        amount_cents: Decimal.to_integer(Decimal.round(split_result.referral_amount)),
+        source: "referral",
+        source_id: thread_id,
+        currency: "nodes"
+      })
     end
+
+    :ok
   end
 end

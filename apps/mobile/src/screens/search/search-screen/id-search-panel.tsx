@@ -9,6 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../components/ui/glass-card';
 import { styles } from './styles';
+import type { ThemeColors } from '@/stores';
 
 interface IdSearchPanelProps {
   idSearchType: 'user' | 'group' | 'forum';
@@ -16,7 +17,7 @@ interface IdSearchPanelProps {
   idSearchValue: string;
   setIdSearchValue: (value: string) => void;
   onSearch: () => void;
-  colors: Record<string, string>;
+  colors: ThemeColors;
 }
 
 export function IdSearchPanel({

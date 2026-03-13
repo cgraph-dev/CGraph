@@ -12,6 +12,15 @@ defmodule CGraph.DataExport.Processor do
   alias CGraph.Repo
   alias CGraph.DataExport.{Delivery, Formatter, Storage}
 
+  @dialyzer {:nowarn_function,
+             do_export_user_data: 2,
+             do_export_query: 2,
+             process_user_export: 4,
+             process_query_export: 3,
+             collect_source_data: 2,
+             finalize_export: 5,
+             mark_export_failed: 2}
+
   @export_table :cgraph_exports
 
   @user_data_sources %{

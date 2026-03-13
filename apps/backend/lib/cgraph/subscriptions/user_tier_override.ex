@@ -39,6 +39,8 @@ defmodule CGraph.Subscriptions.UserTierOverride do
     rate_limit_multiplier
   )
 
+  @type t :: %__MODULE__{}
+
   schema "user_tier_overrides" do
     field :limit_key, :string
     field :override_value, :string

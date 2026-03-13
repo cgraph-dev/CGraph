@@ -100,7 +100,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
       try {
         const res = await fetch('/api/v1/forums/tags');
         if (res.ok) {
-          const json = await res.json();
+          const json = (await res.json()) as { data?: Array<{ id: string; name: string; color?: string }> };
           setAvailableTags(json.data || []);
         }
       } catch {
@@ -232,7 +232,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
           {[1, 2, 3].map((i) => (
             <View
               key={i}
-              style={[styles.skeleton, { backgroundColor: colors.surfaceHover || colors.surface }]}
+              style={[styles.skeleton, { backgroundColor: colors.surfaceHover }]}
             />
           ))}
         </View>
@@ -266,7 +266,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search bar */}
       <View style={[styles.searchBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.inputWrapper, { backgroundColor: colors.input || colors.surfaceHover || colors.surface }]}>
+          <View style={[styles.inputWrapper, { backgroundColor: colors.input }]}>
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
             style={[styles.input, { color: colors.text }]}
@@ -295,7 +295,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
               style={[
                 styles.chip,
                 {
-                  backgroundColor: isActive ? colors.primary + '20' : colors.surfaceHover || colors.surface,
+                  backgroundColor: isActive ? colors.primary + '20' : colors.surfaceHover,
                   borderColor: isActive ? colors.primary : colors.border,
                 },
               ]}

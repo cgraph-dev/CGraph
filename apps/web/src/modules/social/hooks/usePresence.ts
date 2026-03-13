@@ -68,6 +68,7 @@ export function usePresence(): PresenceState {
     }
 
     // Join presence lobby
+    let cleanupChannel: (() => void) | undefined;
     const channel = socketManager.joinPresenceLobby();
     if (channel) {
       setIsConnected(true);
@@ -92,7 +93,7 @@ export function usePresence(): PresenceState {
       const statusRef = channel.on('friend_status_changed', handleStatusChanged);
 
       // Cleanup channel listener on unmount
-      var cleanupChannel = () => {
+      cleanupChannel = () => {
         channel.off('friend_status_changed', statusRef);
       };
     }

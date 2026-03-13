@@ -120,8 +120,7 @@ const PLACEHOLDER_LAYOUTS: ProfileLayout[] = [
 /** Profile layouts customization screen. */
 export default function ProfileLayoutsScreen() {
   const navigation = useNavigation();
-  const theme = useThemeStore((s) => s.theme);
-  const isDark = theme === 'dark';
+  const isDark = useThemeStore((s) => s.isDark);
 
   const [layouts, setLayouts] = useState<ProfileLayout[]>(PLACEHOLDER_LAYOUTS);
 

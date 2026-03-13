@@ -24,7 +24,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
-import type { CustomEmoji, AnimationFormat, FALLBACK_CATEGORIES, FALLBACK_EMOJIS } from './types';
+import { FALLBACK_CATEGORIES, FALLBACK_EMOJIS } from './types';
+import type { CustomEmoji, AnimationFormat } from './types';
 import { EmojiItem } from './emoji-item';
 import { AddEmojiModal } from './add-emoji-modal';
 import { styles } from './styles';
@@ -47,7 +48,7 @@ export default function CustomEmojiScreen() {
     try {
       setIsLoading(true);
       const response = await api.get('/api/v1/emojis/custom');
-      const data = response.data;
+      const { data } = response;
 
       if (data.emojis) {
         setEmojis(

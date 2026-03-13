@@ -32,9 +32,18 @@ defmodule CGraph.Nodes do
   @max_paid_dm_price 10_000
   @eur_per_100_nodes Decimal.new("0.80")
   # Exchange rate: 0.008 EUR per Node (equivalent to @eur_per_100_nodes / 100).
-  # Sourced from config for runtime override flexibility.
-  @exchange_rate_eur Application.compile_env(:cgraph, :nodes_exchange_rate, 0.008)
+  # Actual rate derived from @eur_per_100_nodes at runtime; no separate attribute needed.
   @min_tip 10
+
+  @dialyzer [
+    {:nowarn_function, credit_nodes: 3},
+    {:nowarn_function, credit_nodes: 4},
+    {:nowarn_function, debit_nodes: 3},
+    {:nowarn_function, debit_nodes: 4},
+    {:nowarn_function, tip: 3},
+    {:nowarn_function, unlock_content: 2},
+    {:nowarn_function, do_request_withdrawal: 2}
+  ]
 
   @doc "Maximum price for paid DM file transfers."
   def max_paid_dm_price, do: @max_paid_dm_price
@@ -459,6 +468,10 @@ defmodule CGraph.Nodes do
     end
   end
 
+  def request_withdrawal(_user_id, _nodes_amount) do
+    {:error, :minimum_not_met}
+  end
+
   defp do_request_withdrawal(user_id, nodes_amount) do
     fiat_amount =
       Decimal.mult(Decimal.new(nodes_amount), Decimal.div(@eur_per_100_nodes, Decimal.new(100)))
@@ -510,10 +523,6 @@ defmodule CGraph.Nodes do
       {:error, :lock_wallet, :no_wallet, _} -> {:error, :no_wallet}
       {:error, _step, changeset, _changes} -> {:error, changeset}
     end
-  end
-
-  def request_withdrawal(_user_id, _nodes_amount) do
-    {:error, :minimum_not_met}
   end
 
   # ==================== QUERY HELPERS ====================

@@ -27,7 +27,7 @@ defmodule CGraph.Messaging.ChatPoll do
 
     belongs_to :conversation, CGraph.Messaging.Conversation
     belongs_to :creator, CGraph.Accounts.User
-    has_many :votes, ChatPollVote
+    has_many :votes, ChatPollVote, foreign_key: :poll_id
 
     timestamps()
   end

@@ -7,7 +7,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('framer-motion', () => ({
+vi.mock('motion/react', () => ({
   motion: {
     button: ({
       children,
@@ -74,7 +74,7 @@ describe('CategoryButton', () => {
   it('applies inactive styles when isActive is false', () => {
     render(<CategoryButton {...makeProps({ isActive: false })} />);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-dark-700');
+    expect(button.className).toContain('bg-white/[0.06]');
   });
 
   it('renders different category names', () => {

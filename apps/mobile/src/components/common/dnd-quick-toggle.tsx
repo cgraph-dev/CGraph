@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native';
-import type { useThemeStore } from '@/stores';
+import { useThemeStore } from '@/stores';
 import api from '../../lib/api';
 
 interface DndState {

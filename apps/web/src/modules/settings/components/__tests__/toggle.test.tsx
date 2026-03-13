@@ -7,7 +7,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('framer-motion', () => ({
+vi.mock('motion/react', () => ({
   motion: {
     button: ({
       children,
@@ -78,7 +78,7 @@ describe('Toggle', () => {
   it('applies disabled styles when not enabled', () => {
     render(<Toggle {...defaultProps} enabled={false} />);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-dark-600');
+    expect(button.className).toContain('bg-white/[0.08]');
   });
 
   it('applies glow effect when enabled', () => {

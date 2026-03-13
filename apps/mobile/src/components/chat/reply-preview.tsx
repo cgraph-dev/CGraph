@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Avatar } from '../ui/avatar';
+import Avatar from '../ui/avatar';
 import { space, radius } from '../../theme/tokens';
 
 interface ReplyPreviewProps {

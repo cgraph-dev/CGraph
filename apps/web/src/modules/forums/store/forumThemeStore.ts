@@ -25,6 +25,11 @@ export type ForumThemePreset =
   | 'sunset-gradient'
   | 'arctic-frost'
   | 'volcanic'
+  | 'forest'
+  | 'ocean'
+  | 'sunset'
+  | 'neon'
+  | 'monochrome'
   | 'custom';
 
 export type ForumTitleAnimation =
@@ -182,7 +187,7 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
   },
   forest: {
     name: 'Forest',
-    preset: 'fantasy-guild',
+    preset: 'forest',
     colors: {
       ...DEFAULT_FORUM_COLORS,
       primary: '#2D6A4F',
@@ -201,7 +206,7 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
   },
   ocean: {
     name: 'Ocean',
-    preset: 'arctic-frost',
+    preset: 'ocean',
     colors: {
       ...DEFAULT_FORUM_COLORS,
       primary: '#0077B6',
@@ -220,7 +225,7 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
   },
   sunset: {
     name: 'Sunset',
-    preset: 'sunset-gradient',
+    preset: 'sunset',
     colors: {
       ...DEFAULT_FORUM_COLORS,
       primary: '#E63946',
@@ -239,7 +244,7 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
   },
   neon: {
     name: 'Neon',
-    preset: 'matrix-code',
+    preset: 'neon',
     colors: {
       ...DEFAULT_FORUM_COLORS,
       primary: '#39FF14',
@@ -258,7 +263,7 @@ export const FORUM_THEME_PRESETS: Record<string, Partial<ForumTheme>> = {
   },
   monochrome: {
     name: 'Monochrome',
-    preset: 'minimal-pro',
+    preset: 'monochrome',
     colors: {
       ...DEFAULT_FORUM_COLORS,
       primary: '#FFFFFF',

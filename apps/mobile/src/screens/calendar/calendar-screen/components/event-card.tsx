@@ -8,7 +8,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import type { CalendarEvent, EVENT_TYPE_CONFIG, formatTime } from '../types';
+import { EVENT_TYPE_CONFIG, formatTime } from '../types';
+import type { CalendarEvent } from '../types';
 
 interface EventCardProps {
   event: CalendarEvent;

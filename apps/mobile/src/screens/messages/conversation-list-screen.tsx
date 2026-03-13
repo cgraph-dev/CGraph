@@ -63,31 +63,25 @@ export default function ConversationListScreen({ navigation }: Props) {
     const currentUserId = user?.id;
     const otherParticipant = currentUserId
       ? item.participants?.find((p: ConversationParticipant) => {
-          // @ts-expect-error - flexible participant shape
-          const pId = p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
+          const pId = p.userId || p.user_id || p.user?.id || p.id;
           return String(pId) !== String(currentUserId);
         })
       : item.participants?.[0];
 
     const displayName =
       item.name || otherParticipant?.nickname ||
-      // @ts-expect-error - flexible participant shape
-      (otherParticipant?.user as Record<string, unknown>)?.display_name ||
+      otherParticipant?.user?.display_name ||
       otherParticipant?.display_name ||
-      // @ts-expect-error - flexible participant shape
-      (otherParticipant?.user as Record<string, unknown>)?.username ||
+      otherParticipant?.user?.username ||
       otherParticipant?.username || 'Unknown';
 
-    // @ts-expect-error - flexible participant shape
-    const avatarUrl = (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
-      otherParticipant?.avatar_url;
+    const avatarUrl: string | undefined = otherParticipant?.user?.avatar_url as string | undefined ??
+      otherParticipant?.avatar_url as string | undefined;
 
     const otherUserId = otherParticipant?.userId || otherParticipant?.user_id ||
-      // @ts-expect-error - flexible participant shape
-      (otherParticipant?.user as Record<string, unknown>)?.id || '';
+      otherParticipant?.user?.id || '';
     const isOnline = onlineUsers.has(String(otherUserId));
-    // @ts-expect-error - flexible participant shape
-    const isPremium = (otherParticipant?.user as Record<string, unknown>)?.is_premium || false;
+    const isPremium = Boolean(otherParticipant?.user?.is_premium);
 
     return (
       <AnimatedConversationItem

@@ -5,7 +5,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ModerationQueue } from '../moderation-queue';
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+function Wrapper({ children }: { children: React.ReactNode }) {
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+}
 
 const mockFetchQueue = vi.fn();
 const mockApproveItem = vi.fn();
@@ -39,12 +45,12 @@ describe('ModerationQueue', () => {
   });
 
   it('renders the heading', () => {
-    render(<ModerationQueue />);
+    render(<ModerationQueue />, { wrapper: Wrapper });
     expect(screen.getByText('Moderation Queue')).toBeInTheDocument();
   });
 
   it('calls fetchModerationQueue on mount', () => {
-    render(<ModerationQueue />);
+    render(<ModerationQueue />, { wrapper: Wrapper });
     expect(mockFetchQueue).toHaveBeenCalled();
   });
 
@@ -59,12 +65,12 @@ describe('ModerationQueue', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    render(<ModerationQueue />);
+    render(<ModerationQueue />, { wrapper: Wrapper });
     expect(screen.getByText('Loading queue…')).toBeInTheDocument();
   });
 
   it('shows empty state when no items', () => {
-    render(<ModerationQueue />);
+    render(<ModerationQueue />, { wrapper: Wrapper });
     expect(screen.getByText('No items in queue')).toBeInTheDocument();
   });
 
@@ -95,7 +101,7 @@ describe('ModerationQueue', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    render(<ModerationQueue />);
+    render(<ModerationQueue />, { wrapper: Wrapper });
     expect(screen.getByText('high')).toBeInTheDocument();
     expect(screen.getByText('Suspicious Post')).toBeInTheDocument();
     expect(screen.getByText('Approve')).toBeInTheDocument();

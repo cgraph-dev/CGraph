@@ -14,7 +14,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { NotificationSettings, useSettingsStore, useThemeStore } from '@/stores';
+import { useSettingsStore, useThemeStore } from '@/stores';
+import type { NotificationSettings } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {

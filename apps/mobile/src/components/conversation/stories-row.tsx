@@ -4,7 +4,7 @@
  */
 import React, { memo } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
-import { Avatar } from '../ui/avatar';
+import Avatar from '../ui/avatar';
 import { space } from '../../theme/tokens';
 
 interface StoryUser {

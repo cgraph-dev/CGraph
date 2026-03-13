@@ -21,7 +21,7 @@ import {
   ActivityIndicator,
   Animated,
   Keyboard,
-  _Alert,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';

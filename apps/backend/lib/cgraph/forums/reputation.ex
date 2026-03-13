@@ -92,7 +92,6 @@ defmodule CGraph.Forums.Reputation do
       Enum.reduce(members, 0, fn member, acc ->
         case recalculate_member(member) do
           {:ok, _} -> acc + 1
-          _ -> acc
         end
       end)
 

@@ -56,7 +56,7 @@ const formatTime = (seconds: number): string => {
 export const VideoPlayerComponent = memo(function VideoPlayerComponent({
   videoUrl,
   duration,
-  _onClose,
+  onClose,
 }: VideoPlayerComponentProps) {
   const player = useVideoPlayer(videoUrl, (p) => {
     p.loop = false;

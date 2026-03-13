@@ -59,6 +59,11 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
 
   @behaviour Plug
 
+  @dialyzer {:nowarn_function, call: 2}
+  @dialyzer {:nowarn_function, emit_telemetry: 4}
+  @dialyzer {:nowarn_function, add_retry_after_header: 2}
+  @dialyzer {:nowarn_function, send_rate_limit_response: 3}
+
   # Trusted proxy CIDR ranges - only trust forwarded headers from these IPs
   # Configure via: config :cgraph, CGraphWeb.Plugs.RateLimiterV2, trusted_proxies: [...]
   @default_trusted_proxies [

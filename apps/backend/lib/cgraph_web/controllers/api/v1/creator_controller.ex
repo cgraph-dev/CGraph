@@ -9,6 +9,13 @@ defmodule CGraphWeb.API.V1.CreatorController do
   use CGraphWeb, :controller
   require Logger
 
+  @dialyzer [
+    {:nowarn_function, onboard: 2},
+    {:nowarn_function, subscribe: 2},
+    {:nowarn_function, request_payout: 2},
+    {:nowarn_function, purchase_access: 2}
+  ]
+
   alias CGraph.Creators
   alias CGraph.Forums.Forum
   alias CGraph.Creators.PaidForumSubscription

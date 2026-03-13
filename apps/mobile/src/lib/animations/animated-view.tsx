@@ -43,7 +43,7 @@ export function AnimatedView({
   springConfig = 'default',
   style,
   loop,
-  _onAnimationComplete,
+  onAnimationComplete,
 }: AnimatedViewProps) {
   const EnteringAnimation = ENTERING_PRESETS[entering];
   const ExitingAnimation = EXITING_PRESETS[exiting];
@@ -64,7 +64,7 @@ export function AnimatedView({
     if (!loop || !LOOP_ANIMATIONS[loop]) return {};
 
     const loopConfig = LOOP_ANIMATIONS[loop];
-    const keyframes = loopConfig.keyframes;
+    const { keyframes } = loopConfig;
     const step = loopProgress.value * (keyframes.length - 1);
     const currentIndex = Math.floor(step);
     const nextIndex = Math.min(currentIndex + 1, keyframes.length - 1);

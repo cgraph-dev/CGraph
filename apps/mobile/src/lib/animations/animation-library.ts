@@ -37,7 +37,7 @@ export interface SpringConfig {
  * Use this when passing to withSpring() to avoid type errors.
  */
 export function getSpringConfig(config: SpringConfig): WithSpringConfig {
-  const { _name, _description, ...springConfig } = config;
+  const { name: _name, description: _description, ...springConfig } = config;
    
   return springConfig as WithSpringConfig;
 }
@@ -104,12 +104,12 @@ export interface TimingConfig extends WithTimingConfig {
 }
 
 export const TIMING_PRESETS: Record<string, TimingConfig> = {
-  instant: { duration: durations.instant, easing: Easing.out(Easing.ease), name: 'Instant' },
-  quick: { duration: durations.normal, easing: Easing.out(Easing.ease), name: 'Quick' },
-  default: { duration: durations.slow, easing: Easing.inOut(Easing.ease), name: 'Default' },
-  smooth: { duration: durations.smooth, easing: Easing.inOut(Easing.ease), name: 'Smooth' },
-  slow: { duration: durations.dramatic, easing: Easing.inOut(Easing.ease), name: 'Slow' },
-  verySlow: { duration: durations.verySlow, easing: Easing.inOut(Easing.ease), name: 'Very Slow' },
+  instant: { duration: durations.instant.ms, easing: Easing.out(Easing.ease), name: 'Instant' },
+  quick: { duration: durations.normal.ms, easing: Easing.out(Easing.ease), name: 'Quick' },
+  default: { duration: durations.slow.ms, easing: Easing.inOut(Easing.ease), name: 'Default' },
+  smooth: { duration: durations.smooth.ms, easing: Easing.inOut(Easing.ease), name: 'Smooth' },
+  slow: { duration: durations.dramatic.ms, easing: Easing.inOut(Easing.ease), name: 'Slow' },
+  verySlow: { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.ease), name: 'Very Slow' },
 };
 
 // ============================================================================

@@ -23,8 +23,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore, useAuthStore } from '@/stores';
 import api from '../../lib/api';
-import IdentityCard from '../../components/forums/identity-card';
-import type { NameplateSnapshot } from '../../components/forums/identity-card';
+import IdentityCard, { type NameplateSnapshot } from '../../components/forums/identity-card';
 import { ForumsStackParamList } from '../../types';
 
 // ---------------------------------------------------------------------------
@@ -84,7 +83,7 @@ export default function IdentityCardScreen({ navigation }: Props) {
   useEffect(() => {
     navigation.setOptions({ title: 'Identity Card' });
     loadIdentityData();
-  }, []);
+  }, [navigation]);
 
   const loadIdentityData = async () => {
     try {

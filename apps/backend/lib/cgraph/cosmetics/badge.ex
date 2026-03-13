@@ -17,6 +17,8 @@ defmodule CGraph.Cosmetics.Badge do
   @unlock_types ~w(default achievement level purchase event season gift prestige)
   @categories ~w(social competitive creative milestone seasonal event special)
 
+  @type t :: %__MODULE__{}
+
   schema "badges" do
     field :slug, :string
     field :name, :string

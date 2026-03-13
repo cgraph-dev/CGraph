@@ -311,7 +311,7 @@ describe('FriendStore', () => {
       useFriendStore.setState({ friends: [mockFriend, mockFriend2] });
       mockedApi.delete.mockResolvedValueOnce({} as AxiosResponse);
 
-      await useFriendStore.getState().removeFriend('friend-1');
+      await useFriendStore.getState().removeFriend('fs-1');
 
       const s = useFriendStore.getState();
       expect(s.friends).toHaveLength(1);
@@ -320,13 +320,13 @@ describe('FriendStore', () => {
 
     it('calls correct endpoint', async () => {
       mockedApi.delete.mockResolvedValueOnce({} as AxiosResponse);
-      await useFriendStore.getState().removeFriend('friend-1');
-      expect(mockedApi.delete).toHaveBeenCalledWith('/api/v1/friends/friend-1');
+      await useFriendStore.getState().removeFriend('fs-1');
+      expect(mockedApi.delete).toHaveBeenCalledWith('/api/v1/friends/fs-1');
     });
 
     it('sets error on failure', async () => {
       mockedApi.delete.mockRejectedValueOnce(new Error('fail'));
-      await expect(useFriendStore.getState().removeFriend('friend-1')).rejects.toThrow();
+      await expect(useFriendStore.getState().removeFriend('fs-1')).rejects.toThrow();
       expect(useFriendStore.getState().error).toBe('fail');
     });
   });

@@ -49,7 +49,7 @@ export function Heatmap({
 }: HeatmapProps) {
   const [selectedCell, setSelectedCell] = useState<HeatmapData | null>(null);
 
-  const { startDate, _endDate, weeks } = useMemo(() => {
+  const { startDate, endDate, weeks } = useMemo(() => {
     const end = propEndDate || new Date();
     const start = propStartDate || new Date(end.getTime() - 365 * 24 * 60 * 60 * 1000);
     const adjustedStart = new Date(start);

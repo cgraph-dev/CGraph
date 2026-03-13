@@ -18,13 +18,13 @@ defmodule CGraph.Sharding.ConsistentHash do
   @type node_id :: atom() | String.t()
   @type t :: %__MODULE__{
           vnodes_per_shard: pos_integer(),
-          ring: :gb_trees.tree(non_neg_integer(), node_id()),
-          nodes: MapSet.t(node_id())
+          ring: term(),
+          nodes: %{optional(node_id()) => true}
         }
 
   defstruct vnodes_per_shard: 256,
             ring: :gb_trees.empty(),
-            nodes: MapSet.new()
+            nodes: %{}
 
   @ring_size 4_294_967_296  # 2^32
 
@@ -47,7 +47,7 @@ defmodule CGraph.Sharding.ConsistentHash do
   """
   @spec add_node(t(), node_id()) :: t()
   def add_node(%__MODULE__{nodes: nodes} = ring, node_id) do
-    if MapSet.member?(nodes, node_id) do
+    if is_map_key(nodes, node_id) do
       ring
     else
       new_ring =
@@ -56,7 +56,7 @@ defmodule CGraph.Sharding.ConsistentHash do
           :gb_trees.enter(hash, node_id, acc)
         end)
 
-      %{ring | ring: new_ring, nodes: MapSet.put(nodes, node_id)}
+      %{ring | ring: new_ring, nodes: Map.put(nodes, node_id, true)}
     end
   end
 
@@ -68,7 +68,7 @@ defmodule CGraph.Sharding.ConsistentHash do
   """
   @spec remove_node(t(), node_id()) :: t()
   def remove_node(%__MODULE__{nodes: nodes} = ring, node_id) do
-    if MapSet.member?(nodes, node_id) do
+    if is_map_key(nodes, node_id) do
       new_ring =
         Enum.reduce(0..(ring.vnodes_per_shard - 1), ring.ring, fn vnode_idx, acc ->
           hash = hash_key("#{node_id}:vnode:#{vnode_idx}")
@@ -79,7 +79,7 @@ defmodule CGraph.Sharding.ConsistentHash do
           end
         end)
 
-      %{ring | ring: new_ring, nodes: MapSet.delete(nodes, node_id)}
+      %{ring | ring: new_ring, nodes: Map.delete(nodes, node_id)}
     else
       ring
     end
@@ -125,12 +125,12 @@ defmodule CGraph.Sharding.ConsistentHash do
       []
     else
       ring = ch_ring.ring
-      total_nodes = MapSet.size(ch_ring.nodes)
+      total_nodes = map_size(ch_ring.nodes)
       n = min(n, total_nodes)
 
       hash = hash_key(key)
       iter = :gb_trees.iterator_from(hash, ring)
-      collect_unique_nodes(iter, ring, n, MapSet.new(), [])
+      collect_unique_nodes(iter, ring, n, %{}, [])
     end
   end
 
@@ -138,13 +138,13 @@ defmodule CGraph.Sharding.ConsistentHash do
   List all nodes currently in the ring.
   """
   @spec nodes(t()) :: [node_id()]
-  def nodes(%__MODULE__{nodes: nodes}), do: MapSet.to_list(nodes)
+  def nodes(%__MODULE__{nodes: nodes}), do: Map.keys(nodes)
 
   @doc """
   Return the number of nodes in the ring.
   """
   @spec size(t()) :: non_neg_integer()
-  def size(%__MODULE__{nodes: nodes}), do: MapSet.size(nodes)
+  def size(%__MODULE__{nodes: nodes}), do: map_size(nodes)
 
   # --- Private ---
 
@@ -157,14 +157,14 @@ defmodule CGraph.Sharding.ConsistentHash do
   defp collect_unique_nodes(iter, ring, remaining, seen, acc) do
     case :gb_trees.next(iter) do
       {_pos, node_id, next_iter} ->
-        if MapSet.member?(seen, node_id) do
+        if is_map_key(seen, node_id) do
           collect_unique_nodes(next_iter, ring, remaining, seen, acc)
         else
           collect_unique_nodes(
             next_iter,
             ring,
             remaining - 1,
-            MapSet.put(seen, node_id),
+            Map.put(seen, node_id, true),
             [node_id | acc]
           )
         end
@@ -181,13 +181,13 @@ defmodule CGraph.Sharding.ConsistentHash do
   defp collect_unique_nodes_nowrap(iter, remaining, seen, acc) do
     case :gb_trees.next(iter) do
       {_pos, node_id, next_iter} ->
-        if MapSet.member?(seen, node_id) do
+        if is_map_key(seen, node_id) do
           collect_unique_nodes_nowrap(next_iter, remaining, seen, acc)
         else
           collect_unique_nodes_nowrap(
             next_iter,
             remaining - 1,
-            MapSet.put(seen, node_id),
+            Map.put(seen, node_id, true),
             [node_id | acc]
           )
         end

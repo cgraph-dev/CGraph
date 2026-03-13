@@ -31,6 +31,8 @@ defmodule CGraph.Subscriptions.TierFeature do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
+  @type t :: %__MODULE__{}
+
   schema "tier_features" do
     field :feature_key, :string
     field :enabled, :boolean, default: true

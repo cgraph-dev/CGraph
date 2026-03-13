@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-  _TextInput,
-  _Modal,
+  TextInput,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -74,7 +74,7 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
             style={[styles.tab, activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setActiveTab(tab.key); }}
           >
-            <Ionicons name={tab.icon as string} size={20}
+            <Ionicons name={tab.icon as any} size={20}
               color={activeTab === tab.key ? colors.primary : colors.textSecondary} />
             <Text style={[styles.tabLabel, { color: activeTab === tab.key ? colors.primary : colors.textSecondary }]}>
               {tab.label}

@@ -238,7 +238,7 @@ describe('createUploadMorePrekeys', () => {
     const fn = createUploadMorePrekeys(set as never, get as never);
     const result = await fn(25);
 
-    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/e2ee/prekeys', expect.any(Object));
+    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/e2ee/keys/prekeys', expect.any(Object));
     expect(result).toBe(25);
     expect(state.prekeyCount).toBe(45); // 20 + 25
   });
@@ -317,7 +317,7 @@ describe('createRevokeDevice', () => {
     const fn = createRevokeDevice(set as never, get as never);
     await fn('dev-123');
 
-    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/keys/dev-123');
+    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/devices/dev-123');
     expect(mockClearE2EEData).toHaveBeenCalled();
     expect(state.isInitialized).toBe(false);
     expect(state.deviceId).toBeNull();
@@ -330,7 +330,7 @@ describe('createRevokeDevice', () => {
     const fn = createRevokeDevice(set as never, get as never);
     await fn('other-device');
 
-    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/keys/other-device');
+    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/devices/other-device');
     expect(mockClearE2EEData).not.toHaveBeenCalled();
     expect(state.isInitialized).toBe(true);
     expect(state.deviceId).toBe('dev-123');

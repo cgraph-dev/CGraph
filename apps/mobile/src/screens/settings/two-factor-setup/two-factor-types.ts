@@ -17,8 +17,7 @@ export interface TwoFactorSetupData {
 export type SetupStep = 'intro' | 'scan' | 'verify' | 'backup' | 'complete';
 
 export interface StepInfo {
-  id: string;
-  label: string;
+  title: string;
 }
 
 // =============================================================================
@@ -27,9 +26,10 @@ export interface StepInfo {
 
 export const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export const STEPS: StepInfo[] = [
-  { id: 'intro', label: 'Start' },
-  { id: 'scan', label: 'Scan' },
-  { id: 'verify', label: 'Verify' },
-  { id: 'backup', label: 'Backup' },
-];
+export const STEPS: Record<SetupStep, StepInfo> = {
+  intro: { title: 'Start' },
+  scan: { title: 'Scan' },
+  verify: { title: 'Verify' },
+  backup: { title: 'Backup' },
+  complete: { title: 'Complete' },
+};

@@ -24,7 +24,7 @@ import {
   NODES_EXCHANGE_RATE_EUR,
   MIN_WITHDRAWAL,
   PLATFORM_CUT_PERCENT,
-} from '@cgraph/shared-types/src/nodes';
+} from '@cgraph/shared-types/nodes';
 
 // ---------------------------------------------------------------------------
 // Payout methods
@@ -44,7 +44,7 @@ type PayoutMethodId = (typeof PAYOUT_METHODS)[number]['id'];
 
 export default function WithdrawalScreen(): React.ReactElement {
   const { colors } = useThemeStore();
-  const { balance, withdraw, isLoading } = useNodesStore();
+  const { balance, withdraw, isLoading: _isLoading } = useNodesStore();
 
   const [amountStr, setAmountStr] = useState('');
   const [payoutMethod, setPayoutMethod] = useState<PayoutMethodId>('bank_transfer');

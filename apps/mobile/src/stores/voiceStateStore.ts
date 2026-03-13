@@ -118,15 +118,16 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
         (resolve, reject) => {
           const timeout = setTimeout(() => reject(new Error('Join timeout')), 10000);
 
-          channel.on('phx_reply', (payload: Record<string, unknown>) => {
+          channel.on('phx_reply', (rawPayload?: unknown) => {
             clearTimeout(timeout);
+            const payload = rawPayload as Record<string, unknown>;
             const response = payload.response as { token: string; room_name: string } | undefined;
             if (response?.token) {
               resolve(response);
             }
           });
 
-          channel.on('phx_error', () => {
+          channel.on('phx_error', (_payload?: unknown) => {
             clearTimeout(timeout);
             reject(new Error('Channel join error'));
           });
@@ -134,7 +135,8 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
       );
 
       // Set up event handlers
-      channel.on('voice_member_joined', (payload: Record<string, unknown>) => {
+      channel.on('voice_member_joined', (rawPayload?: unknown) => {
+        const payload = rawPayload as Record<string, unknown>;
         get().addChannelMember(channelId, {
           userId: payload.user_id as string,
           username: payload.username as string,
@@ -146,11 +148,13 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
         });
       });
 
-      channel.on('voice_member_left', (payload: Record<string, unknown>) => {
+      channel.on('voice_member_left', (rawPayload?: unknown) => {
+        const payload = rawPayload as Record<string, unknown>;
         get().removeChannelMember(channelId, payload.user_id as string);
       });
 
-      channel.on('voice_state_update', (payload: Record<string, unknown>) => {
+      channel.on('voice_state_update', (rawPayload?: unknown) => {
+        const payload = rawPayload as Record<string, unknown>;
         get().updateMemberState(channelId, payload.user_id as string, {
           selfMute: payload.self_mute as boolean,
           selfDeafen: payload.self_deafen as boolean,
@@ -158,7 +162,8 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
         });
       });
 
-      channel.on('presence_state', (payload: Record<string, unknown>) => {
+      channel.on('presence_state', (rawPayload?: unknown) => {
+        const payload = rawPayload as Record<string, unknown>;
         const members = payload.members as VoiceMember[] | undefined;
         if (members) {
           get().setChannelMembers(channelId, members);
@@ -237,7 +242,7 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
     if (currentChannelId) {
       const topic = `voice:${currentChannelId}`;
       const channel = socketManager.getChannel?.(topic);
-      channel?.push(!isVideoOn ? 'video_on' : 'video_off', {});
+      channel?.push(isVideoOn ? 'video_off' : 'video_on', {});
     }
   },
 

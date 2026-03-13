@@ -156,7 +156,7 @@ export const AttachmentPreviewModal = memo(function AttachmentPreviewModal({
               <View style={[styles.fileIcon, { backgroundColor: colors.primary }]}>
                 <Ionicons
                    
-                  name={getFileIcon(attachment.mimeType) as string}
+                  name={getFileIcon(attachment.mimeType) as any}
                   size={48}
                   color="#fff"
                 />

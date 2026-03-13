@@ -41,7 +41,7 @@ vi.mock('../connectionLifecycle', () => ({
 }));
 
 vi.mock('../socketUtils', () => ({
-  sendTyping: vi.fn(),
+  sendTypingDebounced: vi.fn(),
   sendReaction: vi.fn(),
   peekConversationsPresence: vi.fn().mockResolvedValue(() => {}),
 }));
@@ -91,7 +91,7 @@ vi.mock('../threadChannel', () => ({
 
 import { SocketManager } from '../socket-manager';
 import { connectSocket, disconnectSocket } from '../connectionLifecycle';
-import { sendTyping, sendReaction } from '../socketUtils';
+import { sendTypingDebounced, sendReaction } from '../socketUtils';
 import {
   isFriendOnline as isFriendOnlineImpl,
   isUserOnline as isUserOnlineImpl,
@@ -160,12 +160,12 @@ describe('SocketManager (extended)', () => {
   describe('sendTyping variations', () => {
     it('sends typing started', () => {
       manager.sendTyping('conversation:c1', true);
-      expect(sendTyping).toHaveBeenCalledWith('conversation:c1', true, expect.any(Map));
+      expect(sendTypingDebounced).toHaveBeenCalledWith('conversation:c1', true, expect.any(Map));
     });
 
     it('sends typing stopped', () => {
       manager.sendTyping('conversation:c1', false);
-      expect(sendTyping).toHaveBeenCalledWith('conversation:c1', false, expect.any(Map));
+      expect(sendTypingDebounced).toHaveBeenCalledWith('conversation:c1', false, expect.any(Map));
     });
   });
 

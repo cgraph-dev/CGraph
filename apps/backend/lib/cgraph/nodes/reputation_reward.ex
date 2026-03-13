@@ -13,6 +13,8 @@ defmodule CGraph.Nodes.ReputationReward do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
+  @type t :: %__MODULE__{}
+
   schema "reputation_rewards" do
     belongs_to :user, CGraph.Accounts.User
 

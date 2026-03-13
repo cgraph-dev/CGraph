@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 
-import { useTheme } from '../../../theme/use-theme';
+import { useThemeStore } from '@/stores';
 
 // ── Types ──────────────────────────────────────────────────────────
 interface ModQueueItem {
@@ -33,7 +33,7 @@ interface ModQueueListProps {
 
 // ── Content Type Badge ─────────────────────────────────────────────
 function ContentTypeBadge({ type }: { type: ModQueueItem['content_type'] }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const config = {
     thread: { label: 'Thread', color: '#6366f1' },
@@ -77,7 +77,7 @@ function QueueItem({
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const handleSwipeOpen = useCallback(
     (direction: 'left' | 'right') => {
@@ -153,7 +153,7 @@ function QueueItem({
 
 // ── Empty State ────────────────────────────────────────────────────
 function EmptyQueue() {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={styles.emptyState}>
@@ -173,7 +173,7 @@ export function ModQueueList({
   onRefresh,
   refreshing,
 }: ModQueueListProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const renderItem = useCallback(
     ({ item }: { item: ModQueueItem }) => (

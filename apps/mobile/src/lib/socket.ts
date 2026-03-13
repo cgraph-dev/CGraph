@@ -1033,6 +1033,10 @@ class SocketManager {
     }
   }
 
+  getSocket(): Socket | null {
+    return this.socket;
+  }
+
   getChannel(topic: string): Channel | undefined {
     return this.channels.get(topic);
   }

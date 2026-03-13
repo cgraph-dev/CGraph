@@ -51,6 +51,7 @@ defmodule CGraph.Cache.RedisPool do
   end
 
   @doc "Initializes the process state."
+  @dialyzer {:nowarn_function, init: 1}
   @spec init(keyword()) :: {:ok, tuple()}
   @impl true
   def init(_opts) do

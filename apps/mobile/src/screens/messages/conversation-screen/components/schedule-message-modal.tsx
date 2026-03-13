@@ -213,7 +213,7 @@ export function ScheduleMessageModal({
         title: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 4 },
         subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: 16 },
         preview: {
-          backgroundColor: colors.surfaceHover ?? colors.input ?? '#222',
+          backgroundColor: colors.surfaceHover,
           borderRadius: 12,
           padding: 12,
           marginBottom: 16,
@@ -229,7 +229,7 @@ export function ScheduleMessageModal({
           paddingVertical: 10,
           paddingHorizontal: 14,
           borderRadius: 12,
-          backgroundColor: colors.surfaceHover ?? colors.input ?? '#222',
+          backgroundColor: colors.surfaceHover,
         },
         quickBtnActive: { backgroundColor: colors.primary + '33', borderWidth: 1, borderColor: colors.primary },
         quickBtnText: { fontSize: 14, color: colors.text },
@@ -260,7 +260,7 @@ export function ScheduleMessageModal({
           paddingVertical: 14,
           borderRadius: 12,
           alignItems: 'center',
-          backgroundColor: colors.surfaceHover ?? colors.input ?? '#222',
+          backgroundColor: colors.surfaceHover,
         },
         cancelText: { fontSize: 16, fontWeight: '600', color: colors.text },
         scheduleBtn: {

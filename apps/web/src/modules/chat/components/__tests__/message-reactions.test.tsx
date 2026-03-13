@@ -3,6 +3,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MessageReactions from '../message-reactions';
 
+vi.mock('motion/react', () => ({
+  motion: new Proxy({} as Record<string, unknown>, {
+    get: (_t: unknown, prop: string) =>
+      ({ children, ...rest }: any) => {
+        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...safe } = rest;
+        return <div data-motion={prop} {...safe}>{children}</div>;
+      },
+  }),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
 vi.mock('@heroicons/react/24/outline', () => ({
   FaceSmileIcon: () => <span data-testid="smile-icon" />,
   PlusIcon: () => <span data-testid="plus-icon" />,
@@ -10,6 +21,19 @@ vi.mock('@heroicons/react/24/outline', () => ({
 
 vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn() },
+}));
+
+vi.mock('@/lib/chat/reactionUtils', () => ({
+  getReactionAnimation: vi.fn(() => null),
+}));
+
+vi.mock('@/lib/lottie', () => ({
+  LottieRenderer: ({ emoji }: { emoji: string }) => <span>{emoji}</span>,
+  AnimatedEmoji: ({ emoji }: { emoji: string }) => <span>{emoji}</span>,
+}));
+
+vi.mock('@cgraph/animation-constants', () => ({
+  durations: { loop: { ms: 2000 } },
 }));
 
 const baseProps = {

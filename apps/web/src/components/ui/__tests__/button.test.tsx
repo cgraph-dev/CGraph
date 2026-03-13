@@ -33,7 +33,7 @@ describe('Button', () => {
   it('applies primary variant styles by default', () => {
     render(<Button>Default</Button>);
     const btn = screen.getByRole('button');
-    expect(btn.className).toContain('bg-indigo-600');
+    expect(btn.className).toContain('bg-gradient-to-r');
   });
 
   it('applies danger variant styles', () => {
@@ -45,7 +45,7 @@ describe('Button', () => {
   it('applies ghost variant styles', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const btn = screen.getByRole('button');
-    expect(btn.className).toContain('hover:bg-gray-100');
+    expect(btn.className).toContain('hover:bg-white/[0.06]');
   });
 
   it('applies outline variant styles', () => {

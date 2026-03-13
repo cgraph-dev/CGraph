@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  _Image,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -21,7 +20,8 @@ import { useAuthStore, useThemeStore } from '@/stores';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { SettingsStackParamList } from '../../types';
-import { AnimatedAvatar, GlassCard, TitleBadge } from '../../components';
+import { AnimatedAvatar, GlassCard } from '../../components';
+import { TitleBadge, type Rarity } from '../../components/ui/title-badge';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Profile'>;
@@ -34,9 +34,9 @@ export default function ProfileScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user, updateUser } = useAuthStore();
 
-  const [displayName, setDisplayName] = useState(user?.display_name || '');
-  const [username, setUsername] = useState(user?.username || '');
-  const [bio, setBio] = useState(user?.bio || '');
+  const [displayName, setDisplayName] = useState(user?.display_name ?? '');
+  const [username, setUsername] = useState(user?.username ?? '');
+  const [bio, setBio] = useState(user?.bio ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [isChangingUsername, setIsChangingUsername] = useState(false);
 
@@ -56,15 +56,15 @@ export default function ProfileScreen({ navigation }: Props) {
     if (!result.canceled && result.assets[0]) {
       // Upload image
       const formData = new FormData();
-      const uri = result.assets[0].uri;
-      const filename = uri.split('/').pop() || 'avatar.jpg';
+      const { uri } = result.assets[0];
+      const filename = uri.split('/').pop() ?? 'avatar.jpg';
 
        
       formData.append('avatar', {
         uri,
         name: filename,
         type: 'image/jpeg',
-      } as unknown);
+      } as unknown as Blob);
 
       try {
         const response = await api.post('/api/v1/me/avatar', formData, {
@@ -163,7 +163,7 @@ export default function ProfileScreen({ navigation }: Props) {
             <TitleBadge
               title={user.title}
                
-              rarity={(user.title_rarity as unknown) || 'common'}
+              rarity={(user.title_rarity as Rarity) ?? 'common'}
               animation="shimmer"
               showSparkles={true}
             />

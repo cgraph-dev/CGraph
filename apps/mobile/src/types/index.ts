@@ -34,7 +34,7 @@ export interface UserBasic {
   displayName?: string | null;
   avatar_url?: string | null;
   avatarUrl?: string | null;
-  status: string;
+  status?: string;
   karma?: number;
   is_verified?: boolean;
   is_premium?: boolean;
@@ -105,6 +105,8 @@ export interface Message {
     type?: string;
     favicon?: string;
   } | null;
+  // Thread information (populated by server for channel messages)
+  thread_count?: number;
   // Disappearing messages
   expires_at?: string | null;
 }
@@ -447,6 +449,7 @@ export type ForumsStackParamList = {
   ForumUserGroups: { forumId: string };
   BoardPermissions: { forumId: string; boardId: string; boardName?: string };
   IdentityCard: undefined;
+  ForumCustomization: { forumId: string };
 };
 
 export type SettingsStackParamList = {
@@ -486,6 +489,8 @@ export type SettingsStackParamList = {
   Customize: undefined;
   IdentityCustomization: undefined;
   EffectsCustomization: undefined;
+  BadgeSelection: undefined;
+  TitleSelection: undefined;
   ProfileCustomization: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
   // Legal screens
@@ -506,10 +511,12 @@ export type SettingsStackParamList = {
   ProfileLayouts: undefined;
   NodesWallet: undefined;
   NodesShop: undefined;
+  CoinShop: undefined;
   Withdrawal: undefined;
   // Phase 35 cosmetics screens
   CosmeticsInventory: undefined;
   CosmeticsEquip: { itemId: string; item: unknown };
+  PaidDmSettings: undefined;
 };
 
 // Friend types

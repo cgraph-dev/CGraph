@@ -32,4 +32,4 @@ export interface FloatingParticlesProps {
   isActive: boolean;
 }
 
-export { Group };
+export type { Group };

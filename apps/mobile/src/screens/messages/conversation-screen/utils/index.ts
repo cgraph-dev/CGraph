@@ -16,7 +16,7 @@ interface ProcessedReaction {
     username: string | null;
     display_name?: string | null;
     avatar_url?: string | null;
-    status: string;
+    status?: string;
   }>;
   hasReacted: boolean;
 }
@@ -387,8 +387,8 @@ export function isValidMessage(message: Message): boolean {
 
   // Must have content or media
   const hasTextContent =
-    message.content && message.content.trim().length > 0 && message.content !== '[Voice Message]';
-  const hasMediaUrl = message.metadata?.url || message.file_url;
+    !!message.content && message.content.trim().length > 0 && message.content !== '[Voice Message]';
+  const hasMediaUrl = !!(message.metadata?.url || message.file_url);
   const isVoiceWithUrl = message.type === 'voice' && hasMediaUrl;
   const isFileWithUrl = (message.type === 'file' || message.type === 'image') && hasMediaUrl;
 

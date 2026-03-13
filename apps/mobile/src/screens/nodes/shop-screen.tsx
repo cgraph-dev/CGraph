@@ -18,9 +18,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNodesStore } from '@/stores';
-import { useThemeStore } from '@/stores';
-import type { NodeBundle } from '@cgraph/shared-types/src/nodes';
+import { useNodesStore, useThemeStore } from '@/stores';
+import type { NodeBundle } from '@cgraph/shared-types/nodes';
 
 // ---------------------------------------------------------------------------
 // Default bundles (fallback if API hasn't loaded)

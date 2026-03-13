@@ -14,6 +14,8 @@ defmodule CGraph.Enterprise.OrgMembership do
   @derive {Jason.Encoder,
            only: [:id, :role, :joined_at, :org_id, :user_id, :inserted_at]}
 
+  @type t :: %__MODULE__{}
+
   schema "enterprise_org_memberships" do
     field :role, Ecto.Enum, values: [:owner, :admin, :member], default: :member
     field :joined_at, :utc_datetime_usec

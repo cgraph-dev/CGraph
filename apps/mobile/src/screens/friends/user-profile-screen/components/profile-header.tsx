@@ -8,10 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Avatar } from '../../../../components';
 import { formatKarma, type UserProfile } from '../types';
 import { styles } from '../styles';
+import type { ThemeColors } from '@/stores';
 
 interface ProfileHeaderProps {
   user: UserProfile;
-  colors: Record<string, string>;
+  colors: ThemeColors;
 }
 
 /** Profile header card with avatar, name, badges, and bio. */

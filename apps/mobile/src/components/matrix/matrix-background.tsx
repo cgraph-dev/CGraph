@@ -56,7 +56,7 @@ import Animated, {
 
 import type {
   MatrixBackgroundProps,
-  _MatrixBackgroundRef,
+  MatrixBackgroundRef,
   MatrixColumnData,
   MatrixChar,
   MatrixMobileTheme,

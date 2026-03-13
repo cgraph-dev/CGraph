@@ -14,6 +14,8 @@ defmodule CGraphWeb.NodesController do
 
   action_fallback CGraphWeb.FallbackController
 
+  @dialyzer {:nowarn_function, checkout: 2}
+
   plug CGraphWeb.Plugs.RateLimiterV2, [tier: :strict] when action in [:tip]
 
   @doc """

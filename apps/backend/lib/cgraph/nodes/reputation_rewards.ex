@@ -16,6 +16,8 @@ defmodule CGraph.Nodes.ReputationRewards do
 
   require Logger
 
+  @dialyzer {:nowarn_function, grant_milestone: 3}
+
   @milestones %{
     "helpful_votes_100" => %{check: :helpful_votes, threshold: 100, reward: 100},
     "helpful_votes_500" => %{check: :helpful_votes, threshold: 500, reward: 300},

@@ -884,6 +884,7 @@ describe('forumStore (module)', () => {
 
   describe('fetchThreadPrefixes', () => {
     it('should populate threadPrefixes with standard defaults', async () => {
+      mockedApi.get.mockRejectedValueOnce(new Error('not available'));
       await useForumStore.getState().fetchThreadPrefixes();
 
       const prefixes = useForumStore.getState().threadPrefixes;

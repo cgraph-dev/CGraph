@@ -106,10 +106,6 @@ defmodule CGraph.Gamification.AchievementSystem do
       # get! safe: ua.user_id FK from UserAchievement inside transaction
       user = Repo.get!(User, ua.user_id)
 
-      if achievement.xp_reward > 0 do
-        CGraph.Gamification.award_xp(user, achievement.xp_reward, "achievement",
-          description: "Unlocked: #{achievement.title}", reference_type: "achievement", reference_id: achievement.id)
-      end
       if achievement.coin_reward > 0 do
         CGraph.Nodes.credit_nodes(user.id, achievement.coin_reward, :purchase,
           description: "Achievement reward: #{achievement.title}", reference_type: "achievement", reference_id: achievement.id)

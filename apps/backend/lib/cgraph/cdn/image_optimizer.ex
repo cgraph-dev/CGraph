@@ -338,9 +338,6 @@ defmodule CGraph.CDN.ImageOptimizer do
                 |> Enum.reject(&is_nil/1)
 
               %{result | srcset: srcset_urls}
-
-            _ ->
-              result
           end
         else
           result

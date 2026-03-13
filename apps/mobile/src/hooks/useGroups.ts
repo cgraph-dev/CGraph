@@ -452,7 +452,7 @@ export function useGroups(options: UseGroupsOptions = {}): UseGroupsReturn {
   useEffect(() => {
     if (autoLoad) {
       if (isCacheValid(cacheRef.current.groups)) {
-        setState((prev) => ({ ...prev, groups: cacheRef.current.groups?.data }));
+        setState((prev) => ({ ...prev, groups: cacheRef.current.groups!.data }));
       } else {
         refreshGroups();
       }

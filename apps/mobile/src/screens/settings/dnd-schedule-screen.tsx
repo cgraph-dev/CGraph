@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { useSettingsStore, useThemeStore } from '@/stores';
+import { useSettingsStore, useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -116,8 +116,8 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
               <Text style={[styles.settingTitle, { color: colors.text }]}>Start Time</Text>
               <Picker
                 selectedValue={startTime}
-                onValueChange={setStartTime}
-                style={[styles.picker, { color: colors.text }]}
+                onValueChange={(v) => setStartTime(v)}
+                style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
                 {HOURS.map((h) => (
@@ -129,8 +129,8 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
               <Text style={[styles.settingTitle, { color: colors.text }]}>End Time</Text>
               <Picker
                 selectedValue={endTime}
-                onValueChange={setEndTime}
-                style={[styles.picker, { color: colors.text }]}
+                onValueChange={(v) => setEndTime(v)}
+                style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
                 {HOURS.map((h) => (
@@ -166,7 +166,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
           style={[
             styles.saveButton,
             { backgroundColor: colors.primary, opacity: isSaving ? 0.5 : 1 },
-          ]}
+          ] as any}
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Text>

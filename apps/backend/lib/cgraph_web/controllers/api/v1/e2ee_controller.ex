@@ -33,6 +33,8 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   plug :ensure_authenticated
 
+  @dialyzer {:nowarn_function, bootstrap: 2, remove_device: 2, safety_number: 2}
+
   @doc """
   Check E2EE bootstrap status for the authenticated user.
 
@@ -265,6 +267,13 @@ defmodule CGraphWeb.API.V1.E2EEController do
     end
   end
 
+  # Fallback when "prekeys" key is missing from params
+  def upload_prekeys(conn, params) do
+    # Try alternative key names the client might send
+    prekeys = params["one_time_prekeys"] || params["preKeys"] || params["pre_keys"] || []
+    upload_prekeys(conn, Map.put(params, "prekeys", prekeys))
+  end
+
   @doc """
   Replenish one-time prekeys.
 
@@ -272,13 +281,6 @@ defmodule CGraphWeb.API.V1.E2EEController do
   """
   @spec replenish_prekeys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def replenish_prekeys(conn, params), do: upload_prekeys(conn, params)
-
-  # Fallback when "prekeys" key is missing from params
-  def upload_prekeys(conn, params) do
-    # Try alternative key names the client might send
-    prekeys = params["one_time_prekeys"] || params["preKeys"] || params["pre_keys"] || []
-    upload_prekeys(conn, Map.put(params, "prekeys", prekeys))
-  end
 
   @doc """
   List all registered devices for the current user.

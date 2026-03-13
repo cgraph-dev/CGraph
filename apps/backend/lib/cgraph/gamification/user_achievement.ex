@@ -8,6 +8,8 @@ defmodule CGraph.Gamification.UserAchievement do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
+  @type t :: %__MODULE__{}
+
   schema "user_achievements" do
     belongs_to :user, CGraph.Accounts.User
     belongs_to :achievement, CGraph.Gamification.Achievement

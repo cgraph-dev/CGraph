@@ -32,7 +32,7 @@ type Props = {
 
 /** Login screen for user authentication. */
 export default function LoginScreen({ navigation }: Props) {
-  const { _colors } = useThemeStore();
+  const { colors: _colors } = useThemeStore();
   const { login } = useAuthStore();
   const { connect: connectWallet } = useWalletConnect();
 
@@ -99,6 +99,7 @@ export default function LoginScreen({ navigation }: Props) {
         }),
       ])
     ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePressIn = () => {
@@ -141,7 +142,6 @@ export default function LoginScreen({ navigation }: Props) {
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const err = error as {
         response?: {
           data?: {
@@ -156,7 +156,7 @@ export default function LoginScreen({ navigation }: Props) {
       let errorMessage = 'Invalid credentials';
 
       if (err.response?.data) {
-        const data = err.response.data;
+        const { data } = err.response;
         // Check for validation details first (most specific)
         if (data.details && typeof data.details === 'object') {
           const firstField = Object.keys(data.details)[0];
@@ -180,9 +180,7 @@ export default function LoginScreen({ navigation }: Props) {
 
       // Log for debugging in development
       if (__DEV__) {
-        if (__DEV__) {
-          console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
-        }
+        console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
       }
 
       Alert.alert('Login Failed', errorMessage);

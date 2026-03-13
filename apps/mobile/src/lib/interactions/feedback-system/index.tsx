@@ -15,6 +15,8 @@ export type {
   LoadingAnimationProps,
   EmptyStateProps,
   RippleProps,
+  PressStyle,
+  FeedbackIntensity,
 } from './types';
 
 // Re-export all components

@@ -6,10 +6,11 @@ import React from 'react';
 import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../styles';
+import type { ThemeColors } from '@/stores';
 
 interface FriendOptionsMenuProps {
   visible: boolean;
-  colors: Record<string, string>;
+  colors: ThemeColors;
   onClose: () => void;
   onInviteToForum: () => void;
   onMute: () => void;

@@ -4,7 +4,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import api from '../../../../lib/api';
-import type { AuditLog, DashboardStats, FALLBACK_AUDIT, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_STATS, RecentUser, Report } from '../types';
+import { FALLBACK_AUDIT, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_STATS } from '../types';
+import type { AuditLog, DashboardStats, RecentUser, Report } from '../types';
 
 export interface UseAdminDashboardReturn {
   stats: DashboardStats;

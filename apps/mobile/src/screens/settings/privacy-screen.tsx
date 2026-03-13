@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Switch, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { useSettingsStore, useThemeStore } from '@/stores';
+import { useSettingsStore, useThemeStore } from '@/stores';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -50,7 +50,7 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
 
   const toggleSetting = useCallback(
     async (key: BooleanSettingKey) => {
-      const currentValue = settings.privacy[key];
+      const currentValue = (settings.privacy as unknown as Record<string, boolean>)[key];
 
       try {
         await updatePrivacySettings({ [key]: !currentValue });
@@ -157,7 +157,7 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
         </Text>
       </View>
       <Switch
-        value={settings.privacy[item.key]}
+        value={(settings.privacy as unknown as Record<string, boolean>)[item.key]}
         onValueChange={() => toggleSetting(item.key)}
         disabled={isSaving}
         trackColor={{ false: colors.surfaceHover, true: colors.primary }}

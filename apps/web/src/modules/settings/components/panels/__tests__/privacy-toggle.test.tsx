@@ -45,7 +45,7 @@ describe('PrivacyToggle', () => {
   it('applies unchecked styles when checked is false', () => {
     render(<PrivacyToggle {...defaultProps} checked={false} />);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-dark-600');
+    expect(button.className).toContain('bg-white/[0.08]');
   });
 
   it('disables button when disabled is true', () => {

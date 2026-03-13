@@ -96,7 +96,7 @@ const CALL_STATES: Record<CallStatus, string> = {
  */
 export default function CallScreen({ navigation, route }: Props) {
   const { colors } = useThemeStore();
-  const { recipientId, callType, _incoming = false, _roomId } = route.params;
+  const { recipientId, callType, incoming = false, roomId } = route.params;
   const isGroupCall = route.params.isGroupCall ?? false;
 
   const [recipient, setRecipient] = useState<CallUser | null>(null);
@@ -174,9 +174,9 @@ export default function CallScreen({ navigation, route }: Props) {
     }, 200);
 
     // Start or answer based on params
-    if (_incoming && _roomId) {
+    if (incoming && roomId) {
       setCallStatus('connecting');
-      manager.answerCall(_roomId, { video: callType === 'video', audio: true });
+      manager.answerCall(roomId, { video: callType === 'video', audio: true });
     } else {
       setCallStatus('ringing');
       manager.startCall(recipientId, { video: callType === 'video', audio: true });

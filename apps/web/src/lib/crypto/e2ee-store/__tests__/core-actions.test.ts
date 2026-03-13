@@ -242,7 +242,7 @@ describe('createResetE2EE', () => {
     const reset = createResetE2EE(set as never, get as never);
     await reset();
 
-    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/keys/dev-old');
+    expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/e2ee/devices/dev-old');
     expect(mockClearE2EEData).toHaveBeenCalled();
     expect(mockSessionManager.destroyAllSessions).toHaveBeenCalled();
     expect(state.isInitialized).toBe(false);
@@ -276,7 +276,7 @@ describe('createGetRecipientBundle', () => {
     const result = await getBundle('u1');
 
     expect(result).toEqual(freshBundle);
-    expect(mockApi.get).toHaveBeenCalledWith('/api/v1/e2ee/bundle/u1');
+    expect(mockApi.get).toHaveBeenCalledWith('/api/v1/e2ee/keys/u1');
   });
 
   it('fetches from server when not in cache', async () => {
@@ -286,7 +286,7 @@ describe('createGetRecipientBundle', () => {
     const getBundle = createGetRecipientBundle(set as never, get as never);
     await getBundle('u-new');
 
-    expect(mockApi.get).toHaveBeenCalledWith('/api/v1/e2ee/bundle/u-new');
+    expect(mockApi.get).toHaveBeenCalledWith('/api/v1/e2ee/keys/u-new');
   });
 });
 

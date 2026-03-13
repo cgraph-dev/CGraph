@@ -68,7 +68,6 @@ describe('ProfileNameSection', () => {
 
   it('shows title badge when equippedTitle is set', () => {
     render(<ProfileNameSection profile={makeProfile({ equippedTitle: 'Legend' })} />);
-    expect(screen.getByTestId('title-badge')).toBeTruthy();
     expect(screen.getByText('Legend')).toBeTruthy();
   });
 

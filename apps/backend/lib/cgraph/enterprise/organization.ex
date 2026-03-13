@@ -19,6 +19,8 @@ defmodule CGraph.Enterprise.Organization do
              :max_members, :inserted_at, :updated_at
            ]}
 
+  @type t :: %__MODULE__{}
+
   schema "enterprise_organizations" do
     field :name, :string
     field :slug, :string

@@ -58,7 +58,7 @@ export function useClickOutside(
     // Delay adding the listener so the opening click's mousedown is not caught
     const timer = setTimeout(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        const target = event.target;
+        const { target } = event;
         if (ref.current && target instanceof Node && !ref.current.contains(target)) {
           onClose();
         }
@@ -79,13 +79,11 @@ export function useClickOutside(
  * Hook to filter emojis based on search query and category.
  */
 export function useFilteredEmojis(searchQuery: string, activeCategory: EmojiCategory) {
-  const filteredEmojis = searchQuery.trim()
+  return searchQuery.trim()
     ? Object.values(EMOJI_CATEGORIES)
         .flat()
         .filter((emoji) => emoji.includes(searchQuery.trim()))
     : EMOJI_CATEGORIES[activeCategory];
-
-  return filteredEmojis;
 }
 
 /**

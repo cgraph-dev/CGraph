@@ -11,6 +11,8 @@ defmodule CGraphWeb.ConversationChannel do
   """
   use CGraphWeb, :channel
 
+  @dialyzer [{:nowarn_function, handle_in: 3}]
+
   alias CGraph.Accounts.Friends
   alias CGraph.Messaging
   alias CGraph.Messaging.DeliveryTracking

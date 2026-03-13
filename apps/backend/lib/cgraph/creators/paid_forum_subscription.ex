@@ -12,6 +12,8 @@ defmodule CGraph.Creators.PaidForumSubscription do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime]
 
+  @type t :: %__MODULE__{}
+
   schema "paid_forum_subscriptions" do
     belongs_to :forum, CGraph.Forums.Forum
     belongs_to :subscriber, CGraph.Accounts.User

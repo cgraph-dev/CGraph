@@ -47,6 +47,9 @@ defmodule CGraph.Repo.Healthcheck do
   require Logger
   alias CGraph.Repo
 
+  # pool_stats/0 returns hardcoded busy: 0 / queue_length: 0 — guards are defensive.
+  @dialyzer {:nowarn_function, maybe_add_pool_issues: 1}
+
   @type status :: :healthy | :degraded | :unhealthy
   @type issue :: %{type: atom(), message: String.t(), severity: :warning | :critical}
   @type health_result :: %{

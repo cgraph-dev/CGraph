@@ -230,7 +230,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
         <Animated.View
           style={[
             styles.reactionEmoji,
-            emojiAnimatedStyle,
+            emojiAnimatedStyle as Record<string, unknown>,
           ]}
         >
           <LottieRenderer
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   reactionEmoji: {
-    fontSize: 16,
+    // fontSize handled by LottieRenderer size prop
   },
   reactionCount: {
     fontSize: 12,

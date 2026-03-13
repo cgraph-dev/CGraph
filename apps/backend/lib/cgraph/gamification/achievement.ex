@@ -14,6 +14,8 @@ defmodule CGraph.Gamification.Achievement do
   @categories ~w(social content exploration mastery legendary secret)
   @rarities ~w(common uncommon rare epic legendary mythic)
 
+  @type t :: %__MODULE__{}
+
   schema "achievements" do
     field :slug, :string
     field :title, :string

@@ -8,7 +8,7 @@ import { Message } from '../../../../types';
 
 interface UseMessageActionWrappersOptions {
   selectedMessage: Message | null;
-  inputRef: RefObject<TextInput>;
+  inputRef: RefObject<TextInput | null>;
   setReplyingTo: (message: Message | null) => void;
   closeMessageActions: () => void;
   clearReply: () => void;

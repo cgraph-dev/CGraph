@@ -43,6 +43,8 @@ defmodule CGraph.Performance.QueryOptimizer do
   import Ecto.Query
   require Logger
 
+  @dialyzer {:nowarn_function, detect_n_plus_one: 1}
+
   alias CGraph.Repo
 
   @default_batch_size 100

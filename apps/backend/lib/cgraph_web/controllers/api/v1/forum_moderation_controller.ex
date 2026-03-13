@@ -13,6 +13,8 @@ defmodule CGraphWeb.API.V1.ForumModerationController do
 
   use CGraphWeb, :controller
 
+  @dialyzer {:nowarn_function, action: 2}
+
   alias CGraph.Forums.{Moderation, ForumAutomod}
   alias CGraph.Repo
 

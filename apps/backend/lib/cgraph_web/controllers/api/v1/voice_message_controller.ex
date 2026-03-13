@@ -194,7 +194,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
     if encryption_params["is_metadata_encrypted"] == true or encryption_params["is_metadata_encrypted"] == "true" do
       case voice_message
-           |> VoiceMessage.encryption_changeset(encryption_params)
+           |> VoiceMessage.changeset(encryption_params)
            |> Repo.update() do
         {:ok, updated} -> updated
         {:error, _} -> voice_message

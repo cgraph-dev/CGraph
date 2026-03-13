@@ -141,43 +141,41 @@ export function useConversationData({
           id: extractedOtherUserId,
           username:
              
-            (otherParticipant?.user as Record<string, unknown>)?.username ||
+            ((otherParticipant?.user as Record<string, unknown>)?.username as string | undefined) ||
             otherParticipant?.username ||
             null,
           display_name:
              
-            (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+            ((otherParticipant?.user as Record<string, unknown>)?.displayName as string | undefined) ||
              
-            (otherParticipant?.user as Record<string, unknown>)?.display_name ||
+            ((otherParticipant?.user as Record<string, unknown>)?.display_name as string | undefined) ||
             null,
           avatar_url:
              
-            (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
+            ((otherParticipant?.user as Record<string, unknown>)?.avatarUrl as string | undefined) ||
              
-            (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
+            ((otherParticipant?.user as Record<string, unknown>)?.avatar_url as string | undefined) ||
             null,
           status: 'offline',
         };
         setOtherUser(otherUserInfo);
 
         // Extract display name
-        const displayName =
+        const displayName = String(
           conv.name ||
           otherParticipant?.nickname ||
-           
           (otherParticipant?.user as Record<string, unknown>)?.displayName ||
-           
           (otherParticipant?.user as Record<string, unknown>)?.display_name ||
           otherParticipant?.displayName ||
           otherParticipant?.display_name ||
-           
           (otherParticipant?.user as Record<string, unknown>)?.username ||
           otherParticipant?.username ||
-          'Conversation';
+          'Conversation',
+        );
 
         // Extract last seen
          
-        const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
+        const lastSeen = ((otherParticipant?.user as Record<string, unknown>)?.lastSeenAt as string | undefined) || null;
 
         // Check presence
         const isOnline =
@@ -189,8 +187,7 @@ export function useConversationData({
           displayName,
           otherParticipantId: extractedOtherUserId,
           otherUser: otherUserInfo,
-           
-          lastSeen: lastSeen as string | null,
+          lastSeen,
           isOnline,
         });
       }

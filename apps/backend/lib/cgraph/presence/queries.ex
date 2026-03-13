@@ -10,6 +10,8 @@ defmodule CGraph.Presence.Queries do
   alias CGraph.Presence
   alias CGraph.Presence.Sampled
 
+  @dialyzer {:nowarn_function, list_room_users: 1}
+
   @typing_timeout_ms 5_000
 
   # Redis keys for scalable global presence

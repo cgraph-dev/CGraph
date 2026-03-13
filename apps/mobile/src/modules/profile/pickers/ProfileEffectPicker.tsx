@@ -183,7 +183,7 @@ function ThumbnailCell({ item, isSelected, isLocked, onPress, cellWidth }: Thumb
   );
 
   const selectedIsOwned = isOwned(selectedId);
-  const selectedRarity = selectedEffect ? RARITY_COLORS[selectedEffect.rarity] : RARITY_COLORS.FREE;
+  const selectedRarity = selectedEffect ? RARITY_COLORS[selectedEffect.rarity] : RARITY_COLORS.free;
 
   // Preview dimensions
   const previewWidth = isWide ? Math.round(screenWidth * 0.45) : Math.round(screenWidth * 0.7);

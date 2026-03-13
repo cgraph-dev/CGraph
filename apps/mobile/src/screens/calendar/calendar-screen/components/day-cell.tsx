@@ -7,7 +7,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { AnimationColors } from '@/lib/animations/animation-engine';
-import type { CalendarEvent, EVENT_TYPE_CONFIG } from '../types';
+import { EVENT_TYPE_CONFIG } from '../types';
+import type { CalendarEvent } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = (SCREEN_WIDTH - 32) / 7;

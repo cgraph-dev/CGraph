@@ -12,6 +12,8 @@ vi.mock('../message-bubble/icons', () => ({
   PinIcon: () => <span data-testid="pin-icon" />,
   ForwardIcon: () => <span data-testid="forward-icon" />,
   DeleteIcon: () => <span data-testid="delete-icon" />,
+  BookmarkIcon: () => <span data-testid="bookmark-icon" />,
+  BookmarkFilledIcon: () => <span data-testid="bookmark-filled-icon" />,
 }));
 
 import { MessageActionMenu } from '../message-bubble/message-action-menu';

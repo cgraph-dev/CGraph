@@ -11,7 +11,7 @@
 
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { Linking, Alert, Platform } from 'react-native';
-import { authService } from '@/services/api';
+import { authApi as authService } from '@/services/api';
 
 interface WalletState {
   address: string | null;
@@ -55,20 +55,18 @@ export function MobileWalletProvider({ children }: WalletProviderProps) {
     setState((prev) => ({ ...prev, isConnecting: connecting }));
   }, []);
 
-  const requestChallenge = useCallback(async (address: string) => {
-    const response = await authService.walletChallenge({ wallet_address: address });
-    return response;
-  }, []);
+  const requestChallenge = useCallback(
+    (address: string) => authService.walletChallenge({ wallet_address: address }),
+    [],
+  );
 
   const verifySignature = useCallback(
-    async (address: string, signature: string, message: string) => {
-      const response = await authService.walletLogin({
+    (address: string, signature: string, message: string) =>
+      authService.walletLogin({
         wallet_address: address,
         signature,
         message,
-      });
-      return response;
-    },
+      }),
     [],
   );
 

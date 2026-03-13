@@ -237,8 +237,8 @@ vi.mock('@/components/shaders/shader-background', () => ({
   default: () => <div data-testid="shader-background" />,
 }));
 
-vi.mock('@/components/navigation/animated-logo', () => ({
-  default: () => <div data-testid="animated-logo" />,
+vi.mock('@/components/logo/logo-icon', () => ({
+  LogoIcon: () => <div data-testid="animated-logo" />,
 }));
 
 vi.mock('@/components/theme/themed-avatar', () => ({

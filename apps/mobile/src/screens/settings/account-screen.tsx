@@ -286,7 +286,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
               </Text>
               {user?.wallet_address ? (
                 <Text style={[styles.connectedValue, { color: colors.textSecondary }]}>
-                  {user.wallet_address.slice(0, 6)}...{user.wallet_address.slice(-4)}
+                  {(user.wallet_address as string).slice(0, 6)}...{(user.wallet_address as string).slice(-4)}
                 </Text>
               ) : (
                 <Text style={[styles.connectedValue, { color: colors.textTertiary }]}>

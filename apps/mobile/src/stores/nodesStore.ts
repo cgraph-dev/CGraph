@@ -10,12 +10,12 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { nodesService } from '../services/nodesService';
-import type {
-  NodeWallet,
-  NodeTransaction,
-  NodeBundle,
-} from '@cgraph/shared-types/src/nodes';
-import { NODES_EXCHANGE_RATE_EUR } from '@cgraph/shared-types/src/nodes';
+import {
+  type NodeWallet,
+  type NodeTransaction,
+  type NodeBundle,
+  NODES_EXCHANGE_RATE_EUR,
+} from '@cgraph/shared-types/nodes';
 
 // ---------------------------------------------------------------------------
 // Constants

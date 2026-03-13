@@ -32,6 +32,8 @@ defmodule CGraph.Operations.CapacityPlanner do
 
   require Logger
 
+  @dialyzer {:nowarn_function, collect_forecasts: 0}
+
   @type metric_name :: atom()
   @type data_point :: %{timestamp: DateTime.t(), value: number()}
   @type forecast :: %{
@@ -53,7 +55,6 @@ defmodule CGraph.Operations.CapacityPlanner do
           suggestion: String.t()
         }
 
-  # Threshold configuration
   @thresholds %{
     cpu_percent: %{critical: 90, warning: 70, low: 30},
     memory_percent: %{critical: 95, warning: 80, low: 40},

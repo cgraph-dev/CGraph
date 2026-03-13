@@ -40,12 +40,11 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
     <Animated.View
       style={[
         {
-           
-          width: width as unknown,
+          width: width as number | string,
           height,
           borderRadius,
           backgroundColor: colors.border,
-        },
+        } as Record<string, unknown>,
         animatedOpacityStyle,
         style,
       ]}

@@ -18,6 +18,8 @@ defmodule CGraphWeb.Api.PaymentController do
 
   action_fallback CGraphWeb.FallbackController
 
+  @dialyzer {:nowarn_function, create_checkout: 2}
+
   @doc """
   Creates a Stripe Checkout session for subscription.
 

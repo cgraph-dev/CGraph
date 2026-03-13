@@ -117,7 +117,11 @@ export async function sync(force = false): Promise<SyncStats | null> {
           throw new Error(`Pull failed: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await response.json() as {
+          changes: SyncDatabaseChangeSet;
+          timestamp: number;
+          conflicts?: number;
+        };
         pulled = countChanges(data.changes);
         conflicts = data.conflicts ?? 0;
 
@@ -299,15 +303,16 @@ export async function enqueueOfflineOperation(params: {
       record.priority = params.priority ?? 3; // NORMAL
       record.endpoint = params.endpoint;
       record.method = params.method;
-      record._raw.payload_json = JSON.stringify(params.payload ?? {});
-      record._raw.headers_json = params.headers ? JSON.stringify(params.headers) : null;
+      const raw = record._raw as Record<string, unknown>;
+      raw.payload_json = JSON.stringify(params.payload ?? {});
+      raw.headers_json = params.headers ? JSON.stringify(params.headers) : null;
       record.retryCount = 0;
       record.maxRetries = params.maxRetries ?? 5;
       record.lastError = null;
       record.status = 'pending';
-      record._raw.metadata_json = params.metadata ? JSON.stringify(params.metadata) : null;
-      record._raw.created_at = now;
-      record._raw.updated_at = now;
+      raw.metadata_json = params.metadata ? JSON.stringify(params.metadata) : null;
+      raw.created_at = now;
+      raw.updated_at = now;
     });
   });
 }

@@ -65,7 +65,7 @@ export function AnimatedFriendItem({ item, index, onPress, colors, isOnline }: P
 
   const displayName = item.user.display_name || item.user.username || 'User';
   const avatarUrl = item.user.avatar_url;
-  const isPremium = (item.user as Record<string, unknown>).is_premium || false;
+  const isPremium = !!(item.user as Record<string, unknown>).is_premium;
 
   const getBorderAnimation = (): 'none' | 'glow' | 'holographic' | 'rainbow' => {
     if (isPremium) return 'holographic';

@@ -152,6 +152,8 @@ export function HolographicDemoScreen({ navigation }: Props) {
       {/* Notification */}
       {showNotification && (
         <HolographicNotification
+          visible={showNotification}
+          title={`${notificationType.charAt(0).toUpperCase()}${notificationType.slice(1)}`}
           message={`This is a ${notificationType} notification with holographic styling!`}
           type={notificationType}
           onDismiss={() => setShowNotification(false)}
@@ -378,19 +380,19 @@ export function HolographicDemoScreen({ navigation }: Props) {
             <HolographicContainer config={{ colorTheme: selectedTheme }} style={styles.demoContainer}>
               <View style={styles.progressDemo}>
                 <HolographicProgress
-                  value={progressValue}
-                  size="sm"
+                  progress={progressValue / 100}
+                  height={4}
                   colorTheme={selectedTheme}
                 />
                 <HolographicProgress
-                  value={progressValue}
-                  size="md"
+                  progress={progressValue / 100}
+                  height={8}
                   colorTheme={selectedTheme}
                   style={styles.progressSpacing}
                 />
                 <HolographicProgress
-                  value={progressValue}
-                  size="lg"
+                  progress={progressValue / 100}
+                  height={12}
                   colorTheme={selectedTheme}
                   style={styles.progressSpacing}
                 />

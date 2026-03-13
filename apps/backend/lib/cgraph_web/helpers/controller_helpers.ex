@@ -174,7 +174,7 @@ defmodule CGraphWeb.ControllerHelpers do
       iex> render_error(conn, 404, "not_found")
       # => conn |> put_status(404) |> json(%{error: "not_found"})
   """
-  @spec render_error(Plug.Conn.t(), integer(), String.t()) :: Plug.Conn.t()
+  @spec render_error(Plug.Conn.t(), Plug.Conn.status(), term()) :: Plug.Conn.t()
   def render_error(conn, status_code, message) do
     conn
     |> Plug.Conn.put_status(status_code)

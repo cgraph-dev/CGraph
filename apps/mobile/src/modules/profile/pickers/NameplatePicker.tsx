@@ -165,7 +165,7 @@ function NameplateRow({ item, isSelected, isLocked, displayName, onPress }: Name
   );
 
   const selectedIsOwned = isOwned(selectedId);
-  const selectedRarity = selectedEntry ? RARITY_COLORS[selectedEntry.rarity] : RARITY_COLORS.FREE;
+  const selectedRarity = selectedEntry ? RARITY_COLORS[selectedEntry.rarity] : RARITY_COLORS.free;
 
   // ── Render row ──────────────────────────────────────────────────────────
 

@@ -171,7 +171,7 @@ export default function WhosOnlineScreen() {
       setIsLoading(true);
 
       const response = await api.get('/api/v1/presence/online');
-      const data = response.data;
+      const { data } = response;
 
       // Set users
       const userList = transformApiUsers(data.users || []);
@@ -274,7 +274,7 @@ export default function WhosOnlineScreen() {
       <FloatingOrbs />
 
       {/* Wave effect */}
-      <WaveEffect scrollY={scrollY} />
+      <WaveEffect scrollY={scrollY as any} />
 
       {/* Header with parallax */}
       <Animated.View
@@ -335,7 +335,7 @@ export default function WhosOnlineScreen() {
               user={item}
               index={index}
               onPress={() => handleUserPress(item)}
-              scrollY={scrollY}
+              scrollY={scrollY as any}
             />
           )}
           contentContainerStyle={styles.listContent}
@@ -381,9 +381,8 @@ export default function WhosOnlineScreen() {
               <AnimatedRecordBadge
                 record={stats.record}
                 recordDate={stats.recordDate}
-                scrollY={scrollY}
+                scrollY={scrollY as any}
               />
-
               {/* Activity Breakdown with animations */}
               {showActivities && activities.length > 0 && (
                 <View style={styles.activitiesContainer}>

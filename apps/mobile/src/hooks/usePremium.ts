@@ -121,7 +121,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
 
   const refreshSubscription = useCallback(async () => {
     if (isCacheValid(cacheRef.current.subscription)) {
-      setState((prev) => ({ ...prev, subscription: cacheRef.current.subscription?.data }));
+      setState((prev) => ({ ...prev, subscription: cacheRef.current.subscription!.data ?? null }));
       return;
     }
 
@@ -142,7 +142,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
 
   const loadTiers = useCallback(async () => {
     if (isCacheValid(cacheRef.current.tiers)) {
-      setState((prev) => ({ ...prev, tiers: cacheRef.current.tiers?.data }));
+      setState((prev) => ({ ...prev, tiers: cacheRef.current.tiers!.data }));
       return;
     }
 
@@ -231,7 +231,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
 
   const refreshCoinBalance = useCallback(async () => {
     if (isCacheValid(cacheRef.current.coinBalance)) {
-      setState((prev) => ({ ...prev, coinBalance: cacheRef.current.coinBalance?.data }));
+      setState((prev) => ({ ...prev, coinBalance: cacheRef.current.coinBalance!.data ?? null }));
       return;
     }
 

@@ -23,6 +23,8 @@ defmodule CGraph.Forums.Post do
 
   @post_types ["text", "link", "image", "poll"]
 
+  @type t :: %__MODULE__{}
+
   schema "posts" do
     field :title, :string
     field :content, :string  # Markdown content for text posts

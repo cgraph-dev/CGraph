@@ -1,0 +1,59 @@
+## Chat Customization Diagnostics
+*WARNING: This file may contain sensitive information.*
+
+**Custom Agents**<br>
+*12 files loaded*
+
+.github/agents<br>
+├─ [`gsd-codebase-mapper.agent.md`](.github/agents/gsd-codebase-mapper.agent.md)<br>
+├─ [`gsd-debugger.agent.md`](.github/agents/gsd-debugger.agent.md)<br>
+├─ [`gsd-executor.agent.md`](.github/agents/gsd-executor.agent.md)<br>
+├─ [`gsd-integration-checker.agent.md`](.github/agents/gsd-integration-checker.agent.md)<br>
+├─ [`gsd-phase-researcher.agent.md`](.github/agents/gsd-phase-researcher.agent.md)<br>
+├─ [`gsd-plan-checker.agent.md`](.github/agents/gsd-plan-checker.agent.md)<br>
+├─ [`gsd-planner.agent.md`](.github/agents/gsd-planner.agent.md)<br>
+├─ [`gsd-project-researcher.agent.md`](.github/agents/gsd-project-researcher.agent.md)<br>
+├─ [`gsd-research-synthesizer.agent.md`](.github/agents/gsd-research-synthesizer.agent.md)<br>
+├─ [`gsd-roadmapper.agent.md`](.github/agents/gsd-roadmapper.agent.md)<br>
+└─ [`gsd-verifier.agent.md`](.github/agents/gsd-verifier.agent.md)<br>
+User Data<br>
+Extension: GitHub.copilot-chat<br>
+└─ [`Plan.agent.md`](../home/looter-admin/.config/Code/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md)<br>
+
+**Instructions**<br>
+
+.github/instructions<br>
+User Data<br>
+
+**Prompt Files**<br>
+*3 files loaded*
+
+.github/prompts<br>
+User Data<br>
+Extension: GitHub.copilot-chat<br>
+├─ [`savePrompt.prompt.md`](../home/looter-admin/.vscode/extensions/github.copilot-chat-0.37.5/assets/prompts/savePrompt.prompt.md)<br>
+├─ [`plan.prompt.md`](../home/looter-admin/.vscode/extensions/github.copilot-chat-0.37.5/assets/prompts/plan.prompt.md)<br>
+└─ [`init.prompt.md`](../home/looter-admin/.vscode/extensions/github.copilot-chat-0.37.5/assets/prompts/init.prompt.md)<br>
+
+**Skills**<br>
+*13 skills loaded*
+
+.github/skills<br>
+├─ [`code-simplifier`](.github/skills/code-simplifier/SKILL.md)<br>
+├─ [`complete-milestone`](.github/skills/complete-milestone/SKILL.md)<br>
+├─ [`diagnose-issues`](.github/skills/diagnose-issues/SKILL.md)<br>
+├─ [`discovery-phase`](.github/skills/discovery-phase/SKILL.md)<br>
+├─ [`discuss-phase`](.github/skills/discuss-phase/SKILL.md)<br>
+├─ [`execute-phase`](.github/skills/execute-phase/SKILL.md)<br>
+├─ [`execute-plan`](.github/skills/execute-plan/SKILL.md)<br>
+├─ [`list-phase-assumptions`](.github/skills/list-phase-assumptions/SKILL.md)<br>
+├─ [`map-codebase`](.github/skills/map-codebase/SKILL.md)<br>
+├─ [`resume-project`](.github/skills/resume-project/SKILL.md)<br>
+├─ [`transition`](.github/skills/transition/SKILL.md)<br>
+├─ [`verify-phase`](.github/skills/verify-phase/SKILL.md)<br>
+└─ [`verify-work`](.github/skills/verify-work/SKILL.md)<br>
+.agents/skills<br>
+.claude/skills<br>
+~/.copilot/skills<br>
+~/.agents/skills<br>
+~/.claude/skills<br>

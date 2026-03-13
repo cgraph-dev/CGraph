@@ -19,6 +19,8 @@ defmodule CGraph.Accounts.User do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder, only: [
     :id, :uid, :user_id, :username, :display_name, :email, :avatar_url, :bio,
     :pronouns, :wallet_address, :is_verified, :is_premium, :status, :last_seen_at,

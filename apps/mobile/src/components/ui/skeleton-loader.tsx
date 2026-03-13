@@ -82,7 +82,7 @@ export function SkeletonLoader({
           height,
           borderRadius: resolvedRadius,
           backgroundColor: '#374151',
-        },
+        } as Record<string, unknown>,
         animatedStyle,
         style,
       ]}

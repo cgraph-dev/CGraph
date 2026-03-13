@@ -37,7 +37,6 @@ defmodule CGraph.Workers.AMLScanWorker do
       Enum.reduce(high_volume_users, 0, fn user_id, acc ->
         case AMLMonitor.scan_user(user_id) do
           {:ok, _flags} -> acc + 1
-          _ -> acc
         end
       end)
 

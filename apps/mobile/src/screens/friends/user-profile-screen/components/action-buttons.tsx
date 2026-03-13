@@ -8,11 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../../../../components';
 import type { UserProfile } from '../types';
 import { styles } from '../styles';
+import type { ThemeColors } from '@/stores';
 
 interface ActionButtonsProps {
   user: UserProfile;
   actionLoading: boolean;
-  colors: Record<string, string>;
+  colors: ThemeColors;
   onSendMessage: () => void;
   onSendRequest: () => void;
   onCancelRequest: () => void;

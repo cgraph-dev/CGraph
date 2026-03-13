@@ -255,7 +255,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Get available plugin by plugin_id from marketplace.
   """
-  @spec get_available_plugin(String.t()) :: map() | nil
+  @spec get_available_plugin(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_available_plugin(plugin_id) do
     list_available_plugins()
     |> Enum.find(&(&1.plugin_id == plugin_id))

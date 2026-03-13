@@ -7,10 +7,10 @@
  * @module lib/lottie/lottie-cache
  */
 
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { getLottieCdnUrl, type LottieCacheEntry } from './lottie-types';
 
-const CACHE_DIR = `${FileSystem.cacheDirectory}lottie/`;
+const CACHE_DIR = `${FileSystem.cacheDirectory ?? ''}lottie/`;
 const MANIFEST_PATH = `${CACHE_DIR}manifest.json`;
 const MAX_CACHE_SIZE_MB = 50;
 const MAX_CACHE_SIZE_BYTES = MAX_CACHE_SIZE_MB * 1024 * 1024;

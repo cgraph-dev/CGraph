@@ -38,6 +38,13 @@ interface User {
   readonly avatar_border_id?: string | null;
   readonly status?: string;
   readonly inserted_at?: string;
+  readonly is_premium?: boolean;
+  readonly is_verified?: boolean;
+  readonly title?: string;
+  readonly title_rarity?: string;
+  readonly can_change_username?: boolean;
+  readonly username_next_change_at?: string;
+  readonly user_id_display?: string;
   [key: string]: unknown; // Allow extra fields from API
 }
 

@@ -10,14 +10,14 @@ import Skeleton, { PostCardSkeleton, ForumCardSkeleton, CommentSkeleton } from '
 describe('Skeleton', () => {
   // ── Base rendering ───────────────────────────────────────────────────
 
-  it('renders a div with pulse animation', () => {
+  it('renders a div with shimmer animation', () => {
     const { container } = render(<Skeleton />);
-    expect(container.firstElementChild!).toHaveClass('animate-pulse');
+    expect(container.firstElementChild!).toHaveClass('overflow-hidden');
   });
 
-  it('applies bg-dark-700 base style', () => {
+  it('applies glass base style', () => {
     const { container } = render(<Skeleton />);
-    expect(container.firstElementChild!).toHaveClass('bg-dark-700');
+    expect(container.firstElementChild!.className).toContain('bg-white/[0.06]');
   });
 
   it('applies custom className', () => {
@@ -119,7 +119,7 @@ describe('PostCardSkeleton', () => {
   it('has card-like structure with border', () => {
     const { container } = render(<PostCardSkeleton />);
     const el = container.firstElementChild!;
-    expect(el.className).toContain('bg-dark-800');
+    expect(el.className).toContain('bg-white/[0.04]');
     expect(el.className).toContain('border');
     expect(el.className).toContain('rounded-lg');
   });
@@ -134,7 +134,7 @@ describe('ForumCardSkeleton', () => {
   it('has card-like structure', () => {
     const { container } = render(<ForumCardSkeleton />);
     const el = container.firstElementChild!;
-    expect(el.className).toContain('bg-dark-800');
+    expect(el.className).toContain('bg-white/[0.04]');
     expect(el.className).toContain('rounded-lg');
   });
 });

@@ -119,6 +119,4 @@ defmodule CGraphWeb.API.V1.NameplateController do
     end)
     |> Enum.map_join(", ", fn {field, errors} -> "#{field}: #{Enum.join(errors, ", ")}" end)
   end
-
-  defp format_changeset_error(error), do: to_string(error)
 end

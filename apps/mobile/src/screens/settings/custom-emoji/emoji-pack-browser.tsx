@@ -72,11 +72,6 @@ export default function EmojiPackBrowser() {
   const [loading, setLoading] = useState(true);
   const [previewEmoji, setPreviewEmoji] = useState<PackEmoji | null>(null);
 
-  // Fetch packs
-  useEffect(() => {
-    fetchPacks();
-  }, [fetchPacks]);
-
   const fetchPacks = useCallback(async () => {
     setLoading(true);
     try {
@@ -96,6 +91,11 @@ export default function EmojiPackBrowser() {
       setLoading(false);
     }
   }, []);
+
+  // Fetch packs
+  useEffect(() => {
+    fetchPacks();
+  }, [fetchPacks]);
 
   const handleInstallPack = useCallback(
     async (packId: string) => {

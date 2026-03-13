@@ -19,6 +19,8 @@ defmodule CGraph.Enterprise.OrgSettings do
              :inserted_at, :updated_at
            ]}
 
+  @type t :: %__MODULE__{}
+
   schema "enterprise_org_settings" do
     field :sso_enabled, :boolean, default: false
     field :allowed_domains, {:array, :string}, default: []

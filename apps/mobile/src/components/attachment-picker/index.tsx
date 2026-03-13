@@ -540,7 +540,7 @@ const AttachmentPicker = memo(
             visible={showContactPicker}
             contacts={contacts}
             searchQuery={contactSearchQuery}
-            animation={contactCardAnim}
+            animation={contactCardAnim as any}
             onShareContact={shareContact}
             onClose={() => setShowContactPicker(false)}
             isDark={isDark}

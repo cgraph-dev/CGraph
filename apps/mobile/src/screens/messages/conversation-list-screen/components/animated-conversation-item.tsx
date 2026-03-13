@@ -44,7 +44,7 @@ export function AnimatedConversationItem({
       exiting={FadeOutLeft.duration(200)} layout={Layout.springify()}>
       <TouchableOpacity activeOpacity={0.8} onPress={handlePress} style={styles.conversationTouchable}>
         <GlassCard variant={item.unread_count > 0 ? 'neon' : 'frosted'} intensity="subtle"
-          style={[styles.conversationCard, item.unread_count > 0 && styles.unreadCard]}
+          style={[styles.conversationCard, item.unread_count > 0 && styles.unreadCard] as any}
           glowColor={item.unread_count > 0 ? '#10b981' : undefined}>
           <View style={styles.conversationInner}>
             <View style={styles.avatarSection}>
@@ -82,7 +82,7 @@ export function AnimatedConversationItem({
                   {displayName}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  {(item as Record<string, unknown>).is_muted && (
+                  {!!(item as unknown as Record<string, unknown>).is_muted && (
                     <Ionicons name="notifications-off" size={14} color={colors.textTertiary} />
                   )}
                   {item.last_message && (

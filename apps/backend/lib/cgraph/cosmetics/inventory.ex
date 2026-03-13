@@ -25,6 +25,8 @@ defmodule CGraph.Cosmetics.Inventory do
   @valid_item_types ~w(border title badge nameplate profile_effect profile_frame chat_effect profile_theme name_style)
   @valid_obtained_via ~w(purchase unlock reward gift default achievement event level)
 
+  @type t :: %__MODULE__{}
+
   schema "user_inventory" do
     field :item_type, :string
     field :item_id, :binary_id

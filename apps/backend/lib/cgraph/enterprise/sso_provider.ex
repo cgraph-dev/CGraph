@@ -12,6 +12,8 @@ defmodule CGraph.Enterprise.SSOProvider do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder,
            only: [:id, :name, :type, :enabled, :org_id, :inserted_at, :updated_at]}
 

@@ -73,6 +73,7 @@ export const ExclamationTriangleIcon = icon('ExclamationTriangleIcon');
 export const EyeIcon = icon('EyeIcon');
 export const EyeSlashIcon = icon('EyeSlashIcon');
 export const FaceSmileIcon = icon('FaceSmileIcon');
+export const FingerPrintIcon = icon('FingerPrintIcon');
 export const FireIcon = icon('FireIcon');
 export const FlagIcon = icon('FlagIcon');
 export const FolderIcon = icon('FolderIcon');

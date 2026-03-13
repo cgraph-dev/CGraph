@@ -33,6 +33,8 @@ defmodule CGraph.Operations.PerformanceProfiler do
 
   require Logger
 
+  @dialyzer {:nowarn_function, capture_eprof_analysis: 0, analyze_ets_tables: 0}
+
   @type profile_result :: %{
           call_count: non_neg_integer(),
           total_time_us: non_neg_integer(),
@@ -206,7 +208,7 @@ defmodule CGraph.Operations.PerformanceProfiler do
         Process.group_leader(self(), original_gl)
       end
 
-      {_input, output} = StringIO.close(string_io)
+      {:ok, {_input, output}} = StringIO.close(string_io)
       parse_eprof_output(output)
     rescue
       _ -> []
@@ -222,8 +224,8 @@ defmodule CGraph.Operations.PerformanceProfiler do
         [_, mod, fun, arity, calls, time, percent] ->
           [
             %{
-              module: String.to_atom(mod),
-              function: String.to_atom(fun),
+              module: String.to_existing_atom(mod),
+              function: String.to_existing_atom(fun),
               arity: String.to_integer(arity),
               calls: String.to_integer(calls),
               time_us: String.to_integer(time),

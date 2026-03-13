@@ -20,9 +20,7 @@ defmodule CGraphWeb.Router.CreatorRoutes do
         # ── Forum Monetization Configuration ───────────────────
         put "/forums/:id/monetization", CreatorController, :update_monetization
 
-        # ── Paid Forum Subscriptions ───────────────────────────
-        post "/forums/:id/subscribe", CreatorController, :subscribe
-        delete "/forums/:id/subscribe", CreatorController, :unsubscribe
+        # Note: POST/DELETE /forums/:id/subscribe handled by ForumController in forum_routes
 
         # ── Balance & Payouts ──────────────────────────────────
         get "/creator/balance", CreatorController, :balance

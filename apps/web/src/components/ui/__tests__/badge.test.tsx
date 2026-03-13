@@ -58,7 +58,7 @@ describe('Badge', () => {
 
   it('applies default variant styles when no variant specified', () => {
     render(<Badge>Default</Badge>);
-    expect(screen.getByText('Default').className).toContain('bg-dark-600');
+    expect(screen.getByText('Default').className).toContain('bg-white/[0.08]');
   });
 
   it('applies primary variant styles', () => {
@@ -80,7 +80,7 @@ describe('Badge', () => {
     render(<Badge variant="outline">Outlined</Badge>);
     const el = screen.getByText('Outlined');
     expect(el.className).toContain('bg-transparent');
-    expect(el.className).toContain('border-dark-600');
+    expect(el.className).toContain('border-white/[0.08]');
   });
 
   // ── Sizes ────────────────────────────────────────────────────────────

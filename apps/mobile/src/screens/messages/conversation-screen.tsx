@@ -10,6 +10,8 @@ import {
   Platform,
   ActivityIndicator,
   RefreshControl,
+  Animated,
+  TextInput,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -119,14 +121,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
       });
       const displayName =
         conv.name || otherParticipant?.nickname ||
-        (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+        (otherParticipant?.user as Record<string, unknown> | undefined)?.displayName ||
         otherParticipant?.user?.display_name ||
-        (otherParticipant as Record<string, unknown>)?.displayName ||
+        otherParticipant?.displayName ||
         otherParticipant?.display_name ||
-        (otherParticipant?.user as Record<string, unknown>)?.username ||
+        (otherParticipant?.user as Record<string, unknown> | undefined)?.username ||
         otherParticipant?.user?.username ||
-        (otherParticipant as Record<string, unknown>)?.username || 'Conversation';
-      setup.header.updateHeader(displayName);
+        otherParticipant?.username || 'Conversation';
+      setup.header.updateHeader(displayName as string);
       if (otherParticipant) {
         const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
         setup.presence.setOtherParticipantLastSeen(lastSeen as string | null);
@@ -182,7 +184,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           isNewMessage={isNewMessage}
           colors={colors}
           formatTime={setup.formatTime}
-          getMessageStatus={setup.getMessageStatus}
+          getMessageStatus={setup.getMessageStatus as (message: Message, isOwnMessage: boolean) => { icon: 'checkmark' | 'checkmark-done'; color: string } | null}
           onLongPress={setup.messageActions.handleMessageLongPress}
           onImagePress={setup.mediaViewer.handleImagePress}
           onVideoPress={setup.mediaViewer.handleVideoPress}
@@ -220,10 +222,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         isOwnMessage={String(user?.id) === String(setup.messageActions.selectedMessage?.sender_id)}
         isDark={isDark}
         colors={colors}
-        messageActionsAnim={setup.messageActions.messageActionsAnim}
-        backdropAnim={setup.messageActions.backdropAnim}
-        menuScaleAnim={setup.messageActions.menuScaleAnim}
-        actionItemAnims={setup.messageActions.actionItemAnims}
+        messageActionsAnim={setup.messageActions.messageActionsAnim as unknown as Animated.Value}
+        backdropAnim={setup.messageActions.backdropAnim as unknown as Animated.Value}
+        menuScaleAnim={setup.messageActions.menuScaleAnim as unknown as Animated.Value}
+        actionItemAnims={setup.messageActions.actionItemAnims as unknown as Animated.Value[]}
         closeMessageActions={setup.messageActions.closeMessageActions}
         onReply={setup.actionWrappers.handleReply}
         onEdit={handleEdit}
@@ -243,7 +245,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         showAttachmentPreview={setup.attachments.showAttachmentPreview}
         pendingAttachments={setup.attachments.pendingAttachments}
         attachmentCaption={setup.attachments.attachmentCaption}
-        attachmentPreviewAnim={setup.attachments.attachmentPreviewAnim}
+        attachmentPreviewAnim={setup.attachments.attachmentPreviewAnim as unknown as Animated.Value}
         closeAttachmentPreview={setup.attachments.closeAttachmentPreview}
         addMoreAttachments={setup.attachmentUpload.addMoreAttachments}
         removeAttachment={setup.attachments.removeAttachment}
@@ -253,7 +255,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         selectedImage={setup.mediaViewer.selectedImage}
         imageGallery={setup.mediaViewer.imageGallery}
         currentImageIndex={setup.mediaViewer.currentImageIndex}
-        imageGalleryRef={setup.mediaViewer.imageGalleryRef}
+        imageGalleryRef={setup.mediaViewer.imageGalleryRef as React.RefObject<FlatList<string>>}
         imageViewerAnim={setup.mediaViewer.imageViewerAnim}
         imageScaleAnim={setup.mediaViewer.imageScaleAnim}
         closeImageViewer={setup.mediaViewer.closeImageViewer}
@@ -326,7 +328,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         isSending={setup.isSending}
         showAttachMenu={setup.attachments.showAttachMenu}
         attachMenuAnim={setup.attachments.attachMenuAnim}
-        inputRef={setup.inputRef}
+        inputRef={setup.inputRef as React.RefObject<TextInput>}
         colors={colors}
         onTextChange={setup.handleTextChange}
         onSendMessage={setup.textSending.sendMessage}

@@ -79,10 +79,6 @@ defmodule CGraph.Moderation.AutoAction do
         })
 
         :ok
-
-      {:error, reason} ->
-        Logger.error("ai_moderation_check_failed", reason: inspect(reason))
-        {:error, reason}
     end
   end
 

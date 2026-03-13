@@ -62,7 +62,7 @@ function AnimatedBar({
         mass: 0.8,
       }),
     );
-  }, [percentage, index]);
+  }, [percentage, index, width]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     width: `${width.value}%`,

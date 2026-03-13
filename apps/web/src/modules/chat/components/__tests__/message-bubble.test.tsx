@@ -277,7 +277,7 @@ describe('MessageBubble', () => {
         <MessageBubble {...defaultProps} message={message} isOwn={true} />
       );
 
-      const bubble = container.querySelector('.bg-primary-600');
+      const bubble = container.querySelector('[class*="bg-primary-600"]');
       expect(bubble).toBeInTheDocument();
     });
 
@@ -287,7 +287,7 @@ describe('MessageBubble', () => {
         <MessageBubble {...defaultProps} message={message} isOwn={false} />
       );
 
-      const bubble = container.querySelector('.bg-dark-700');
+      const bubble = container.querySelector('[class*="bg-white/[0.08]"]');
       expect(bubble).toBeInTheDocument();
     });
   });

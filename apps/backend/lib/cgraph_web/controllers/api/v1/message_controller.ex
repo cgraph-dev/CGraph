@@ -11,6 +11,8 @@ defmodule CGraphWeb.API.V1.MessageController do
   alias CGraph.Messaging
   alias CGraphWeb.API.V1.MessageJSON
 
+  @dialyzer {:nowarn_function, translate: 2}
+
   action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
@@ -400,7 +402,7 @@ defmodule CGraphWeb.API.V1.MessageController do
     conversation_ids = Map.get(params, "conversation_ids", [])
 
     cond do
-      not is_list(conversation_ids) or length(conversation_ids) == 0 ->
+      not is_list(conversation_ids) or conversation_ids == [] ->
         conn
         |> put_status(:bad_request)
         |> json(%{error: "conversation_ids must be a non-empty list"})

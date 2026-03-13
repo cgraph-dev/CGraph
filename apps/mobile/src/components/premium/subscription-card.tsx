@@ -61,7 +61,7 @@ export function SubscriptionCard({
   if (variant === 'compact') {
     return (
        
-      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as unknown}>
+      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as any}>
         <View style={styles.compactHeader}>
           <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
             <Text style={styles.tierBadgeText}>{tier.name}</Text>
@@ -148,7 +148,7 @@ export function SubscriptionCard({
   // Default variant
   return (
      
-    <GlassCard style={[styles.card, tier.popular && styles.popularCard] as unknown}>
+    <GlassCard style={[styles.card, tier.popular && styles.popularCard] as any}>
       {/* Badge */}
       {tier.popular && (
         <View style={[styles.cardBadge, { backgroundColor: tier.color }]}>

@@ -30,7 +30,6 @@ defmodule CGraphWeb.CosmeticsController do
   alias CGraph.Accounts
   alias CGraph.Cosmetics
   alias CGraph.Customizations
-  alias CGraph.Gamification
   alias CGraph.Gamification.{AvatarBorder, ChatEffect, ProfileTheme, UserAvatarBorder, UserChatEffect, UserProfileTheme}
   alias CGraph.Repo
 
@@ -476,9 +475,6 @@ defmodule CGraphWeb.CosmeticsController do
 
       {:error, :not_equipped} ->
         render_error(conn, :conflict, "Item not equipped")
-
-      {:error, reason} ->
-        render_error(conn, :bad_request, to_string(reason))
     end
   end
 
@@ -506,7 +502,7 @@ defmodule CGraphWeb.CosmeticsController do
   defp deduct_currency(user_id, border, currency) do
     cost = if currency == "gems", do: border.gem_cost, else: border.coin_cost
 
-    case Gamification.deduct_currency(user_id, cost, String.to_existing_atom(currency)) do
+    case CGraph.Nodes.debit_nodes(user_id, cost, :cosmetic_purchase) do
       {:ok, _} -> {:ok, :deducted}
       {:error, _} -> {:error, "Insufficient #{currency}"}
     end

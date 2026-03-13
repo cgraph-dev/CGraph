@@ -161,7 +161,7 @@ defmodule CGraphWeb.Router.MessagingRoutes do
         put "/conversations/:conversation_id/theme", ChatThemeController, :update
         get "/conversations/:conversation_id/theme", ChatThemeController, :show
         delete "/conversations/:conversation_id/theme", ChatThemeController, :delete
-        get "/themes/presets", ChatThemeController, :presets
+        # Note: GET /themes/presets is handled by ThemeController in user_routes
 
         # Message Translation
         post "/messages/:id/translate", MessageController, :translate

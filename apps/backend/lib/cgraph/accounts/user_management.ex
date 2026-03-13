@@ -94,7 +94,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "List top users by karma."
-  @spec list_top_users_by_karma(keyword()) :: [User.t()]
+  @spec list_top_users_by_karma(keyword()) :: {[User.t()], map()}
   def list_top_users_by_karma(opts \\ []) do
     per_page = Keyword.get(opts, :per_page, Keyword.get(opts, :limit, 10))
     page = Keyword.get(opts, :page, 1)

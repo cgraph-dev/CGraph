@@ -324,7 +324,7 @@ export function useAutoReadOnVisibility({
       const latestUnread = viewableItems
         .map((v) => v.item)
         .filter((m) => m.sender_id !== userId && !m.read_at)
-        .sort((a, b) => new Date(b.inserted_at || b.created_at).getTime() - new Date(a.inserted_at || a.created_at).getTime())[0];
+        .sort((a, b) => new Date(b.inserted_at).getTime() - new Date(a.inserted_at).getTime())[0];
 
       if (latestUnread) {
         const channel = socketManager.getChannel(`conversation:${conversationId}`);

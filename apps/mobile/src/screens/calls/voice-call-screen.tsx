@@ -61,7 +61,7 @@ const AUDIO_LEVELS_COUNT = 32;
 export default function VoiceCallScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CallStackParamList>>();
   const route = useRoute<VoiceCallRouteProp>();
-  const { _recipientId, recipientName, recipientAvatar, isIncoming } = route.params;
+  const { recipientId, recipientName, recipientAvatar, isIncoming } = route.params;
 
   // State
   const [callState, setCallState] = useState<CallState>(isIncoming ? 'ringing' : 'connecting');
@@ -117,7 +117,7 @@ export default function VoiceCallScreen() {
             console.error('[VoiceCall] WebRTC error:', err);
           },
         });
-        manager.startCall(_recipientId, { video: false, audio: true });
+        manager.startCall(recipientId, { video: false, audio: true });
       }
     }
 
@@ -193,7 +193,7 @@ export default function VoiceCallScreen() {
         const socket = socketManager.getSocket();
         if (socket && !isMuted) {
           const manager = getWebRTCManager(socket);
-          const stats = (manager as Record<string, unknown>).getAudioLevels;
+          const stats = (manager as unknown as Record<string, unknown>).getAudioLevels;
           if (typeof stats === 'function') {
             const levels = stats();
             if (Array.isArray(levels) && levels.length > 0) {

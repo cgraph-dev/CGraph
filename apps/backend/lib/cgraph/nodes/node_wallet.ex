@@ -10,6 +10,8 @@ defmodule CGraph.Nodes.NodeWallet do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   @primary_key false
   schema "node_wallets" do
     belongs_to :user, CGraph.Accounts.User, type: :binary_id, primary_key: true

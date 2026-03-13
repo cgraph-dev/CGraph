@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 
-import { useTheme } from '../../theme/use-theme';
+import { useThemeStore } from '@/stores';
 import { ModQueueList } from './components/mod-queue-list';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ interface TabSelectorProps {
 }
 
 function TabSelector({ activeTab, onTabChange, pendingCount }: TabSelectorProps) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const tabs: { key: ModTab; label: string; badge?: number }[] = [
     { key: 'queue', label: 'Mod Queue', badge: pendingCount },
@@ -101,7 +101,7 @@ function WarningItem({
   warning: ForumWarning;
   onRevoke: (id: string) => void;
 }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <View style={[styles.warningCard, { backgroundColor: colors.surface }]}>
@@ -156,7 +156,7 @@ function WarningItem({
 
 // ── Stats Card ─────────────────────────────────────────────────────
 function StatsCard({ stats }: { stats: ModStats }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const items = [
     { label: 'Pending Reports', value: stats.pending_count, color: '#f59e0b' },
@@ -179,7 +179,7 @@ function StatsCard({ stats }: { stats: ModStats }) {
 
 // ── Quick Warn Form ────────────────────────────────────────────────
 function QuickWarnButton({ onPress }: { onPress: () => void }) {
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   return (
     <TouchableOpacity
@@ -198,7 +198,7 @@ interface ForumModerationScreenProps {
 
 export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
   const { forumId } = route.params;
-  const { colors } = useTheme();
+  const { colors } = useThemeStore();
 
   const [activeTab, setActiveTab] = useState<ModTab>('queue');
   const [loading, setLoading] = useState(true);

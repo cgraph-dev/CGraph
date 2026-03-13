@@ -9,6 +9,8 @@ defmodule CGraph.Forums.Moderator do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
+  @type t :: %__MODULE__{}
+
   schema "forum_moderators" do
     belongs_to :forum, CGraph.Forums.Forum
     belongs_to :user, CGraph.Accounts.User

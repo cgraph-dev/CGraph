@@ -25,6 +25,8 @@ defmodule CGraph.Forums.ThreadPost do
     :score, :upvotes, :downvotes, :position, :inserted_at, :updated_at
   ]}
 
+  @type t :: %__MODULE__{}
+
   schema "thread_posts" do
     field :content, :string
     field :content_html, :string

@@ -1,13 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
-import type { useAuthStore } from '@/stores';
 import api from '../../../lib/api';
 import socketManager from '../../../lib/socket';
-import { Conversation, ConversationParticipant } from '../../../types';
+import { Conversation, ConversationParticipant, UserBasic } from '../../../types';
 
-type User = ReturnType<typeof useAuthStore>['user'];
-
-export function useConversationList(user: User) {
+export function useConversationList(user: UserBasic | null) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
@@ -52,16 +49,13 @@ export function useConversationList(user: User) {
       const convos = response.data.data || [];
       setConversations(convos);
 
-      // @ts-expect-error - participant shape varies
       const participantIds = convos
         .map((conv: Conversation) => {
           const other = conv.participants?.find((p: ConversationParticipant) => {
             const pUserId =
-              // @ts-expect-error - flexible participant shape
               p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
             return String(pUserId) !== String(user?.id);
           });
-          // @ts-expect-error - flexible participant shape
           return other?.userId || other?.user_id || (other?.user as Record<string, unknown>)?.id;
         })
         .filter(Boolean) as string[];

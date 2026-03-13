@@ -394,7 +394,7 @@ describe('groupStore (modules)', () => {
       expect(mockedApi.post).toHaveBeenCalledWith('/api/v1/groups', {
         name: 'Test Group',
         description: 'desc',
-        isPublic: false,
+        visibility: 'private',
       });
     });
 

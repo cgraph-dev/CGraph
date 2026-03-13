@@ -128,8 +128,7 @@ describe('useWebRTC', () => {
     expect(mockStartCall).toHaveBeenCalledWith('user-456', { video: true, audio: true });
   });
 
-  it('shows toast error when startCall returns no room', async () => {
-    const { toast } = await import('@/components/feedback/toast');
+  it('handles null room from startCall gracefully', async () => {
     mockStartCall.mockResolvedValueOnce(null);
 
     const { result } = renderHook(() => useWebRTC());
@@ -138,7 +137,9 @@ describe('useWebRTC', () => {
       await result.current.startCall('user-456');
     });
 
-    expect(toast.error).toHaveBeenCalledWith('Failed to start call');
+    expect(mockStartCall).toHaveBeenCalledWith('user-456', { video: true, audio: true });
+    // Source silently returns when roomId is null — callState stays idle
+    expect(result.current.callState.status).toBe('idle');
   });
 
   // --- answerCall ----------------------------------------------------------

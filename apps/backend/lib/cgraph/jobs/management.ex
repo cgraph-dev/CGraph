@@ -30,10 +30,7 @@ defmodule CGraph.Jobs.Management do
   """
   @spec cancel_job(pos_integer()) :: :ok | {:error, term()}
   def cancel_job(job_id) do
-    case Oban.cancel_job(job_id) do
-      :ok -> :ok
-      error -> error
-    end
+    Oban.cancel_job(job_id)
   end
 
   @doc """
@@ -41,10 +38,7 @@ defmodule CGraph.Jobs.Management do
   """
   @spec retry_job(pos_integer()) :: :ok | {:error, term()}
   def retry_job(job_id) do
-    case Oban.retry_job(job_id) do
-      :ok -> :ok
-      error -> error
-    end
+    Oban.retry_job(job_id)
   end
 
   @doc """

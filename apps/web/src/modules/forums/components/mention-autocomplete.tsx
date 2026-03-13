@@ -101,7 +101,7 @@ export default function MentionAutocomplete({
     const el = inputRef.current;
     if (!el) return;
 
-    const value = el.value;
+    const { value } = el;
     const cursorPos = el.selectionStart ?? value.length;
     const textBefore = value.slice(0, cursorPos);
 
@@ -145,7 +145,7 @@ export default function MentionAutocomplete({
       const el = inputRef.current;
       if (!el) return;
 
-      const value = el.value;
+      const { value } = el;
       const cursorPos = el.selectionStart ?? value.length;
       const textBefore = value.slice(0, cursorPos);
 

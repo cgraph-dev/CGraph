@@ -4,7 +4,8 @@
  * @module screens/messages/conversation-screen/components/conversation-modals
  */
 import React from 'react';
-import { Animated } from 'react-native';
+import { Animated, FlatList } from 'react-native';
+import { type SharedValue } from 'react-native-reanimated';
 import { AttachmentPicker } from '../../../../components';
 import {
   MessageActionsMenu,
@@ -13,8 +14,11 @@ import {
   ImageViewerModal,
   VideoPlayerModal,
 } from '.';
-import type { GifPickerModal } from './gif-picker-modal';
-import type { Message } from '../../../types';
+import { GifPickerModal, type GifResult } from './gif-picker-modal';
+import type { Message } from '../../../../types';
+import { EMOJI_CATEGORIES } from '../hooks/useReactions';
+
+type EmojiCategoryKey = keyof typeof EMOJI_CATEGORIES;
 
 interface ConversationModalsProps {
   // Attachment picker
@@ -26,7 +30,16 @@ interface ConversationModalsProps {
   selectedMessage: Message | null;
   isOwnMessage: boolean;
   isDark: boolean;
-  colors: Record<string, unknown>;
+  colors: {
+    primary: string;
+    text: string;
+    textSecondary: string;
+    surface: string;
+    background: string;
+    surfaceHover: string;
+    border: string;
+    [key: string]: unknown;
+  };
   messageActionsAnim: Animated.Value;
   backdropAnim: Animated.Value;
   menuScaleAnim: Animated.Value;
@@ -36,21 +49,21 @@ interface ConversationModalsProps {
   onEdit: () => void;
   onTogglePin: () => void;
   onUnsend: () => void;
-  onQuickReaction: () => void;
+  onQuickReaction: (emoji: string) => void;
   onOpenReactionPicker: () => void;
-  getReactionState: () => Record<string, boolean>;
+  getReactionState: (emoji: string) => boolean;
   // Reaction picker
   showReactionPicker: boolean;
   reactionPickerMessage: Message | null;
-  selectedEmojiCategory: string;
+  selectedEmojiCategory: EmojiCategoryKey;
   closeReactionPicker: () => void;
-  setSelectedEmojiCategory: (c: string) => void;
-  handleAddReaction: (conversationId: string, messageId: string, emoji: string) => Promise<void>;
-  handleRemoveReaction: (conversationId: string, messageId: string, emoji: string) => Promise<void>;
+  setSelectedEmojiCategory: (c: EmojiCategoryKey) => void;
+  handleAddReaction: (messageId: string, emoji: string) => void;
+  handleRemoveReaction: (messageId: string, emoji: string) => void;
   conversationId: string;
   // Attachment preview
   showAttachmentPreview: boolean;
-  pendingAttachments: Array<{ uri: string; type: string; name?: string; mimeType?: string; duration?: number }>;
+  pendingAttachments: Array<{ uri: string; type: 'image' | 'file' | 'video'; name?: string; mimeType?: string; duration?: number }>;
   attachmentCaption: string;
   attachmentPreviewAnim: Animated.Value;
   closeAttachmentPreview: () => void;
@@ -63,9 +76,9 @@ interface ConversationModalsProps {
   selectedImage: string | null;
   imageGallery: string[];
   currentImageIndex: number;
-  imageGalleryRef: React.MutableRefObject<unknown>;
-  imageViewerAnim: Animated.Value;
-  imageScaleAnim: Animated.Value;
+  imageGalleryRef: React.RefObject<FlatList<string>>;
+  imageViewerAnim: SharedValue<number>;
+  imageScaleAnim: SharedValue<number>;
   closeImageViewer: () => void;
   setCurrentImageIndex: (i: number) => void;
   setSelectedImage: (s: string | null) => void;
@@ -77,7 +90,7 @@ interface ConversationModalsProps {
   // GIF picker
   showGifPicker: boolean;
   setShowGifPicker: (v: boolean) => void;
-  handleGifSelect: (gif: { id: string; url: string; title: string; previewUrl: string; width: number; height: number }) => void;
+  handleGifSelect: (gif: GifResult) => void;
 }
 
 export function ConversationModals(props: ConversationModalsProps) {
