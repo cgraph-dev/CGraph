@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
+import { InlineTitle } from '@/shared/components/ui';
 import type { LayoutProps } from './types';
 import { tweens } from '@/lib/animation-presets';
 
@@ -44,9 +45,8 @@ export const GamingLayout = memo(function GamingLayout({
         </div>
         <div className="flex-1">
           <div className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
-          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
+            <InlineTitle titleId={user.equippedTitle.id} size="sm" />
           )}
         </div>
       </div>
@@ -104,12 +104,24 @@ export const GamingLayout = memo(function GamingLayout({
       )}
 
       {/* Achievements */}
-      {/* TODO(phase-26): Rewire — gamification components deleted */}
       {config.showAchievements && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex justify-center gap-2">
           {user.equippedBadges.slice(0, 5).map((badge) => (
-            <span key={badge.id} className="rounded bg-white/10 px-2 py-0.5 text-xs">
-              {badge.id}
+            <span
+              key={badge.id}
+              className={cn(
+                'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium',
+                badge.rarity === 'legendary' || badge.rarity === 'mythic'
+                  ? 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-300 shadow-lg shadow-yellow-500/10'
+                  : badge.rarity === 'epic'
+                    ? 'bg-purple-500/20 text-purple-300'
+                    : badge.rarity === 'rare'
+                      ? 'bg-blue-500/20 text-blue-300'
+                      : 'bg-white/10 text-white/70'
+              )}
+            >
+              <span>{badge.icon}</span>
+              <span>{badge.title}</span>
             </span>
           ))}
         </div>

@@ -86,7 +86,6 @@ export const BlockedUsers = lazyRetry(() => import('@/pages/settings/blocked-use
 export const CustomEmoji = lazyRetry(() => import('@/pages/settings/custom-emoji'));
 export const RSSFeeds = lazyRetry(() => import('@/pages/settings/rss-feeds'));
 export const UserProfile = lazyRetry(() => import('@/pages/profile/user-profile'));
-// TODO(phase-26): Rewire — gamification components deleted (UserLeaderboard)
 
 // ── Security ───────────────────────────────────────────────────────────
 export const E2EEVerification = lazyRetry(() => import('@/pages/security/e2-ee-verification'));

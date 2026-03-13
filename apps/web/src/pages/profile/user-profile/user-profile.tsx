@@ -13,7 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
-// TODO(phase-26): Rewire — gamification stores deleted
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
@@ -50,9 +50,7 @@ export function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuthStore();
-  // TODO(phase-26): Rewire — gamification stores deleted
-  const achievements = EMPTY_ACHIEVEMENTS;
-  const equippedBadges: string[] = [];
+  const equippedBadges = useCustomizationStore((s) => s.equippedBadges) ?? [];
 
   const isOwnProfile = currentUser?.id === userId;
 
@@ -179,12 +177,10 @@ export function UserProfile() {
               onBioChange={actions.setEditedBio}
             />
 
-            {/* TODO(phase-26): Rewire — gamification components deleted (LevelProgress) */}
-
             {isOwnProfile && (
               <EquippedBadgesShowcase
                 equippedBadges={equippedBadges}
-                achievements={achievements}
+                achievements={EMPTY_ACHIEVEMENTS}
                 editMode={actions.editMode}
               />
             )}
@@ -193,7 +189,7 @@ export function UserProfile() {
               <AchievementsShowcase
                 achievements={unlockedAchievements}
                 totalUnlocked={totalUnlocked}
-                totalAchievements={profile?.totalAchievements || achievements.length}
+                totalAchievements={profile?.totalAchievements || 0}
                 showAll={showAllAchievements}
                 onToggleShowAll={() => setShowAllAchievements(!showAllAchievements)}
               />

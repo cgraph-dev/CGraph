@@ -5,6 +5,7 @@
 import { motion } from 'motion/react';
 import { Lock, Sparkles } from 'lucide-react';
 import type { TitleCardProps } from './types';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 import { springs } from '@/lib/animation-presets';
 
 /**
@@ -33,8 +34,7 @@ export function TitleCard({
     >
       <div className="p-4">
         <div className="mb-3 flex items-center justify-center py-2">
-          {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
-          <span className="text-sm font-medium text-purple-400">{title.name ?? title.id}</span>
+          <InlineTitle titleId={title.id} size="sm" />
         </div>
 
         <div className="mb-3 text-center">

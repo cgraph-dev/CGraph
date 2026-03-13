@@ -6,8 +6,10 @@
 
 import { useState, useMemo } from 'react';
 import { Award } from 'lucide-react';
-// TODO(phase-26): Rewire — gamification stores deleted
 import { useAuthStore } from '@/modules/auth/store';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
+import { useProfileStore } from '@/modules/social/store/profileStore.impl';
+import { ALL_BADGES } from '@/data/badgesCollection';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';
 import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
@@ -20,55 +22,36 @@ import type { Badge } from './types';
 
 const logger = createLogger('BadgeSelection');
 
-// TODO(phase-26): Rewire — stub achievement type for deleted gamification data
-interface StubAchievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  category: string;
-  rarity: string;
-  unlocked: boolean;
-  unlockedAt?: string;
-  progress: number;
-  maxProgress: number;
-}
-
-/** Stable empty array for stub achievements */
-const EMPTY_ACHIEVEMENTS: StubAchievement[] = [];
+/** Map BadgeDefinition[] to Badge[] */
+const MAPPED_BADGES: Badge[] = ALL_BADGES.map((b) => ({
+  id: b.id,
+  name: b.name,
+  description: b.description,
+  icon: b.icon,
+  category: b.rarity, // group by rarity as category
+  rarity: b.rarity,
+  isUnlocked: b.unlocked,
+  isPremium: b.isPremium,
+  progress: b.unlocked ? 1 : 0,
+  requirement: 1,
+}));
 
 /**
  * Badge Selection component.
  */
 export default function BadgeSelection() {
   const user = useAuthStore((state) => state.user);
-  // TODO(phase-26): Rewire — gamification stores deleted
-  const achievements = EMPTY_ACHIEVEMENTS;
-  const equippedBadges: string[] = [];
-  const equipBadge = async (_badgeId: string) => {};
-  const unequipBadge = async (_badgeId: string) => {};
+  const equippedBadges = useCustomizationStore((s) => s.equippedBadges) ?? [];
+  const setEquippedBadges = useCustomizationStore((s) => s.setEquippedBadges);
+  const profileEquipBadge = useProfileStore((s) => s.equipBadge);
+  const profileUnequipBadge = useProfileStore((s) => s.unequipBadge);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedRarity, setSelectedRarity] = useState<string>('all');
   const [previewBadge, setPreviewBadge] = useState<Badge | null>(null);
 
-  // Convert achievements to badges
-  const badges = useMemo(() => {
-    return achievements.map((achievement) => ({
-      id: achievement.id,
-      name: achievement.title,
-      description: achievement.description,
-      icon: achievement.icon,
-      category: achievement.category,
-      rarity: achievement.rarity,
-      isUnlocked: achievement.unlocked,
-      isPremium: achievement.rarity === 'legendary' || achievement.rarity === 'epic',
-      unlockedAt: achievement.unlockedAt,
-      progress: achievement.progress,
-      requirement: achievement.maxProgress,
-    }));
-  }, [achievements]);
+  const badges = MAPPED_BADGES;
 
   // Filter badges
   const filteredBadges = useMemo(() => {
@@ -105,10 +88,12 @@ export default function BadgeSelection() {
       }
 
       if (equippedBadges.includes(badgeId)) {
-        await unequipBadge(badgeId);
+        await profileUnequipBadge(badgeId);
+        setEquippedBadges(equippedBadges.filter((id) => id !== badgeId));
         toast.success('Badge unequipped!');
       } else {
-        await equipBadge(badgeId);
+        await profileEquipBadge(badgeId);
+        setEquippedBadges([...equippedBadges, badgeId]);
         toast.success('Badge equipped!');
       }
     } catch (error) {

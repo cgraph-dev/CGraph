@@ -28,6 +28,7 @@ import { EditHistoryViewer } from './edit-history-viewer';
 import { MessageActionMenu } from './message-action-menu';
 import { MessageMediaContent } from './message-media-content';
 import { ThreadReplyBadge } from './thread-reply-badge';
+import { InlineTitle } from '@/shared/components/ui';
 import { springs, tweens } from '@/lib/animation-presets';
 
 export const MessageBubble = memo(function MessageBubble({
@@ -144,8 +145,7 @@ export const MessageBubble = memo(function MessageBubble({
             <span className="text-xs font-medium text-gray-400">
               {message.sender?.displayName || message.sender?.username}
             </span>
-            {/* TODO(phase-26): Rewire — gamification components deleted */}
-            {equippedTitleId && <span className="text-xs opacity-60">{equippedTitleId}</span>}
+            {equippedTitleId && <InlineTitle titleId={equippedTitleId} size="xs" />}
           </div>
         )}
 

@@ -4,6 +4,7 @@ import { UserIcon, StarIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 import { ROLE_COLORS } from './constants';
 import type { MemberCardProps } from './types';
 
@@ -54,8 +55,7 @@ export function MemberCard({ member }: MemberCardProps) {
             </span>
           )}
         </div>
-        {/* TODO(phase-26): Rewire — gamification components deleted */}
-        {member.title && <span className="text-xs text-purple-400">{member.title}</span>}
+        {member.title && <InlineTitle titleId={member.title} size="xs" />}
         <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
           <span>{member.postCount.toLocaleString()} posts</span>
           <span>

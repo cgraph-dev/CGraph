@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
+import { InlineTitle } from '@/shared/components/ui';
 import type { LayoutProps } from './types';
 
 export const MinimalLayout = memo(function MinimalLayout({
@@ -32,9 +33,8 @@ export const MinimalLayout = memo(function MinimalLayout({
             {user.displayName}
           </span>
         </div>
-        {/* TODO(phase-26): Rewire — gamification components deleted */}
         {config.showTitle && user.equippedTitle && (
-          <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
+          <InlineTitle titleId={user.equippedTitle.id} size="xs" />
         )}
       </div>
     </div>

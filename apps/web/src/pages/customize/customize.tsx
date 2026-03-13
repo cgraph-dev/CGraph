@@ -15,7 +15,7 @@ const IdentityCustomization = lazy(() => import('./identity-customization'));
 const ThemeCustomization = lazy(() => import('./theme-customization'));
 const ChatCustomization = lazy(() => import('./chat-customization'));
 const EffectsCustomization = lazy(() => import('./effects-customization'));
-// TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization)
+const ProgressionCustomization = lazy(() => import('./progression-customization'));
 
 // New V2 panels for enhanced experience (optional use)
 import { LivePreviewPanel } from '@/modules/settings/components/customize';
@@ -111,7 +111,7 @@ export default function Customize() {
                 {activeCategory === 'themes' && <ThemeCustomization />}
                 {activeCategory === 'chat' && <ChatCustomization />}
                 {activeCategory === 'effects' && <EffectsCustomization />}
-                {/* TODO(phase-26): Rewire — gamification components deleted (ProgressionCustomization) */}
+                {activeCategory === 'progression' && <ProgressionCustomization />}
               </Suspense>
             </GlassCard>
           </motion.div>

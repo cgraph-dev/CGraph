@@ -16,6 +16,7 @@ import {
   UserMinusIcon,
   NoSymbolIcon,
 } from '@heroicons/react/24/outline';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 import type { FriendListItemProps } from './types';
 
 /**
@@ -95,7 +96,7 @@ export function FriendListItem({
           <p className="truncate text-sm font-medium text-white">
             {friend.displayName || friend.username}
           </p>
-          {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
+          {friend.equippedTitleId && <InlineTitle titleId={friend.equippedTitleId} size="xs" />}
         </div>
         <p className="truncate text-xs text-gray-400">@{friend.username}</p>
         <LastSeenBadge

@@ -110,3 +110,5 @@ export {
   GlassCardCrystal,
 } from '@/components/ui/glass-card';
 export { default as AnimatedAvatar, useAvatarStyle } from '@/components/ui/animated-avatar';
+export { InlineTitle } from './inline-title';
+export { InlineBadges } from './inline-badges';

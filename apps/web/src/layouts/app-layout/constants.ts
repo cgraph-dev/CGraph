@@ -20,7 +20,6 @@ import {
   Cog6ToothIcon as Cog6ToothIconSolid,
   CircleStackIcon as CircleStackIconSolid,
 } from '@heroicons/react/24/solid';
-// TODO(phase-26): Rewire — FeatureGateKey deleted from shared-types
 type FeatureGateKey = string;
 
 export const navItems = [

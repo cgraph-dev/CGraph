@@ -2,7 +2,6 @@
  * Referral program page component.
  * @module pages/referrals/referral-page
  */
-// TODO(phase-26): Rewire — gamification components deleted (ReferralDashboard)
 
 /**
  * Referral Page

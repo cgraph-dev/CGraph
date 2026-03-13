@@ -13,7 +13,6 @@ import { memo, useMemo, useRef, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { THEME_COLORS } from '@/types/avatar-borders';
-// TODO(phase-26): Rewire — gamification stores deleted
 import { LottieBorderRenderer } from '@/lib/lottie/lottie-border-renderer';
 import type { AvatarBorderRendererProps, BorderColors } from './types';
 import {
@@ -53,7 +52,6 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
   reducedMotion: propReducedMotion,
 }: AvatarBorderRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // TODO(phase-26): Rewire — gamification stores deleted
   const preferences = {
     showParticles: true,
     reducedMotion: false,

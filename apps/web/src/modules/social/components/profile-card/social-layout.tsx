@@ -9,6 +9,7 @@ import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-
 import { getBorderById } from '@/data/avatar-borders';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { PulseDots } from '@/modules/pulse/components/pulse-dots';
+import { InlineTitle } from '@/shared/components/ui';
 import type { LayoutProps } from './types';
 
 export const SocialLayout = memo(function SocialLayout({
@@ -32,9 +33,8 @@ export const SocialLayout = memo(function SocialLayout({
         />
         <div className="flex-1">
           <div className={cn('font-semibold', sizeConfig.titleSize)}>{user.displayName}</div>
-          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
+            <InlineTitle titleId={user.equippedTitle.id} size="xs" />
           )}
         </div>
       </div>

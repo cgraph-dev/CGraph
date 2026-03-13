@@ -20,7 +20,6 @@ import { PresenceStatusSelector } from '@/shared/components/presence-status-sele
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 import { loop, springs } from '@/lib/animation-presets';
-// TODO(phase-26): Rewire — FeatureGateKey deleted from shared-types
 type FeatureGateKey = string;
 import { useState, useCallback, useRef } from 'react';
 
@@ -29,7 +28,6 @@ import { useState, useCallback, useRef } from 'react';
  * Shows a small lock icon with tooltip when the feature is locked.
  */
 function NavItemGateBadge({ feature: _feature }: { feature: FeatureGateKey }) {
-  // TODO(phase-26): Rewire — gamification stores deleted
   const { unlocked, requiredLevel } = { unlocked: true, requiredLevel: 0 };
 
   if (unlocked) return null;

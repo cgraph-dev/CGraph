@@ -4,7 +4,7 @@
  * Manages avatar border selection, filtering, and equipping.
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 
@@ -12,22 +12,8 @@ import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import type { SectionProps, FilterState } from './types';
 import { RARITY_COLORS } from './constants';
 import { GridIcon, ListIcon } from './icons';
-
-// =============================================================================
-// STUB DATA — phase-26 removed gamification; these satisfy hook deps stably
-// =============================================================================
-/** Unlocked-border stub record */
-interface UnlockedBorderRecord {
-  borderId: string;
-}
-
-const STUB_BORDERS: AvatarBorderConfig[] = [];
-const STUB_UNLOCKED: UnlockedBorderRecord[] = [];
-const STUB_PREFS: { equippedBorderId: string | null } = { equippedBorderId: null };
-const stubGetFilteredBorders = (): AvatarBorderConfig[] => [];
-const stubEquipBorder = (_id: string): Promise<void> => Promise.resolve();
-const stubPurchaseBorder = (_id: string): Promise<boolean> => Promise.resolve(false);
-const stubFetchLottieBorders = (): Promise<void> => Promise.resolve();
+import { AVATAR_BORDERS } from '@/data/avatar-borders';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 
 /** Type guard: trust `<select>` option values for theme filter */
 function isThemeFilter(_v: string): _v is FilterState['theme'] {
@@ -47,36 +33,19 @@ function isRarityFilter(_v: string): _v is FilterState['rarity'] {
  * Avatar Borders Section component.
  */
 export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMode }: SectionProps) {
-  // TODO(phase-26): Rewire — gamification components deleted
-  const allBorders = STUB_BORDERS;
-  const unlockedBorders = STUB_UNLOCKED;
-  const preferences = STUB_PREFS;
-  const getFilteredBorders = stubGetFilteredBorders;
-  const equipBorder = stubEquipBorder;
-  const purchaseBorder = stubPurchaseBorder;
-  const fetchLottieBorders = stubFetchLottieBorders;
-  void unlockedBorders;
-
-  const equippedBorderId = preferences.equippedBorderId;
+  const equippedBorderId = useCustomizationStore((s) => s.selectedBorderId);
+  const selectBorderId = useCustomizationStore((s) => s.selectBorderId);
   const [selectedBorder, setSelectedBorder] = useState<string | null>(null);
-  const [purchasing, setPurchasing] = useState(false);
-
-  // Fetch Lottie borders on mount
-  useEffect(() => {
-    void fetchLottieBorders();
-  }, [fetchLottieBorders]);
 
   const filteredBorders = useMemo(() => {
-    let result = getFilteredBorders();
+    let result: AvatarBorderConfig[] = [...AVATAR_BORDERS];
 
-    // Apply additional filters from props
     if (filters.theme !== 'all') {
       result = result.filter((b) => b.theme === filters.theme);
     }
     if (filters.rarity !== 'all') {
       result = result.filter((b) => b.rarity === filters.rarity);
     }
-
     if (filters.search) {
       const search = filters.search.toLowerCase();
       result = result.filter(
@@ -85,33 +54,14 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
       );
     }
 
-    if (!filters.showLocked) {
-      result = result.filter((b) => unlockedBorders.some((u) => u.borderId === b.id));
-    }
-
     return result;
-  }, [getFilteredBorders, filters, unlockedBorders]);
+  }, [filters]);
 
   const handleEquip = useCallback(
-    async (borderId: string) => {
-      await equipBorder(borderId);
+    (borderId: string) => {
+      selectBorderId(equippedBorderId === borderId ? null : borderId);
     },
-    [equipBorder]
-  );
-
-  const handlePurchase = useCallback(
-    async (borderId: string) => {
-      setPurchasing(true);
-      try {
-        const success = await purchaseBorder(borderId);
-        if (success) {
-          // Show success notification
-        }
-      } finally {
-        setPurchasing(false);
-      }
-    },
-    [purchaseBorder]
+    [selectBorderId, equippedBorderId]
   );
 
   return (
@@ -200,17 +150,17 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
           <div className="flex items-center gap-6">
             <div className="relative h-24 w-24">
               <AvatarBorderRenderer
-                border={allBorders.find((b) => b.id === equippedBorderId)}
+                border={AVATAR_BORDERS.find((b) => b.id === equippedBorderId)}
                 size={96}
                 src="/default-avatar.png"
               />
             </div>
             <div>
               <p className="font-medium">
-                {allBorders.find((b) => b.id === equippedBorderId)?.name}
+                {AVATAR_BORDERS.find((b) => b.id === equippedBorderId)?.name}
               </p>
               <p className="text-sm text-gray-400">
-                {allBorders.find((b) => b.id === equippedBorderId)?.description}
+                {AVATAR_BORDERS.find((b) => b.id === equippedBorderId)?.description}
               </p>
             </div>
           </div>
@@ -226,7 +176,10 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
         }
       >
         {filteredBorders.map((border) => {
-          const isOwned = unlockedBorders.some((u) => u.borderId === border.id);
+          const isOwned =
+            border.rarity === 'free' ||
+            border.rarity === 'common' ||
+            border.unlockType === 'default';
           const isEquipped = equippedBorderId === border.id;
 
           return (
@@ -292,36 +245,20 @@ export function AvatarBordersSection({ filters, setFilters, viewMode, setViewMod
               )}
 
               {/* Hover Actions */}
-              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                {isOwned ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEquip(border.id);
-                    }}
-                    disabled={isEquipped}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                      isEquipped
-                        ? 'cursor-not-allowed bg-white/[0.08]'
-                        : 'bg-cyan-500 hover:bg-cyan-600'
-                    }`}
-                  >
-                    {isEquipped ? 'Equipped' : 'Equip'}
-                  </button>
-                ) : (border.coinCost ?? 0) > 0 ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePurchase(border.id);
-                    }}
-                    disabled={purchasing}
-                    className="rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 px-4 py-2 text-sm font-medium"
-                  >
-                    {purchasing ? 'Purchasing...' : `Buy ${border.coinCost}`}
-                  </button>
-                ) : (
-                  <span className="text-sm text-gray-400">Unlock via {border.unlockType}</span>
-                )}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEquip(border.id);
+                  }}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    isEquipped
+                      ? 'cursor-not-allowed bg-white/[0.08]'
+                      : 'bg-cyan-500 hover:bg-cyan-600'
+                  }`}
+                >
+                  {isEquipped ? 'Equipped' : 'Equip'}
+                </button>
               </div>
             </motion.div>
           );

@@ -35,8 +35,6 @@ export * as auth from './auth';
 export * as chat from './chat';
 export * as forums from './forums';
 export * as groups from './groups';
-// TODO(phase-26): Rewire — gamification module deleted
-// export * as gamification from './gamification';
 export * as social from './social';
 export * as settings from './settings';
 export * as calls from './calls';

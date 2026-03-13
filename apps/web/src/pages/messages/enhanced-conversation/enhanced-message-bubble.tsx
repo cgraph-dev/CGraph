@@ -16,6 +16,7 @@ import {
   ReactionPicker,
 } from '@/modules/chat/components/animated-reaction-bubble';
 import { GlassCard } from '@/shared/components/ui';
+import { InlineTitle } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/advanced-voice-visualizer';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -197,7 +198,9 @@ export function EnhancedMessageBubble({
                   <span className="text-xs font-medium text-primary-300">
                     {message.sender.displayName || message.sender.username}
                   </span>
-                  {/* TODO(phase-26): Rewire — gamification components deleted (InlineTitle) */}
+                  {message.sender.equippedTitleId && (
+                    <InlineTitle titleId={message.sender.equippedTitleId} size="xs" />
+                  )}
                 </div>
               )}
               {/* Text content */}

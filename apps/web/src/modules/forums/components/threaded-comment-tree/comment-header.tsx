@@ -7,6 +7,7 @@
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { formatTimeAgo } from '@/lib/utils';
+import { InlineTitle } from '@/shared/components/ui';
 import type { CommentTreeNode } from './types';
 
 interface CommentHeaderProps {
@@ -48,7 +49,9 @@ export function CommentHeader({
           <span className="font-medium text-white">
             {comment.author.displayName || comment.author.username}
           </span>
-          {/* TODO(phase-26): Rewire — gamification components deleted (InlineTitle, UserStars) */}
+          {comment.author.equippedTitleId && (
+            <InlineTitle titleId={comment.author.equippedTitleId} size="xs" />
+          )}
           {isOwnComment && (
             <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-xs text-blue-400">You</span>
           )}

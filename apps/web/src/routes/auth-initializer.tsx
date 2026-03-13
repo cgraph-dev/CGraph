@@ -10,7 +10,6 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-// TODO(phase-26): Rewire — gamification stores deleted
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { ThemeRegistry } from '@/themes/theme-registry';

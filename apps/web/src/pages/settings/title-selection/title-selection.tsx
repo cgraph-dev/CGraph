@@ -8,6 +8,7 @@
 import { motion } from 'motion/react';
 import { Search, Sparkles } from 'lucide-react';
 import VisibilityBadge from '@/modules/settings/components/visibility-badge';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 import { useTitleSelection } from './useTitleSelection';
 import { getRarityColor, RARITY_LIST } from './constants';
 import { TitleCard } from './title-card';
@@ -20,7 +21,6 @@ export default function TitleSelection() {
   const {
     displayName,
     equippedTitleId,
-    equipTitle,
     filteredTitles,
     handleEquipTitle,
     previewTitle,
@@ -58,12 +58,11 @@ export default function TitleSelection() {
               <h3 className="mb-2 text-sm font-semibold text-gray-400">Currently Equipped</h3>
               <div className="flex items-center gap-3">
                 <span className="text-lg font-semibold">{displayName}</span>
-                {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
-                <span className="text-sm text-purple-400">{equippedTitleId}</span>
+                <InlineTitle titleId={equippedTitleId} size="sm" />
               </div>
             </div>
             <button
-              onClick={() => equipTitle('')}
+              onClick={() => handleEquipTitle('')}
               className="rounded-lg bg-white/[0.06] px-4 py-2 text-sm text-white transition-colors hover:bg-white/[0.10]"
             >
               Unequip

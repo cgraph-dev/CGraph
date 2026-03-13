@@ -104,6 +104,7 @@ export interface Post {
     avatarUrl: string | null;
     avatarBorderId?: string | null;
     avatar_border_id?: string | null;
+    equippedTitleId?: string | null;
     reputation?: number;
   };
   forum: {
@@ -143,6 +144,7 @@ export interface Comment {
     avatarUrl: string | null;
     avatarBorderId?: string | null;
     avatar_border_id?: string | null;
+    equippedTitleId?: string | null;
     reputation?: number;
   };
   createdAt: string;

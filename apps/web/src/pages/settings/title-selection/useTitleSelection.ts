@@ -3,8 +3,10 @@
  */
 
 import { useState, useMemo } from 'react';
-// TODO(phase-26): Rewire — gamification stores deleted
 import { useAuthStore } from '@/modules/auth/store';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
+import { useProfileStore } from '@/modules/social/store/profileStore.impl';
+import { ALL_TITLES } from '@/data/titlesCollection';
 import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 import type { TitleRarity } from '@/data/titles';
@@ -12,8 +14,14 @@ import type { PreviewTitle } from './types';
 
 const logger = createLogger('TitleSelection');
 
-/** Stable empty array for stub titles */
-const EMPTY_TITLES: PreviewTitle[] = [];
+/** Map TitleDefinition[] to PreviewTitle[] */
+const MAPPED_TITLES: PreviewTitle[] = ALL_TITLES.map((t) => ({
+  id: t.id,
+  name: t.displayName || t.name,
+  description: t.description,
+  color: t.colors[0] ?? '#a855f7',
+  rarity: t.rarity satisfies TitleRarity,
+}));
 
 /**
  * unknown for the settings module.
@@ -23,10 +31,9 @@ const EMPTY_TITLES: PreviewTitle[] = [];
  */
 export function useTitleSelection() {
   const user = useAuthStore((state) => state.user);
-  // TODO(phase-26): Rewire — gamification stores deleted
-  const titles = EMPTY_TITLES;
-  const equippedTitleId: string | null = null;
-  const equipTitle = async (_titleId: string) => {};
+  const equippedTitleId = useCustomizationStore((s) => s.equippedTitle) ?? null;
+  const titles = MAPPED_TITLES;
+  const profileEquipTitle = useProfileStore((s) => s.equipTitle);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRarity, setSelectedRarity] = useState<TitleRarity | 'all'>('all');
@@ -45,9 +52,12 @@ export function useTitleSelection() {
   const userIsPremium = user?.isPremium || false;
   const displayName = user?.displayName || 'User';
 
+  const setEquippedTitle = useCustomizationStore((s) => s.setEquippedTitle);
+
   const handleEquipTitle = async (titleId: string) => {
     try {
-      await equipTitle(titleId);
+      await profileEquipTitle(titleId || null);
+      setEquippedTitle(titleId || null);
       toast.success('Title equipped successfully!');
     } catch (error) {
       logger.error('Failed to equip title:', error);
@@ -58,7 +68,6 @@ export function useTitleSelection() {
   return {
     displayName,
     equippedTitleId,
-    equipTitle,
     filteredTitles,
     handleEquipTitle,
     previewTitle,

@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { getBorderById } from '@/data/avatar-borders';
+import { InlineTitle } from '@/shared/components/ui';
 import type { LayoutProps } from './types';
 
 export const CreatorLayout = memo(function CreatorLayout({
@@ -30,7 +31,11 @@ export const CreatorLayout = memo(function CreatorLayout({
           className="mx-auto"
         />
         <div className={cn('mt-2 font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
-        {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
+        {user.equippedTitle && (
+          <div className="mt-1 flex justify-center">
+            <InlineTitle titleId={user.equippedTitle.id} size="sm" />
+          </div>
+        )}
       </div>
 
       {/* Bio */}
@@ -65,13 +70,13 @@ export const CreatorLayout = memo(function CreatorLayout({
       {/* Badges */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2">
-          {/* TODO(phase-26): Rewire — gamification components deleted (AnimatedBadgeWithTooltip) */}
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
             <span
               key={badge.id}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70"
+              className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70"
             >
-              {badge.description || badge.id}
+              <span>{badge.icon}</span>
+              <span>{badge.title}</span>
             </span>
           ))}
         </div>

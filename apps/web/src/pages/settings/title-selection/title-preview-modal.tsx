@@ -4,6 +4,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import type { TitlePreviewModalProps } from './types';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 
 /**
  * Title Preview Modal dialog component.
@@ -35,10 +36,7 @@ export function TitlePreviewModal({
 
             <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-white/[0.04] p-4">
               <span className="text-lg font-semibold">{displayName}</span>
-              {/* TODO(phase-26): Rewire — gamification components deleted (TitleBadge) */}
-              <span className="text-sm text-purple-400">
-                {previewTitle.name ?? previewTitle.id}
-              </span>
+              <InlineTitle titleId={previewTitle.id} size="sm" />
             </div>
 
             <div className="mb-4 space-y-2">

@@ -12,8 +12,6 @@ import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import { AVATAR_BORDERS } from '@/data/avatar-borders';
 import { tweens, loop } from '@/lib/animation-presets';
-// TODO(phase-26): Rewire — gamification components deleted
-type AvatarBorderData = Record<string, unknown>;
 
 interface ThemedAvatarProps {
   src?: string | null;
@@ -24,7 +22,7 @@ interface ThemedAvatarProps {
   avatarBorderId?: string | null;
   avatarBorderConfig?: AvatarBorderConfig;
   /** Gamification equipped border (animated CSS borders) */
-  equippedBorder?: AvatarBorderData | null;
+  equippedBorder?: Record<string, unknown> | null;
   onClick?: () => void;
   style?: React.CSSProperties;
 }
@@ -90,30 +88,10 @@ export function ThemedAvatar({
   // Prefer advanced avatar borders when provided (discord-style compatibility)
   const resolvedBorder: AvatarBorderConfig | undefined =
     avatarBorderConfig ||
-    (avatarBorderId ? AVATAR_BORDERS.find((border) => border.id === avatarBorderId) : undefined);
-
-  // Gamification equipped border (CSS animated borders) — highest priority
-  // TODO(phase-26): Rewire — gamification components deleted
-  if (equippedBorder) {
-    return (
-      <div className={className} style={style} onClick={onClick}>
-        <div style={{ width: sizePxMap[size], height: sizePxMap[size] }}>
-          <img
-            src={src || '/default-avatar.png'}
-            alt={alt}
-            className="h-full w-full rounded-full object-cover"
-            style={{
-              width: sizePxMap[size] - borderWidth * 2,
-              height: sizePxMap[size] - borderWidth * 2,
-            }}
-            onError={(e) => {
-              e.currentTarget.src = '/default-avatar.png';
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
+    (avatarBorderId ? AVATAR_BORDERS.find((border) => border.id === avatarBorderId) : undefined) ||
+    (equippedBorder && typeof equippedBorder.id === 'string'
+      ? AVATAR_BORDERS.find((border) => border.id === equippedBorder.id)
+      : undefined);
 
   if (resolvedBorder) {
     return (

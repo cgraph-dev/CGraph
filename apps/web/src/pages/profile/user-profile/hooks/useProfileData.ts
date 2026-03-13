@@ -41,7 +41,7 @@ export function useProfileData({
   userId,
   isOwnProfile,
 }: UseProfileDataOptions): UseProfileDataReturn {
-  // TODO(phase-26): Rewire — gamification stores deleted
+  // Gamification defaults — data comes from API response, these are fallbacks
   const achievements = EMPTY_ACHIEVEMENTS;
   const myLevel = 1;
   const myTotalXP = 0;

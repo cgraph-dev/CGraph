@@ -12,6 +12,7 @@ import { PulseDots } from '@/modules/pulse/components/pulse-dots';
 import { StatItem } from './stat-item';
 import type { LayoutProps } from './types';
 import { tweens } from '@/lib/animation-presets';
+import { InlineTitle } from '@/shared/components/ui';
 
 export const DetailedLayout = memo(function DetailedLayout({
   user,
@@ -38,9 +39,8 @@ export const DetailedLayout = memo(function DetailedLayout({
             <span className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</span>
             <span className="text-sm opacity-60">@{user.username}</span>
           </div>
-          {/* TODO(phase-26): Rewire — gamification components deleted */}
           {config.showTitle && user.equippedTitle && (
-            <span className="text-xs opacity-60">{user.equippedTitle.id}</span>
+            <InlineTitle titleId={user.equippedTitle.id} size="sm" />
           )}
           {config.showBio && user.bio && (
             <p className={cn('mt-2 line-clamp-2 opacity-80', sizeConfig.textSize)}>{user.bio}</p>
@@ -107,12 +107,24 @@ export const DetailedLayout = memo(function DetailedLayout({
       )}
 
       {/* Badges */}
-      {/* TODO(phase-26): Rewire — gamification components deleted */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
-            <span key={badge.id} className="rounded bg-white/10 px-2 py-0.5 text-xs">
-              {badge.id}
+            <span
+              key={badge.id}
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
+                badge.rarity === 'legendary' || badge.rarity === 'mythic'
+                  ? 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-300'
+                  : badge.rarity === 'epic'
+                    ? 'bg-purple-500/20 text-purple-300'
+                    : badge.rarity === 'rare'
+                      ? 'bg-blue-500/20 text-blue-300'
+                      : 'bg-white/10 text-white/70'
+              )}
+            >
+              <span>{badge.icon}</span>
+              <span>{badge.title}</span>
             </span>
           ))}
         </div>

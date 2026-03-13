@@ -6,7 +6,6 @@
 
 import { memo } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-// TODO(phase-26): Rewire — gamification stores deleted
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/avatar-border-renderer';
 import { BADGE_DISPLAY_MAP } from '@/modules/settings/store/customization/mappings';
@@ -19,13 +18,15 @@ export const MiniProfileCard = memo(function MiniProfileCard({
   onMessage,
 }: MiniProfileCardProps) {
   const { user: currentUser } = useAuthStore();
-  const getEquippedBorder = () => null; // TODO(phase-26): Rewire — gamification stores deleted
+  const equippedBorderId = useCustomizationStore((s) => s.selectedBorderId);
   const equippedBadgeIds = useCustomizationStore((s) => s.equippedBadges);
   const isOwnProfile = user.id === currentUser?.id;
 
   // Get the user's equipped border
   const userBorder = isOwnProfile
-    ? (getEquippedBorder() ?? undefined)
+    ? equippedBorderId
+      ? getBorderById(equippedBorderId)
+      : undefined
     : user.avatarBorderId
       ? getBorderById(user.avatarBorderId)
       : undefined;

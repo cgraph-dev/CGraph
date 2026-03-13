@@ -138,7 +138,7 @@ export function NotificationProvider({
   const _handleDismissAchievement = useCallback((index: number) => {
     setAchievementNotifications((prev) => prev.filter((_, i) => i !== index));
   }, []);
-  void _handleDismissAchievement; // TODO(phase-26): Rewire when AchievementNotification restored
+  void _handleDismissAchievement;
 
   const contextValue: NotificationContextType = {
     toast,
@@ -165,7 +165,7 @@ export function NotificationProvider({
         </AnimatePresence>
       </div>
 
-      {/* TODO(phase-26): Rewire — gamification components deleted (AchievementNotification) */}
+      {/* Achievement Notifications — placeholder for AchievementNotification component */}
     </NotificationContext.Provider>
   );
 }

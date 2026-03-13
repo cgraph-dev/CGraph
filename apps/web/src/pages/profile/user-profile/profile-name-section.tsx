@@ -5,6 +5,7 @@
 import { motion } from 'motion/react';
 import { ShieldCheckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import type { UserProfileData } from '@/types/profile.types';
+import { InlineTitle } from '@/shared/components/ui';
 import { springs } from '@/lib/animation-presets';
 
 interface ProfileNameSectionProps {
@@ -39,10 +40,7 @@ export function ProfileNameSection({ profile }: ProfileNameSectionProps) {
       {/* User Title */}
       <div className="mt-0.5 flex items-center gap-2">
         <p className="text-gray-400">@{profile.username}</p>
-        {/* TODO(phase-26): Rewire — gamification components deleted */}
-        {profile.equippedTitle && (
-          <span className="text-xs text-purple-400">{profile.equippedTitle}</span>
-        )}
+        {profile.equippedTitle && <InlineTitle titleId={profile.equippedTitle} size="sm" />}
       </div>
 
       {profile.statusMessage && (

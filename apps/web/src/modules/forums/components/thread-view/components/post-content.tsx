@@ -21,6 +21,7 @@ import {
 import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
+import { InlineTitle } from '@/shared/components/ui/inline-title';
 import type { Post } from '@/modules/forums/store';
 // Import siblings directly to avoid circular dep through barrel
 import { PrefixBadge } from './prefix-badge';
@@ -119,7 +120,9 @@ export function PostContent({
         <div>
           <div className="flex items-center gap-2">
             <span className="font-medium">{post.author.displayName || post.author.username}</span>
-            {/* TODO(phase-26): Rewire — gamification components deleted (UserStars) */}
+            {post.author.equippedTitleId && (
+              <InlineTitle titleId={post.author.equippedTitleId} size="xs" />
+            )}
             {post.author.reputation !== undefined && (
               <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
                 {post.author.reputation} karma
