@@ -22,6 +22,7 @@ defmodule CGraphWeb.PresenceChannel do
   alias CGraph.Accounts.Friends
   alias CGraph.Accounts.Friends.Queries, as: FriendQueries
   alias CGraph.Accounts.User
+  alias CGraph.Customizations
   alias CGraph.Presence
   alias CGraph.Repo
 
@@ -51,7 +52,7 @@ defmodule CGraphWeb.PresenceChannel do
 
     # Restore persisted status from DB on reconnect
     # get! safe: user.id from authenticated socket assignment
-    user = Repo.get!(User, user.id)
+    user = Repo.get!(User, user.id) |> Repo.preload(:customization)
     {restored_status, restored_meta} = restore_persisted_status(user)
 
     # Get user's friend IDs for presence filtering, excluding blocked users
@@ -87,13 +88,17 @@ defmodule CGraphWeb.PresenceChannel do
       })
     end
 
-    # Notify friends that this user is now online (with restored status if any)
+    # Build customization data for friends to see
+    customization_data = extract_customization_data(user.customization)
+
+    # Notify friends that this user is now online (with restored status + customization)
     broadcast_to_friends(user.id, friend_ids, "friend_online", %{
       user_id: user.id,
       status: restored_status,
       status_message: user.status_message,
       custom_status: user.custom_status,
-      online_at: DateTime.utc_now() |> DateTime.to_iso8601()
+      online_at: DateTime.utc_now() |> DateTime.to_iso8601(),
+      customization: customization_data
     })
 
     # Schedule periodic heartbeat
@@ -238,6 +243,24 @@ defmodule CGraphWeb.PresenceChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  @impl true
+  def handle_in("customization_changed", _params, socket) do
+    user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+
+    # Reload customization from DB (just saved by the REST endpoint)
+    customization = Customizations.get_user_customization_record(user.id)
+    customization_data = extract_customization_data(customization)
+
+    broadcast_to_friends(user.id, friend_ids, "friend_customization_changed", %{
+      user_id: user.id,
+      customization: customization_data,
+      updated_at: DateTime.utc_now() |> DateTime.to_iso8601()
+    })
+
+    {:reply, :ok, socket}
   end
 
   @impl true
@@ -483,17 +506,44 @@ defmodule CGraphWeb.PresenceChannel do
   defp build_friend_presence(friend_ids) when is_list(friend_ids) and friend_ids != [] do
     statuses = Presence.bulk_status(friend_ids)
 
-    friend_ids
-    |> Enum.filter(fn fid -> Map.get(statuses, fid) not in [nil, "offline"] end)
+    # Batch-load customizations for online friends
+    online_friend_ids =
+      friend_ids
+      |> Enum.filter(fn fid -> Map.get(statuses, fid) not in [nil, "offline"] end)
+
+    customizations = Customizations.get_customizations_for_users(online_friend_ids)
+
+    online_friend_ids
     |> Enum.map(fn fid ->
       presence = Presence.get_user_presence(fid) || %{}
+      customization_data = extract_customization_data(Map.get(customizations, fid))
+
       {fid, %{
         online: true,
         status: Map.get(statuses, fid, "online"),
-        last_active: presence[:last_active]
+        last_active: presence[:last_active],
+        customization: customization_data
       }}
     end)
     |> Map.new()
   end
   defp build_friend_presence(_), do: %{}
+
+  # Extract key customization fields for presence broadcasts.
+  # Only sends fields that other users need to see — not the full record.
+  @spec extract_customization_data(struct() | nil) :: map()
+  defp extract_customization_data(nil), do: %{}
+  defp extract_customization_data(customization) do
+    %{
+      avatar_border_id: customization.avatar_border_id,
+      bubble_style: customization.bubble_style,
+      bubble_color: customization.bubble_color,
+      message_effect: customization.message_effect,
+      profile_theme: customization.profile_theme,
+      title_id: customization.title_id,
+      equipped_badges: customization.equipped_badges || [],
+      particle_effect: customization.particle_effect,
+      entrance_animation: customization.entrance_animation
+    }
+  end
 end

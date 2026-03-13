@@ -20,6 +20,27 @@ defmodule CGraph.Customizations do
   end
 
   @doc """
+  Gets the raw customization record for a user (nil if none exists).
+  Used for presence broadcasts where we don't want to auto-create defaults.
+  """
+  @spec get_user_customization_record(Ecto.UUID.t()) :: UserCustomization.t() | nil
+  def get_user_customization_record(user_id) do
+    Repo.get_by(UserCustomization, user_id: user_id)
+  end
+
+  @doc """
+  Batch-loads customizations for multiple users. Returns a map of user_id => customization.
+  Used by presence to efficiently load customizations for all online friends.
+  """
+  @spec get_customizations_for_users(list(Ecto.UUID.t())) :: map()
+  def get_customizations_for_users([]), do: %{}
+  def get_customizations_for_users(user_ids) do
+    from(c in UserCustomization, where: c.user_id in ^user_ids)
+    |> Repo.all()
+    |> Map.new(fn c -> {c.user_id, c} end)
+  end
+
+  @doc """
   Creates default customizations for a user.
   """
   @spec create_default_customizations(Ecto.UUID.t()) :: {:ok, UserCustomization.t()} | {:error, Ecto.Changeset.t()}

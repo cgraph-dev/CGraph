@@ -105,7 +105,7 @@ defmodule CGraph.Messaging.MessageOperations do
         where: m.schedule_status == "scheduled",
         where: not is_nil(m.scheduled_at),
         where: not_deleted(m),
-        preload: [:sender]
+        preload: [[sender: :customization]]
 
     pagination_opts = CGraph.Pagination.parse_params(
       Enum.into(opts, %{}),

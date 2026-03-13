@@ -170,7 +170,7 @@ defmodule CGraph.Groups.Channels do
     |> Message.changeset(message_attrs)
     |> Repo.insert()
     |> case do
-      {:ok, message} -> {:ok, Repo.preload(message, [:sender, :reactions])}
+      {:ok, message} -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
       error -> error
     end
   end
@@ -181,7 +181,7 @@ defmodule CGraph.Groups.Channels do
     query = from m in Message,
       where: m.id == ^message_id,
       where: m.channel_id == ^channel.id,
-      preload: [:user, :reactions]
+      preload: [[sender: :customization], :reactions]
 
     case Repo.one(query) do
       nil -> {:error, :not_found}

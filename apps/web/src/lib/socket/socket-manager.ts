@@ -24,6 +24,7 @@ import {
   getOnlineUsers as getOnlineUsersImpl,
   isUserOnline as isUserOnlineImpl,
   getAllOnlineStatuses as getAllOnlineStatusesImpl,
+  getFriendCustomization as getFriendCustomizationImpl,
 } from './presenceManager';
 import {
   joinConversation as joinConversationImpl,
@@ -231,6 +232,24 @@ export class SocketManager {
    */
   getAllOnlineStatuses(): Map<string, Set<string>> {
     return getAllOnlineStatusesImpl(this.onlineUsers);
+  }
+
+  /**
+   *
+   */
+  getFriendCustomization(userId: string) {
+    return getFriendCustomizationImpl(userId);
+  }
+
+  /**
+   *
+   */
+  notifyCustomizationChanged(): void {
+    const topic = 'presence:lobby';
+    const channel = this.channels.get(topic);
+    if (channel) {
+      channel.push('customization_changed', {});
+    }
   }
 
   /**

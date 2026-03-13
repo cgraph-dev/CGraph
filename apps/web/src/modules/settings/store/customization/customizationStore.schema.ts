@@ -9,6 +9,7 @@
  */
 
 import { api } from '@/lib/api';
+import { socketManager } from '@/lib/socket';
 import { createSchemaMapper, createDebouncedSave } from '@/lib/storeHelpers';
 
 import type { CustomizationState, CustomizationStore } from './customizationStore.types';
@@ -87,6 +88,8 @@ export const debouncedSave = createDebouncedSave<CustomizationStore>(
   async (state, _set) => {
     const payload = apiSchemaMapper.toApi(state);
     await api.patch('/api/v1/me/customizations', payload);
+    // Notify friends via WebSocket that customizations have changed
+    socketManager.notifyCustomizationChanged();
   },
   { delay: 1000 }
 );
