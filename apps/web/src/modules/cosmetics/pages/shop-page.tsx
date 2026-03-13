@@ -1,19 +1,19 @@
 /**
  * Shop Page — browse and purchase cosmetic items organized by type.
  *
- * Sections for all cosmetic types: badges, nameplates, profile effects,
- * profile frames, borders, titles, chat bubbles, emoji packs, sound packs, themes.
- * Each section shows a horizontal scroll of items with purchase/equip actions.
+ * Connects to the backend CosmeticsController to load real catalogue
+ * and inventory data. Items are organized by type in horizontal sections.
  *
  * @module cosmetics/pages/shop-page
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion } from 'motion/react';
 
-import type { CosmeticItem, CosmeticType, UserCosmeticInventory } from '@cgraph/shared-types';
+import type { CosmeticItem, CosmeticType } from '@cgraph/shared-types';
 import { CosmeticCard } from '../components/cosmetic-card';
 import { EquipPanel } from '../components/equip-panel';
+import { useCosmeticsStore } from '../store/cosmetics-store';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -34,37 +34,28 @@ const SHOP_SECTIONS: { type: CosmeticType; label: string; icon: string }[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Stub data (wired to real API in future phase)
-// ---------------------------------------------------------------------------
-
-const STUB_CATALOGUE: CosmeticItem[] = [];
-const STUB_INVENTORY: UserCosmeticInventory[] = [];
-
-// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-
-interface ShopPageProps {
-  /** Full cosmetic catalogue. */
-  readonly catalogue?: CosmeticItem[];
-  /** User's owned inventory. */
-  readonly inventory?: UserCosmeticInventory[];
-  /** Equip callback. */
-  readonly onEquip?: (item: CosmeticItem) => void;
-  /** Unequip callback. */
-  readonly onUnequip?: (item: CosmeticItem) => void;
-}
 
 /**
  * Shop Page component.
  */
-export function ShopPage({
-  catalogue = STUB_CATALOGUE,
-  inventory = STUB_INVENTORY,
-  onEquip,
-  onUnequip,
-}: ShopPageProps) {
+export function ShopPage() {
+  const catalogue = useCosmeticsStore((s) => s.catalogue);
+  const inventory = useCosmeticsStore((s) => s.inventory);
+  const isLoadingCatalogue = useCosmeticsStore((s) => s.isLoadingCatalogue);
+  const error = useCosmeticsStore((s) => s.error);
+  const fetchCatalogue = useCosmeticsStore((s) => s.fetchCatalogue);
+  const fetchInventory = useCosmeticsStore((s) => s.fetchInventory);
+  const equipItem = useCosmeticsStore((s) => s.equipItem);
+  const unequipItem = useCosmeticsStore((s) => s.unequipItem);
+
   const [selectedItem, setSelectedItem] = useState<CosmeticItem | null>(null);
+
+  useEffect(() => {
+    fetchCatalogue();
+    fetchInventory();
+  }, [fetchCatalogue, fetchInventory]);
 
   // Build lookup sets
   const ownedIds = useMemo(() => new Set(inventory.map((e) => e.cosmetic.id)), [inventory]);
@@ -87,14 +78,25 @@ export function ShopPage({
   const handleToggleEquip = useCallback(
     (item: CosmeticItem) => {
       if (equippedIds.has(item.id)) {
-        onUnequip?.(item);
+        unequipItem(item);
       } else {
-        onEquip?.(item);
+        equipItem(item);
       }
       setSelectedItem(null);
     },
-    [equippedIds, onEquip, onUnequip]
+    [equippedIds, equipItem, unequipItem]
   );
+
+  if (isLoadingCatalogue && catalogue.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black/95">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+          <p className="mt-4 text-gray-400">Loading cosmetics...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black/95 text-white">
@@ -105,6 +107,7 @@ export function ShopPage({
             Cosmetics Shop
           </h1>
           <p className="mt-1 text-sm text-gray-400">Discover and equip unique cosmetic items</p>
+          {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
         </div>
       </div>
 

@@ -1,23 +1,21 @@
 /**
  * Inventory Page — browse and manage owned cosmetic items.
  *
- * Features:
- * - Type filter tabs (all / border / title / badge / nameplate / ...)
- * - Rarity filter dropdown
- * - CSS grid of CosmeticCard components
- * - Equipped indicator on cards
+ * Connects to the backend CosmeticsController to load real inventory data.
+ * Features type filter tabs, rarity filter, and search.
  *
  * @module cosmetics/pages/inventory-page
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-import type { CosmeticItem, CosmeticType, UserCosmeticInventory } from '@cgraph/shared-types';
+import type { CosmeticItem, CosmeticType } from '@cgraph/shared-types';
 import { RARITY_TIERS } from '@cgraph/shared-types';
 import type { RarityTier } from '@cgraph/shared-types';
 
 import { CosmeticCard } from '../components/cosmetic-card';
+import { useCosmeticsStore } from '../store/cosmetics-store';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -39,29 +37,25 @@ const TYPE_TABS: { id: CosmeticType | 'all'; label: string }[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Stub data (wired to real API in future phase)
-// ---------------------------------------------------------------------------
-
-const STUB_INVENTORY: UserCosmeticInventory[] = [];
-
-// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-
-interface InventoryPageProps {
-  /** Optional pre-loaded inventory. Falls back to stub. */
-  readonly inventory?: UserCosmeticInventory[];
-  /** Callback when user selects a card to view/equip. */
-  readonly onSelectItem?: (item: CosmeticItem) => void;
-}
 
 /**
  * Inventory Page component.
  */
-export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: InventoryPageProps) {
+export function InventoryPage() {
+  const inventory = useCosmeticsStore((s) => s.inventory);
+  const isLoadingInventory = useCosmeticsStore((s) => s.isLoadingInventory);
+  const error = useCosmeticsStore((s) => s.error);
+  const fetchInventory = useCosmeticsStore((s) => s.fetchInventory);
+
   const [activeType, setActiveType] = useState<CosmeticType | 'all'>('all');
   const [rarityFilter, setRarityFilter] = useState<RarityTier | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    fetchInventory();
+  }, [fetchInventory]);
 
   // -------------------------------------------------------------------------
   // Filtered items
@@ -81,12 +75,20 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
     });
   }, [inventory, activeType, rarityFilter, searchQuery]);
 
-  const handleSelect = useCallback(
-    (item: CosmeticItem) => {
-      onSelectItem?.(item);
-    },
-    [onSelectItem]
-  );
+  const handleSelect = useCallback((_item: CosmeticItem) => {
+    // Selection handler — can navigate to detail or open equip panel
+  }, []);
+
+  if (isLoadingInventory && inventory.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black/95">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+          <p className="mt-4 text-gray-400">Loading inventory...</p>
+        </div>
+      </div>
+    );
+  }
 
   // -------------------------------------------------------------------------
   // Render
@@ -101,6 +103,7 @@ export function InventoryPage({ inventory = STUB_INVENTORY, onSelectItem }: Inve
             My Inventory
           </h1>
           <p className="mt-1 text-sm text-gray-400">{inventory.length} items collected</p>
+          {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
         </div>
 
         {/* Type tabs */}
